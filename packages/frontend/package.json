@@ -21,7 +21,7 @@
     "i18n:sort": "tsx ./src/i18n/check.ts --sort"
   },
   "dependencies": {
-    "@altinn/altinn-components": "^0.16.0",
+    "@altinn/altinn-components": "^0.18.4",
     "@digdir/designsystemet-css": "0.11.0-next.10",
     "@digdir/designsystemet-react": "1.0.0-next.15",
     "@digdir/designsystemet-theme": "1.0.0-next.14",

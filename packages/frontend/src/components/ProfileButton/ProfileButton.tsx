@@ -11,10 +11,8 @@ type ProfileButtonProps = {
 
 export const ProfileButton = (props: ProfileButtonProps) => {
   const { t } = useTranslation();
-  const { className, isLoading, children, variant = 'primary', size, ...restProps } = props;
+  const { className, isLoading, children, variant = 'tertiary', size, ...restProps } = props;
   const classes = cx(className, styles.profileButton, {
-    [styles.primary]: variant === 'primary',
-    [styles.secondary]: variant === 'secondary',
     [styles.tertiary]: variant === 'tertiary',
     [styles.xs]: size === 'xs',
   });

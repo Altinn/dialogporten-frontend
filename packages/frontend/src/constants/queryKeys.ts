@@ -1,6 +1,7 @@
 export const QUERY_KEYS = {
   DIALOG_BY_ID: 'dialogById',
   PARTIES: 'parties',
+  PARTIES_EMPTY_LIST: 'partiesEmptyList',
   SELECTED_PARTIES: 'selectedParties',
   ALL_ORGANIZATIONS_SELECTED: 'allOrganizationsSelected',
   SEARCH_DIALOGS: 'searchDialogs',

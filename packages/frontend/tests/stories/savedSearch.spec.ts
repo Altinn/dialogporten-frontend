@@ -1,14 +1,17 @@
 import { expect, test } from '@playwright/test';
 import { defaultAppURL } from '../';
 import { PageRoutes } from '../../src/pages/routes';
-import { getSidebarMenuItem, getSidebarMenuItemBadge, performSearch } from './common';
+import { expectIsCompanyPage, getSidebarMenuItem, getSidebarMenuItemBadge, performSearch } from './common';
 
 test.describe('Saved search', () => {
   test('Create and delete saved search', async ({ page }) => {
     await page.goto(defaultAppURL);
-    await page.getByRole('button', { name: 'Legg til filter' }).click();
-    await page.getByText('Avsender').click();
-    await page.getByLabel('Fra Oslo kommune').check();
+    const toolbarArea = page.getByTestId('inbox-toolbar');
+    await toolbarArea.getByRole('button', { name: 'add' }).click();
+
+    await toolbarArea.getByText('Velg avsender').locator('visible=true').click();
+    await toolbarArea.getByLabel('Oslo kommune').locator('visible=true').check();
+
     await page.mouse.click(200, 0, { button: 'left' });
 
     await page.getByRole('button', { name: 'Lagre søk' }).click();
@@ -47,8 +50,9 @@ test.describe('Saved search', () => {
     await page.goto(defaultAppURL);
 
     await page.getByRole('button', { name: 'Test Testesen' }).click();
-    await page.getByText('Testbedrift AS Avd Oslo').click();
-    await expect(page.getByTestId('pageLayout-background')).toHaveClass(/.*isCompany.*/);
+    const toolbarArea = page.getByTestId('inbox-toolbar');
+    await toolbarArea.getByText('Testbedrift AS Avd Oslo').locator('visible=true').click();
+    await expectIsCompanyPage(page);
     await expect(page.getByRole('link', { name: 'Innkalling til sesjon' })).toBeVisible();
 
     await performSearch(page, 'innkalling');
@@ -61,6 +65,6 @@ test.describe('Saved search', () => {
 
     await page.getByRole('link', { name: '«innkalling»' }).click();
     await expect(page.getByRole('link', { name: 'Innkalling til sesjon' })).toBeVisible();
-    await expect(page.getByTestId('pageLayout-background')).toHaveClass(/.*isCompany.*/);
+    await expectIsCompanyPage(page);
   });
 });

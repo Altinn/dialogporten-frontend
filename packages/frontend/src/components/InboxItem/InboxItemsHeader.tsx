@@ -27,7 +27,6 @@ interface InboxItemsHeaderProps {
 export const InboxItemsHeader = ({ title, onSelectAll, hideSelectAll = false }: InboxItemsHeaderProps) => {
   const { t } = useTranslation();
   const disableBulkActions = useFeatureFlag<boolean>(FeatureFlagKeys.DisableBulkActions);
-
   return (
     <header className={styles.inboxItemsHeader}>
       <h2 className={styles.title}>{title}</h2>

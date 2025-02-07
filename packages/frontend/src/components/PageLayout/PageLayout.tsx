@@ -9,17 +9,16 @@ import { Snackbar } from '@altinn/altinn-components';
 import { useQueryClient } from '@tanstack/react-query';
 import { type ChangeEvent, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, Outlet, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, Outlet, useSearchParams } from 'react-router-dom';
 import { useDialogs } from '../../api/useDialogs.tsx';
 import { useParties } from '../../api/useParties.ts';
 import { getSearchStringFromQueryParams } from '../../pages/Inbox/queryParams.ts';
-import { useSavedSearches } from '../../pages/SavedSearches/useSavedSearches.ts';
+import { useSavedSearches } from '../../pages/SavedSearches/useSavedSearches.tsx';
 import { PageRoutes } from '../../pages/routes.ts';
 import { useProfile } from '../../profile';
 import { BetaBanner } from '../BetaBanner/BetaBanner';
 import { useAuth } from '../Login/AuthContext.tsx';
 import { useAccounts } from './Accounts/useAccounts.tsx';
-import { Background } from './Background';
 import { useFooter } from './Footer';
 import { useGlobalMenu } from './GlobalMenu';
 import { useSearchAutocompleteDialogs, useSearchString } from './Search';
@@ -37,18 +36,15 @@ export const PageLayout: React.FC = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { searchValue, setSearchValue, onClear } = useSearchString();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { selectedProfile, selectedParties, parties, selectedPartyIds, setSelectedPartyIds, allOrganizationsSelected } =
-    useParties();
+  const { selectedProfile, selectedParties, parties, selectedPartyIds, allOrganizationsSelected } = useParties();
   const { dialogsByView, dialogCountInconclusive: partyDialogsCountInconclusive } = useDialogs(selectedParties);
   const { dialogsByView: allDialogsByView, dialogCountInconclusive: allDialogCountInconclusive } = useDialogs(parties);
   const { autocomplete } = useSearchAutocompleteDialogs({ selectedParties: selectedParties, searchValue });
-  const { accounts, selectedAccount, accountSearch, accountGroups } = useAccounts({
+  const { accounts, selectedAccount, accountSearch, accountGroups, onSelectAccount } = useAccounts({
     parties,
     selectedParties,
     allOrganizationsSelected,
-    dialogs: allDialogsByView.inbox,
+    countableItems: allDialogsByView.inbox,
     dialogCountInconclusive: allDialogCountInconclusive,
   });
   const { currentPartySavedSearches } = useSavedSearches(selectedPartyIds);
@@ -108,20 +104,7 @@ export const PageLayout: React.FC = () => {
       items: global,
       accountGroups,
       accounts,
-      onSelectAccount: (account: string) => {
-        const allAccountsSelected = account === 'ALL';
-        const search = new URLSearchParams();
-
-        if (location.pathname === PageRoutes.inbox) {
-          setSelectedPartyIds(allAccountsSelected ? [] : [account], allAccountsSelected);
-        } else {
-          search.append(
-            allAccountsSelected ? 'allParties' : 'party',
-            allAccountsSelected ? 'true' : encodeURIComponent(account),
-          );
-          navigate(PageRoutes.inbox + `?${search.toString()}`);
-        }
-      },
+      onSelectAccount: (account: string) => onSelectAccount(account, PageRoutes.inbox),
       changeLabel: t('layout.menu.change_account'),
       backLabel: t('word.back'),
       ...(accountSearch && {
@@ -149,12 +132,12 @@ export const PageLayout: React.FC = () => {
   };
 
   return (
-    <Background isCompany={selectedProfile === 'company'}>
+    <>
       <BetaBanner />
       <Layout color={selectedProfile} {...layoutProps}>
         <Outlet />
         <Snackbar />
       </Layout>
-    </Background>
+    </>
   );
 };

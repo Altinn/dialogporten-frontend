@@ -1,11 +1,11 @@
+import type { FilterState } from '@altinn/altinn-components';
 import { BookmarkFillIcon, BookmarkIcon } from '@navikt/aksel-icons';
-import type { SavedSearchData, SearchDataValueFilter } from 'bff-types-generated';
+import type { SavedSearchData } from 'bff-types-generated';
 import type { ButtonHTMLAttributes, RefAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Filter } from '..';
 import type { InboxViewType } from '../../api/useDialogs.tsx';
 import { useParties } from '../../api/useParties';
-import { useSavedSearches } from '../../pages/SavedSearches/useSavedSearches';
+import { convertFilterStateToFilters, useSavedSearches } from '../../pages/SavedSearches/useSavedSearches.tsx';
 import { useSearchString } from '../PageLayout/Search';
 import { ProfileButton } from '../ProfileButton';
 import { getAlreadySavedSearch } from './alreadySaved.ts';
@@ -13,11 +13,11 @@ import { getAlreadySavedSearch } from './alreadySaved.ts';
 type SaveSearchButtonProps = {
   disabled?: boolean;
   viewType: InboxViewType;
-  activeFilters: Filter[];
+  filterState: FilterState;
 } & ButtonHTMLAttributes<HTMLButtonElement> &
   RefAttributes<HTMLButtonElement>;
 
-export const SaveSearchButton = ({ disabled, className, activeFilters, viewType }: SaveSearchButtonProps) => {
+export const SaveSearchButton = ({ disabled, className, filterState, viewType }: SaveSearchButtonProps) => {
   const { t } = useTranslation();
   const { selectedPartyIds } = useParties();
   const { enteredSearchValue } = useSearchString();
@@ -29,16 +29,16 @@ export const SaveSearchButton = ({ disabled, className, activeFilters, viewType 
   } = useSavedSearches(selectedPartyIds);
 
   const searchToCheckIfExistsAlready: SavedSearchData = {
-    filters: activeFilters as SearchDataValueFilter[],
+    filters: convertFilterStateToFilters(filterState),
     urn: selectedPartyIds as string[],
     searchString: enteredSearchValue,
   };
 
-  const alreadySavedSearch = getAlreadySavedSearch(searchToCheckIfExistsAlready, savedSearches);
-
   if (disabled) {
     return null;
   }
+
+  const alreadySavedSearch = getAlreadySavedSearch(searchToCheckIfExistsAlready, savedSearches);
 
   if (alreadySavedSearch) {
     return (
@@ -60,7 +60,7 @@ export const SaveSearchButton = ({ disabled, className, activeFilters, viewType 
       className={className}
       size="xs"
       onClick={() =>
-        saveSearch({ filters: activeFilters, selectedParties: selectedPartyIds, enteredSearchValue, viewType })
+        saveSearch({ filters: filterState, selectedParties: selectedPartyIds, enteredSearchValue, viewType })
       }
       variant="tertiary"
       isLoading={isCTALoading}
