@@ -1,13 +1,13 @@
+import type { ToolbarFilterProps } from '@altinn/altinn-components';
+import type { FilterState } from '@altinn/altinn-components/dist/types/lib/components/Toolbar/Toolbar';
 import { t } from 'i18next';
 import type { Participant } from '../../api/useDialogById.tsx';
-import type { Filter, FilterSetting } from '../../components/FilterBar/FilterBar.tsx';
+import type { InboxItemInput } from '../../components';
 import {
   countOccurrences,
-  generateDateOptions,
   getPredefinedRange,
   isCombinedDateAndInterval,
 } from '../../components/FilterBar/dateInfo.ts';
-import type { InboxItemInput } from '../../components/InboxItem/InboxItem.tsx';
 import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
 
 /**
@@ -21,39 +21,28 @@ import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
 
 export const filterDialogs = (
   dialogs: InboxItemInput[],
-  activeFilters: Filter[],
+  activeFilters: FilterState,
   format: FormatFunction,
 ): InboxItemInput[] => {
   if (!activeFilters.length) {
     return dialogs;
   }
 
-  // Group filters by their IDs to apply OR logic within the same ID group
-  const filtersById = activeFilters.reduce(
-    (acc, filter) => {
-      if (!acc[filter.id]) {
-        acc[filter.id] = [];
-      }
-      acc[filter.id].push(filter);
-      return acc;
-    },
-    {} as Record<string, typeof activeFilters>,
-  );
-
   return dialogs.filter((item) => {
-    // Apply AND logic across different filter ID groups
-    return Object.keys(filtersById).every((filterId) => {
-      const filters = filtersById[filterId];
+    return Object.keys(activeFilters).every((filterId) => {
       // Apply OR logic within each filter ID group
-      return filters.some((filter) => {
-        if (filter.id === 'sender' || filter.id === 'receiver') {
-          const participant = item[filter.id as keyof InboxItemInput] as Participant;
-          return filter.value === participant.name;
-        }
-        if (filter.id === 'updated') {
-          const rangeProperties = getPredefinedRange().find((range) => range.value === filter.value);
+      if (filterId === 'sender' || filterId === 'receiver') {
+        return activeFilters[filterId]?.some((filterValue) => {
+          const participant = item[filterId as keyof InboxItemInput] as Participant;
+          return filterValue === participant.name;
+        });
+      }
+
+      if (filterId === 'updated') {
+        return activeFilters[filterId]?.some((filterValue) => {
+          const rangeProperties = getPredefinedRange().find((range) => range.value === filterValue);
           const { isDate, endDate, startDate } = isCombinedDateAndInterval(
-            rangeProperties?.range ?? (filter.value as string),
+            rangeProperties?.range ?? (filterValue as string),
             format,
           );
 
@@ -66,15 +55,16 @@ export const filterDialogs = (
             }
             return true;
           }
-          return new Date(filter.value as string).toDateString() === new Date(item.updatedAt).toDateString();
-        }
-        return filter.value === item[filter.id as keyof InboxItemInput];
-      });
+          return new Date(filterValue).toDateString() === new Date(item.updatedAt).toDateString();
+        });
+      }
+      console.info(activeFilters);
+      //return activeFilters[filterId]?.includes(item[filterId as keyof InboxItemInput] as string);
     });
   });
 };
 
-export enum FilterBarIds {
+export enum FilterCategory {
   SENDER = 'sender',
   RECEIVER = 'receiver',
   STATUS = 'status',
@@ -82,27 +72,44 @@ export enum FilterBarIds {
 }
 
 /**
- * Generates filter settings for the filter bar.
+ * Generates facets for the filters.
  *
  * @param {InboxItemInput[]} dialogs - The array of dialogs to filter.
- * @param {Array} activeFilters - The array of active filter objects, where each filter has an 'id' and a 'value'.
+ * @param currentFilterState
  * @param format
  * @returns {Array} - The array of filter settings.
  */
-export const getFilterBarSettings = (
+export const getFacets = (
   dialogs: InboxItemInput[],
-  activeFilters: Filter[],
+  currentFilterState: FilterState,
   format: FormatFunction,
-): FilterSetting[] => {
+): ToolbarFilterProps[] => {
   return [
     {
+      label: t('filter_bar.label.choose_sender'),
+      name: FilterCategory.SENDER,
+      optionType: 'checkbox' as ToolbarFilterProps['optionType'],
+      options: (() => {
+        const { [FilterCategory.SENDER]: _, ...otherFilters } = currentFilterState;
+        const filteredDialogs = filterDialogs(dialogs, otherFilters, format);
+        const senders = filteredDialogs.map((p) => p.sender.name);
+        const senderCounts = countOccurrences(senders);
+
+        return Array.from(new Set(senders)).map((sender) => ({
+          label: `${t('filter_bar_fields.from')} ${sender}`,
+          value: sender,
+          badge: senderCounts[sender] ? { label: String(senderCounts[sender]) } : undefined,
+        }));
+      })(),
+    },
+    /*{
       id: FilterBarIds.SENDER,
       label: t('filter_bar.label.sender'),
       unSelectedLabel: t('filter_bar.label.all_senders'),
       mobileNavLabel: t('filter_bar.label.choose_sender'),
       operation: 'includes',
       options: (() => {
-        const otherFilters = activeFilters.filter((activeFilter) => activeFilter.id !== 'sender');
+        const { sender: _, ...otherFilters } = currentFilterState;
         const filteredDialogs = filterDialogs(dialogs, otherFilters, format);
         const senders = filteredDialogs.map((p) => p.sender.name);
         const senderCounts = countOccurrences(senders);
@@ -121,7 +128,7 @@ export const getFilterBarSettings = (
       mobileNavLabel: t('filter_bar.label.choose_recipient'),
       operation: 'includes',
       options: (() => {
-        const otherFilters = activeFilters.filter((activeFilter) => activeFilter.id !== 'receiver');
+        const { receiver: _, ...otherFilters } = currentFilterState;
         const filteredDialogs = filterDialogs(dialogs, otherFilters, format);
 
         const receivers = filteredDialogs.map((p) => p.receiver.name);
@@ -141,7 +148,7 @@ export const getFilterBarSettings = (
       operation: 'includes',
       horizontalRule: true,
       options: (() => {
-        const otherFilters = activeFilters.filter((activeFilter) => activeFilter.id !== 'status');
+        const { status: _, ...otherFilters } = currentFilterState;
         const filteredDialogs = filterDialogs(dialogs, otherFilters, format);
 
         const status = filteredDialogs.map((p) => p.status);
@@ -165,30 +172,36 @@ export const getFilterBarSettings = (
         format,
       ),
     },
-  ];
+     */
+  ].filter((facet: ToolbarFilterProps) => facet.options.length > 1);
 };
 
-export const createFiltersURLQuery = (activeFilters: Filter[], allFilterKeys: string[], baseURL: string): URL => {
+export const createFiltersURLQuery = (activeFilters: FilterState, allFilterKeys: string[], baseURL: string): URL => {
   const url = new URL(baseURL);
 
   for (const filter of allFilterKeys) {
     url.searchParams.delete(filter);
   }
 
-  for (const filter of activeFilters.filter((filter) => typeof filter.value !== 'undefined')) {
-    url.searchParams.append(filter.id, String(filter.value));
+  for (const [id, value] of Object.entries(activeFilters).filter(([_, value]) => typeof value !== 'undefined')) {
+    url.searchParams.append(id, String(value));
   }
   return url;
 };
 
-export const readFiltersFromURLQuery = (query: string): Filter[] => {
+export const readFiltersFromURLQuery = (query: string): FilterState => {
   const searchParams = new URLSearchParams(query);
-  const allowedFilterKeys = Object.values(FilterBarIds) as string[];
-  const filters: Filter[] = [];
+  const allowedFilterKeys = Object.values(FilterCategory) as string[];
+  const filters: FilterState = {};
   searchParams.forEach((value, key) => {
     if (allowedFilterKeys.includes(key)) {
-      filters.push({ id: key, value });
+      if (filters[key]) {
+        filters[key].push(value);
+      } else {
+        filters[key] = [value];
+      }
     }
   });
+
   return filters;
 };

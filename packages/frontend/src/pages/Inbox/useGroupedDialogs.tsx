@@ -1,8 +1,9 @@
+import type { FilterState } from '@altinn/altinn-components/dist/types/lib/components/Toolbar/Toolbar';
 import { format } from 'date-fns';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type InboxViewType, getViewType } from '../../api/useDialogs.tsx';
-import type { Filter, InboxItemInput } from '../../components';
+import type { InboxItemInput } from '../../components';
 
 interface DialogCategory {
   label: string;
@@ -12,7 +13,7 @@ interface DialogCategory {
 
 interface UseGroupedDialogsProps {
   items: InboxItemInput[];
-  filters: Filter[];
+  filters: FilterState;
   displaySearchResults: boolean;
   viewType: InboxViewType;
 }

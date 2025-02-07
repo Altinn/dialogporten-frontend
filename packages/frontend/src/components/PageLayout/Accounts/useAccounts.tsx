@@ -8,6 +8,9 @@ import type {
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import { type ChangeEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useParties } from '../../../api/useParties.ts';
+import { PageRoutes } from '../../../pages/routes.ts';
 import type { InboxItemInput } from '../../InboxItem';
 import { getAlertBadgeProps } from '../GlobalMenu';
 
@@ -24,6 +27,7 @@ interface UseAccountsOutput {
   accountGroups: MenuItemGroups;
   selectedAccount: Account;
   accountSearch: AccountSearchProps | undefined;
+  onSelectAccount: (account: string) => void;
 }
 
 type AccountType = 'company' | 'person';
@@ -89,6 +93,9 @@ export const useAccounts = ({
   dialogCountInconclusive,
 }: UseAccountsProps): UseAccountsOutput => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { setSelectedPartyIds } = useParties();
   const [searchString, setSearchString] = useState<string>('');
   const accountSearchThreshold = 2;
   const showSearch = parties.length > accountSearchThreshold;
@@ -195,10 +202,26 @@ export const useAccounts = ({
       }
     : undefined;
 
+  const onSelectAccount = (account: string) => {
+    const allAccountsSelected = account === 'ALL';
+    const search = new URLSearchParams();
+
+    if (location.pathname === PageRoutes.inbox) {
+      setSelectedPartyIds(allAccountsSelected ? [] : [account], allAccountsSelected);
+    } else {
+      search.append(
+        allAccountsSelected ? 'allParties' : 'party',
+        allAccountsSelected ? 'true' : encodeURIComponent(account),
+      );
+      navigate(PageRoutes.inbox + `?${search.toString()}`);
+    }
+  };
+
   return {
     accounts,
     accountGroups,
     selectedAccount,
     accountSearch,
+    onSelectAccount,
   };
 };
