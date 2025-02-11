@@ -38,6 +38,6 @@ const plugin: FastifyPluginAsync = async (fastify) => {
 };
 
 export const fastifyHeaders = fp(plugin, {
-  fastify: '4.x',
+  fastify: '5.x',
   name: 'fastify-headers',
 });

@@ -23,6 +23,6 @@ const plugin: FastifyPluginAsync<Props> = async (fastify, options) => {
 };
 
 export default fp(plugin, {
-  fastify: '4.x',
+  fastify: '5.x',
   name: 'azure-healthprobs',
 });

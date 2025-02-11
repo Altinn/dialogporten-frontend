@@ -6,7 +6,6 @@ import session from '@fastify/session';
 import type { FastifySessionOptions } from '@fastify/session';
 import RedisStore from 'connect-redis';
 import Fastify from 'fastify';
-import fastifyGraphiql from 'fastify-graphiql';
 import { oidc, userApi, verifyToken } from './auth/index.ts';
 import healthChecks from './azure/HealthChecks.ts';
 import healthProbes from './azure/HealthProbes.ts';
@@ -44,10 +43,11 @@ const startServer = async (): Promise<void> => {
   // Session setup
   const cookieSessionConfig: FastifySessionOptions = {
     secret,
+    rolling: true,
+    cookieName: 'arbeidsflate',
     cookie: {
       secure: cookieConfig.secure,
       httpOnly: true,
-      maxAge: cookieConfig.maxAge,
     },
   };
   if (redisConnectionString) {
@@ -75,12 +75,12 @@ const startServer = async (): Promise<void> => {
   server.register(userApi);
   server.register(graphqlApi);
   server.register(graphqlStream);
-  if (enableGraphiql) {
+  /*if (enableGraphiql) {
     server.register(fastifyGraphiql, {
       url: '/api/graphiql',
       graphqlURL: '/api/graphql',
     });
-  }
+  }*/
 
   server.listen({ port, host }, (error, address) => {
     if (error) {

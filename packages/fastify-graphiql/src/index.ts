@@ -1,4 +1,4 @@
-import type { FastifyPluginAsync } from 'fastify';
+import type { FastifyInstance, FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 
 type Options = {
@@ -6,7 +6,7 @@ type Options = {
   graphqlURL: string;
 };
 
-const plugin: FastifyPluginAsync<Options> = async (fastify, opts) => {
+const plugin: FastifyPluginAsync<Options> = async (fastify: FastifyInstance, opts) => {
   const { url, graphqlURL } = opts;
   fastify.get(url, (request, reply) => {
     reply.type('text/html');
@@ -84,6 +84,6 @@ const plugin: FastifyPluginAsync<Options> = async (fastify, opts) => {
 };
 
 export default fp(plugin, {
-  fastify: '4.x',
+  fastify: '5.x',
   name: 'fastify-graphiql',
 });

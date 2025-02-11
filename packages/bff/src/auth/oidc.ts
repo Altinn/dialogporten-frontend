@@ -1,5 +1,5 @@
 import { logger } from '@digdir/dialogporten-node-logger';
-import oauthPlugin, { type OAuth2Namespace } from '@fastify/oauth2';
+import oauthPlugin, { type FastifyOAuth2Options, type OAuth2Namespace } from '@fastify/oauth2';
 import type {
   FastifyInstance,
   FastifyPluginAsync,
@@ -51,6 +51,9 @@ declare module 'fastify' {
     token: SessionStorageToken;
     sub: string;
     locale: string;
+    state?: string;
+    verifier?: string;
+    nonce?: string;
   }
 }
 
@@ -78,22 +81,6 @@ interface CustomOICDPluginOptions {
   client_secret: string;
 }
 
-interface OAuthPluginOptions {
-  name: string;
-  scope: string[];
-  credentials: {
-    client: {
-      id: string;
-      secret: string;
-    };
-  };
-  startRedirectPath: string;
-  callbackUri: string;
-  discovery: {
-    issuer: string;
-  };
-}
-
 export const handleLogout = async (request: FastifyRequest, reply: FastifyReply) => {
   const { oidc_url, hostname } = config;
   const token: SessionStorageToken | undefined = request.session.get('token');
@@ -111,7 +98,7 @@ export const handleLogout = async (request: FastifyRequest, reply: FastifyReply)
 export const handleAuthRequest = async (request: FastifyRequest, reply: FastifyReply, fastify: FastifyInstance) => {
   try {
     const now = new Date();
-    const { token } = await fastify.idporten.getAccessTokenFromAuthorizationCodeFlow(request);
+    const { token } = await fastify.idporten.getAccessTokenFromAuthorizationCodeFlow(request, reply);
     const customToken: IdportenToken = token as unknown as IdportenToken;
     const refreshTokenExpiresAt = new Date(now.getTime() + customToken.refresh_token_expires_in * 1000).toISOString();
     const { sub, locale = 'nb' } = jwt.decode(token.id_token as string) as unknown as IdTokenPayload;
@@ -137,7 +124,7 @@ export const handleAuthRequest = async (request: FastifyRequest, reply: FastifyR
 const plugin: FastifyPluginAsync<CustomOICDPluginOptions> = async (fastify, options) => {
   const { client_id, client_secret, oidc_url, hostname } = options;
 
-  fastify.register<OAuthPluginOptions>(oauthPlugin as unknown as FastifyPluginCallback<OAuthPluginOptions>, {
+  fastify.register<FastifyOAuth2Options>(oauthPlugin as FastifyPluginCallback<FastifyOAuth2Options>, {
     name: 'idporten',
     scope: ['digdir:dialogporten.noconsent', 'openid'],
     credentials: {
@@ -145,6 +132,18 @@ const plugin: FastifyPluginAsync<CustomOICDPluginOptions> = async (fastify, opti
         id: client_id,
         secret: client_secret,
       },
+    },
+    redirectStateCookieName: 'AF-state',
+    verifierCookieName: 'AF-verifier',
+    generateStateFunction: (request: FastifyRequest) => {
+      // TODO: Generate a random state
+      const state = 'AF';
+      request.session.state = state;
+      return state;
+    },
+    checkStateFunction: (request: FastifyRequest) => {
+      // TODO: Check if the state is valid
+      return request.session.state === 'AF';
     },
     startRedirectPath: '/api/login/',
     callbackUri: `${hostname}/api/cb`,
@@ -156,8 +155,12 @@ const plugin: FastifyPluginAsync<CustomOICDPluginOptions> = async (fastify, opti
   /* Post login: retrieves token, stores values to user session and redirects to client */
   fastify.get('/api/cb', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      await handleAuthRequest(request, reply, fastify);
+      console.info('refererOfRequest', JSON.stringify(request.headers, null, 3));
+      console.info('Request cookies', JSON.stringify(request.cookies, null, 3));
+      console.info('Reply cookies', JSON.stringify(reply.cookies, null, 3));
 
+      await handleAuthRequest(request, reply, fastify);
+      // https://docs.digdir.no/docs/idporten/oidc/oidc_protocol_authorize.html
       reply.redirect('/?loggedIn=true');
     } catch (e) {
       logger.error(e);
@@ -168,6 +171,6 @@ const plugin: FastifyPluginAsync<CustomOICDPluginOptions> = async (fastify, opti
   fastify.get('/api/logout', { preHandler: fastify.verifyToken(false) }, handleLogout);
 };
 export default fp(plugin, {
-  fastify: '4.x',
+  fastify: '5.x',
   name: 'fastify-oicd',
 });
