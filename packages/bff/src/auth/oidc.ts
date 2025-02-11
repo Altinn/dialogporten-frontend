@@ -1,9 +1,9 @@
 import { logger } from '@digdir/dialogporten-node-logger';
-import oauthPlugin, { type FastifyOAuth2Options, type OAuth2Namespace } from '@fastify/oauth2';
+import type { OAuth2Namespace } from '@fastify/oauth2';
+import axios from 'axios';
 import type {
   FastifyInstance,
   FastifyPluginAsync,
-  FastifyPluginCallback,
   FastifyReply,
   FastifyRequest,
   HookHandlerDoneFunction,
@@ -11,6 +11,7 @@ import type {
 } from 'fastify';
 import fp from 'fastify-plugin';
 import jwt from 'jsonwebtoken';
+import * as client from 'openid-client';
 import config from '../config.js';
 
 declare module 'fastify' {
@@ -49,6 +50,8 @@ declare module 'fastify' {
 
   interface Session {
     token: SessionStorageToken;
+    codeVerifier: string;
+    codeChallenge: string;
     sub: string;
     locale: string;
     state?: string;
@@ -81,6 +84,10 @@ interface CustomOICDPluginOptions {
   client_secret: string;
 }
 
+const { client_id, oidc_url, hostname, client_secret } = config;
+const issuerURL = new URL(`https://${oidc_url}/.well-known/openid-configuration`);
+const providerConfig: client.Configuration = await client.discovery(issuerURL, client_id, client_secret);
+
 export const handleLogout = async (request: FastifyRequest, reply: FastifyReply) => {
   const { oidc_url, hostname } = config;
   const token: SessionStorageToken | undefined = request.session.get('token');
@@ -98,7 +105,50 @@ export const handleLogout = async (request: FastifyRequest, reply: FastifyReply)
 export const handleAuthRequest = async (request: FastifyRequest, reply: FastifyReply, fastify: FastifyInstance) => {
   try {
     const now = new Date();
-    const { token } = await fastify.idporten.getAccessTokenFromAuthorizationCodeFlow(request, reply);
+    console.info('handleAuthRequest');
+
+    /* must match the one in the callback */
+    const {
+      code: authorizationCode,
+      state: callbackState,
+      iss,
+    } = request.query as { code: string; state: string; iss: string };
+
+    const codeVerifier = request.session.get('codeVerifier') ?? '';
+    const code_challenge = request.session.get('codeChallenge') ?? '';
+    const state = request.session.get('state') ?? '';
+    const currentURL = new URL(`${hostname}${request.originalUrl}`);
+    console.info('codeVerifier', codeVerifier);
+    console.info('code_challenge', code_challenge);
+    console.info('state', state);
+
+    const token: client.TokenEndpointResponse = await client.authorizationCodeGrant(providerConfig, currentURL, {
+      pkceCodeVerifier: codeVerifier,
+      expectedState: callbackState,
+    });
+
+    /*const tokenEndpoint = `https://${oidc_url}/token`;
+    const basicAuthString = `${client_id}:${client_secret}`;
+    const authEncoded = `Basic ${Buffer.from(basicAuthString).toString('base64')}`;
+
+    const body = new URLSearchParams();
+    body.append('grant_type', 'authorization_code');
+    body.append('client_id', config.client_id);
+    body.append('code_verifier', codeVerifier);
+    body.append('redirect_uri', `${hostname}/?loggedIn=true`);
+    body.append('code', authorizationCode);
+
+    const refreshResponse = await axios.post(tokenEndpoint, body, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Authorization: authEncoded,
+      },
+    });
+    /
+    console.info('token', JSON.stringify(refreshResponse, null, 3));
+
+     */
+
     const customToken: IdportenToken = token as unknown as IdportenToken;
     const refreshTokenExpiresAt = new Date(now.getTime() + customToken.refresh_token_expires_in * 1000).toISOString();
     const { sub, locale = 'nb' } = jwt.decode(token.id_token as string) as unknown as IdTokenPayload;
@@ -116,49 +166,65 @@ export const handleAuthRequest = async (request: FastifyRequest, reply: FastifyR
     request.session.set('sub', sub);
     request.session.set('locale', locale);
   } catch (e) {
+    console.info('handleAuthRequest error', {
+      message: e.message,
+      response: e.response
+        ? {
+            status: e.response.status,
+            headers: e.response.headers,
+            data: e.response.data,
+          }
+        : null,
+    });
     logger.error(e);
     reply.status(500);
   }
 };
 
-const plugin: FastifyPluginAsync<CustomOICDPluginOptions> = async (fastify, options) => {
-  const { client_id, client_secret, oidc_url, hostname } = options;
+const redirectToAuthorizationURI = async (request: FastifyRequest, reply: FastifyReply) => {
+  const { hostname } = config;
 
-  fastify.register<FastifyOAuth2Options>(oauthPlugin as FastifyPluginCallback<FastifyOAuth2Options>, {
-    name: 'idporten',
-    scope: ['digdir:dialogporten.noconsent', 'openid'],
-    credentials: {
-      client: {
-        id: client_id,
-        secret: client_secret,
-      },
-    },
-    redirectStateCookieName: 'AF-state',
-    verifierCookieName: 'AF-verifier',
-    generateStateFunction: (request: FastifyRequest) => {
-      // TODO: Generate a random state
-      const state = 'AF';
-      request.session.state = state;
-      return state;
-    },
-    checkStateFunction: (request: FastifyRequest) => {
-      // TODO: Check if the state is valid
-      return request.session.state === 'AF';
-    },
-    startRedirectPath: '/api/login/',
-    callbackUri: `${hostname}/api/cb`,
-    discovery: {
-      issuer: `https://${oidc_url}/.well-known/openid-configuration`,
-    },
+  const codeVerifier: string = client.randomPKCECodeVerifier();
+  const codeChallenge: string = await client.calculatePKCECodeChallenge(codeVerifier);
+  const state = client.randomState();
+
+  console.info('codeVerifier', codeVerifier);
+  console.info('codeChallenge', codeChallenge);
+
+  const parameters: Record<string, string> = {
+    redirect_uri: `${hostname}/api/cb`,
+    scope: 'digdir:dialogporten.noconsent openid',
+    state,
+    code_challenge: codeChallenge,
+    code_challenge_method: 'S256',
+  };
+
+  request.session.set('codeVerifier', codeVerifier);
+  request.session.set('codeChallenge', codeChallenge);
+  request.session.set('state', state);
+
+  const redirectTo: URL = client.buildAuthorizationUrl(providerConfig, parameters);
+
+  // Something missing here since 400 server_error is returned, but close ...
+  console.info('redirectToAuthorizationURI', redirectTo.href);
+  reply.redirect(redirectTo.href);
+};
+
+const plugin: FastifyPluginAsync<CustomOICDPluginOptions> = async (fastify, options) => {
+  fastify.get('/api/login', async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+      await redirectToAuthorizationURI(request, reply);
+    } catch (e) {
+      logger.error(e);
+      reply.status(500);
+    }
   });
 
   /* Post login: retrieves token, stores values to user session and redirects to client */
   fastify.get('/api/cb', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      console.info('refererOfRequest', JSON.stringify(request.headers, null, 3));
-      console.info('Request cookies', JSON.stringify(request.cookies, null, 3));
-      console.info('Reply cookies', JSON.stringify(reply.cookies, null, 3));
-
+      /* Handle the callback from the OIDC provider */
+      // TODO: Check if state and nonce in session matches the one in the callback
       await handleAuthRequest(request, reply, fastify);
       // https://docs.digdir.no/docs/idporten/oidc/oidc_protocol_authorize.html
       reply.redirect('/?loggedIn=true');
