@@ -65,6 +65,7 @@ const getIsTokenValid = async (
   fastify: FastifyInstance,
 ): Promise<ValidationStatus> => {
   const token: SessionStorageToken | undefined = request.session.get('token');
+  console.info('is token valid', token);
 
   if (!token) {
     return 'missing_token';
@@ -101,7 +102,6 @@ const plugin: FastifyPluginAsync = async (fastify, _) => {
     return async (request: FastifyRequest, reply: FastifyReply) => {
       try {
         const validationStatus: ValidationStatus = await getIsTokenValid(request, allowTokenRefresh, fastify);
-
         if (validationStatus === 'refresh_token_expired' || validationStatus === 'missing_token') {
           // Redirect to force a new login if the refresh token has expired or if the token is missing
           return handleLogout(request, reply);

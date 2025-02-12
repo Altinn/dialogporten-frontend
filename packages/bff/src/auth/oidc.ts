@@ -7,7 +7,6 @@ import type {
   FastifyReply,
   FastifyRequest,
   HookHandlerDoneFunction,
-  IdportenToken,
 } from 'fastify';
 import fp from 'fastify-plugin';
 import jwt from 'jsonwebtoken';
@@ -60,6 +59,17 @@ declare module 'fastify' {
   }
 }
 
+interface IdportenToken {
+  access_token: string;
+  refresh_token: string;
+  id_token: string;
+  scope: string;
+  token_type: string;
+  expires_in: number;
+  expires_at: string;
+  refresh_token_expires_in: number;
+}
+
 export interface IdTokenPayload {
   sub: string;
   locale: string;
@@ -105,7 +115,6 @@ export const handleLogout = async (request: FastifyRequest, reply: FastifyReply)
 export const handleAuthRequest = async (request: FastifyRequest, reply: FastifyReply, fastify: FastifyInstance) => {
   try {
     const now = new Date();
-    console.info('handleAuthRequest');
 
     /* must match the one in the callback */
     const {
@@ -117,44 +126,38 @@ export const handleAuthRequest = async (request: FastifyRequest, reply: FastifyR
     const codeVerifier = request.session.get('codeVerifier') ?? '';
     const code_challenge = request.session.get('codeChallenge') ?? '';
     const state = request.session.get('state') ?? '';
-    const currentURL = new URL(`${hostname}${request.originalUrl}`);
-    console.info('codeVerifier', codeVerifier);
-    console.info('code_challenge', code_challenge);
-    console.info('state', state);
 
-    const token: client.TokenEndpointResponse = await client.authorizationCodeGrant(providerConfig, currentURL, {
-      pkceCodeVerifier: codeVerifier,
-      expectedState: callbackState,
-    });
+    // TODO: check code challenge with code from request
 
-    /*const tokenEndpoint = `https://${oidc_url}/token`;
+    const tokenEndpoint = `https://${oidc_url}/token`;
     const basicAuthString = `${client_id}:${client_secret}`;
     const authEncoded = `Basic ${Buffer.from(basicAuthString).toString('base64')}`;
 
-    const body = new URLSearchParams();
-    body.append('grant_type', 'authorization_code');
-    body.append('client_id', config.client_id);
-    body.append('code_verifier', codeVerifier);
-    body.append('redirect_uri', `${hostname}/?loggedIn=true`);
-    body.append('code', authorizationCode);
-
-    const refreshResponse = await axios.post(tokenEndpoint, body, {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        Authorization: authEncoded,
+    const { data: token } = await axios.post(
+      tokenEndpoint,
+      {
+        grant_type: 'authorization_code',
+        client_id: client_id,
+        code_verifier: codeVerifier,
+        code: authorizationCode,
+        redirect_uri: `${hostname}/api/cb`,
       },
-    });
-    /
-    console.info('token', JSON.stringify(refreshResponse, null, 3));
-
-     */
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization: authEncoded,
+        },
+      },
+    );
 
     const customToken: IdportenToken = token as unknown as IdportenToken;
     const refreshTokenExpiresAt = new Date(now.getTime() + customToken.refresh_token_expires_in * 1000).toISOString();
-    const { sub, locale = 'nb' } = jwt.decode(token.id_token as string) as unknown as IdTokenPayload;
+    const accessTokenExpiresAt = new Date(now.getTime() + customToken.expires_in * 1000).toISOString();
+
+    const { sub, locale = 'nb' } = jwt.decode(customToken.id_token as string) as unknown as IdTokenPayload;
     const sessionStorageToken: SessionStorageToken = {
       access_token: customToken.access_token,
-      access_token_expires_at: customToken.expires_at,
+      access_token_expires_at: accessTokenExpiresAt,
       id_token: customToken.id_token,
       refresh_token: customToken.refresh_token,
       refresh_token_expires_at: refreshTokenExpiresAt,
@@ -165,18 +168,10 @@ export const handleAuthRequest = async (request: FastifyRequest, reply: FastifyR
     request.session.set('token', sessionStorageToken);
     request.session.set('sub', sub);
     request.session.set('locale', locale);
+
+    reply.redirect('/?loggedIn=true');
   } catch (e) {
-    console.info('handleAuthRequest error', {
-      message: e.message,
-      response: e.response
-        ? {
-            status: e.response.status,
-            headers: e.response.headers,
-            data: e.response.data,
-          }
-        : null,
-    });
-    logger.error(e);
+    logger.error(e.response);
     reply.status(500);
   }
 };
@@ -187,9 +182,6 @@ const redirectToAuthorizationURI = async (request: FastifyRequest, reply: Fastif
   const codeVerifier: string = client.randomPKCECodeVerifier();
   const codeChallenge: string = await client.calculatePKCECodeChallenge(codeVerifier);
   const state = client.randomState();
-
-  console.info('codeVerifier', codeVerifier);
-  console.info('codeChallenge', codeChallenge);
 
   const parameters: Record<string, string> = {
     redirect_uri: `${hostname}/api/cb`,
@@ -205,8 +197,6 @@ const redirectToAuthorizationURI = async (request: FastifyRequest, reply: Fastif
 
   const redirectTo: URL = client.buildAuthorizationUrl(providerConfig, parameters);
 
-  // Something missing here since 400 server_error is returned, but close ...
-  console.info('redirectToAuthorizationURI', redirectTo.href);
   reply.redirect(redirectTo.href);
 };
 
@@ -223,11 +213,10 @@ const plugin: FastifyPluginAsync<CustomOICDPluginOptions> = async (fastify, opti
   /* Post login: retrieves token, stores values to user session and redirects to client */
   fastify.get('/api/cb', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
+      console.info('query', request.query);
+
       /* Handle the callback from the OIDC provider */
-      // TODO: Check if state and nonce in session matches the one in the callback
       await handleAuthRequest(request, reply, fastify);
-      // https://docs.digdir.no/docs/idporten/oidc/oidc_protocol_authorize.html
-      reply.redirect('/?loggedIn=true');
     } catch (e) {
       logger.error(e);
       reply.status(500);
