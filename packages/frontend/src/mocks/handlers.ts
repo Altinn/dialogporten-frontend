@@ -26,7 +26,7 @@ const isAuthenticatedMock = http.get('/api/isAuthenticated', () => {
 
 const getAllDialogsForPartiesMock = graphql.query('getAllDialogsForParties', (options) => {
   const {
-    variables: { partyURIs, search },
+    variables: { partyURIs, search, org },
   } = options;
 
 
@@ -39,8 +39,11 @@ const getAllDialogsForPartiesMock = graphql.query('getAllDialogsForParties', (op
       },
     });
   }
-
-  const itemsForParty = inMemoryStore.dialogs.filter((dialog) => partyURIs.includes(dialog.party));
+  
+  const  itemsForParty = inMemoryStore.dialogs
+  .filter((dialog) => partyURIs.includes(dialog.party))
+  .filter(dialog => !org || dialog.org === org);
+ 
   const allowedPartyIds = inMemoryStore.parties.flatMap((party: PartyFieldsFragment) => [party.party, ...(party.subParties ?? []).map((subParty) => subParty.party)]);
   const allPartiesEligible = partyURIs.every((partyURI: string) => allowedPartyIds.includes(partyURI));
   const shouldReturnNull = !allPartiesEligible || partyURIs.length === 0;

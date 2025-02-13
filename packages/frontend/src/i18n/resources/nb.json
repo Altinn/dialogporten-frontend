@@ -135,6 +135,7 @@
   "search.autocomplete.recommendedHits": "Anbefalte treff",
   "search.hits": "{count, plural, =0 {Ingen treff} one {# treff} other {# treff}}",
   "search.searchFor": "Søker etter",
+  "search.suggestions": "Søkeforslag",
   "sidebar.archived": "Arkiv",
   "sidebar.archived.label": "Trykk her for å gå til Arkiv",
   "sidebar.deleted": "Papirkurv",

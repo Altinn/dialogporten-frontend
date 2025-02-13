@@ -135,6 +135,7 @@
   "search.autocomplete.recommendedHits": "Recommended hits",
   "search.hits": "{count, plural, =0 {No hits} one {# hit} other {# hits}}",
   "search.searchFor": "Search for",
+  "search.suggestions": "Search suggestions",
   "sidebar.archived": "Archive",
   "sidebar.archived.label": "Press here to go to Archive",
   "sidebar.deleted": "Trash",
