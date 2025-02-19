@@ -13,6 +13,9 @@ param targetSubnetId string
 @description('The name of the existing container app environment to be used.')
 param containerAppEnvName string
 
+@description('The name of the existing log analytics workspace to be used.')
+param appInsightWorkspaceName string
+
 @description('The tags to apply to the resources')
 param tags object
 
@@ -41,6 +44,10 @@ var gatewayName = '${namePrefix}-applicationGateway'
 
 resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' existing = {
   name: containerAppEnvName
+}
+
+resource appInsightsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' existing = {
+  name: appInsightWorkspaceName
 }
 
 resource publicIp 'Microsoft.Network/publicIPAddresses@2021-03-01' = {
@@ -421,5 +428,30 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2024-01-01' =
   }
   tags: tags
 }
+
+// todo: setting as 0 for now. Will use the log analytics workspace policy instead. Consider setting explicitly in the future.
+var diagnosticSettingRetentionPolicy = {
+  days: 0
+  enabled: false
+}
+
+var diagnosticLogCategories = [
+  'ApplicationGatewayAccessLog'
+  'ApplicationGatewayPerformanceLog'
+]
+
+resource diagnosticSetting 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  name: 'ApplicationGatewayDiagnosticSetting'
+  scope: applicationGateway
+  properties: {
+    workspaceId: appInsightsWorkspace.id
+    logs: [for category in diagnosticLogCategories: {
+      category: category
+      enabled: true
+      retentionPolicy: diagnosticSettingRetentionPolicy
+    }]
+  }
+}
+
 
 output applicationGatewayId string = applicationGateway.id
