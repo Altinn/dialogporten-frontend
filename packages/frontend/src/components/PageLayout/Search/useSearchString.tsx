@@ -11,12 +11,14 @@ export const useSearchString = () => {
   const navigate = useNavigate();
   const searchQueryParams = getSearchStringFromQueryParams(searchParams);
   const queryClient = useQueryClient();
+
   const { data: searchValue } = useQuery<string>({
     queryKey: [QUERY_KEYS.SEARCH_VALUE],
     enabled: false,
     staleTime: Number.POSITIVE_INFINITY,
     initialData: searchQueryParams,
   });
+
   const { data: enteredSearchValue } = useQuery<string>({
     queryKey: [QUERY_KEYS.ENTERED_SEARCH_VALUE],
     enabled: false,
@@ -42,12 +44,22 @@ export const useSearchString = () => {
     queryClient.setQueryData([QUERY_KEYS.ENTERED_SEARCH_VALUE], value);
   };
 
-  const onSearch = (value: string) => {
-    if (!value) {
+  const onSearch = (value: string, org?: string) => {
+    const newSearchParams = new URLSearchParams(searchParams);
+
+    if (!value && !org) {
       onClear();
-    } else {
-      const newSearchParams = new URLSearchParams(searchParams);
-      newSearchParams.set('search', value);
+      return;
+    }
+
+    if (!value && org) {
+      newSearchParams.delete('search');
+    }
+
+    value && newSearchParams.set('search', value);
+    org && newSearchParams.set('org', org);
+
+    if (value || org) {
       if (location.pathname !== PageRoutes.inbox) {
         navigate(PageRoutes.inbox + `?${newSearchParams.toString()}`);
       } else {
@@ -59,10 +71,19 @@ export const useSearchString = () => {
 
   const onClear = () => {
     const newSearchParams = new URLSearchParams(searchParams);
-    if (newSearchParams.has('search')) {
-      newSearchParams.delete('search');
+    let updated = false;
+
+    for (const param of ['search', 'org']) {
+      if (newSearchParams.has(param)) {
+        newSearchParams.delete(param);
+        updated = true;
+      }
+    }
+
+    if (updated) {
       setSearchParams(newSearchParams);
     }
+
     setSearchValue('');
     setEnteredSearchValue('');
   };

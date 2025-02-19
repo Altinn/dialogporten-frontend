@@ -69,6 +69,7 @@ export function mapDialogToToInboxItem(
       status: item.status ?? 'UnknownStatus',
       isSeenByEndUser,
       label: item.systemLabel,
+      org: item.org,
     };
   });
 }
@@ -100,10 +101,12 @@ export function mapAutocompleteDialogsDtoToInboxItem(
 export const searchDialogs = (
   partyURIs: string[],
   search: string | undefined,
+  org: string | undefined,
 ): Promise<GetAllDialogsForPartiesQuery> => {
   return graphQLSDK.getAllDialogsForParties({
     partyURIs,
-    search,
+    search: search?.length === 0 ? undefined : search,
+    org: org?.length === 0 ? undefined : org,
   });
 };
 

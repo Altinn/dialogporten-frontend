@@ -44,6 +44,7 @@ export interface InboxItemInput {
   status: DialogStatus;
   isSeenByEndUser: boolean;
   label: SystemLabel;
+  org?: string;
 }
 
 export const OptionalLinkContent = ({

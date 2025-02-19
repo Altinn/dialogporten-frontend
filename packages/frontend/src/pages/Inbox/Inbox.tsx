@@ -3,7 +3,7 @@ import { ArrowForwardIcon, ClockDashedIcon, EnvelopeOpenIcon, TrashIcon } from '
 import { format } from 'date-fns';
 import { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { type InboxViewType, useDialogs } from '../../api/useDialogs.tsx';
 import { useParties } from '../../api/useParties.ts';
 import { ActionPanel, FilterBar, InboxItem, InboxItems, PartyDropdown, useSelectedDialogs } from '../../components';
@@ -43,9 +43,14 @@ export const Inbox = ({ viewType }: InboxProps) => {
     searchValue: enteredSearchValue,
   });
 
+  const [searchParams] = useSearchParams();
+  const searchBarParam = new URLSearchParams(searchParams);
+  const searchParamOrg = searchBarParam.get('org') ?? undefined;
+
   const { dialogsByView, isLoading: isLoadingDialogs, isSuccess: dialogsIsSuccess } = useDialogs(selectedParties);
   const dialogsForView = dialogsByView[viewType];
-  const displaySearchResults = enteredSearchValue.length > 0;
+  const displaySearchResults = enteredSearchValue.length > 0 || !!searchParamOrg;
+
   const dataSource = displaySearchResults ? searchResults : dialogsForView;
   const dataSourceFetchSuccess = displaySearchResults ? searchSuccess : dialogsIsSuccess;
   const { filters, onFiltersChange, filterSettings } = useFilters({ dialogs: dataSource });
