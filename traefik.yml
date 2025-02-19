@@ -14,8 +14,8 @@ providers:
     watch: true
 
 api:
-  dashboard: true
-  insecure: true
+  dashboard: false
+  insecure: false
 
 log:
   level: DEBUG

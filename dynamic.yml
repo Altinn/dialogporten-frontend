@@ -1,30 +1,42 @@
 tls:
   certificates:
-    - certFile: "/certs/cert.pem"
-      keyFile: "/certs/key.pem"
+    - certFile: "/etc/certs/cert.pem"
+      keyFile: "/etc/certs/key.pem"
+
+  options:
+    default:
+      minVersion: VersionTLS12
+      cipherSuites:
+        - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305
+      sniStrict: true
 
 http:
   routers:
     app-router:
-      rule: "Host(`altinn.lokalt.no`)"
+      rule: "Host(`app.localhost`)"
       entryPoints:
         - websecure
       service: app-service
-      tls: {}
+      tls: 
+        options: default
 
     # Router for the backend, listens on /api
     backend-router:
-      rule: "Host(`altinn.lokalt.no`) && PathPrefix(`/api`)"
+      rule: "Host(`app.localhost`) && PathPrefix(`/api`)"
       entryPoints:
         - websecure
       service: backend-service
-      tls: {}
+      tls: 
+        options: default
+
 
   services:
     app-service:
       loadBalancer:
         servers:
-          - url: "http://frontend-https:3030" # Backend service
+          - url: "http://frontend-https:3030" 
 
     # Service for the backend
     backend-service:

@@ -30,7 +30,7 @@ const startServer = async (): Promise<void> => {
   const { dataSource } = await connectToDB();
   /* CORS configuration for local env, needs to be applied before routes are defined */
   const corsOptions = {
-    origin: ['http://app.localhost', 'http://localhost:3000'],
+    origin: ['http://app.localhost', 'https://app.localhost', 'http://localhost:3000'],
     credentials: true,
     methods: 'GET, POST, PATCH, DELETE, PUT',
     allowedHeaders: 'Content-Type, Authorization',

@@ -35,19 +35,16 @@ services:
       - "8086:8080"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./traefik.yml:/etc/traefik/traefik.yml" # Static configuration
-      - "./dynamic.yml:/etc/traefik/dynamic.yml" # Dynamic configuration
-      - "./letsencrypt:/letsencrypt" # Let's Encrypt certificates
-      - "./certs:/certs"
+      - "./traefik.yml:/etc/traefik/traefik.yml"
+      - "./dynamic.yml:/etc/traefik/dynamic.yml"
+      - "./letsencrypt:/letsencrypt"
+      - "./certs:/etc/certs"
     command:
       - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      - "--entrypoints.websecure.http.tls=true"
-      - "--entrypoints.websecure.http.tls.certificates.certFile=/certs/cert.pem"
-      - "--entrypoints.websecure.http.tls.certificates.keyFile=/certs/key.pem"
       - "--providers.docker=true"
       - "--providers.docker.network=https-network"
       - "--providers.docker.exposedByDefault=false"
+      - "--entrypoints.websecure.address=:443"
     restart: always
     networks:
       - https-network
@@ -215,7 +212,7 @@ services:
       target: build
     environment:
       DB_CONNECTION_STRING: postgres://postgres:${POSTGRES_PASSWORD}@db:5432/dialogporten
-      HOSTNAME: https://altinn.lokalt.no
+      HOSTNAME: https://app.localhost
       CLIENT_ID: ${CLIENT_ID}
       CLIENT_SECRET: ${CLIENT_SECRET}
       ENABLE_GRAPHIQL: true
@@ -227,7 +224,7 @@ services:
       APPLICATIONINSIGHTS_ENABLED: ${APPLICATIONINSIGHTS_ENABLED}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.bff.rule=Host(`altinn.lokalt.no`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.bff.rule=Host(`app.localhost`) && PathPrefix(`/api`)"
     networks:
       - https-network
     depends_on:
@@ -272,7 +269,7 @@ services:
       target: build
     environment:
       DB_CONNECTION_STRING: postgres://postgres:${POSTGRES_PASSWORD}@db:5432/dialogporten
-      HOSTNAME: http://altinn.lokalt.no
+      HOSTNAME: https://app.localhost
       CLIENT_ID: ${CLIENT_ID}
       CLIENT_SECRET: ${CLIENT_SECRET}
       SESSION_SECRET: IDPortenSessionSecret2023MoreLettersBlaBla
@@ -337,7 +334,7 @@ services:
       - https-network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`altinn.lokalt.no`)"
+      - "traefik.http.routers.frontend.rule=Host(`app.localhost`)"
       - "traefik.http.routers.frontend.entrypoints=websecure"
       - "traefik.http.services.frontend.loadbalancer.server.port=3030"
     develop:

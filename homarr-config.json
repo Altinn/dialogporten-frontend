@@ -14,7 +14,7 @@
     {
       "id": "a68fa935-1771-4ca2-b993-9f7815f93ffd",
       "name": "Redis",
-      "url": "http://redisinsight.localhost",
+      "url": "://redisinsight.localhost",
       "appearance": {
         "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/redis.svg",
         "appNameStatus": "normal",
@@ -28,7 +28,7 @@
       },
       "behaviour": {
         "isOpeningNewTab": true,
-        "externalUrl": "http://redisinsight.localhost"
+        "externalUrl": "://redisinsight.localhost"
       },
       "area": {
         "type": "wrapper",
@@ -56,7 +56,7 @@
     {
       "id": "5e5fbebb-e66d-463d-bbf7-95b569babfb6",
       "name": "GraphIQL",
-      "url": "http://app.localhost/api/graphiql",
+      "url": "://app.localhost/api/graphiql",
       "appearance": {
         "iconUrl": "/imgs/logo/logo.png",
         "appNameStatus": "normal",
@@ -70,7 +70,7 @@
       },
       "behaviour": {
         "isOpeningNewTab": true,
-        "externalUrl": "http://app.localhost/api/graphiql"
+        "externalUrl": "://app.localhost/api/graphiql"
       },
       "area": {
         "type": "wrapper",
@@ -98,7 +98,7 @@
     {
       "id": "dc928175-cfc0-4287-a7c1-5f817a0ab770",
       "name": "Docs",
-      "url": "http://docs.localhost",
+      "url": "://docs.localhost",
       "appearance": {
         "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/docsify.svg",
         "appNameStatus": "normal",
@@ -112,7 +112,7 @@
       },
       "behaviour": {
         "isOpeningNewTab": true,
-        "externalUrl": "http://docs.localhost"
+        "externalUrl": "://docs.localhost"
       },
       "area": {
         "type": "wrapper",
@@ -140,7 +140,7 @@
     {
       "id": "59866e3c-f552-4c2a-ba12-044aebdf95c7",
       "name": "PostgresDB",
-      "url": "http://pgadmin4.localhost",
+      "url": "://pgadmin4.localhost",
       "appearance": {
         "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/postgres.svg",
         "appNameStatus": "normal",
@@ -154,7 +154,7 @@
       },
       "behaviour": {
         "isOpeningNewTab": true,
-        "externalUrl": "http://pgadmin4.localhost"
+        "externalUrl": "://pgadmin4.localhost"
       },
       "area": {
         "type": "wrapper",
@@ -182,7 +182,7 @@
     {
       "id": "755d6f85-f5c1-426e-b108-8eb72ed61c25",
       "name": "Traefik",
-      "url": "http://dashboard.localhost",
+      "url": "://dashboard.localhost",
       "appearance": {
         "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/traefik-proxy.svg",
         "appNameStatus": "normal",
@@ -196,7 +196,7 @@
       },
       "behaviour": {
         "isOpeningNewTab": true,
-        "externalUrl": "http://dashboard.localhost"
+        "externalUrl": "://dashboard.localhost"
       },
       "area": {
         "type": "wrapper",
@@ -224,7 +224,7 @@
     {
       "id": "1822917e-8c87-498a-bb95-79253a894cff",
       "name": "Arbeidsflate",
-      "url": "http://app.localhost",
+      "url": "://app.localhost",
       "appearance": {
         "iconUrl": "/imgs/logo/logo.png",
         "appNameStatus": "normal",
@@ -238,7 +238,7 @@
       },
       "behaviour": {
         "isOpeningNewTab": true,
-        "externalUrl": "http://app.localhost"
+        "externalUrl": "://app.localhost"
       },
       "area": {
         "type": "wrapper",
