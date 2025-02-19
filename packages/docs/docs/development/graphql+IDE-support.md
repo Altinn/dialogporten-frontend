@@ -32,4 +32,4 @@ Graphql and gql tagged template literals in JavaScript and TypeScript are automa
 
 ## Alternative?
 
-You can also use http://app.localhost/api/graphiql as an alternative.
+You can also use https://app.localhost/api/graphiql as an alternative.

@@ -4,7 +4,7 @@
 
 - Frontend:
     - React app:
-        href: http://app.localhost/
+        href: https://app.localhost/
         description: React app
         icon: /icons/react_logo.png
     - Docs:
@@ -14,11 +14,11 @@
 
 - BFF:
     - Node App:
-        href: http://app.localhost/api/
+        href: https://app.localhost/api/
         description: Backend for frontend
         icon: /icons/nodejs.png
     - GraphIQL:
-        href: http://app.localhost/api/graphiql
+        href: https://app.localhost/api/graphiql
         description: GraphIQL
         icon: /icons/GraphQL.svg
 

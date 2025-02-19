@@ -56,7 +56,7 @@
     {
       "id": "5e5fbebb-e66d-463d-bbf7-95b569babfb6",
       "name": "GraphIQL",
-      "url": "http://app.localhost/api/graphiql",
+      "url": "https://app.localhost/api/graphiql",
       "appearance": {
         "iconUrl": "/imgs/logo/logo.png",
         "appNameStatus": "normal",
@@ -70,7 +70,7 @@
       },
       "behaviour": {
         "isOpeningNewTab": true,
-        "externalUrl": "http://app.localhost/api/graphiql"
+        "externalUrl": "https://app.localhost/api/graphiql"
       },
       "area": {
         "type": "wrapper",
@@ -224,7 +224,7 @@
     {
       "id": "1822917e-8c87-498a-bb95-79253a894cff",
       "name": "Arbeidsflate",
-      "url": "http://app.localhost",
+      "url": "https://app.localhost",
       "appearance": {
         "iconUrl": "/imgs/logo/logo.png",
         "appNameStatus": "normal",
@@ -238,7 +238,7 @@
       },
       "behaviour": {
         "isOpeningNewTab": true,
-        "externalUrl": "http://app.localhost"
+        "externalUrl": "https://app.localhost"
       },
       "area": {
         "type": "wrapper",
