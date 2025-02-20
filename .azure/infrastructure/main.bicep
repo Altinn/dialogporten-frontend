@@ -108,7 +108,7 @@ module bffAvailabilityTest '../modules/applicationInsights/availabilityTest.bice
   scope: resourceGroup
   name: 'bffAvailabilityTest'
   params: {
-    name: 'BFF'
+    name: 'BFF - ${environment}'
     location: location
     tags: tags
     appInsightsId: appInsights.outputs.appInsightsId
@@ -120,7 +120,7 @@ module frontendAvailabilityTest '../modules/applicationInsights/availabilityTest
   scope: resourceGroup
   name: 'frontendAvailabilityTest'
   params: {
-    name: 'Frontend'
+    name: 'Frontend - ${environment}'
     location: location
     tags: tags
     appInsightsId: appInsights.outputs.appInsightsId
