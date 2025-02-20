@@ -6,12 +6,13 @@ import { performSearch, selectDialogBySearch } from './common';
 test.describe('Search flow', () => {
   test('less than 3 chars not allowed', async ({ page }) => {
     await page.goto(`${defaultAppURL}&playwrightId=search-flow`);
-    await page.getByPlaceholder('Søk').click();
-    await page.getByPlaceholder('Søk').fill('me');
+    const searchbarInput = page.locator("[name='Søk']");
+    await searchbarInput.click();
+    await searchbarInput.fill('me');
     await expect(page.getByRole('heading', { name: 'Anbefalte treff' })).not.toBeVisible();
     await page.getByTestId('search-button-clear').click();
-    await page.getByPlaceholder('Søk').click();
-    await page.getByPlaceholder('Søk').fill('mel');
+    await searchbarInput.click();
+    await searchbarInput.fill('mel');
     await expect(page.getByRole('heading', { name: 'Anbefalte treff' })).toBeVisible();
     await expect(page.getByRole('button', { name: '«mel» i innboks 3 treff' })).toBeVisible();
   });
@@ -22,8 +23,10 @@ test.describe('Search flow', () => {
     await performSearch(page, 'Sixth', 'clear');
 
     /* Check that desired results are rendered */
-    await page.getByPlaceholder('Søk').click();
-    await page.getByPlaceholder('Søk').fill('test');
+    const searchbarInput = page.locator("[name='Søk']");
+
+    await searchbarInput.click();
+    await searchbarInput.fill('test');
 
     await expect(page.getByLabel('First test message')).toBeVisible();
     await expect(page.getByLabel('Second test message')).toBeVisible();

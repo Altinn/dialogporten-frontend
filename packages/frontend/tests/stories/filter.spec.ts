@@ -8,33 +8,23 @@ test.describe('Testing filter bar', () => {
     await page.goto(defaultAppURL);
 
     /* Choose Skatteetaten as sender */
-    await page.getByRole('button', { name: 'Legg til filter' }).click();
-    await page.getByText('Avsender').click();
-    await page.getByLabel('Fra Skatteetaten').check();
+    await page.getByRole('button', { name: 'add' }).click();
+    await page.getByRole('menu').locator('a').filter({ hasText: 'Velg avsender' }).click();
+    await page.getByRole('menu').getByText('Skatteetaten').click();
     await page.mouse.click(200, 0, { button: 'left' });
 
     expect(new URL(page.url()).searchParams.get('sender')).toEqual('Skatteetaten');
     await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).toBeVisible();
 
     /* Remove filter */
-    await page
-      .locator('div')
-      .filter({ hasText: /^Fra Skatteetaten Legg til filter$/ })
-      .getByRole('button')
-      .nth(1)
-      .click();
+    await page.getByRole('button', { name: 'Fjern filter' }).click();
 
     expect(new URL(page.url()).searchParams.has('sender')).toEqual(false);
 
     /* Choose COMPLETED as status */
-    await page.getByRole('button', { name: 'Legg til filter' }).click();
-    await page
-      .locator('div')
-      .filter({ hasText: /^Status$/ })
-      .nth(1)
-      .click();
-    await page.getByText('Avsluttet').first().click();
-
+    await page.getByRole('button', { name: 'add' }).click();
+    await page.getByRole('menu').locator('a').filter({ hasText: 'Velg status' }).click();
+    await page.getByRole('menu').getByText('Avsluttet').click();
     expect(new URL(page.url()).searchParams.get('status')).toEqual('COMPLETED');
 
     await page.mouse.click(200, 0, { button: 'left' });
@@ -46,9 +36,9 @@ test.describe('Testing filter bar', () => {
     await page.goto(defaultAppURL);
 
     /* Choose Skatteetaten as sender */
-    await page.getByRole('button', { name: 'Legg til filter' }).click();
-    await page.getByText('Avsender').click();
-    await page.getByLabel('Fra Skatteetaten').check();
+    await page.getByRole('button', { name: 'add' }).click();
+    await page.getByRole('menu').locator('a').filter({ hasText: 'Velg avsender' }).click();
+    await page.getByRole('menu').getByText('Skatteetaten').click();
     await page.mouse.click(200, 0, { button: 'left' });
 
     expect(new URL(page.url()).searchParams.get('sender')).toEqual('Skatteetaten');
@@ -64,9 +54,9 @@ test.describe('Testing filter bar', () => {
     await page.goto(defaultAppURL);
 
     /* Choose Skatteetaten as sender */
-    await page.getByRole('button', { name: 'Legg til filter' }).click();
-    await page.getByText('Avsender').click();
-    await page.getByLabel('Fra Skatteetaten').check();
+    await page.getByRole('button', { name: 'add' }).click();
+    await page.getByRole('menu').locator('a').filter({ hasText: 'Velg avsender' }).click();
+    await page.getByRole('menu').getByText('Skatteetaten').click();
     await page.mouse.click(200, 0, { button: 'left' });
 
     expect(new URL(page.url()).searchParams.get('sender')).toEqual('Skatteetaten');

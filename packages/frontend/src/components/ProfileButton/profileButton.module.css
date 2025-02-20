@@ -3,29 +3,18 @@
   border-radius: 2px;
 }
 
-.primary {
-  background-color: var(--button-color);
-  color: var(--background-color);
-}
-
-.secondary {
-  background: var(--background-color);
-  border: 1px dashed var(--button-color);
-  color: 1px dashed var(--button-color);
-}
-
 .tertiary {
-  background: var(--background-color);
+  background: transparent;
   color: 1px dashed var(--button-color);
 }
 
 .xs {
   border-radius: .125rem;
   font-size: .875rem;
-  min-height: 36px;
-  height: 36px;
+  min-height: 2.25rem;
+  height: 2.25rem;
   box-sizing: border-box;
   padding: 0.625rem 0.5rem;
   font-weight: 500;
-  column-gap: 7px;
+  column-gap: 0.5rem;
 }

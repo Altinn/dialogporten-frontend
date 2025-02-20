@@ -22,12 +22,6 @@
   align-items: flex-start;
 }
 
-.filterSaveContainer {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
 .title {
   color: #000;
   font-weight: 500;

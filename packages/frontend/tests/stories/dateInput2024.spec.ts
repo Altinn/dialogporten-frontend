@@ -19,44 +19,23 @@ test.describe('Date filter, system date set 2024', () => {
     ).toBeVisible();
   });
 
-  test('Date filter - date picker functionality', async ({ page }) => {
-    await page.getByRole('button', { name: 'Legg til filter' }).click();
-    await expect(page.getByText('Oppdatert dato')).toBeVisible();
-
-    await page.getByText('Oppdatert dato').click();
-
-    await expect(page.getByText('Spesifer dato')).toBeVisible();
-    await page.getByText('Spesifer dato').click();
-
-    await expect(page.getByTestId('filterButton-fromDate')).toBeVisible();
-    await expect(page.getByTestId('filterButton-toDate')).toBeVisible();
-
-    await expect(page.getByTestId('filterButton-fromDate')).toHaveValue('2022-02-20');
-    await expect(page.getByTestId('filterButton-toDate')).toHaveValue('2024-12-31');
-
-    await page.getByTestId('filterButton-fromDate').fill('2023-01-01');
-    await page.getByTestId('filterButton-toDate').fill('2023-12-31');
-    await page.getByRole('button', { name: 'Bruk dato' }).click();
-
-    await expect(page.getByRole('link', { name: 'Mocked system date des 31, 2024' })).not.toBeVisible();
-  });
-
   test('Date filter - quick filters functionality', async ({ page }) => {
-    await page.getByRole('button', { name: 'Legg til filter' }).click();
+    await page.getByRole('button', { name: 'add' }).click();
 
-    await expect(page.getByText('Oppdatert dato')).toBeVisible();
-    await page.getByText('Oppdatert dato').click();
+    await expect(page.getByRole('menu').locator('a').filter({ hasText: 'Oppdatert dato' })).toBeVisible();
+    await page.getByRole('menu').locator('a').filter({ hasText: 'Oppdatert dato' }).click();
 
-    await expect(page.getByText('I dag')).toBeVisible();
+    await expect(page.getByRole('menu').getByText('i dag')).toBeVisible();
     await expect(page.locator('li').filter({ hasText: 'I dag' }).locator('span').nth(2)).toHaveText('1');
 
-    await expect(page.getByText('Denne måneden')).toBeVisible();
+    await expect(page.getByRole('menu').getByText('Denne måneden')).toBeVisible();
+
     await expect(page.locator('li').filter({ hasText: 'Denne måneden' }).locator('span').nth(2)).toHaveText('1');
 
-    await expect(page.getByText('I år')).toBeVisible();
-    await expect(page.locator('li').filter({ hasText: 'I år' }).locator('span').nth(2)).toHaveText('3');
+    await expect(page.getByRole('menu').getByText('Siste tolv måneder')).toBeVisible();
+    await expect(page.locator('li').filter({ hasText: 'Siste tolv måneder' }).locator('span').nth(2)).toHaveText('3');
 
-    await page.getByText('I dag').click();
+    await page.getByRole('menu').getByText('I dag').click();
     await expect(page.getByRole('button', { name: 'I dag' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Mocked system date Dec 31, 2024' })).toBeVisible();
     await expect(

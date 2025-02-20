@@ -2,9 +2,9 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import { useEffect, useMemo } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
-import { normalizeFlattenParties } from '../components/PartyDropdown/normalizeFlattenParties.ts';
 import { QUERY_KEYS } from '../constants/queryKeys.ts';
 import { getSelectedAllPartiesFromQueryParams, getSelectedPartyFromQueryParams } from '../pages/Inbox/queryParams.ts';
+import { normalizeFlattenParties } from './normalizeFlattenParties.ts';
 import { graphQLSDK } from './queries.ts';
 
 interface UsePartiesOutput {
@@ -19,6 +19,7 @@ interface UsePartiesOutput {
   currentEndUser: PartyFieldsFragment | undefined;
   allOrganizationsSelected: boolean;
   selectedProfile: 'company' | 'person';
+  partiesEmptyList: boolean;
 }
 
 interface PartiesResult {
@@ -71,6 +72,13 @@ export const useParties = (): UsePartiesOutput => {
 
   const { data: allOrganizationsSelected } = useQuery<boolean>({
     queryKey: [QUERY_KEYS.ALL_ORGANIZATIONS_SELECTED],
+    enabled: false,
+    staleTime: Number.POSITIVE_INFINITY,
+    initialData: false,
+  });
+
+  const { data: partiesEmptyList } = useQuery<boolean>({
+    queryKey: [QUERY_KEYS.PARTIES_EMPTY_LIST],
     enabled: false,
     staleTime: Number.POSITIVE_INFINITY,
     initialData: false,
@@ -163,8 +171,12 @@ export const useParties = (): UsePartiesOutput => {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: Full control of what triggers this code is needed
   useEffect(() => {
-    if (isSuccess && data?.parties?.length > 0) {
-      handlePartySelection();
+    if (isSuccess) {
+      if (data?.parties?.length > 0) {
+        handlePartySelection();
+      } else {
+        queryClient.setQueryData([QUERY_KEYS.PARTIES_EMPTY_LIST], true);
+      }
     }
   }, [isSuccess, data?.parties, location.search]);
 
@@ -185,5 +197,6 @@ export const useParties = (): UsePartiesOutput => {
     deletedParties: data?.deletedParties ?? [],
     allOrganizationsSelected,
     selectedProfile,
+    partiesEmptyList,
   };
 };

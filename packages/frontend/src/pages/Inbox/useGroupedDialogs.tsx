@@ -1,8 +1,9 @@
-import { format } from 'date-fns';
+import type { FilterState } from '@altinn/altinn-components/dist/types/lib/components/Toolbar/Toolbar';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type InboxViewType, getViewType } from '../../api/useDialogs.tsx';
-import type { Filter, InboxItemInput } from '../../components';
+import type { InboxItemInput } from '../../components';
+import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 
 interface DialogCategory {
   label: string;
@@ -12,18 +13,18 @@ interface DialogCategory {
 
 interface UseGroupedDialogsProps {
   items: InboxItemInput[];
-  filters: Filter[];
+  filters: FilterState;
   displaySearchResults: boolean;
   viewType: InboxViewType;
 }
 
 const useGroupedDialogs = ({ items, displaySearchResults, viewType }: UseGroupedDialogsProps): DialogCategory[] => {
   const { t } = useTranslation();
+  const format = useFormat();
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   return useMemo(() => {
-    const allWithinSameYear = items.every((d) => new Date(d.createdAt).getFullYear() === new Date().getFullYear());
-
+    const allWithinSameYear = items.every((d) => new Date(d.updatedAt).getFullYear() === new Date().getFullYear());
     const youAreNotInInbox = items.every((d) => ['drafts', 'sent', 'bin', 'archive'].includes(getViewType(d)));
 
     if (!displaySearchResults && youAreNotInInbox) {

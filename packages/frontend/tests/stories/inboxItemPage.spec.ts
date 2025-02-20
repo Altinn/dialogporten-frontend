@@ -1,7 +1,7 @@
 import { type Page, expect, test } from '@playwright/test';
 import { defaultAppURL } from '../';
 import { PageRoutes } from '../../src/pages/routes';
-import { getSidebarMenuItem } from './common';
+import { getSidebarMenuItem, getSidebarMenuItemBadge } from './common';
 
 test.describe('InboxItemPage', () => {
   test('Check message opening, archiving and deleting', async ({ page }: { page: Page }) => {
@@ -22,7 +22,7 @@ test.describe('InboxItemPage', () => {
     await expect(page.locator('h2').filter({ hasText: /^Grunnleggende konsepter fra markdown$/ })).toBeVisible();
 
     await page.getByRole('button', { name: 'Flytt til arkiv' }).click();
-    await page.locator('span').filter({ hasText: /^Flyttet til arkiv$/ });
+    page.locator('span').filter({ hasText: /^Flyttet til arkiv$/ });
     await expect(archiveLinkCount).toBeVisible();
 
     await archiveLink.click();
@@ -31,12 +31,14 @@ test.describe('InboxItemPage', () => {
 
     await page.getByRole('link', { name: 'Skatten din for 2022' }).click();
     await page.getByRole('button', { name: 'Flytt til papirkurv' }).click();
-    await page.locator('span').filter({ hasText: /^Flyttet til papirkurv$/ });
+    page.locator('span').filter({ hasText: /^Flyttet til papirkurv$/ });
     await expect(archiveLinkCount).not.toBeVisible();
     await expect(binLinkCount).toBeVisible();
 
     await binLink.click();
-    await expect(page.getByRole('heading', { name: '1 i papirkurv' })).toBeVisible();
+
+    await expect(getSidebarMenuItemBadge(page, PageRoutes.bin)).toContainText('1');
+
     await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).toBeVisible();
 
     await archiveLink.click();

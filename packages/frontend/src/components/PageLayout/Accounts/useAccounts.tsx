@@ -8,13 +8,20 @@ import type {
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import { type ChangeEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { InboxItemInput } from '../../InboxItem';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useParties } from '../../../api/useParties.ts';
+import type { PageRoutes } from '../../../pages/routes.ts';
 import { getAlertBadgeProps } from '../GlobalMenu';
+
+export interface CountableItem {
+  party: string;
+  isSeenByEndUser?: boolean;
+}
 
 interface UseAccountsProps {
   parties: PartyFieldsFragment[];
   selectedParties: PartyFieldsFragment[];
-  dialogs: InboxItemInput[];
+  countableItems: CountableItem[];
   allOrganizationsSelected: boolean;
   dialogCountInconclusive: boolean;
 }
@@ -22,8 +29,9 @@ interface UseAccountsProps {
 interface UseAccountsOutput {
   accounts: AccountMenuItem[];
   accountGroups: MenuItemGroups;
-  selectedAccount: Account;
   accountSearch: AccountSearchProps | undefined;
+  onSelectAccount: (account: string, route: PageRoutes) => void;
+  selectedAccount?: Account;
 }
 
 type AccountType = 'company' | 'person';
@@ -35,7 +43,7 @@ const getAllPartyIds = (party: PartyFieldsFragment | PartyFieldsFragment[]): str
 };
 
 export const getAccountAlertBadge = (
-  dialogs: InboxItemInput[],
+  dialogs: CountableItem[],
   party?: PartyFieldsFragment | PartyFieldsFragment[],
 ): BadgeProps | undefined => {
   if (!party || !dialogs?.length || (Array.isArray(party) && !party.length)) {
@@ -51,7 +59,7 @@ export const getAccountAlertBadge = (
 };
 
 export const getAccountBadge = (
-  dialogs: InboxItemInput[],
+  items: CountableItem[],
   party?: PartyFieldsFragment | PartyFieldsFragment[],
   dialogCountInconclusive?: boolean,
 ): BadgeProps | undefined => {
@@ -62,12 +70,12 @@ export const getAccountBadge = (
     };
   }
 
-  if (!party || !dialogs?.length || (Array.isArray(party) && !party.length)) {
+  if (!party || !items?.length || (Array.isArray(party) && !party.length)) {
     return undefined;
   }
 
   const allPartyIds = getAllPartyIds(party);
-  const count = dialogs.filter((dialog) => allPartyIds.includes(dialog.party)).length;
+  const count = items.filter((dialog) => allPartyIds.includes(dialog.party)).length;
 
   if (count > 0) {
     return {
@@ -84,11 +92,14 @@ const getSubPartyIds = (party?: PartyFieldsFragment): string[] => {
 export const useAccounts = ({
   parties,
   selectedParties,
-  dialogs,
+  countableItems,
   allOrganizationsSelected,
   dialogCountInconclusive,
 }: UseAccountsProps): UseAccountsOutput => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { setSelectedPartyIds } = useParties();
   const [searchString, setSearchString] = useState<string>('');
   const accountSearchThreshold = 2;
   const showSearch = parties.length > accountSearchThreshold;
@@ -101,12 +112,8 @@ export const useAccounts = ({
     return {
       accounts: [],
       accountGroups: {},
-      selectedAccount: {
-        id: 'no-account',
-        name: '?',
-        type: 'person',
-      },
       accountSearch: undefined,
+      onSelectAccount: () => {},
     };
   }
 
@@ -128,8 +135,8 @@ export const useAccounts = ({
     name: endUser?.name ?? '',
     type: 'person' as AccountType,
     groupId: 'primary',
-    badge: getAccountBadge(dialogs, endUser, dialogCountInconclusive),
-    alertBadge: getAccountAlertBadge(dialogs, endUser),
+    badge: getAccountBadge(countableItems, endUser, dialogCountInconclusive),
+    alertBadge: getAccountAlertBadge(countableItems, endUser),
   };
 
   const otherUsersAccounts = nonEndUsers.map((noEnderUserParty) => {
@@ -138,8 +145,8 @@ export const useAccounts = ({
       name: noEnderUserParty.name,
       type: 'person' as AccountType,
       groupId: 'other_users',
-      badge: getAccountBadge(dialogs, noEnderUserParty, dialogCountInconclusive),
-      alertBadge: getAccountAlertBadge(dialogs, noEnderUserParty),
+      badge: getAccountBadge(countableItems, noEnderUserParty, dialogCountInconclusive),
+      alertBadge: getAccountAlertBadge(countableItems, noEnderUserParty),
     };
   });
 
@@ -149,8 +156,8 @@ export const useAccounts = ({
       name: party.name,
       type: 'company' as AccountType,
       groupId: 'secondary',
-      badge: getAccountBadge(dialogs, party, dialogCountInconclusive),
-      alertBadge: getAccountAlertBadge(dialogs, party),
+      badge: getAccountBadge(countableItems, party, dialogCountInconclusive),
+      alertBadge: getAccountAlertBadge(countableItems, party),
     };
   });
 
@@ -160,8 +167,8 @@ export const useAccounts = ({
     type: 'company' as AccountType,
     groupId: 'secondary',
     accountNames: organizations.map((party) => party.name),
-    badge: getAccountBadge(dialogs, organizations, dialogCountInconclusive),
-    alertBadge: getAccountAlertBadge(dialogs, organizations),
+    badge: getAccountBadge(countableItems, organizations, dialogCountInconclusive),
+    alertBadge: getAccountAlertBadge(countableItems, organizations),
   };
 
   const accounts: AccountMenuItem[] = [
@@ -195,10 +202,26 @@ export const useAccounts = ({
       }
     : undefined;
 
+  const onSelectAccount = (account: string, route: PageRoutes) => {
+    const allAccountsSelected = account === 'ALL';
+    const search = new URLSearchParams();
+
+    if (location.pathname === route) {
+      setSelectedPartyIds(allAccountsSelected ? [] : [account], allAccountsSelected);
+    } else {
+      search.append(
+        allAccountsSelected ? 'allParties' : 'party',
+        allAccountsSelected ? 'true' : encodeURIComponent(account),
+      );
+      navigate(route + `?${search.toString()}`);
+    }
+  };
+
   return {
     accounts,
     accountGroups,
     selectedAccount,
     accountSearch,
+    onSelectAccount,
   };
 };

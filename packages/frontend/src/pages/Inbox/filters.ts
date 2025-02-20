@@ -1,194 +1,252 @@
+import type { FilterState, ToolbarFilterProps } from '@altinn/altinn-components';
+import { endOfDay, endOfMonth, endOfWeek, startOfDay, startOfMonth, startOfWeek, subMonths, subYears } from 'date-fns';
 import { t } from 'i18next';
-import type { Participant } from '../../api/useDialogById.tsx';
-import type { Filter, FilterSetting } from '../../components/FilterBar/FilterBar.tsx';
-import {
-  countOccurrences,
-  generateDateOptions,
-  getPredefinedRange,
-  isCombinedDateAndInterval,
-} from '../../components/FilterBar/dateInfo.ts';
-import type { InboxItemInput } from '../../components/InboxItem/InboxItem.tsx';
-import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
+import type { InboxItemInput } from '../../components';
+
+export const countOccurrences = (array: string[]): Record<string, number> => {
+  return array.reduce(
+    (acc, item) => {
+      acc[item] = (acc[item] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
+};
 
 /**
  * Filters dialogs based on active filters.
  *
  * @param {InboxItemInput[]} dialogs - The array of dialogs to filter.
- * @param {Array} activeFilters - The array of active filter objects, where each filter has an 'id' and a 'value'.
- * @param format
+ * @param {Array} activeFilters - The object of active filter, where each filter is represented by a key used as 'id' and a 'value' (a list).
  * @returns {InboxItemInput[]} - The filtered array of dialogs.
  */
-
-export const filterDialogs = (
-  dialogs: InboxItemInput[],
-  activeFilters: Filter[],
-  format: FormatFunction,
-): InboxItemInput[] => {
-  if (!activeFilters.length) {
+export const filterDialogs = (dialogs: InboxItemInput[], activeFilters: FilterState): InboxItemInput[] => {
+  if (!Object.keys(activeFilters).length) {
     return dialogs;
   }
 
-  // Group filters by their IDs to apply OR logic within the same ID group
-  const filtersById = activeFilters.reduce(
-    (acc, filter) => {
-      if (!acc[filter.id]) {
-        acc[filter.id] = [];
+  return dialogs.filter((dialog) => {
+    const { sender, receiver } = dialog;
+
+    return Object.keys(activeFilters).every((filterId) => {
+      if (!activeFilters[filterId]?.length) {
+        return true;
       }
-      acc[filter.id].push(filter);
-      return acc;
-    },
-    {} as Record<string, typeof activeFilters>,
-  );
 
-  return dialogs.filter((item) => {
-    // Apply AND logic across different filter ID groups
-    return Object.keys(filtersById).every((filterId) => {
-      const filters = filtersById[filterId];
-      // Apply OR logic within each filter ID group
-      return filters.some((filter) => {
-        if (filter.id === 'sender' || filter.id === 'receiver') {
-          const participant = item[filter.id as keyof InboxItemInput] as Participant;
-          return filter.value === participant.name;
-        }
-        if (filter.id === 'updated') {
-          const rangeProperties = getPredefinedRange().find((range) => range.value === filter.value);
-          const { isDate, endDate, startDate } = isCombinedDateAndInterval(
-            rangeProperties?.range ?? (filter.value as string),
-            format,
-          );
+      if (filterId === FilterCategory.SENDER) {
+        return activeFilters[filterId]?.some((filterValue) => {
+          return filterValue === sender.name;
+        });
+      }
 
-          if (isDate) {
-            if (startDate && endDate) {
-              return new Date(item.updatedAt) >= startDate && new Date(item.updatedAt) <= endDate;
-            }
-            if (startDate) {
-              return new Date(item.updatedAt) >= startDate;
-            }
-            return true;
+      if (filterId === FilterCategory.RECEIVER) {
+        return activeFilters[filterId]?.some((filterValue) => {
+          return filterValue === receiver.name;
+        });
+      }
+
+      if (filterId === 'updated') {
+        const date = new Date(dialog.updatedAt);
+        const filterValue = activeFilters[filterId][0] as DateFilterOption;
+        const now = new Date();
+
+        const getDateRange = (unit: 'day' | 'week' | 'month' | 'sixMonths' | 'year') => {
+          switch (unit) {
+            case 'day':
+              return { start: startOfDay(now), end: endOfDay(now) };
+            case 'week':
+              return { start: startOfWeek(now), end: endOfWeek(now) };
+            case 'month':
+              return { start: startOfMonth(now), end: endOfMonth(now) };
+            case 'sixMonths':
+              return { start: subMonths(now, 6), end: endOfDay(now) };
+            case 'year':
+              return { start: subYears(now, 1), end: endOfDay(now) };
           }
-          return new Date(filter.value as string).toDateString() === new Date(item.updatedAt).toDateString();
+        };
+
+        const filterRanges: Record<DateFilterOption, { start: Date; end: Date }> = {
+          [DateFilterOption.TODAY]: getDateRange('day'),
+          [DateFilterOption.THIS_WEEK]: getDateRange('week'),
+          [DateFilterOption.THIS_MONTH]: getDateRange('month'),
+          [DateFilterOption.LAST_SIX_MONTHS]: getDateRange('sixMonths'),
+          [DateFilterOption.LAST_TWELVE_MONTHS]: getDateRange('year'),
+          [DateFilterOption.OLDER_THAN_ONE_YEAR]: { start: new Date(0), end: getDateRange('year').start }, // Anything before last year
+        };
+
+        const { start, end } = filterRanges[filterValue] ?? {};
+
+        if (filterValue === DateFilterOption.OLDER_THAN_ONE_YEAR) {
+          return date < end;
         }
-        return filter.value === item[filter.id as keyof InboxItemInput];
-      });
+        return date >= start && date <= end;
+      }
+
+      return activeFilters[filterId]?.includes(dialog[filterId as keyof InboxItemInput] as string);
     });
   });
 };
 
-export enum FilterBarIds {
+export enum FilterCategory {
   SENDER = 'sender',
   RECEIVER = 'receiver',
   STATUS = 'status',
   UPDATED = 'updated',
 }
 
+export enum DateFilterOption {
+  TODAY = 'TODAY',
+  THIS_WEEK = 'THIS_WEEK',
+  THIS_MONTH = 'THIS_MONTH',
+  LAST_SIX_MONTHS = 'LAST_SIX_MONTHS',
+  LAST_TWELVE_MONTHS = 'LAST_TWELVE_MONTHS',
+  OLDER_THAN_ONE_YEAR = 'OLDER_THAN_ONE_YEAR',
+}
+
+const getStartOf = (date: Date, unit: DateFilterOption): string => {
+  switch (unit) {
+    case DateFilterOption.TODAY:
+      return startOfDay(date).toISOString();
+    case DateFilterOption.THIS_WEEK:
+      return startOfWeek(date, { weekStartsOn: 0 }).toISOString();
+    case DateFilterOption.THIS_MONTH:
+      return startOfMonth(date).toISOString();
+    default:
+      return '';
+  }
+};
+
+const getDateOptions = (dates: Date[]): ToolbarFilterProps['options'] => {
+  const now = new Date(2024, 11, 31);
+  const startOfSixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+  const sameDateLastYear = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+
+  const options: string[] = [];
+
+  for (const date of dates) {
+    const isStartOfDay = getStartOf(date, DateFilterOption.TODAY) === getStartOf(now, DateFilterOption.TODAY);
+    const isStartOfWeek = getStartOf(date, DateFilterOption.THIS_WEEK) === getStartOf(now, DateFilterOption.THIS_WEEK);
+    const isStartOfMonth =
+      getStartOf(date, DateFilterOption.THIS_MONTH) === getStartOf(now, DateFilterOption.THIS_MONTH);
+
+    if (isStartOfDay) options.push(DateFilterOption.TODAY);
+    if (isStartOfWeek) options.push(DateFilterOption.THIS_WEEK);
+    if (isStartOfMonth) options.push(DateFilterOption.THIS_MONTH);
+
+    if (date >= startOfSixMonthsAgo) options.push(DateFilterOption.LAST_SIX_MONTHS);
+    if (date >= sameDateLastYear) options.push(DateFilterOption.LAST_TWELVE_MONTHS);
+    if (date < sameDateLastYear) options.push(DateFilterOption.OLDER_THAN_ONE_YEAR);
+  }
+
+  const uniqueOptions = Array.from(new Set(options));
+
+  return uniqueOptions.map((option) => ({
+    label: t(`filter.date.${option.toLowerCase()}`),
+    value: option,
+    badge: { label: String(options.filter((o) => o === option).length) },
+  }));
+};
+
 /**
- * Generates filter settings for the filter bar.
+ * Generates facets for the filters. This will replaced as soon as Dialogporten offers this a response.
  *
  * @param {InboxItemInput[]} dialogs - The array of dialogs to filter.
- * @param {Array} activeFilters - The array of active filter objects, where each filter has an 'id' and a 'value'.
- * @param format
+ * @param currentFilterState
  * @returns {Array} - The array of filter settings.
  */
-export const getFilterBarSettings = (
-  dialogs: InboxItemInput[],
-  activeFilters: Filter[],
-  format: FormatFunction,
-): FilterSetting[] => {
-  return [
+export const getFacets = (dialogs: InboxItemInput[], currentFilterState: FilterState): ToolbarFilterProps[] => {
+  if (!dialogs.length) {
+    return [];
+  }
+  const facets = [
     {
-      id: FilterBarIds.SENDER,
-      label: t('filter_bar.label.sender'),
-      unSelectedLabel: t('filter_bar.label.all_senders'),
-      mobileNavLabel: t('filter_bar.label.choose_sender'),
-      operation: 'includes',
+      label: t('filter_bar.label.choose_sender'),
+      name: FilterCategory.SENDER,
+      removable: true,
+      optionType: 'checkbox' as ToolbarFilterProps['optionType'],
       options: (() => {
-        const otherFilters = activeFilters.filter((activeFilter) => activeFilter.id !== 'sender');
-        const filteredDialogs = filterDialogs(dialogs, otherFilters, format);
+        const { [FilterCategory.SENDER]: _, ...otherFilters } = currentFilterState;
+        const filteredDialogs = filterDialogs(dialogs, otherFilters);
         const senders = filteredDialogs.map((p) => p.sender.name);
         const senderCounts = countOccurrences(senders);
 
         return Array.from(new Set(senders)).map((sender) => ({
-          displayLabel: `${t('filter_bar_fields.from')} ${sender}`,
+          label: sender,
           value: sender,
-          count: senderCounts[sender] ?? 0,
+          badge: senderCounts[sender] ? { label: String(senderCounts[sender]) } : undefined,
         }));
       })(),
     },
     {
-      id: FilterBarIds.RECEIVER,
-      label: t('filter_bar.label.recipient'),
-      unSelectedLabel: t('filter_bar.label.all_recipients'),
-      mobileNavLabel: t('filter_bar.label.choose_recipient'),
-      operation: 'includes',
+      label: t('filter_bar.label.choose_recipient'),
+      name: FilterCategory.RECEIVER,
+      removable: true,
+      optionType: 'checkbox' as ToolbarFilterProps['optionType'],
       options: (() => {
-        const otherFilters = activeFilters.filter((activeFilter) => activeFilter.id !== 'receiver');
-        const filteredDialogs = filterDialogs(dialogs, otherFilters, format);
+        const { [FilterCategory.RECEIVER]: _, ...otherFilters } = currentFilterState;
+        const filteredDialogs = filterDialogs(dialogs, otherFilters);
+        const recipients = filteredDialogs.map((p) => p.receiver.name);
+        const recipientsCounts = countOccurrences(recipients);
 
-        const receivers = filteredDialogs.map((p) => p.receiver.name);
-        const receiversCount = countOccurrences(receivers);
-        return Array.from(new Set(receivers)).map((receiver) => ({
-          displayLabel: `${t('filter_bar_fields.to')} ${receiver}`,
-          value: receiver,
-          count: receiversCount[receiver] ?? 0,
+        return Array.from(new Set(recipients)).map((recipient) => ({
+          label: recipient,
+          value: recipient,
+          badge: recipientsCounts[recipient] ? { label: String(recipientsCounts[recipient]) } : undefined,
         }));
       })(),
     },
     {
-      id: FilterBarIds.STATUS,
-      label: t('filter_bar.label.status'),
-      unSelectedLabel: t('filter_bar.label.all_statuses'),
-      mobileNavLabel: t('filter_bar.label.choose_status'),
-      operation: 'includes',
-      horizontalRule: true,
+      label: t('filter_bar.label.choose_status'),
+      name: FilterCategory.STATUS,
+      removable: true,
+      optionType: 'checkbox' as ToolbarFilterProps['optionType'],
       options: (() => {
-        const otherFilters = activeFilters.filter((activeFilter) => activeFilter.id !== 'status');
-        const filteredDialogs = filterDialogs(dialogs, otherFilters, format);
-
+        const { status: _, ...otherFilters } = currentFilterState;
+        const filteredDialogs = filterDialogs(dialogs, otherFilters);
         const status = filteredDialogs.map((p) => p.status);
         const statusCount = countOccurrences(status);
 
         return Array.from(new Set(status)).map((statusLabel) => ({
-          displayLabel: t(`status.${statusLabel.toLowerCase()}`),
+          label: t(`status.${statusLabel.toLowerCase()}`),
           value: statusLabel,
-          count: statusCount[statusLabel] ?? 0,
+          badge: statusCount[statusLabel] ? { label: String(statusCount[statusLabel]) } : undefined,
         }));
       })(),
     },
     {
-      id: FilterBarIds.UPDATED,
+      id: FilterCategory.UPDATED,
+      name: FilterCategory.UPDATED,
       label: t('filter_bar.label.updated'),
-      mobileNavLabel: t('filter_bar.label.choose_date'),
-      unSelectedLabel: t('filter_bar.label.all_dates'),
-      operation: 'equals',
-      options: generateDateOptions(
-        dialogs.map((p) => new Date(p.updatedAt)),
-        format,
-      ),
+      optionType: 'radio' as ToolbarFilterProps['optionType'],
+      removable: true,
+      options: (() => {
+        const { updated: _, ...otherFilters } = currentFilterState;
+        const filteredDialogs = filterDialogs(dialogs, otherFilters);
+        const dates = filteredDialogs.map((p) => new Date(p.updatedAt));
+        return getDateOptions(dates);
+      })(),
     },
   ];
+
+  if (!Object.keys(currentFilterState).length) {
+    return facets.filter((facet: ToolbarFilterProps) => facet.options.length > 1);
+  }
+  return facets;
 };
 
-export const createFiltersURLQuery = (activeFilters: Filter[], allFilterKeys: string[], baseURL: string): URL => {
-  const url = new URL(baseURL);
-
-  for (const filter of allFilterKeys) {
-    url.searchParams.delete(filter);
-  }
-
-  for (const filter of activeFilters.filter((filter) => typeof filter.value !== 'undefined')) {
-    url.searchParams.append(filter.id, String(filter.value));
-  }
-  return url;
-};
-
-export const readFiltersFromURLQuery = (query: string): Filter[] => {
+export const readFiltersFromURLQuery = (query: string): FilterState => {
   const searchParams = new URLSearchParams(query);
-  const allowedFilterKeys = Object.values(FilterBarIds) as string[];
-  const filters: Filter[] = [];
+  const allowedFilterKeys = Object.values(FilterCategory) as string[];
+  const filters: FilterState = {};
   searchParams.forEach((value, key) => {
-    if (allowedFilterKeys.includes(key)) {
-      filters.push({ id: key, value });
+    if (allowedFilterKeys.includes(key) && value) {
+      if (filters[key]) {
+        filters[key].push(value);
+      } else {
+        filters[key] = [value];
+      }
     }
   });
+
   return filters;
 };
