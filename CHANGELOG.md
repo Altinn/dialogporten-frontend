@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.16.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.15.1...v1.16.0) (2025-02-20)
+
+
+### Features
+
+* Add autocomplete senders suggestions ([#1799](https://github.com/Altinn/dialogporten-frontend/issues/1799)) ([99eb04d](https://github.com/Altinn/dialogporten-frontend/commit/99eb04d3814df46992fb3f13042e7a8c32cc9d51))
+* add Toolbar and remove legacy components ([#1788](https://github.com/Altinn/dialogporten-frontend/issues/1788)) ([7c2ecd0](https://github.com/Altinn/dialogporten-frontend/commit/7c2ecd0583ded6b5cd58a43e3111b98dc448f2d0))
+* Improve ID-porten integration ([#1796](https://github.com/Altinn/dialogporten-frontend/issues/1796)) ([d394707](https://github.com/Altinn/dialogporten-frontend/commit/d394707d2dfd3f339a58b66c3c119dd74ee423ea))
+* **infra:** enable access logs for application gateway ([#1805](https://github.com/Altinn/dialogporten-frontend/issues/1805)) ([0dee2ef](https://github.com/Altinn/dialogporten-frontend/commit/0dee2ef02a197b833542b531ad1131c5f9d5dae1))
+
 ## [1.15.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.15.0...v1.15.1) (2025-02-07)
 
 
