@@ -108,11 +108,23 @@ module bffAvailabilityTest '../modules/applicationInsights/availabilityTest.bice
   scope: resourceGroup
   name: 'bffAvailabilityTest'
   params: {
-    name: '${namePrefix}-bff-health-test'
+    name: 'BFF'
     location: location
     tags: tags
     appInsightsId: appInsights.outputs.appInsightsId
     url: 'https://${applicationGatewayConfiguration.hostName}/api/health'
+  }
+}
+
+module frontendAvailabilityTest '../modules/applicationInsights/availabilityTest.bicep' = {
+  scope: resourceGroup
+  name: 'frontendAvailabilityTest'
+  params: {
+    name: 'Frontend'
+    location: location
+    tags: tags
+    appInsightsId: appInsights.outputs.appInsightsId
+    url: 'https://${applicationGatewayConfiguration.hostName}'
   }
 }
 
