@@ -65,11 +65,7 @@ test.describe('LoginPartyContext', () => {
 
     await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).not.toBeVisible();
     await expect(page.getByRole('link', { name: 'This is a message 1 for Firma AS' })).toBeVisible();
-    await expect(
-      page.getByRole('link', {
-        name: 'This is a message 1 for Testbedrift AS Oslo kommune til Testbedrift AS Message',
-      }),
-    ).toBeVisible();
+    await expect(page.getByRole('link', { name: 'This is a message 1 for Testbedrift AS', exact: true })).toBeVisible();
     await expect(
       page.getByRole('link', { name: 'This is a message 1 for Testbedrift AS sub party AVD SUB' }),
     ).toBeVisible();

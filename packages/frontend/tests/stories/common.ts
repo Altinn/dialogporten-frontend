@@ -31,9 +31,9 @@ export async function selectDialogBySearch(page, query: string, itemLabel: strin
   await searchbarInput.fill(query);
 
   if (endGameAction === 'click') {
-    await page.getByLabel(itemLabel).click();
+    await page.getByRole('banner').getByRole('link', { name: itemLabel }).click();
   } else if (endGameAction === 'enter') {
-    await page.getByLabel(itemLabel).hover();
+    await page.getByRole('banner').getByRole('link', { name: itemLabel }).hover();
     await page.keyboard.press('Enter');
   }
 }

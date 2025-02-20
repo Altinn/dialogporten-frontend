@@ -38,6 +38,10 @@ describe('generateSendersAutocompleteBySearchString', () => {
       isSeenByEndUser: false,
       label: 'DEFAULT',
       org: 'skd',
+      guiAttachmentCount: 1,
+      seenByOthersCount: 0,
+      seenByLabel: 'Sett av deg',
+      viewType: 'DEFAULT',
     },
     {
       id: '019241f7-812c-71c8-8e68-94a0b771fa10',
@@ -72,11 +76,14 @@ describe('generateSendersAutocompleteBySearchString', () => {
         },
       ],
       createdAt: '2023-05-17T09:30:00.000Z',
-      updatedAt: '2023-05-17T09:30:00.000Z',
+      org: 'ssb',
+      guiAttachmentCount: 1,
+      seenByOthersCount: 1,
+      seenByLabel: 'Sett av deg',
+      viewType: 'DEFAULT',
       status: 'REQUIRES_ATTENTION',
       isSeenByEndUser: true,
       label: 'DEFAULT',
-      org: 'ssb',
     },
   ];
 

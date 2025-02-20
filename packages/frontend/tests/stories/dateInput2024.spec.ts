@@ -11,12 +11,8 @@ test.describe('Date filter, system date set 2024', () => {
   });
 
   test('Dialog with mocked system date and scenario data visable', async ({ page }) => {
-    await expect(page.getByRole('link', { name: 'Mocked system date Dec 31, 2024' })).toBeVisible();
-    await expect(
-      page.getByRole('link', {
-        name: 'Melding om bortkjøring av snø i 2024 Oslo kommune til Test Testesen Melding om',
-      }),
-    ).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Mocked system date Dec 31,' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Melding om bortkjøring av snø i' })).toBeVisible();
   });
 
   test('Date filter - quick filters functionality', async ({ page }) => {

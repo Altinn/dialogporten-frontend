@@ -43,8 +43,8 @@ test.describe('Search suggests with senders', () => {
 
     await expect(page.getByRole('link', { name: 'test1 NAV Arbeids- og' })).not.toBeVisible();
 
-    await expect(page.getByRole('link', { name: 'test1 skatt Skatteetaten til' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'test2 skatt Skatteetaten til' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'test1 skatt' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'test2 skatt' })).toBeVisible();
   });
 
   test('Selecting sender and value filters data correctly', async ({ page }) => {
@@ -56,10 +56,10 @@ test.describe('Search suggests with senders', () => {
     await page.getByRole('button', { name: 'Skatteetaten' }).click();
 
     await expect(page).toHaveURL(`${defaultAppURL}&playwrightId=search-sender&search=test1&org=skd`);
-    await expect(page.getByRole('link', { name: 'test1 skatt Skatteetaten til' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'test1 skatt' })).toBeVisible();
 
-    await expect(page.getByRole('link', { name: 'test1 NAV Arbeids- og' })).not.toBeVisible();
-    await expect(page.getByRole('link', { name: 'test2 skatt Skatteetaten til' })).not.toBeVisible();
+    await expect(page.getByRole('link', { name: 'test1 NAV' })).not.toBeVisible();
+    await expect(page.getByRole('link', { name: 'test2 skatt' })).not.toBeVisible();
   });
 
   test('Clear button removes search parasm and display data', async ({ page }) => {
@@ -71,15 +71,15 @@ test.describe('Search suggests with senders', () => {
     await page.getByRole('button', { name: 'Skatteetaten' }).click();
 
     await expect(page).toHaveURL(`${defaultAppURL}&playwrightId=search-sender&search=test1&org=skd`);
-    await expect(page.getByRole('link', { name: 'test1 skatt Skatteetaten til' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'test1 NAV Arbeids- og' })).not.toBeVisible();
-    await expect(page.getByRole('link', { name: 'test2 skatt Skatteetaten til' })).not.toBeVisible();
+    await expect(page.getByRole('link', { name: 'test1 skatt' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'test1 NAV' })).not.toBeVisible();
+    await expect(page.getByRole('link', { name: 'test2 skatt' })).not.toBeVisible();
 
     await page.getByTestId('search-button-clear').click();
     await expect(page).toHaveURL(`${defaultAppURL}&playwrightId=search-sender`);
 
-    await expect(page.getByRole('link', { name: 'test1 skatt Skatteetaten til' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'test1 NAV Arbeids- og' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'test2 skatt Skatteetaten til' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'test1 skatt' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'test1 NAV' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'test2 skatt' })).toBeVisible();
   });
 });

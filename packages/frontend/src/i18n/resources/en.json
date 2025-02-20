@@ -15,6 +15,7 @@
   "dialog.toolbar.toast.move_to_bin_success": "Moved to bin",
   "dialog.toolbar.toast.move_to_inbox_failed": "Failed to move to inbox",
   "dialog.toolbar.toast.move_to_inbox_success": "Moved to inbox",
+  "dialog.imageAltURL": "Company logo for {companyName}",
   "dialogs.attachment_count": "{count, plural, one {# attachment} other {# attachments}}",
   "editSavedSearch.give_search_name": "Name the search",
   "editSavedSearch.save_and_close": "Save and close",
