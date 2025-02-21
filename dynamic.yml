@@ -1,0 +1,15 @@
+tls:
+  certificates:
+    - certFile: /etc/certs/cert.pem
+      keyFile: /etc/certs/key.pem
+logger:
+  level: DEBUG
+
+certificatesResolvers:
+  default:
+    tls:
+      stores:
+        - default
+      options:
+        default:
+          minVersion: VersionTLS12
