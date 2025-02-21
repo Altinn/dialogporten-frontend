@@ -1,18 +1,6 @@
-.inboxItemDetailWrapper {
-  padding: 1.5rem;
-}
-
-.inboxItemDetail {
-  display: flex;
-  flex-direction: column;
-  background: #fff;
-  padding-bottom: 1.5rem;
-}
-
-@media (max-width: 1024px) {
-  .inboxItemDetailWrapper {
-    padding: 1.5rem 1rem;
-  }
+.errorFallBack {
+  margin-top: 1rem;
+  padding: 1rem;
 }
 
 .sectionWithStatus {
