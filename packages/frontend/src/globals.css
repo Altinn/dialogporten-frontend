@@ -1,4 +1,5 @@
 /* GLOBAL VARIABLES */
+@import "@digdir/designsystemet-css";
 @import "@altinn/altinn-components/dist/global.css";
 
 :root {
@@ -37,6 +38,7 @@
   --background-color-accented: var(--Person-300);
   --border-color-subtle: var(--Person-600);
   --border-color-accented: var(--Person-800);
+  --ds-body-md-font-size: 1rem; /* work-around until order of css is fixed */
 }
 
 body,
