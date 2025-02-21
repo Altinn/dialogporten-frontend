@@ -11,13 +11,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "pino": "9.3.2",
-    "pino-pretty": "11.2.2"
+    "pino": "9.6.0",
+    "pino-pretty": "11.3.0"
   },
   "devDependencies": {
-    "@types/node": "22.5.1",
-    "typescript": "5.5.4",
-    "zod": "3.23.8"
+    "@types/node": "22.13.4",
+    "typescript": "5.7.3",
+    "zod": "3.24.2"
   },
   "repository": {
     "type": "git",
