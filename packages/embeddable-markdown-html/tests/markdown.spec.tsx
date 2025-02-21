@@ -8,7 +8,7 @@ describe('Markdown', () => {
     await waitFor(() => {
       expect(getByText('header')).toBeInTheDocument();
     });
-    expect(container.firstChild).toMatchSnapshot();
+    expect(container.innerHTML).toEqual('<h1 class="__fce-header-1">header</h1>');
   });
 
   test('should render hard line breaks, 1', async () => {
@@ -19,7 +19,8 @@ describe('Markdown', () => {
       expect(container).toHaveTextContent('foo');
       expect(container).toHaveTextContent('baz');
     });
-    expect(container.firstChild).toMatchSnapshot();
+    expect(container.innerHTML).toEqual(`<p class="__fce-paragraph">foo<br>
+baz</p>`);
   });
 
   test('should render hard line breaks, 2', async () => {
@@ -31,7 +32,8 @@ This is the second line.`;
       expect(container).toHaveTextContent('This is the first line');
       expect(container).toHaveTextContent('This is the second line');
     });
-    expect(container.firstChild).toMatchSnapshot();
+    expect(container.innerHTML).toEqual(`<p class="__fce-paragraph">This is the first line.<br>
+This is the second line.</p>`);
   });
 
   test('list items', async () => {
@@ -42,7 +44,17 @@ This is the second line.`;
       expect(container).toHaveTextContent('indented code');
       expect(container).toHaveTextContent('A block quote.');
     });
-    expect(container.firstChild).toMatchSnapshot();
+    expect(container.innerHTML).toEqual(`<ol>
+<li class="__fce-list-item">
+<p class="__fce-paragraph">A paragraph
+with two lines.</p>
+<pre><code>indented code
+</code></pre>
+<blockquote>
+<p class="__fce-paragraph">A block quote.</p>
+</blockquote>
+</li>
+</ol>`);
   });
 
   test('should render link', async () => {
@@ -51,7 +63,7 @@ This is the second line.`;
     await waitFor(() => {
       expect(container).toHaveTextContent('foo');
     });
-    expect(container.firstChild).toMatchSnapshot();
+    expect(container.innerHTML).toEqual(`<p class="__fce-paragraph"><a href="/url" title="title">foo</a></p>`);
   });
 
   test('should render emphasis and strong emphasis', async () => {
@@ -60,6 +72,8 @@ This is the second line.`;
     await waitFor(() => {
       expect(container).toHaveTextContent('foo');
     });
-    expect(container.firstChild).toMatchSnapshot();
+    expect(container.innerHTML).toEqual(
+      `<p class="__fce-paragraph"><strong class="__fce-strong">foo</strong>  <em>bar</em></p>`,
+    );
   });
 });

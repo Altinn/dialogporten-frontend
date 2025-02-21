@@ -1,6 +1,6 @@
 import { Button, Spinner } from '@digdir/designsystemet-react';
 import type { GuiActionPriority } from 'bff-types-generated';
-import { useState } from 'react';
+import { type ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './guiActions.module.css';
 export interface GuiActionProps {
@@ -29,6 +29,7 @@ interface GuiActionsProps {
  *
  * @param {GuiActionButton} props - The properties passed to the button component.
  * @param dialogToken - The dialog token used for authorization.
+ * @param responseFinished
  */
 const handleButtonClick = async (props: GuiActionButtonProps, dialogToken: string, responseFinished: () => void) => {
   const { url, httpMethod, prompt } = props;
@@ -66,9 +67,9 @@ const handleButtonClick = async (props: GuiActionButtonProps, dialogToken: strin
  *
  * @component
  * @param {GuiActionButton} props - The properties passed to the button component.
- * @returns {JSX.Element | null} The rendered button or null if hidden.
+ * @returns {ReactElement | null} The rendered button or null if hidden.
  */
-const GuiActionButton = ({ actions, dialogToken }: GuiActionsProps): JSX.Element | null => {
+const GuiActionButton = ({ actions, dialogToken }: GuiActionsProps): ReactElement | null => {
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -81,13 +82,13 @@ const GuiActionButton = ({ actions, dialogToken }: GuiActionsProps): JSX.Element
 
   const handleClick = () => {
     setIsLoading(true);
-    handleButtonClick(actions, dialogToken, responseCallback);
+    void handleButtonClick(actions, dialogToken, responseCallback);
   };
 
   if (isLoading) {
     return (
-      <Button id={id} variant={variant} disabled={true} aria-disabled>
-        <Spinner title="loading" size="sm" />
+      <Button id={id} variant={variant} disabled aria-disabled>
+        <Spinner aria-label="loading" data-size="sm" />
         {t('word.loading')}
       </Button>
     );
@@ -105,7 +106,7 @@ const GuiActionButton = ({ actions, dialogToken }: GuiActionsProps): JSX.Element
  *
  * @component
  * @param {GuiActionProps} props - The properties passed to the component.
- * @returns {JSX.Element} The container with all rendered action buttons.
+ * @returns {ReactElement} The container with all rendered action buttons.
  *
  * @example
  * <GuiActions
@@ -117,7 +118,7 @@ const GuiActionButton = ({ actions, dialogToken }: GuiActionsProps): JSX.Element
  *   dialogToken="your-dialog-token"
  * />
  */
-export const GuiActions = ({ actions, dialogToken }: GuiActionProps): JSX.Element => {
+export const GuiActions = ({ actions, dialogToken }: GuiActionProps): ReactElement => {
   return (
     <section className={styles.guiActions} data-id="dialog-gui-actions">
       {actions.map((actionProps) => (

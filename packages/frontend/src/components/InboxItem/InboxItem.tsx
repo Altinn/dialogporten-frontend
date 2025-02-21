@@ -2,7 +2,7 @@ import { Avatar } from '@altinn/altinn-components';
 import type { DialogStatus, SystemLabel } from 'bff-types-generated';
 import classNames from 'classnames';
 import cx from 'classnames';
-import type { JSX } from 'react';
+import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import type { Participant } from '../../api/useDialogById.tsx';
@@ -79,10 +79,9 @@ export const OptionalLinkContent = ({
  * @param {Participant} props.receiver - The receiver of the inbox item, including label and optional icon.
  * @param {boolean} props.isChecked - Whether the inbox item is checked. This can support batch operations.
  * @param {function(boolean): void} props.onCheckedChange - Callback function triggered when the checkbox value changes.
- * @param {InboxItemTag[]} [props.tags=[]] - Optional array of tags associated with the inbox item, each with a label, optional icon, and optional className.
  * @param {boolean} [props.isUnread=false] - Whether the inbox item should be styled to indicate it is unread.
  * @param {string} [props.linkTo=undefined] - When provided a href it renders a link as title for navigation.
- * @returns {JSX.Element} The InboxItem component.
+ * @returns {ReactElement} The InboxItem component.
  *
  * @example
  * <InboxItem
@@ -111,7 +110,7 @@ export const InboxItem = ({
   isChecked = false,
   linkTo,
   viewType,
-}: InboxItemProps): JSX.Element => {
+}: InboxItemProps): ReactElement => {
   const { inSelectionMode } = useSelectedDialogs();
   const { t } = useTranslation();
   const disableBulkActions = useFeatureFlag<boolean>(FeatureFlagKeys.DisableBulkActions);
@@ -151,6 +150,7 @@ export const InboxItem = ({
               <h2 className={styles.title}>{title}</h2>
               {onCheckedChange && (
                 <ProfileCheckbox
+                  aria-label={t('inbox.checkbox.select_item')}
                   checked={isChecked}
                   value={checkboxValue}
                   onClick={(e) => {
@@ -161,7 +161,7 @@ export const InboxItem = ({
                   onChange={(e) => {
                     onCheckedChange?.(e.target.checked);
                   }}
-                  size="sm"
+                  data-size="sm"
                 />
               )}
             </header>
@@ -197,6 +197,7 @@ export const InboxItem = ({
             <h2 className={classNames(styles.title, { [styles.title__unread]: isUnread })}>{title}</h2>
             {onCheckedChange && !disableBulkActions && (
               <ProfileCheckbox
+                aria-label={t('inbox.checkbox.select_item')}
                 checked={isChecked}
                 value={checkboxValue}
                 onClick={(e) => {
@@ -207,7 +208,7 @@ export const InboxItem = ({
                 onChange={(e) => {
                   onCheckedChange?.(e.target.checked);
                 }}
-                size="sm"
+                data-size="sm"
               />
             )}
           </header>

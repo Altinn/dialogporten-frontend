@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import { createContext, useEffect } from 'react';
 import { Analytics } from '../analytics.ts';
 
@@ -8,7 +8,7 @@ type LoggerContextProviderProps = {
   children: ReactNode;
 };
 
-export const LoggerContextProvider = ({ children }: LoggerContextProviderProps): JSX.Element => {
+export const LoggerContextProvider = ({ children }: LoggerContextProviderProps): ReactElement => {
   useEffect(() => {
     const handleWindowError = (event: ErrorEvent) => {
       Analytics.trackException({

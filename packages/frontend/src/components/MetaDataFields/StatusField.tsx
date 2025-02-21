@@ -1,11 +1,12 @@
 import cx from 'classnames';
+import type { ReactElement } from 'react';
 import { CompletedIcon } from '../Icons';
 import { SentIcon } from '../Icons/SentIcon';
 import { LoadingCircle } from '../LoadingCircle/LoadingCircle.tsx';
 import type { InboxItemMetaFieldType } from './MetaDataFields.tsx';
 import styles from './statusField.module.css';
 
-const getIconByType = (type?: InboxItemMetaFieldType): JSX.Element | null => {
+const getIconByType = (type?: InboxItemMetaFieldType): ReactElement | null => {
   switch (type) {
     case 'status_IN_PROGRESS':
       return <LoadingCircle percentage={75} />;

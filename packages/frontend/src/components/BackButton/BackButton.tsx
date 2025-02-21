@@ -8,11 +8,11 @@ import styles from './backButton.module.css';
 export function BackButton({ path }: { path: string }) {
   const { t } = useTranslation();
   return (
-    <Link to={path} rel="noreferrer" className={styles.backLink}>
-      <Button color="neutral" variant="tertiary" className={styles.backButton}>
+    <Button variant="tertiary" className={styles.backButton} asChild>
+      <Link to={path} rel="noreferrer" className={styles.backLink}>
         <ArrowLeftIcon className={styles.backIcon} />
         {t('word.back')}
-      </Button>
-    </Link>
+      </Link>
+    </Button>
   );
 }

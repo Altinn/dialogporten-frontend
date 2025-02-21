@@ -4,7 +4,7 @@ import HomepageFeatures from '@site/src/components/HomepageFeatures';
 import Heading from '@theme/Heading';
 import Layout from '@theme/Layout';
 import clsx from 'clsx';
-
+import type { ReactElement } from 'react';
 import styles from './index.module.css';
 
 function HomepageHeader() {
@@ -26,7 +26,7 @@ function HomepageHeader() {
   );
 }
 
-export default function Home(): JSX.Element {
+export default function Home(): ReactElement {
   const { siteConfig } = useDocusaurusContext();
   return (
     <Layout title={`Hello from ${siteConfig.title}`} description="Description will go into a meta tag in <head />">

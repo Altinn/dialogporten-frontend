@@ -1,6 +1,7 @@
 import { Avatar } from '@altinn/altinn-components';
 import { Link } from '@digdir/designsystemet-react';
 import { EyeIcon, FileIcon } from '@navikt/aksel-icons';
+import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { DialogActivity, DialogByIdDetails, DialogTransmission } from '../../api/useDialogById.tsx';
 import { getPreferredPropertyByLocale } from '../../i18n/property.ts';
@@ -25,7 +26,7 @@ interface InboxItemDetailProps {
  * @component
  * @param {object} props - The properties passed to the component.
  * @param {DialogByIdDetails} props.dialog - The dialog details containing all the necessary information.
- * @returns {JSX.Element} The InboxItemDetail component.
+ * @returns {ReactElement} The InboxItemDetail component.
  *
  * @example
  * <InboxItemDetail
@@ -41,7 +42,7 @@ interface InboxItemDetailProps {
  * />
  */
 
-export const InboxItemDetail = ({ dialog }: InboxItemDetailProps): JSX.Element => {
+export const InboxItemDetail = ({ dialog }: InboxItemDetailProps): ReactElement => {
   const { t } = useTranslation();
   const format = useFormat();
 

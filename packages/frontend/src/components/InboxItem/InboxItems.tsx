@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react';
 import styles from './inboxItems.module.css';
 
 interface InboxItemsProps {
@@ -13,11 +14,11 @@ interface InboxItemsProps {
  * @param {Object} props - The properties passed to the component.
  * @param {React.ReactNode} props.children - The child components to be rendered within the container.
  * Typically, these are `InboxItem` components, but can include any React nodes.
- * @returns {JSX.Element} A div element wrapping the children in a styled manner,
+ * @returns {ReactElement} A div element wrapping the children in a styled manner,
  * according to the `inboxItems` CSS class defined in `inboxItems.module.css`.
  *
  */
 
-export const InboxItems = ({ children }: InboxItemsProps): JSX.Element => {
+export const InboxItems = ({ children }: InboxItemsProps): ReactElement => {
   return <ul className={styles.inboxItems}>{children}</ul>;
 };
