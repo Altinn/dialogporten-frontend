@@ -271,7 +271,9 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
     return {
       title: t('savedSearches.title', { count: currentPartySavedSearches?.length }),
       items,
-      description: `${t('savedSearches.lastUpdated')}${autoFormatRelativeTime(lastUpdated!, formatDistance)}`,
+      description: lastUpdated
+        ? `${t('savedSearches.lastUpdated')}${autoFormatRelativeTime(lastUpdated, formatDistance)}`
+        : '',
       expandedId,
       onToggle: handleOnToggle,
       titleField: {

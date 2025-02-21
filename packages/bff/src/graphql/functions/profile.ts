@@ -1,14 +1,14 @@
 import { ProfileRepository } from '../../db.ts';
 import { ProfileTable } from '../../entities.ts';
 
-export const getOrCreateProfile = async (sub: string, locale: string): Promise<ProfileTable> => {
+export const getOrCreateProfile = async (pid: string, locale: string): Promise<ProfileTable> => {
   const profile = await ProfileRepository!.findOne({
-    where: { sub },
+    where: { pid },
   });
 
   if (!profile) {
     const newProfile = new ProfileTable();
-    newProfile.sub = sub;
+    newProfile.pid = pid;
     newProfile.language = locale || 'nb';
 
     const savedProfile = await ProfileRepository!.save(newProfile);
