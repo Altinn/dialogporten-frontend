@@ -49,7 +49,7 @@ declare module 'fastify' {
     token: SessionStorageToken;
     codeVerifier: string;
     codeChallenge: string;
-    sub: string;
+    pid: string;
     locale: string;
     state?: string;
     verifier?: string;
@@ -69,7 +69,7 @@ interface IdportenToken {
 }
 
 export interface IdTokenPayload {
-  sub: string;
+  pid: string;
   locale: string;
   jwt: string;
   nonce: string;
@@ -170,11 +170,8 @@ export const handleAuthRequest = async (request: FastifyRequest, reply: FastifyR
     );
 
     const customToken: IdportenToken = token as unknown as IdportenToken;
-    const {
-      sub,
-      locale = 'nb',
-      nonce: receivedNonce,
-    } = jwt.decode(customToken.id_token as string) as unknown as IdTokenPayload;
+    const decodedIDToken = jwt.decode(customToken.id_token) as IdTokenPayload;
+    const { pid, locale = 'nb', nonce: receivedNonce } = decodedIDToken;
 
     const nonceIsAMatch = storedNonceTruth === receivedNonce && storedNonceTruth !== '';
     const refreshTokenExpiresAt = new Date(now.getTime() + customToken.refresh_token_expires_in * 1000).toISOString();
@@ -196,7 +193,7 @@ export const handleAuthRequest = async (request: FastifyRequest, reply: FastifyR
     };
 
     request.session.set('token', sessionStorageToken);
-    request.session.set('sub', sub);
+    request.session.set('pid', pid);
     request.session.set('locale', locale);
 
     reply.redirect('/?loggedIn=true');
