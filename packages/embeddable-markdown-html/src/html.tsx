@@ -24,8 +24,8 @@ export const Html: React.FC<{
       .use(addClasses, defaultClassMap)
       .use(rehypeReact, production)
       .process(children)
-      .then((vfile) => setReactContent(vfile.result as ReactElement))
-      .catch((e) => onError(e));
+      .then((vfile: { result: ReactElement }) => setReactContent(vfile.result))
+      .catch((e: Error) => onError(e));
   }, [children, onError]);
 
   return reactContent;

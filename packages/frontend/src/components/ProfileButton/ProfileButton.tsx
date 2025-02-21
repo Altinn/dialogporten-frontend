@@ -20,7 +20,7 @@ export const ProfileButton = (props: ProfileButtonProps) => {
   if (isLoading) {
     return (
       <Button className={classes} {...restProps} aria-disabled>
-        <Spinner title="loading" size="sm" />
+        <Spinner aria-label="loading" data-size="sm" />
         {t('word.loading')}
       </Button>
     );

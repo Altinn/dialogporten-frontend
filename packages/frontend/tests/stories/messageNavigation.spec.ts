@@ -14,7 +14,7 @@ test.describe('Message navigation', () => {
 
     await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).toBeVisible();
     await page.getByRole('link', { name: 'Skatten din for 2022' }).click();
-    await page.getByRole('button', { name: 'Tilbake' }).click();
+    await page.getByRole('link', { name: 'Tilbake' }).click();
     await expect(page.getByRole('button', { name: 'Test Testesen' })).toBeVisible();
 
     await page.getByRole('button', { name: 'Test Testesen' }).click();
@@ -23,7 +23,7 @@ test.describe('Message navigation', () => {
     await expect(page.getByRole('button', { name: 'Firma AS' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'This is a message 1 for Firma AS' })).toBeVisible();
     await page.getByRole('link', { name: 'This is a message 1 for Firma AS' }).click();
-    await page.getByRole('button', { name: 'Tilbake' }).click();
+    await page.getByRole('link', { name: 'Tilbake' }).click();
     await expect(page.getByRole('button', { name: 'Firma AS' })).toBeVisible();
     await expectIsCompanyPage(page);
     expect(new URL(page.url()).searchParams.has('party')).toBe(true);
@@ -33,7 +33,7 @@ test.describe('Message navigation', () => {
     await expect(page.getByRole('button', { name: 'Alle virksomheter' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'This is a message 1 for Firma AS' })).toBeVisible();
     await page.getByRole('link', { name: 'This is a message 1 for Firma AS' }).click();
-    await page.getByRole('button', { name: 'Tilbake' }).click();
+    await page.getByRole('link', { name: 'Tilbake' }).click();
     await expect(page.getByRole('button', { name: 'Alle virksomheter' })).toBeVisible();
     await expectIsCompanyPage(page);
   });
@@ -48,7 +48,7 @@ test.describe('Message navigation', () => {
 
     await getSidebarMenuItem(page, PageRoutes.bin).click();
     await page.getByRole('link', { name: 'Skatten din for 2022' }).click();
-    await page.getByRole('button', { name: 'Tilbake' }).click();
+    await page.getByRole('link', { name: 'Tilbake' }).click();
     await expect(page.getByRole('heading', { name: 'i papirkurv' })).toBeVisible();
   });
 });
