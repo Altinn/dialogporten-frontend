@@ -3,6 +3,7 @@ import type {
   AttachmentFieldsFragment,
   DialogActivityFragment,
   DialogByIdFieldsFragment,
+  DialogStatus,
   GetDialogByIdQuery,
   OrganizationFieldsFragment,
   PartyFieldsFragment,
@@ -70,6 +71,8 @@ export interface DialogByIdDetails {
   createdAt: string;
   label: SystemLabel;
   transmissions: DialogTransmission[];
+  status: DialogStatus;
+  dueAt?: string;
 }
 
 interface UseDialogByIdOutput {
@@ -153,6 +156,7 @@ export function mapDialogToToInboxItem(
 
   return {
     title: getPreferredPropertyByLocale(titleObj)?.value ?? '',
+    status: item.status,
     summary: getPreferredPropertyByLocale(summaryObj)?.value ?? '',
     sender: {
       name: getPreferredPropertyByLocale(senderName)?.value || serviceOwner?.name || '',
@@ -211,6 +215,7 @@ export function mapDialogToToInboxItem(
     createdAt: item.createdAt,
     updatedAt: item.updatedAt,
     label: item.systemLabel,
+    dueAt: item.dueAt,
   };
 }
 export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseDialogByIdOutput => {

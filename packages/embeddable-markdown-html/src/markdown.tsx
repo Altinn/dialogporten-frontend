@@ -36,7 +36,7 @@ export const Markdown: ({
       .use(addClasses, defaultClassMap)
       .use(rehypeReact, production)
       .process(children)
-      .then((vfile) => setReactContent(vfile.result as ReactElement))
+      .then((vfile: { result: ReactElement }) => setReactContent(vfile.result as ReactElement))
       .catch(onError);
   }, [children]);
 

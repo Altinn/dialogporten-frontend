@@ -1,23 +1,29 @@
-import { type SnackbarColor, SnackbarDuration, useSnackbar } from '@altinn/altinn-components';
+import {
+  PageBase,
+  PageNav,
+  Section,
+  type SnackbarColor,
+  SnackbarDuration,
+  useSnackbar,
+} from '@altinn/altinn-components';
 import { useQueryClient } from '@tanstack/react-query';
 import { SystemLabel } from 'bff-types-generated';
-import i18n from 'i18next';
 import { useState } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { Link, type LinkProps, useLocation, useParams } from 'react-router-dom';
 import { updateSystemLabel } from '../../api/queries.ts';
 import { useDialogById } from '../../api/useDialogById.tsx';
 import { useDialogByIdSubscription } from '../../api/useDialogByIdSubscription.ts';
 import { useParties } from '../../api/useParties.ts';
-import { BackButton } from '../../components';
 import { InboxItemDetail } from '../../components';
 import { DialogToolbar } from '../../components/DialogToolbar/DialogToolbar.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { InboxItemPageSkeleton } from './InboxItemPageSkeleton.tsx';
-import styles from './inboxItemPage.module.css';
 
 export const InboxItemPage = () => {
   const { id } = useParams();
   const { parties } = useParties();
+  const { t } = useTranslation();
   const location = useLocation();
   const { dialog, isLoading } = useDialogById(parties, id);
   const [archiveLoading, setArchiveLoading] = useState<boolean>(false);
@@ -42,7 +48,7 @@ export const InboxItemPage = () => {
   }) => {
     const showSnackbar = (messageKey: string, color: SnackbarColor) => {
       openSnackbar({
-        message: i18n.t(messageKey),
+        message: t(messageKey),
         duration: SnackbarDuration.normal,
         color,
       });
@@ -107,23 +113,31 @@ export const InboxItemPage = () => {
   }
 
   const previousPath = (location?.state?.fromView ?? '/') + location.search;
+  const showToolbar = id && dialog;
 
   return (
-    <main className={styles.itemInboxPage}>
-      <section className={styles.itemInboxPageContent}>
-        <nav className={styles.itemInboxNav}>
-          <BackButton path={previousPath} />
-        </nav>
-        <InboxItemDetail dialog={dialog} />
-      </section>
-      {id && dialog && (
-        <DialogToolbar
-          currentLabel={dialog.label}
-          archiveAction={{ onClick: () => handleMoveDialogToArchive(id), isLoading: archiveLoading }}
-          deleteAction={{ onClick: () => handleMoveDialogBin(id), isLoading: deleteLoading }}
-          undoAction={{ onClick: () => handleUndoMoving(id), isLoading: undoLoading }}
-        />
-      )}
+    <main>
+      <PageBase spacing={0} bleed>
+        <Section theme="default" shadow="xs">
+          <PageNav
+            color="neutral"
+            padding={2}
+            backButton={{
+              label: t('word.back'),
+              as: (props: LinkProps) => <Link {...props} to={previousPath} />,
+            }}
+          />
+          <InboxItemDetail dialog={dialog} />
+        </Section>
+        {showToolbar && (
+          <DialogToolbar
+            currentLabel={dialog.label}
+            archiveAction={{ onClick: () => handleMoveDialogToArchive(id), isLoading: archiveLoading }}
+            deleteAction={{ onClick: () => handleMoveDialogBin(id), isLoading: deleteLoading }}
+            undoAction={{ onClick: () => handleUndoMoving(id), isLoading: undoLoading }}
+          />
+        )}
+      </PageBase>
     </main>
   );
 };

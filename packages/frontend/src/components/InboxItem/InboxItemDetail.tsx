@@ -1,6 +1,8 @@
-import { Avatar } from '@altinn/altinn-components';
+import { Article, Avatar, DialogHeader } from '@altinn/altinn-components';
+import type { DialogStatusValue } from '@altinn/altinn-components/dist/types/lib/components/Dialog/DialogStatus';
 import { Link } from '@digdir/designsystemet-react';
 import { EyeIcon, FileIcon } from '@navikt/aksel-icons';
+import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { DialogActivity, DialogByIdDetails, DialogTransmission } from '../../api/useDialogById.tsx';
 import { getPreferredPropertyByLocale } from '../../i18n/property.ts';
@@ -25,7 +27,7 @@ interface InboxItemDetailProps {
  * @component
  * @param {object} props - The properties passed to the component.
  * @param {DialogByIdDetails} props.dialog - The dialog details containing all the necessary information.
- * @returns {JSX.Element} The InboxItemDetail component.
+ * @returns {ReactElement} The InboxItemDetail component.
  *
  * @example
  * <InboxItemDetail
@@ -41,13 +43,13 @@ interface InboxItemDetailProps {
  * />
  */
 
-export const InboxItemDetail = ({ dialog }: InboxItemDetailProps): JSX.Element => {
+export const InboxItemDetail = ({ dialog }: InboxItemDetailProps): ReactElement => {
   const { t } = useTranslation();
   const format = useFormat();
 
   if (!dialog) {
     return (
-      <div className={styles.inboxItemDetailWrapper}>
+      <div className={styles.errorFallBack}>
         <section className={styles.inboxItemDetail}>
           <header className={styles.header} data-id="dialog-header">
             <h1 className={styles.title}>{t('error.dialog.not_found')}</h1>
@@ -59,6 +61,7 @@ export const InboxItemDetail = ({ dialog }: InboxItemDetailProps): JSX.Element =
   }
 
   const {
+    dueAt,
     title,
     dialogToken,
     summary,
@@ -72,77 +75,83 @@ export const InboxItemDetail = ({ dialog }: InboxItemDetailProps): JSX.Element =
     activities,
     transmissions,
     updatedAt,
+    status,
   } = dialog;
 
   const attachmentCount = attachments.reduce((count, { urls }) => count + urls.length, 0);
   const clockPrefix = t('word.clock_prefix');
   const formatString = clockPrefix ? `do MMMM yyyy '${clockPrefix}' HH.mm` : `do MMMM yyyy HH.mm`;
+  const dueAtLabel = dueAt ? format(dueAt, formatString) : '';
 
   return (
-    <div className={styles.inboxItemDetailWrapper}>
-      <article className={styles.inboxItemDetail}>
-        <header className={styles.header} data-id="dialog-header">
-          <h1 className={styles.title}>{title}</h1>
-        </header>
-        <div className={styles.participants} data-id="dialog-sender-receiver">
-          <Avatar
-            name={sender?.name ?? ''}
-            imageUrl={sender?.imageURL}
-            size="lg"
-            type={sender?.isCompany ? 'company' : 'person'}
-          />
-          <div className={styles.senderInfo}>
-            <div className={styles.sender}>{sender?.name}</div>
-            <div className={styles.receiver}>
-              {t('word.to')} {receiver?.name}
-            </div>
+    <Article padding={6} spacing={6}>
+      <DialogHeader
+        dueAt={dueAt}
+        dueAtLabel={dueAtLabel}
+        status={{
+          label: t(`filter.query.${status.replace(/-/g, '_').toLowerCase()}`),
+          value: status.replace(/-/g, '_').toLowerCase() as unknown as DialogStatusValue,
+        }}
+        title={title}
+      />
+      <div className={styles.participants} data-id="dialog-sender-receiver">
+        <Avatar
+          name={sender?.name ?? ''}
+          imageUrl={sender?.imageURL}
+          size="lg"
+          type={sender?.isCompany ? 'company' : 'person'}
+        />
+        <div className={styles.senderInfo}>
+          <div className={styles.sender}>{sender?.name}</div>
+          <div className={styles.receiver}>
+            {t('word.to')} {receiver?.name}
           </div>
         </div>
-        <div className={styles.sectionWithStatus} data-id="dialog-summary">
-          <section className={styles.summarySection}>
-            <time className={styles.updatedLabel} dateTime={updatedAt}>
-              {format(updatedAt, formatString)}
-            </time>
-            <p className={styles.summary}>{summary}</p>
-          </section>
-          <MainContentReference content={mainContentReference} dialogToken={dialogToken} />
-          <section data-id="dialog-attachments">
-            {attachmentCount > 0 && (
-              <h2 className={styles.attachmentTitle}>{t('inbox.heading.attachments', { count: attachmentCount })}</h2>
+      </div>
+      <div className={styles.sectionWithStatus} data-id="dialog-summary">
+        <section className={styles.summarySection}>
+          <time className={styles.updatedLabel} dateTime={updatedAt}>
+            {format(updatedAt, formatString)}
+          </time>
+          <p className={styles.summary}>{summary}</p>
+        </section>
+        <MainContentReference content={mainContentReference} dialogToken={dialogToken} />
+        <section data-id="dialog-attachments">
+          {attachmentCount > 0 && (
+            <h2 className={styles.attachmentTitle}>{t('inbox.heading.attachments', { count: attachmentCount })}</h2>
+          )}
+          <ul className={styles.attachments} data-id="dialog-attachments-list">
+            {attachments.map((attachment) =>
+              attachment.urls.map((url) => (
+                <li key={url.id} className={styles.attachmentItem}>
+                  <Link
+                    target="_blank"
+                    href={url.url}
+                    aria-label={t('inbox.attachment.link', {
+                      label: url.url,
+                    })}
+                  >
+                    <FileIcon className={styles.attachmentIcon} />
+                    {getPreferredPropertyByLocale(attachment.displayName)?.value || url.url}
+                  </Link>
+                </li>
+              )),
             )}
-            <ul className={styles.attachments} data-id="dialog-attachments-list">
-              {attachments.map((attachment) =>
-                attachment.urls.map((url) => (
-                  <li key={url.id} className={styles.attachmentItem}>
-                    <Link
-                      target="_blank"
-                      href={url.url}
-                      aria-label={t('inbox.attachment.link', {
-                        label: url.url,
-                      })}
-                    >
-                      <FileIcon className={styles.attachmentIcon} />
-                      {getPreferredPropertyByLocale(attachment.displayName)?.value || url.url}
-                    </Link>
-                  </li>
-                )),
-              )}
-            </ul>
-          </section>
-          {guiActions.length > 0 && <GuiActions actions={guiActions} dialogToken={dialogToken} />}
-          <div className={styles.tags} data-id="dialog-meta-field-tags">
-            {metaFields.map((tag) => (
-              <div key={tag.label} className={styles.tag}>
-                <div className={styles.tagIcon}>
-                  <EyeIcon />
-                </div>
-                <span> {tag.label}</span>
+          </ul>
+        </section>
+        {guiActions.length > 0 && <GuiActions actions={guiActions} dialogToken={dialogToken} />}
+        <div className={styles.tags} data-id="dialog-meta-field-tags">
+          {metaFields.map((tag) => (
+            <div key={tag.label} className={styles.tag}>
+              <div className={styles.tagIcon}>
+                <EyeIcon />
               </div>
-            ))}
-          </div>
+              <span> {tag.label}</span>
+            </div>
+          ))}
         </div>
-        <AdditionalInfoContent mediaType={additionalInfo?.mediaType} value={additionalInfo?.value} />
-      </article>
+      </div>
+      <AdditionalInfoContent mediaType={additionalInfo?.mediaType} value={additionalInfo?.value} />
       {activities.length > 0 && (
         <section data-id="dialog-activity-history" className={styles.activities}>
           <h3 className={styles.activitiesTitle}>{t('word.activities')}</h3>
@@ -159,6 +168,6 @@ export const InboxItemDetail = ({ dialog }: InboxItemDetailProps): JSX.Element =
           ))}
         </section>
       )}
-    </div>
+    </Article>
   );
 };
