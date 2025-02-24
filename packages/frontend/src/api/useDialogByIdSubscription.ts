@@ -29,8 +29,10 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
         if (updatedType && updatedType === DialogEventType.DialogDeleted) {
           // Redirect to inbox if the dialog was deleted
           navigate(PageRoutes.inbox);
+          void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.DIALOGS] });
         } else if (updatedType && updatedType === DialogEventType.DialogUpdated) {
           void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.DIALOG_BY_ID] });
+          void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.DIALOGS] });
         }
       } catch (e) {
         console.error('Error parsing event data:', e);
