@@ -9,9 +9,9 @@ export const Query = objectType({
     t.field('profile', {
       type: 'Profile',
       resolve: async (_source, _args, ctx) => {
-        const sub = ctx.session.get('sub');
+        const pid = ctx.session.get('pid');
         const locale = ctx.session.get('locale');
-        const profile = await getOrCreateProfile(sub, locale);
+        const profile = await getOrCreateProfile(pid, locale);
         const { language, updatedAt } = profile;
         return {
           language,
@@ -35,10 +35,10 @@ export const Query = objectType({
     t.field('savedSearches', {
       type: list('SavedSearches'),
       resolve: async (_source, _args, ctx) => {
-        const sub = ctx.session.get('sub');
+        const pid = ctx.session.get('pid');
         if (SavedSearchRepository) {
           return await SavedSearchRepository.find({
-            where: { profile: { sub } },
+            where: { profile: { pid } },
             order: { updatedAt: 'DESC' },
           });
         }

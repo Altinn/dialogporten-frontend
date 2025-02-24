@@ -13,7 +13,7 @@ import {
 @Entity({ name: 'profile' })
 export class ProfileTable {
   @PrimaryColumn()
-  sub: string;
+  pid: string;
 
   @Column({ length: 255, nullable: true })
   language: string;

@@ -44,7 +44,7 @@ export const SaveSearchButton = ({ disabled, className, filterState, viewType }:
     return (
       <ProfileButton
         className={className}
-        size="xs"
+        size="md"
         onClick={() => deleteSearch(alreadySavedSearch.id)}
         variant="tertiary"
         isLoading={isCTALoading}
@@ -57,8 +57,8 @@ export const SaveSearchButton = ({ disabled, className, filterState, viewType }:
 
   return (
     <ProfileButton
+      size="md"
       className={className}
-      size="xs"
       onClick={() =>
         saveSearch({ filters: filterState, selectedParties: selectedPartyIds, enteredSearchValue, viewType })
       }
