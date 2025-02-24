@@ -117,7 +117,7 @@ const getStartOf = (date: Date, unit: DateFilterOption): string => {
 };
 
 const getDateOptions = (dates: Date[]): ToolbarFilterProps['options'] => {
-  const now = new Date(2024, 11, 31);
+  const now = new Date();
   const startOfSixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
   const sameDateLastYear = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
 
