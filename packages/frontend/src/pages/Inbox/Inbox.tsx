@@ -107,8 +107,9 @@ export const Inbox = ({ viewType }: InboxProps) => {
               showResultsLabel={t('filter.show_all_results')}
               removeButtonAltText={t('filter_bar.remove_filter')}
               addFilterButtonLabel={t('filter_bar.add_filter')}
-            />
-            <SaveSearchButton viewType={viewType} disabled={savedSearchDisabled} filterState={filterState} />
+            >
+              <SaveSearchButton viewType={viewType} disabled={savedSearchDisabled} filterState={filterState} />
+            </Toolbar>
           </>
         ) : null}
       </section>
