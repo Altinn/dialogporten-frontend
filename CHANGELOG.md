@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.18.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.17.0...v1.18.0) (2025-02-24)
+
+
+### Features
+
+* Use 'pid' instead of 'sub' as primary key for profile database ([023142b](https://github.com/Altinn/dialogporten-frontend/commit/023142b6dc2b49d84e621df753c6e039b11e1a4c))
+
+
+### Bug Fixes
+
+* re-potion saved search button ([#1831](https://github.com/Altinn/dialogporten-frontend/issues/1831)) ([0ec966a](https://github.com/Altinn/dialogporten-frontend/commit/0ec966a30046c7eb3add0634a803c1eef8002fa7))
+* refetch data after gui action delete ([#1835](https://github.com/Altinn/dialogporten-frontend/issues/1835)) ([3e93749](https://github.com/Altinn/dialogporten-frontend/commit/3e93749cc4676aaab42757531a041f7e62760cfb))
+
 ## [1.17.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.16.0...v1.17.0) (2025-02-24)
 
 
