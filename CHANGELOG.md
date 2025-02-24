@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.17.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.16.0...v1.17.0) (2025-02-24)
+
+
+### Features
+
+* add dialog header and fix wrapper for dialog details page ([#1825](https://github.com/Altinn/dialogporten-frontend/issues/1825)) ([d54356c](https://github.com/Altinn/dialogporten-frontend/commit/d54356c3ad6d9b20d95e40c101c90178e76119fa))
+* **infra:** add availability test for frontend ([#1818](https://github.com/Altinn/dialogporten-frontend/issues/1818)) ([6418e5c](https://github.com/Altinn/dialogporten-frontend/commit/6418e5c20205d7e3b8d72da6975c6cf9635f91d4))
+
+
+### Bug Fixes
+
+* incorrect date for calculating date options - forgot to remove static date for testing ([#1830](https://github.com/Altinn/dialogporten-frontend/issues/1830)) ([ebb2137](https://github.com/Altinn/dialogporten-frontend/commit/ebb213796c777be0e63148cebc15d03a296313ff))
+
 ## [1.16.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.15.1...v1.16.0) (2025-02-20)
 
 
