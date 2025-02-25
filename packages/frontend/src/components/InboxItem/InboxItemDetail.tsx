@@ -1,7 +1,6 @@
-import { Article, Avatar, DialogHeader } from '@altinn/altinn-components';
+import { Article, type AttachmentLinkProps, Avatar, DialogAttachments, DialogHeader } from '@altinn/altinn-components';
 import type { DialogStatusValue } from '@altinn/altinn-components/dist/types/lib/components/Dialog/DialogStatus';
-import { Link } from '@digdir/designsystemet-react';
-import { EyeIcon, FileIcon } from '@navikt/aksel-icons';
+import { EyeIcon } from '@navikt/aksel-icons';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { DialogActivity, DialogByIdDetails, DialogTransmission } from '../../api/useDialogById.tsx';
@@ -79,6 +78,14 @@ export const InboxItemDetail = ({ dialog }: InboxItemDetailProps): ReactElement 
   } = dialog;
 
   const attachmentCount = attachments.reduce((count, { urls }) => count + urls.length, 0);
+
+  const attachmentItems: AttachmentLinkProps[] = attachments.flatMap((attachment) =>
+    attachment.urls.map((url) => ({
+      label: getPreferredPropertyByLocale(attachment.displayName)?.value || url.url,
+      href: url.url,
+    })),
+  );
+
   const clockPrefix = t('word.clock_prefix');
   const formatString = clockPrefix ? `do MMMM yyyy '${clockPrefix}' HH.mm` : `do MMMM yyyy HH.mm`;
   const dueAtLabel = dueAt ? format(dueAt, formatString) : '';
@@ -116,29 +123,7 @@ export const InboxItemDetail = ({ dialog }: InboxItemDetailProps): ReactElement 
           <p className={styles.summary}>{summary}</p>
         </section>
         <MainContentReference content={mainContentReference} dialogToken={dialogToken} />
-        <section data-id="dialog-attachments">
-          {attachmentCount > 0 && (
-            <h2 className={styles.attachmentTitle}>{t('inbox.heading.attachments', { count: attachmentCount })}</h2>
-          )}
-          <ul className={styles.attachments} data-id="dialog-attachments-list">
-            {attachments.map((attachment) =>
-              attachment.urls.map((url) => (
-                <li key={url.id} className={styles.attachmentItem}>
-                  <Link
-                    target="_blank"
-                    href={url.url}
-                    aria-label={t('inbox.attachment.link', {
-                      label: url.url,
-                    })}
-                  >
-                    <FileIcon className={styles.attachmentIcon} />
-                    {getPreferredPropertyByLocale(attachment.displayName)?.value || url.url}
-                  </Link>
-                </li>
-              )),
-            )}
-          </ul>
-        </section>
+        <DialogAttachments title={t('inbox.heading.attachments', { count: attachmentCount })} items={attachmentItems} />
         {guiActions.length > 0 && <GuiActions actions={guiActions} dialogToken={dialogToken} />}
         <div className={styles.tags} data-id="dialog-meta-field-tags">
           {metaFields.map((tag) => (
