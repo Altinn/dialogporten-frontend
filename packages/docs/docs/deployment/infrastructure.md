@@ -49,3 +49,14 @@ Ensure you log into the azure CLI using the relevant user and subscription using
    az ssh vm -g dp-fe-<env>-rg -n dp-fe-<env>-ssh-jumper -- -L 5432:<database-host-name>:5432
    ```
    This example forwards the PostgreSQL default port (5432) to your localhost. Adjust the ports and hostnames as needed for other resources.
+
+- Alternatively, you can use the database-forwarder utility located in `scripts/database-forwarder/` for an easier way to connect to PostgreSQL and Redis:
+   ```bash
+   # Interactive mode
+   ./scripts/database-forwarder/forward.sh
+
+   # Or specify environment and database type directly
+   ./scripts/database-forwarder/forward.sh -e test -t postgres
+   ./scripts/database-forwarder/forward.sh -e prod -t redis
+   ```
+   This utility provides a more user-friendly way to establish connections and will show you the relevant connection details. See the utility's README for more detailed instructions.
