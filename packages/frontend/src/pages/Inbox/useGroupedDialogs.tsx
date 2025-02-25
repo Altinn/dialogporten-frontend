@@ -2,15 +2,15 @@ import type {
   DialogListGroupProps,
   DialogListItemProps,
   DialogListItemState,
-  DialogStatusValue,
   FilterState,
 } from '@altinn/altinn-components';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps } from 'react-router-dom';
 import type { InboxViewType } from '../../api/useDialogs.tsx';
-import type { InboxItemInput } from '../../components';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
+import type { InboxItemInput } from './InboxItemInput.ts';
+import { getDialogStatus } from './status.ts';
 
 interface GroupedItem {
   id: string | number;
@@ -79,6 +79,7 @@ const useGroupedDialogs = ({
   const formatDialogItem = (item: InboxItemInput, groupId: string): DialogListItemProps => ({
     groupId,
     title: item.title,
+    label: !item.isSeenByEndUser ? t('word.new') : undefined,
     id: item.id,
     sender: {
       name: item.sender.name,
@@ -95,15 +96,14 @@ const useGroupedDialogs = ({
       imageUrlAlt: t('dialog.imageAltURL', { companyName: item.receiver.name }),
     },
     attachmentsCount: item.guiAttachmentCount,
-    seenBy: {
-      seenByEndUser: item.isSeenByEndUser,
-      seenByOthersCount: item.seenByOthersCount,
-      label: item.seenByLabel,
-    },
-    status: {
-      label: t(`filter.query.${item.status.replace(/-/g, '_').toLowerCase()}`),
-      value: status.replace(/-/g, '_').toLowerCase() as unknown as DialogStatusValue,
-    },
+    seenBy: item.seenByLabel
+      ? {
+          seenByEndUser: item.isSeenByEndUser,
+          seenByOthersCount: item.seenByOthersCount,
+          label: item.seenByLabel,
+        }
+      : undefined,
+    status: getDialogStatus(item.status, t),
     seen: item.isSeenByEndUser,
     updatedAt: item.updatedAt,
     updatedAtLabel: format(item.updatedAt, formatString),
@@ -112,6 +112,7 @@ const useGroupedDialogs = ({
     ),
   });
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   return useMemo(() => {
     if (isLoading) {
       return {

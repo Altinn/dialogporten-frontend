@@ -11,13 +11,14 @@ import type {
   TransmissionFieldsFragment,
 } from 'bff-types-generated';
 import { AttachmentUrlConsumer } from 'bff-types-generated';
-import type { GuiActionButtonProps, InboxItemMetaField } from '../components';
+import { t } from 'i18next';
+import type { GuiActionButtonProps } from '../components';
 import { QUERY_KEYS } from '../constants/queryKeys.ts';
-import { i18n } from '../i18n/config.ts';
 import { type ValueType, getPreferredPropertyByLocale } from '../i18n/property.ts';
 import { useOrganizations } from '../pages/Inbox/useOrganizations.ts';
 import { getOrganization } from './organizations.ts';
 import { graphQLSDK } from './queries.ts';
+import { getSeenByLabel } from './useDialogs.tsx';
 
 export interface Participant {
   name: string;
@@ -60,7 +61,6 @@ export interface DialogByIdDetails {
   sender: Participant;
   receiver: Participant;
   title: string;
-  metaFields: InboxItemMetaField[];
   guiActions: GuiActionButtonProps[];
   additionalInfo: { value: string; mediaType: string } | undefined;
   attachments: AttachmentFieldsFragment[];
@@ -73,10 +73,14 @@ export interface DialogByIdDetails {
   transmissions: DialogTransmission[];
   status: DialogStatus;
   dueAt?: string;
+  isSeenByEndUser: boolean;
+  seenByOthersCount: number;
+  seenByLabel?: string;
 }
 
 interface UseDialogByIdOutput {
   isSuccess: boolean;
+  isError: boolean;
   isLoading: boolean;
   dialog?: DialogByIdDetails;
 }
@@ -84,38 +88,6 @@ export const getDialogsById = (id: string): Promise<GetDialogByIdQuery> =>
   graphQLSDK.getDialogById({
     id,
   });
-
-export const getMetaFields = (item: DialogByIdFieldsFragment, isSeenByEndUser: boolean) => {
-  const nOtherSeen = item.seenSinceLastUpdate?.filter((seenLogEntry) => !seenLogEntry.isCurrentEndUser).length ?? 0;
-  const metaFields: InboxItemMetaField[] = [];
-
-  if (isSeenByEndUser && nOtherSeen) {
-    metaFields.push({
-      type: 'seenBy',
-      label: `${i18n.t('word.seenBy')} ${i18n.t('word.you')} ${i18n.t('word.and')} ${nOtherSeen} ${i18n.t('word.others')}`,
-      options: {
-        tooltip: item.seenSinceLastUpdate.map((seenLogEntry) => seenLogEntry.seenBy.actorName).join('\n'),
-      },
-    });
-  } else if (nOtherSeen) {
-    metaFields.push({
-      type: 'seenBy',
-      label: `${i18n.t('word.seenBy')} ${nOtherSeen} ${i18n.t('word.others')}`,
-      options: {
-        tooltip: item.seenSinceLastUpdate.map((seenLogEntry) => seenLogEntry.seenBy.actorName).join('\n'),
-      },
-    });
-  } else if (isSeenByEndUser) {
-    metaFields.push({
-      type: 'seenBy',
-      label: `${i18n.t('word.seenBy')} ${i18n.t('word.you')}`,
-      options: {
-        tooltip: item.seenSinceLastUpdate.map((seenLogEntry) => seenLogEntry.seenBy.actorName).join('\n'),
-      },
-    });
-  }
-  return metaFields;
-};
 
 const getMainContentReference = (
   args: { value: ValueType; mediaType: string } | undefined | null,
@@ -151,8 +123,8 @@ export function mapDialogToToInboxItem(
   const dialogReceiverParty = parties?.find((party) => party.party === item.party);
   const actualReceiverParty = dialogReceiverParty ?? endUserParty;
   const serviceOwner = getOrganization(organizations || [], item.org, 'nb');
-  const isSeenByEndUser = item.seenSinceLastUpdate.find((seenLogEntry) => seenLogEntry.isCurrentEndUser) !== undefined;
   const senderName = item.content.senderName?.value;
+  const { isSeenByEndUser, seenByOthersCount, seenByLabel } = getSeenByLabel(item.seenSinceLastUpdate, t);
 
   return {
     title: getPreferredPropertyByLocale(titleObj)?.value ?? '',
@@ -167,7 +139,6 @@ export function mapDialogToToInboxItem(
       name: actualReceiverParty?.name ?? '',
       isCompany: actualReceiverParty?.partyType === 'Organization',
     },
-    metaFields: getMetaFields(item, isSeenByEndUser),
     additionalInfo: {
       value: getPreferredPropertyByLocale(additionalInfoObj)?.value ?? '',
       mediaType: item.content?.additionalInfo?.mediaType ?? '',
@@ -188,6 +159,9 @@ export function mapDialogToToInboxItem(
     ),
     mainContentReference: getMainContentReference(mainContentReference),
     dialogToken: item.dialogToken!,
+    isSeenByEndUser,
+    seenByLabel,
+    seenByOthersCount,
     activities: item.activities
       .map((activity) => ({
         id: activity.id,
@@ -222,7 +196,7 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
   const queryClient = useQueryClient();
   const { organizations, isLoading: isOrganizationsLoading } = useOrganizations();
   const partyURIs = parties.map((party) => party.party);
-  const { data, isSuccess, isLoading } = useQuery<GetDialogByIdQuery>({
+  const { data, isSuccess, isLoading, isError } = useQuery<GetDialogByIdQuery>({
     queryKey: [QUERY_KEYS.DIALOG_BY_ID, id, organizations],
     staleTime: 1000 * 60 * 10,
     retry: 3,
@@ -237,12 +211,13 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
   });
 
   if (isOrganizationsLoading) {
-    return { isLoading: true, isSuccess: false };
+    return { isLoading: true, isError: false, isSuccess: false };
   }
 
   return {
     isLoading,
     isSuccess,
     dialog: mapDialogToToInboxItem(data?.dialogById.dialog, parties, organizations),
+    isError,
   };
 };

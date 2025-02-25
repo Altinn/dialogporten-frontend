@@ -3,21 +3,6 @@
   padding: 1rem;
 }
 
-.sectionWithStatus {
-  margin-left: 1rem;
-  border-left: 4px solid rgba(0, 0, 0, 0.1);
-  margin-top: 1rem;
-  display: flex;
-  flex-direction: column;
-  row-gap: 1.5rem;
-  padding: 1rem;
-}
-
-.sectionWithStatus > * {
-  margin-top: 0;
-  margin-bottom: 0;
-}
-
 .summarySection {
   display: flex;
   flex-direction: column;
@@ -61,19 +46,6 @@
   margin: 0;
 }
 
-.participants {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.senderInfo {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  column-gap: 0.25rem;
-}
-
 .receiver,
 .sender {
   font-size: 1rem;
@@ -87,21 +59,6 @@
 
 .sender {
   font-weight: 500;
-}
-
-.summary {
-  font-size: 1.125rem;
-  line-height: 1.5;
-  font-weight: 400;
-  margin-top: 0;
-  margin-bottom: 0;
-}
-
-.updatedLabel {
-  color: var(--text-neutral-subtle);
-  font-size: 1rem;
-  font-weight: 400;
-  margin-bottom: 0;
 }
 
 .participantIcon {

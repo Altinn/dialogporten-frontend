@@ -386,8 +386,8 @@ importers:
   packages/frontend:
     dependencies:
       '@altinn/altinn-components':
-        specifier: ^0.18.6
-        version: 0.18.6(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        specifier: ^0.18.8
+        version: 0.18.8(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@digdir/designsystemet-css':
         specifier: 1.0.0-next.50
         version: 1.0.0-next.50
@@ -606,8 +606,8 @@ packages:
     resolution: {integrity: sha512-p6t8ue0XZNjcRiqNkb5QAM0qQRAKsCiebZ6n9JjWA+p8fWf8BvnhO55y2fO28g3GW0Imj7PrAuyBuxq8aDVQwQ==}
     engines: {node: '>= 14.0.0'}
 
-  '@altinn/altinn-components@0.18.6':
-    resolution: {integrity: sha512-0jiAhZsg3huf+3PJ8hzp9TRu2QrcgZkImpMEdS9U5KP7jhdTTpN58XyI6sWzY5cYv+f0SG9QwxHO8U6oZzd6Xg==}
+  '@altinn/altinn-components@0.18.8':
+    resolution: {integrity: sha512-O7Z+zI61/AX/UpAWU9JzaaXKTnQs/CebmCR6Hrxk/5aQtZaARnWtrtGyEPgEBMPYZMfYNngkkuX1jSGE6hCgrA==}
     peerDependencies:
       react: '>=18.3.1'
       react-dom: '>=18.3.1'
@@ -1324,10 +1324,6 @@ packages:
 
   '@babel/runtime@7.26.7':
     resolution: {integrity: sha512-AOPI3D+a8dXnja+iwsUqGRjr1BbZIe771sXdapOtYI531gSqpi92vXivKcq2asu/DFpdl1ceFAKZyRzK2PCVcQ==}
-    engines: {node: '>=6.9.0'}
-
-  '@babel/runtime@7.26.9':
-    resolution: {integrity: sha512-aA63XwOkcl4xxQa3HjPMqOP6LiK0ZDv3mUPYEFXkpHbaFjtGggE1A61FjFzJnB+p7/oy2gA8E+rcBNl/zC1tMg==}
     engines: {node: '>=6.9.0'}
 
   '@babel/template@7.25.9':
@@ -6003,8 +5999,8 @@ packages:
     resolution: {integrity: sha512-b6suED+5/3rTpUBdG1gupIl8MPFCAMA0QXwmljLhvCUKcUvdE4gWky9zpuGCcXHOsz4J9wPGNWq6OKpmIzz3hQ==}
     hasBin: true
 
-  flatted@3.3.3:
-    resolution: {integrity: sha512-GX+ysw4PBCz0PzosHDepZGANEuFCMLrnRTiEy9McGjmkCQYwRq4A/X786G/fjM/+OjsWSU1ZrY5qyARZmO/uwg==}
+  flatted@3.3.2:
+    resolution: {integrity: sha512-AiwGJM8YcNOaobumgtng+6NHuOqC3A7MixFeDafM3X9cIUM+xUXoS5Vfgf+OihAYe20fxqNM9yPBXJzRtZ/4eA==}
 
   follow-redirects@1.15.9:
     resolution: {integrity: sha512-gew4GsXizNgdoRyqmyfMHyAmXsZDk6mHkSxZFCzW9gwlbtOW44CDtYavM+y+72qD/Vq2l550kMF52DT8fOLJqQ==}
@@ -10311,7 +10307,7 @@ snapshots:
     dependencies:
       '@algolia/client-common': 5.19.0
 
-  '@altinn/altinn-components@0.18.6(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
+  '@altinn/altinn-components@0.18.8(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
       '@navikt/aksel-icons': 7.14.1
       classnames: 2.5.1
@@ -10360,7 +10356,7 @@ snapshots:
       '@babel/core': 7.26.0
       '@babel/generator': 7.26.3
       '@babel/parser': 7.26.3
-      '@babel/runtime': 7.26.9
+      '@babel/runtime': 7.26.7
       '@babel/traverse': 7.26.4
       '@babel/types': 7.26.3
       babel-preset-fbjs: 3.4.0(@babel/core@7.26.0)
@@ -11370,10 +11366,6 @@ snapshots:
       regenerator-runtime: 0.14.1
 
   '@babel/runtime@7.26.7':
-    dependencies:
-      regenerator-runtime: 0.14.1
-
-  '@babel/runtime@7.26.9':
     dependencies:
       regenerator-runtime: 0.14.1
 
@@ -14556,7 +14548,7 @@ snapshots:
 
   '@slorber/react-helmet-async@1.3.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
-      '@babel/runtime': 7.26.9
+      '@babel/runtime': 7.26.7
       invariant: 2.2.4
       prop-types: 15.8.1
       react: 19.0.0
@@ -14784,7 +14776,7 @@ snapshots:
   '@testing-library/dom@10.4.0':
     dependencies:
       '@babel/code-frame': 7.26.2
-      '@babel/runtime': 7.26.9
+      '@babel/runtime': 7.26.7
       '@types/aria-query': 5.0.4
       aria-query: 5.3.0
       chalk: 4.1.2
@@ -17394,13 +17386,13 @@ snapshots:
 
   flat-cache@3.2.0:
     dependencies:
-      flatted: 3.3.3
+      flatted: 3.3.2
       keyv: 4.5.4
       rimraf: 3.0.2
 
   flat@5.0.2: {}
 
-  flatted@3.3.3: {}
+  flatted@3.3.2: {}
 
   follow-redirects@1.15.9(debug@4.4.0):
     optionalDependencies:
@@ -20724,7 +20716,7 @@ snapshots:
 
   relay-runtime@12.0.0:
     dependencies:
-      '@babel/runtime': 7.26.9
+      '@babel/runtime': 7.26.7
       fbjs: 3.0.5
       invariant: 2.2.4
     transitivePeerDependencies:

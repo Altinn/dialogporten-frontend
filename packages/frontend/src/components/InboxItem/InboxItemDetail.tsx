@@ -1,11 +1,16 @@
-import { Article, type AttachmentLinkProps, Avatar, DialogAttachments, DialogHeader } from '@altinn/altinn-components';
-import type { DialogStatusValue } from '@altinn/altinn-components/dist/types/lib/components/Dialog/DialogStatus';
-import { EyeIcon } from '@navikt/aksel-icons';
+import {
+  Article,
+  type AttachmentLinkProps,
+  DialogAttachments,
+  DialogBody,
+  DialogHeader,
+} from '@altinn/altinn-components';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { DialogActivity, DialogByIdDetails, DialogTransmission } from '../../api/useDialogById.tsx';
 import { getPreferredPropertyByLocale } from '../../i18n/property.ts';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
+import { getDialogStatus } from '../../pages/Inbox/status.ts';
 import { Activity } from '../Activity';
 import { AdditionalInfoContent } from '../AdditonalInfoContent';
 import { MainContentReference } from '../MainContentReference';
@@ -67,7 +72,6 @@ export const InboxItemDetail = ({ dialog }: InboxItemDetailProps): ReactElement 
     sender,
     receiver,
     guiActions,
-    metaFields = [],
     additionalInfo,
     attachments,
     mainContentReference,
@@ -75,67 +79,43 @@ export const InboxItemDetail = ({ dialog }: InboxItemDetailProps): ReactElement 
     transmissions,
     updatedAt,
     status,
+    seenByLabel,
+    isSeenByEndUser,
+    seenByOthersCount,
   } = dialog;
 
   const attachmentCount = attachments.reduce((count, { urls }) => count + urls.length, 0);
-
   const attachmentItems: AttachmentLinkProps[] = attachments.flatMap((attachment) =>
     attachment.urls.map((url) => ({
       label: getPreferredPropertyByLocale(attachment.displayName)?.value || url.url,
       href: url.url,
     })),
   );
-
   const clockPrefix = t('word.clock_prefix');
   const formatString = clockPrefix ? `do MMMM yyyy '${clockPrefix}' HH.mm` : `do MMMM yyyy HH.mm`;
   const dueAtLabel = dueAt ? format(dueAt, formatString) : '';
 
   return (
     <Article padding={6} spacing={6}>
-      <DialogHeader
-        dueAt={dueAt}
-        dueAtLabel={dueAtLabel}
-        status={{
-          label: t(`filter.query.${status.replace(/-/g, '_').toLowerCase()}`),
-          value: status.replace(/-/g, '_').toLowerCase() as unknown as DialogStatusValue,
-        }}
-        title={title}
-      />
-      <div className={styles.participants} data-id="dialog-sender-receiver">
-        <Avatar
-          name={sender?.name ?? ''}
-          imageUrl={sender?.imageURL}
-          size="lg"
-          type={sender?.isCompany ? 'company' : 'person'}
-        />
-        <div className={styles.senderInfo}>
-          <div className={styles.sender}>{sender?.name}</div>
-          <div className={styles.receiver}>
-            {t('word.to')} {receiver?.name}
-          </div>
-        </div>
-      </div>
-      <div className={styles.sectionWithStatus} data-id="dialog-summary">
-        <section className={styles.summarySection}>
-          <time className={styles.updatedLabel} dateTime={updatedAt}>
-            {format(updatedAt, formatString)}
-          </time>
-          <p className={styles.summary}>{summary}</p>
-        </section>
+      <DialogHeader dueAt={dueAt} dueAtLabel={dueAtLabel} status={getDialogStatus(status, t)} title={title} />
+      <DialogBody
+        sender={sender}
+        recipient={receiver}
+        updatedAt={updatedAt}
+        updatedAtLabel={format(updatedAt, formatString)}
+        recipientLabel={t('word.to')}
+        seenBy={seenByLabel ? { seenByEndUser: isSeenByEndUser, seenByOthersCount, label: seenByLabel } : undefined}
+      >
+        <p>{summary}</p>
         <MainContentReference content={mainContentReference} dialogToken={dialogToken} />
-        <DialogAttachments title={t('inbox.heading.attachments', { count: attachmentCount })} items={attachmentItems} />
+        {attachmentCount > 0 && (
+          <DialogAttachments
+            title={t('inbox.heading.attachments', { count: attachmentCount })}
+            items={attachmentItems}
+          />
+        )}
         {guiActions.length > 0 && <GuiActions actions={guiActions} dialogToken={dialogToken} />}
-        <div className={styles.tags} data-id="dialog-meta-field-tags">
-          {metaFields.map((tag) => (
-            <div key={tag.label} className={styles.tag}>
-              <div className={styles.tagIcon}>
-                <EyeIcon />
-              </div>
-              <span> {tag.label}</span>
-            </div>
-          ))}
-        </div>
-      </div>
+      </DialogBody>
       <AdditionalInfoContent mediaType={additionalInfo?.mediaType} value={additionalInfo?.value} />
       {activities.length > 0 && (
         <section data-id="dialog-activity-history" className={styles.activities}>

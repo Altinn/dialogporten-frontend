@@ -2,9 +2,8 @@ import cx from 'classnames';
 import { useRef } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import { InboxItems } from '../../components';
-import styles from '../../components/InboxItem/inboxItem.module.css';
-import inboxItemsHeaderStyles from '../../components/InboxItem/inboxItemsHeader.module.css';
 import 'react-loading-skeleton/dist/skeleton.css';
+import styles from './inboxSkeleton.module.css';
 
 interface InboxSkeletonProps {
   numberOfItems: number;
@@ -23,7 +22,7 @@ export const InboxSkeleton: React.FC<InboxSkeletonProps> = ({
     <>
       <InboxItems key={key.current}>
         {withHeader && (
-          <header className={inboxItemsHeaderStyles.inboxItemsHeader}>
+          <header className={styles.inboxItemsHeader}>
             <h2>
               <Skeleton width="80px" />
             </h2>

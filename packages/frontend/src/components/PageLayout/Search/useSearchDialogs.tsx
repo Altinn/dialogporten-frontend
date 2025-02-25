@@ -5,8 +5,8 @@ import { useSearchParams } from 'react-router-dom';
 import { useDebounce } from 'use-debounce';
 import { mapDialogToToInboxItem, searchDialogs } from '../../../api/useDialogs.tsx';
 import { QUERY_KEYS } from '../../../constants/queryKeys.ts';
+import type { InboxItemInput } from '../../../pages/Inbox/InboxItemInput.ts';
 import { useOrganizations } from '../../../pages/Inbox/useOrganizations.ts';
-import type { InboxItemInput } from '../../InboxItem';
 
 interface searchDialogsProps {
   parties: PartyFieldsFragment[];
