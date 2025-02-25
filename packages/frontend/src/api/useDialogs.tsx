@@ -11,10 +11,9 @@ import {
   SystemLabel,
 } from 'bff-types-generated';
 import { t } from 'i18next';
-import type { InboxItemInput, InboxItemMetaField, InboxItemMetaFieldType } from '../components';
 import { QUERY_KEYS } from '../constants/queryKeys.ts';
-import { i18n } from '../i18n/config.ts';
 import { getPreferredPropertyByLocale } from '../i18n/property.ts';
+import type { InboxItemInput } from '../pages/Inbox/InboxItemInput.ts';
 import { useOrganizations } from '../pages/Inbox/useOrganizations.ts';
 import { getOrganization } from './organizations.ts';
 import { graphQLSDK } from './queries.ts';
@@ -28,6 +27,7 @@ interface UseDialogsOutput {
   dialogsByView: DialogsByView;
   isSuccess: boolean;
   isLoading: boolean;
+  isError: boolean;
 }
 
 export function mapDialogToToInboxItem(
@@ -190,7 +190,7 @@ export const useDialogs = (parties: PartyFieldsFragment[]): UseDialogsOutput => 
   const partiesToUse = parties ? parties : selectedParties;
   const mergedPartiesWithSubParties = flattenParties(partiesToUse);
 
-  const { data, isSuccess, isLoading } = useQuery<GetAllDialogsForPartiesQuery>({
+  const { data, isSuccess, isLoading, isError } = useQuery<GetAllDialogsForPartiesQuery>({
     queryKey: [QUERY_KEYS.DIALOGS, mergedPartiesWithSubParties, organizations],
     staleTime: 1000 * 60 * 10,
     retry: 3,
@@ -203,6 +203,7 @@ export const useDialogs = (parties: PartyFieldsFragment[]): UseDialogsOutput => 
   return {
     isLoading,
     isSuccess,
+    isError,
     dialogs,
     dialogsByView: {
       inbox: dialogs.filter((dialog) => dialog.viewType === 'inbox'),
@@ -213,50 +214,4 @@ export const useDialogs = (parties: PartyFieldsFragment[]): UseDialogsOutput => 
     },
     dialogCountInconclusive: data?.searchDialogs?.hasNextPage === true || data?.searchDialogs?.items === null,
   };
-};
-
-export const getMetaFields = (item: SearchDialogFieldsFragment, isSeenByEndUser: boolean) => {
-  const nOtherSeen = item.seenSinceLastUpdate?.filter((seenLogEntry) => !seenLogEntry.isCurrentEndUser).length ?? 0;
-  const metaFields: InboxItemMetaField[] = [];
-  metaFields.push({
-    type: `status_${item.status}` as InboxItemMetaFieldType,
-    label: `${i18n.t('word.status')}: ${item.status}`,
-  });
-
-  metaFields.push({ type: 'timestamp', label: item.updatedAt });
-
-  if (typeof item.guiAttachmentCount === 'number' && item.guiAttachmentCount > 0) {
-    metaFields.push({
-      type: 'attachment',
-      label: item.guiAttachmentCount.toString(),
-    });
-  }
-
-  if (isSeenByEndUser && nOtherSeen) {
-    metaFields.push({
-      type: 'seenBy',
-      label: `${i18n.t('word.seenBy')} ${i18n.t('word.you')} ${i18n.t('word.and')} ${nOtherSeen} ${i18n.t('word.others')}`,
-      options: {
-        tooltip: item.seenSinceLastUpdate.map((seenLogEntry) => seenLogEntry.seenBy.actorName).join('\n'),
-      },
-    });
-  } else if (nOtherSeen) {
-    metaFields.push({
-      type: 'seenBy',
-      label: `${i18n.t('word.seenBy')} ${nOtherSeen} ${i18n.t('word.others')}`,
-      options: {
-        tooltip: item.seenSinceLastUpdate.map((seenLogEntry) => seenLogEntry.seenBy.actorName).join('\n'),
-      },
-    });
-  } else if (isSeenByEndUser) {
-    metaFields.push({
-      type: 'seenBy',
-      label: `${i18n.t('word.seenBy')} ${i18n.t('word.you')}`,
-      options: {
-        tooltip: item.seenSinceLastUpdate.map((seenLogEntry) => seenLogEntry.seenBy.actorName).join('\n'),
-      },
-    });
-  }
-
-  return metaFields;
 };

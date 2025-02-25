@@ -1,8 +1,0 @@
-.fields {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  flex-wrap: wrap;
-  height: 100%;
-  gap: 0.5rem;
-}

@@ -28,7 +28,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const {
     dialogsByView,
     isLoading: isLoadingDialogs,
-    isSuccess: isSuccessDialogs,
     dialogCountInconclusive: allDialogCountInconclusive,
   } = useDialogs(selectedParties);
 
@@ -52,7 +51,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const { filterState, filters, onFiltersChange, getFilterLabel } = useFilters({ dialogs: dataSource });
   const filteredItems = useMemo(() => filterDialogs(dataSource, filterState), [dataSource, filterState]);
 
-  const isLoading = !isSuccessDialogs || isFetchingSearchResults || isLoadingDialogs;
+  const isLoading = isFetchingSearchResults || isLoadingDialogs;
 
   const { mappedGroupedDialogs, groups } = useGroupedDialogs({
     items: filteredItems,
@@ -104,7 +103,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
       </section>
       <Section spacing={3} margin="section">
         {!filteredItems.length && <h1>{t(`inbox.heading.title.${viewType}`, { count: 0 })}</h1>}
-
         <DialogList items={mappedGroupedDialogs} groups={groups} />
       </Section>
     </>

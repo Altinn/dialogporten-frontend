@@ -1,7 +1,7 @@
 import type { FilterState, ToolbarFilterProps } from '@altinn/altinn-components';
 import { endOfDay, endOfMonth, endOfWeek, startOfDay, startOfMonth, startOfWeek, subMonths, subYears } from 'date-fns';
 import { t } from 'i18next';
-import type { InboxItemInput } from '../../components';
+import type { InboxItemInput } from './InboxItemInput.ts';
 
 export const countOccurrences = (array: string[]): Record<string, number> => {
   return array.reduce(

@@ -25,7 +25,7 @@ export const InboxItemPage = () => {
   const { parties } = useParties();
   const { t } = useTranslation();
   const location = useLocation();
-  const { dialog, isLoading } = useDialogById(parties, id);
+  const { dialog, isLoading, isSuccess, isError } = useDialogById(parties, id);
   const [archiveLoading, setArchiveLoading] = useState<boolean>(false);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
   const [undoLoading, setUndoLoading] = useState<boolean>(false);
@@ -108,7 +108,7 @@ export const InboxItemPage = () => {
     });
   };
 
-  if (isLoading) {
+  if (isLoading || (!isSuccess && !isError)) {
     return <InboxItemPageSkeleton />;
   }
 
