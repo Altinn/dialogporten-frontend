@@ -10,6 +10,7 @@ import {
   type SearchDialogFieldsFragment,
   SystemLabel,
 } from 'bff-types-generated';
+import { t } from 'i18next';
 import type { InboxItemInput, InboxItemMetaField, InboxItemMetaFieldType } from '../components';
 import { QUERY_KEYS } from '../constants/queryKeys.ts';
 import { i18n } from '../i18n/config.ts';
@@ -49,6 +50,10 @@ export function mapDialogToToInboxItem(
     const serviceOwner = getOrganization(organizations || [], item.org, 'nb');
     const isSeenByEndUser =
       item.seenSinceLastUpdate.find((seenLogEntry) => seenLogEntry.isCurrentEndUser) !== undefined;
+
+    const { isSeenByYou, seenByOthersCount } = getSeenByLabel(item.seenSinceLastUpdate);
+
+    const seenByLabel = `${t('word.seenBy')} ${isSeenByYou ? t('word.you') : ''} ${seenByOthersCount > 0 ? ' + ' + seenByOthersCount : ''}`;
     return {
       id: item.id,
       party: item.party,
@@ -63,13 +68,16 @@ export function mapDialogToToInboxItem(
         name: actualReceiverParty?.name ?? dialogReceiverSubParty?.name ?? '',
         isCompany: actualReceiverParty?.partyType === 'Organization',
       },
-      metaFields: getMetaFields(item, isSeenByEndUser),
+      guiAttachmentCount: item.guiAttachmentCount ?? 0,
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,
       status: item.status ?? 'UnknownStatus',
       isSeenByEndUser,
       label: item.systemLabel,
       org: item.org,
+      seenByLabel,
+      seenByOthersCount,
+      viewType: getViewType(item),
     };
   });
 }
@@ -97,6 +105,17 @@ export function mapAutocompleteDialogsDtoToInboxItem(
     };
   });
 }
+
+interface SeenByItem {
+  isCurrentEndUser: boolean;
+}
+
+export const getSeenByLabel = (seenBy: SeenByItem[]): { isSeenByYou: boolean; seenByOthersCount: number } => {
+  const isSeenByYou = seenBy?.some((item) => item.isCurrentEndUser === true);
+  const seenByOthersCount = seenBy?.filter((item) => item.isCurrentEndUser === false).length;
+
+  return { isSeenByYou, seenByOthersCount };
+};
 
 export const searchDialogs = (
   partyURIs: string[],
@@ -131,24 +150,25 @@ export const flattenParties = (partiesToUse: PartyFieldsFragment[]) => {
   return [...partyURIs, ...subPartyURIs] as string[];
 };
 
-export const isBinDialog = (dialog: InboxItemInput): boolean => dialog.label === SystemLabel.Bin;
+export const isBinDialog = (dialog: SearchDialogFieldsFragment): boolean => dialog.systemLabel === SystemLabel.Bin;
 
-export const isArchivedDialog = (dialog: InboxItemInput): boolean => dialog.label === SystemLabel.Archive;
+export const isArchivedDialog = (dialog: SearchDialogFieldsFragment): boolean =>
+  dialog.systemLabel === SystemLabel.Archive;
 
-export const isInboxDialog = (dialog: InboxItemInput): boolean =>
+export const isInboxDialog = (dialog: SearchDialogFieldsFragment): boolean =>
   !isBinDialog(dialog) &&
   !isArchivedDialog(dialog) &&
   [DialogStatus.New, DialogStatus.InProgress, DialogStatus.RequiresAttention, DialogStatus.Completed].includes(
     dialog.status,
   );
 
-export const isDraftDialog = (dialog: InboxItemInput): boolean =>
+export const isDraftDialog = (dialog: SearchDialogFieldsFragment): boolean =>
   !isBinDialog(dialog) && !isArchivedDialog(dialog) && dialog.status === DialogStatus.Draft;
 
-export const isSentDialog = (dialog: InboxItemInput): boolean =>
+export const isSentDialog = (dialog: SearchDialogFieldsFragment): boolean =>
   !isBinDialog(dialog) && !isArchivedDialog(dialog) && dialog.status === DialogStatus.Sent;
 
-export const getViewType = (dialog: InboxItemInput): InboxViewType => {
+export const getViewType = (dialog: SearchDialogFieldsFragment): InboxViewType => {
   if (isDraftDialog(dialog)) {
     return 'drafts';
   }
@@ -167,7 +187,6 @@ export const getViewType = (dialog: InboxItemInput): InboxViewType => {
 export const useDialogs = (parties: PartyFieldsFragment[]): UseDialogsOutput => {
   const { organizations } = useOrganizations();
   const { selectedParties } = useParties();
-
   const partiesToUse = parties ? parties : selectedParties;
   const mergedPartiesWithSubParties = flattenParties(partiesToUse);
 
@@ -186,11 +205,11 @@ export const useDialogs = (parties: PartyFieldsFragment[]): UseDialogsOutput => 
     isSuccess,
     dialogs,
     dialogsByView: {
-      inbox: dialogs.filter(isInboxDialog),
-      drafts: dialogs.filter(isDraftDialog),
-      sent: dialogs.filter(isSentDialog),
-      archive: dialogs.filter(isArchivedDialog),
-      bin: dialogs.filter(isBinDialog),
+      inbox: dialogs.filter((dialog) => dialog.viewType === 'inbox'),
+      drafts: dialogs.filter((dialog) => dialog.viewType === 'drafts'),
+      sent: dialogs.filter((dialog) => dialog.viewType === 'sent'),
+      archive: dialogs.filter((dialog) => dialog.viewType === 'archive'),
+      bin: dialogs.filter((dialog) => dialog.viewType === 'bin'),
     },
     dialogCountInconclusive: data?.searchDialogs?.hasNextPage === true || data?.searchDialogs?.items === null,
   };

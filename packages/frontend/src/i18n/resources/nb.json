@@ -15,6 +15,7 @@
   "dialog.toolbar.toast.move_to_bin_success": "Flyttet til papirkurv",
   "dialog.toolbar.toast.move_to_inbox_failed": "Flytting til innboks feilet",
   "dialog.toolbar.toast.move_to_inbox_success": "Flyttet til innboks",
+  "dialog.imageAltURL": "Selskapets logo for {companyName}",
   "dialogs.attachment_count": "{count, plural, one {# vedlegg} other {# vedlegg}}",
   "editSavedSearch.give_search_name": "Gi søket et navn",
   "editSavedSearch.save_and_close": "Lagre og avslutt",

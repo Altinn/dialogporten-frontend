@@ -38,13 +38,16 @@ export interface InboxItemInput {
   summary: string;
   sender: Participant;
   receiver: Participant;
-  metaFields: InboxItemMetaField[];
   createdAt: string;
   updatedAt: string;
   status: DialogStatus;
   isSeenByEndUser: boolean;
   label: SystemLabel;
   org?: string;
+  guiAttachmentCount: number;
+  seenByOthersCount: number;
+  seenByLabel: string;
+  viewType: InboxViewType;
 }
 
 export const OptionalLinkContent = ({
