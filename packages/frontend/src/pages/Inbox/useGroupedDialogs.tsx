@@ -2,15 +2,15 @@ import type {
   DialogListGroupProps,
   DialogListItemProps,
   DialogListItemState,
-  DialogStatusValue,
   FilterState,
 } from '@altinn/altinn-components';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps } from 'react-router-dom';
 import type { InboxViewType } from '../../api/useDialogs.tsx';
-import type { InboxItemInput } from '../../components';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
+import type { InboxItemInput } from './InboxItemInput.ts';
+import { getDialogStatus } from './status.ts';
 
 interface GroupedItem {
   id: string | number;
@@ -100,10 +100,7 @@ const useGroupedDialogs = ({
       seenByOthersCount: item.seenByOthersCount,
       label: item.seenByLabel,
     },
-    status: {
-      label: t(`filter.query.${item.status.replace(/-/g, '_').toLowerCase()}`),
-      value: status.replace(/-/g, '_').toLowerCase() as unknown as DialogStatusValue,
-    },
+    status: getDialogStatus(item.status, t),
     seen: item.isSeenByEndUser,
     updatedAt: item.updatedAt,
     updatedAtLabel: format(item.updatedAt, formatString),
@@ -112,6 +109,7 @@ const useGroupedDialogs = ({
     ),
   });
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   return useMemo(() => {
     if (isLoading) {
       return {
