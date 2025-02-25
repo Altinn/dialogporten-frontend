@@ -45,11 +45,6 @@
   flex-shrink: 0;
 }
 
-.additionalInfo {
-  padding: 1.5rem 0 0;
-  line-height: 1.5;
-}
-
 .activities,
 .transmissions {
   display: flex;

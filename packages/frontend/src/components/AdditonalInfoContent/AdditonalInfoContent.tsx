@@ -1,6 +1,6 @@
+import { DialogSection } from '@altinn/altinn-components';
 import { Html, Markdown } from 'embeddable-markdown-html';
 import { memo } from 'react';
-import styles from '../InboxItem/inboxItemDetail.module.css';
 
 interface AdditionalInfoContentProps {
   mediaType: string | undefined;
@@ -25,9 +25,5 @@ export const AdditionalInfoContent = memo(({ mediaType, value }: AdditionalInfoC
     }
   };
 
-  return (
-    <section className={styles.additionalInfo} data-id="dialog-additional-info">
-      {getContent(mediaType ?? 'text/plain')}
-    </section>
-  );
+  return <DialogSection>{getContent(mediaType ?? 'text/plain')}</DialogSection>;
 });
