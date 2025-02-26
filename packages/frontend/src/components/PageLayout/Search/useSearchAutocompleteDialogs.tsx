@@ -19,8 +19,8 @@ import {
 } from '../../../api/useDialogs.tsx';
 import { useDialogs } from '../../../api/useDialogs.tsx';
 import { QUERY_KEYS } from '../../../constants/queryKeys.ts';
+import type { InboxItemInput } from '../../../pages/Inbox/InboxItemInput.ts';
 import { useOrganizations } from '../../../pages/Inbox/useOrganizations.ts';
-import type { InboxItemInput } from '../../InboxItem';
 import { useSearchString } from './useSearchString.tsx';
 
 interface searchDialogsProps {
@@ -256,7 +256,7 @@ export const generateSendersAutocompleteBySearchString = (
   return {
     items: mappedSenderWithKeywords,
     groups: {
-      [SENDERS_GROUP_ID]: { title: `${t('search.suggestions')}` },
+      [SENDERS_GROUP_ID]: { title: t('search.suggestions') },
     },
   };
 };

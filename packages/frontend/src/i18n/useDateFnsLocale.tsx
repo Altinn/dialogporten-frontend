@@ -2,7 +2,6 @@ import { format, formatDistance } from 'date-fns';
 import { type Locale, enGB, nb } from 'date-fns/locale';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-
 export type { Locale } from 'date-fns/locale';
 
 export const defaultLocale = nb;

@@ -1,7 +1,7 @@
 import type { FilterState } from '@altinn/altinn-components/dist/types/lib/components/Toolbar/Toolbar';
 import { isBefore, isWithinInterval, startOfDay, startOfMonth, subMonths, subYears } from 'date-fns';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
-import type { InboxItemInput } from '../../components';
+import type { InboxItemInput } from './InboxItemInput.ts';
 import { filterDialogs } from './filters';
 
 describe('filterDialogs', () => {

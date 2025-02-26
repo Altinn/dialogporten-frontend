@@ -1,9 +1,11 @@
+import type { DialogStatus, SystemLabel } from 'bff-types-generated';
 import { describe, expect, it } from 'vitest';
-import type { InboxItemInput } from '../../InboxItem';
+import type { InboxViewType } from '../../../api/useDialogs.tsx';
+import type { InboxItemInput } from '../../../pages/Inbox/InboxItemInput.ts';
 import { generateSendersAutocompleteBySearchString } from './useSearchAutocompleteDialogs';
 
 describe('generateSendersAutocompleteBySearchString', () => {
-  const mockDialogs = [
+  const mockDialogs: InboxItemInput[] = [
     {
       id: '019241f7-5fa0-7336-934d-716a8e5bbb49',
       party: 'urn:altinn:person:identifier-no:1',
@@ -18,30 +20,16 @@ describe('generateSendersAutocompleteBySearchString', () => {
         name: 'Test Testesen',
         isCompany: false,
       },
-      metaFields: [
-        {
-          type: 'status_COMPLETED',
-          label: 'Status: COMPLETED',
-        },
-        {
-          type: 'timestamp',
-          label: '2023-07-15T08:45:00.000Z',
-        },
-        {
-          type: 'attachment',
-          label: '1',
-        },
-      ],
       createdAt: '2023-03-11T07:00:00.000Z',
       updatedAt: '2023-07-15T08:45:00.000Z',
-      status: 'COMPLETED',
+      status: 'COMPLETED' as DialogStatus,
       isSeenByEndUser: false,
-      label: 'DEFAULT',
+      label: 'DEFAULT' as SystemLabel,
       org: 'skd',
       guiAttachmentCount: 1,
       seenByOthersCount: 0,
       seenByLabel: 'Sett av deg',
-      viewType: 'DEFAULT',
+      viewType: 'INBOX' as InboxViewType,
     },
     {
       id: '019241f7-812c-71c8-8e68-94a0b771fa10',
@@ -58,38 +46,21 @@ describe('generateSendersAutocompleteBySearchString', () => {
         name: 'Test Testesen',
         isCompany: false,
       },
-      metaFields: [
-        {
-          type: 'status_REQUIRES_ATTENTION',
-          label: 'Status: REQUIRES_ATTENTION',
-        },
-        {
-          type: 'timestamp',
-          label: '2023-05-17T09:30:00.000Z',
-        },
-        {
-          type: 'seenBy',
-          label: 'Sett av deg',
-          options: {
-            tooltip: 'SØSTER FANTASIFULL',
-          },
-        },
-      ],
       createdAt: '2023-05-17T09:30:00.000Z',
       org: 'ssb',
       guiAttachmentCount: 1,
       seenByOthersCount: 1,
       seenByLabel: 'Sett av deg',
-      viewType: 'DEFAULT',
-      status: 'REQUIRES_ATTENTION',
+      viewType: 'INBOX' as InboxViewType,
+      status: 'REQUIRES_ATTENTION' as DialogStatus,
       isSeenByEndUser: true,
-      label: 'DEFAULT',
+      label: 'DEFAULT' as SystemLabel,
+      updatedAt: '2023-05-17T09:30:00.000Z',
     },
   ];
 
   it('should return no hits when sender (searchValue) is empty', () => {
     const result = generateSendersAutocompleteBySearchString('', mockDialogs as InboxItemInput[]);
-
     expect(result.items).toEqual([]);
     expect(result.groups).toEqual({
       noHits: { title: 'noHits' },

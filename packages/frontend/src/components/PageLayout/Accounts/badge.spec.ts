@@ -1,6 +1,6 @@
 import { DialogStatus, type PartyFieldsFragment, SystemLabel } from 'bff-types-generated';
 import { describe, expect, it } from 'vitest';
-import type { InboxItemInput } from '../../InboxItem';
+import type { InboxItemInput } from '../../../pages/Inbox/InboxItemInput.ts';
 import { getAccountBadge } from './useAccounts';
 
 describe('getCountBadge', () => {

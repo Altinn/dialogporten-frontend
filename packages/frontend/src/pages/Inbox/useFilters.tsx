@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { createFiltersURLQuery } from '../../auth';
-import type { InboxItemInput } from '../../components';
+import type { InboxItemInput } from './InboxItemInput.ts';
 import { FilterCategory, getFacets, readFiltersFromURLQuery } from './filters.ts';
 
 interface UseFiltersOutput {

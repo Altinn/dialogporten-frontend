@@ -28,13 +28,17 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const {
     dialogsByView,
     isLoading: isLoadingDialogs,
-    isSuccess: isSuccessDialogs,
     dialogCountInconclusive: allDialogCountInconclusive,
+    isSuccess: dialogsSuccess,
   } = useDialogs(selectedParties);
 
   const displaySearchResults = enteredSearchValue.length > 0 || !!searchParamOrg;
 
-  const { searchResults, isFetching: isFetchingSearchResults } = useSearchDialogs({
+  const {
+    searchResults,
+    isFetching: isFetchingSearchResults,
+    isSuccess: searchSuccess,
+  } = useSearchDialogs({
     parties: selectedParties,
     searchValue: enteredSearchValue,
   });
@@ -48,12 +52,12 @@ export const Inbox = ({ viewType }: InboxProps) => {
   });
 
   const dialogsForView = dialogsByView[viewType];
+  const dataSourceSuccess = displaySearchResults ? searchSuccess : dialogsSuccess;
   const dataSource = displaySearchResults ? searchResults : dialogsForView;
   const { filterState, filters, onFiltersChange, getFilterLabel } = useFilters({ dialogs: dataSource });
   const filteredItems = useMemo(() => filterDialogs(dataSource, filterState), [dataSource, filterState]);
 
-  const isLoading = !isSuccessDialogs || isFetchingSearchResults || isLoadingDialogs;
-
+  const isLoading = isFetchingSearchResults || isLoadingDialogs;
   const { mappedGroupedDialogs, groups } = useGroupedDialogs({
     items: filteredItems,
     displaySearchResults,
@@ -103,8 +107,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
         ) : null}
       </section>
       <Section spacing={3} margin="section">
-        {!filteredItems.length && <h1>{t(`inbox.heading.title.${viewType}`, { count: 0 })}</h1>}
-
+        {dataSourceSuccess && !filteredItems.length && <h1>{t(`inbox.heading.title.${viewType}`, { count: 0 })}</h1>}
         <DialogList items={mappedGroupedDialogs} groups={groups} />
       </Section>
     </>

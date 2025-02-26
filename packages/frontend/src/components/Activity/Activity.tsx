@@ -1,9 +1,8 @@
 import { Avatar } from '@altinn/altinn-components';
 import { ActorType } from 'bff-types-generated';
+import { t } from 'i18next';
 import type { DialogActivity, Participant } from '../../api/useDialogById.tsx';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
-
-import { t } from 'i18next';
 import styles from './activity.module.css';
 
 interface ActivityProps {
