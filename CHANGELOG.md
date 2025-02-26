@@ -6,7 +6,7 @@
 ### Bug Fixes
 
 * replace additional info content with DialogSection from altinn-components ([#1838](https://github.com/Altinn/dialogporten-frontend/issues/1838)) ([d562ccf](https://github.com/Altinn/dialogporten-frontend/commit/d562ccf4fd03ca4b6a73e95d4c16416cae112846))
-* use DialogContentt ([#1841](https://github.com/Altinn/dialogporten-frontend/issues/1841)) ([4c16180](https://github.com/Altinn/dialogporten-frontend/commit/4c16180defe8b46ed238714b29370646e36051ab))
+* use DialogContent ([#1841](https://github.com/Altinn/dialogporten-frontend/issues/1841)) ([4c16180](https://github.com/Altinn/dialogporten-frontend/commit/4c16180defe8b46ed238714b29370646e36051ab))
 
 ## [1.18.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.17.0...v1.18.0) (2025-02-24)
 
