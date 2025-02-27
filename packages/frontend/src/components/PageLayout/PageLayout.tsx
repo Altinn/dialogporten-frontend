@@ -7,9 +7,9 @@ import {
 } from '@altinn/altinn-components';
 import { Snackbar } from '@altinn/altinn-components';
 import { useQueryClient } from '@tanstack/react-query';
-import { type ChangeEvent, useEffect } from 'react';
+import { type ChangeEvent, useEffect, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, Outlet, useSearchParams } from 'react-router-dom';
+import { Link, Outlet, useLocation, useSearchParams } from 'react-router-dom';
 import { useDialogs } from '../../api/useDialogs.tsx';
 import { useParties } from '../../api/useParties.ts';
 import { getSearchStringFromQueryParams } from '../../pages/Inbox/queryParams.ts';
@@ -75,6 +75,13 @@ export const PageLayout: React.FC = () => {
   });
 
   useProfile();
+
+  const location = useLocation();
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: runs synchronously after DOM mutations but before the browser paints.
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [location.pathname]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: Full control of what triggers this code is needed
   useEffect(() => {
