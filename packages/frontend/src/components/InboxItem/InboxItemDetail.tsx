@@ -129,7 +129,7 @@ export const InboxItemDetail = ({ dialog }: InboxItemDetailProps): ReactElement 
         <section data-id="dialog-transmissions" className={styles.transmissions}>
           <h3 className={styles.transmissionsTitle}>{t('word.transmissions')}</h3>
           {transmissions.map((transmission: DialogTransmission) => (
-            <Transmission key={transmission.id} transmission={transmission} serviceOwner={sender} />
+            <Transmission key={transmission.id} transmission={transmission} />
           ))}
         </section>
       )}
