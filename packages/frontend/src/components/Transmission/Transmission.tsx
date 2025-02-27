@@ -1,6 +1,5 @@
 import { Avatar } from '@altinn/altinn-components';
-import { ActorType } from 'bff-types-generated';
-import type { DialogTransmission, Participant } from '../../api/useDialogById.tsx';
+import type { DialogTransmission } from '../../api/useDialogById.tsx';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 
 import { Link } from '@digdir/designsystemet-react';
@@ -11,7 +10,6 @@ import styles from './transmission.module.css';
 
 interface TransmissionProps {
   transmission: DialogTransmission;
-  serviceOwner?: Participant;
 }
 
 const getTransmissionText = (transmission: DialogTransmission) => {
@@ -37,13 +35,8 @@ const getTransmissionText = (transmission: DialogTransmission) => {
   }
 };
 
-export const Transmission = ({ transmission, serviceOwner }: TransmissionProps) => {
+export const Transmission = ({ transmission }: TransmissionProps) => {
   const format = useFormat();
-  const isCompany =
-    transmission.performedBy.actorType === ActorType.ServiceOwner ||
-    (transmission.performedBy.actorId ?? '').includes('urn:altinn:organization:');
-  const performedByName = isCompany ? (serviceOwner?.name ?? '') : (transmission.performedBy.actorName ?? '');
-  const imageUrl = isCompany ? serviceOwner?.imageURL : undefined;
   const transmissionType = 'Type: ' + getTransmissionText(transmission);
   const clockPrefix = t('word.clock_prefix');
   const formatString = clockPrefix ? `do MMMM yyyy '${clockPrefix}' HH.mm` : `do MMMM yyyy HH.mm`;
@@ -56,8 +49,8 @@ export const Transmission = ({ transmission, serviceOwner }: TransmissionProps) 
     <div key={transmission.id}>
       <div className={styles.transmissionParticipants}>
         <div className={styles.sender}>
-          <Avatar name={performedByName} type={isCompany ? 'company' : 'person'} imageUrl={imageUrl} size="sm" />
-          <span className={styles.participantLabel}>{performedByName}</span>
+          <Avatar {...transmission.sender} size="sm" />
+          <span className={styles.participantLabel}>{transmission.sender.name}</span>
         </div>
         <span className={styles.dateLabel}>{format(transmission.createdAt, formatString)}</span>
       </div>

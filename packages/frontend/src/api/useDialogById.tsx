@@ -1,14 +1,16 @@
+import type { AvatarProps } from '@altinn/altinn-components';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import type {
-  AttachmentFieldsFragment,
-  DialogActivityFragment,
-  DialogByIdFieldsFragment,
-  DialogStatus,
-  GetDialogByIdQuery,
-  OrganizationFieldsFragment,
-  PartyFieldsFragment,
-  SystemLabel,
-  TransmissionFieldsFragment,
+import {
+  ActorType,
+  type AttachmentFieldsFragment,
+  type DialogActivityFragment,
+  type DialogByIdFieldsFragment,
+  type DialogStatus,
+  type GetDialogByIdQuery,
+  type OrganizationFieldsFragment,
+  type PartyFieldsFragment,
+  type SystemLabel,
+  type TransmissionFieldsFragment,
 } from 'bff-types-generated';
 import { AttachmentUrlConsumer } from 'bff-types-generated';
 import { t } from 'i18next';
@@ -16,6 +18,7 @@ import type { GuiActionButtonProps } from '../components';
 import { QUERY_KEYS } from '../constants/queryKeys.ts';
 import { type ValueType, getPreferredPropertyByLocale } from '../i18n/property.ts';
 import { useOrganizations } from '../pages/Inbox/useOrganizations.ts';
+import { toTitleCase } from '../profile';
 import { getOrganization } from './organizations.ts';
 import { graphQLSDK } from './queries.ts';
 import { getSeenByLabel } from './useDialogs.tsx';
@@ -50,7 +53,7 @@ export interface DialogTransmission {
   id: string;
   type: TransmissionFieldsFragment['type'];
   createdAt: string;
-  performedBy: TransmissionFieldsFragment['sender'];
+  sender: AvatarProps;
   attachments: TransmissionFieldsFragment['attachments'];
   title: string;
   summary: string;
@@ -173,13 +176,23 @@ export function mapDialogToToInboxItem(
       .reverse(),
     transmissions: item.transmissions
       .map((transmission) => {
+        const senderType =
+          transmission.sender.actorType === ActorType.ServiceOwner ||
+          (transmission.sender.actorId ?? '').includes('urn:altinn:organization:');
+        const hasSenderName = (transmission.sender.actorName?.length ?? 0) > 0;
+        const senderName = hasSenderName ? toTitleCase(transmission.sender.actorName) : (serviceOwner?.name ?? '');
+        const senderLogo = senderType ? serviceOwner?.logo : undefined;
         const titleObj = transmission.content.title.value;
         const summaryObj = transmission.content.summary.value;
         return {
           id: transmission.id,
           type: transmission.type,
           createdAt: transmission.createdAt,
-          performedBy: transmission.sender,
+          sender: {
+            name: senderName,
+            type: senderType ? 'company' : ('person' as AvatarProps['type']),
+            imageUrl: senderLogo,
+          },
           attachments: transmission.attachments,
           title: getPreferredPropertyByLocale(titleObj)?.value ?? '',
           summary: getPreferredPropertyByLocale(summaryObj)?.value ?? '',
