@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.18.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.18.1...v1.18.2) (2025-02-27)
+
+
+### Bug Fixes
+
+* scroll to top on navigating between routes ([#1846](https://github.com/Altinn/dialogporten-frontend/issues/1846)) ([9de045d](https://github.com/Altinn/dialogporten-frontend/commit/9de045d322afb3619cf71bc056c24a13c9781902))
+* show sender name if provided for transmission ([#1854](https://github.com/Altinn/dialogporten-frontend/issues/1854)) ([d375ffc](https://github.com/Altinn/dialogporten-frontend/commit/d375ffc3903b80c07f1ecb762b921108d2567cf7))
+
 ## [1.18.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.18.0...v1.18.1) (2025-02-26)
 
 
