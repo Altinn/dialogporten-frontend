@@ -14,7 +14,7 @@ import {
 } from 'bff-types-generated';
 import { AttachmentUrlConsumer } from 'bff-types-generated';
 import { t } from 'i18next';
-import type { GuiActionButtonProps } from '../components';
+import type { DialogActionProps } from '../components/InboxItem/InboxItemDetail.tsx';
 import { QUERY_KEYS } from '../constants/queryKeys.ts';
 import { type ValueType, getPreferredPropertyByLocale } from '../i18n/property.ts';
 import { useOrganizations } from '../pages/Inbox/useOrganizations.ts';
@@ -64,7 +64,7 @@ export interface DialogByIdDetails {
   sender: Participant;
   receiver: Participant;
   title: string;
-  guiActions: GuiActionButtonProps[];
+  guiActions: DialogActionProps[];
   additionalInfo: { value: string; mediaType: string } | undefined;
   attachments: AttachmentFieldsFragment[];
   dialogToken: string;

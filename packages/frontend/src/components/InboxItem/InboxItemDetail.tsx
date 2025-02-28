@@ -1,11 +1,14 @@
 import {
   Article,
   type AttachmentLinkProps,
+  type DialogActionButtonProps,
+  DialogActions,
   DialogAttachments,
   DialogBody,
+  type DialogButtonPriority,
   DialogHeader,
 } from '@altinn/altinn-components';
-import type { ReactElement } from 'react';
+import { type ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { DialogActivity, DialogByIdDetails, DialogTransmission } from '../../api/useDialogById.tsx';
 import { getPreferredPropertyByLocale } from '../../i18n/property.ts';
@@ -15,7 +18,6 @@ import { Activity } from '../Activity';
 import { AdditionalInfoContent } from '../AdditonalInfoContent';
 import { MainContentReference } from '../MainContentReference';
 import { Transmission } from '../Transmission';
-import { GuiActions } from './GuiActions.tsx';
 import styles from './inboxItemDetail.module.css';
 
 interface InboxItemDetailProps {
@@ -46,6 +48,51 @@ interface InboxItemDetailProps {
  *   }}
  * />
  */
+
+export interface DialogActionProps {
+  id: string;
+  title: string;
+  url: string;
+  httpMethod: string;
+  prompt?: string;
+  disabled?: boolean;
+  priority: string;
+}
+
+const handleDialogActionClick = async (
+  props: DialogActionProps,
+  dialogToken: string,
+  responseFinished: () => void,
+): Promise<void> => {
+  const { url, httpMethod, prompt } = props;
+
+  if (prompt && !window.confirm(prompt)) {
+    responseFinished();
+    return;
+  }
+
+  if (httpMethod === 'GET') {
+    responseFinished();
+    window.open(url, '_blank');
+  } else {
+    try {
+      const response = await fetch(url, {
+        method: httpMethod,
+        headers: {
+          Authorization: `Bearer ${dialogToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        console.error(`Error: ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error('Error performing action:', error);
+    } finally {
+      responseFinished();
+    }
+  }
+};
 
 export const InboxItemDetail = ({ dialog }: InboxItemDetailProps): ReactElement => {
   const { t } = useTranslation();
@@ -95,6 +142,22 @@ export const InboxItemDetail = ({ dialog }: InboxItemDetailProps): ReactElement 
   const formatString = clockPrefix ? `do MMMM yyyy '${clockPrefix}' HH.mm` : `do MMMM yyyy HH.mm`;
   const dueAtLabel = dueAt ? format(dueAt, formatString) : '';
 
+  const [isLoading, setIsLoading] = useState<string>('');
+
+  const dialogActions: DialogActionButtonProps[] = guiActions.map((action) => ({
+    id: action.id,
+    label: action.title,
+    disabled: !!isLoading || action.disabled,
+    priority: action.priority.toLocaleLowerCase() as DialogButtonPriority,
+    url: action.url,
+    httpMethod: action.httpMethod,
+    loading: isLoading === action.id,
+    onClick: () => {
+      setIsLoading(action.id);
+      handleDialogActionClick(action, dialogToken, () => setIsLoading(''));
+    },
+  }));
+
   return (
     <Article padding={6} spacing={6}>
       <DialogHeader dueAt={dueAt} dueAtLabel={dueAtLabel} status={getDialogStatus(status, t)} title={title} />
@@ -114,7 +177,7 @@ export const InboxItemDetail = ({ dialog }: InboxItemDetailProps): ReactElement 
             items={attachmentItems}
           />
         )}
-        {guiActions.length > 0 && <GuiActions actions={guiActions} dialogToken={dialogToken} />}
+        <DialogActions items={dialogActions} />
       </DialogBody>
       <AdditionalInfoContent mediaType={additionalInfo?.mediaType} value={additionalInfo?.value} />
       {activities.length > 0 && (
