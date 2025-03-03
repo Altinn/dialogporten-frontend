@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.18.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.18.3...v1.18.4) (2025-03-03)
+
+
+### Bug Fixes
+
+* remove filters that should not be displayed ([#1875](https://github.com/Altinn/dialogporten-frontend/issues/1875)) ([978ca9e](https://github.com/Altinn/dialogporten-frontend/commit/978ca9e80955ad4e0b0a4ab8be4be29e92a65fe2))
+
 ## [1.18.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.18.2...v1.18.3) (2025-03-03)
 
 
