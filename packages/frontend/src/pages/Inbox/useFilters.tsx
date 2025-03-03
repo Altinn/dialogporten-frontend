@@ -49,7 +49,7 @@ export const useFilters = ({ dialogs }: UseFiltersProps): UseFiltersOutput => {
       return value.map((v) => t(`filter.date.${v.toString().toLowerCase()}`)).join(', ');
     }
 
-    if (name === FilterCategory.SENDER) {
+    if (name === FilterCategory.SENDER || name === FilterCategory.RECEIVER) {
       if (value?.length === 1) {
         return value.join('');
       }

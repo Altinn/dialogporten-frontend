@@ -6,21 +6,19 @@ import styles from './profileButton.module.css';
 
 type ProfileButtonProps = {
   isLoading?: boolean;
-  size?: 'xs' | 'sm' | 'md' | 'lg';
 } & Omit<ButtonProps, 'size'>;
 
 export const ProfileButton = (props: ProfileButtonProps) => {
   const { t } = useTranslation();
-  const { className, isLoading, children, variant = 'tertiary', size, ...restProps } = props;
+  const { className, isLoading, children, variant = 'tertiary', ...restProps } = props;
   const classes = cx(className, styles.profileButton, {
     [styles.tertiary]: variant === 'tertiary',
-    [styles.xs]: size === 'xs',
   });
 
   if (isLoading) {
     return (
-      <Button className={classes} {...restProps} aria-disabled>
-        <Spinner aria-label="loading" fontSize="1rem" />
+      <Button className={classes} {...restProps} aria-disabled data-size="sm">
+        <Spinner aria-label="loading" fontSize="0.875rem" />
         {t('word.loading')}
       </Button>
     );
