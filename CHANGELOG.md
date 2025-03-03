@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.18.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.18.2...v1.18.3) (2025-03-03)
+
+
+### Bug Fixes
+
+* Add sorting function to DialogList ([#1874](https://github.com/Altinn/dialogporten-frontend/issues/1874)) ([359adeb](https://github.com/Altinn/dialogporten-frontend/commit/359adeb2e047b3356266d593dcc90ca1d48b8929))
+* saved search button was visible even though no filters were applied ([#1872](https://github.com/Altinn/dialogporten-frontend/issues/1872)) ([005106f](https://github.com/Altinn/dialogporten-frontend/commit/005106ff198571a298c0056df0e667a8129714a6))
+
 ## [1.18.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.18.1...v1.18.2) (2025-02-27)
 
 
