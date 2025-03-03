@@ -44,12 +44,11 @@ export const SaveSearchButton = ({ disabled, className, filterState, viewType }:
     return (
       <ProfileButton
         className={className}
-        size="md"
         onClick={() => deleteSearch(alreadySavedSearch.id)}
         variant="tertiary"
         isLoading={isCTALoading}
       >
-        <BookmarkFillIcon fontSize="1.25rem" />
+        <BookmarkFillIcon fontSize="0.875rem" />
         {t('filter_bar.saved_search')}
       </ProfileButton>
     );
@@ -57,7 +56,6 @@ export const SaveSearchButton = ({ disabled, className, filterState, viewType }:
 
   return (
     <ProfileButton
-      size="md"
       className={className}
       onClick={() =>
         saveSearch({ filters: filterState, selectedParties: selectedPartyIds, enteredSearchValue, viewType })
@@ -65,7 +63,7 @@ export const SaveSearchButton = ({ disabled, className, filterState, viewType }:
       variant="tertiary"
       isLoading={isCTALoading}
     >
-      <BookmarkIcon fontSize="1.25rem" />
+      <BookmarkIcon fontSize="0.875rem" />
       {t('filter_bar.save_search')}
     </ProfileButton>
   );

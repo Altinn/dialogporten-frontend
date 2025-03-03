@@ -1,20 +1,10 @@
 .profileButton {
-  white-space: nowrap;
-  border-radius: 2px;
+  font-size: .875rem;
+  border: 0;
+  margin: 0;
 }
 
 .tertiary {
   background: transparent;
   color: 1px dashed var(--button-color);
-}
-
-.xs {
-  border-radius: .125rem;
-  font-size: .875rem;
-  min-height: 2.25rem;
-  height: 2.25rem;
-  box-sizing: border-box;
-  padding: 0.625rem 0.5rem;
-  font-weight: 500;
-  column-gap: 0.5rem;
 }

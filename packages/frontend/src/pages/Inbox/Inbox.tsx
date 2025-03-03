@@ -7,6 +7,7 @@ import { useParties } from '../../api/useParties.ts';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
 import { useSearchDialogs, useSearchString } from '../../components/PageLayout/Search/';
 import { SaveSearchButton } from '../../components/SavedSearchButton/SaveSearchButton.tsx';
+import { isSavedSearchDisabled } from '../../components/SavedSearchButton/savedSearchEnabled.ts';
 import { PageRoutes } from '../routes.ts';
 import { filterDialogs } from './filters.ts';
 import styles from './inbox.module.css';
@@ -19,7 +20,13 @@ interface InboxProps {
 
 export const Inbox = ({ viewType }: InboxProps) => {
   const { t } = useTranslation();
-  const { selectedParties, allOrganizationsSelected, parties, partiesEmptyList } = useParties();
+  const {
+    selectedParties,
+    allOrganizationsSelected,
+    parties,
+    partiesEmptyList,
+    isLoading: isLoadingParties,
+  } = useParties();
   const [searchParams] = useSearchParams();
   const searchBarParam = new URLSearchParams(searchParams);
   const searchParamOrg = searchBarParam.get('org') ?? undefined;
@@ -57,7 +64,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const { filterState, filters, onFiltersChange, getFilterLabel } = useFilters({ dialogs: dataSource });
   const filteredItems = useMemo(() => filterDialogs(dataSource, filterState), [dataSource, filterState]);
 
-  const isLoading = isFetchingSearchResults || isLoadingDialogs;
+  const isLoading = isLoadingParties || isFetchingSearchResults || isLoadingDialogs;
   const { mappedGroupedDialogs, groups } = useGroupedDialogs({
     items: filteredItems,
     displaySearchResults,
@@ -74,10 +81,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     );
   }
 
-  const savedSearchDisabled =
-    !Object.keys(filterState)?.length &&
-    Object.values(filterState).every((item) => item?.values?.length === 0) &&
-    !enteredSearchValue;
+  const savedSearchDisabled = isSavedSearchDisabled(filterState, enteredSearchValue);
 
   return (
     <>
