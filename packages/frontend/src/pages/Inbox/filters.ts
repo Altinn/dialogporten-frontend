@@ -228,10 +228,13 @@ export const getFacets = (dialogs: InboxItemInput[], currentFilterState: FilterS
     },
   ];
 
-  if (!Object.keys(currentFilterState).length) {
-    return facets.filter((facet: ToolbarFilterProps) => facet.options.length > 1);
-  }
-  return facets;
+  return facets.filter((facet: ToolbarFilterProps) => {
+    const filtersForFacet = currentFilterState?.[facet.name];
+    if (Array.isArray(filtersForFacet) && filtersForFacet.length > 0) {
+      return true;
+    }
+    return facet.options.length > 1;
+  });
 };
 
 export const readFiltersFromURLQuery = (query: string): FilterState => {
