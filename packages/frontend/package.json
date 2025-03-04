@@ -40,7 +40,6 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-i18next": "^15.0.1",
-    "react-loading-skeleton": "^3.5.0",
     "react-router-dom": "^7.2.0",
     "sse.js": "^2.5.0",
     "use-debounce": "^10.0.1"
