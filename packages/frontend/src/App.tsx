@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { ProtectedPageLayout } from './components/PageLayout/PageLayout.tsx';
+import { DialogDetailsPage } from './pages/DialogDetailsPage';
 import { Inbox } from './pages/Inbox';
-import { InboxItemPage } from './pages/InboxItemPage';
 import { Logout } from './pages/LogoutPage';
 import { SavedSearchesPage } from './pages/SavedSearches';
 import { PageRoutes } from './pages/routes.ts';
@@ -18,7 +18,7 @@ function App() {
           <Route path={PageRoutes.sent} element={<Inbox key="sent" viewType={'sent'} />} />
           <Route path={PageRoutes.archive} element={<Inbox key="archive" viewType={'archive'} />} />
           <Route path={PageRoutes.bin} element={<Inbox key="bin" viewType={'bin'} />} />
-          <Route path={PageRoutes.inboxItem} element={<InboxItemPage />} />
+          <Route path={PageRoutes.inboxItem} element={<DialogDetailsPage />} />
           <Route path={PageRoutes.savedSearches} element={<SavedSearchesPage />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Route>

@@ -8,6 +8,7 @@ import {
   type DialogButtonPriority,
   DialogHeader,
 } from '@altinn/altinn-components';
+import { DialogStatus } from 'bff-types-generated';
 import { type ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { DialogActivity, DialogByIdDetails, DialogTransmission } from '../../api/useDialogById.tsx';
@@ -18,10 +19,11 @@ import { Activity } from '../Activity';
 import { AdditionalInfoContent } from '../AdditonalInfoContent';
 import { MainContentReference } from '../MainContentReference';
 import { Transmission } from '../Transmission';
-import styles from './inboxItemDetail.module.css';
+import styles from './dialogDetails.module.css';
 
-interface InboxItemDetailProps {
+interface DialogDetailsProps {
   dialog: DialogByIdDetails | undefined | null;
+  isLoading?: boolean;
 }
 
 /**
@@ -94,45 +96,45 @@ const handleDialogActionClick = async (
   }
 };
 
-export const InboxItemDetail = ({ dialog }: InboxItemDetailProps): ReactElement => {
+export const DialogDetails = ({ dialog, isLoading }: DialogDetailsProps): ReactElement => {
   const { t } = useTranslation();
+  const [actionIdLoading, setActionIdLoading] = useState<string>('');
   const format = useFormat();
 
-  if (!dialog) {
+  if (isLoading) {
     return (
-      <div className={styles.errorFallBack}>
-        <section className={styles.inboxItemDetail}>
-          <header className={styles.header} data-id="dialog-header">
-            <h1 className={styles.title}>{t('error.dialog.not_found')}</h1>
-          </header>
-          <p className={styles.summary}>{t('dialog.error_message')}</p>
-        </section>
-      </div>
+      <Article padding={6} spacing={6}>
+        <DialogHeader
+          loading
+          dueAt={new Date().toISOString()}
+          dueAtLabel={format(new Date(), 'do MMMM yyyy HH.mm').toString()}
+          status={getDialogStatus(DialogStatus.New, t)}
+          title={'???'}
+        />
+        <DialogBody
+          sender={{ name: 'XXX' }}
+          recipient={{ name: 'YYY' }}
+          updatedAt={new Date().toISOString()}
+          updatedAtLabel={format(new Date(), 'do MMMM yyyy HH.mm').toString()}
+          loading
+        />
+      </Article>
     );
   }
 
-  const {
-    dueAt,
-    title,
-    dialogToken,
-    summary,
-    sender,
-    receiver,
-    guiActions,
-    additionalInfo,
-    attachments,
-    mainContentReference,
-    activities,
-    transmissions,
-    updatedAt,
-    status,
-    seenByLabel,
-    isSeenByEndUser,
-    seenByOthersCount,
-  } = dialog;
+  if (!dialog) {
+    return (
+      <Article padding={6} spacing={6}>
+        <header className={styles.header} data-id="dialog-header">
+          <h1 className={styles.title}>{t('error.dialog.not_found')}</h1>
+        </header>
+        <p className={styles.summary}>{t('dialog.error_message')}</p>
+      </Article>
+    );
+  }
 
-  const attachmentCount = attachments.reduce((count, { urls }) => count + urls.length, 0);
-  const attachmentItems: AttachmentLinkProps[] = attachments.flatMap((attachment) =>
+  const attachmentCount = dialog.attachments.reduce((count, { urls }) => count + urls.length, 0);
+  const attachmentItems: AttachmentLinkProps[] = dialog.attachments.flatMap((attachment) =>
     attachment.urls.map((url) => ({
       label: getPreferredPropertyByLocale(attachment.displayName)?.value || url.url,
       href: url.url,
@@ -140,37 +142,48 @@ export const InboxItemDetail = ({ dialog }: InboxItemDetailProps): ReactElement 
   );
   const clockPrefix = t('word.clock_prefix');
   const formatString = clockPrefix ? `do MMMM yyyy '${clockPrefix}' HH.mm` : `do MMMM yyyy HH.mm`;
-  const dueAtLabel = dueAt ? format(dueAt, formatString) : '';
+  const dueAtLabel = dialog.dueAt ? format(dialog.dueAt, formatString) : '';
 
-  const [isLoading, setIsLoading] = useState<string>('');
-
-  const dialogActions: DialogActionButtonProps[] = guiActions.map((action) => ({
+  const dialogActions: DialogActionButtonProps[] = dialog.guiActions.map((action) => ({
     id: action.id,
     label: action.title,
     disabled: !!isLoading || action.disabled,
     priority: action.priority.toLocaleLowerCase() as DialogButtonPriority,
     url: action.url,
     httpMethod: action.httpMethod,
-    loading: isLoading === action.id,
+    loading: actionIdLoading === action.id,
     onClick: () => {
-      setIsLoading(action.id);
-      handleDialogActionClick(action, dialogToken, () => setIsLoading(''));
+      setActionIdLoading(action.id);
+      void handleDialogActionClick(action, dialog.dialogToken, () => setActionIdLoading(''));
     },
   }));
 
   return (
     <Article padding={6} spacing={6}>
-      <DialogHeader dueAt={dueAt} dueAtLabel={dueAtLabel} status={getDialogStatus(status, t)} title={title} />
+      <DialogHeader
+        dueAt={dialog.dueAt}
+        dueAtLabel={dueAtLabel}
+        status={getDialogStatus(dialog.status, t)}
+        title={dialog.title}
+      />
       <DialogBody
-        sender={sender}
-        recipient={receiver}
-        updatedAt={updatedAt}
-        updatedAtLabel={format(updatedAt, formatString)}
+        sender={dialog.sender}
+        recipient={dialog.receiver}
+        updatedAt={dialog.updatedAt}
+        updatedAtLabel={format(dialog.updatedAt, formatString)}
         recipientLabel={t('word.to')}
-        seenBy={seenByLabel ? { seenByEndUser: isSeenByEndUser, seenByOthersCount, label: seenByLabel } : undefined}
+        seenBy={
+          dialog.seenByLabel
+            ? {
+                seenByEndUser: dialog.isSeenByEndUser,
+                seenByOthersCount: dialog.seenByOthersCount,
+                label: dialog.seenByLabel,
+              }
+            : undefined
+        }
       >
-        <p>{summary}</p>
-        <MainContentReference content={mainContentReference} dialogToken={dialogToken} />
+        <p>{dialog.summary}</p>
+        <MainContentReference content={dialog.mainContentReference} dialogToken={dialog.dialogToken} />
         {attachmentCount > 0 && (
           <DialogAttachments
             title={t('inbox.heading.attachments', { count: attachmentCount })}
@@ -179,19 +192,19 @@ export const InboxItemDetail = ({ dialog }: InboxItemDetailProps): ReactElement 
         )}
         <DialogActions items={dialogActions} />
       </DialogBody>
-      <AdditionalInfoContent mediaType={additionalInfo?.mediaType} value={additionalInfo?.value} />
-      {activities.length > 0 && (
+      <AdditionalInfoContent mediaType={dialog.additionalInfo?.mediaType} value={dialog.additionalInfo?.value} />
+      {dialog.activities.length > 0 && (
         <section data-id="dialog-activity-history" className={styles.activities}>
           <h3 className={styles.activitiesTitle}>{t('word.activities')}</h3>
-          {activities.map((activity: DialogActivity) => (
-            <Activity key={activity.id} activity={activity} serviceOwner={sender} />
+          {dialog.activities.map((activity: DialogActivity) => (
+            <Activity key={activity.id} activity={activity} serviceOwner={dialog.sender} />
           ))}
         </section>
       )}
-      {transmissions.length > 0 && (
+      {dialog.transmissions.length > 0 && (
         <section data-id="dialog-transmissions" className={styles.transmissions}>
           <h3 className={styles.transmissionsTitle}>{t('word.transmissions')}</h3>
-          {transmissions.map((transmission: DialogTransmission) => (
+          {dialog.transmissions.map((transmission: DialogTransmission) => (
             <Transmission key={transmission.id} transmission={transmission} />
           ))}
         </section>
