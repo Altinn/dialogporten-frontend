@@ -112,7 +112,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
       </section>
       <Section spacing={3} margin="section">
         {dataSourceSuccess && !filteredItems.length && <h1>{t(`inbox.heading.title.${viewType}`, { count: 0 })}</h1>}
-        <DialogList items={mappedGroupedDialogs} groups={groups} sortGroupBy={([a], [b]) => b.localeCompare(a)} />
+        <DialogList items={mappedGroupedDialogs} groups={groups} sortGroupBy={(a, b) => b[0].localeCompare(a[0])} />
       </Section>
     </>
   );
