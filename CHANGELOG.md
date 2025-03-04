@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.18.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.18.4...v1.18.5) (2025-03-04)
+
+
+### Bug Fixes
+
+* Adjust sorting function for DialogList ([#1879](https://github.com/Altinn/dialogporten-frontend/issues/1879)) ([2946971](https://github.com/Altinn/dialogporten-frontend/commit/2946971e34769ca428f0beb1a282787106e62ab0))
+
 ## [1.18.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.18.3...v1.18.4) (2025-03-03)
 
 
