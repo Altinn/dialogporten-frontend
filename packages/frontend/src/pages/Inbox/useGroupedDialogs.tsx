@@ -16,11 +16,16 @@ interface GroupedItem {
   id: string | number;
   label: string;
   items: InboxItemInput[];
+  orderIndex: number | null;
+}
+
+interface DialogListGroupPropsSort extends DialogListGroupProps {
+  orderIndex?: number | null;
 }
 
 interface UseGroupedDialogsOutput {
   mappedGroupedDialogs: DialogListItemProps[];
-  groups?: Record<string, DialogListGroupProps>;
+  groups: Record<string, DialogListGroupPropsSort>;
 }
 
 interface UseGroupedDialogsProps {
@@ -132,6 +137,15 @@ const useGroupedDialogs = ({
       };
     }
 
+    const getOrderIndex = (createdAt: Date, isDateKey: boolean) => {
+      if (!isDateKey) return null;
+
+      if (allWithinSameYear) {
+        return createdAt.getMonth();
+      }
+      return createdAt.getFullYear();
+    };
+
     const groupedItems = items.reduce<GroupedItem[]>((acc, item, _, list) => {
       const createdAt = new Date(item.createdAt);
 
@@ -141,6 +155,8 @@ const useGroupedDialogs = ({
           ? format(createdAt, 'LLLL')
           : format(createdAt, 'yyyy');
 
+      const isDateKey = !displaySearchResults;
+
       const label = displaySearchResults
         ? t(`inbox.heading.search_results.${groupKey}`, {
             count: list.filter((i) => i.viewType === groupKey).length,
@@ -148,16 +164,21 @@ const useGroupedDialogs = ({
         : groupKey;
 
       const existingGroup = acc.find((group) => group.id === groupKey);
+
       if (existingGroup) {
         existingGroup.items.push(item);
       } else {
-        acc.push({ id: groupKey, label, items: [item] });
+        const orderIndex = getOrderIndex(createdAt, isDateKey);
+
+        acc.push({ id: groupKey, label, items: [item], orderIndex });
       }
 
       return acc;
     }, []);
 
-    const groups = Object.fromEntries(groupedItems.map(({ id, label }) => [id, { title: label }]));
+    const groups = Object.fromEntries(
+      groupedItems.map(({ id, label, orderIndex }) => [id, { title: label, orderIndex }]),
+    );
 
     const mappedGroupedDialogs = groupedItems.flatMap(({ id, items }) =>
       items.map((item) => formatDialogItem(item, id.toString())),
