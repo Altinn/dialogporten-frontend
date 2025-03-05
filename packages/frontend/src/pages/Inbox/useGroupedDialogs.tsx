@@ -30,7 +30,7 @@ interface UseGroupedDialogsOutput {
 
 interface UseGroupedDialogsProps {
   items: InboxItemInput[];
-  filters: FilterState;
+  filters?: FilterState;
   displaySearchResults: boolean;
   viewType: InboxViewType;
   isLoading: boolean;
@@ -148,7 +148,6 @@ const useGroupedDialogs = ({
 
     const groupedItems = items.reduce<GroupedItem[]>((acc, item, _, list) => {
       const createdAt = new Date(item.createdAt);
-
       const groupKey = displaySearchResults
         ? item.viewType
         : allWithinSameYear
