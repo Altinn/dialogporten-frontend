@@ -197,7 +197,7 @@ export const DialogDetails = ({ dialog, isLoading }: DialogDetailsProps): ReactE
         <section data-id="dialog-activity-history" className={styles.activities}>
           <h3 className={styles.activitiesTitle}>{t('word.activities')}</h3>
           {dialog.activities.map((activity: DialogActivity) => (
-            <Activity key={activity.id} activity={activity} serviceOwner={dialog.sender} />
+            <Activity key={activity.id} activity={activity} />
           ))}
         </section>
       )}

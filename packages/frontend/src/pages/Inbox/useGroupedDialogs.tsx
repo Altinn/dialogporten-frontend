@@ -86,20 +86,10 @@ const useGroupedDialogs = ({
     title: item.title,
     label: !item.isSeenByEndUser ? t('word.new') : undefined,
     id: item.id,
-    sender: {
-      name: item.sender.name,
-      type: item.sender.isCompany ? 'company' : 'person',
-      imageUrl: item.sender.imageURL,
-      imageUrlAlt: t('dialog.imageAltURL', { companyName: item.sender.name }),
-    },
+    sender: item.sender,
     summary: item.summary,
     state: getDialogState(viewType),
-    recipient: {
-      name: item.receiver.name,
-      type: item.receiver.isCompany ? 'company' : 'person',
-      imageUrl: item.receiver.imageURL!,
-      imageUrlAlt: t('dialog.imageAltURL', { companyName: item.receiver.name }),
-    },
+    recipient: item.receiver,
     attachmentsCount: item.guiAttachmentCount,
     seenBy: item.seenByLabel
       ? {
