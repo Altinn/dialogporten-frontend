@@ -9,6 +9,7 @@ import type { PartyFieldsFragment } from 'bff-types-generated';
 import { type ChangeEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { flattenParties } from '../../../api/useDialogs.tsx';
 import { useParties } from '../../../api/useParties.ts';
 import type { PageRoutes } from '../../../pages/routes.ts';
 import { getAlertBadgeProps } from '../GlobalMenu';
@@ -174,7 +175,9 @@ export const useAccounts = ({
   const accounts: AccountMenuItem[] = [
     ...(endUser ? [endUserAccount] : []),
     ...otherUsersAccounts,
-    ...(organizationAccounts.length > 1 ? [...organizationAccounts, allOrganizationsAccount] : organizationAccounts),
+    ...(organizationAccounts.length > 1 && flattenParties(organizations).length <= 20
+      ? [...organizationAccounts, allOrganizationsAccount]
+      : organizationAccounts),
   ];
 
   const selectedAccount = allOrganizationsSelected
