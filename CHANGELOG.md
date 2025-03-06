@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.19.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.18.5...v1.19.0) (2025-03-06)
+
+
+### Features
+
+* use loading state for dialog from altinn-components ([#1884](https://github.com/Altinn/dialogporten-frontend/issues/1884)) ([0ed7832](https://github.com/Altinn/dialogporten-frontend/commit/0ed78327bf37bab5b7fcf97dfec492baa54cc6e5))
+
+
+### Bug Fixes
+
+* Fix dialogs sorting by date ([#1881](https://github.com/Altinn/dialogporten-frontend/issues/1881)) ([6adce4d](https://github.com/Altinn/dialogporten-frontend/commit/6adce4db373efa92a21aefaa221bb41fec19e1af))
+* **vitest:** fix issues with imports of react-router-dom outside of scope ([#1894](https://github.com/Altinn/dialogporten-frontend/issues/1894)) ([883d700](https://github.com/Altinn/dialogporten-frontend/commit/883d700805f8008153df8a630a2cbccddabae585))
+
 ## [1.18.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.18.4...v1.18.5) (2025-03-04)
 
 
