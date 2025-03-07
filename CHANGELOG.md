@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.20.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.19.0...v1.20.0) (2025-03-07)
+
+
+### Features
+
+* Hide 'All actors' button if there are more than 20 ([8062138](https://github.com/Altinn/dialogporten-frontend/commit/8062138a8c1517249f4142222c8768f907aaa614))
+
+
+### Bug Fixes
+
+* consistent actor props for all dialogs elements ([#1908](https://github.com/Altinn/dialogporten-frontend/issues/1908)) ([a62d717](https://github.com/Altinn/dialogporten-frontend/commit/a62d717556eb70e11cc74d29e8c55e1743e33cc7))
+* Fix loading dialogs stuck after refresh ([#1904](https://github.com/Altinn/dialogporten-frontend/issues/1904)) ([b758605](https://github.com/Altinn/dialogporten-frontend/commit/b75860584fbdf5e6fdd813e493f27f30fa7a8e2a))
+
 ## [1.19.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.18.5...v1.19.0) (2025-03-06)
 
 
