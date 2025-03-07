@@ -174,7 +174,7 @@ const useGroupedDialogs = ({
     );
 
     return { mappedGroupedDialogs, groups };
-  }, [items, displaySearchResults, t, format, isNotInbox, viewType, allWithinSameYear]);
+  }, [items, displaySearchResults, t, format, isNotInbox, viewType, allWithinSameYear, isLoading]);
 };
 
 export default useGroupedDialogs;
