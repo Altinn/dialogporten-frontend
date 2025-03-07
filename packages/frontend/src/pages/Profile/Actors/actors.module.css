@@ -1,0 +1,49 @@
+.searchContainer {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.searchBar {
+  /* border: 2px solid red; */
+}
+
+.selectContainer label {
+  margin-right: 0.75rem;
+}
+
+.partyListExpandedContent {
+  margin-left: 60px;
+}
+
+.subpartiesTitle {
+  color: var(--color-neutral-text-default, #202C3D);
+  font-size: var(--font-size-3, 14px);
+  font-style: normal;
+  font-weight: 400;
+  line-height: 130%;
+  letter-spacing: 0.035px;
+}
+
+.subpartyItem {
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+.subpartyName {
+  color: var(--global-text-default, #232C3C);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px;
+  margin-left: 0.5rem;
+}
+
+.subpartyOrgNr {
+  color: var(--global-text-subtle, #5D6470);
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
+  margin-left: 1rem;
+}
