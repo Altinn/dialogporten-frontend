@@ -1,13 +1,11 @@
 import { Avatar } from '@altinn/altinn-components';
-import { ActorType } from 'bff-types-generated';
 import { t } from 'i18next';
-import type { DialogActivity, Participant } from '../../api/useDialogById.tsx';
+import type { DialogActivity } from '../../api/useDialogById.tsx';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import styles from './activity.module.css';
 
 interface ActivityProps {
   activity: DialogActivity;
-  serviceOwner?: Participant;
 }
 
 const getActivityText = (activity: DialogActivity) => {
@@ -29,13 +27,8 @@ const getActivityText = (activity: DialogActivity) => {
   }
 };
 
-export const Activity = ({ activity, serviceOwner }: ActivityProps) => {
+export const Activity = ({ activity }: ActivityProps) => {
   const format = useFormat();
-  const isCompany =
-    activity.performedBy.actorType === ActorType.ServiceOwner ||
-    (activity.performedBy.actorId ?? '').includes('urn:altinn:organization:');
-  const performedByName = isCompany ? (serviceOwner?.name ?? '') : (activity.performedBy.actorName ?? '');
-  const imageUrl = isCompany ? serviceOwner?.imageURL : undefined;
   const text = getActivityText(activity);
   const clockPrefix = t('word.clock_prefix');
   const formatString = clockPrefix ? `do MMMM yyyy '${clockPrefix}' HH.mm` : `do MMMM yyyy HH.mm`;
@@ -44,8 +37,8 @@ export const Activity = ({ activity, serviceOwner }: ActivityProps) => {
     <div key={activity.id}>
       <div className={styles.activityParticipants}>
         <div className={styles.sender}>
-          <Avatar name={performedByName} type={isCompany ? 'company' : 'person'} imageUrl={imageUrl} size="sm" />
-          <span className={styles.participantLabel}>{performedByName}</span>
+          <Avatar {...activity.performedBy} size="sm" />
+          <span className={styles.participantLabel}>{activity.performedBy.name}</span>
         </div>
         <span className={styles.dateLabel}>{format(activity.createdAt, formatString)}</span>
       </div>

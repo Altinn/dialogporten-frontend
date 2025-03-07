@@ -1,6 +1,7 @@
 import type { AvatarProps } from '@altinn/altinn-components';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
+  type Actor,
   ActorType,
   type AttachmentFieldsFragment,
   type DialogActivityFragment,
@@ -14,20 +15,14 @@ import {
 } from 'bff-types-generated';
 import { AttachmentUrlConsumer } from 'bff-types-generated';
 import { t } from 'i18next';
-import type { DialogActionProps } from '../components/DialogDetails/DialogDetails.tsx';
+import type { DialogActionProps } from '../components';
 import { QUERY_KEYS } from '../constants/queryKeys.ts';
 import { type ValueType, getPreferredPropertyByLocale } from '../i18n/property.ts';
 import { useOrganizations } from '../pages/Inbox/useOrganizations.ts';
 import { toTitleCase } from '../profile';
-import { getOrganization } from './organizations.ts';
+import { type OrganizationOutput, getOrganization } from './organizations.ts';
 import { graphQLSDK } from './queries.ts';
 import { getSeenByLabel } from './useDialogs.tsx';
-
-export interface Participant {
-  name: string;
-  isCompany: boolean;
-  imageURL?: string;
-}
 
 export enum EmbeddableMediaType {
   markdown = 'application/vnd.dialogporten.frontchannelembed-url;type=text/markdown',
@@ -46,7 +41,7 @@ export interface DialogActivity {
   type: DialogActivityFragment['type'];
   createdAt: string;
   description: string;
-  performedBy: DialogActivityFragment['performedBy'];
+  performedBy: AvatarProps;
 }
 
 export interface DialogTransmission {
@@ -61,8 +56,8 @@ export interface DialogTransmission {
 
 export interface DialogByIdDetails {
   summary: string;
-  sender: Participant;
-  receiver: Participant;
+  sender: AvatarProps;
+  receiver: AvatarProps;
   title: string;
   guiActions: DialogActionProps[];
   additionalInfo: { value: string; mediaType: string } | undefined;
@@ -109,6 +104,21 @@ const getMainContentReference = (
   };
 };
 
+export const getActorProps = (actor: Actor, serviceOwner?: OrganizationOutput) => {
+  const isCompany =
+    actor.actorType === ActorType.ServiceOwner || (actor.actorId ?? '').includes('urn:altinn:organization:');
+  const type = isCompany ? 'company' : ('person' as AvatarProps['type']);
+  const hasSenderName = (actor.actorName?.length ?? 0) > 0;
+  const senderName = hasSenderName ? toTitleCase(actor.actorName) : (serviceOwner?.name ?? '');
+  const senderLogo = isCompany ? serviceOwner?.logo : undefined;
+  return {
+    name: senderName,
+    type,
+    imageUrl: senderLogo,
+    imageUrlAlt: t('dialog.imageAltURL', { companyName: senderName }),
+  };
+};
+
 export function mapDialogToToInboxItem(
   item: DialogByIdFieldsFragment | null | undefined,
   parties: PartyFieldsFragment[],
@@ -135,12 +145,13 @@ export function mapDialogToToInboxItem(
     summary: getPreferredPropertyByLocale(summaryObj)?.value ?? '',
     sender: {
       name: getPreferredPropertyByLocale(senderName)?.value || serviceOwner?.name || '',
-      isCompany: true,
-      imageURL: serviceOwner?.logo,
+      type: 'company',
+      imageUrl: serviceOwner?.logo,
+      imageUrlAlt: t('dialog.imageAltURL', { companyName: getPreferredPropertyByLocale(senderName)?.value }),
     },
     receiver: {
       name: actualReceiverParty?.name ?? '',
-      isCompany: actualReceiverParty?.partyType === 'Organization',
+      type: actualReceiverParty?.partyType === 'Organization' ? 'company' : 'person',
     },
     additionalInfo: {
       value: getPreferredPropertyByLocale(additionalInfoObj)?.value ?? '',
@@ -166,33 +177,27 @@ export function mapDialogToToInboxItem(
     seenByLabel,
     seenByOthersCount,
     activities: item.activities
-      .map((activity) => ({
-        id: activity.id,
-        type: activity.type,
-        createdAt: activity.createdAt,
-        performedBy: activity.performedBy,
-        description: getPreferredPropertyByLocale(activity.description)?.value ?? '',
-      }))
+      .map((activity) => {
+        const actorProps = getActorProps(activity.performedBy, serviceOwner);
+        return {
+          id: activity.id,
+          type: activity.type,
+          createdAt: activity.createdAt,
+          performedBy: actorProps,
+          description: getPreferredPropertyByLocale(activity.description)?.value ?? '',
+        };
+      })
       .reverse(),
     transmissions: item.transmissions
       .map((transmission) => {
-        const senderType =
-          transmission.sender.actorType === ActorType.ServiceOwner ||
-          (transmission.sender.actorId ?? '').includes('urn:altinn:organization:');
-        const hasSenderName = (transmission.sender.actorName?.length ?? 0) > 0;
-        const senderName = hasSenderName ? toTitleCase(transmission.sender.actorName) : (serviceOwner?.name ?? '');
-        const senderLogo = senderType ? serviceOwner?.logo : undefined;
+        const senderProps = getActorProps(transmission.sender, serviceOwner);
         const titleObj = transmission.content.title.value;
         const summaryObj = transmission.content.summary.value;
         return {
           id: transmission.id,
           type: transmission.type,
           createdAt: transmission.createdAt,
-          sender: {
-            name: senderName,
-            type: senderType ? 'company' : ('person' as AvatarProps['type']),
-            imageUrl: senderLogo,
-          },
+          sender: senderProps,
           attachments: transmission.attachments,
           title: getPreferredPropertyByLocale(titleObj)?.value ?? '',
           summary: getPreferredPropertyByLocale(summaryObj)?.value ?? '',
@@ -216,7 +221,7 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
     queryFn: () =>
       getDialogsById(id!).then((data) => {
         if (data?.dialogById.dialog) {
-          queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.DIALOGS] });
+          void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.DIALOGS] });
         }
         return data;
       }),

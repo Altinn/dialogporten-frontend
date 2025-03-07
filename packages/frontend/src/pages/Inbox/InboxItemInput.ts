@@ -1,5 +1,5 @@
+import type { AvatarProps } from '@altinn/altinn-components';
 import type { DialogStatus, SystemLabel } from 'bff-types-generated';
-import type { Participant } from '../../api/useDialogById.tsx';
 import type { InboxViewType } from '../../api/useDialogs.tsx';
 
 export interface InboxItemInput {
@@ -7,8 +7,8 @@ export interface InboxItemInput {
   party: string;
   title: string;
   summary: string;
-  sender: Participant;
-  receiver: Participant;
+  sender: AvatarProps;
+  receiver: AvatarProps;
   createdAt: string;
   updatedAt: string;
   status: DialogStatus;

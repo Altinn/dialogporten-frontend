@@ -113,28 +113,26 @@ export const DialogDetailsPage = () => {
   const showToolbar = id && dialog && !isLoading;
 
   return (
-    <main>
-      <PageBase spacing={0} bleed>
-        <Section theme="default" shadow="xs">
-          <PageNav
-            color="neutral"
-            padding={2}
-            backButton={{
-              label: t('word.back'),
-              as: (props: LinkProps) => <Link {...props} to={previousPath} />,
-            }}
-          />
-          <DialogDetails dialog={dialog} isLoading={isLoading} />
-        </Section>
-        {showToolbar && (
-          <DialogToolbar
-            currentLabel={dialog.label}
-            archiveAction={{ onClick: () => handleMoveDialogToArchive(id), isLoading: archiveLoading }}
-            deleteAction={{ onClick: () => handleMoveDialogBin(id), isLoading: deleteLoading }}
-            undoAction={{ onClick: () => handleUndoMoving(id), isLoading: undoLoading }}
-          />
-        )}
-      </PageBase>
-    </main>
+    <PageBase spacing={0} bleed>
+      <Section theme="default" shadow="xs">
+        <PageNav
+          color="neutral"
+          padding={2}
+          backButton={{
+            label: t('word.back'),
+            as: (props: LinkProps) => <Link {...props} to={previousPath} />,
+          }}
+        />
+        <DialogDetails dialog={dialog} isLoading={isLoading} />
+      </Section>
+      {showToolbar && (
+        <DialogToolbar
+          currentLabel={dialog.label}
+          archiveAction={{ onClick: () => handleMoveDialogToArchive(id), isLoading: archiveLoading }}
+          deleteAction={{ onClick: () => handleMoveDialogBin(id), isLoading: deleteLoading }}
+          undoAction={{ onClick: () => handleUndoMoving(id), isLoading: undoLoading }}
+        />
+      )}
+    </PageBase>
   );
 };

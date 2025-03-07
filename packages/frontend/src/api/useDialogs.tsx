@@ -56,12 +56,13 @@ export function mapDialogToToInboxItem(
       summary: getPreferredPropertyByLocale(summaryObj)?.value ?? '',
       sender: {
         name: getPreferredPropertyByLocale(senderName)?.value || serviceOwner?.name || '',
-        isCompany: true,
-        imageURL: serviceOwner?.logo,
+        type: 'company',
+        imageUrl: serviceOwner?.logo,
+        imageUrlAlt: t('dialog.imageAltURL', { companyName: getPreferredPropertyByLocale(senderName)?.value }),
       },
       receiver: {
         name: actualReceiverParty?.name ?? dialogReceiverSubParty?.name ?? '',
-        isCompany: actualReceiverParty?.partyType === 'Organization',
+        type: 'person',
       },
       guiAttachmentCount: item.guiAttachmentCount ?? 0,
       createdAt: item.createdAt,

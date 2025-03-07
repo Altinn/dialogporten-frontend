@@ -11,11 +11,11 @@ import {
 } from '@navikt/aksel-icons';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
-import { useWindowSize } from '../../../../utils/useWindowSize.tsx';
 import type { InboxViewType } from '../../../api/useDialogs.tsx';
 import { useParties } from '../../../api/useParties.ts';
 import { getGlobalSearchQueryParams } from '../../../pages/Inbox/queryParams.ts';
 import { PageRoutes } from '../../../pages/routes.ts';
+import { useWindowSize } from '../useWindowSize.tsx';
 export type SideBarView = InboxViewType | 'saved-searches' | 'archive' | 'bin';
 
 export type ViewCountRecord = {
