@@ -27,7 +27,7 @@ export const useSearchDialogs = ({ parties, searchValue }: searchDialogsProps): 
   const [searchParams] = useSearchParams();
   const searchBarParam = new URLSearchParams(searchParams);
   const org = searchBarParam.get('org') ?? '';
-  const enabled = (!!debouncedSearchString && debouncedSearchString.length > 2 && parties.length > 0) || !!org;
+  const enabled = parties.length > 0 && ((!!debouncedSearchString && debouncedSearchString.length > 2) || !!org);
 
   const { data, isSuccess, isLoading, isFetching } = useQuery<GetAllDialogsForPartiesQuery>({
     queryKey: [QUERY_KEYS.SEARCH_DIALOGS, partyURIs, debouncedSearchString, org],
