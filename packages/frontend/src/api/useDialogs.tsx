@@ -11,6 +11,7 @@ import {
   SystemLabel,
 } from 'bff-types-generated';
 import { type TFunction, t } from 'i18next';
+import { useLocation } from 'react-router-dom';
 import { QUERY_KEYS } from '../constants/queryKeys.ts';
 import { getPreferredPropertyByLocale } from '../i18n/property.ts';
 import type { InboxItemInput } from '../pages/Inbox/InboxItemInput.ts';
@@ -195,13 +196,15 @@ export const useDialogs = (parties: PartyFieldsFragment[]): UseDialogsOutput => 
   const { selectedParties } = useParties();
   const partiesToUse = parties ? parties : selectedParties;
   const mergedPartiesWithSubParties = flattenParties(partiesToUse);
+  const location = useLocation();
 
   const { data, isSuccess, isLoading, isError } = useQuery<GetAllDialogsForPartiesQuery>({
-    queryKey: [QUERY_KEYS.DIALOGS, mergedPartiesWithSubParties, organizations],
+    queryKey: [QUERY_KEYS.DIALOGS, mergedPartiesWithSubParties, organizations, location.pathname],
     staleTime: 1000 * 60 * 10,
     retry: 3,
     queryFn: () => getDialogs(mergedPartiesWithSubParties),
     enabled: mergedPartiesWithSubParties.length > 0,
+    gcTime: 0,
   });
 
   const dialogs = mapDialogToToInboxItem(data?.searchDialogs?.items ?? [], selectedParties, organizations);
