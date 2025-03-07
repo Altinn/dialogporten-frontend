@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.20.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.20.1...v1.20.2) (2025-03-07)
+
+
+### Bug Fixes
+
+* Remove search parameters if searh value is empty ([#1916](https://github.com/Altinn/dialogporten-frontend/issues/1916)) ([589804d](https://github.com/Altinn/dialogporten-frontend/commit/589804dabafc06fbd747e0e4775c9180f7da5771))
+
 ## [1.20.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.20.0...v1.20.1) (2025-03-07)
 
 
