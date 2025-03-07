@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.20.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.20.0...v1.20.1) (2025-03-07)
+
+
+### Bug Fixes
+
+* issues with dialog actions with click away not working and primary button in combo button not being triggered ([#1915](https://github.com/Altinn/dialogporten-frontend/issues/1915)) ([630a292](https://github.com/Altinn/dialogporten-frontend/commit/630a2926ac7ac558321450a3fab154900345c78f))
+* Refetch data on going back from dialog, avoid unnecessary request when only org is provided ([#1903](https://github.com/Altinn/dialogporten-frontend/issues/1903)) ([b51442a](https://github.com/Altinn/dialogporten-frontend/commit/b51442a45e15d0f1d51dda33d38883138ef2a0cd))
+
 ## [1.20.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.19.0...v1.20.0) (2025-03-07)
 
 
