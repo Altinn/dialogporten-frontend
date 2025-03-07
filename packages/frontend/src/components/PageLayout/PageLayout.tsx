@@ -89,6 +89,12 @@ export const PageLayout: React.FC = () => {
     queryClient.setQueryData(['search'], () => searchString || '');
   }, [searchParams]);
 
+  useEffect(() => {
+    if (!searchValue) {
+      onClear();
+    }
+  }, [searchValue]);
+
   const headerProps: HeaderProps = {
     currentAccount: selectedAccount,
     logo: {
