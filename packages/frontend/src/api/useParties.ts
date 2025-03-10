@@ -12,6 +12,7 @@ interface UsePartiesOutput {
   parties: PartyFieldsFragment[];
   deletedParties: PartyFieldsFragment[];
   isSuccess: boolean;
+  isError: boolean;
   isLoading: boolean;
   selectedParties: PartyFieldsFragment[];
   selectedPartyIds: string[];
@@ -69,11 +70,13 @@ export const useParties = (): UsePartiesOutput => {
     }
   };
 
-  const { data, isLoading, isSuccess } = useQuery<PartiesResult>({
+  const { data, isLoading, isSuccess, isError } = useQuery<PartiesResult>({
     queryKey: [QUERY_KEYS.PARTIES],
     queryFn: fetchParties,
     staleTime: Number.POSITIVE_INFINITY,
     gcTime: Number.POSITIVE_INFINITY,
+    retry: 2,
+    retryDelay: 500,
   });
 
   const handleSetSelectedParties = (parties: PartyFieldsFragment[] | null) => {
@@ -167,6 +170,7 @@ export const useParties = (): UsePartiesOutput => {
   return {
     isLoading,
     isSuccess,
+    isError,
     selectedParties,
     selectedPartyIds: selectedParties.map((party) => party.party) ?? [],
     setSelectedParties: handleSetSelectedParties,
