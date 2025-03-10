@@ -89,6 +89,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
         {selectedAccount ? (
           <>
             <Toolbar
+              key={`toolbar-${filters.length}`}
               data-testid="inbox-toolbar"
               accountMenu={{
                 accounts,
