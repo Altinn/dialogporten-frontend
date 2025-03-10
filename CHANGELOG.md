@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.20.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.20.2...v1.20.3) (2025-03-10)
+
+
+### Bug Fixes
+
+* show technical error with link to log out if user has no profile ([#1926](https://github.com/Altinn/dialogporten-frontend/issues/1926)) ([7093161](https://github.com/Altinn/dialogporten-frontend/commit/7093161f875c810c82da57fcf40f7c74c5fbead7))
+
 ## [1.20.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.20.1...v1.20.2) (2025-03-10)
 
 
