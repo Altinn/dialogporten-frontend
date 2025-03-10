@@ -10,7 +10,7 @@ import {
   type GetDialogByIdQuery,
   type OrganizationFieldsFragment,
   type PartyFieldsFragment,
-  type SystemLabel,
+  SystemLabel,
   type TransmissionFieldsFragment,
 } from 'bff-types-generated';
 import { AttachmentUrlConsumer } from 'bff-types-generated';
@@ -160,7 +160,7 @@ export function mapDialogToToInboxItem(
     guiActions: item.guiActions.map((guiAction) => ({
       id: guiAction.id,
       url: guiAction.url,
-      hidden: !guiAction.isAuthorized,
+      hidden: !guiAction.isAuthorized || (guiAction.isDeleteDialogAction && item.systemLabel !== SystemLabel.Bin),
       priority: guiAction.priority,
       httpMethod: guiAction.httpMethod,
       title: getPreferredPropertyByLocale(guiAction.title)?.value ?? '',
