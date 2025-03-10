@@ -89,6 +89,7 @@ export const PageLayout: React.FC = () => {
     queryClient.setQueryData(['search'], () => searchString || '');
   }, [searchParams]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Not all dependencies are needed
   useEffect(() => {
     if (!searchValue) {
       onClear();
