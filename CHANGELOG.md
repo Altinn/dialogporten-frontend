@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.20.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.20.3...v1.20.4) (2025-03-10)
+
+
+### Bug Fixes
+
+* Hide delete gui action if systemLabel is not BIN ([#1925](https://github.com/Altinn/dialogporten-frontend/issues/1925)) ([1f9ddce](https://github.com/Altinn/dialogporten-frontend/commit/1f9ddce039c6b204620fe277a6ea0042cf2d8c92))
+
 ## [1.20.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.20.2...v1.20.3) (2025-03-10)
 
 
