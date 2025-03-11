@@ -67,7 +67,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const filteredItems = useMemo(() => filterDialogs(dataSource, filterState), [dataSource, filterState]);
 
   const isLoading = isLoadingParties || isFetchingSearchResults || isLoadingDialogs;
-  const { mappedGroupedDialogs, groups } = useGroupedDialogs({
+  const { groupedDialogs, groups } = useGroupedDialogs({
     items: filteredItems,
     displaySearchResults,
     filters: filterState,
@@ -130,7 +130,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
       <Section spacing={3} margin="section">
         {dataSourceSuccess && !filteredItems.length && <h1>{t(`inbox.heading.title.${viewType}`, { count: 0 })}</h1>}
         <DialogList
-          items={mappedGroupedDialogs}
+          items={groupedDialogs}
           groups={groups}
           sortGroupBy={([aKey], [bKey]) => (groups[bKey]?.orderIndex ?? 0) - (groups[aKey]?.orderIndex ?? 0)}
         />

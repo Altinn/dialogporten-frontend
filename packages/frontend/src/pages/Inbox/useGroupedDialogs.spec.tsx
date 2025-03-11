@@ -211,7 +211,7 @@ describe('useGroupedDialogs', () => {
       }),
     );
 
-    expect(result.current.mappedGroupedDialogs).toHaveLength(5);
+    expect(result.current.groupedDialogs).toHaveLength(5);
     expect(result.current.groups).toEqual({ loading: { title: 'word.loading' } });
   });
 
@@ -225,7 +225,7 @@ describe('useGroupedDialogs', () => {
       }),
     );
 
-    expect(result.current.mappedGroupedDialogs).toHaveLength(7);
+    expect(result.current.groupedDialogs).toHaveLength(7);
     expect(result.current.groups).toEqual({
       inbox: { title: 'inbox.heading.search_results.inbox', orderIndex: null },
     });

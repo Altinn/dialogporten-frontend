@@ -24,7 +24,7 @@ interface DialogListGroupPropsSort extends DialogListGroupProps {
 }
 
 interface UseGroupedDialogsOutput {
-  mappedGroupedDialogs: DialogListItemProps[];
+  groupedDialogs: DialogListItemProps[];
   groups: Record<string, DialogListGroupPropsSort>;
 }
 
@@ -35,6 +35,10 @@ interface UseGroupedDialogsProps {
   viewType: InboxViewType;
   isLoading: boolean;
 }
+
+const sortByUpdatedAt = (arr: DialogListItemProps[]) => {
+  return arr.sort((a, b) => new Date(b.updatedAt ?? 0).getTime() - new Date(a.updatedAt ?? 0).getTime());
+};
 
 const renderLoadingItems = (size: number): DialogListItemProps[] => {
   return Array.from({ length: size }, (_, index) => {
@@ -111,7 +115,7 @@ const useGroupedDialogs = ({
   return useMemo(() => {
     if (isLoading) {
       return {
-        mappedGroupedDialogs: renderLoadingItems(5),
+        groupedDialogs: renderLoadingItems(5),
         groups: {
           loading: { title: t(`word.loading`) },
         },
@@ -120,29 +124,29 @@ const useGroupedDialogs = ({
 
     if (!displaySearchResults && isNotInbox) {
       return {
-        mappedGroupedDialogs: items.map((item) => formatDialogItem(item, viewType)),
+        groupedDialogs: items.map((item) => formatDialogItem(item, viewType)),
         groups: {
           [viewType]: { title: t(`inbox.heading.title.${viewType}`, { count: items.length }) },
         },
       };
     }
 
-    const getOrderIndex = (createdAt: Date, isDateKey: boolean) => {
+    const getOrderIndex = (updatedAt: Date, isDateKey: boolean) => {
       if (!isDateKey) return null;
 
       if (allWithinSameYear) {
-        return createdAt.getMonth();
+        return updatedAt.getMonth();
       }
-      return createdAt.getFullYear();
+      return updatedAt.getFullYear();
     };
 
     const groupedItems = items.reduce<GroupedItem[]>((acc, item, _, list) => {
-      const createdAt = new Date(item.createdAt);
+      const updatedAt = new Date(item.updatedAt);
       const groupKey = displaySearchResults
         ? item.viewType
         : allWithinSameYear
-          ? format(createdAt, 'LLLL')
-          : format(createdAt, 'yyyy');
+          ? format(updatedAt, 'LLLL')
+          : format(updatedAt, 'yyyy');
 
       const isDateKey = !displaySearchResults;
 
@@ -157,7 +161,7 @@ const useGroupedDialogs = ({
       if (existingGroup) {
         existingGroup.items.push(item);
       } else {
-        const orderIndex = getOrderIndex(createdAt, isDateKey);
+        const orderIndex = getOrderIndex(updatedAt, isDateKey);
 
         acc.push({ id: groupKey, label, items: [item], orderIndex });
       }
@@ -173,7 +177,9 @@ const useGroupedDialogs = ({
       items.map((item) => formatDialogItem(item, id.toString())),
     );
 
-    return { mappedGroupedDialogs, groups };
+    const groupedDialogs = sortByUpdatedAt(mappedGroupedDialogs);
+
+    return { groupedDialogs, groups };
   }, [items, displaySearchResults, t, format, isNotInbox, viewType, allWithinSameYear, isLoading]);
 };
 
