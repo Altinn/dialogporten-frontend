@@ -1,6 +1,6 @@
 import type { OrganizationFieldsFragment } from 'bff-types-generated';
 
-interface OrganizationOutput {
+export interface OrganizationOutput {
   name: string;
   logo: string;
 }

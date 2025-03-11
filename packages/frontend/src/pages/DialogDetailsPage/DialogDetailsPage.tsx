@@ -15,22 +15,23 @@ import { updateSystemLabel } from '../../api/queries.ts';
 import { useDialogById } from '../../api/useDialogById.tsx';
 import { useDialogByIdSubscription } from '../../api/useDialogByIdSubscription.ts';
 import { useParties } from '../../api/useParties.ts';
-import { InboxItemDetail } from '../../components';
+import { DialogDetails } from '../../components';
 import { DialogToolbar } from '../../components/DialogToolbar/DialogToolbar.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
-import { InboxItemPageSkeleton } from './InboxItemPageSkeleton.tsx';
 
-export const InboxItemPage = () => {
+export const DialogDetailsPage = () => {
   const { id } = useParams();
   const { parties } = useParties();
   const { t } = useTranslation();
   const location = useLocation();
-  const { dialog, isLoading, isSuccess, isError } = useDialogById(parties, id);
+  const { dialog, isLoading: isLoadingDialog, isSuccess, isError } = useDialogById(parties, id);
   const [archiveLoading, setArchiveLoading] = useState<boolean>(false);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
   const [undoLoading, setUndoLoading] = useState<boolean>(false);
   const { openSnackbar } = useSnackbar();
   const queryClient = useQueryClient();
+  const isLoading = isLoadingDialog || (!isSuccess && !isError);
+
   useDialogByIdSubscription(id, dialog?.dialogToken);
 
   const handleMoveDialog = async ({
@@ -108,36 +109,30 @@ export const InboxItemPage = () => {
     });
   };
 
-  if (isLoading || (!isSuccess && !isError)) {
-    return <InboxItemPageSkeleton />;
-  }
-
   const previousPath = (location?.state?.fromView ?? '/') + location.search;
-  const showToolbar = id && dialog;
+  const showToolbar = id && dialog && !isLoading;
 
   return (
-    <main>
-      <PageBase spacing={0} bleed>
-        <Section theme="default" shadow="xs">
-          <PageNav
-            color="neutral"
-            padding={2}
-            backButton={{
-              label: t('word.back'),
-              as: (props: LinkProps) => <Link {...props} to={previousPath} />,
-            }}
-          />
-          <InboxItemDetail dialog={dialog} />
-        </Section>
-        {showToolbar && (
-          <DialogToolbar
-            currentLabel={dialog.label}
-            archiveAction={{ onClick: () => handleMoveDialogToArchive(id), isLoading: archiveLoading }}
-            deleteAction={{ onClick: () => handleMoveDialogBin(id), isLoading: deleteLoading }}
-            undoAction={{ onClick: () => handleUndoMoving(id), isLoading: undoLoading }}
-          />
-        )}
-      </PageBase>
-    </main>
+    <PageBase spacing={0} bleed>
+      <Section theme="default" shadow="xs">
+        <PageNav
+          color="neutral"
+          padding={2}
+          backButton={{
+            label: t('word.back'),
+            as: (props: LinkProps) => <Link {...props} to={previousPath} />,
+          }}
+        />
+        <DialogDetails dialog={dialog} isLoading={isLoading} />
+      </Section>
+      {showToolbar && (
+        <DialogToolbar
+          currentLabel={dialog.label}
+          archiveAction={{ onClick: () => handleMoveDialogToArchive(id), isLoading: archiveLoading }}
+          deleteAction={{ onClick: () => handleMoveDialogBin(id), isLoading: deleteLoading }}
+          undoAction={{ onClick: () => handleUndoMoving(id), isLoading: undoLoading }}
+        />
+      )}
+    </PageBase>
   );
 };

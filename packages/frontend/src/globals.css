@@ -3,41 +3,10 @@
 @import "@altinn/altinn-components/dist/global.css";
 
 :root {
-  /* Layer 0 - Raw colors */
-  --dark-blue: #111d46;
-  --grey: #f4f5f6;
-  --Action-Link: #1d4ed8;
-
   /* Layer 1 - Semantic colors */
-  --Person-Primary: #084826;
-  --Person-800: #076046;
-  --Person-Progress: #347659;
-  --Person-600: #079669;
-  --Person-Secondary: #10b981;
-  --Person-400: #34d399;
-  --Person-300: #6ee7b7;
-  --Person-200: #a8f3d0;
-  --Person-Paper: #eaf7ef;
-  --Company-Primary: #111d46;
-  --Company-800: #166aac;
-  --Company-Progress: #4086d7;
-  --Company-600: #1e98f5;
-  --Company-Secondary: #4badf7;
-  --Company-400: #78c1f9;
-  --Company-300: #a5d6fb;
-  --Company-200: #d3eafd;
-  --Company-Paper: #e9f5ff;
-  --Action-Important: #e02e49;
-  --Action-Danger: #861c2c;
   --text-neutral-subtle: #5b6471;
   --text-accent-subtle: #0163ba;
-
-  /* Profile variables */
-  --background-color: var(--Person-Paper);
-  --button-color: var(--Person-Primary);
-  --background-color-accented: var(--Person-300);
-  --border-color-subtle: var(--Person-600);
-  --border-color-accented: var(--Person-800);
+  /* temporary overrides until https://github.com/Altinn/altinn-components/issues/285 is solved */
   --ds-body-md-font-size: 1rem; /* work-around until order of css is fixed */
 }
 

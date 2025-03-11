@@ -1,9 +1,10 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import { useEffect, useMemo } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { QUERY_KEYS } from '../constants/queryKeys.ts';
 import { getSelectedAllPartiesFromQueryParams, getSelectedPartyFromQueryParams } from '../pages/Inbox/queryParams.ts';
+import { useGlobalState } from '../useGlobalState.ts';
 import { normalizeFlattenParties } from './normalizeFlattenParties.ts';
 import { graphQLSDK } from './queries.ts';
 
@@ -11,6 +12,7 @@ interface UsePartiesOutput {
   parties: PartyFieldsFragment[];
   deletedParties: PartyFieldsFragment[];
   isSuccess: boolean;
+  isError: boolean;
   isLoading: boolean;
   selectedParties: PartyFieldsFragment[];
   selectedPartyIds: string[];
@@ -52,9 +54,14 @@ const createPartyParams = (searchParamString: string, key: string, value: string
 };
 
 export const useParties = (): UsePartiesOutput => {
-  const queryClient = useQueryClient();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [allOrganizationsSelected, setAllOrganizationsSelected] = useGlobalState<boolean>(
+    QUERY_KEYS.ALL_ORGANIZATIONS_SELECTED,
+    false,
+  );
+  const [selectedParties, setSelectedParties] = useGlobalState<PartyFieldsFragment[]>(QUERY_KEYS.SELECTED_PARTIES, []);
+  const [partiesEmptyList, setPartiesEmptyList] = useGlobalState<boolean>(QUERY_KEYS.PARTIES_EMPTY_LIST, false);
 
   const handleChangSearchParams = (searchParams: URLSearchParams) => {
     /* Avoid setting search params if they are the same as the current ones */
@@ -63,44 +70,19 @@ export const useParties = (): UsePartiesOutput => {
     }
   };
 
-  const selectedPartiesQuery = useQuery<PartyFieldsFragment[]>({
-    queryKey: [QUERY_KEYS.SELECTED_PARTIES],
-    enabled: false,
-    staleTime: Number.POSITIVE_INFINITY,
-    initialData: [],
-  });
-
-  const { data: allOrganizationsSelected } = useQuery<boolean>({
-    queryKey: [QUERY_KEYS.ALL_ORGANIZATIONS_SELECTED],
-    enabled: false,
-    staleTime: Number.POSITIVE_INFINITY,
-    initialData: false,
-  });
-
-  const { data: partiesEmptyList } = useQuery<boolean>({
-    queryKey: [QUERY_KEYS.PARTIES_EMPTY_LIST],
-    enabled: false,
-    staleTime: Number.POSITIVE_INFINITY,
-    initialData: false,
-  });
-
-  const selectedParties = selectedPartiesQuery.data ?? [];
-
-  const { data, isLoading, isSuccess } = useQuery<PartiesResult>({
+  const { data, isLoading, isSuccess, isError } = useQuery<PartiesResult>({
     queryKey: [QUERY_KEYS.PARTIES],
     queryFn: fetchParties,
     staleTime: Number.POSITIVE_INFINITY,
     gcTime: Number.POSITIVE_INFINITY,
+    retry: 2,
+    retryDelay: 500,
   });
 
-  const setSelectedParties = (parties: PartyFieldsFragment[] | null) => {
+  const handleSetSelectedParties = (parties: PartyFieldsFragment[] | null) => {
     if (parties?.length) {
-      queryClient.setQueryData([QUERY_KEYS.SELECTED_PARTIES], parties);
+      setSelectedParties(parties);
     }
-  };
-
-  const setAllOrganizationsSelected = (allOrganizations: boolean) => {
-    queryClient.setQueryData([QUERY_KEYS.ALL_ORGANIZATIONS_SELECTED], allOrganizations);
   };
 
   const setSelectedPartyIds = (partyIds: string[], allOrganizationsSelected: boolean) => {
@@ -121,7 +103,7 @@ export const useParties = (): UsePartiesOutput => {
       const params = createPartyParams(searchParamsString, 'party', encodeURIComponent(partyIds[0]));
       handleChangSearchParams(params);
     }
-    setSelectedParties(data?.parties.filter((party) => partyIds.includes(party.party)) ?? []);
+    handleSetSelectedParties(data?.parties.filter((party) => partyIds.includes(party.party)) ?? []);
   };
 
   const selectAllOrganizations = () => {
@@ -175,7 +157,7 @@ export const useParties = (): UsePartiesOutput => {
       if (data?.parties?.length > 0) {
         handlePartySelection();
       } else {
-        queryClient.setQueryData([QUERY_KEYS.PARTIES_EMPTY_LIST], true);
+        setPartiesEmptyList(true);
       }
     }
   }, [isSuccess, data?.parties, location.search]);
@@ -188,9 +170,10 @@ export const useParties = (): UsePartiesOutput => {
   return {
     isLoading,
     isSuccess,
+    isError,
     selectedParties,
     selectedPartyIds: selectedParties.map((party) => party.party) ?? [],
-    setSelectedParties,
+    setSelectedParties: handleSetSelectedParties,
     setSelectedPartyIds,
     parties: data?.parties ?? [],
     currentEndUser: data?.parties.find((party) => party.isCurrentEndUser),

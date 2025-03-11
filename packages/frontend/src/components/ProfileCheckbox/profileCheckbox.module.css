@@ -1,7 +1,0 @@
-.profileCheckbox input[type="checkbox"]:checked {
-  background-color: var(--button-color);
-}
-
-.profileCheckbox input[type="checkbox"]:checked:after {
-  background-color: var(--background-color);
-}

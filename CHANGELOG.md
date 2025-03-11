@@ -1,5 +1,54 @@
 # Changelog
 
+## [1.20.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.20.2...v1.20.3) (2025-03-10)
+
+
+### Bug Fixes
+
+* show technical error with link to log out if user has no profile ([#1926](https://github.com/Altinn/dialogporten-frontend/issues/1926)) ([7093161](https://github.com/Altinn/dialogporten-frontend/commit/7093161f875c810c82da57fcf40f7c74c5fbead7))
+
+## [1.20.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.20.1...v1.20.2) (2025-03-10)
+
+
+### Bug Fixes
+
+* ensure filters are active in Toolbar on reload of state ([#1922](https://github.com/Altinn/dialogporten-frontend/issues/1922)) ([a22689a](https://github.com/Altinn/dialogporten-frontend/commit/a22689a6569b92dcd201cfd30de6ae9a3d240684))
+* Remove search parameters if searh value is empty ([#1916](https://github.com/Altinn/dialogporten-frontend/issues/1916)) ([589804d](https://github.com/Altinn/dialogporten-frontend/commit/589804dabafc06fbd747e0e4775c9180f7da5771))
+
+## [1.20.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.20.0...v1.20.1) (2025-03-07)
+
+
+### Bug Fixes
+
+* issues with dialog actions with click away not working and primary button in combo button not being triggered ([#1915](https://github.com/Altinn/dialogporten-frontend/issues/1915)) ([630a292](https://github.com/Altinn/dialogporten-frontend/commit/630a2926ac7ac558321450a3fab154900345c78f))
+* Refetch data on going back from dialog, avoid unnecessary request when only org is provided ([#1903](https://github.com/Altinn/dialogporten-frontend/issues/1903)) ([b51442a](https://github.com/Altinn/dialogporten-frontend/commit/b51442a45e15d0f1d51dda33d38883138ef2a0cd))
+
+## [1.20.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.19.0...v1.20.0) (2025-03-07)
+
+
+### Features
+
+* Hide 'All actors' button if there are more than 20 ([8062138](https://github.com/Altinn/dialogporten-frontend/commit/8062138a8c1517249f4142222c8768f907aaa614))
+
+
+### Bug Fixes
+
+* consistent actor props for all dialogs elements ([#1908](https://github.com/Altinn/dialogporten-frontend/issues/1908)) ([a62d717](https://github.com/Altinn/dialogporten-frontend/commit/a62d717556eb70e11cc74d29e8c55e1743e33cc7))
+* Fix loading dialogs stuck after refresh ([#1904](https://github.com/Altinn/dialogporten-frontend/issues/1904)) ([b758605](https://github.com/Altinn/dialogporten-frontend/commit/b75860584fbdf5e6fdd813e493f27f30fa7a8e2a))
+
+## [1.19.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.18.5...v1.19.0) (2025-03-06)
+
+
+### Features
+
+* use loading state for dialog from altinn-components ([#1884](https://github.com/Altinn/dialogporten-frontend/issues/1884)) ([0ed7832](https://github.com/Altinn/dialogporten-frontend/commit/0ed78327bf37bab5b7fcf97dfec492baa54cc6e5))
+
+
+### Bug Fixes
+
+* Fix dialogs sorting by date ([#1881](https://github.com/Altinn/dialogporten-frontend/issues/1881)) ([6adce4d](https://github.com/Altinn/dialogporten-frontend/commit/6adce4db373efa92a21aefaa221bb41fec19e1af))
+* **vitest:** fix issues with imports of react-router-dom outside of scope ([#1894](https://github.com/Altinn/dialogporten-frontend/issues/1894)) ([883d700](https://github.com/Altinn/dialogporten-frontend/commit/883d700805f8008153df8a630a2cbccddabae585))
+
 ## [1.18.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.18.4...v1.18.5) (2025-03-04)
 
 

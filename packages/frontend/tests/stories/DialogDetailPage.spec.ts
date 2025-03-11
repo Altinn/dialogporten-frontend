@@ -3,7 +3,7 @@ import { defaultAppURL } from '../';
 import { PageRoutes } from '../../src/pages/routes';
 import { getSidebarMenuItem, getSidebarMenuItemBadge } from './common';
 
-test.describe('InboxItemPage', () => {
+test.describe('DialogDetailsPage', () => {
   test('Check message opening, archiving and deleting', async ({ page }: { page: Page }) => {
     const archiveLink = getSidebarMenuItem(page, PageRoutes.archive);
     const archiveLinkCount = archiveLink.locator('span:text("1")');

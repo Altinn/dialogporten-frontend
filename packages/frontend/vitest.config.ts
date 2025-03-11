@@ -3,10 +3,14 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   plugins: [react()],
+  define: process.env.VITEST ? {} : { global: 'window' },
   test: {
-    server: {
-      deps: {
-        inline: ['react-router'],
+    deps: {
+      optimizer: {
+        web: {
+          include: ['react-router-dom'],
+          enabled: true,
+        },
       },
     },
     exclude: ['node_modules', 'tests'], // tests for Playwright

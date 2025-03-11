@@ -13,12 +13,12 @@ describe('generateSendersAutocompleteBySearchString', () => {
       summary: 'Skatteoppgjøret for 2022 er klart. Du kan fortsatt gjøre endringer.',
       sender: {
         name: 'Skatteetaten',
-        isCompany: true,
-        imageURL: 'https://altinncdn.no/orgs/skd/skd.png',
+        type: 'company',
+        imageUrl: 'https://altinncdn.no/orgs/skd/skd.png',
       },
       receiver: {
         name: 'Test Testesen',
-        isCompany: false,
+        type: 'company',
       },
       createdAt: '2023-03-11T07:00:00.000Z',
       updatedAt: '2023-07-15T08:45:00.000Z',
@@ -39,12 +39,12 @@ describe('generateSendersAutocompleteBySearchString', () => {
         'Du er en av 6.000 personer som er trukket ut fra folkeregisteret til å delta i SSBs undersøkelse om levekår.\n\n',
       sender: {
         name: 'Statistisk sentralbyrå',
-        isCompany: true,
-        imageURL: 'https://altinncdn.no/orgs/ssb/ssb_dark.png',
+        type: 'company',
+        imageUrl: 'https://altinncdn.no/orgs/ssb/ssb_dark.png',
       },
       receiver: {
         name: 'Test Testesen',
-        isCompany: false,
+        type: 'company',
       },
       createdAt: '2023-05-17T09:30:00.000Z',
       org: 'ssb',

@@ -21,7 +21,7 @@
     "i18n:sort": "tsx ./src/i18n/check.ts --sort"
   },
   "dependencies": {
-    "@altinn/altinn-components": "^0.19.3",
+    "@altinn/altinn-components": "^0.20.2",
     "@digdir/designsystemet-css": "1.0.0-next.50",
     "@digdir/designsystemet-react": "1.0.0-next.50",
     "@digdir/designsystemet-theme": "1.0.0-next.50",
@@ -40,7 +40,6 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-i18next": "^15.0.1",
-    "react-loading-skeleton": "^3.5.0",
     "react-router-dom": "^7.2.0",
     "sse.js": "^2.5.0",
     "use-debounce": "^10.0.1"
@@ -61,7 +60,7 @@
     "tsx": "^4.16.5",
     "typescript": "^5.2.2",
     "vite": "^5.0.8",
-    "vitest": "^2.0.0",
+    "vitest": "^3.0.7",
     "web-streams-polyfill": "^3.3.3"
   },
   "msw": {

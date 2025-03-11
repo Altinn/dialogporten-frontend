@@ -1,4 +1,5 @@
-import { DialogList, Section, Toolbar } from '@altinn/altinn-components';
+import { DialogList, Heading, Section, Toolbar } from '@altinn/altinn-components';
+import { Alert, Paragraph } from '@digdir/designsystemet-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
@@ -25,6 +26,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     allOrganizationsSelected,
     parties,
     partiesEmptyList,
+    isError: unableToLoadParties,
     isLoading: isLoadingParties,
   } = useParties();
   const [searchParams] = useSearchParams();
@@ -73,11 +75,25 @@ export const Inbox = ({ viewType }: InboxProps) => {
     isLoading,
   });
 
+  if (unableToLoadParties) {
+    return (
+      <section className={styles.noParties}>
+        <Alert data-color="danger">
+          <Heading data-size="xs">{t('inbox.unable_to_load_parties.title')}</Heading>
+          <Paragraph>
+            {t('inbox.unable_to_load_parties.body')}
+            <a href="/api/logout">{t('inbox.unable_to_load_parties.link')}</a>
+          </Paragraph>
+        </Alert>
+      </section>
+    );
+  }
+
   if (partiesEmptyList) {
     return (
-      <div className={styles.noParties}>
+      <section className={styles.noParties}>
         <h1 className={styles.noPartiesText}>{t('inbox.no_parties_found')}</h1>
-      </div>
+      </section>
     );
   }
 
@@ -89,6 +105,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
         {selectedAccount ? (
           <>
             <Toolbar
+              key={`toolbar-${filters.length}`}
               data-testid="inbox-toolbar"
               accountMenu={{
                 accounts,
@@ -112,7 +129,11 @@ export const Inbox = ({ viewType }: InboxProps) => {
       </section>
       <Section spacing={3} margin="section">
         {dataSourceSuccess && !filteredItems.length && <h1>{t(`inbox.heading.title.${viewType}`, { count: 0 })}</h1>}
-        <DialogList items={mappedGroupedDialogs} groups={groups} sortGroupBy={(a, b) => b[0].localeCompare(a[0])} />
+        <DialogList
+          items={mappedGroupedDialogs}
+          groups={groups}
+          sortGroupBy={([aKey], [bKey]) => (groups[bKey]?.orderIndex ?? 0) - (groups[aKey]?.orderIndex ?? 0)}
+        />
       </Section>
     </>
   );

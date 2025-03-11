@@ -156,6 +156,7 @@ export const useSearchAutocompleteDialogs = ({
     queryFn: () => searchAutocompleteDialogs(partyURIs, debouncedSearchString),
     staleTime: 1000 * 60 * 10,
     enabled,
+    gcTime: 0,
   });
 
   const generatedSendersAutocomplete = generateSendersAutocompleteBySearchString(
