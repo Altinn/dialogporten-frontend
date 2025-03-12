@@ -87,6 +87,7 @@ describe('getCountBadge', () => {
     isCurrentEndUser: false,
     isDeleted: false,
     isMainAdministrator: false,
+    hasOnlyAccessToSubParties: false,
     name: 'party1',
     partyType: 'Person',
     party: 'party1',
@@ -122,6 +123,7 @@ describe('getCountBadge', () => {
       isCurrentEndUser: false,
       isDeleted: false,
       isMainAdministrator: false,
+      hasOnlyAccessToSubParties: false,
       name: '',
       partyType: '',
       party: 'party3',
@@ -140,6 +142,7 @@ describe('getCountBadge', () => {
         isMainAdministrator: false,
         name: 'party1',
         isCurrentEndUser: false,
+        hasOnlyAccessToSubParties: false,
         isDeleted: false,
       },
       {
@@ -150,6 +153,7 @@ describe('getCountBadge', () => {
         isMainAdministrator: false,
         name: 'party2',
         isCurrentEndUser: false,
+        hasOnlyAccessToSubParties: false,
         isDeleted: false,
       },
     ];

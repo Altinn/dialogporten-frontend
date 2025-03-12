@@ -13,7 +13,7 @@ import { useDebounce } from 'use-debounce';
 import { getOrganization } from '../../../api/organizations.ts';
 import {
   type SearchAutocompleteDialogInput,
-  flattenParties,
+  getPartyIds,
   mapAutocompleteDialogsDtoToInboxItem,
   searchAutocompleteDialogs,
 } from '../../../api/useDialogs.tsx';
@@ -139,7 +139,7 @@ export const useSearchAutocompleteDialogs = ({
   selectedParties,
   searchValue,
 }: searchDialogsProps): UseAutocompleteDialogsOutput => {
-  const partyURIs = flattenParties(selectedParties);
+  const partyURIs = getPartyIds(selectedParties);
   const debouncedSearchString = useDebounce(searchValue, 300)[0];
   const { onSearch } = useSearchString();
   const { dialogs } = useDialogs(selectedParties);

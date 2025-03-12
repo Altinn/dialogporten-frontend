@@ -8,6 +8,7 @@ describe('normalizeParties', () => {
       party: 'urn:altinn:person:identifier-no:1337',
       partyType: 'Person',
       subParties: [],
+      hasOnlyAccessToSubParties: false,
       isAccessManager: true,
       isMainAdministrator: false,
       name: 'EDEL REIERSEN',
@@ -17,6 +18,7 @@ describe('normalizeParties', () => {
     {
       party: 'urn:altinn:organization:identifier-no:1',
       partyType: 'Organization',
+      hasOnlyAccessToSubParties: false,
       subParties: [
         {
           party: 'urn:altinn:organization:identifier-no:2',
