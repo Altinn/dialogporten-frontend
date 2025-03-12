@@ -1,5 +1,6 @@
 fragment partyFields on AuthorizedParty {
   party
+  hasOnlyAccessToSubParties
   partyType
   subParties {
     ...subPartyFields

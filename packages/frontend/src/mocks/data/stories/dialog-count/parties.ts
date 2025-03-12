@@ -9,11 +9,13 @@ export const parties: PartyFieldsFragment[] = [
     "isMainAdministrator": false,
     "name": "ASK UGLESETT",
     "isCurrentEndUser": true,
-    "isDeleted": false
+    "isDeleted": false,
+    "hasOnlyAccessToSubParties": false,
   },
   {
     "party": "urn:altinn:organization:identifier-no:213294342",
     "partyType": "Organization",
+    "hasOnlyAccessToSubParties": false,
     "subParties": [
       {
         "party": "urn:altinn:organization:identifier-no:215421902",
@@ -34,6 +36,7 @@ export const parties: PartyFieldsFragment[] = [
   {
     "party": "urn:altinn:organization:identifier-no:313549461",
     "partyType": "Organization",
+    "hasOnlyAccessToSubParties": false,
     "subParties": [
       {
         "party": "urn:altinn:organization:identifier-no:311615696",
@@ -63,6 +66,7 @@ export const parties: PartyFieldsFragment[] = [
   {
     "party": "urn:altinn:organization:identifier-no:313776816",
     "partyType": "Organization",
+    "hasOnlyAccessToSubParties": false,
     "subParties": [
       {
         "party": "urn:altinn:organization:identifier-no:315073693",
@@ -83,6 +87,7 @@ export const parties: PartyFieldsFragment[] = [
   {
     "party": "urn:altinn:organization:identifier-no:312409216",
     "partyType": "Organization",
+    "hasOnlyAccessToSubParties": false,
     "subParties": [
       {
         "party": "urn:altinn:organization:identifier-no:314518748",

@@ -39,6 +39,7 @@ const stripQueryParamsForParty = (searchParamString: string) => {
 const fetchParties = async (): Promise<PartiesResult> => {
   const response = await graphQLSDK.parties();
   const normalizedParties = normalizeFlattenParties(response.parties);
+
   return {
     parties: normalizedParties.filter((party) => !party.isDeleted),
     deletedParties: normalizedParties.filter((party) => party.isDeleted),

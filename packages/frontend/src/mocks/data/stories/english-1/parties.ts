@@ -10,5 +10,6 @@ export const parties: PartyFieldsFragment[] = [
     name: 'ENGLISHMAN IN NEW YORK',
     isCurrentEndUser: true,
     isDeleted: false,
+    hasOnlyAccessToSubParties: false,
   },
 ];

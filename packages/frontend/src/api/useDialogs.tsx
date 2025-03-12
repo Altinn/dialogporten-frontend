@@ -150,9 +150,10 @@ export const getDialogs = (partyURIs: string[]): Promise<GetAllDialogsForParties
     partyURIs,
   });
 
-export const flattenParties = (partiesToUse: PartyFieldsFragment[]) => {
-  const partyURIs = partiesToUse.map((party) => party.party);
-
+export const getPartyIds = (partiesToUse: PartyFieldsFragment[]) => {
+  const partyURIs = partiesToUse
+    .filter((party) => !party.hasOnlyAccessToSubParties === true)
+    .map((party) => party.party);
   const subPartyURIs = partiesToUse.flatMap((party) => (party.subParties ?? []).map((subParty) => subParty.party));
   return [...partyURIs, ...subPartyURIs] as string[];
 };
@@ -197,7 +198,9 @@ export const getViewType = (dialog: SearchDialogFieldsFragment): InboxViewType =
 
 export const useDialogs = (parties: PartyFieldsFragment[]): UseDialogsOutput => {
   const { organizations } = useOrganizations();
-  const mergedPartiesWithSubParties = flattenParties(parties);
+  const { selectedParties } = useParties();
+  const partiesToUse = parties ? parties : selectedParties;
+  const mergedPartiesWithSubParties = getPartyIds(partiesToUse);
   const location = useLocation();
 
   const { data, isSuccess, isLoading, isError } = useQuery<GetAllDialogsForPartiesQuery>({
