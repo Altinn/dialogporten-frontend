@@ -1,4 +1,6 @@
 import type { SavedSearchData, SavedSearchesFieldsFragment } from 'bff-types-generated';
+import type { InboxViewType } from '../../api/useDialogs.tsx';
+import { PageRoutes } from '../../pages/routes.ts';
 
 type JsonValue = string | number | boolean | JsonObject | JsonArray | null;
 type JsonObject = { [key: string]: JsonValue };
@@ -56,16 +58,31 @@ const arraysAreEqual = (arr1: JsonArray, arr2: JsonArray): boolean => {
   return sortedArr1.every((item, index) => item === sortedArr2[index]);
 };
 
+/**
+ * Finds a previously saved search that matches the given search data.
+ *
+ * @param {SavedSearchData} searchDataToCheck - The search data to check against saved searches.
+ * @param {SavedSearchesFieldsFragment[] | undefined} savedSearches - The list of saved searches, or undefined if none exist.
+ * @param {InboxViewType} viewType - The type of inbox view.
+ * @returns {SavedSearchesFieldsFragment | undefined} - The matching saved search if found, otherwise undefined.
+ *
+ * The function compares each key-value pair in `searchDataToCheck` against `savedSearches`
+ * using deep equality to determine if an identical search is already saved.
+ */
 export const getAlreadySavedSearch = (
   searchDataToCheck: SavedSearchData,
   savedSearches: SavedSearchesFieldsFragment[] | undefined,
+  viewType: InboxViewType,
 ): SavedSearchesFieldsFragment | undefined => {
-  return (savedSearches ?? []).find((prevSaved) => {
-    const prevSavedData = prevSaved.data as SavedSearchData;
-    return Object.keys(searchDataToCheck).every((key) => {
-      const prevSavedDataKey = prevSavedData[key as keyof SavedSearchData];
-      const searchDataToCheckKey = searchDataToCheck[key as keyof SavedSearchData];
-      return deepEqual(prevSavedDataKey, searchDataToCheckKey);
+  return (savedSearches ?? [])
+    .filter((savedSearch) => savedSearch.data.fromView === PageRoutes[viewType])
+    .find((prevSaved) => {
+      const prevSavedData = prevSaved.data as SavedSearchData;
+      return Object.keys(searchDataToCheck).every((key) => {
+        const prevSavedDataKey = prevSavedData[key as keyof SavedSearchData];
+        const searchDataToCheckKey = searchDataToCheck[key as keyof SavedSearchData];
+        console.info(prevSavedDataKey, searchDataToCheckKey);
+        return deepEqual(prevSavedDataKey, searchDataToCheckKey);
+      });
     });
-  });
 };

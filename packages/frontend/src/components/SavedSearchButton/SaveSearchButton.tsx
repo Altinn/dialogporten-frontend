@@ -38,7 +38,7 @@ export const SaveSearchButton = ({ disabled, className, filterState, viewType }:
     return null;
   }
 
-  const alreadySavedSearch = getAlreadySavedSearch(searchToCheckIfExistsAlready, savedSearches);
+  const alreadySavedSearch = getAlreadySavedSearch(searchToCheckIfExistsAlready, savedSearches, viewType);
 
   if (alreadySavedSearch) {
     return (

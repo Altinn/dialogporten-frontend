@@ -153,6 +153,7 @@ export const getDialogs = (partyURIs: string[]): Promise<GetAllDialogsForParties
 
 export const flattenParties = (partiesToUse: PartyFieldsFragment[]) => {
   const partyURIs = partiesToUse.map((party) => party.party);
+
   const subPartyURIs = partiesToUse.flatMap((party) => (party.subParties ?? []).map((subParty) => subParty.party));
   return [...partyURIs, ...subPartyURIs] as string[];
 };
@@ -188,6 +189,10 @@ export const getViewType = (dialog: SearchDialogFieldsFragment): InboxViewType =
   if (isBinDialog(dialog)) {
     return 'bin';
   }
+  if (isInboxDialog(dialog)) {
+    return 'inbox';
+  }
+  console.warn('Unknown dialog status, fallback=inbox', dialog.status);
   return 'inbox';
 };
 

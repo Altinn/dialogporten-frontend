@@ -117,28 +117,6 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
     setExpandedId(nextExpandedId);
   };
 
-  const handleDelete = async (savedSearchId: number) => {
-    try {
-      setIsCTALoading(true);
-      await deleteSearch(savedSearchId);
-
-      openSnackbar({
-        message: t('savedSearches.deleted_success'),
-        color: 'success',
-      });
-
-      void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.SAVED_SEARCHES] });
-      setExpandedId('');
-    } catch {
-      openSnackbar({
-        message: t('savedSearches.delete_failed'),
-        color: 'alert',
-      });
-    } finally {
-      setIsCTALoading(false);
-    }
-  };
-
   const saveSearch = async ({
     filters,
     selectedParties,
@@ -261,7 +239,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
         removeButton: {
           label: t('savedSearches.delete_search'),
           onClick: () => {
-            void handleDelete(savedSearch.id);
+            void deleteSearch(savedSearch.id);
           },
         },
         params,
