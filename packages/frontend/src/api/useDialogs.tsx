@@ -18,7 +18,6 @@ import type { InboxItemInput } from '../pages/Inbox/InboxItemInput.ts';
 import { useOrganizations } from '../pages/Inbox/useOrganizations.ts';
 import { getOrganization } from './organizations.ts';
 import { graphQLSDK } from './queries.ts';
-import { useParties } from './useParties.ts';
 
 export type InboxViewType = 'inbox' | 'drafts' | 'sent' | 'archive' | 'bin';
 export type DialogsByView = { [key in InboxViewType]: InboxItemInput[] };
@@ -198,13 +197,11 @@ export const getViewType = (dialog: SearchDialogFieldsFragment): InboxViewType =
 
 export const useDialogs = (parties: PartyFieldsFragment[]): UseDialogsOutput => {
   const { organizations } = useOrganizations();
-  const { selectedParties } = useParties();
-  const partiesToUse = parties ? parties : selectedParties;
-  const mergedPartiesWithSubParties = flattenParties(partiesToUse);
+  const mergedPartiesWithSubParties = flattenParties(parties);
   const location = useLocation();
 
   const { data, isSuccess, isLoading, isError } = useQuery<GetAllDialogsForPartiesQuery>({
-    queryKey: [QUERY_KEYS.DIALOGS, mergedPartiesWithSubParties, organizations, location.pathname],
+    queryKey: [QUERY_KEYS.DIALOGS, mergedPartiesWithSubParties, location.pathname],
     staleTime: 1000 * 60 * 10,
     retry: 3,
     queryFn: () => getDialogs(mergedPartiesWithSubParties),
@@ -212,7 +209,7 @@ export const useDialogs = (parties: PartyFieldsFragment[]): UseDialogsOutput => 
     gcTime: 0,
   });
 
-  const dialogs = mapDialogToToInboxItem(data?.searchDialogs?.items ?? [], selectedParties, organizations);
+  const dialogs = mapDialogToToInboxItem(data?.searchDialogs?.items ?? [], parties, organizations);
 
   return {
     isLoading,

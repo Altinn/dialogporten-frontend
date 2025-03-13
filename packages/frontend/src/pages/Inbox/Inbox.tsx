@@ -32,15 +32,10 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const [searchParams] = useSearchParams();
   const searchBarParam = new URLSearchParams(searchParams);
   const searchParamOrg = searchBarParam.get('org') ?? undefined;
-  const { dialogsByView: allDialogsByView } = useDialogs(parties);
+  const { dialogsByView: allDialogsByView, dialogCountInconclusive: allDialogCountInconclusive } = useDialogs(parties);
   const { enteredSearchValue } = useSearchString();
-  const {
-    dialogsByView,
-    isLoading: isLoadingDialogs,
-    dialogCountInconclusive: allDialogCountInconclusive,
-    isSuccess: dialogsSuccess,
-  } = useDialogs(selectedParties);
-
+  const { dialogsByView, isLoading: isLoadingDialogs, isSuccess: dialogsSuccess } = useDialogs(selectedParties);
+  const dialogsForView = dialogsByView[viewType];
   const displaySearchResults = enteredSearchValue.length > 0 || !!searchParamOrg;
 
   const {
@@ -60,7 +55,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
     dialogCountInconclusive: allDialogCountInconclusive,
   });
 
-  const dialogsForView = dialogsByView[viewType];
   const dataSourceSuccess = displaySearchResults ? searchSuccess : dialogsSuccess;
   const dataSource = displaySearchResults ? searchResults : dialogsForView;
   const { filterState, filters, onFiltersChange, getFilterLabel } = useFilters({ dialogs: dataSource });
