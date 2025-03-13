@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.20.6](https://github.com/Altinn/dialogporten-frontend/compare/v1.20.5...v1.20.6) (2025-03-13)
+
+
+### Bug Fixes
+
+* The numbers in the 'actor menu' do not match either the new or the total number of dialogues ([#1945](https://github.com/Altinn/dialogporten-frontend/issues/1945)) ([159444e](https://github.com/Altinn/dialogporten-frontend/commit/159444e87096e07ae39493274af3ef88051c4261))
+
 ## [1.20.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.20.4...v1.20.5) (2025-03-13)
 
 
