@@ -50,13 +50,13 @@ const mockedSavedSearches: SavedSearchesFieldsFragment[] = [
 describe('getAlreadySavedSearch', () => {
   it('should return undefined when savedSearches is undefined', () => {
     const searchDataToCheck: SavedSearchData = {};
-    const result = getAlreadySavedSearch(searchDataToCheck, undefined);
+    const result = getAlreadySavedSearch(searchDataToCheck, undefined, 'inbox');
     expect(result).toBeUndefined();
   });
 
   it('should return the matching saved search', () => {
     const searchDataToCheck: SavedSearchData = mockedSavedSearches[1].data;
-    const result = getAlreadySavedSearch(searchDataToCheck, mockedSavedSearches);
+    const result = getAlreadySavedSearch(searchDataToCheck, mockedSavedSearches, 'inbox');
     expect(result?.id).toEqual(2);
   });
 
@@ -76,7 +76,27 @@ describe('getAlreadySavedSearch', () => {
         },
       ],
     };
-    const result = getAlreadySavedSearch(mockedSearchDataToCheck, mockedSavedSearches);
+    const result = getAlreadySavedSearch(mockedSearchDataToCheck, mockedSavedSearches, 'inbox');
     expect(result?.id).toEqual(1);
+  });
+
+  it('should return undefined when fromView in search data is different than saved searches matched by filters', () => {
+    const searchDataToCheck: SavedSearchData = {
+      urn: ['urn:altinn:organization:identifier-no:1', 'urn:altinn:organization:identifier-no:2'],
+      searchString: '',
+      fromView: '/drafts',
+      filters: [
+        {
+          id: 'sender',
+          value: 'Skatteetaten',
+        },
+        {
+          id: 'sender',
+          value: 'Digitaliseringsdirektoratet',
+        },
+      ],
+    };
+    const result = getAlreadySavedSearch(searchDataToCheck, mockedSavedSearches, 'inbox');
+    expect(result).toBeUndefined();
   });
 });
