@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.20.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.20.4...v1.20.5) (2025-03-13)
+
+
+### Bug Fixes
+
+* check for if filter already was saved ignored fromView property ([#1941](https://github.com/Altinn/dialogporten-frontend/issues/1941)) ([f34733c](https://github.com/Altinn/dialogporten-frontend/commit/f34733cbb7414e4693dab527844ed033be090af8))
+* Fix grouping dialogs by updatedAt, add sorting dialogs in groups by updatedAt ([#1933](https://github.com/Altinn/dialogporten-frontend/issues/1933)) ([b008c31](https://github.com/Altinn/dialogporten-frontend/commit/b008c31d44319cd264a99acf209abb57b5719b51))
+
 ## [1.20.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.20.3...v1.20.4) (2025-03-10)
 
 
