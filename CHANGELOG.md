@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.21.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.20.6...v1.21.0) (2025-03-14)
+
+
+### Features
+
+* Added integrity check for Altinn CDN css file ([d8233c1](https://github.com/Altinn/dialogporten-frontend/commit/d8233c1422b09ed041117107515c0abc5c9d529e))
+* Exclude Parent Parties When Only Access to Sub-Parties ([a356892](https://github.com/Altinn/dialogporten-frontend/commit/a3568924684a99fdb1a851c2a2e55ce4f9d1c8dd))
+
+
+### Bug Fixes
+
+* Add hidden prop to guiActions mapping, update altinn components ([#1955](https://github.com/Altinn/dialogporten-frontend/issues/1955)) ([c7f7845](https://github.com/Altinn/dialogporten-frontend/commit/c7f7845d4ce1e40a4cd13c676e2c4be37fca6fbf))
+* update to v. 0.21.4 of altinn-components without font imports from altinn cdn ([#1949](https://github.com/Altinn/dialogporten-frontend/issues/1949)) ([7e13aef](https://github.com/Altinn/dialogporten-frontend/commit/7e13aef6f5d355da0757b2b51440a7cacbd7995c))
+
 ## [1.20.6](https://github.com/Altinn/dialogporten-frontend/compare/v1.20.5...v1.20.6) (2025-03-13)
 
 
