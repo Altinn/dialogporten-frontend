@@ -18,6 +18,7 @@ import type { InboxItemInput } from '../pages/Inbox/InboxItemInput.ts';
 import { useOrganizations } from '../pages/Inbox/useOrganizations.ts';
 import { getOrganization } from './organizations.ts';
 import { graphQLSDK } from './queries.ts';
+import { useParties } from './useParties.ts';
 
 export type InboxViewType = 'inbox' | 'drafts' | 'sent' | 'archive' | 'bin';
 export type DialogsByView = { [key in InboxViewType]: InboxItemInput[] };
