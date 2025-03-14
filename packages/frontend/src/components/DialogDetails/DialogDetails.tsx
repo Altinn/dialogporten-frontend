@@ -59,6 +59,7 @@ export interface DialogActionProps {
   prompt?: string;
   disabled?: boolean;
   priority: string;
+  hidden?: boolean;
 }
 
 const handleDialogActionClick = async (
@@ -152,6 +153,7 @@ export const DialogDetails = ({ dialog, isLoading }: DialogDetailsProps): ReactE
     url: action.url,
     httpMethod: action.httpMethod,
     loading: actionIdLoading === action.id,
+    hidden: action.hidden,
     onClick: () => {
       setActionIdLoading(action.id);
       void handleDialogActionClick(action, dialog.dialogToken, () => setActionIdLoading(''));
