@@ -392,8 +392,8 @@ importers:
         specifier: 1.0.0-next.50
         version: 1.0.0-next.50(@types/react@19.0.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@digdir/designsystemet-theme':
-        specifier: 1.0.0-next.50
-        version: 1.0.0-next.50
+        specifier: 1.0.2
+        version: 1.0.2
       '@microsoft/applicationinsights-react-js':
         specifier: 17.3.2
         version: 17.3.2(history@4.10.1)(react@19.0.0)(tslib@2.8.1)
@@ -1685,8 +1685,8 @@ packages:
       react: '>=18.3.1'
       react-dom: '>=18.3.1'
 
-  '@digdir/designsystemet-theme@1.0.0-next.50':
-    resolution: {integrity: sha512-6+kdopfhZ8EuA4hzZ9KAlIRTU0Vcgyf9q697wt2Oz5eCWhiga/R1/W3C+HgNPr/OzF7odu1SJLisDgq14RXaiw==}
+  '@digdir/designsystemet-theme@1.0.2':
+    resolution: {integrity: sha512-9pF9+cZCdQHvMocedZ27g+bgekBafqaqjnPNLAYQkfKR5xTWkVBSsBPNkZG98kZ5BP4fdswvWbhFIM1prL7Ykg==}
 
   '@digdir/dialogporten-schema@1.55.1':
     resolution: {integrity: sha512-zQK9ay2R3b92FZOQmeGVKss8nNgO2wbh6svwBOuvCInGI05x5Yfgg9yYC+7r63vLbL+03TqJXBg3Qpd1PSAWqA==}
@@ -11801,7 +11801,7 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
 
-  '@digdir/designsystemet-theme@1.0.0-next.50': {}
+  '@digdir/designsystemet-theme@1.0.2': {}
 
   '@digdir/dialogporten-schema@1.55.1': {}
 
