@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.21.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.21.0...v1.21.1) (2025-03-17)
+
+
+### Bug Fixes
+
+* update ac to 21.6, fix filtering of gui actions ([#1959](https://github.com/Altinn/dialogporten-frontend/issues/1959)) ([5eeda04](https://github.com/Altinn/dialogporten-frontend/commit/5eeda04571a800709283dbfbe378366eb57210aa))
+
 ## [1.21.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.20.6...v1.21.0) (2025-03-14)
 
 
