@@ -7,6 +7,7 @@ import { SavedSearchesPage } from './pages/SavedSearches';
 import { PageRoutes } from './pages/routes.ts';
 
 import './app.css';
+import { Actors } from './pages/Profile/Actors/Actors.tsx';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
       <Routes>
         <Route element={<ProtectedPageLayout />}>
           <Route path={PageRoutes.inbox} element={<Inbox key="inbox" viewType={'inbox'} />} />
+          <Route path={PageRoutes.actors} element={<Actors key="actors" />} />
           <Route path={PageRoutes.drafts} element={<Inbox key="draft" viewType={'drafts'} />} />
           <Route path={PageRoutes.sent} element={<Inbox key="sent" viewType={'sent'} />} />
           <Route path={PageRoutes.archive} element={<Inbox key="archive" viewType={'archive'} />} />
