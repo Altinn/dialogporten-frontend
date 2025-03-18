@@ -174,15 +174,7 @@ export const DialogDetails = ({ dialog, isLoading }: DialogDetailsProps): ReactE
         updatedAt={dialog.updatedAt}
         updatedAtLabel={format(dialog.updatedAt, formatString)}
         recipientLabel={t('word.to')}
-        seenBy={
-          dialog.seenByLabel
-            ? {
-                seenByEndUser: dialog.isSeenByEndUser,
-                seenByOthersCount: dialog.seenByOthersCount,
-                label: dialog.seenByLabel,
-              }
-            : undefined
-        }
+        seenByLog={dialog.seenByLog}
       >
         <p>{dialog.summary}</p>
         <MainContentReference content={dialog.mainContentReference} dialogToken={dialog.dialogToken} />
