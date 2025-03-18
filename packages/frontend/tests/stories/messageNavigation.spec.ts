@@ -1,10 +1,10 @@
 import { expect, test } from '@playwright/test';
-import { defaultAppURL } from '../';
+import { appUrlWithPlaywrightId } from '../';
 import { PageRoutes } from '../../src/pages/routes';
 import { expectIsCompanyPage, expectIsPersonPage, getSidebarMenuItem } from './common';
 
 test.describe('Message navigation', () => {
-  const pageWithMockOrganizations = `${defaultAppURL}&playwrightId=login-party-context`;
+  const pageWithMockOrganizations = appUrlWithPlaywrightId('login-party-context');
 
   test('Back button navigates correctly and saves party', async ({ page }) => {
     await page.goto(pageWithMockOrganizations);

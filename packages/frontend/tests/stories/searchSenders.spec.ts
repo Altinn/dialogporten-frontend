@@ -1,10 +1,11 @@
-import { expect, test } from '@playwright/test';
-import { defaultAppURL } from '..';
+import { type Page, expect, test } from '@playwright/test';
+import { appUrlWithPlaywrightId, defaultAppURL } from '..';
 
 test.describe('Search suggests with senders', () => {
+  test.beforeEach(async ({ page }: { page: Page }) => {
+    await page.goto(appUrlWithPlaywrightId('search-sender'));
+  });
   test('Render suggestions with senders', async ({ page }) => {
-    await page.goto(`${defaultAppURL}&playwrightId=search-sender`);
-
     const searchbarInput = page.locator("[name='Søk']");
     await expect(searchbarInput).toBeVisible();
     await searchbarInput.click();
@@ -18,13 +19,11 @@ test.describe('Search suggests with senders', () => {
 
     await searchbarInput.fill('skatt test1');
     await expect(page.getByRole('heading', { name: 'Søkeforslag' })).toBeVisible();
-    const button = page.locator('button[aria-label="Skatteetaten"]');
-    await expect(button.locator(':text("test1")')).toBeVisible();
+    const button = page.getByRole('button', { name: 'Søk etter dialoger fra Skatteetaten' });
+    await expect(button).toBeVisible();
   });
 
   test('Not rendering senders suggestions with no match', async ({ page }) => {
-    await page.goto(`${defaultAppURL}&playwrightId=search-sender`);
-
     const searchbarInput = page.locator("[name='Søk']");
     await searchbarInput.click();
     await searchbarInput.fill('test1');
@@ -33,8 +32,6 @@ test.describe('Search suggests with senders', () => {
   });
 
   test('Selecting sender search filters data correctly', async ({ page }) => {
-    await page.goto(`${defaultAppURL}&playwrightId=search-sender`);
-
     const searchbarInput = page.locator("[name='Søk']");
     await searchbarInput.click();
     await searchbarInput.fill('skatt');
@@ -48,8 +45,6 @@ test.describe('Search suggests with senders', () => {
   });
 
   test('Selecting sender and value filters data correctly', async ({ page }) => {
-    await page.goto(`${defaultAppURL}&playwrightId=search-sender`);
-
     const searchbarInput = page.locator("[name='Søk']");
     await searchbarInput.click();
     await searchbarInput.fill('skatt test1');
@@ -63,8 +58,6 @@ test.describe('Search suggests with senders', () => {
   });
 
   test('Clear button removes search parasm and display data', async ({ page }) => {
-    await page.goto(`${defaultAppURL}&playwrightId=search-sender`);
-
     const searchbarInput = page.locator("[name='Søk']");
     await searchbarInput.click();
     await searchbarInput.fill('skatt test1');

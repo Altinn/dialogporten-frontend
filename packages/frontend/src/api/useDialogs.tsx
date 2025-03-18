@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 import {
   DialogStatus,
@@ -211,6 +211,7 @@ export const useDialogs = (parties: PartyFieldsFragment[]): UseDialogsOutput => 
     queryFn: () => getDialogs(mergedPartiesWithSubParties),
     enabled: mergedPartiesWithSubParties.length > 0,
     gcTime: 0,
+    placeholderData: keepPreviousData,
   });
 
   const dialogs = mapDialogToToInboxItem(data?.searchDialogs?.items ?? [], parties, organizations);
