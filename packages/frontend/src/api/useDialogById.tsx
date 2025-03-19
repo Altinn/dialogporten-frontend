@@ -1,4 +1,5 @@
-import type { AvatarProps, SeenByLogProps } from '@altinn/altinn-components';
+import type { AttachmentLinkProps, AvatarProps, SeenByLogProps } from '@altinn/altinn-components';
+import type { DialogHistorySegmentProps } from '@altinn/altinn-components/dist/types/lib/components';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   type Actor,
@@ -11,7 +12,6 @@ import {
   type OrganizationFieldsFragment,
   type PartyFieldsFragment,
   SystemLabel,
-  type TransmissionFieldsFragment,
 } from 'bff-types-generated';
 import { AttachmentUrlConsumer } from 'bff-types-generated';
 import { t } from 'i18next';
@@ -24,6 +24,7 @@ import { useOrganizations } from '../pages/Inbox/useOrganizations.ts';
 import { toTitleCase } from '../profile';
 import { type OrganizationOutput, getOrganization } from './organizations.ts';
 import { graphQLSDK } from './queries.ts';
+import { getDialogHistoryForTransmissions } from './transmissions.ts';
 import { getSeenByLabel } from './useDialogs.tsx';
 
 export enum EmbeddableMediaType {
@@ -46,16 +47,6 @@ export interface DialogActivity {
   performedBy: AvatarProps;
 }
 
-export interface DialogTransmission {
-  id: string;
-  type: TransmissionFieldsFragment['type'];
-  createdAt: string;
-  sender: AvatarProps;
-  attachments: TransmissionFieldsFragment['attachments'];
-  title: string;
-  summary: string;
-}
-
 export interface DialogByIdDetails {
   summary: string;
   sender: AvatarProps;
@@ -63,14 +54,15 @@ export interface DialogByIdDetails {
   title: string;
   guiActions: DialogActionProps[];
   additionalInfo: { value: string; mediaType: string } | undefined;
-  attachments: AttachmentFieldsFragment[];
+  attachments: AttachmentLinkProps[];
   dialogToken: string;
   mainContentReference?: EmbeddedContent;
   activities: DialogActivity[];
   updatedAt: string;
   createdAt: string;
   label: SystemLabel;
-  transmissions: DialogTransmission[];
+  transmissions: DialogHistorySegmentProps[];
+  contentReferenceForTransmissions: Record<string, EmbeddedContent>;
   status: DialogStatus;
   dueAt?: string;
   seenByLog?: SeenByLogProps;
@@ -86,6 +78,17 @@ export const getDialogsById = (id: string): Promise<GetDialogByIdQuery> =>
   graphQLSDK.getDialogById({
     id,
   });
+
+export const getAttachmentLinks = (attachments: AttachmentFieldsFragment[]): AttachmentLinkProps[] => {
+  return attachments
+    .filter((a) => a.urls.filter((url) => url.consumerType === AttachmentUrlConsumer.Gui).length > 0)
+    .flatMap((attachment) =>
+      attachment.urls.map((url) => ({
+        label: getPreferredPropertyByLocale(attachment.displayName)?.value || url.url,
+        href: url.url,
+      })),
+    );
+};
 
 const getMainContentReference = (
   args: { value: ValueType; mediaType: string } | undefined | null,
@@ -171,10 +174,18 @@ export function mapDialogToToInboxItem(
       isDeleteAction: guiAction.isDeleteDialogAction,
       disabled: !guiAction.isAuthorized,
     })),
-    attachments: item.attachments.filter(
-      (a) => a.urls.filter((url) => url.consumerType === AttachmentUrlConsumer.Gui).length > 0,
-    ),
+    attachments: getAttachmentLinks(item.attachments),
     mainContentReference: getMainContentReference(mainContentReference),
+    contentReferenceForTransmissions: item.transmissions.reduce(
+      (acc, transmission) => {
+        const reference = getMainContentReference(transmission.content?.contentReference);
+        if (reference) {
+          acc[transmission.id] = reference;
+        }
+        return acc;
+      },
+      {} as Record<string, EmbeddedContent>,
+    ),
     dialogToken: item.dialogToken!,
     seenByLog: {
       collapsible: true,
@@ -182,6 +193,7 @@ export function mapDialogToToInboxItem(
       endUserLabel: t('word.you'),
       items: item.seenSinceLastUpdate.map((seen) => ({
         id: seen.id,
+        isEndUser: seen.isCurrentEndUser,
         name: (seen?.isCurrentEndUser ? (endUserParty?.name ?? '') : toTitleCase(seen.seenBy?.actorName ?? '')) || '',
         seenAt: seen.seenAt,
         seenAtLabel: format(seen.seenAt, formatString),
@@ -200,28 +212,14 @@ export function mapDialogToToInboxItem(
         };
       })
       .reverse(),
-    transmissions: item.transmissions
-      .map((transmission) => {
-        const senderProps = getActorProps(transmission.sender, serviceOwner);
-        const titleObj = transmission.content.title.value;
-        const summaryObj = transmission.content.summary.value;
-        return {
-          id: transmission.id,
-          type: transmission.type,
-          createdAt: transmission.createdAt,
-          sender: senderProps,
-          attachments: transmission.attachments,
-          title: getPreferredPropertyByLocale(titleObj)?.value ?? '',
-          summary: getPreferredPropertyByLocale(summaryObj)?.value ?? '',
-        };
-      })
-      .reverse(),
+    transmissions: getDialogHistoryForTransmissions(item.transmissions, format, serviceOwner),
     createdAt: item.createdAt,
     updatedAt: item.updatedAt,
     label: item.systemLabel,
     dueAt: item.dueAt,
   };
 }
+
 export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseDialogByIdOutput => {
   const queryClient = useQueryClient();
   const format = useFormat();

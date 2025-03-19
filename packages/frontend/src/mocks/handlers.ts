@@ -120,6 +120,12 @@ Dette er HTML som er generert fra markdown.
 `);
 });
 
+const getContentMarkdownMock = http.get('https://dialogporten-serviceprovider.net/fce-markdown-transmission', ({request}) => {
+  const url = new URL(request.url)
+  const productId = url.searchParams.get('id')
+  return HttpResponse.text(`# Info i markdown for transmission (id=${productId})`);
+});
+
 const getMainContentHtmlMock = http.get('https://dialogporten-serviceprovider.net/fce-html', () => {
   return HttpResponse.text(`<html><body><h1>Tittel i arvet HTML</h1><p>Brødtekst!</p></body></html>`);
 });
@@ -251,5 +257,6 @@ export const handlers = [
   mutateUpdateSystemLabelMock,
   deleteSavedSearchMock,
   getOrganizationsMock,
-  searchAutocompleteDialogsMock
+  searchAutocompleteDialogsMock,
+  getContentMarkdownMock
 ];
