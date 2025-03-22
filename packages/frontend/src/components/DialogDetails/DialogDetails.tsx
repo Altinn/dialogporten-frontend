@@ -1,29 +1,36 @@
 import {
   Article,
-  type AttachmentLinkProps,
   type DialogActionButtonProps,
   DialogActions,
   DialogAttachments,
   DialogBody,
   type DialogButtonPriority,
   DialogHeader,
+  DialogHistory,
+  DialogTabs,
 } from '@altinn/altinn-components';
 import { DialogStatus } from 'bff-types-generated';
-import { type ReactElement, useState } from 'react';
+import { type ReactElement, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { DialogActivity, DialogByIdDetails, DialogTransmission } from '../../api/useDialogById.tsx';
-import { getPreferredPropertyByLocale } from '../../i18n/property.ts';
+import type { DialogActivity, DialogByIdDetails } from '../../api/useDialogById.tsx';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { getDialogStatus } from '../../pages/Inbox/status.ts';
 import { Activity } from '../Activity';
 import { AdditionalInfoContent } from '../AdditonalInfoContent';
 import { MainContentReference } from '../MainContentReference';
-import { Transmission } from '../Transmission';
 import styles from './dialogDetails.module.css';
 
 interface DialogDetailsProps {
   dialog: DialogByIdDetails | undefined | null;
   isLoading?: boolean;
+}
+
+type ActivePageTab = 'additional_info' | 'activities' | 'transmissions';
+
+interface PageTab {
+  id: ActivePageTab;
+  title: string;
+  onClick: () => void;
 }
 
 /**
@@ -100,7 +107,69 @@ const handleDialogActionClick = async (
 export const DialogDetails = ({ dialog, isLoading }: DialogDetailsProps): ReactElement => {
   const { t } = useTranslation();
   const [actionIdLoading, setActionIdLoading] = useState<string>('');
+  const [activeTab, setActiveTab] = useState<ActivePageTab | undefined>();
   const format = useFormat();
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: full control
+  const dialogTabs = useMemo(() => {
+    if (!dialog) {
+      return [];
+    }
+    const tabs: PageTab[] = [];
+    if (dialog.transmissions.length > 0) {
+      tabs.push({
+        id: 'transmissions',
+        title: t('dialog.tabs.transmissions'),
+        onClick: () => setActiveTab('transmissions'),
+      });
+    }
+    if (dialog.additionalInfo?.value) {
+      tabs.push({
+        id: 'additional_info',
+        title: t('dialog.tabs.additional_info'),
+        onClick: () => setActiveTab('additional_info'),
+      });
+    }
+    if (dialog.activities.length > 0) {
+      tabs.push({
+        id: 'activities',
+        title: t('dialog.tabs.activities'),
+        onClick: () => setActiveTab('activities'),
+      });
+    }
+    if (tabs.length > 0 && (activeTab === undefined || !tabs.map((tab) => tab.id).includes(activeTab))) {
+      setActiveTab(tabs[0].id);
+    }
+    return tabs;
+  }, [dialog, activeTab]);
+
+  const transmissions = useMemo(() => {
+    if (!dialog?.transmissions) {
+      return [];
+    }
+    /* Add content reference to each item in the transmission - ensure they are not eagerly loaded, will only render on expand */
+    return dialog.transmissions.map((transmission) => ({
+      ...transmission,
+      items: transmission.items.map((item) => ({
+        ...item,
+        children: (
+          <MainContentReference
+            content={dialog.contentReferenceForTransmissions[item.id]}
+            dialogToken={dialog.dialogToken}
+          />
+        ),
+        items: item.items?.map((subItem) => ({
+          ...subItem,
+          children: (
+            <MainContentReference
+              content={dialog.contentReferenceForTransmissions[subItem.id]}
+              dialogToken={dialog.dialogToken}
+            />
+          ),
+        })),
+      })),
+    }));
+  }, [dialog]);
 
   if (isLoading) {
     return (
@@ -134,13 +203,6 @@ export const DialogDetails = ({ dialog, isLoading }: DialogDetailsProps): ReactE
     );
   }
 
-  const attachmentCount = dialog.attachments.reduce((count, { urls }) => count + urls.length, 0);
-  const attachmentItems: AttachmentLinkProps[] = dialog.attachments.flatMap((attachment) =>
-    attachment.urls.map((url) => ({
-      label: getPreferredPropertyByLocale(attachment.displayName)?.value || url.url,
-      href: url.url,
-    })),
-  );
   const clockPrefix = t('word.clock_prefix');
   const formatString = clockPrefix ? `do MMMM yyyy '${clockPrefix}' HH.mm` : `do MMMM yyyy HH.mm`;
   const dueAtLabel = dialog.dueAt ? format(dialog.dueAt, formatString) : '';
@@ -174,40 +236,34 @@ export const DialogDetails = ({ dialog, isLoading }: DialogDetailsProps): ReactE
         updatedAt={dialog.updatedAt}
         updatedAtLabel={format(dialog.updatedAt, formatString)}
         recipientLabel={t('word.to')}
-        seenBy={
-          dialog.seenByLabel
-            ? {
-                seenByEndUser: dialog.isSeenByEndUser,
-                seenByOthersCount: dialog.seenByOthersCount,
-                label: dialog.seenByLabel,
-              }
-            : undefined
-        }
+        seenByLog={dialog.seenByLog}
       >
         <p>{dialog.summary}</p>
         <MainContentReference content={dialog.mainContentReference} dialogToken={dialog.dialogToken} />
-        {attachmentCount > 0 && (
+        {dialog.attachments.length > 0 && (
           <DialogAttachments
-            title={t('inbox.heading.attachments', { count: attachmentCount })}
-            items={attachmentItems}
+            title={t('inbox.heading.attachments', { count: dialog.attachments.length })}
+            items={dialog.attachments}
           />
         )}
         <DialogActions items={dialogActions} />
       </DialogBody>
-      <AdditionalInfoContent mediaType={dialog.additionalInfo?.mediaType} value={dialog.additionalInfo?.value} />
-      {dialog.activities.length > 0 && (
-        <section data-id="dialog-activity-history" className={styles.activities}>
-          <h3 className={styles.activitiesTitle}>{t('word.activities')}</h3>
+      <DialogTabs
+        items={dialogTabs.map((item) => ({
+          ...item,
+          selected: item.id === activeTab,
+        }))}
+      />
+      {activeTab === 'transmissions' && (
+        <DialogHistory items={transmissions} collapseLabel="Skjul historikk" collapsible expandLabel="Vis historikk" />
+      )}
+      {activeTab === 'additional_info' && (
+        <AdditionalInfoContent mediaType={dialog.additionalInfo?.mediaType} value={dialog.additionalInfo?.value} />
+      )}
+      {activeTab === 'activities' && (
+        <section data-id="dialog-activity-history">
           {dialog.activities.map((activity: DialogActivity) => (
             <Activity key={activity.id} activity={activity} />
-          ))}
-        </section>
-      )}
-      {dialog.transmissions.length > 0 && (
-        <section data-id="dialog-transmissions" className={styles.transmissions}>
-          <h3 className={styles.transmissionsTitle}>{t('word.transmissions')}</h3>
-          {dialog.transmissions.map((transmission: DialogTransmission) => (
-            <Transmission key={transmission.id} transmission={transmission} />
           ))}
         </section>
       )}

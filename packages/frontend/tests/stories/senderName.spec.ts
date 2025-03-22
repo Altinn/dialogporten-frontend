@@ -9,7 +9,7 @@ test.describe('Testing Sender Name', () => {
     const link = page.getByRole('link', { name: 'This has a sender name' });
 
     await expect(link).toBeVisible();
-    await expect(link.getByText('SENDER NAME Oslo Kommune')).toBeVisible();
+    await expect(page.getByRole('main')).toContainText('SENDER NAME Oslo Kommune to Test Testesensender');
   });
 
   test('If provided, sender name should be overwritten inside a dialog', async ({ page }) => {

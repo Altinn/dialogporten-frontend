@@ -5,7 +5,7 @@ import {
   DialogByIdFieldsFragment,
   GuiActionPriority,
   HttpVerb,
-  SearchDialogFieldsFragment,
+  SearchDialogFieldsFragment, TransmissionType,
 } from 'bff-types-generated';
 
 export const getMockedMainContent = (dialogId: string) => {
@@ -33,6 +33,141 @@ export const getMockedMainContent = (dialogId: string) => {
     ],
   };
 };
+
+export const getMockedFCEContent = (transmissionId: string) => {
+  return {
+    mediaType: 'application/vnd.dialogporten.frontchannelembed-url;type=text/markdown',
+    value: [
+      {
+        value: `https://dialogporten-serviceprovider.net/fce-markdown-transmission?id=t${transmissionId}`,
+        languageCode: 'nb',
+      },
+    ],
+  };
+};
+
+export const getMockedTransmissions = (dialogId: string) => {
+  const dialogWithTransmissions = '019241f7-8218-7756-be82-123qwe456rtA';
+  if (dialogId === dialogWithTransmissions) {
+    return [
+      {
+        "id": "transmission-1",
+        "createdAt": "2024-07-30T18:12:54.233Z",
+        "type": TransmissionType.Information,
+        "sender": {
+          "actorType": ActorType.ServiceOwner,
+          "actorId": null,
+          "actorName": null
+        },
+        "content": {
+          "title": {
+            "value": [ {
+              value: 'Tittel',
+              languageCode: 'nb',
+            }],
+            "mediaType": "text/plain"
+          },
+          "summary": {
+            "value": [ {
+              value: 'Oppsummering',
+              languageCode: 'nb',
+            }],
+            "mediaType": "text/plain"
+          },
+          "contentReference": getMockedFCEContent('transmission-1'),
+        },
+        "attachments": []
+      },
+      {
+        "id": "transmission-2",
+        relatedTransmissionId: 'transmission-1',
+        "createdAt": "2024-07-31T18:12:54.233Z",
+        "type": TransmissionType.Information,
+        "sender": {
+          "actorType": ActorType.PartyRepresentative,
+          "actorId": null,
+          "actorName": 'Kari Nordmann'
+        },
+        "content": {
+          "title": {
+            "value": [ {
+              value: 'Tittel 2',
+              languageCode: 'nb',
+            }],
+            "mediaType": "text/plain"
+          },
+          "summary": {
+            "value": [ {
+              value: 'Oppsummering 2',
+              languageCode: 'nb',
+            }],
+            "mediaType": "text/plain"
+          },
+          "contentReference": getMockedFCEContent('transmission-2'),
+        },
+        "attachments": []
+      },
+      {
+        "id": "transmission-3",
+        "createdAt": "2024-07-31T18:12:54.233Z",
+        "type": TransmissionType.Information,
+        "sender": {
+          "actorType": ActorType.PartyRepresentative,
+          "actorId": null,
+          "actorName": 'Per Nordmann'
+        },
+        "content": {
+          "title": {
+            "value": [ {
+              value: 'Tittel 3',
+              languageCode: 'nb',
+            }],
+            "mediaType": "text/plain"
+          },
+          "contentReference": getMockedFCEContent('transmission-3'),
+          "summary": {
+            "value": [ {
+              value: 'Oppsummering 3',
+              languageCode: 'nb',
+            }],
+            "mediaType": "text/plain"
+          },
+        },
+        "attachments": []
+      },
+      {
+        "id": "transmission-4",
+        relatedTransmissionId: 'transmission-2',
+        "createdAt": "2024-08-13T12:12:54.233Z",
+        "type": TransmissionType.Information,
+        "sender": {
+          "actorType": ActorType.PartyRepresentative,
+          "actorId": null,
+          "actorName": 'Per Nordmann'
+        },
+        "content": {
+          "title": {
+            "value": [ {
+              value: 'Tittel 4',
+              languageCode: 'nb',
+            }],
+            "mediaType": "text/plain"
+          },
+          "contentReference": getMockedFCEContent('transmission-4'),
+          "summary": {
+            "value": [ {
+              value: 'Oppsummering 4',
+              languageCode: 'nb',
+            }],
+            "mediaType": "text/plain"
+          },
+        },
+        "attachments": []
+      }
+    ]
+  }
+  return [];
+}
 
 export const convertToDialogByIdTemplate = (input: SearchDialogFieldsFragment): DialogByIdFieldsFragment => {
   return {
@@ -73,7 +208,7 @@ export const convertToDialogByIdTemplate = (input: SearchDialogFieldsFragment): 
         createdAt: input.createdAt,
       },
     ],
-    transmissions: [],
+    transmissions: getMockedTransmissions(input.id),
     guiActions: [
       {
         id: input.id,
