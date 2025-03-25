@@ -11,7 +11,7 @@ set -euo pipefail
 # =========================================================================
 # Constants
 # =========================================================================
-readonly PRODUCT_TAG="Dialogporten"
+readonly PRODUCT_TAG="Arbeidsflate"
 readonly DEFAULT_POSTGRES_PORT=5432
 readonly DEFAULT_REDIS_PORT=6379
 readonly VALID_ENVIRONMENTS=("test" "yt01" "staging" "prod")
@@ -257,12 +257,12 @@ get_subscription_id() {
 # Resource naming helper functions
 get_resource_group() {
     local env=$1
-    echo "dp-be-${env}-rg"
+    echo "dp-fe-${env}-rg"
 }
 
 get_jumper_vm_name() {
     local env=$1
-    echo "dp-be-${env}-ssh-jumper"
+    echo "dp-fe-${env}-ssh-jumper"
 }
 
 # =========================================================================
