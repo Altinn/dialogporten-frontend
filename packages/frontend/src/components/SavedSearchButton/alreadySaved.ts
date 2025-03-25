@@ -81,7 +81,6 @@ export const getAlreadySavedSearch = (
       return Object.keys(searchDataToCheck).every((key) => {
         const prevSavedDataKey = prevSavedData[key as keyof SavedSearchData];
         const searchDataToCheckKey = searchDataToCheck[key as keyof SavedSearchData];
-        console.info(prevSavedDataKey, searchDataToCheckKey);
         return deepEqual(prevSavedDataKey, searchDataToCheckKey);
       });
     });

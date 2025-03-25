@@ -1,5 +1,5 @@
 import { type Page, expect, test } from '@playwright/test';
-import { defaultAppURL } from '../';
+import { appUrlWithPlaywrightId } from '../';
 import {
   expectIsCompanyPage,
   expectIsPersonPage,
@@ -10,7 +10,7 @@ import {
 
 test.describe('LoginPartyContext', () => {
   test.beforeEach(async ({ page }: { page: Page }) => {
-    const dateScenarioPage = `${defaultAppURL}&playwrightId=login-party-context`;
+    const dateScenarioPage = appUrlWithPlaywrightId('login-party-context');
     await page.goto(dateScenarioPage);
   });
 

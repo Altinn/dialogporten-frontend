@@ -1,10 +1,10 @@
 import { type Page, expect, test } from '@playwright/test';
-import { defaultAppURL } from '..';
+import { appUrlWithPlaywrightId, defaultAppURL } from '..';
 import { MOCKED_SYS_DATE } from '../../src/mocks/data/stories/date-2024/dialogs';
 
 test.describe('Date filter, system date set 2024', () => {
   test.beforeEach(async ({ page }: { page: Page }) => {
-    const dateScenarioPage = `${defaultAppURL}&playwrightId=date-2024`;
+    const dateScenarioPage = appUrlWithPlaywrightId('date-2024');
     //mock system date to keep tests consistent
     await page.clock.setFixedTime(MOCKED_SYS_DATE);
     await page.goto(dateScenarioPage);

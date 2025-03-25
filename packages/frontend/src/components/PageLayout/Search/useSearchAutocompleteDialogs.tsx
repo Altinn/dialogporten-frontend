@@ -63,6 +63,8 @@ const createAutocomplete = (
     id: 'inboxScope',
     type: 'scope',
     disabled: searchResults.length === 0,
+    ariaLabel: t('search.autocomplete.searchInInbox', { query: searchValue }),
+    as: 'button',
     onClick: () => {
       onSearch?.(searchValue ?? '');
     },
@@ -78,6 +80,7 @@ const createAutocomplete = (
       as: (props: AutocompleteItemProps) => <Link to={`/inbox/${item.id}${location.search}`} {...props} />,
       title: item.title,
       description: item.summary,
+      tabIndex: -1,
       type: 'dialog',
     }));
 
@@ -215,14 +218,24 @@ export const generateSendersAutocompleteBySearchString = (
       if (senderDetected) {
         const serviceOwner = getOrganization(organizations || [], senderDetected.org ?? '', 'nb');
         const unmatchedSearchArr = array.filter((s) => s.toLowerCase() !== searchString.toLowerCase());
+        const searchQuery = unmatchedSearchArr.join(' ');
+        const ariaLabelId = searchQuery
+          ? 'search.autocomplete.searchForSender.withQuery'
+          : 'search.autocomplete.searchForSender.withoutQuery';
         acc.items.push({
           id: senderDetected.org ?? serviceOwner?.name ?? '',
           groupId: SENDERS_GROUP_ID,
           title: senderDetected.sender.name,
           params: [{ type: 'filter', label: serviceOwner?.name }],
           type: TYPE_SUGGEST,
+          as: 'button',
+          ariaLabel: t(ariaLabelId, {
+            sender: senderDetected.sender.name,
+            query: searchQuery,
+          }),
+          interactive: true,
           onClick: () => {
-            onSearch?.(unmatchedSearchArr.join(' '), senderDetected.org);
+            onSearch?.(searchQuery, senderDetected.org);
           },
         });
       }

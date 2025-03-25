@@ -8,7 +8,9 @@ export const appURLDrafts = baseURL + PageRoutes.drafts + baseQueryParams;
 export const appURLBin = baseURL + PageRoutes.bin + baseQueryParams;
 export const appURLSent = baseURL + PageRoutes.sent + baseQueryParams;
 export const appURLSavedSearches = baseURL + PageRoutes.savedSearches + baseQueryParams;
-
+export const appUrlWithPlaywrightId = (id: string): string => {
+  return appURLInbox + `&playwrightId=${id}`;
+};
 export const matchPathName = (currentURL: string, expectedRoute: string): boolean => {
   return new URL(currentURL).pathname === new URL(expectedRoute).pathname;
 };

@@ -1,10 +1,10 @@
 import { type Page, expect, test } from '@playwright/test';
-import { defaultAppURL } from '..';
-import { getToolbarAccountInfo, performSearch } from './common';
+import { appUrlWithPlaywrightId } from '..';
+import { getToolbarAccountInfo } from './common';
 
 test.describe('Flattened parties and subparties', () => {
   test.beforeEach(async ({ page }: { page: Page }) => {
-    const flattenedPartiesPage = `${defaultAppURL}&playwrightId=subparty-merged-with-party`;
+    const flattenedPartiesPage = appUrlWithPlaywrightId('subparty-merged-with-party');
     await page.goto(flattenedPartiesPage);
   });
 
@@ -42,8 +42,9 @@ test.describe('Flattened parties and subparties', () => {
 
     await searchbarInput.fill('test');
     /* search box result */
-    await expect(page.getByLabel('Message for Test Testesen')).toBeVisible();
-    await expect(page.getByLabel('Main party message')).not.toBeVisible();
+    await expect(page.getByRole('banner').getByRole('link', { name: 'Message for Test Testesen' })).toBeVisible();
+    await expect(page.getByRole('banner').getByRole('link', { name: 'Main party message' })).not.toBeVisible();
+
     await page.keyboard.press('Escape');
 
     await page.getByRole('button', { name: 'Test Testesen' }).click();
@@ -51,8 +52,7 @@ test.describe('Flattened parties and subparties', () => {
 
     await searchbarInput.fill('party');
     await expect(page.getByLabel('Message for Test Testesen')).not.toBeVisible();
-    await expect(page.getByLabel('Main party message')).toBeVisible();
-    await expect(page.getByLabel('Main party message')).toBeVisible();
+    await expect(page.getByRole('banner').getByRole('link', { name: 'Main party message' })).toBeVisible();
   });
 
   test('Filters shows merged parties if sub party has same name as main party', async ({ page }) => {

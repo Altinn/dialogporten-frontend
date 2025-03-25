@@ -55,15 +55,15 @@ test.describe('Saved search', () => {
     await expectIsCompanyPage(page);
     await expect(page.getByRole('link', { name: 'Innkalling til sesjon' })).toBeVisible();
 
-    await performSearch(page, 'innkalling');
+    await performSearch(page, 'innkalling', 'enter');
 
     await page.getByRole('button', { name: 'Lagre søk' }).click();
 
     await getSidebarMenuItem(page, PageRoutes.savedSearches).click();
 
-    await expect(page.getByRole('link', { name: '«innkalling»' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Gi søket et navn' })).toBeVisible();
 
-    await page.getByRole('link', { name: '«innkalling»' }).click();
+    await page.getByRole('link', { name: 'Gi søket et navn' }).click();
     await expect(page.getByRole('link', { name: 'Innkalling til sesjon' })).toBeVisible();
     await expectIsCompanyPage(page);
   });

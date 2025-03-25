@@ -112,6 +112,7 @@ fragment TransmissionFields on Transmission {
     actorId
     actorName
   }
+  relatedTransmissionId
   content {
     title {
       value {

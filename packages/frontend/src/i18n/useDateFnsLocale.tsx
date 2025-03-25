@@ -25,7 +25,7 @@ export const useDateFnsLocale = () => {
 
 export type FormatFunction = (date: Date | string, formatStr: string) => string;
 
-export const useFormat = () => {
+export const useFormat = (): FormatFunction => {
   const { locale } = useDateFnsLocale();
 
   return useCallback(
