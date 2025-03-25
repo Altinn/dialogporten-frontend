@@ -10,6 +10,17 @@ param tags object
 @description('Optional list of IP addresses/ranges to whitelist for incoming traffic')
 param applicationGatewayWhitelistedIps array = []
 
+// Network address ranges
+var vnetAddressPrefix = '10.0.0.0/16'
+
+// Subnet address ranges
+var defaultSubnetAddressPrefix = '10.0.0.0/24'
+var applicationGatewaySubnetAddressPrefix = '10.0.1.0/24'
+var containerAppEnvSubnetAddressPrefix = '10.0.2.0/23'
+var postgresqlSubnetAddressPrefix = '10.0.4.0/24'
+var redisSubnetAddressPrefix = '10.0.5.0/24'
+var sshJumperSubnetAddressPrefix = '10.0.6.0/24'
+
 var commonHttpProperties = {
   protocol: '*'
   sourcePortRange: '*'
@@ -304,20 +315,44 @@ resource redisNSG 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
   tags: tags
 }
 
+resource sshJumperNSG 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
+  name: '${namePrefix}-ssh-jumper-nsg'
+  location: location
+  properties: {
+    securityRules: [
+      {
+        name: 'AllowAnyCustomAnyOutbound'
+        type: 'Microsoft.Network/networkSecurityGroups/securityRules'
+        properties: {
+          protocol: '*'
+          sourcePortRange: '*'
+          destinationPortRange: '*'
+          sourceAddressPrefix: '*'
+          destinationAddressPrefix: '*'
+          access: 'Allow'
+          priority: 100
+          direction: 'Outbound'
+        }
+      }
+    ]
+  }
+  tags: tags
+}
+
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-09-01' = {
   name: '${namePrefix}-vnet'
   location: location
   properties: {
     addressSpace: {
       addressPrefixes: [
-        '10.0.0.0/16'
+        vnetAddressPrefix
       ]
     }
     subnets: [
       {
         name: 'default'
         properties: {
-          addressPrefix: '10.0.0.0/24'
+          addressPrefix: defaultSubnetAddressPrefix
           networkSecurityGroup: {
             id: defaultNSG.id
           }
@@ -326,7 +361,7 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-09-01' = {
       {
         name: 'applicationGatewaySubnet'
         properties: {
-          addressPrefix: '10.0.1.0/24'
+          addressPrefix: applicationGatewaySubnetAddressPrefix
           networkSecurityGroup: {
             id: applicationGatewayNSG.id
           }
@@ -336,7 +371,7 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-09-01' = {
         name: 'containerAppEnvSubnet'
         properties: {
           // required size for the container app environment is /23
-          addressPrefix: '10.0.2.0/23'
+          addressPrefix: containerAppEnvSubnetAddressPrefix
           networkSecurityGroup: {
             id: containerAppEnvironmentNSG.id
           }
@@ -346,7 +381,7 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-09-01' = {
       {
         name: 'postgresqlSubnet'
         properties: {
-          addressPrefix: '10.0.4.0/24'
+          addressPrefix: postgresqlSubnetAddressPrefix
           networkSecurityGroup: {
             id: postgresqlNSG.id
           }
@@ -369,9 +404,18 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-09-01' = {
       {
         name: 'redisSubnet'
         properties: {
-          addressPrefix: '10.0.5.0/24'
+          addressPrefix: redisSubnetAddressPrefix
           networkSecurityGroup: {
             id: redisNSG.id
+          }
+        }
+      }
+      {
+        name: 'sshJumperSubnet'
+        properties: {
+          addressPrefix: sshJumperSubnetAddressPrefix
+          networkSecurityGroup: {
+            id: sshJumperNSG.id
           }
         }
       }
@@ -402,4 +446,9 @@ output redisSubnetId string = resourceId(
   'Microsoft.Network/virtualNetworks/subnets',
   virtualNetwork.name,
   'redisSubnet'
+)
+output sshJumperSubnetId string = resourceId(
+  'Microsoft.Network/virtualNetworks/subnets',
+  virtualNetwork.name,
+  'sshJumperSubnet'
 )
