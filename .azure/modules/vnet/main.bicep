@@ -16,7 +16,7 @@ var vnetAddressPrefix = '10.0.0.0/16'
 // Subnet address ranges
 var defaultSubnetAddressPrefix = '10.0.0.0/24'
 var applicationGatewaySubnetAddressPrefix = '10.0.1.0/24'
-var containerAppEnvSubnetAddressPrefix = '10.0.2.0/23'
+var containerAppEnvSubnetAddressPrefix = '10.0.2.0/23' // required size for the container app environment is /23
 var postgresqlSubnetAddressPrefix = '10.0.4.0/24'
 var redisSubnetAddressPrefix = '10.0.5.0/24'
 var sshJumperSubnetAddressPrefix = '10.0.6.0/24'
@@ -370,7 +370,6 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-09-01' = {
       {
         name: 'containerAppEnvSubnet'
         properties: {
-          // required size for the container app environment is /23
           addressPrefix: containerAppEnvSubnetAddressPrefix
           networkSecurityGroup: {
             id: containerAppEnvironmentNSG.id
