@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.22.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.22.0...v1.22.1) (2025-03-25)
+
+
+### Bug Fixes
+
+* **infra:** enable JIT for ssh-jumpers ([#1984](https://github.com/Altinn/dialogporten-frontend/issues/1984)) ([d711de3](https://github.com/Altinn/dialogporten-frontend/commit/d711de3989aff5f2a2a588f16b3c9591f55d5b80))
+* **infra:** separate subnet for ssh jumper with restricted rules ([#1982](https://github.com/Altinn/dialogporten-frontend/issues/1982)) ([f2b9309](https://github.com/Altinn/dialogporten-frontend/commit/f2b9309a1592f914d46f9bdcb3b6f84f7e55c33f))
+* prevent duplicate entries of searching for same sender ([#1987](https://github.com/Altinn/dialogporten-frontend/issues/1987)) ([a9cae4f](https://github.com/Altinn/dialogporten-frontend/commit/a9cae4fb1f416b0af22be0e212533c14cb74c84b))
+
 ## [1.22.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.21.1...v1.22.0) (2025-03-25)
 
 
