@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.22.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.21.1...v1.22.0) (2025-03-25)
+
+
+### Features
+
+* Display transmissions as DialogHistory ([#1969](https://github.com/Altinn/dialogporten-frontend/issues/1969)) ([6793351](https://github.com/Altinn/dialogporten-frontend/commit/6793351a7dfe1b687b08ce1d76291cadb2ed51d3))
+
 ## [1.21.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.21.0...v1.21.1) (2025-03-17)
 
 
