@@ -222,22 +222,24 @@ export const generateSendersAutocompleteBySearchString = (
         const ariaLabelId = searchQuery
           ? 'search.autocomplete.searchForSender.withQuery'
           : 'search.autocomplete.searchForSender.withoutQuery';
-        acc.items.push({
-          id: senderDetected.org ?? serviceOwner?.name ?? '',
-          groupId: SENDERS_GROUP_ID,
-          title: senderDetected.sender.name,
-          params: [{ type: 'filter', label: serviceOwner?.name }],
-          type: TYPE_SUGGEST,
-          as: 'button',
-          ariaLabel: t(ariaLabelId, {
-            sender: senderDetected.sender.name,
-            query: searchQuery,
-          }),
-          interactive: true,
-          onClick: () => {
-            onSearch?.(searchQuery, senderDetected.org);
-          },
-        });
+        if (!acc.items.some((existingItem) => existingItem.id === senderDetected.org)) {
+          acc.items.push({
+            id: senderDetected.org ?? serviceOwner?.name ?? '',
+            groupId: SENDERS_GROUP_ID,
+            title: senderDetected.sender.name,
+            params: [{ type: 'filter', label: serviceOwner?.name }],
+            type: TYPE_SUGGEST,
+            as: 'button',
+            ariaLabel: t(ariaLabelId, {
+              sender: senderDetected.sender.name,
+              query: searchQuery,
+            }),
+            interactive: true,
+            onClick: () => {
+              onSearch?.(searchQuery, senderDetected.org);
+            },
+          });
+        }
       }
 
       return acc;
