@@ -124,6 +124,7 @@ export const PageLayout: React.FC = () => {
       ...(accountSearch && {
         accountSearch,
       }),
+      isVirtualized: true,
       logoutButton: {
         label: t('word.log_out'),
         onClick: () => {

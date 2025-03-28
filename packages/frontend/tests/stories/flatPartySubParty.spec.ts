@@ -57,6 +57,10 @@ test.describe('Flattened parties and subparties', () => {
 
   test('Filters shows merged parties if sub party has same name as main party', async ({ page }) => {
     await page.getByRole('button', { name: 'Test Testesen' }).click();
+    const menu = await page.getByRole('menu');
+    await menu.hover();
+    await page.mouse.wheel(0, 300);
+    await page.getByRole('menu').locator('a').filter({ hasText: 'Alle virksomheter' }).waitFor();
     await page.getByRole('menu').locator('a').filter({ hasText: 'Alle virksomheter' }).click();
     await page.getByTestId('inbox-toolbar').getByRole('button', { name: 'add' }).click();
     await page.getByRole('menu').locator('a').filter({ hasText: 'Velg mottaker' }).click();
