@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.23.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.22.1...v1.23.0) (2025-03-28)
+
+
+### Features
+
+* Enable virtualization for accounts lists ([#1992](https://github.com/Altinn/dialogporten-frontend/issues/1992)) ([f64347f](https://github.com/Altinn/dialogporten-frontend/commit/f64347f784976fefe749c8b0c3aa1028b5b751fb))
+
 ## [1.22.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.22.0...v1.22.1) (2025-03-25)
 
 
