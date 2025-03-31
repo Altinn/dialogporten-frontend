@@ -5,7 +5,6 @@ import {
   type Actor,
   ActorType,
   type AttachmentFieldsFragment,
-  type DialogActivityFragment,
   type DialogByIdFieldsFragment,
   type DialogStatus,
   type GetDialogByIdQuery,
@@ -15,16 +14,17 @@ import {
 } from 'bff-types-generated';
 import { AttachmentUrlConsumer } from 'bff-types-generated';
 import { t } from 'i18next';
-import type { DialogActionProps } from '../components';
-import { QUERY_KEYS } from '../constants/queryKeys.ts';
-import { type ValueType, getPreferredPropertyByLocale } from '../i18n/property.ts';
-import { useFormat } from '../i18n/useDateFnsLocale.tsx';
-import type { FormatFunction } from '../i18n/useDateFnsLocale.tsx';
-import { useOrganizations } from '../pages/Inbox/useOrganizations.ts';
-import { toTitleCase } from '../profile';
-import { type OrganizationOutput, getOrganization } from './organizations.ts';
-import { graphQLSDK } from './queries.ts';
-import { getDialogHistoryForTransmissions } from './transmissions.ts';
+import type { DialogActionProps } from '../../components';
+import { QUERY_KEYS } from '../../constants/queryKeys.ts';
+import { type ValueType, getPreferredPropertyByLocale } from '../../i18n/property.ts';
+import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
+import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
+import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
+import { toTitleCase } from '../../profile';
+import { graphQLSDK } from '../queries.ts';
+import { getActivityHistory } from '../utils/activities.tsx';
+import { type OrganizationOutput, getOrganization } from '../utils/organizations.ts';
+import { getDialogHistoryForTransmissions } from '../utils/transmissions.ts';
 import { getSeenByLabel } from './useDialogs.tsx';
 
 export enum EmbeddableMediaType {
@@ -35,37 +35,50 @@ export enum EmbeddableMediaType {
 }
 
 export interface EmbeddedContent {
+  /* URL to content provided by service owner */
   url: string;
+  /* Media type of content */
   mediaType: EmbeddableMediaType;
 }
 
-export interface DialogActivity {
-  id: string;
-  type: DialogActivityFragment['type'];
-  createdAt: string;
-  description: string;
-  performedBy: AvatarProps;
-}
-
 export interface DialogByIdDetails {
+  /* id of dialog */
+  id: string;
+  /* summary of dialog by locale,sorted by preference */
   summary: string;
+  /* sender of dialog, fallbacks to dialog's service owner */
   sender: AvatarProps;
+  /* recipient of dialog, fallbacks to current end-user */
   receiver: AvatarProps;
+  /* title of dialog by locale,sorted by preference */
   title: string;
+  /* actions available for dialog  */
   guiActions: DialogActionProps[];
+  /* additional info of dialog by locale, sorted by preference - can be markdown / HTML */
   additionalInfo: { value: string; mediaType: string } | undefined;
+  /* attachments for dialog, same of each attachment can be represented differently through list of URLs  */
   attachments: AttachmentLinkProps[];
+  /* Used for guiActions and front channel embeds */
   dialogToken: string;
+  /* main content reference for dialog, used to dynamically embed content in the frontend from an external URL. */
   mainContentReference?: EmbeddedContent;
-  activities: DialogActivity[];
+  /* all activities for dialog, including transmissions */
+  activityHistory: DialogHistorySegmentProps[];
+  /* last updated timestamp */
   updatedAt: string;
+  /* created timestamp */
   createdAt: string;
   label: SystemLabel;
+  /* all transmissions for dialog, grouped by related transmissions */
   transmissions: DialogHistorySegmentProps[];
+  /* a map of all content references for all content reference for transmission, used to dynamically embed content in the frontend from an external URL. */
   contentReferenceForTransmissions: Record<string, EmbeddedContent>;
+  /* dialog status */
   status: DialogStatus;
+  /* all actions (including end-user) that have seen the dialog since last update */
+  seenByLog: SeenByLogProps;
+  /* due date for dialog: This is the last date when the dialog is expected to be completed. */
   dueAt?: string;
-  seenByLog?: SeenByLogProps;
 }
 
 interface UseDialogByIdOutput {
@@ -146,6 +159,7 @@ export function mapDialogToToInboxItem(
   const { seenByLabel } = getSeenByLabel(item.seenSinceLastUpdate, t);
 
   return {
+    id: item.id,
     title: getPreferredPropertyByLocale(titleObj)?.value ?? '',
     status: item.status,
     summary: getPreferredPropertyByLocale(summaryObj)?.value ?? '',
@@ -200,18 +214,7 @@ export function mapDialogToToInboxItem(
         type: 'person',
       })),
     },
-    activities: item.activities
-      .map((activity) => {
-        const actorProps = getActorProps(activity.performedBy, serviceOwner);
-        return {
-          id: activity.id,
-          type: activity.type,
-          createdAt: activity.createdAt,
-          performedBy: actorProps,
-          description: getPreferredPropertyByLocale(activity.description)?.value ?? '',
-        };
-      })
-      .reverse(),
+    activityHistory: getActivityHistory(item.activities, item.transmissions, format, serviceOwner),
     transmissions: getDialogHistoryForTransmissions(item.transmissions, format, serviceOwner),
     createdAt: item.createdAt,
     updatedAt: item.updatedAt,

@@ -2,28 +2,30 @@
 
 exports[`MainContentReference Component > should render html content 1`] = `
 <DocumentFragment>
-  <section
-    class="mainContentReference"
+  <div
+    class="_typography_cr720_1 mainContentReference"
+    data-size="md"
   >
     <h1
       class="__fce-header-1"
     >
       header 1
     </h1>
-  </section>
+  </div>
 </DocumentFragment>
 `;
 
 exports[`MainContentReference Component > should render markdown content 1`] = `
 <DocumentFragment>
-  <section
-    class="mainContentReference"
+  <div
+    class="_typography_cr720_1 mainContentReference"
+    data-size="md"
   >
     <h1
       class="__fce-header-1"
     >
       header ## subheader ### subsubheader
     </h1>
-  </section>
+  </div>
 </DocumentFragment>
 `;

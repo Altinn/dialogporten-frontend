@@ -12,10 +12,9 @@ import {
 import { DialogStatus } from 'bff-types-generated';
 import { type ReactElement, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { DialogActivity, DialogByIdDetails } from '../../api/useDialogById.tsx';
+import type { DialogByIdDetails } from '../../api/hooks/useDialogById.tsx';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { getDialogStatus } from '../../pages/Inbox/status.ts';
-import { Activity } from '../Activity';
 import { AdditionalInfoContent } from '../AdditonalInfoContent';
 import { MainContentReference } from '../MainContentReference';
 import styles from './dialogDetails.module.css';
@@ -130,7 +129,7 @@ export const DialogDetails = ({ dialog, isLoading }: DialogDetailsProps): ReactE
         onClick: () => setActiveTab('additional_info'),
       });
     }
-    if (dialog.activities.length > 0) {
+    if (dialog.activityHistory.length > 0) {
       tabs.push({
         id: 'activities',
         title: t('dialog.tabs.activities'),
@@ -152,20 +151,20 @@ export const DialogDetails = ({ dialog, isLoading }: DialogDetailsProps): ReactE
       ...transmission,
       items: transmission.items.map((item) => ({
         ...item,
-        children: (
+        children: dialog.contentReferenceForTransmissions[item.id] ? (
           <MainContentReference
             content={dialog.contentReferenceForTransmissions[item.id]}
             dialogToken={dialog.dialogToken}
           />
-        ),
+        ) : null,
         items: item.items?.map((subItem) => ({
           ...subItem,
-          children: (
+          children: dialog.contentReferenceForTransmissions[subItem.id] ? (
             <MainContentReference
               content={dialog.contentReferenceForTransmissions[subItem.id]}
               dialogToken={dialog.dialogToken}
             />
-          ),
+          ) : null,
         })),
       })),
     }));
@@ -215,12 +214,15 @@ export const DialogDetails = ({ dialog, isLoading }: DialogDetailsProps): ReactE
     url: action.url,
     httpMethod: action.httpMethod,
     loading: actionIdLoading === action.id,
+    loadingText: t('word.loading'),
     hidden: action.hidden,
     onClick: () => {
       setActionIdLoading(action.id);
       void handleDialogActionClick(action, dialog.dialogToken, () => setActionIdLoading(''));
     },
   }));
+
+  console.info(transmissions);
 
   return (
     <Article padding={6} spacing={6}>
@@ -261,11 +263,12 @@ export const DialogDetails = ({ dialog, isLoading }: DialogDetailsProps): ReactE
         <AdditionalInfoContent mediaType={dialog.additionalInfo?.mediaType} value={dialog.additionalInfo?.value} />
       )}
       {activeTab === 'activities' && (
-        <section data-id="dialog-activity-history">
-          {dialog.activities.map((activity: DialogActivity) => (
-            <Activity key={activity.id} activity={activity} />
-          ))}
-        </section>
+        <DialogHistory
+          items={dialog.activityHistory}
+          collapseLabel="Skjul aktiviteter"
+          collapsible
+          expandLabel="Vis aktiviteter"
+        />
       )}
     </Article>
   );

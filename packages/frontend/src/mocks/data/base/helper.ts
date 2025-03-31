@@ -5,7 +5,8 @@ import {
   DialogByIdFieldsFragment,
   GuiActionPriority,
   HttpVerb,
-  SearchDialogFieldsFragment, TransmissionType,
+  SearchDialogFieldsFragment,
+  TransmissionType,
 } from 'bff-types-generated';
 
 export const getMockedMainContent = (dialogId: string) => {
@@ -45,6 +46,76 @@ export const getMockedFCEContent = (transmissionId: string) => {
     ],
   };
 };
+
+export const getMockedActivities = (latestActivity: SearchDialogFieldsFragment['latestActivity'], id: string) => {
+  if (id === '019241f7-8218-7756-be82-123qwe456rtA') {
+    return [
+      {
+        id: Math.random() + '-activity',
+        performedBy: {
+          actorType: ActorType.ServiceOwner,
+          actorId: 'actor-01',
+          actorName: 'Skatteetaten',
+        },
+        description: [
+          {
+            value: 'Meldingen ble sendt.',
+            languageCode: 'nb',
+          }
+        ],
+        type: ActivityType.Information,
+        createdAt: '2023-12-03T10:45:00.000Z',
+      },
+      {
+        id: Math.random() + '-activity',
+        performedBy: {
+          actorType: ActorType.ServiceOwner,
+          actorId: 'actor-01',
+          actorName: 'Skatteetaten',
+        },
+        description: [
+          {
+            value: 'Meldingen ble åpnet.',
+            languageCode: 'nb',
+          }
+        ],
+        type: ActivityType.Information,
+        createdAt: '2023-12-04T10:45:00.000Z',
+      },
+      {
+        id: Math.random() + '-activity',
+        performedBy: {
+          actorType: ActorType.ServiceOwner,
+          actorId: 'actor-01',
+          actorName: 'Skatteetaten',
+        },
+        description: [
+          {
+            value: 'Denne meldingen er utløpt.',
+            languageCode: 'nb',
+          }
+        ],
+        type: ActivityType.Information,
+        createdAt: '2025-12-31T10:45:00.000Z',
+      },
+    ]
+  }
+
+  return [
+    {
+      id: Math.random() + '-activity',
+      performedBy: {
+        actorType: latestActivity!.performedBy.actorType as ActorType,
+        actorId: latestActivity!.performedBy.actorId,
+        actorName: latestActivity!.performedBy.actorName,
+      },
+      description: latestActivity!.description,
+      type: ActivityType.Information,
+      createdAt: new Date().toISOString(),
+    },
+  ]
+
+}
 
 export const getMockedTransmissions = (dialogId: string) => {
   const dialogWithTransmissions = '019241f7-8218-7756-be82-123qwe456rtA';
@@ -94,7 +165,7 @@ export const getMockedTransmissions = (dialogId: string) => {
               value: 'Tittel 2',
               languageCode: 'nb',
             }],
-            "mediaType": "text/plain"
+            "mediaType": "text/pla  in"
           },
           "summary": {
             "value": [ {
@@ -195,19 +266,7 @@ export const convertToDialogByIdTemplate = (input: SearchDialogFieldsFragment): 
         ],
       },
     ],
-    activities: [
-      {
-        id: input.id,
-        performedBy: {
-          actorType: input.latestActivity!.performedBy.actorType as ActorType,
-          actorId: input.latestActivity!.performedBy.actorId,
-          actorName: input.latestActivity!.performedBy.actorName,
-        },
-        description: input.latestActivity!.description,
-        type: ActivityType.Information,
-        createdAt: input.createdAt,
-      },
-    ],
+    activities: getMockedActivities(input.latestActivity, input.id),
     transmissions: getMockedTransmissions(input.id),
     guiActions: [
       {

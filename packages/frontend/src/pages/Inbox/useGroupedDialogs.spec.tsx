@@ -2,7 +2,7 @@ import { renderHook } from '@testing-library/react';
 import type { DialogStatus, SystemLabel } from 'bff-types-generated';
 import { useTranslation } from 'react-i18next';
 import { type Mock, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { InboxViewType } from '../../api/useDialogs.tsx';
+import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import useGroupedDialogs from './useGroupedDialogs.tsx';
 

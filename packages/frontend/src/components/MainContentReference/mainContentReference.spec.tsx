@@ -3,7 +3,7 @@ import { QueryClient } from '@tanstack/react-query';
 import { type RenderOptions, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { createCustomWrapper, customRender } from '../../../utils/test-utils.tsx';
-import { EmbeddableMediaType } from '../../api/useDialogById.tsx';
+import { EmbeddableMediaType } from '../../api/hooks/useDialogById.tsx';
 import { MainContentReference } from './MainContentReference.tsx';
 
 const queryClient = new QueryClient();

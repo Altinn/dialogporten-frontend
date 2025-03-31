@@ -1,7 +1,7 @@
 import type { PartyFieldsFragment, SubPartyFieldsFragment } from 'bff-types-generated';
 type PartyField = PartyFieldsFragment | SubPartyFieldsFragment;
 
-import { toTitleCase } from '../profile';
+import { toTitleCase } from '../../profile';
 
 /* normalizes the parties and sub parties to title case and returns a flatten lists of PartyFieldsFragment
  where name of parent differs from sub parties
