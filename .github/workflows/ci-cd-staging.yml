@@ -134,5 +134,6 @@ jobs:
     with:
       app-name: arbeidsflate
       environment: 'staging'
+      version: ${{ github.event.client_payload.version }}
     secrets:
       token: ${{ secrets.SWARMIA_DEPLOYMENTS_AUTHORIZATION }}
