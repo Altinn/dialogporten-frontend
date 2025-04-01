@@ -1,5 +1,5 @@
 import type { SavedSearchData, SavedSearchesFieldsFragment } from 'bff-types-generated';
-import type { InboxViewType } from '../../api/useDialogs.tsx';
+import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { PageRoutes } from '../../pages/routes.ts';
 
 type JsonValue = string | number | boolean | JsonObject | JsonArray | null;

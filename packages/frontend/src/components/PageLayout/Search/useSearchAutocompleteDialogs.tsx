@@ -10,14 +10,14 @@ import { t } from 'i18next';
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useDebounce } from 'use-debounce';
-import { getOrganization } from '../../../api/organizations.ts';
 import {
   type SearchAutocompleteDialogInput,
   getPartyIds,
   mapAutocompleteDialogsDtoToInboxItem,
   searchAutocompleteDialogs,
-} from '../../../api/useDialogs.tsx';
-import { useDialogs } from '../../../api/useDialogs.tsx';
+} from '../../../api/hooks/useDialogs.tsx';
+import { useDialogs } from '../../../api/hooks/useDialogs.tsx';
+import { getOrganization } from '../../../api/utils/organizations.ts';
 import { QUERY_KEYS } from '../../../constants/queryKeys.ts';
 import type { InboxItemInput } from '../../../pages/Inbox/InboxItemInput.ts';
 import { useOrganizations } from '../../../pages/Inbox/useOrganizations.ts';
@@ -72,6 +72,16 @@ const createAutocomplete = (
     label,
   });
 
+  const getInfoItem = (label: React.ReactNode, badgeLabel?: string) => ({
+    id: 'info',
+    type: 'info',
+    disabled: true,
+    interactive: false,
+    ariaLabel: t('search.autocomplete.searchInInbox', { query: searchValue }),
+    badge: badgeLabel ? { label: badgeLabel } : undefined,
+    label,
+  });
+
   const mapSearchResults = () =>
     searchResults.slice(0, resultsSize).map((item) => ({
       id: item.id,
@@ -105,7 +115,7 @@ const createAutocomplete = (
   if (searchHits.length === 0) {
     return {
       items: [
-        getScopeItem(
+        getInfoItem(
           <span>
             <mark>{searchValue}</mark> {t('search.autocomplete.inInbox')}
           </span>,

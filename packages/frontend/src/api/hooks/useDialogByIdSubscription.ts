@@ -3,8 +3,8 @@ import { DialogEventType } from 'bff-types-generated';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SSE } from 'sse.js';
-import { QUERY_KEYS } from '../constants/queryKeys.ts';
-import { PageRoutes } from '../pages/routes.ts';
+import { QUERY_KEYS } from '../../constants/queryKeys.ts';
+import { PageRoutes } from '../../pages/routes.ts';
 
 export const useDialogByIdSubscription = (dialogId: string | undefined, dialogToken: string | undefined) => {
   const queryClient = useQueryClient();

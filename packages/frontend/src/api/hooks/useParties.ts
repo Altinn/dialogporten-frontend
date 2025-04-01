@@ -2,11 +2,14 @@ import { useQuery } from '@tanstack/react-query';
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import { useEffect, useMemo } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
-import { QUERY_KEYS } from '../constants/queryKeys.ts';
-import { getSelectedAllPartiesFromQueryParams, getSelectedPartyFromQueryParams } from '../pages/Inbox/queryParams.ts';
-import { useGlobalState } from '../useGlobalState.ts';
-import { normalizeFlattenParties } from './normalizeFlattenParties.ts';
-import { graphQLSDK } from './queries.ts';
+import { QUERY_KEYS } from '../../constants/queryKeys.ts';
+import {
+  getSelectedAllPartiesFromQueryParams,
+  getSelectedPartyFromQueryParams,
+} from '../../pages/Inbox/queryParams.ts';
+import { useGlobalState } from '../../useGlobalState.ts';
+import { graphQLSDK } from '../queries.ts';
+import { normalizeFlattenParties } from '../utils/normalizeFlattenParties.ts';
 
 interface UsePartiesOutput {
   parties: PartyFieldsFragment[];

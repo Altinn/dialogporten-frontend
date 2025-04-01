@@ -9,8 +9,8 @@ import type { PartyFieldsFragment } from 'bff-types-generated';
 import { type ChangeEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { getPartyIds } from '../../../api/useDialogs.tsx';
-import { useParties } from '../../../api/useParties.ts';
+import { getPartyIds } from '../../../api/hooks/useDialogs.tsx';
+import { useParties } from '../../../api/hooks/useParties.ts';
 import type { PageRoutes } from '../../../pages/routes.ts';
 import { getAlertBadgeProps } from '../GlobalMenu';
 

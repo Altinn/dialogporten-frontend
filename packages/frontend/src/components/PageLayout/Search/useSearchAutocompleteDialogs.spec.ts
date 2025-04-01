@@ -1,6 +1,6 @@
 import type { DialogStatus, SystemLabel } from 'bff-types-generated';
 import { describe, expect, it } from 'vitest';
-import type { InboxViewType } from '../../../api/useDialogs.tsx';
+import type { InboxViewType } from '../../../api/hooks/useDialogs.tsx';
 import type { InboxItemInput } from '../../../pages/Inbox/InboxItemInput.ts';
 import { generateSendersAutocompleteBySearchString } from './useSearchAutocompleteDialogs';
 

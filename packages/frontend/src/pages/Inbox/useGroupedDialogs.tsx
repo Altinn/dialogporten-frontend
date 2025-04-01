@@ -7,7 +7,7 @@ import type {
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps } from 'react-router-dom';
-import type { InboxViewType } from '../../api/useDialogs.tsx';
+import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import type { InboxItemInput } from './InboxItemInput.ts';
 import { getDialogStatus } from './status.ts';
@@ -89,6 +89,12 @@ const useGroupedDialogs = ({
     groupId,
     title: item.title,
     label: !item.isSeenByEndUser ? t('word.new') : undefined,
+    badge: !item.isSeenByEndUser
+      ? {
+          label: 'Ulest',
+          theme: 'surface-hover',
+        }
+      : undefined,
     id: item.id,
     sender: item.sender,
     summary: item.summary,

@@ -3,7 +3,7 @@ import type { DialogStatus, GetAllDialogsForPartiesQuery, PartyFieldsFragment } 
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useDebounce } from 'use-debounce';
-import { mapDialogToToInboxItem, searchDialogs } from '../../../api/useDialogs.tsx';
+import { mapDialogToToInboxItem, searchDialogs } from '../../../api/hooks/useDialogs.tsx';
 import { QUERY_KEYS } from '../../../constants/queryKeys.ts';
 import type { InboxItemInput } from '../../../pages/Inbox/InboxItemInput.ts';
 import { useOrganizations } from '../../../pages/Inbox/useOrganizations.ts';
