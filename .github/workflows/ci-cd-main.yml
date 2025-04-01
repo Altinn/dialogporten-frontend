@@ -133,7 +133,7 @@ jobs:
     uses: ./.github/workflows/workflow-swarmia-deployment.yml
     needs: [ deploy-infrastructure, deploy-apps ]
     with:
-      app-name: dialogporten
+      app-name: arbeidsflate
       environment: 'test'
     secrets:
       token: ${{ secrets.SWARMIA_DEPLOYMENTS_AUTHORIZATION }}
