@@ -12,12 +12,12 @@ import {
 } from 'bff-types-generated';
 import { type TFunction, t } from 'i18next';
 import { useLocation } from 'react-router-dom';
-import { QUERY_KEYS } from '../constants/queryKeys.ts';
-import { getPreferredPropertyByLocale } from '../i18n/property.ts';
-import type { InboxItemInput } from '../pages/Inbox/InboxItemInput.ts';
-import { useOrganizations } from '../pages/Inbox/useOrganizations.ts';
-import { getOrganization } from './organizations.ts';
-import { graphQLSDK } from './queries.ts';
+import { QUERY_KEYS } from '../../constants/queryKeys.ts';
+import { getPreferredPropertyByLocale } from '../../i18n/property.ts';
+import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
+import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
+import { graphQLSDK } from '../queries.ts';
+import { getOrganization } from '../utils/organizations.ts';
 import { useParties } from './useParties.ts';
 
 export type InboxViewType = 'inbox' | 'drafts' | 'sent' | 'archive' | 'bin';
@@ -152,9 +152,7 @@ export const getDialogs = (partyURIs: string[]): Promise<GetAllDialogsForParties
   });
 
 export const getPartyIds = (partiesToUse: PartyFieldsFragment[]) => {
-  const partyURIs = partiesToUse
-    .filter((party) => !party.hasOnlyAccessToSubParties === true)
-    .map((party) => party.party);
+  const partyURIs = partiesToUse.filter((party) => !party.hasOnlyAccessToSubParties).map((party) => party.party);
   const subPartyURIs = partiesToUse.flatMap((party) => (party.subParties ?? []).map((subParty) => subParty.party));
   return [...partyURIs, ...subPartyURIs] as string[];
 };

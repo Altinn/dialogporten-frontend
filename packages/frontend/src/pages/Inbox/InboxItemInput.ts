@@ -1,6 +1,6 @@
 import type { AvatarProps } from '@altinn/altinn-components';
 import type { DialogStatus, SystemLabel } from 'bff-types-generated';
-import type { InboxViewType } from '../../api/useDialogs.tsx';
+import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 
 export interface InboxItemInput {
   id: string;

@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.24.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.23.0...v1.24.0) (2025-04-01)
+
+
+### Features
+
+* Replace Activities with DialogHistory ([#1996](https://github.com/Altinn/dialogporten-frontend/issues/1996)) ([d91ffdb](https://github.com/Altinn/dialogporten-frontend/commit/d91ffdb792433e5712b7f52f38bc35dab0a57bef))
+
+
+### Bug Fixes
+
+* **infra:** ensure we enable periodic assessment updates for ssh-jumpers ([#1994](https://github.com/Altinn/dialogporten-frontend/issues/1994)) ([cb522eb](https://github.com/Altinn/dialogporten-frontend/commit/cb522eb89ef52c93f8d240e2dfa6bda78c1de0cd))
+
 ## [1.23.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.22.1...v1.23.0) (2025-03-28)
 
 

@@ -17,8 +17,8 @@ import {
 import { type ChangeEvent, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps } from 'react-router-dom';
+import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { createSavedSearch, deleteSavedSearch, fetchSavedSearches, updateSavedSearch } from '../../api/queries.ts';
-import type { InboxViewType } from '../../api/useDialogs.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useFormatDistance } from '../../i18n/useDateFnsLocale.tsx';
 import { DateFilterOption } from '../Inbox/filters.ts';

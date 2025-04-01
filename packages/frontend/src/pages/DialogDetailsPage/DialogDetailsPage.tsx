@@ -11,10 +11,10 @@ import { SystemLabel } from 'bff-types-generated';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps, useLocation, useParams } from 'react-router-dom';
+import { useDialogById } from '../../api/hooks/useDialogById.tsx';
+import { useDialogByIdSubscription } from '../../api/hooks/useDialogByIdSubscription.ts';
+import { useParties } from '../../api/hooks/useParties.ts';
 import { updateSystemLabel } from '../../api/queries.ts';
-import { useDialogById } from '../../api/useDialogById.tsx';
-import { useDialogByIdSubscription } from '../../api/useDialogByIdSubscription.ts';
-import { useParties } from '../../api/useParties.ts';
 import { DialogDetails } from '../../components';
 import { DialogToolbar } from '../../components/DialogToolbar/DialogToolbar.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
@@ -32,7 +32,7 @@ export const DialogDetailsPage = () => {
   const queryClient = useQueryClient();
   const isLoading = isLoadingDialog || (!isSuccess && !isError);
 
-  useDialogByIdSubscription(id, dialog?.dialogToken);
+  useDialogByIdSubscription(dialog?.id, dialog?.dialogToken);
 
   const handleMoveDialog = async ({
     id,

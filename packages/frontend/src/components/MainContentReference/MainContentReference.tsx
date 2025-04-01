@@ -1,7 +1,8 @@
+import { Typography } from '@altinn/altinn-components';
 import { useQuery } from '@tanstack/react-query';
 import { Html, Markdown } from 'embeddable-markdown-html';
 import { memo } from 'react';
-import { type DialogByIdDetails, EmbeddableMediaType } from '../../api/useDialogById.tsx';
+import { type DialogByIdDetails, EmbeddableMediaType } from '../../api/hooks/useDialogById.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import styles from './mainContentReference.module.css';
 
@@ -35,6 +36,6 @@ export const MainContentReference = memo(
     if (!content || !isSuccess) {
       return null;
     }
-    return <section className={styles.mainContentReference}>{getContent(content.mediaType, data)}</section>;
+    return <Typography className={styles.mainContentReference}>{getContent(content.mediaType, data)}</Typography>;
   },
 );
