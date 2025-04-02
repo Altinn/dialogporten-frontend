@@ -110,3 +110,15 @@ jobs:
     secrets:
       SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
       SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_CI_CD_STATUS }} 
+
+  send-deployment-to-swarmia:
+    name: Send deployment to Swarmia
+    if: ${{ always() && !failure() && !cancelled() }}
+    uses: ./.github/workflows/workflow-swarmia-deployment.yml
+    needs: [ deploy-infrastructure, deploy-apps ]
+    with:
+      app-name: arbeidsflate
+      environment: 'yt01'
+      version: ${{ github.event.client_payload.version }}
+    secrets:
+      token: ${{ secrets.SWARMIA_DEPLOYMENTS_AUTHORIZATION }}
