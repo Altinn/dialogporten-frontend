@@ -20,9 +20,14 @@ const getContent = (mediaType: EmbeddableMediaType, data: string) => {
 };
 
 export const MainContentReference = memo(
-  ({ content, dialogToken }: { content: DialogByIdDetails['mainContentReference']; dialogToken: string }) => {
+  ({
+    content,
+    dialogToken,
+    id,
+  }: { content: DialogByIdDetails['mainContentReference']; dialogToken: string; id: string }) => {
     const { data, isSuccess } = useQuery({
-      queryKey: [QUERY_KEYS.MAIN_CONTENT_REFERENCE, content?.url, content?.mediaType],
+      queryKey: [QUERY_KEYS.MAIN_CONTENT_REFERENCE, id],
+      staleTime: 1000 * 60 * 10,
       queryFn: () =>
         fetch(content!.url, {
           headers: {

@@ -107,7 +107,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
                 accountGroups,
                 currentAccount: selectedAccount,
                 onSelectAccount: (account: string) => onSelectAccount(account, PageRoutes[viewType]),
-                isVirtualized: true,
+                isVirtualized: accounts.length > 20,
               }}
               filterState={filterState}
               getFilterLabel={getFilterLabel}

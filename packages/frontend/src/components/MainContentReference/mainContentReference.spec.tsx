@@ -32,7 +32,7 @@ describe('MainContentReference Component', () => {
     );
 
     const { asFragment } = await waitFor(() =>
-      customRender(<MainContentReference content={mockContent} dialogToken={mockDialogToken} />, {
+      customRender(<MainContentReference content={mockContent} dialogToken={mockDialogToken} id="test" />, {
         wrapper,
       } as RenderOptions),
     );
@@ -52,7 +52,7 @@ describe('MainContentReference Component', () => {
     );
 
     const { asFragment } = await waitFor(() =>
-      customRender(<MainContentReference content={mockContent} dialogToken={mockDialogToken} />, {
+      customRender(<MainContentReference content={mockContent} dialogToken={mockDialogToken} id="test" />, {
         wrapper,
       } as RenderOptions),
     );

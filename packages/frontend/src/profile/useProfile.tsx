@@ -9,6 +9,7 @@ export const useProfile = () => {
   const { data } = useQuery<ProfileQuery>({
     queryKey: [QUERY_KEYS.PROFILE],
     queryFn: () => profile(),
+    refetchOnWindowFocus: false,
   });
   const { i18n } = useTranslation();
   const language = data?.profile?.language || i18n.language || 'nb';
