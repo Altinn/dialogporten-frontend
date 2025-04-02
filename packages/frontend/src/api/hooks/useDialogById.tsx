@@ -230,7 +230,8 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
   const partyURIs = parties.map((party) => party.party);
   const { data, isSuccess, isLoading, isError } = useQuery<GetDialogByIdQuery>({
     queryKey: [QUERY_KEYS.DIALOG_BY_ID, id, organizations],
-    staleTime: 1000 * 60 * 10,
+    staleTime: 1000 * 60 * 30,
+    refetchOnWindowFocus: false,
     retry: 3,
     queryFn: () =>
       getDialogsById(id!).then((data) => {

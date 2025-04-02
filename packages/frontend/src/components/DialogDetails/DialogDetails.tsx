@@ -9,6 +9,7 @@ import {
   DialogHistory,
   DialogTabs,
 } from '@altinn/altinn-components';
+import type { DialogHistorySegmentProps } from '@altinn/altinn-components/dist/types/lib/components';
 import { DialogStatus } from 'bff-types-generated';
 import { type ReactElement, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -147,12 +148,13 @@ export const DialogDetails = ({ dialog, isLoading }: DialogDetailsProps): ReactE
       return [];
     }
     /* Add content reference to each item in the transmission - ensure they are not eagerly loaded, will only render on expand */
-    return dialog.transmissions.map((transmission) => ({
+    return dialog.transmissions.map((transmission: DialogHistorySegmentProps) => ({
       ...transmission,
       items: transmission.items.map((item) => ({
         ...item,
         children: dialog.contentReferenceForTransmissions[item.id] ? (
           <MainContentReference
+            id={item.id}
             content={dialog.contentReferenceForTransmissions[item.id]}
             dialogToken={dialog.dialogToken}
           />
@@ -161,6 +163,7 @@ export const DialogDetails = ({ dialog, isLoading }: DialogDetailsProps): ReactE
           ...subItem,
           children: dialog.contentReferenceForTransmissions[subItem.id] ? (
             <MainContentReference
+              id={subItem.id}
               content={dialog.contentReferenceForTransmissions[subItem.id]}
               dialogToken={dialog.dialogToken}
             />
@@ -222,8 +225,6 @@ export const DialogDetails = ({ dialog, isLoading }: DialogDetailsProps): ReactE
     },
   }));
 
-  console.info(transmissions);
-
   return (
     <Article padding={6} spacing={6}>
       <DialogHeader
@@ -241,7 +242,7 @@ export const DialogDetails = ({ dialog, isLoading }: DialogDetailsProps): ReactE
         seenByLog={dialog.seenByLog}
       >
         <p>{dialog.summary}</p>
-        <MainContentReference content={dialog.mainContentReference} dialogToken={dialog.dialogToken} />
+        <MainContentReference content={dialog.mainContentReference} dialogToken={dialog.dialogToken} id={dialog.id} />
         {dialog.attachments.length > 0 && (
           <DialogAttachments
             title={t('inbox.heading.attachments', { count: dialog.attachments.length })}
