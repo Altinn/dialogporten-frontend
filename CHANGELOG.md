@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.24.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.24.0...v1.24.1) (2025-04-02)
+
+
+### Bug Fixes
+
+* reduce requests to fce and increase staale time for dialog by id requests ([#2003](https://github.com/Altinn/dialogporten-frontend/issues/2003)) ([8bd5dea](https://github.com/Altinn/dialogporten-frontend/commit/8bd5dea3cd3b12f795ac0c8c5c3ebe74905839d4))
+
 ## [1.24.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.23.0...v1.24.0) (2025-04-01)
 
 
