@@ -24,6 +24,22 @@ const isAuthenticatedMock = http.get('/api/isAuthenticated', () => {
   return HttpResponse.json({ authenticated: true });
 });
 
+export const streamMock = http.get('/api/graphql/stream', async () => {
+  const stream = new ReadableStream({
+    start( {
+      /* Create a readable stream that sends events if needed for testing in the future and remember to close stream controller */
+    }) {
+  }});
+
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      Connection: 'keep-alive',
+    },
+  });
+});
+
 const getAllDialogsForPartiesMock = graphql.query('getAllDialogsForParties', (options) => {
   const {
     variables: { partyURIs, search, org },
@@ -258,5 +274,6 @@ export const handlers = [
   deleteSavedSearchMock,
   getOrganizationsMock,
   searchAutocompleteDialogsMock,
-  getContentMarkdownMock
+  getContentMarkdownMock,
+  streamMock,
 ];
