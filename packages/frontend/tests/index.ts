@@ -7,6 +7,7 @@ export const appURLInbox = baseURL + PageRoutes.inbox + baseQueryParams;
 export const appURLDrafts = baseURL + PageRoutes.drafts + baseQueryParams;
 export const appURLBin = baseURL + PageRoutes.bin + baseQueryParams;
 export const appURLSent = baseURL + PageRoutes.sent + baseQueryParams;
+export const appURLArchived = baseURL + PageRoutes.archive + baseQueryParams;
 export const appURLSavedSearches = baseURL + PageRoutes.savedSearches + baseQueryParams;
 export const appUrlWithPlaywrightId = (id: string): string => {
   return appURLInbox + `&playwrightId=${id}`;
