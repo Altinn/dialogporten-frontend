@@ -6,6 +6,15 @@ import { type DialogByIdDetails, EmbeddableMediaType } from '../../api/hooks/use
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import styles from './mainContentReference.module.css';
 
+const isValidURL = (url: string) => {
+  try {
+    const newUrl = new URL(url);
+    return newUrl.protocol === 'http:' || newUrl.protocol === 'https:';
+  } catch (_) {
+    return false;
+  }
+};
+
 const getContent = (mediaType: EmbeddableMediaType, data: string) => {
   switch (mediaType) {
     case EmbeddableMediaType.markdown_deprecated:
@@ -25,6 +34,7 @@ export const MainContentReference = memo(
     dialogToken,
     id,
   }: { content: DialogByIdDetails['mainContentReference']; dialogToken: string; id: string }) => {
+    const validURL = content?.url ? isValidURL(content.url) : false;
     const { data, isSuccess } = useQuery({
       queryKey: [QUERY_KEYS.MAIN_CONTENT_REFERENCE, id],
       staleTime: 1000 * 60 * 10,
@@ -35,7 +45,7 @@ export const MainContentReference = memo(
             Authorization: `Bearer ${dialogToken}`,
           },
         }).then((res) => res.text()),
-      enabled: content?.url !== undefined && Object.values(EmbeddableMediaType).includes(content.mediaType),
+      enabled: validURL && content?.mediaType && Object.values(EmbeddableMediaType).includes(content.mediaType),
     });
 
     if (!content || !isSuccess) {

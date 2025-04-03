@@ -105,6 +105,7 @@ fragment DialogByIdFields on Dialog {
 
 fragment TransmissionFields on Transmission {
   id
+  isAuthorized
   createdAt
   type
   sender {
