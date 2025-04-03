@@ -28,13 +28,13 @@ export const DialogToolbar = ({ archiveAction, deleteAction, undoAction, current
       )}
       {currentLabel !== SystemLabel.Archive && (
         <ProfileButton color="neutral" onClick={archiveAction.onClick} isLoading={archiveAction.isLoading}>
-          <ArchiveIcon fontSize="1.5rem" />
+          <ArchiveIcon fontSize="1.5rem" title={t('route.archived')} />
           {t('dialog.toolbar.move_to_archive')}
         </ProfileButton>
       )}
       {currentLabel !== SystemLabel.Bin && (
         <ProfileButton color="neutral" onClick={deleteAction.onClick} isLoading={deleteAction.isLoading}>
-          <TrashIcon fontSize="1.5rem" />
+          <TrashIcon fontSize="1.5rem" title={t('route.deleted')} />
           {t('dialog.toolbar.move_to_bin')}
         </ProfileButton>
       )}
