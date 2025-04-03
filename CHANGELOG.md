@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.24.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.24.1...v1.24.2) (2025-04-03)
+
+
+### Bug Fixes
+
+* disregard fce user is not authorized to access ([#2006](https://github.com/Altinn/dialogporten-frontend/issues/2006)) ([46b905e](https://github.com/Altinn/dialogporten-frontend/commit/46b905e9883962ae82cdf4a9cd7f7ce15228f2de))
+
 ## [1.24.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.24.0...v1.24.1) (2025-04-02)
 
 
