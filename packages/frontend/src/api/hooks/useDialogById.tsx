@@ -96,17 +96,20 @@ export const getAttachmentLinks = (attachments: AttachmentFieldsFragment[]): Att
   return attachments
     .filter((a) => a.urls.filter((url) => url.consumerType === AttachmentUrlConsumer.Gui).length > 0)
     .flatMap((attachment) =>
-      attachment.urls.map((url) => ({
-        label: getPreferredPropertyByLocale(attachment.displayName)?.value || url.url,
-        href: url.url,
-      })),
+      attachment.urls
+        .filter((url) => url.url !== 'urn:dialogporten:unauthorized')
+        .map((url) => ({
+          label: getPreferredPropertyByLocale(attachment.displayName)?.value || url.url,
+          href: url.url,
+        })),
     );
 };
 
 const getMainContentReference = (
   args: { value: ValueType; mediaType: string } | undefined | null,
+  isAuthorized: boolean,
 ): EmbeddedContent | undefined => {
-  if (typeof args === 'undefined' || args === null) return undefined;
+  if (!isAuthorized || typeof args === 'undefined' || args === null) return undefined;
 
   const { value, mediaType } = args;
   const content = getPreferredPropertyByLocale(value);
@@ -189,10 +192,10 @@ export function mapDialogToToInboxItem(
       disabled: !guiAction.isAuthorized,
     })),
     attachments: getAttachmentLinks(item.attachments),
-    mainContentReference: getMainContentReference(mainContentReference),
+    mainContentReference: getMainContentReference(mainContentReference, true),
     contentReferenceForTransmissions: item.transmissions.reduce(
       (acc, transmission) => {
-        const reference = getMainContentReference(transmission.content?.contentReference);
+        const reference = getMainContentReference(transmission.content?.contentReference, transmission.isAuthorized);
         if (reference) {
           acc[transmission.id] = reference;
         }

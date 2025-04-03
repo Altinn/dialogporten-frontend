@@ -47,6 +47,18 @@ export const getMockedFCEContent = (transmissionId: string) => {
   };
 };
 
+export const getMockedUnauthorizedFCEContent = () => {
+  return {
+    mediaType: 'application/vnd.dialogporten.frontchannelembed-url;type=text/html',
+    value: [
+      {
+        value: 'urn:dialogporten:unauthorized',
+        languageCode: 'nb',
+      },
+    ],
+  };
+}
+
 export const getMockedActivities = (latestActivity: SearchDialogFieldsFragment['latestActivity'], id: string) => {
   if (id === '019241f7-8218-7756-be82-123qwe456rtA') {
     return [
@@ -124,6 +136,7 @@ export const getMockedTransmissions = (dialogId: string) => {
       {
         "id": "transmission-1",
         "createdAt": "2024-07-30T18:12:54.233Z",
+        isAuthorized: true,
         "type": TransmissionType.Information,
         "sender": {
           "actorType": ActorType.ServiceOwner,
@@ -152,6 +165,7 @@ export const getMockedTransmissions = (dialogId: string) => {
       {
         "id": "transmission-2",
         relatedTransmissionId: 'transmission-1',
+        isAuthorized: true,
         "createdAt": "2024-07-31T18:12:54.233Z",
         "type": TransmissionType.Information,
         "sender": {
@@ -181,6 +195,7 @@ export const getMockedTransmissions = (dialogId: string) => {
       {
         "id": "transmission-3",
         "createdAt": "2024-07-31T18:12:54.233Z",
+        isAuthorized: false,
         "type": TransmissionType.Information,
         "sender": {
           "actorType": ActorType.PartyRepresentative,
@@ -195,7 +210,7 @@ export const getMockedTransmissions = (dialogId: string) => {
             }],
             "mediaType": "text/plain"
           },
-          "contentReference": getMockedFCEContent('transmission-3'),
+          "contentReference": getMockedUnauthorizedFCEContent(),
           "summary": {
             "value": [ {
               value: 'Oppsummering 3',
@@ -209,6 +224,7 @@ export const getMockedTransmissions = (dialogId: string) => {
       {
         "id": "transmission-4",
         relatedTransmissionId: 'transmission-2',
+        isAuthorized: true,
         "createdAt": "2024-08-13T12:12:54.233Z",
         "type": TransmissionType.Information,
         "sender": {

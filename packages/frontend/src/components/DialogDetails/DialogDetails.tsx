@@ -173,6 +173,30 @@ export const DialogDetails = ({ dialog, isLoading }: DialogDetailsProps): ReactE
     }));
   }, [dialog]);
 
+  const activityHistoryItems = useMemo(() => {
+    if (!dialog?.activityHistory) {
+      return [];
+    }
+    return dialog.activityHistory.map((dialogHistoryItem: DialogHistorySegmentProps) => {
+      if (dialogHistoryItem.items[0]?.variant === 'transmission') {
+        return {
+          ...dialogHistoryItem,
+          items: dialogHistoryItem.items.map((item) => ({
+            ...item,
+            children: dialog.contentReferenceForTransmissions[item.id] ? (
+              <MainContentReference
+                id={item.id}
+                content={dialog.contentReferenceForTransmissions[item.id]}
+                dialogToken={dialog.dialogToken}
+              />
+            ) : null,
+          })),
+        };
+      }
+      return dialogHistoryItem;
+    });
+  }, [dialog]);
+
   if (isLoading) {
     return (
       <Article padding={6} spacing={6}>
@@ -257,20 +281,11 @@ export const DialogDetails = ({ dialog, isLoading }: DialogDetailsProps): ReactE
           selected: item.id === activeTab,
         }))}
       />
-      {activeTab === 'transmissions' && (
-        <DialogHistory items={transmissions} collapseLabel="Skjul historikk" collapsible expandLabel="Vis historikk" />
-      )}
+      {activeTab === 'transmissions' && <DialogHistory items={transmissions} collapsible />}
       {activeTab === 'additional_info' && (
         <AdditionalInfoContent mediaType={dialog.additionalInfo?.mediaType} value={dialog.additionalInfo?.value} />
       )}
-      {activeTab === 'activities' && (
-        <DialogHistory
-          items={dialog.activityHistory}
-          collapseLabel="Skjul aktiviteter"
-          collapsible
-          expandLabel="Vis aktiviteter"
-        />
-      )}
+      {activeTab === 'activities' && <DialogHistory items={activityHistoryItems} />}
     </Article>
   );
 };
