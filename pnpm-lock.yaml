@@ -39,8 +39,8 @@ importers:
         specifier: workspace:*
         version: link:../node-logger
       '@digdir/dialogporten-schema':
-        specifier: 1.55.1
-        version: 1.55.1
+        specifier: 1.61.1-86f834a
+        version: 1.61.1-86f834a
       '@fastify/cookie':
         specifier: ^11.0.2
         version: 11.0.2
@@ -98,9 +98,6 @@ importers:
       axios:
         specifier: ^1.6.2
         version: 1.7.9
-      azure-app-configuration:
-        specifier: ^0.0.1-security.3
-        version: 0.0.1-security.3
       connect-redis:
         specifier: ^7.1.1
         version: 7.1.1(express-session@1.18.1)
@@ -1688,8 +1685,8 @@ packages:
   '@digdir/designsystemet-theme@1.0.0-next.50':
     resolution: {integrity: sha512-6+kdopfhZ8EuA4hzZ9KAlIRTU0Vcgyf9q697wt2Oz5eCWhiga/R1/W3C+HgNPr/OzF7odu1SJLisDgq14RXaiw==}
 
-  '@digdir/dialogporten-schema@1.55.1':
-    resolution: {integrity: sha512-zQK9ay2R3b92FZOQmeGVKss8nNgO2wbh6svwBOuvCInGI05x5Yfgg9yYC+7r63vLbL+03TqJXBg3Qpd1PSAWqA==}
+  '@digdir/dialogporten-schema@1.61.1-86f834a':
+    resolution: {integrity: sha512-Pa2YRPSS7EckWLHh336hRXJT2XIIH0zxrsrCAspnKkUp3q0PBvZfxTnotiBJEFGrkZNe5Zi/gSCD8ql3n33NPw==}
     engines: {node: '22'}
 
   '@discoveryjs/json-ext@0.5.7':
@@ -4592,9 +4589,6 @@ packages:
 
   axios@1.7.9:
     resolution: {integrity: sha512-LhLcE7Hbiryz8oMDdDptSrWowmB4Bl6RCt6sIJKpRB4XtVf0iEgewX3au/pJqm+Py1kCASkb/FFKjxQaLtxJvw==}
-
-  azure-app-configuration@0.0.1-security.3:
-    resolution: {integrity: sha512-I9doYdwEiwNme9wBQt9x+nex2cmmPA7sMP5UBk2zRoy/WpU4W9v5+lSiawdrCOGfDxKMmW3Y8Zx+iCfhsmH7LA==}
 
   babel-loader@9.2.1:
     resolution: {integrity: sha512-fqe8naHt46e0yIdkjUZYqddSXfej3AHajX+CSO5X7oy0EmPc6o5Xh+RClNoHjnieWz9AW4kZxW9yyFMhVB1QLA==}
@@ -11813,7 +11807,7 @@ snapshots:
 
   '@digdir/designsystemet-theme@1.0.0-next.50': {}
 
-  '@digdir/dialogporten-schema@1.55.1': {}
+  '@digdir/dialogporten-schema@1.61.1-86f834a': {}
 
   '@discoveryjs/json-ext@0.5.7': {}
 
@@ -15781,8 +15775,6 @@ snapshots:
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
       - debug
-
-  azure-app-configuration@0.0.1-security.3: {}
 
   babel-loader@9.2.1(@babel/core@7.26.0)(webpack@5.97.1(@swc/core@1.10.7)):
     dependencies:
