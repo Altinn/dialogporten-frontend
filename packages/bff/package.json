@@ -17,9 +17,6 @@
     "typeorm": "typeorm-ts-node-esm"
   },
   "dependencies": {
-    "@azure/app-configuration": "^1.4.1",
-    "@azure/identity": "^4.0.0",
-    "@azure/keyvault-keys": "^4.7.2",
     "@azure/monitor-opentelemetry": "1.7.0",
     "@digdir/dialogporten-node-logger": "workspace:*",
     "@digdir/dialogporten-schema": "1.61.1-86f834a",
@@ -63,7 +60,6 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@azure/keyvault-secrets": "^4.7.0",
     "@tsconfig/node22": "^22.0.0",
     "@types/cookie-parser": "^1.4.2",
     "@types/cors": "^2.8.8",
