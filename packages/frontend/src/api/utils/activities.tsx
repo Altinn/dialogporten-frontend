@@ -100,8 +100,8 @@ export const getActivityHistory = (
     },
   );
   return [...activityItems, ...transmissionItems].sort((a, b) => {
-    const dateA = a.items[0].datetime || '';
-    const dateB = b.items[0].datetime || '';
-    return new Date(dateA).getTime() - new Date(dateB).getTime();
+    const dateA = a.items[0].datetime || a.items[0].createdAt || '';
+    const dateB = b.items[0].datetime || b.items[0].createdAt || '';
+    return new Date(dateB).getTime() - new Date(dateA).getTime();
   });
 };
