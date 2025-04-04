@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.24.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.24.2...v1.24.3) (2025-04-04)
+
+
+### Bug Fixes
+
+* change sort order for items in dialog history for activities ([#2016](https://github.com/Altinn/dialogporten-frontend/issues/2016)) ([4a6098c](https://github.com/Altinn/dialogporten-frontend/commit/4a6098cdc60e5408646c01f140c3d0c44cb74acb))
+* **deps:** update dependency @opentelemetry/instrumentation-fastify to v0.45.0 ([#1851](https://github.com/Altinn/dialogporten-frontend/issues/1851)) ([b803a8a](https://github.com/Altinn/dialogporten-frontend/commit/b803a8a1724b8f1e456b5d09c98e04ea4a1ac93a))
+* **deps:** update dependency @opentelemetry/instrumentation-graphql to v0.48.0 ([#1852](https://github.com/Altinn/dialogporten-frontend/issues/1852)) ([3f92293](https://github.com/Altinn/dialogporten-frontend/commit/3f92293b273d18f40ef45a263d8f961607eb27cd))
+* **deps:** update dependency @opentelemetry/instrumentation-ioredis to v0.48.0 ([#1901](https://github.com/Altinn/dialogporten-frontend/issues/1901)) ([5f91fe0](https://github.com/Altinn/dialogporten-frontend/commit/5f91fe01da74f55ff753955e9f4d0029ae629676))
+
 ## [1.24.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.24.1...v1.24.2) (2025-04-03)
 
 
