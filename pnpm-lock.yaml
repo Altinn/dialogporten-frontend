@@ -371,8 +371,8 @@ importers:
         specifier: ^0.24.2
         version: 0.24.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@digdir/designsystemet-css':
-        specifier: 1.0.0-next.50
-        version: 1.0.0-next.50
+        specifier: 1.0.3
+        version: 1.0.3
       '@digdir/designsystemet-react':
         specifier: 1.0.0-next.50
         version: 1.0.0-next.50(@types/react@19.0.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -1624,8 +1624,8 @@ packages:
     peerDependencies:
       postcss: ^8.4
 
-  '@digdir/designsystemet-css@1.0.0-next.50':
-    resolution: {integrity: sha512-Tloe8Nr7mvv5cjxWFn5teokoY707UW8OGoAsauMIl4U0sR3nnBQw6+VNZQOvebVUXQ/kxt7ShyldJ9f0735yqg==}
+  '@digdir/designsystemet-css@1.0.3':
+    resolution: {integrity: sha512-9WiE6XmGI8OfFmf1XyhrNpDRIMNFpPyqx5ij5AYqF6zqfqJ02DQelERenoDKJOIjcF6+gd33xzlOPAX8wJ485A==}
 
   '@digdir/designsystemet-react@1.0.0-next.50':
     resolution: {integrity: sha512-7FmELIuNzT4SunkQdA/HDkHcBqzYEccaC5up9+jgc67S7P3qRL1Tfp0wzqqRWjawZWY+Jz/yDykMWofV4RdUjg==}
@@ -11665,7 +11665,7 @@ snapshots:
     dependencies:
       postcss: 8.4.49
 
-  '@digdir/designsystemet-css@1.0.0-next.50': {}
+  '@digdir/designsystemet-css@1.0.3': {}
 
   '@digdir/designsystemet-react@1.0.0-next.50(@types/react@19.0.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
