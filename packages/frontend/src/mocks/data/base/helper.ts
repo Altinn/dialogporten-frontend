@@ -110,6 +110,17 @@ export const getMockedActivities = (latestActivity: SearchDialogFieldsFragment['
         type: ActivityType.Information,
         createdAt: '2025-12-31T10:45:00.000Z',
       },
+      {
+        id: Math.random() + '-activity',
+        performedBy: {
+          actorType: ActorType.ServiceOwner,
+          actorId: 'actor-01',
+          actorName: 'Skatteetaten',
+        },
+        transmissionId: 'transmission-2',
+        type: ActivityType.TransmissionOpened,
+        createdAt: '2025-12-31T10:45:00.000Z',
+      },
     ]
   }
 
