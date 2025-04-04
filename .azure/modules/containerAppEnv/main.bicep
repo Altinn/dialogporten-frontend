@@ -17,7 +17,7 @@ resource appInsightsWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10-
   name: appInsightWorkspaceName
 }
 
-resource containerAppEnv 'Microsoft.App/managedEnvironments@2024-03-01' = {
+resource containerAppEnv 'Microsoft.App/managedEnvironments@2024-10-02-preview' = {
   name: name
   location: location
   properties: {
@@ -32,6 +32,10 @@ resource containerAppEnv 'Microsoft.App/managedEnvironments@2024-03-01' = {
         sharedKey: appInsightsWorkspace.listKeys().primarySharedKey
       }
     }
+    zoneRedundant: true
+    availabilityZones: [
+      '1', '2','3'
+    ]
   }
   tags: tags
 }
