@@ -12,6 +12,7 @@ fragment SearchDialogFields on SearchDialog {
     ...SeenLogFields
   }
   latestActivity {
+    transmissionId
     description {
       value
       languageCode
@@ -199,6 +200,7 @@ fragment AttachmentFields on Attachment {
 
 fragment DialogActivity on Activity {
   id
+  transmissionId
   performedBy {
     actorType
     actorId
