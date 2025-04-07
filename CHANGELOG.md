@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.25.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.24.3...v1.25.0) (2025-04-07)
+
+
+### Features
+
+* add actors to activites and translate missing activity types ([#2020](https://github.com/Altinn/dialogporten-frontend/issues/2020)) ([a44ad78](https://github.com/Altinn/dialogporten-frontend/commit/a44ad787004731b051e20bbbbd62fc5af80b1cdb))
+
 ## [1.24.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.24.2...v1.24.3) (2025-04-04)
 
 
