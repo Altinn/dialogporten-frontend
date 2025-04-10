@@ -12,10 +12,11 @@ export const Query = objectType({
         const pid = ctx.session.get('pid');
         const locale = ctx.session.get('locale');
         const profile = await getOrCreateProfile(pid, locale);
-        const { language, updatedAt } = profile;
+        const { favoriteActors, language, updatedAt } = profile;
         return {
           language,
           updatedAt,
+          favoriteActors,
         };
       },
     });

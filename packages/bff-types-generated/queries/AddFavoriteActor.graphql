@@ -1,0 +1,6 @@
+mutation AddFavoriteActor($actorId: String!) {
+  addFavoriteActor(actorId: $actorId) {
+    success
+    message
+  }
+}

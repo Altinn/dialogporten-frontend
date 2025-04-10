@@ -21,6 +21,9 @@ export class ProfileTable {
   @OneToMany('saved_search', 'profile')
   savedSearches: SavedSearch[];
 
+  @Column('text', { array: true })
+  favoriteActors: string[];
+
   @CreateDateColumn()
   createdAt: Date;
 
@@ -35,13 +38,11 @@ export interface Filter {
   id: string;
   value: string;
 }
-
 export interface SavedSearchData {
   filters?: Filter[];
   searchString?: string;
   fromView?: string;
 }
-
 @Entity({ name: 'saved_search' })
 export class SavedSearch {
   @PrimaryGeneratedColumn()
