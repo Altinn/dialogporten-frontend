@@ -13,6 +13,8 @@ import { Link, Outlet, useLocation, useSearchParams } from 'react-router-dom';
 import { useDialogs } from '../../api/hooks/useDialogs.tsx';
 import { useDialogsCount } from '../../api/hooks/useDialogsCount.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
+import { updateLanguage } from '../../api/queries.ts';
+import { i18n } from '../../i18n/config.ts';
 import { getSearchStringFromQueryParams } from '../../pages/Inbox/queryParams.ts';
 import { useSavedSearches } from '../../pages/SavedSearches/useSavedSearches.tsx';
 import { PageRoutes } from '../../pages/routes.ts';
@@ -102,6 +104,16 @@ export const PageLayout: React.FC = () => {
     }
   }, [searchValue]);
 
+  const handleUpdateLanguage = async (language: string) => {
+    try {
+      await updateLanguage(language);
+    } catch (error) {
+      console.error('Failed to delete saved search:', error);
+    } finally {
+      i18n.changeLanguage(language);
+    }
+  };
+
   const headerProps: HeaderProps = {
     currentAccount: selectedAccount,
     logo: {
@@ -137,6 +149,15 @@ export const PageLayout: React.FC = () => {
           (window as Window).location = `/api/logout`;
         },
       },
+    },
+    locale: {
+      title: 'Språk/language',
+      options: [
+        { label: 'Norsk Bokmål', value: 'nb', checked: i18n.language === 'nb' },
+        { label: 'Norsk Nynorsk', value: 'nn', checked: i18n.language === 'nn' },
+        { label: 'English', value: 'en', checked: i18n.language === 'en' },
+      ],
+      onChange: (e) => handleUpdateLanguage((e.target as HTMLSelectElement).value),
     },
   };
 

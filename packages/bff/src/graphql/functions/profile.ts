@@ -1,7 +1,7 @@
 import { ProfileRepository } from '../../db.ts';
 import { ProfileTable } from '../../entities.ts';
 
-export const getOrCreateProfile = async (pid: string, locale: string): Promise<ProfileTable> => {
+export const getOrCreateProfile = async (pid: string, sessionLocale: string): Promise<ProfileTable> => {
   const profile = await ProfileRepository!.findOne({
     where: { pid },
   });
@@ -9,7 +9,7 @@ export const getOrCreateProfile = async (pid: string, locale: string): Promise<P
   if (!profile) {
     const newProfile = new ProfileTable();
     newProfile.pid = pid;
-    newProfile.language = locale || 'nb';
+    newProfile.language = sessionLocale || 'nb';
     newProfile.favoriteActors = [];
 
     const savedProfile = await ProfileRepository!.save(newProfile);
@@ -18,10 +18,12 @@ export const getOrCreateProfile = async (pid: string, locale: string): Promise<P
     }
     return savedProfile;
   }
-  if (profile?.language !== locale) {
-    profile.language = locale;
+
+  if (!profile.language) {
+    profile.language = sessionLocale || 'nb';
     await ProfileRepository!.save(profile);
   }
+
   return profile;
 };
 
@@ -64,6 +66,23 @@ export const deleteFavoriteActor = async (pid: string, actorId: string) => {
   });
   if (!updatedProfile) {
     throw new Error('Failed to delete profile');
+  }
+  return updatedProfile;
+};
+
+export const updateLanguage = async (pid: string, language: string) => {
+  const currentProfile = await ProfileRepository!.findOne({
+    where: { pid },
+  });
+  if (!currentProfile) {
+    throw new Error('Profile not found');
+  }
+  const updatedProfile = await ProfileRepository!.update(pid, {
+    ...currentProfile,
+    language,
+  });
+  if (!updatedProfile) {
+    throw new Error('Failed to update profile');
   }
   return updatedProfile;
 };

@@ -1,0 +1,5 @@
+mutation UpdateLanguage($language: String!) {
+  updateLanguage(language: $language) {
+    success
+  }
+}
