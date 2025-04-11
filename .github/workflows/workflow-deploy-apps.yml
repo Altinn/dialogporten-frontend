@@ -92,14 +92,12 @@ jobs:
           APP_CONFIGURATION_NAME: ${{ secrets.AZURE_APP_CONFIGURATION_NAME }}
           ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
         with:
-          scope: resourcegroup
-          template: ./.azure/applications/bff-migration-job/main.bicep
-          resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
-          deploymentMode: Incremental
-          deploymentName: "dp-fe-${{ inputs.environment }}-bff-migration-job-${{ inputs.version }}"
-          region: ${{ inputs.region }}
-          failOnStdErr: false
-          additionalArguments: '--what-if'
+          scope: resourceGroup
+          operation: whatIf
+          type: deployment
+          template-file: ./.azure/applications/bff-migration-job/main.bicep
+          resource-group-name: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+          name: "dp-fe-${{ inputs.environment }}-bff-migration-job-${{ inputs.version }}"
           parameters: ./.azure/applications/bff-migration-job/${{ inputs.environment }}.bicepparam
 
       - name: Deploy migration job (${{ inputs.environment }})
@@ -115,14 +113,13 @@ jobs:
           APP_CONFIGURATION_NAME: ${{ secrets.AZURE_APP_CONFIGURATION_NAME }}
           ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
         with:
-          scope: resourcegroup
-          template: ./.azure/applications/bff-migration-job/main.bicep
-          resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
-          deploymentMode: Incremental
-          deploymentName: "dp-fe-${{ inputs.environment }}-bff-migration-job-${{ inputs.version }}"
-          region: ${{ inputs.region }}
-          failOnStdErr: false
-          parameters: ./.azure/applications/bff-migration-job/${{ inputs.environment }}.bicepparam
+          scope: resourceGroup
+          type: deployment
+          operation: create
+          template-file: ./.azure/applications/bff-migration-job/main.bicep
+          resource-group-name: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+          name: "dp-fe-${{ inputs.environment }}-bff-migration-job-${{ inputs.version }}"
+          parameters-file: ./.azure/applications/bff-migration-job/${{ inputs.environment }}.bicepparam
 
       - name: Start migration job
         uses: azure/CLI@089eac9d8cc39f5d003e94f8b65efc51076c9cbd # v2.1.0
@@ -188,14 +185,12 @@ jobs:
           ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
           AZURE_APPLICATION_INSIGHTS_INSTRUMENTATION_KEY: ${{ secrets.AZURE_APPLICATION_INSIGHTS_INSTRUMENTATION_KEY }}
         with:
-          scope: resourcegroup
-          template: ./.azure/applications/${{ matrix.name }}/main.bicep
-          resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
-          deploymentMode: Incremental
-          deploymentName: dp-fe-${{ inputs.environment }}-${{ matrix.name }}-${{ inputs.version }}
-          region: ${{ inputs.region }}
-          failOnStdErr: false
-          additionalArguments: '--what-if'
+          scope: resourceGroup
+          type: deployment
+          operation: whatIf
+          template-file: ./.azure/applications/${{ matrix.name }}/main.bicep
+          resource-group-name: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+          name: dp-fe-${{ inputs.environment }}-${{ matrix.name }}-${{ inputs.version }}
           parameters: ./.azure/applications/${{ matrix.name }}/${{ inputs.environment }}.bicepparam
 
       - name: Deploy app ${{ matrix.name }}(${{ inputs.environment }})
@@ -213,13 +208,12 @@ jobs:
           AZURE_APPLICATION_INSIGHTS_INSTRUMENTATION_KEY: ${{ secrets.AZURE_APPLICATION_INSIGHTS_INSTRUMENTATION_KEY }}
         with:
           scope: resourcegroup
-          template: ./.azure/applications/${{ matrix.name }}/main.bicep
-          resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
-          deploymentMode: Incremental
-          deploymentName: dp-fe-${{ inputs.environment }}-${{ matrix.name }}-${{ inputs.version }}
-          region: ${{ inputs.region }}
-          failOnStdErr: false
-          parameters: ./.azure/applications/${{ matrix.name }}/${{ inputs.environment }}.bicepparam
+          type: deployment
+          operation: create
+          template-file: ./.azure/applications/${{ matrix.name }}/main.bicep
+          resource-group-name: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+          name: dp-fe-${{ inputs.environment }}-${{ matrix.name }}-${{ inputs.version }}
+          parameters-file: ./.azure/applications/${{ matrix.name }}/${{ inputs.environment }}.bicepparam
 
       - name: Verify deployment (${{ matrix.name }})
         uses: azure/CLI@089eac9d8cc39f5d003e94f8b65efc51076c9cbd # v2.1.0
