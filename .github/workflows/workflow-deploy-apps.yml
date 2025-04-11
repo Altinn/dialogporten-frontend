@@ -26,9 +26,6 @@ on:
         required: true
 
     inputs:
-      region:
-        required: true
-        type: string
       environment:
         required: true
         type: string

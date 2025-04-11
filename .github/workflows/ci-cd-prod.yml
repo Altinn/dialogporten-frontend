@@ -100,7 +100,6 @@ jobs:
       AZURE_APP_CONFIGURATION_NAME: ${{ secrets.AZURE_APP_CONFIGURATION_NAME }}
     with:
       environment: prod
-      region: norwayeast
       version: ${{ inputs.version }}
       runMigration: ${{ needs.check-for-changes.outputs.hasMigrationChanges == 'true' }}
       ref: "refs/tags/v${{ inputs.version }}"
