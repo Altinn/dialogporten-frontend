@@ -36,7 +36,7 @@
     "@docusaurus/types": "3.7.0",
     "typescript": "~5.5.4",
     "@types/node": "^22.13.4",
-    "@types/react": "^19.0.10"
+    "@types/react": "19.0.10"
   },
   "browserslist": {
     "production": [">0.5%", "not dead", "not op_mini all"],
