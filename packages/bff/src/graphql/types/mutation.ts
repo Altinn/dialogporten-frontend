@@ -1,5 +1,5 @@
 import { extendType, intArg, nonNull, stringArg } from 'nexus';
-import { addFavoriteActor, deleteFavoriteActor, getOrCreateProfile } from '../functions/profile.ts';
+import { getOrCreateProfile } from '../functions/profile.ts';
 import { createSavedSearch, deleteSavedSearch, updateSavedSearch } from '../functions/savedsearch.ts';
 import { Response, SavedSearchInput, SavedSearches } from './index.ts';
 
@@ -61,48 +61,6 @@ export const CreateSavedSearch = extendType({
         try {
           const profile = await getOrCreateProfile(ctx.session.get('pid'), ctx.session.get('locale'));
           return await createSavedSearch({ name, data, profile });
-        } catch (error) {
-          console.error('Failed to create saved search:', error);
-          return error;
-        }
-      },
-    });
-  },
-});
-
-export const AddFavoriteActor = extendType({
-  type: 'Mutation',
-  definition(t) {
-    t.field('addFavoriteActor', {
-      type: Response,
-      args: {
-        actorId: stringArg(),
-      },
-      resolve: async (_, { actorId }, ctx) => {
-        try {
-          await addFavoriteActor(ctx.session.get('pid'), actorId);
-          return { success: true, message: 'FavoriteActor added successfully' };
-        } catch (error) {
-          console.error('Failed to create saved search:', error);
-          return error;
-        }
-      },
-    });
-  },
-});
-
-export const DeleteFavoriteActor = extendType({
-  type: 'Mutation',
-  definition(t) {
-    t.field('deleteFavoriteActor', {
-      type: Response,
-      args: {
-        actorId: stringArg(),
-      },
-      resolve: async (_, { actorId }, ctx) => {
-        try {
-          await deleteFavoriteActor(ctx.session.get('pid'), actorId);
-          return { success: true, message: 'FavoriteActor deleted successfully' };
         } catch (error) {
           console.error('Failed to create saved search:', error);
           return error;

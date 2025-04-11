@@ -1,7 +1,5 @@
 import {
-  type AddFavoriteActorMutation,
   type CreateSavedSearchMutation,
-  type DeleteFavoriteActorMutation,
   type DeleteSavedSearchMutation,
   type OrganizationsQuery,
   type SavedSearchInput,
@@ -21,10 +19,6 @@ export const deleteSavedSearch = (id: number): Promise<DeleteSavedSearchMutation
   graphQLSDK.DeleteSavedSearch({ id });
 export const updateSavedSearch = (id: number, name: string): Promise<UpdateSavedSearchMutation> =>
   graphQLSDK.UpdateSavedSearch({ id, name });
-export const addFavoriteActor = (actorId: string): Promise<AddFavoriteActorMutation> =>
-  graphQLSDK.AddFavoriteActor({ actorId });
-export const deleteFavoriteActor = (actorId: string): Promise<DeleteFavoriteActorMutation> =>
-  graphQLSDK.DeleteFavoriteActor({ actorId });
 export const createSavedSearch = (name: string, data: SavedSearchInput): Promise<CreateSavedSearchMutation> =>
   graphQLSDK.CreateSavedSearch({ name, data });
 export const updateSystemLabel = (dialogId: string, label: SystemLabel): Promise<UpdateSystemLabelMutation> =>

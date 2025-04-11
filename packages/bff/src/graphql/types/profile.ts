@@ -9,12 +9,6 @@ export const Profile = objectType({
         return profile.language;
       },
     });
-    t.list.string('favoriteActors', {
-      description: 'The users favorite actors',
-      resolve: (profile) => {
-        return profile.favoriteActors;
-      },
-    });
     t.string('updatedAt', {
       description: 'Last updated',
       resolve: (profile) => {
