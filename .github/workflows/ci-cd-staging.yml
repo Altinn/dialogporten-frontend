@@ -80,7 +80,6 @@ jobs:
       AZURE_APP_CONFIGURATION_NAME: ${{ secrets.AZURE_APP_CONFIGURATION_NAME }}
     with:
       environment: staging
-      region: norwayeast
       version: ${{ github.event.client_payload.version }}
       runMigration: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasMigrationChanges == 'true' }}
       ref: "refs/tags/v${{ github.event.client_payload.version }}"

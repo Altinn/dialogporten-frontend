@@ -58,6 +58,5 @@ jobs:
       AZURE_APP_CONFIGURATION_NAME: ${{ secrets.AZURE_APP_CONFIGURATION_NAME }}
     with:
       environment: ${{ inputs.environment }}
-      region: norwayeast
       version: ${{ inputs.version }}
       runMigration: ${{ inputs.runMigration }}

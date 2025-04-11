@@ -62,7 +62,6 @@ jobs:
       AZURE_APP_CONFIGURATION_NAME: ${{ secrets.AZURE_APP_CONFIGURATION_NAME }}
     with:
       environment: staging
-      region: norwayeast
       dryRun: true
       version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
 
