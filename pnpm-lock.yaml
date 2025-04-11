@@ -30,8 +30,8 @@ importers:
         specifier: workspace:*
         version: link:../node-logger
       '@digdir/dialogporten-schema':
-        specifier: 1.61.1-86f834a
-        version: 1.61.1-86f834a
+        specifier: 1.62.1-0ba6a7c
+        version: 1.62.1-0ba6a7c
       '@fastify/cookie':
         specifier: ^11.0.2
         version: 11.0.2
@@ -1636,8 +1636,8 @@ packages:
   '@digdir/designsystemet-theme@1.0.0-next.50':
     resolution: {integrity: sha512-6+kdopfhZ8EuA4hzZ9KAlIRTU0Vcgyf9q697wt2Oz5eCWhiga/R1/W3C+HgNPr/OzF7odu1SJLisDgq14RXaiw==}
 
-  '@digdir/dialogporten-schema@1.61.1-86f834a':
-    resolution: {integrity: sha512-Pa2YRPSS7EckWLHh336hRXJT2XIIH0zxrsrCAspnKkUp3q0PBvZfxTnotiBJEFGrkZNe5Zi/gSCD8ql3n33NPw==}
+  '@digdir/dialogporten-schema@1.62.1-0ba6a7c':
+    resolution: {integrity: sha512-KskPsaMtbK//i/m0dI9LDavms6CmBsxc9IuJw+0LnAxFvektvGfQGYRITkPqUaekrgs+H8ZHlW/zcTqO1iJz8A==}
     engines: {node: '22'}
 
   '@discoveryjs/json-ext@0.5.7':
@@ -11684,7 +11684,7 @@ snapshots:
 
   '@digdir/designsystemet-theme@1.0.0-next.50': {}
 
-  '@digdir/dialogporten-schema@1.61.1-86f834a': {}
+  '@digdir/dialogporten-schema@1.62.1-0ba6a7c': {}
 
   '@discoveryjs/json-ext@0.5.7': {}
 
