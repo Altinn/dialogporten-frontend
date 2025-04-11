@@ -26,9 +26,6 @@ on:
         required: true
 
     inputs:
-      region:
-        required: true
-        type: string
       environment:
         required: true
         type: string
@@ -80,7 +77,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Dryrun Deploy migration job (${{ inputs.environment }})
-        uses: azure/arm-deploy@a1361c2c2cd398621955b16ca32e01c65ea340f5 # v2.0.0
+        uses: azure/bicep-deploy@b63eaec8b9f6816ac93b70400c64e60fae54530f # v2.1.0
         if: ${{inputs.dryRun}}
         id: deploy-dryrun
         env:
@@ -92,18 +89,17 @@ jobs:
           APP_CONFIGURATION_NAME: ${{ secrets.AZURE_APP_CONFIGURATION_NAME }}
           ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
         with:
-          scope: resourcegroup
-          template: ./.azure/applications/bff-migration-job/main.bicep
-          resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
-          deploymentMode: Incremental
-          deploymentName: "dp-fe-${{ inputs.environment }}-bff-migration-job-${{ inputs.version }}"
-          region: ${{ inputs.region }}
-          failOnStdErr: false
-          additionalArguments: '--what-if'
-          parameters: ./.azure/applications/bff-migration-job/${{ inputs.environment }}.bicepparam
+          scope: resourceGroup
+          operation: whatIf
+          type: deployment
+          template-file: ./.azure/applications/bff-migration-job/main.bicep
+          resource-group-name: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+          name: "dp-fe-${{ inputs.environment }}-bff-migration-job-${{ inputs.version }}"
+          parameters-file: ./.azure/applications/bff-migration-job/${{ inputs.environment }}.bicepparam
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Deploy migration job (${{ inputs.environment }})
-        uses: azure/arm-deploy@a1361c2c2cd398621955b16ca32e01c65ea340f5 # v2.0.0
+        uses: azure/bicep-deploy@b63eaec8b9f6816ac93b70400c64e60fae54530f # v2.1.0
         if: ${{!inputs.dryRun}}
         id: deploy
         env:
@@ -115,14 +111,14 @@ jobs:
           APP_CONFIGURATION_NAME: ${{ secrets.AZURE_APP_CONFIGURATION_NAME }}
           ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
         with:
-          scope: resourcegroup
-          template: ./.azure/applications/bff-migration-job/main.bicep
-          resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
-          deploymentMode: Incremental
-          deploymentName: "dp-fe-${{ inputs.environment }}-bff-migration-job-${{ inputs.version }}"
-          region: ${{ inputs.region }}
-          failOnStdErr: false
-          parameters: ./.azure/applications/bff-migration-job/${{ inputs.environment }}.bicepparam
+          scope: resourceGroup
+          type: deployment
+          operation: create
+          template-file: ./.azure/applications/bff-migration-job/main.bicep
+          resource-group-name: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+          name: "dp-fe-${{ inputs.environment }}-bff-migration-job-${{ inputs.version }}"
+          parameters-file: ./.azure/applications/bff-migration-job/${{ inputs.environment }}.bicepparam
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Start migration job
         uses: azure/CLI@089eac9d8cc39f5d003e94f8b65efc51076c9cbd # v2.1.0
@@ -175,7 +171,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Dryrun Deploy app ${{ matrix.name }}(${{ inputs.environment }})
-        uses: azure/arm-deploy@a1361c2c2cd398621955b16ca32e01c65ea340f5 # v2.0.0
+        uses: azure/bicep-deploy@b63eaec8b9f6816ac93b70400c64e60fae54530f # v2.1.0
         if: ${{inputs.dryRun}}
         id: deploy-dryrun
         env:
@@ -188,18 +184,17 @@ jobs:
           ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
           AZURE_APPLICATION_INSIGHTS_INSTRUMENTATION_KEY: ${{ secrets.AZURE_APPLICATION_INSIGHTS_INSTRUMENTATION_KEY }}
         with:
-          scope: resourcegroup
-          template: ./.azure/applications/${{ matrix.name }}/main.bicep
-          resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
-          deploymentMode: Incremental
-          deploymentName: dp-fe-${{ inputs.environment }}-${{ matrix.name }}-${{ inputs.version }}
-          region: ${{ inputs.region }}
-          failOnStdErr: false
-          additionalArguments: '--what-if'
-          parameters: ./.azure/applications/${{ matrix.name }}/${{ inputs.environment }}.bicepparam
+          scope: resourceGroup
+          type: deployment
+          operation: whatIf
+          template-file: ./.azure/applications/${{ matrix.name }}/main.bicep
+          resource-group-name: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+          name: dp-fe-${{ inputs.environment }}-${{ matrix.name }}-${{ inputs.version }}
+          parameters-file: ./.azure/applications/${{ matrix.name }}/${{ inputs.environment }}.bicepparam
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Deploy app ${{ matrix.name }}(${{ inputs.environment }})
-        uses: azure/arm-deploy@a1361c2c2cd398621955b16ca32e01c65ea340f5 # v2.0.0
+        uses: azure/bicep-deploy@b63eaec8b9f6816ac93b70400c64e60fae54530f # v2.1.0
         if: ${{!inputs.dryRun}}
         id: deploy
         env:
@@ -212,14 +207,14 @@ jobs:
           ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
           AZURE_APPLICATION_INSIGHTS_INSTRUMENTATION_KEY: ${{ secrets.AZURE_APPLICATION_INSIGHTS_INSTRUMENTATION_KEY }}
         with:
-          scope: resourcegroup
-          template: ./.azure/applications/${{ matrix.name }}/main.bicep
-          resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
-          deploymentMode: Incremental
-          deploymentName: dp-fe-${{ inputs.environment }}-${{ matrix.name }}-${{ inputs.version }}
-          region: ${{ inputs.region }}
-          failOnStdErr: false
-          parameters: ./.azure/applications/${{ matrix.name }}/${{ inputs.environment }}.bicepparam
+          scope: resourceGroup
+          type: deployment
+          operation: create
+          template-file: ./.azure/applications/${{ matrix.name }}/main.bicep
+          resource-group-name: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+          name: dp-fe-${{ inputs.environment }}-${{ matrix.name }}-${{ inputs.version }}
+          parameters-file: ./.azure/applications/${{ matrix.name }}/${{ inputs.environment }}.bicepparam
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Verify deployment (${{ matrix.name }})
         uses: azure/CLI@089eac9d8cc39f5d003e94f8b65efc51076c9cbd # v2.1.0

@@ -1,0 +1,6 @@
+mutation DeleteFavoriteActor($actorId: String!) {
+  deleteFavoriteActor(actorId: $actorId) {
+    success
+    message
+  }
+}
