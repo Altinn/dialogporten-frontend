@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, Outlet, useLocation, useSearchParams } from 'react-router-dom';
 import { useDialogs } from '../../api/hooks/useDialogs.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
+import { i18n } from '../../i18n/config.ts';
 import { getSearchStringFromQueryParams } from '../../pages/Inbox/queryParams.ts';
 import { useSavedSearches } from '../../pages/SavedSearches/useSavedSearches.tsx';
 import { PageRoutes } from '../../pages/routes.ts';
@@ -130,6 +131,17 @@ export const PageLayout: React.FC = () => {
         onClick: () => {
           (window as Window).location = `/api/logout`;
         },
+      },
+    },
+    locale: {
+      title: 'Språk/language',
+      options: [
+        { label: 'Norsk Bokmål', value: 'nb', checked: i18n.language === 'nb' },
+        { label: 'Norsk Nynorsk', value: 'nn', checked: i18n.language === 'nn' },
+        { label: 'English', value: 'en', checked: i18n.language === 'en' },
+      ],
+      onChange: (e) => {
+        i18n.changeLanguage((e.target as HTMLSelectElement).value);
       },
     },
   };
