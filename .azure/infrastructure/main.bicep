@@ -84,16 +84,6 @@ module environmentKeyVault '../modules/keyvault/create.bicep' = {
   }
 }
 
-module appConfiguration '../modules/appConfiguration/create.bicep' = {
-  scope: resourceGroup
-  name: 'appConfiguration'
-  params: {
-    namePrefix: namePrefix
-    location: location
-    tags: tags
-  }
-}
-
 module appInsights '../modules/applicationInsights/create.bicep' = {
   scope: resourceGroup
   name: 'appInsights'
@@ -252,18 +242,6 @@ module copySecrets '../modules/keyvault/copySecrets.bicep' = {
     srcKeyVaultSubId: srcKeyVault.subscriptionId
     destKeyVaultName: environmentKeyVault.outputs.name
     secretPrefix: 'dialogporten--${environment}--'
-    tags: tags
-  }
-}
-
-module appConfigDatabaseConnectionString '../modules/appConfiguration/upsertKeyValue.bicep' = {
-  scope: resourceGroup
-  name: 'AppConfig_Add_DatabaseConnectionString'
-  params: {
-    configStoreName: appConfiguration.outputs.name
-    key: 'DATABASE_CONNECTION_STRING'
-    value: postgresql.outputs.connectionStringSecretUri
-    keyValueType: 'keyVaultReference'
     tags: tags
   }
 }
