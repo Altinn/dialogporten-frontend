@@ -207,7 +207,7 @@ jobs:
           ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
           AZURE_APPLICATION_INSIGHTS_INSTRUMENTATION_KEY: ${{ secrets.AZURE_APPLICATION_INSIGHTS_INSTRUMENTATION_KEY }}
         with:
-          scope: resourcegroup
+          scope: resourceGroup
           type: deployment
           operation: create
           template-file: ./.azure/applications/${{ matrix.name }}/main.bicep
