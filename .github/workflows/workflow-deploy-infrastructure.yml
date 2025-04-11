@@ -87,7 +87,7 @@ jobs:
           echo "::set-output name=postgresqlPassword::$password"
 
       - name: Dryrun Deploy infrastructure (${{ inputs.environment }})
-        uses: azure/arm-deploy@a1361c2c2cd398621955b16ca32e01c65ea340f5 # v2.0.0
+        uses: azure/bicep-deploy@b63eaec8b9f6816ac93b70400c64e60fae54530f # v2.1.0
         if: ${{inputs.dryRun}}
         id: deploy-dryrun
         env:
@@ -103,17 +103,15 @@ jobs:
           APPLICATION_GATEWAY_WHITELISTED_IPS: ${{ secrets.APPLICATION_GATEWAY_WHITELISTED_IPS }}
         with:
           scope: subscription
-          template: ./.azure/infrastructure/main.bicep
-          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          deploymentMode: Incremental
-          deploymentName: dp-fe-${{ inputs.environment }}-${{ inputs.version }}
-          region: ${{ inputs.region }}
-          failOnStdErr: false
-          additionalArguments: '--what-if'
-          parameters: ./.azure/infrastructure/${{ inputs.environment }}.bicepparam
+          operation: whatIf
+          type: deployment
+          template-file: ./.azure/infrastructure/main.bicep
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          name: dp-fe-${{ inputs.environment }}-${{ inputs.version }}
+          parameters-file: ./.azure/infrastructure/${{ inputs.environment }}.bicepparam
 
       - name: Deploy infrastructure (${{ inputs.environment }})
-        uses: azure/arm-deploy@a1361c2c2cd398621955b16ca32e01c65ea340f5 # v2.0.0
+        uses: azure/bicep-deploy@b63eaec8b9f6816ac93b70400c64e60fae54530f # v2.1.0
         if: ${{!inputs.dryRun}}
         id: deploy
         env:
@@ -129,13 +127,12 @@ jobs:
           APPLICATION_GATEWAY_WHITELISTED_IPS: ${{ secrets.APPLICATION_GATEWAY_WHITELISTED_IPS }}
         with:
           scope: subscription
-          template: ./.azure/infrastructure/main.bicep
-          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          deploymentMode: Incremental
-          deploymentName: dp-fe-${{ inputs.environment }}-${{ inputs.version }}
-          region: ${{ inputs.region }}
-          failOnStdErr: false
-          parameters: ./.azure/infrastructure/${{ inputs.environment }}.bicepparam
+          template-file: ./.azure/infrastructure/main.bicep
+          type: deployment
+          operation: create
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          name: dp-fe-${{ inputs.environment }}-${{ inputs.version }}
+          parameters-file: ./.azure/infrastructure/${{ inputs.environment }}.bicepparam
 
       - name: Logout from azure
         if: ${{failure() || success()}}
