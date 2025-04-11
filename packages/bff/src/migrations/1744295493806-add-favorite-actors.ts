@@ -6,7 +6,7 @@ export class AddFavoriteActors1744295493806 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
             ALTER TABLE "profile" 
-            ADD "favoriteActors" text[] NOT NULL DEFAULT '{}'
+            ADD "favoriteActors" text[] NOT NULL DEFAULT '{}' 
         `);
   }
 
