@@ -1,4 +1,39 @@
-query getAllDialogsForParties($partyURIs: [String!], $search: String, $org: [String!], $status: [DialogStatus!]) {
+query getAllDialogsForParties(
+  $partyURIs: [String!]
+  $search: String
+  $org: [String!]
+  $status: [DialogStatus!]
+  $continuationToken: String
+  $limit: Int
+  $label: [SystemLabel!]
+) {
+  searchDialogs(
+    input: {
+      party: $partyURIs
+      search: $search
+      org: $org
+      status: $status
+      continuationToken: $continuationToken
+      orderBy: { createdAt: null, updatedAt: DESC, dueAt: null }
+      systemLabel: $label
+      limit: $limit
+    }
+  ) {
+    items {
+      ...SearchDialogFields
+    }
+    hasNextPage
+    continuationToken
+  }
+}
+
+query getAllDialogsForCount(
+  $partyURIs: [String!]
+  $search: String
+  $org: [String!]
+  $status: [DialogStatus!]
+  $label: [SystemLabel!]
+) {
   searchDialogs(
     input: {
       party: $partyURIs
@@ -6,10 +41,11 @@ query getAllDialogsForParties($partyURIs: [String!], $search: String, $org: [Str
       org: $org
       status: $status
       orderBy: { createdAt: null, updatedAt: DESC, dueAt: null }
+      systemLabel: $label
     }
   ) {
     items {
-      ...SearchDialogFields
+      ...CountableDialogFields
     }
     hasNextPage
   }

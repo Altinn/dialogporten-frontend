@@ -16,6 +16,8 @@
   "activity.status.sent_to_signing": "Sendt til signering av {actor}.",
   "activity.status.signature_provided": "Signert av {actor}.",
   "activity.status.transmission_opened": "{transmission} åpnet av {actor}.",
+  "dialog.aria.fetch_more": "Hent og vis flere dialoger",
+  "dialog.fetch_more": "Vis flere ...",
   "dialog.tabs.transmissions": "Siste aktivitet",
   "dialog.tabs.additional_info": "Tilleggsinformasjon",
   "dialog.tabs.activities": "Aktivitetslogg",

@@ -7,6 +7,7 @@ export const QUERY_KEYS = {
   SEARCH_DIALOGS: 'searchDialogs',
   SEARCH_AUTOCOMPLETE_DIALOGS: 'searchAutocompleteDialogs',
   DIALOGS: 'dialogs',
+  COUNT_DIALOGS: 'countDialogs',
   MAIN_CONTENT_REFERENCE: 'mainContentReference',
   SAVED_SEARCHES: 'savedSearches',
   PROFILE: 'profile',

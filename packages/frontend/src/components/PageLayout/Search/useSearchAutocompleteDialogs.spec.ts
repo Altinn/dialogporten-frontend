@@ -2,7 +2,7 @@ import type { DialogStatus, SystemLabel } from 'bff-types-generated';
 import { describe, expect, it } from 'vitest';
 import type { InboxViewType } from '../../../api/hooks/useDialogs.tsx';
 import type { InboxItemInput } from '../../../pages/Inbox/InboxItemInput.ts';
-import { generateSendersAutocompleteBySearchString } from './useSearchAutocompleteDialogs';
+import { createSendersForAutocomplete } from './useSearchAutocompleteDialogs';
 
 describe('generateSendersAutocompleteBySearchString', () => {
   const mockDialogs: InboxItemInput[] = [
@@ -60,7 +60,7 @@ describe('generateSendersAutocompleteBySearchString', () => {
   ];
 
   it('should return no hits when sender (searchValue) is empty', () => {
-    const result = generateSendersAutocompleteBySearchString('', mockDialogs as InboxItemInput[]);
+    const result = createSendersForAutocomplete('', mockDialogs as InboxItemInput[]);
     expect(result.items).toEqual([]);
     expect(result.groups).toEqual({
       noHits: { title: 'noHits' },
@@ -68,8 +68,8 @@ describe('generateSendersAutocompleteBySearchString', () => {
   });
 
   it('should return matched sender when search value matches sender name', () => {
-    const resultSKD = generateSendersAutocompleteBySearchString('skat', mockDialogs as InboxItemInput[]);
-    const resultSSB = generateSendersAutocompleteBySearchString('sentralby', mockDialogs as InboxItemInput[]);
+    const resultSKD = createSendersForAutocomplete('skat', mockDialogs as InboxItemInput[]);
+    const resultSSB = createSendersForAutocomplete('sentralby', mockDialogs as InboxItemInput[]);
 
     expect(resultSKD.items).toHaveLength(1);
     expect(resultSKD.items[0].title).toBe('Skatteetaten');
@@ -85,7 +85,7 @@ describe('generateSendersAutocompleteBySearchString', () => {
   });
 
   it('should return matched sender and unmatched search string', () => {
-    const resultSKD = generateSendersAutocompleteBySearchString('skat test1', mockDialogs as InboxItemInput[]);
+    const resultSKD = createSendersForAutocomplete('skat test1', mockDialogs as InboxItemInput[]);
     //@ts-ignore Property 'params' does not exist on type 'AutocompleteItemProps'.
     const searchUnmatechedValue = resultSKD.items[0].params.find((item) => item.type === 'search');
     expect(searchUnmatechedValue.type === 'search');
@@ -99,7 +99,7 @@ describe('generateSendersAutocompleteBySearchString', () => {
   });
 
   it('should return all matched senders and unmatched search string if provided', () => {
-    const result = generateSendersAutocompleteBySearchString('skat sentralby test1', mockDialogs as InboxItemInput[]);
+    const result = createSendersForAutocomplete('skat sentralby test1', mockDialogs as InboxItemInput[]);
     //@ts-ignore Property 'params' does not exist on type 'AutocompleteItemProps'.
     const searchUnmatechedValueSKD = result.items[0].params.find((item) => item.type === 'search');
     //@ts-ignore Property 'params' does not exist on type 'AutocompleteItemProps'.
@@ -121,7 +121,7 @@ describe('generateSendersAutocompleteBySearchString', () => {
   });
 
   it('should return no hits when search value does not match any sender name', () => {
-    const result = generateSendersAutocompleteBySearchString('Nonexistent Sender', mockDialogs as InboxItemInput[]);
+    const result = createSendersForAutocomplete('Nonexistent Sender', mockDialogs as InboxItemInput[]);
 
     expect(result.items).toEqual([]);
     expect(result.groups).toEqual({

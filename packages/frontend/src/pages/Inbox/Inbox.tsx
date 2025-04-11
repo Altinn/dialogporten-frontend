@@ -1,9 +1,10 @@
 import { DialogList, Heading, Section, Toolbar } from '@altinn/altinn-components';
-import { Alert, Paragraph } from '@digdir/designsystemet-react';
+import { Alert, Button, Paragraph } from '@digdir/designsystemet-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { type InboxViewType, useDialogs } from '../../api/hooks/useDialogs.tsx';
+import { useDialogsCount } from '../../api/hooks/useDialogsCount.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
 import { useSearchDialogs, useSearchString } from '../../components/PageLayout/Search/';
@@ -32,10 +33,20 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const [searchParams] = useSearchParams();
   const searchBarParam = new URLSearchParams(searchParams);
   const searchParamOrg = searchBarParam.get('org') ?? undefined;
-  const { dialogsByView: allDialogsByView, dialogCountInconclusive: allDialogCountInconclusive } = useDialogs(parties);
+  /* Used to populate account menu */
+  const { dialogCountsByViewType, dialogCountInconclusive: dialogForAllPartiesCountInconclusive } = useDialogsCount(
+    parties,
+    viewType,
+  );
   const { enteredSearchValue } = useSearchString();
-  const { dialogsByView, isLoading: isLoadingDialogs, isSuccess: dialogsSuccess } = useDialogs(selectedParties);
-  const dialogsForView = dialogsByView[viewType];
+  const {
+    dialogs: allDialogsForView,
+    isLoading: isLoadingDialogs,
+    isSuccess: dialogsSuccess,
+    fetchNextPage,
+    isFetchingNextPage,
+    hasNextPage,
+  } = useDialogs(selectedParties, viewType);
   const displaySearchResults = enteredSearchValue.length > 0 || !!searchParamOrg;
 
   const {
@@ -51,12 +62,15 @@ export const Inbox = ({ viewType }: InboxProps) => {
     parties,
     selectedParties,
     allOrganizationsSelected,
-    countableItems: allDialogsByView[viewType],
-    dialogCountInconclusive: allDialogCountInconclusive,
+    countableItems: dialogCountsByViewType[viewType].map((dialog) => ({
+      party: dialog.party,
+      isSeenByEndUser: dialog.seenSinceLastUpdate?.some((s) => s.isCurrentEndUser),
+    })),
+    dialogCountInconclusive: dialogForAllPartiesCountInconclusive,
   });
 
   const dataSourceSuccess = displaySearchResults ? searchSuccess : dialogsSuccess;
-  const dataSource = displaySearchResults ? searchResults : dialogsForView;
+  const dataSource = displaySearchResults ? searchResults : allDialogsForView;
   const { filterState, filters, onFiltersChange, getFilterLabel } = useFilters({ dialogs: dataSource });
   const filteredItems = useMemo(() => filterDialogs(dataSource, filterState), [dataSource, filterState]);
 
@@ -67,6 +81,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     filters: filterState,
     viewType,
     isLoading,
+    isFetchingNextPage,
   });
 
   if (unableToLoadParties) {
@@ -129,6 +144,11 @@ export const Inbox = ({ viewType }: InboxProps) => {
           groups={groups}
           sortGroupBy={([aKey], [bKey]) => (groups[bKey]?.orderIndex ?? 0) - (groups[aKey]?.orderIndex ?? 0)}
         />
+        {hasNextPage && (
+          <Button aria-label={t('dialog.aria.fetch_more')} onClick={fetchNextPage} variant="tertiary">
+            {t('dialog.fetch_more')}
+          </Button>
+        )}
       </Section>
     </>
   );

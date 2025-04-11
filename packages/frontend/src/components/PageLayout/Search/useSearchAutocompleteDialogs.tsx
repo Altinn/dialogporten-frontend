@@ -10,13 +10,13 @@ import { t } from 'i18next';
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useDebounce } from 'use-debounce';
+import { useDialogs } from '../../../api/hooks/useDialogs.tsx';
+import { searchAutocompleteDialogs } from '../../../api/queries.ts';
 import {
   type SearchAutocompleteDialogInput,
-  getPartyIds,
   mapAutocompleteDialogsDtoToInboxItem,
-  searchAutocompleteDialogs,
-} from '../../../api/hooks/useDialogs.tsx';
-import { useDialogs } from '../../../api/hooks/useDialogs.tsx';
+} from '../../../api/utils/autcomplete.ts';
+import { getPartyIds } from '../../../api/utils/dialog.ts';
 import { getOrganization } from '../../../api/utils/organizations.ts';
 import { QUERY_KEYS } from '../../../constants/queryKeys.ts';
 import type { InboxItemInput } from '../../../pages/Inbox/InboxItemInput.ts';
@@ -172,12 +172,7 @@ export const useSearchAutocompleteDialogs = ({
     gcTime: 0,
   });
 
-  const generatedSendersAutocomplete = generateSendersAutocompleteBySearchString(
-    searchValue!,
-    dialogs,
-    onSearch,
-    organizations,
-  );
+  const suggestedSenders = createSendersForAutocomplete(searchValue!, dialogs, onSearch, organizations);
 
   const autocomplete: AutocompleteProps = useMemo(() => {
     const results = hits?.searchDialogs?.items ?? [];
@@ -185,8 +180,8 @@ export const useSearchAutocompleteDialogs = ({
   }, [hits, isLoading, searchValue, onSearch]);
 
   const mergedAutocomplete = {
-    groups: { ...autocomplete.groups, ...generatedSendersAutocomplete.groups },
-    items: [...autocomplete.items, ...generatedSendersAutocomplete.items],
+    groups: { ...autocomplete.groups, ...suggestedSenders.groups },
+    items: [...autocomplete.items, ...suggestedSenders.items],
   };
 
   return {
@@ -197,7 +192,7 @@ export const useSearchAutocompleteDialogs = ({
   };
 };
 
-export const generateSendersAutocompleteBySearchString = (
+export const createSendersForAutocomplete = (
   searchValue: string,
   dialogs: InboxItemInput[],
   onSearch?: (searchString: string, sender?: string) => void,

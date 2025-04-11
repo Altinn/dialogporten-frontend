@@ -4,15 +4,22 @@ import {
   SavedSearchesFieldsFragment,
   UpdateSystemLabelMutationVariables,
   DialogByIdFieldsFragment,
-  SearchAutocompleteDialogFieldsFragment,
-  PartyFieldsFragment,
+  Profile,
+  SearchAutocompleteDialogFieldsFragment, SearchDialogFieldsFragment, PartyFieldsFragment, OrganizationFieldsFragment,
 } from 'bff-types-generated';
-import { convertToDialogByIdTemplate } from './data/base/helper.ts';
+import {convertToDialogByIdTemplate, filterDialogs} from './data/base/helper.ts';
 import { getMockedData } from './data.ts';
 
 const data = await getMockedData(window.location.href);
+export type InMemoryStore = {
+  savedSearches?: SavedSearchesFieldsFragment[];
+  profile?: Profile;
+  dialogs?: SearchDialogFieldsFragment[] | null;
+  parties?: PartyFieldsFragment[];
+  organizations?: OrganizationFieldsFragment[];
+};
 
-let inMemoryStore = {
+let inMemoryStore: InMemoryStore = {
   savedSearches: data.savedSearches,
   profile: data.profile,
   dialogs: data.dialogs,
@@ -40,57 +47,61 @@ export const streamMock = http.get('/api/graphql/stream', async () => {
   });
 });
 
-const getAllDialogsForPartiesMock = graphql.query('getAllDialogsForParties', (options) => {
-  const {
-    variables: { partyURIs, search, org },
-  } = options;
 
-
-  if (inMemoryStore.dialogs === null) {
-    return HttpResponse.json({
-      data: {
-        searchDialogs: {
-          items: null,
-        },
-      },
-    });
-  }
-  
-  const  itemsForParty = inMemoryStore.dialogs
-  .filter((dialog) => partyURIs.includes(dialog.party))
-  .filter(dialog => !org || dialog.org === org);
- 
-  const allowedPartyIds = inMemoryStore.parties.flatMap((party: PartyFieldsFragment) => [party.party, ...(party.subParties ?? []).map((subParty) => subParty.party)]);
-  const allPartiesEligible = partyURIs.every((partyURI: string) => allowedPartyIds.includes(partyURI));
-  const shouldReturnNull = !allPartiesEligible || partyURIs.length === 0;
-
-  if (shouldReturnNull) {
-    return HttpResponse.json({
-      data: {
-        searchDialogs: {
-          items: null,
-        },
-      },
-    });
-  }
+const getAllDialogsforCountMock = graphql.query('getAllDialogsForCount', ({ variables }) => {
+  const items = filterDialogs({
+    inMemoryStore,
+    partyURIs: variables.partyURIs,
+    search: variables.search,
+    org: variables.org,
+    label: variables.systemLabel,
+    status: variables.status,
+  });
 
   return HttpResponse.json({
     data: {
       searchDialogs: {
-        items: itemsForParty.filter((item) => naiveSearchFilter(item, search)),
+        items: items?.map((item) => ({
+          id: item.id,
+          party: item.party,
+          updatedAt: item.updatedAt,
+          status: item.status,
+          systemLabel: item.systemLabel,
+          seenSinceLastUpdate: item.seenSinceLastUpdate,
+        })) ?? null,
       },
     },
   });
 });
 
+const getAllDialogsForPartiesMock = graphql.query('getAllDialogsForParties', ({ variables }) => {
+  const items = filterDialogs({
+    inMemoryStore,
+    partyURIs: variables.partyURIs,
+    search: variables.search,
+    org: variables.org,
+    label: variables.label,
+    status: variables.status,
+  });
+
+  return HttpResponse.json({
+    data: {
+      searchDialogs: {
+        items: items ?? null,
+      },
+    },
+  });
+});
+
+
 const getDialogByIdMock = graphql.query('getDialogById', (options) => {
   const {
     variables: { id },
   } = options;
-  const dialog = inMemoryStore.dialogs.find((dialog) => dialog.id === id) ?? null;
+  const dialog = inMemoryStore.dialogs?.find((dialog) => dialog.id === id) ?? null;
 
   if (dialog && !dialog.seenSinceLastUpdate.find(d => d.isCurrentEndUser)) {
-    const party = inMemoryStore.parties.find((party) => party.isCurrentEndUser) ?? null;
+    const party = inMemoryStore.parties?.find((party) => party.isCurrentEndUser) ?? null;
     dialog.seenSinceLastUpdate = [
       {
         id: 'c4f4d846-2fe7-4172-badc-abc48f9af8a5',
@@ -104,7 +115,7 @@ const getDialogByIdMock = graphql.query('getDialogById', (options) => {
       },
     ];
     inMemoryStore.dialogs = dialog 
-      ? inMemoryStore.dialogs.map((d) => (d.id === id ? dialog : d))
+      ? inMemoryStore.dialogs?.map((d) => (d.id === id ? dialog : d))
       : inMemoryStore.dialogs;
   }
 
@@ -172,7 +183,7 @@ export const getOrganizationsMock = graphql.query('organizations', () => {
 
 export const deleteSavedSearchMock = graphql.mutation('DeleteSavedSearch', (req) => {
   const { id } = req.variables;
-  inMemoryStore.savedSearches = inMemoryStore.savedSearches.filter((savedSearch) => savedSearch.id !== id);
+  inMemoryStore.savedSearches = inMemoryStore.savedSearches?.filter((savedSearch) => savedSearch.id !== id);
   return HttpResponse.json({
     data: {
       savedSearches: inMemoryStore.savedSearches,
@@ -191,13 +202,13 @@ const getProfileMock = graphql.query('profile', async () => {
 const mutateSavedSearchMock = graphql.mutation('CreateSavedSearch', (req) => {
   const { name, data } = req.variables;
   const savedSearch: SavedSearchesFieldsFragment = {
-    id: inMemoryStore.savedSearches.length + 1,
+    id: (inMemoryStore.savedSearches?.length ?? 0) + 1,
     name,
     data,
     updatedAt: new Date().toISOString(),
     createdAt: new Date().toISOString(),
   };
-  inMemoryStore.savedSearches.push(savedSearch);
+  inMemoryStore.savedSearches?.push(savedSearch);
   return HttpResponse.json({
     data: {
       CreateSavedSearch: savedSearch,
@@ -213,7 +224,7 @@ const mutateUpdateSystemLabelMock = graphql.mutation('updateSystemLabel', (req) 
     label,
   };
 
-  inMemoryStore.dialogs = inMemoryStore.dialogs.map((dialog) => {
+  inMemoryStore.dialogs = inMemoryStore.dialogs?.map((dialog) => {
     if (dialog.id === dialogId) {
       dialog.systemLabel = label;
     }
@@ -231,9 +242,9 @@ const searchAutocompleteDialogsMock = graphql.query('getSearchAutocompleteDialog
   const {
     variables: { partyURIs, search },
   } = req;
-  const itemsForParty = inMemoryStore.dialogs.filter((dialog) => partyURIs.includes(dialog.party));
-  const filteredItems = itemsForParty.filter((item) => naiveSearchFilter(item, search));
-  const autoCompleteItems: SearchAutocompleteDialogFieldsFragment[] = filteredItems.map(item => ({
+  const itemsForParty = inMemoryStore.dialogs?.filter((dialog) => partyURIs.includes(dialog.party));
+  const filteredItems = itemsForParty?.filter((item) => naiveSearchFilter(item, search));
+  const autoCompleteItems: SearchAutocompleteDialogFieldsFragment[] = filteredItems?.map(item => ({
     id: item.id,
     seenSinceLastUpdate: item.seenSinceLastUpdate,
     content: {
@@ -249,7 +260,7 @@ const searchAutocompleteDialogsMock = graphql.query('getSearchAutocompleteDialog
       },
       summary: item.content.summary
     }
-  }));
+  })) ?? [];
 
   return HttpResponse.json({
     data: {
@@ -275,5 +286,7 @@ export const handlers = [
   getOrganizationsMock,
   searchAutocompleteDialogsMock,
   getContentMarkdownMock,
+  getAllDialogsForPartiesMock,
+  getAllDialogsforCountMock,
   streamMock,
 ];

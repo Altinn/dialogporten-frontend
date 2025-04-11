@@ -34,6 +34,7 @@ interface UseGroupedDialogsProps {
   displaySearchResults: boolean;
   viewType: InboxViewType;
   isLoading: boolean;
+  isFetchingNextPage?: boolean;
 }
 
 const sortByUpdatedAt = (arr: DialogListItemProps[]) => {
@@ -75,6 +76,7 @@ const useGroupedDialogs = ({
   displaySearchResults,
   viewType,
   isLoading,
+  isFetchingNextPage,
 }: UseGroupedDialogsProps): UseGroupedDialogsOutput => {
   const { t } = useTranslation();
   const format = useFormat();
@@ -129,8 +131,12 @@ const useGroupedDialogs = ({
     }
 
     if (!displaySearchResults && isNotInbox) {
+      const groupedDialogs = items.map((item) => formatDialogItem(item, item.viewType));
+      if (isFetchingNextPage) {
+        groupedDialogs.push(...renderLoadingItems(1));
+      }
       return {
-        groupedDialogs: items.map((item) => formatDialogItem(item, viewType)),
+        groupedDialogs,
         groups: {
           [viewType]: { title: t(`inbox.heading.title.${viewType}`, { count: items.length }) },
         },
@@ -184,6 +190,9 @@ const useGroupedDialogs = ({
     );
 
     const groupedDialogs = sortByUpdatedAt(mappedGroupedDialogs);
+    if (isFetchingNextPage) {
+      groupedDialogs.push(...renderLoadingItems(1));
+    }
 
     return { groupedDialogs, groups };
   }, [items, displaySearchResults, t, format, isNotInbox, viewType, allWithinSameYear, isLoading]);
