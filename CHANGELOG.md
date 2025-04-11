@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.26.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.25.0...v1.26.0) (2025-04-11)
+
+
+### Features
+
+* Added interim solution for storing actor favorites in BFF ([7189d91](https://github.com/Altinn/dialogporten-frontend/commit/7189d91d488118e8c5cbb023c0de02a0b5fcd4a8))
+
 ## [1.25.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.24.3...v1.25.0) (2025-04-07)
 
 
