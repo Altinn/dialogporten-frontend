@@ -17,6 +17,7 @@
   "activity.status.signature_provided": "Signature provided by {actor}.",
   "activity.status.transmission_opened": "{transmission} opened by {actor}.",
   "dialog.fetch_more": "Show more ...",
+  "parties.current_end_user": "Logged in as {name}",
   "dialog.aria.fetch_more": "Fetch and show more dialogs",
   "dialog.tabs.transmissions": "Last activity",
   "dialog.tabs.additional_info": "Additional information",

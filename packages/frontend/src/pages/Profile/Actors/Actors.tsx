@@ -1,5 +1,4 @@
-import { ListBase, PageNav, Toolbar, Typography } from '@altinn/altinn-components';
-import { Alert, Chip } from '@digdir/designsystemet-react';
+import { DsAlert, DsChip, ListBase, PageNav, Toolbar, Typography } from '@altinn/altinn-components';
 import { useState } from 'react';
 import { useParties } from '../../../api/hooks/useParties';
 import { useProfile } from '../../../profile';
@@ -40,12 +39,12 @@ export const Actors = () => {
         ]}
       />
       <h1>Innstillinger for Mine aktører</h1>
-      <Alert className={styles.alert} data-color="info">
+      <DsAlert className={styles.alert} data-color="info">
         <Typography>
           <div className={styles.alertTitle}>På denne siden kan du organisere, favorisere og...</div>
           Her må vi legge inn utfyllende informasjon om maks antall aktører, favoritter o.l.
         </Typography>
-      </Alert>
+      </DsAlert>
       <div className={styles.searchContainer}>
         <Toolbar
           search={{
@@ -105,7 +104,7 @@ export const Actors = () => {
           showResultsLabel="Vis alle treff"
         >
           <div>
-            <Chip.Radio
+            <DsChip.Radio
               name="underenheter"
               value="underenheter"
               checked={showSubActors}
@@ -113,8 +112,8 @@ export const Actors = () => {
               onClick={() => setShowSubActors((showSubActors) => !showSubActors)}
             >
               Underenheter
-            </Chip.Radio>
-            <Chip.Radio
+            </DsChip.Radio>
+            <DsChip.Radio
               name="slettede-aktorer"
               value="slettede-aktorer"
               data-size="md"
@@ -122,7 +121,7 @@ export const Actors = () => {
               onClick={() => setShowDeletedActors(!showDeletedActors)}
             >
               Slettede aktører
-            </Chip.Radio>
+            </DsChip.Radio>
           </div>
         </Toolbar>
       </div>
