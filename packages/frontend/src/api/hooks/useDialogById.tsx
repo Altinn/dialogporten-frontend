@@ -23,9 +23,9 @@ import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
 import { toTitleCase } from '../../profile';
 import { graphQLSDK } from '../queries.ts';
 import { getActivityHistory } from '../utils/activities.tsx';
+import { getSeenByLabel } from '../utils/dialog.ts';
 import { type OrganizationOutput, getOrganization } from '../utils/organizations.ts';
 import { getDialogHistoryForTransmissions } from '../utils/transmissions.ts';
-import { getSeenByLabel } from './useDialogs.tsx';
 
 export enum EmbeddableMediaType {
   markdown = 'application/vnd.dialogporten.frontchannelembed-url;type=text/markdown',
@@ -239,7 +239,7 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
     queryFn: () =>
       getDialogsById(id!).then((data) => {
         if (data?.dialogById.dialog) {
-          void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.DIALOGS] });
+          void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.COUNT_DIALOGS] });
         }
         return data;
       }),

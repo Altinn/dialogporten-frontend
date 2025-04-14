@@ -11,6 +11,7 @@ import { type ChangeEvent, useEffect, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, Outlet, useLocation, useSearchParams } from 'react-router-dom';
 import { useDialogs } from '../../api/hooks/useDialogs.tsx';
+import { useDialogsCount } from '../../api/hooks/useDialogsCount.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { getSearchStringFromQueryParams } from '../../pages/Inbox/queryParams.ts';
 import { useSavedSearches } from '../../pages/SavedSearches/useSavedSearches.tsx';
@@ -37,7 +38,8 @@ export const PageLayout: React.FC = () => {
   const queryClient = useQueryClient();
   const { searchValue, setSearchValue, onClear } = useSearchString();
   const { selectedProfile, selectedParties, parties, selectedPartyIds, allOrganizationsSelected } = useParties();
-  const { dialogsByView, dialogCountInconclusive: partyDialogsCountInconclusive } = useDialogs(selectedParties);
+  const { dialogCountsByViewType, dialogCountInconclusive: partyDialogsCountInconclusive } =
+    useDialogsCount(selectedParties);
   const { dialogsByView: allDialogsByView, dialogCountInconclusive: allDialogCountInconclusive } = useDialogs(parties);
   const { autocomplete } = useSearchAutocompleteDialogs({ selectedParties: selectedParties, searchValue });
   const { accounts, selectedAccount, accountSearch, accountGroups, onSelectAccount } = useAccounts({
@@ -50,21 +52,25 @@ export const PageLayout: React.FC = () => {
   const { currentPartySavedSearches } = useSavedSearches(selectedPartyIds);
 
   const needsAttentionPerView = {
-    inbox: dialogsByView.inbox.filter((item) => !item.isSeenByEndUser).length,
-    drafts: dialogsByView.drafts.filter((item) => !item.isSeenByEndUser).length,
-    sent: dialogsByView.sent.filter((item) => !item.isSeenByEndUser).length,
+    inbox: dialogCountsByViewType.inbox.filter((item) => !item.seenSinceLastUpdate?.some((s) => s.isCurrentEndUser))
+      .length,
+    drafts: dialogCountsByViewType.drafts.filter((item) => !item.seenSinceLastUpdate?.some((s) => s.isCurrentEndUser))
+      .length,
+    sent: dialogCountsByViewType.sent.filter((item) => !item.seenSinceLastUpdate?.some((s) => s.isCurrentEndUser))
+      .length,
     'saved-searches': 0,
-    archive: dialogsByView.archive.filter((item) => !item.isSeenByEndUser).length,
-    bin: dialogsByView.bin.filter((item) => !item.isSeenByEndUser).length,
+    archive: dialogCountsByViewType.archive.filter((item) => !item.seenSinceLastUpdate?.some((s) => s.isCurrentEndUser))
+      .length,
+    bin: dialogCountsByViewType.bin.filter((item) => !item.seenSinceLastUpdate?.some((s) => s.isCurrentEndUser)).length,
   };
 
   const itemsPerViewCount = {
-    inbox: dialogsByView.inbox.length,
-    drafts: dialogsByView.drafts.length,
-    sent: dialogsByView.sent.length,
+    inbox: dialogCountsByViewType.inbox.length,
+    drafts: dialogCountsByViewType.drafts.length,
+    sent: dialogCountsByViewType.sent.length,
     'saved-searches': currentPartySavedSearches?.length ?? 0,
-    archive: dialogsByView.archive.length,
-    bin: dialogsByView.bin.length,
+    archive: dialogCountsByViewType.archive.length,
+    bin: dialogCountsByViewType.bin.length,
   };
 
   const footer: FooterProps = useFooter();

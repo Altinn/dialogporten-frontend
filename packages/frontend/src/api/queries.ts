@@ -3,6 +3,8 @@ import {
   type CreateSavedSearchMutation,
   type DeleteFavoriteActorMutation,
   type DeleteSavedSearchMutation,
+  type GetAllDialogsForPartiesQuery,
+  type GetSearchAutocompleteDialogsQuery,
   type OrganizationsQuery,
   type SavedSearchInput,
   type SavedSearchesQuery,
@@ -32,3 +34,24 @@ export const updateSystemLabel = (dialogId: string, label: SystemLabel): Promise
     dialogId,
     label,
   });
+export const searchDialogs = (
+  partyURIs: string[],
+  search: string | undefined,
+  org: string | undefined,
+): Promise<GetAllDialogsForPartiesQuery> => {
+  return graphQLSDK.getAllDialogsForParties({
+    partyURIs,
+    search: search?.length === 0 ? undefined : search,
+    org: org?.length === 0 ? undefined : org,
+  });
+};
+
+export const searchAutocompleteDialogs = (
+  partyURIs: string[],
+  search: string | undefined,
+): Promise<GetSearchAutocompleteDialogsQuery> => {
+  return graphQLSDK.getSearchAutocompleteDialogs({
+    partyURIs,
+    search,
+  });
+};

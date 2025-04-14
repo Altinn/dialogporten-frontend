@@ -4,10 +4,52 @@ import {
   AttachmentUrlConsumer,
   DialogByIdFieldsFragment,
   GuiActionPriority,
-  HttpVerb,
+  HttpVerb, PartyFieldsFragment,
   SearchDialogFieldsFragment,
   TransmissionType,
 } from 'bff-types-generated';
+import {naiveSearchFilter} from "../../filters.ts";
+import {InMemoryStore} from "../../handlers.ts";
+
+export const filterDialogs = ({
+  inMemoryStore,
+  partyURIs,
+  search,
+  org,
+  label,
+  status,
+ }: {
+  inMemoryStore: InMemoryStore;
+  partyURIs: string[];
+  search?: string;
+  org?: string;
+  label?: string;
+  status?: string | string[];
+}) => {
+
+  if (!inMemoryStore.dialogs) return null;
+
+  const allowedPartyIds = inMemoryStore.parties?.flatMap((party: PartyFieldsFragment) => [
+    party.party,
+    ...(party.subParties ?? []).map((subParty) => subParty.party),
+  ]);
+
+  const allPartiesEligible = partyURIs.every((partyURI) => allowedPartyIds?.includes(partyURI));
+  const shouldReturnNull = !allPartiesEligible || partyURIs.length === 0;
+
+  if (shouldReturnNull) return null;
+
+  return inMemoryStore.dialogs
+    .filter((dialog) => partyURIs.includes(dialog.party))
+    .filter((dialog) => !org || dialog.org === org)
+    .filter((dialog) => !label || dialog.systemLabel === label)
+    .filter((dialog) =>
+      Array.isArray(status)
+        ? status.length === 0 || status.includes(dialog.status)
+        : !status || dialog.status === status
+    )
+    .filter((dialog) => naiveSearchFilter(dialog, search));
+};
 
 export const getMockedMainContent = (dialogId: string) => {
   const idWithLegacyHTML = '019241f7-6f45-72fd-a574-f19d358aaf4e';

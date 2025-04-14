@@ -3,7 +3,8 @@ import type { DialogStatus, GetAllDialogsForPartiesQuery, PartyFieldsFragment } 
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useDebounce } from 'use-debounce';
-import { mapDialogToToInboxItem, searchDialogs } from '../../../api/hooks/useDialogs.tsx';
+import { searchDialogs } from '../../../api/queries.ts';
+import { mapDialogToToInboxItems } from '../../../api/utils/dialog.ts';
 import { QUERY_KEYS } from '../../../constants/queryKeys.ts';
 import type { InboxItemInput } from '../../../pages/Inbox/InboxItemInput.ts';
 import { useOrganizations } from '../../../pages/Inbox/useOrganizations.ts';
@@ -39,7 +40,7 @@ export const useSearchDialogs = ({ parties, searchValue }: searchDialogsProps): 
   const [searchResults, setSearchResults] = useState([] as InboxItemInput[]);
 
   useEffect(() => {
-    setSearchResults(enabled ? mapDialogToToInboxItem(data?.searchDialogs?.items ?? [], parties, organizations) : []);
+    setSearchResults(enabled ? mapDialogToToInboxItems(data?.searchDialogs?.items ?? [], parties, organizations) : []);
   }, [data?.searchDialogs?.items, enabled, parties, organizations]);
 
   return {

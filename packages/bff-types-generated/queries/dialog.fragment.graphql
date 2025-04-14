@@ -224,3 +224,14 @@ fragment SeenLogFields on SeenLog {
   }
   isCurrentEndUser
 }
+
+fragment CountableDialogFields on SearchDialog {
+  id
+  party
+  updatedAt
+  status
+  systemLabel
+  seenSinceLastUpdate {
+    isCurrentEndUser
+  }
+}
