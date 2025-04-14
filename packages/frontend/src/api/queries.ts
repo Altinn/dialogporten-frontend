@@ -9,6 +9,7 @@ import {
   type SavedSearchInput,
   type SavedSearchesQuery,
   type SystemLabel,
+  type UpdateLanguageMutation,
   type UpdateSavedSearchMutation,
   type UpdateSystemLabelMutation,
   getSdk,
@@ -55,3 +56,6 @@ export const searchAutocompleteDialogs = (
     search,
   });
 };
+
+export const updateLanguage = (language: string): Promise<UpdateLanguageMutation> =>
+  graphQLSDK.UpdateLanguage({ language });

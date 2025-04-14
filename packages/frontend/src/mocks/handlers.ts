@@ -271,6 +271,21 @@ const searchAutocompleteDialogsMock = graphql.query('getSearchAutocompleteDialog
   });
 })
 
+const mutateUpdateLanguageMock = graphql.mutation('UpdateLanguage', (req) => {
+  const { language } = req.variables;
+
+  inMemoryStore.profile = {
+    ...inMemoryStore.profile,
+    language,
+  };
+
+  return HttpResponse.json({
+    data: {
+      profile: inMemoryStore.profile,
+    },
+  });
+});
+
 export const handlers = [
   isAuthenticatedMock,
   getAllDialogsForPartiesMock,
@@ -289,4 +304,5 @@ export const handlers = [
   getAllDialogsForPartiesMock,
   getAllDialogsforCountMock,
   streamMock,
+  mutateUpdateLanguageMock
 ];

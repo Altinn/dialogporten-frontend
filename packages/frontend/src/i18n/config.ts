@@ -4,11 +4,13 @@ import { initReactI18next } from 'react-i18next';
 
 import en from './resources/en.json';
 import nb from './resources/nb.json';
+import nn from './resources/nn.json';
 
 const i18nInitConfig = {
   resources: {
     nb: { translation: nb },
     en: { translation: en },
+    nn: { translation: nn },
   },
   lng: 'nb',
   fallbackLng: 'nb',

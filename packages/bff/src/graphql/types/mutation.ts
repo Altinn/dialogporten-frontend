@@ -1,5 +1,5 @@
 import { extendType, intArg, nonNull, stringArg } from 'nexus';
-import { addFavoriteActor, deleteFavoriteActor, getOrCreateProfile } from '../functions/profile.ts';
+import { addFavoriteActor, deleteFavoriteActor, getOrCreateProfile, updateLanguage } from '../functions/profile.ts';
 import { createSavedSearch, deleteSavedSearch, updateSavedSearch } from '../functions/savedsearch.ts';
 import { Response, SavedSearchInput, SavedSearches } from './index.ts';
 
@@ -105,6 +105,28 @@ export const DeleteFavoriteActor = extendType({
           return { success: true, message: 'FavoriteActor deleted successfully' };
         } catch (error) {
           console.error('Failed to create saved search:', error);
+          return error;
+        }
+      },
+    });
+  },
+});
+
+export const UpdateLanguage = extendType({
+  type: 'Mutation',
+  definition(t) {
+    t.field('updateLanguage', {
+      type: Response,
+      args: {
+        language: stringArg(),
+      },
+      resolve: async (_, { language }, ctx) => {
+        try {
+          const pid = ctx.session.get('pid');
+          await updateLanguage(pid, language);
+          return { success: true };
+        } catch (error) {
+          console.error('Failed to update language:', error);
           return error;
         }
       },
