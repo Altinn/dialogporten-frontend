@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.26.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.25.0...v1.26.0) (2025-04-14)
+
+
+### Features
+
+* Add language picker support, add nynorsk translation ([#2034](https://github.com/Altinn/dialogporten-frontend/issues/2034)) ([c18fe8e](https://github.com/Altinn/dialogporten-frontend/commit/c18fe8e961864c2a49579f57413309ec89134023))
+* Added interim solution for storing actor favorites in BFF ([7189d91](https://github.com/Altinn/dialogporten-frontend/commit/7189d91d488118e8c5cbb023c0de02a0b5fcd4a8))
+* Added rough draft of actors list, mainly to merge favorite functionality ([39fe61c](https://github.com/Altinn/dialogporten-frontend/commit/39fe61cf46b0640d1befecf6bc155f642a315174))
+* support fetch more ([#2042](https://github.com/Altinn/dialogporten-frontend/issues/2042)) ([0788b6a](https://github.com/Altinn/dialogporten-frontend/commit/0788b6afbc02ba6339fed72fdd69923c8983849a))
+
+
+### Bug Fixes
+
+* use ds components from altinn-components instead of from ds directly ([#2047](https://github.com/Altinn/dialogporten-frontend/issues/2047)) ([f871be0](https://github.com/Altinn/dialogporten-frontend/commit/f871be02406e036e9927eaa7a086e299d1d6585e))
+
 ## [1.25.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.24.3...v1.25.0) (2025-04-07)
 
 
