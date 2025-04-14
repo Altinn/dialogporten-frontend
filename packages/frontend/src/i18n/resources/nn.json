@@ -61,6 +61,7 @@
   "menuBar.all_services": "Alle tenester",
   "menuBar.chat": "Få hjelp på chat",
   "parties.groups.other_accounts": "Andre kontoar",
+  "parties.current_end_user": "Logga inn som {name}",
   "parties.groups.yourself": "Deg sjølv",
   "parties.labels.all_organizations": "Alle verksemder",
   "parties.results": "{hits, plural, one {# treff} other {# treff}}",

@@ -1,13 +1,12 @@
 /* GLOBAL VARIABLES */
-@import "@digdir/designsystemet-css";
 @import "@altinn/altinn-components/dist/global.css";
 
 :root {
   /* Layer 1 - Semantic colors */
   --text-neutral-subtle: #5b6471;
   --text-accent-subtle: #0163ba;
-  /* temporary overrides until https://github.com/Altinn/altinn-components/issues/285 is solved */
-  --ds-body-md-font-size: 1rem; /* work-around until order of css is fixed */
+  /* work-around until tinted is available for colors in brand/theme in altinn-components */
+  --ds-color-neutral-surface-default: var(--ds-color-neutral-surface-tinted);
 }
 
 body,

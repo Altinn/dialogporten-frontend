@@ -39,7 +39,8 @@ export const PageLayout: React.FC = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { searchValue, setSearchValue, onClear } = useSearchString();
-  const { selectedProfile, selectedParties, parties, selectedPartyIds, allOrganizationsSelected } = useParties();
+  const { selectedProfile, selectedParties, parties, selectedPartyIds, allOrganizationsSelected, currentEndUser } =
+    useParties();
   const { dialogCountsByViewType, dialogCountInconclusive: partyDialogsCountInconclusive } =
     useDialogsCount(selectedParties);
   const { dialogsByView: allDialogsByView, dialogCountInconclusive: allDialogCountInconclusive } = useDialogs(parties);
@@ -142,6 +143,7 @@ export const PageLayout: React.FC = () => {
       ...(accountSearch && {
         accountSearch,
       }),
+      currentEndUserLabel: t('parties.current_end_user', { name: currentEndUser?.name ?? 'n/a' }),
       isVirtualized: accounts.length > 20,
       logoutButton: {
         label: t('word.log_out'),

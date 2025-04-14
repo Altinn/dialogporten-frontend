@@ -167,7 +167,10 @@ export const useAccounts = ({
     name: t('parties.labels.all_organizations'),
     type: 'company' as AccountType,
     groupId: 'secondary',
-    accountNames: organizations.map((party) => party.name),
+    items: organizations.map((party) => ({
+      name: party.name,
+      type: 'company' as AccountType,
+    })),
     badge: getAccountBadge(countableItems, organizations, dialogCountInconclusive),
     alertBadge: getAccountAlertBadge(countableItems, organizations),
   };

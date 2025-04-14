@@ -1,5 +1,4 @@
-import { DialogList, Heading, Section, Toolbar } from '@altinn/altinn-components';
-import { Alert, Button, Paragraph } from '@digdir/designsystemet-react';
+import { DialogList, DsAlert, DsButton, DsParagraph, Heading, Section, Toolbar } from '@altinn/altinn-components';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
@@ -87,13 +86,13 @@ export const Inbox = ({ viewType }: InboxProps) => {
   if (unableToLoadParties) {
     return (
       <section className={styles.noParties}>
-        <Alert data-color="danger">
+        <DsAlert data-color="danger">
           <Heading data-size="xs">{t('inbox.unable_to_load_parties.title')}</Heading>
-          <Paragraph>
+          <DsParagraph>
             {t('inbox.unable_to_load_parties.body')}
             <a href="/api/logout">{t('inbox.unable_to_load_parties.link')}</a>
-          </Paragraph>
-        </Alert>
+          </DsParagraph>
+        </DsAlert>
       </section>
     );
   }
@@ -145,9 +144,9 @@ export const Inbox = ({ viewType }: InboxProps) => {
           sortGroupBy={([aKey], [bKey]) => (groups[bKey]?.orderIndex ?? 0) - (groups[aKey]?.orderIndex ?? 0)}
         />
         {hasNextPage && (
-          <Button aria-label={t('dialog.aria.fetch_more')} onClick={fetchNextPage} variant="tertiary">
+          <DsButton aria-label={t('dialog.aria.fetch_more')} onClick={fetchNextPage} variant="tertiary">
             {t('dialog.fetch_more')}
-          </Button>
+          </DsButton>
         )}
       </Section>
     </>

@@ -368,17 +368,8 @@ importers:
   packages/frontend:
     dependencies:
       '@altinn/altinn-components':
-        specifier: ^0.24.2
-        version: 0.24.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      '@digdir/designsystemet-css':
-        specifier: 1.0.0-next.50
-        version: 1.0.0-next.50
-      '@digdir/designsystemet-react':
-        specifier: 1.0.0-next.50
-        version: 1.0.0-next.50(@types/react@19.0.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      '@digdir/designsystemet-theme':
-        specifier: 1.0.0-next.50
-        version: 1.0.0-next.50
+        specifier: ^0.24.5
+        version: 0.24.5(@types/react@19.0.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@microsoft/applicationinsights-react-js':
         specifier: 17.3.2
         version: 17.3.2(history@4.10.1)(react@19.0.0)(tslib@2.8.1)
@@ -588,8 +579,8 @@ packages:
     resolution: {integrity: sha512-p6t8ue0XZNjcRiqNkb5QAM0qQRAKsCiebZ6n9JjWA+p8fWf8BvnhO55y2fO28g3GW0Imj7PrAuyBuxq8aDVQwQ==}
     engines: {node: '>= 14.0.0'}
 
-  '@altinn/altinn-components@0.24.2':
-    resolution: {integrity: sha512-8ySpM/oOTkl5TKqulD/yKhmxu2zWd5SboB18bdnFuGhGGpBU3jtzVxI9nhHBql+qlKyXdOecCmeGVIKbVv21AQ==}
+  '@altinn/altinn-components@0.24.5':
+    resolution: {integrity: sha512-uVPo4UN42ih2aEN3Qi8knMlhxWcvNIHLiUoqYcpHo3+hvrYht/jllWCtUwxqoMxKf3+e/kNSwqiMnd9MluZgJA==}
     peerDependencies:
       react: '>=18.3.1 || ^19.0.0'
       react-dom: '>=18.3.1 || ^19.0.0'
@@ -1624,17 +1615,17 @@ packages:
     peerDependencies:
       postcss: ^8.4
 
-  '@digdir/designsystemet-css@1.0.0-next.50':
-    resolution: {integrity: sha512-Tloe8Nr7mvv5cjxWFn5teokoY707UW8OGoAsauMIl4U0sR3nnBQw6+VNZQOvebVUXQ/kxt7ShyldJ9f0735yqg==}
+  '@digdir/designsystemet-css@1.0.3':
+    resolution: {integrity: sha512-9WiE6XmGI8OfFmf1XyhrNpDRIMNFpPyqx5ij5AYqF6zqfqJ02DQelERenoDKJOIjcF6+gd33xzlOPAX8wJ485A==}
 
-  '@digdir/designsystemet-react@1.0.0-next.50':
-    resolution: {integrity: sha512-7FmELIuNzT4SunkQdA/HDkHcBqzYEccaC5up9+jgc67S7P3qRL1Tfp0wzqqRWjawZWY+Jz/yDykMWofV4RdUjg==}
+  '@digdir/designsystemet-react@1.0.3':
+    resolution: {integrity: sha512-bYqUhVI6mXQIpJQiYM1EA/AlC6OR5f98I4gXANUKqbnpbrpt2wAqP/81n42PgsYyxgHWY+NGDqLpGH5LL4twlQ==}
     peerDependencies:
-      react: '>=18.3.1'
-      react-dom: '>=18.3.1'
+      react: '>=18.3.1 || ^19.0.0'
+      react-dom: '>=18.3.1 || ^19.0.0'
 
-  '@digdir/designsystemet-theme@1.0.0-next.50':
-    resolution: {integrity: sha512-6+kdopfhZ8EuA4hzZ9KAlIRTU0Vcgyf9q697wt2Oz5eCWhiga/R1/W3C+HgNPr/OzF7odu1SJLisDgq14RXaiw==}
+  '@digdir/designsystemet-theme@1.0.3':
+    resolution: {integrity: sha512-Fdx0tGknFxp+dyMU95QvkGe2yNevjPTuW1FIKFcmZx/ZF5Txd9oZsSK6ylutlEc9R+BMd7yk2o5JI64x4ZqTgg==}
 
   '@digdir/dialogporten-schema@1.62.1-0ba6a7c':
     resolution: {integrity: sha512-KskPsaMtbK//i/m0dI9LDavms6CmBsxc9IuJw+0LnAxFvektvGfQGYRITkPqUaekrgs+H8ZHlW/zcTqO1iJz8A==}
@@ -3762,20 +3753,11 @@ packages:
     peerDependencies:
       react: ^18 || ^19
 
-  '@tanstack/react-virtual@3.11.2':
-    resolution: {integrity: sha512-OuFzMXPF4+xZgx8UzJha0AieuMihhhaWG0tCqpp6tDzlFwOmNBPYMuLOtMJ1Tr4pXLHmgjcWhG6RlknY2oNTdQ==}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-
   '@tanstack/react-virtual@3.13.5':
     resolution: {integrity: sha512-MzSSMGkFWCDSb2xXqmdbfQqBG4wcRI3JKVjpYGZG0CccnViLpfRW4tGU97ImfBbSYzvEWJ/2SK/OiIoSmcUBAA==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-
-  '@tanstack/virtual-core@3.11.2':
-    resolution: {integrity: sha512-vTtpNt7mKCiZ1pwU9hfKPhpdVO2sVzFQsxoVBGtOSHxlrRRzYr8iQ2TlwbAcRYCcEiZ9ECAM8kBzH0v2+VzfKw==}
 
   '@tanstack/virtual-core@3.13.5':
     resolution: {integrity: sha512-gMLNylxhJdUlfRR1G3U9rtuwUh2IjdrrniJIDcekVJN3/3i+bluvdMi3+eodnxzJq5nKnxnigo9h0lIpaqV6HQ==}
@@ -4207,6 +4189,9 @@ packages:
 
   '@u-elements/u-details@0.1.0':
     resolution: {integrity: sha512-PAyTwXXsKj7SOI5U+iqSFrnOcMbOkw9aR6egTVlj4CgTZ+apxhS/RE5MW7t3LDXJp+ecVQA21u+XVyEGyuMW6Q==}
+
+  '@u-elements/u-tags@0.1.4':
+    resolution: {integrity: sha512-5VbqbFatd42ZY6Zf2d5MGvOIsJdflf5+ixpR4B5YT97dustT9csAS6SEHrUFgGdFzJDpASIbZdojsnU1j7GArA==}
 
   '@ungap/structured-clone@1.2.1':
     resolution: {integrity: sha512-fEzPV3hSkSMltkw152tJKNARhOupqbH96MZWyRjNaYZOMIzbrTeQDG+MTc6Mr2pgzFQzFxAfmhGDNP5QK++2ZA==}
@@ -10360,13 +10345,18 @@ snapshots:
     dependencies:
       '@algolia/client-common': 5.19.0
 
-  '@altinn/altinn-components@0.24.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
+  '@altinn/altinn-components@0.24.5(@types/react@19.0.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
+      '@digdir/designsystemet-css': 1.0.3
+      '@digdir/designsystemet-react': 1.0.3(@types/react@19.0.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@digdir/designsystemet-theme': 1.0.3
       '@navikt/aksel-icons': 7.14.1
       '@tanstack/react-virtual': 3.13.5(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       classnames: 2.5.1
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
+    transitivePeerDependencies:
+      - '@types/react'
 
   '@ampproject/remapping@2.3.0':
     dependencies:
@@ -11665,24 +11655,25 @@ snapshots:
     dependencies:
       postcss: 8.4.49
 
-  '@digdir/designsystemet-css@1.0.0-next.50': {}
+  '@digdir/designsystemet-css@1.0.3': {}
 
-  '@digdir/designsystemet-react@1.0.0-next.50(@types/react@19.0.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
+  '@digdir/designsystemet-react@1.0.3(@types/react@19.0.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
       '@floating-ui/dom': 1.6.13
       '@floating-ui/react': 0.26.23(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@navikt/aksel-icons': 7.14.1
       '@radix-ui/react-slot': 1.1.1(@types/react@19.0.10)(react@19.0.0)
-      '@tanstack/react-virtual': 3.11.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@tanstack/react-virtual': 3.13.5(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@u-elements/u-datalist': 0.1.3
       '@u-elements/u-details': 0.1.0
+      '@u-elements/u-tags': 0.1.4
       clsx: 2.1.1
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
     transitivePeerDependencies:
       - '@types/react'
 
-  '@digdir/designsystemet-theme@1.0.0-next.50': {}
+  '@digdir/designsystemet-theme@1.0.3': {}
 
   '@digdir/dialogporten-schema@1.62.1-0ba6a7c': {}
 
@@ -14739,19 +14730,11 @@ snapshots:
       '@tanstack/query-core': 5.62.16
       react: 19.0.0
 
-  '@tanstack/react-virtual@3.11.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
-    dependencies:
-      '@tanstack/virtual-core': 3.11.2
-      react: 19.0.0
-      react-dom: 19.0.0(react@19.0.0)
-
   '@tanstack/react-virtual@3.13.5(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
       '@tanstack/virtual-core': 3.13.5
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
-
-  '@tanstack/virtual-core@3.11.2': {}
 
   '@tanstack/virtual-core@3.13.5': {}
 
@@ -15259,6 +15242,8 @@ snapshots:
   '@u-elements/u-datalist@0.1.3': {}
 
   '@u-elements/u-details@0.1.0': {}
+
+  '@u-elements/u-tags@0.1.4': {}
 
   '@ungap/structured-clone@1.2.1': {}
 

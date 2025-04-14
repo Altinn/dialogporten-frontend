@@ -1,4 +1,4 @@
-import { Button, type ButtonProps, Spinner } from '@digdir/designsystemet-react';
+import { DsButton, type DsButtonProps, DsSpinner } from '@altinn/altinn-components';
 import cx from 'classnames';
 
 import { useTranslation } from 'react-i18next';
@@ -6,7 +6,7 @@ import styles from './profileButton.module.css';
 
 type ProfileButtonProps = {
   isLoading?: boolean;
-} & Omit<ButtonProps, 'size'>;
+} & Omit<DsButtonProps, 'size'>;
 
 export const ProfileButton = (props: ProfileButtonProps) => {
   const { t } = useTranslation();
@@ -17,16 +17,16 @@ export const ProfileButton = (props: ProfileButtonProps) => {
 
   if (isLoading) {
     return (
-      <Button className={classes} {...restProps} aria-disabled data-size="sm" variant="tertiary">
-        <Spinner aria-label="loading" fontSize="0.875rem" />
+      <DsButton className={classes} {...restProps} aria-disabled data-size="sm" variant="tertiary">
+        <DsSpinner aria-label="loading" fontSize="0.875rem" />
         {t('word.loading')}
-      </Button>
+      </DsButton>
     );
   }
 
   return (
-    <Button className={classes} {...restProps} variant="tertiary">
+    <DsButton className={classes} {...restProps} variant="tertiary">
       {children}
-    </Button>
+    </DsButton>
   );
 };
