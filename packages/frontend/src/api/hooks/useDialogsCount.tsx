@@ -8,17 +8,18 @@ import { useMemo } from 'react';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { graphQLSDK } from '../queries.ts';
 import { getPartyIds, getQueryVariables } from '../utils/dialog.ts';
-import { getViewType } from '../utils/viewType.ts';
+import { getViewTypes } from '../utils/viewType.ts';
+import type { InboxViewType } from './useDialogs.tsx';
 import { useParties } from './useParties.ts';
 
-export type InboxViewType = 'inbox' | 'drafts' | 'sent' | 'archive' | 'bin';
 export type DialogsByViewCount = { [key in InboxViewType]: CountableDialogFieldsFragment[] };
 interface UseDialogsOutput {
   dialogCountInconclusive: boolean;
   dialogCountsByViewType: DialogsByViewCount;
+  dialogCounts: CountableDialogFieldsFragment[];
 }
 
-export const useDialogsCount = (parties: PartyFieldsFragment[], viewType?: InboxViewType): UseDialogsOutput => {
+export const useDialogsCount = (parties?: PartyFieldsFragment[], viewType?: InboxViewType): UseDialogsOutput => {
   const { selectedParties } = useParties();
   const partiesToUse = parties ? parties : selectedParties;
   const partyIds = getPartyIds(partiesToUse);
@@ -28,10 +29,14 @@ export const useDialogsCount = (parties: PartyFieldsFragment[], viewType?: Inbox
     staleTime: 1000 * 60 * 10,
     retry: 3,
     queryFn: () =>
-      graphQLSDK.getAllDialogsForCount({
-        partyURIs: partyIds,
-        ...getQueryVariables(viewType),
-      }),
+      graphQLSDK.getAllDialogsForCount(
+        getQueryVariables({
+          viewType,
+          variables: {
+            partyURIs: partyIds,
+          },
+        }),
+      ),
     enabled: partyIds.length > 0 && partyIds.length <= 20,
     gcTime: 10 * 1000,
     placeholderData: keepPreviousData,
@@ -48,8 +53,8 @@ export const useDialogsCount = (parties: PartyFieldsFragment[], viewType?: Inbox
     };
 
     for (const dialog of items) {
-      const viewType = getViewType(dialog);
-      if (counts[viewType]) {
+      const viewType = getViewTypes(dialog)[0];
+      if (viewType && counts[viewType]) {
         counts[viewType].push(dialog);
       }
     }
@@ -59,5 +64,6 @@ export const useDialogsCount = (parties: PartyFieldsFragment[], viewType?: Inbox
   return {
     dialogCountsByViewType,
     dialogCountInconclusive: data?.searchDialogs?.hasNextPage === true || data?.searchDialogs?.items === null,
+    dialogCounts: data?.searchDialogs?.items ?? [],
   };
 };

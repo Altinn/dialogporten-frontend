@@ -1,4 +1,4 @@
-import { BookmarksSection, Toolbar } from '@altinn/altinn-components';
+import { BookmarksSection, PageBase, Toolbar } from '@altinn/altinn-components';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { type CountableItem, useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
 import { PageRoutes } from '../routes.ts';
@@ -21,7 +21,7 @@ export const SavedSearchesPage = () => {
 
   return (
     <>
-      <section className={styles.filtersArea}>
+      <PageBase margin="page">
         <div className={styles.gridContainer}>
           {selectedAccount ? (
             <Toolbar
@@ -35,10 +35,8 @@ export const SavedSearchesPage = () => {
             />
           ) : null}
         </div>
-      </section>
-      <div className={styles.savedSearchesWrapper}>
-        {bookmarkSectionProps && <BookmarksSection {...bookmarkSectionProps} />}
-      </div>
+      </PageBase>
+      {bookmarkSectionProps && <BookmarksSection {...bookmarkSectionProps} />}
     </>
   );
 };

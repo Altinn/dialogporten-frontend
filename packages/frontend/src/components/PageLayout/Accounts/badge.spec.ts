@@ -7,6 +7,7 @@ describe('getCountBadge', () => {
   const dialogs: InboxItemInput[] = [
     {
       party: 'party1',
+      org: 'org1',
       id: 'dialog-1',
       title: '',
       summary: '',
@@ -15,7 +16,7 @@ describe('getCountBadge', () => {
         type: 'company',
         imageUrl: '',
       },
-      receiver: {
+      recipient: {
         name: '',
         type: 'company',
         imageUrl: '',
@@ -33,6 +34,8 @@ describe('getCountBadge', () => {
     {
       party: 'subParty1',
       id: 'dialog-2',
+      org: 'org1',
+
       title: '',
       summary: '',
       sender: {
@@ -40,7 +43,7 @@ describe('getCountBadge', () => {
         type: 'company',
         imageUrl: '',
       },
-      receiver: {
+      recipient: {
         name: '',
         type: 'company',
         imageUrl: '',
@@ -58,6 +61,7 @@ describe('getCountBadge', () => {
     {
       party: 'party2',
       id: 'dialog-3',
+      org: 'org1',
       title: '',
       summary: '',
       sender: {
@@ -65,7 +69,7 @@ describe('getCountBadge', () => {
         type: 'company',
         imageUrl: '',
       },
-      receiver: {
+      recipient: {
         name: '',
         type: 'company',
         imageUrl: '',

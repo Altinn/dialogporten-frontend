@@ -14,17 +14,17 @@ test.describe('Testing filter bar', () => {
       .locator('a')
       .filter({ hasText: 'Velg avsender' })
       .click();
-    await page.getByTestId('inbox-toolbar').getByRole('group').getByText('checkboxSkatteetaten1').click();
+    await page.getByTestId('inbox-toolbar').getByRole('group').getByText('Skatteetaten').click();
     await page.mouse.click(200, 0, { button: 'left' });
   });
 
   test('should filter when selecting sender filter and status filter', async ({ page }) => {
-    expect(new URL(page.url()).searchParams.get('sender')).toEqual('Skatteetaten');
+    expect(new URL(page.url()).searchParams.get('org')).toEqual('skd');
     await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).toBeVisible();
 
     await page.getByRole('button', { name: 'Fjern filter' }).click();
 
-    expect(new URL(page.url()).searchParams.has('sender')).toEqual(false);
+    expect(new URL(page.url()).searchParams.has('org')).toEqual(false);
 
     await page.getByRole('button', { name: 'add' }).click();
 
@@ -38,7 +38,7 @@ test.describe('Testing filter bar', () => {
   });
 
   test('should remove filters when changing view types', async ({ page, isMobile }) => {
-    expect(new URL(page.url()).searchParams.get('sender')).toEqual('Skatteetaten');
+    expect(new URL(page.url()).searchParams.get('org')).toEqual('skd');
     await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).toBeVisible();
 
     if (isMobile) {
@@ -48,16 +48,16 @@ test.describe('Testing filter bar', () => {
     } else {
       await getSidebarMenuItem(page, PageRoutes.drafts).click();
     }
-    expect(new URL(page.url()).searchParams.has('sender')).toEqual(false);
+    expect(new URL(page.url()).searchParams.has('org')).toEqual(false);
   });
 
   test('should keep filters when returning to a filtered inbox from ', async ({ page }) => {
-    expect(new URL(page.url()).searchParams.get('sender')).toEqual('Skatteetaten');
+    expect(new URL(page.url()).searchParams.get('org')).toEqual('skd');
 
     await page.getByRole('link', { name: 'Skatten din for 2022' }).click();
 
     await page.getByRole('link', { name: 'Tilbake' }).click();
 
-    expect(new URL(page.url()).searchParams.get('sender')).toEqual('Skatteetaten');
+    expect(new URL(page.url()).searchParams.get('org')).toEqual('skd');
   });
 });

@@ -31,10 +31,15 @@ interface UseGroupedDialogsOutput {
 interface UseGroupedDialogsProps {
   items: InboxItemInput[];
   filters?: FilterState;
-  displaySearchResults: boolean;
   viewType: InboxViewType;
   isLoading: boolean;
   isFetchingNextPage?: boolean;
+  /* true if the search results are displayed */
+  displaySearchResults?: boolean;
+  /* collapse all groups into one group, default=false */
+  collapseGroups?: boolean;
+  /* title for the collapsed group, only applicable if collapseGroups=true */
+  getCollapsedGroupTitle?: (count: number) => string;
 }
 
 const sortByUpdatedAt = (arr: DialogListItemProps[]) => {
@@ -77,6 +82,8 @@ const useGroupedDialogs = ({
   viewType,
   isLoading,
   isFetchingNextPage,
+  getCollapsedGroupTitle,
+  collapseGroups = false,
 }: UseGroupedDialogsProps): UseGroupedDialogsOutput => {
   const { t } = useTranslation();
   const format = useFormat();
@@ -93,15 +100,15 @@ const useGroupedDialogs = ({
     label: !item.isSeenByEndUser ? t('word.new') : undefined,
     badge: !item.isSeenByEndUser
       ? {
-          label: 'Ulest',
+          label: t('word.unread'),
           theme: 'surface-hover',
         }
       : undefined,
     id: item.id,
     sender: item.sender,
-    summary: item.summary,
-    state: getDialogState(viewType),
-    recipient: item.receiver,
+    summary: item.viewType === 'inbox' ? item.summary : undefined,
+    state: getDialogState(item.viewType),
+    recipient: item.recipient,
     attachmentsCount: item.guiAttachmentCount,
     seenBy: item.seenByLabel
       ? {
@@ -143,43 +150,44 @@ const useGroupedDialogs = ({
       };
     }
 
-    const getOrderIndex = (updatedAt: Date, isDateKey: boolean) => {
-      if (!isDateKey) return null;
+    const groupedItems: GroupedItem[] = [];
 
-      if (allWithinSameYear) {
-        return updatedAt.getMonth();
-      }
-      return updatedAt.getFullYear();
-    };
+    if (collapseGroups) {
+      groupedItems.push({
+        id: 'collapsed',
+        label: getCollapsedGroupTitle?.(items.length) ?? t('inbox.heading.collapsed_group_default'),
+        items,
+        orderIndex: null,
+      });
+    } else {
+      items.reduce((acc, item, _, list) => {
+        const updatedAt = new Date(item.updatedAt);
+        const groupKey = displaySearchResults
+          ? item.viewType
+          : allWithinSameYear
+            ? format(updatedAt, 'LLLL')
+            : format(updatedAt, 'yyyy');
 
-    const groupedItems = items.reduce<GroupedItem[]>((acc, item, _, list) => {
-      const updatedAt = new Date(item.updatedAt);
-      const groupKey = displaySearchResults
-        ? item.viewType
-        : allWithinSameYear
-          ? format(updatedAt, 'LLLL')
-          : format(updatedAt, 'yyyy');
+        const isDateKey = !displaySearchResults;
 
-      const isDateKey = !displaySearchResults;
+        const label = displaySearchResults
+          ? t(`inbox.heading.search_results.${groupKey}`, {
+              count: list.filter((i) => i.viewType === groupKey).length,
+            })
+          : groupKey;
 
-      const label = displaySearchResults
-        ? t(`inbox.heading.search_results.${groupKey}`, {
-            count: list.filter((i) => i.viewType === groupKey).length,
-          })
-        : groupKey;
+        const existingGroup = acc.find((group) => group.id === groupKey);
 
-      const existingGroup = acc.find((group) => group.id === groupKey);
+        if (existingGroup) {
+          existingGroup.items.push(item);
+        } else {
+          const orderIndex = isDateKey ? (allWithinSameYear ? updatedAt.getMonth() : updatedAt.getFullYear()) : null;
+          acc.push({ id: groupKey, label, items: [item], orderIndex });
+        }
 
-      if (existingGroup) {
-        existingGroup.items.push(item);
-      } else {
-        const orderIndex = getOrderIndex(updatedAt, isDateKey);
-
-        acc.push({ id: groupKey, label, items: [item], orderIndex });
-      }
-
-      return acc;
-    }, []);
+        return acc;
+      }, groupedItems);
+    }
 
     const groups = Object.fromEntries(
       groupedItems.map(({ id, label, orderIndex }) => [id, { title: label, orderIndex }]),

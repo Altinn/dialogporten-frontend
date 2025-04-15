@@ -18,6 +18,8 @@ export const filterDialogs = ({
   org,
   label,
   status,
+  updatedAfter,
+  updatedBefore,
  }: {
   inMemoryStore: InMemoryStore;
   partyURIs: string[];
@@ -25,6 +27,8 @@ export const filterDialogs = ({
   org?: string;
   label?: string;
   status?: string | string[];
+  updatedBefore?: string;
+  updatedAfter?: string;
 }) => {
 
   if (!inMemoryStore.dialogs) return null;
@@ -39,16 +43,22 @@ export const filterDialogs = ({
 
   if (shouldReturnNull) return null;
 
-  return inMemoryStore.dialogs
-    .filter((dialog) => partyURIs.includes(dialog.party))
-    .filter((dialog) => !org || dialog.org === org)
-    .filter((dialog) => !label || dialog.systemLabel === label)
-    .filter((dialog) =>
-      Array.isArray(status)
-        ? status.length === 0 || status.includes(dialog.status)
-        : !status || dialog.status === status
-    )
-    .filter((dialog) => naiveSearchFilter(dialog, search));
+  const normalizeArray = (value: string | string[] | undefined) =>
+    Array.isArray(value) ? value : value ? [value] : [];
+
+  const labels = normalizeArray(label);
+  const statuses = normalizeArray(status);
+
+  return inMemoryStore.dialogs.filter((dialog) =>
+    partyURIs.includes(dialog.party) &&
+    (!updatedBefore || dialog.updatedAt < updatedBefore) &&
+    (!updatedAfter || dialog.updatedAt > updatedAfter) &&
+    (!org || !org.length || org.includes(dialog.org)) &&
+    (!labels.length || labels.some((l) => dialog.systemLabel?.includes(l))) &&
+    (!statuses.length || statuses.includes(dialog.status)) &&
+    naiveSearchFilter(dialog, search)
+  );
+
 };
 
 export const getMockedMainContent = (dialogId: string) => {

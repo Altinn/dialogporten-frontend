@@ -12,15 +12,15 @@ test.describe('Search suggests with senders', () => {
     await searchbarInput.click();
     await searchbarInput.fill('arbeids');
     await expect(page.getByRole('heading', { name: 'Søkeforslag' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Arbeids- og velferdsetaten (NAV)' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Arbeids- og velferdsetaten (NAV)' })).toBeVisible();
 
     await searchbarInput.fill('skatt');
     await expect(page.getByRole('heading', { name: 'Søkeforslag' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Skatteetaten' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Skatteetaten' })).toBeVisible();
 
     await searchbarInput.fill('skatt test1');
     await expect(page.getByRole('heading', { name: 'Søkeforslag' })).toBeVisible();
-    const button = page.getByRole('button', { name: 'Søk etter dialoger fra Skatteetaten' });
+    const button = page.getByRole('link', { name: 'Søk etter avsender Skatteetaten' });
     await expect(button).toBeVisible();
   });
 
@@ -36,8 +36,10 @@ test.describe('Search suggests with senders', () => {
     const searchbarInput = page.locator("[name='Søk']");
     await searchbarInput.click();
     await searchbarInput.fill('skatt');
-    await page.getByRole('button', { name: 'Skatteetaten' }).click();
-    await expect(page).toHaveURL(`${defaultAppURL}&playwrightId=search-sender&org=skd`);
+    await page.getByText(/^2 treff$/).waitFor();
+    await page.getByRole('link', { name: 'Søk etter avsender Skatteetaten' }).click();
+
+    await expect.poll(() => page.url()).toEqual(`${defaultAppURL}&playwrightId=search-sender&org=skd`);
 
     await expect(page.getByRole('link', { name: 'test1 NAV Arbeids- og' })).not.toBeVisible();
 
@@ -49,31 +51,30 @@ test.describe('Search suggests with senders', () => {
     const searchbarInput = page.locator("[name='Søk']");
     await searchbarInput.click();
     await searchbarInput.fill('skatt test1');
-    await page.getByRole('button', { name: 'Skatteetaten' }).click();
+    await page.getByRole('link', { name: 'Søk etter avsender Skatteetaten med fritekst test1' }).click();
 
-    await expect(page).toHaveURL(`${defaultAppURL}&playwrightId=search-sender&search=test1&org=skd`);
+    await expect(page).toHaveURL(`${defaultAppURL}&playwrightId=search-sender&org=skd&search=test1`);
     await expect(page.getByRole('link', { name: 'test1 skatt' })).toBeVisible();
 
     await expect(page.getByRole('link', { name: 'test1 NAV' })).not.toBeVisible();
     await expect(page.getByRole('link', { name: 'test2 skatt' })).not.toBeVisible();
   });
 
-  test('Clear button removes search parasm and display data', async ({ page }) => {
+  test('Clear button removes search param and display data', async ({ page }) => {
     const searchbarInput = page.locator("[name='Søk']");
     await searchbarInput.click();
     await searchbarInput.fill('skatt test1');
-    await page.getByRole('button', { name: 'Skatteetaten' }).click();
+    await page.getByRole('link', { name: 'Skatteetaten' }).click();
 
-    await expect(page).toHaveURL(`${defaultAppURL}&playwrightId=search-sender&search=test1&org=skd`);
+    await expect(page).toHaveURL(`${defaultAppURL}&playwrightId=search-sender&org=skd&search=test1`);
     await expect(page.getByRole('link', { name: 'test1 skatt' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'test1 NAV' })).not.toBeVisible();
     await expect(page.getByRole('link', { name: 'test2 skatt' })).not.toBeVisible();
 
     await page.getByTestId('search-button-clear').click();
-    await expect(page).toHaveURL(`${defaultAppURL}&playwrightId=search-sender`);
+    await expect(page).toHaveURL(`${defaultAppURL}&playwrightId=search-sender&org=skd`);
 
     await expect(page.getByRole('link', { name: 'test1 skatt' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'test1 NAV' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'test2 skatt' })).toBeVisible();
   });
 });

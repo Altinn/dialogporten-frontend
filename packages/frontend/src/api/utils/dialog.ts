@@ -11,7 +11,7 @@ import { getPreferredPropertyByLocale } from '../../i18n/property.ts';
 import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
 import type { InboxViewType } from '../hooks/useDialogs.tsx';
 import { getOrganization } from './organizations.ts';
-import { getViewType } from './viewType.ts';
+import { getViewTypes } from './viewType.ts';
 
 interface SeenByItem {
   isCurrentEndUser: boolean;
@@ -70,7 +70,7 @@ export function mapDialogToToInboxItems(
         imageUrl: serviceOwner?.logo,
         imageUrlAlt: t('dialog.imageAltURL', { companyName: getPreferredPropertyByLocale(senderName)?.value }),
       },
-      receiver: {
+      recipient: {
         name: actualReceiverParty?.name ?? dialogReceiverSubParty?.name ?? '',
         type: 'person',
       },
@@ -83,43 +83,47 @@ export function mapDialogToToInboxItems(
       org: item.org,
       seenByLabel,
       seenByOthersCount,
-      viewType: getViewType(item),
+      viewType: getViewTypes(item, true)?.[0],
     };
   });
 }
 
-export const getQueryVariables = (viewType?: InboxViewType): Partial<GetAllDialogsForPartiesQueryVariables> => {
-  if (!viewType) {
-    return {};
-  }
+interface QueryVariablesInput {
+  viewType?: InboxViewType;
+  variables?: Partial<GetAllDialogsForPartiesQueryVariables>;
+  continuationToken?: string;
+}
 
-  switch (viewType) {
-    case 'inbox':
-      return {
-        status: [DialogStatus.New, DialogStatus.InProgress, DialogStatus.RequiresAttention, DialogStatus.Completed],
-        label: SystemLabel.Default,
-      };
-    case 'drafts':
-      return {
-        status: [DialogStatus.Draft],
-        label: SystemLabel.Default,
-      };
-    case 'sent':
-      return {
-        status: [DialogStatus.Sent],
-        label: SystemLabel.Default,
-      };
-    case 'archive':
-      return {
-        label: SystemLabel.Archive,
-      };
-    case 'bin':
-      return {
-        label: SystemLabel.Bin,
-      };
-    default: {
-      console.error(`Unknown viewType: ${viewType}`);
-      return {};
-    }
-  }
+const viewTypeQueryMap: Record<InboxViewType, Record<string, string[] | string | number>> = {
+  inbox: {
+    status: [DialogStatus.New, DialogStatus.InProgress, DialogStatus.RequiresAttention, DialogStatus.Completed],
+    label: SystemLabel.Default,
+  },
+  drafts: {
+    status: [DialogStatus.Draft],
+    label: SystemLabel.Default,
+  },
+  sent: {
+    status: [DialogStatus.Sent],
+    label: SystemLabel.Default,
+  },
+  archive: {
+    label: SystemLabel.Archive,
+  },
+  bin: {
+    label: SystemLabel.Bin,
+  },
+};
+
+export const getQueryVariables = ({
+  viewType,
+  continuationToken,
+  variables,
+}: QueryVariablesInput): Partial<GetAllDialogsForPartiesQueryVariables> => {
+  const viewTypeQueries = viewType ? viewTypeQueryMap[viewType] || {} : {};
+  return {
+    ...viewTypeQueries,
+    continuationToken,
+    ...variables,
+  };
 };

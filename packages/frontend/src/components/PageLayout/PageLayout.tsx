@@ -24,7 +24,7 @@ import { useAuth } from '../Login/AuthContext.tsx';
 import { useAccounts } from './Accounts/useAccounts.tsx';
 import { useFooter } from './Footer';
 import { useGlobalMenu } from './GlobalMenu';
-import { useSearchAutocompleteDialogs, useSearchString } from './Search';
+import { useAutocomplete, useSearchString } from './Search';
 
 export const ProtectedPageLayout = () => {
   const { isAuthenticated } = useAuth();
@@ -43,8 +43,11 @@ export const PageLayout: React.FC = () => {
     useParties();
   const { dialogCountsByViewType, dialogCountInconclusive: partyDialogsCountInconclusive } =
     useDialogsCount(selectedParties);
-  const { dialogsByView: allDialogsByView, dialogCountInconclusive: allDialogCountInconclusive } = useDialogs(parties);
-  const { autocomplete } = useSearchAutocompleteDialogs({ selectedParties: selectedParties, searchValue });
+  const { dialogsByView: allDialogsByView, dialogCountInconclusive: allDialogCountInconclusive } = useDialogs({
+    parties,
+  });
+  const { autocomplete } = useAutocomplete({ selectedParties: selectedParties, searchValue });
+
   const { accounts, selectedAccount, accountSearch, accountGroups, onSelectAccount } = useAccounts({
     parties,
     selectedParties,

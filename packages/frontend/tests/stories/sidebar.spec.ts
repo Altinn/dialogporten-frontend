@@ -41,7 +41,7 @@ test.describe('Sidebar menu', () => {
     } else {
       await getSidebarMenuItem(page, PageRoutes.archive).click();
     }
-    await expect(page.getByRole('heading', { name: 'Ingen arkiverte meldinger' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Arkivet er tomt' })).toBeVisible();
 
     if (isMobile) {
       await page.getByRole('button', { name: 'Meny' }).click();
@@ -50,7 +50,7 @@ test.describe('Sidebar menu', () => {
     } else {
       await getSidebarMenuItem(page, PageRoutes.bin).click();
     }
-    await expect(page.getByRole('heading', { name: 'Ingen meldinger i papirkurv' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Papirkurven er tom' })).toBeVisible();
 
     if (isMobile) {
       await page.getByRole('button', { name: 'Meny' }).click();

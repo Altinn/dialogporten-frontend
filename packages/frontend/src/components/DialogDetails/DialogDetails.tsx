@@ -34,7 +34,7 @@ interface PageTab {
 }
 
 /**
- * Displays detailed information about an inbox item, including title, summary, sender, receiver, attachments, tags, and GUI actions.
+ * Displays detailed information about an inbox item, including title, summary, sender, recipient, attachments, tags, and GUI actions.
  * This component is intended to be used for presenting a full view of an inbox item, with comprehensive details not shown in the summary view.
  * It supports rendering both text and React node summarys, and dynamically lists attachments with links.
  * Dynamically rendered action buttons are implemented through the `GuiActions` component.
@@ -50,7 +50,7 @@ interface PageTab {
  *     title: "Project Update",
  *     summary: "Here's the latest update on the project...",
  *     sender: { name: "Alice", icon: <PersonIcon /> },
- *     receiver: { name: "Bob", icon: <PersonIcon /> },
+ *     recipient: { name: "Bob", icon: <PersonIcon /> },
  *     attachment: [{ label: "Project Plan", href: "/path/to/document", mime: "application/pdf" }],
  *     tags: [{ label: "Important", icon: <FlagIcon />, className: "important" }],
  *     guiActions: [{ label: "Approve", onClick: () => alert('Approved') }]

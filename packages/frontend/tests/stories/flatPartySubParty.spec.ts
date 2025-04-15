@@ -87,11 +87,9 @@ test.describe('Flattened parties and subparties', () => {
       .getByTestId('inbox-toolbar')
       .getByRole('group')
       .locator('a')
-      .filter({ hasText: 'Velg mottaker' })
+      .filter({ hasText: 'Velg avsender' })
       .click();
 
-    await expect(
-      page.getByTestId('inbox-toolbar').getByRole('group').getByText('checkboxMycompany AS Main2'),
-    ).toBeVisible();
+    await expect(page.getByTestId('inbox-toolbar').getByRole('group').getByText('Oslo kommune')).toBeVisible();
   });
 });

@@ -28,15 +28,15 @@ export const SaveSearchButton = ({ disabled, className, filterState, viewType }:
     deleteSearch,
   } = useSavedSearches(selectedPartyIds);
 
+  if (disabled) {
+    return null;
+  }
+
   const searchToCheckIfExistsAlready: SavedSearchData = {
     filters: convertFilterStateToFilters(filterState),
     urn: selectedPartyIds as string[],
     searchString: enteredSearchValue,
   };
-
-  if (disabled) {
-    return null;
-  }
 
   const alreadySavedSearch = getAlreadySavedSearch(searchToCheckIfExistsAlready, savedSearches, viewType);
 

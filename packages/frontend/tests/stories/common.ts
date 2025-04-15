@@ -12,24 +12,18 @@ export async function performSearch(page, query: string, action?: 'clear' | 'cli
   await searchbarInput.click();
   await expect(searchbarInput).toBeVisible();
   await page.locator("[name='Søk']").fill(query);
-  const searchButton = page.getByRole('button', { name: 'Søk i innboks etter ' + query });
+  const searchLink = page.getByRole('link', { name: 'Søk i innboks etter ' + query });
 
   if (endGameAction === 'clear') {
     await page.getByTestId('search-button-clear').click();
   } else if (endGameAction === 'click') {
-    await searchButton.click();
+    await searchLink.click();
   } else if (endGameAction === 'enter') {
-    await searchButton.hover();
     await page.keyboard.press('Enter');
   }
 }
 
-export async function selectDialogBySearch(
-  page,
-  query: string,
-  itemLabel: string,
-  action?: 'click' | 'enter' | ' nothing',
-) {
+export async function selectDialogBySearch(page, query: string, action?: 'click' | 'enter' | 'nothing') {
   const endGameAction = action || 'click';
   const searchbarInput = page.locator("[name='Søk']");
 
@@ -40,7 +34,6 @@ export async function selectDialogBySearch(
   if (endGameAction === 'click') {
     await page.getByRole('banner').getByRole('link', { name: 'Sixth test message' }).click();
   } else if (endGameAction === 'enter') {
-    await page.getByRole('banner').getByRole('link', { name: 'Sixth test message' }).hover();
     await page.keyboard.press('Enter');
   }
 }

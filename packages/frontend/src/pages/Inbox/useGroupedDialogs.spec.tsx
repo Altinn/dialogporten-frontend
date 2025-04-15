@@ -25,7 +25,7 @@ const mockData = [
       isCompany: true,
       imageURL: '',
     },
-    receiver: {
+    recipient: {
       name: 'Hjelpelinje Ordinær',
       isCompany: false,
     },
@@ -50,7 +50,7 @@ const mockData = [
       isCompany: true,
       imageURL: '',
     },
-    receiver: {
+    recipient: {
       name: 'Hjelpelinje Ordinær',
       isCompany: false,
     },
@@ -75,7 +75,7 @@ const mockData = [
       isCompany: true,
       imageURL: '',
     },
-    receiver: {
+    recipient: {
       name: 'Hjelpelinje Ordinær',
       isCompany: false,
     },
@@ -100,7 +100,7 @@ const mockData = [
       isCompany: true,
       imageURL: '',
     },
-    receiver: {
+    recipient: {
       name: 'Hjelpelinje Ordinær',
       isCompany: false,
     },
@@ -125,7 +125,7 @@ const mockData = [
       isCompany: true,
       imageURL: '',
     },
-    receiver: {
+    recipient: {
       name: 'Hjelpelinje Ordinær',
       isCompany: false,
     },
@@ -150,7 +150,7 @@ const mockData = [
       isCompany: true,
       imageURL: 'https://altinncdn.no/orgs/skd/skd.png',
     },
-    receiver: {
+    recipient: {
       name: 'Hjelpelinje Ordinær',
       isCompany: false,
     },
@@ -175,7 +175,7 @@ const mockData = [
       isCompany: true,
       imageURL: 'https://altinncdn.no/orgs/skd/skd.png',
     },
-    receiver: {
+    recipient: {
       name: 'Hjelpelinje Ordinær',
       isCompany: false,
     },

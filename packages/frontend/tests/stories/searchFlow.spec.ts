@@ -14,7 +14,7 @@ test.describe('Search flow', () => {
     await searchbarInput.click();
     await searchbarInput.fill('mel');
     await expect(page.getByRole('heading', { name: 'Anbefalte treff' })).toBeVisible();
-    const searchButton = page.getByRole('button', { name: 'Søk i innboks etter mel' });
+    const searchButton = page.getByRole('link', { name: 'Søk i innboks etter mel' });
     await expect(searchButton).toBeVisible();
   });
 
@@ -39,7 +39,8 @@ test.describe('Search flow', () => {
   test('Search link should open dialog details with enter', async ({ page, isMobile }) => {
     if (!isMobile) {
       await page.goto(appUrlWithPlaywrightId('search-flow'));
-      await selectDialogBySearch(page, 'Sixth', 'Sixth test message', 'enter');
+      await selectDialogBySearch(page, 'Sixth', 'nothing');
+      await page.waitForSelector('span:text("1 treff")');
       await page.getByTestId('searchbar-input').press('ArrowDown');
       await page.keyboard.press('Enter');
 
@@ -50,7 +51,7 @@ test.describe('Search flow', () => {
 
   test('Search link should open dialog details with click', async ({ page }) => {
     await page.goto(appUrlWithPlaywrightId('search-flow'));
-    await selectDialogBySearch(page, 'Sixth', 'Sixth test message', 'click');
+    await selectDialogBySearch(page, 'Sixth', 'click');
 
     await expect(page.getByRole('heading', { name: 'Sixth test message' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Info i markdown' })).toBeVisible();

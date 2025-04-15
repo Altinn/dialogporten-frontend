@@ -1,16 +1,28 @@
-import { DialogList, DsAlert, DsButton, DsParagraph, Heading, Section, Toolbar } from '@altinn/altinn-components';
-import { useMemo } from 'react';
+import {
+  DialogList,
+  DsAlert,
+  DsButton,
+  DsParagraph,
+  Heading,
+  PageBase,
+  Section,
+  Toolbar,
+} from '@altinn/altinn-components';
+import type { FilterState } from '@altinn/altinn-components/dist/types/lib/components/Toolbar/Toolbar';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { type InboxViewType, useDialogs } from '../../api/hooks/useDialogs.tsx';
 import { useDialogsCount } from '../../api/hooks/useDialogsCount.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
+import { createFiltersURLQuery } from '../../auth';
+import { EmptyState } from '../../components/EmptyState/EmptyState.tsx';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
-import { useSearchDialogs, useSearchString } from '../../components/PageLayout/Search/';
+import { useSearchString } from '../../components/PageLayout/Search/';
 import { SaveSearchButton } from '../../components/SavedSearchButton/SaveSearchButton.tsx';
 import { isSavedSearchDisabled } from '../../components/SavedSearchButton/savedSearchEnabled.ts';
 import { PageRoutes } from '../routes.ts';
-import { filterDialogs } from './filters.ts';
+import { FilterCategory, readFiltersFromURLQuery } from './filters.ts';
 import styles from './inbox.module.css';
 import { useFilters } from './useFilters.tsx';
 import useGroupedDialogs from './useGroupedDialogs.tsx';
@@ -29,33 +41,42 @@ export const Inbox = ({ viewType }: InboxProps) => {
     isError: unableToLoadParties,
     isLoading: isLoadingParties,
   } = useParties();
-  const [searchParams] = useSearchParams();
-  const searchBarParam = new URLSearchParams(searchParams);
-  const searchParamOrg = searchBarParam.get('org') ?? undefined;
+  const [filterState, setFilterState] = useState<FilterState>(readFiltersFromURLQuery(location.search));
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const onFiltersChange = (filters: FilterState) => {
+    const currentURL = new URL(window.location.href);
+    const allowedFilters = Object.values(FilterCategory);
+    const updatedURL = createFiltersURLQuery(filters, allowedFilters, currentURL.toString());
+    setSearchParams(updatedURL.searchParams, { replace: true });
+    setFilterState(filters);
+  };
+
   /* Used to populate account menu */
-  const { dialogCountsByViewType, dialogCountInconclusive: dialogForAllPartiesCountInconclusive } = useDialogsCount(
-    parties,
-    viewType,
-  );
+  const { dialogCountsByViewType, dialogCountInconclusive: dialogForAllPartiesCountInconclusive } =
+    useDialogsCount(parties);
   const { enteredSearchValue } = useSearchString();
+
+  const validSearchString = enteredSearchValue.length > 2 ? enteredSearchValue : undefined;
+  const hasValidFilters = Object.values(filterState).some((arr) => typeof arr !== 'undefined' && arr?.length > 0);
+  const displayAsSearchResults = hasValidFilters || !!validSearchString;
+  const enableSavedSearch = displayAsSearchResults && !isSavedSearchDisabled(filterState, enteredSearchValue);
+
   const {
-    dialogs: allDialogsForView,
+    dialogs,
     isLoading: isLoadingDialogs,
     isSuccess: dialogsSuccess,
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
-  } = useDialogs(selectedParties, viewType);
-  const displaySearchResults = enteredSearchValue.length > 0 || !!searchParamOrg;
+  } = useDialogs({ parties: selectedParties, viewType, filterState, search: validSearchString });
 
-  const {
-    searchResults,
-    isFetching: isFetchingSearchResults,
-    isSuccess: searchSuccess,
-  } = useSearchDialogs({
-    parties: selectedParties,
-    searchValue: enteredSearchValue,
-  });
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    if (location.search) {
+      setFilterState(readFiltersFromURLQuery(location.search));
+    }
+  }, [searchParams.toString()]);
 
   const { accounts, selectedAccount, accountSearch, accountGroups, onSelectAccount } = useAccounts({
     parties,
@@ -68,24 +89,23 @@ export const Inbox = ({ viewType }: InboxProps) => {
     dialogCountInconclusive: dialogForAllPartiesCountInconclusive,
   });
 
-  const dataSourceSuccess = displaySearchResults ? searchSuccess : dialogsSuccess;
-  const dataSource = displaySearchResults ? searchResults : allDialogsForView;
-  const { filterState, filters, onFiltersChange, getFilterLabel } = useFilters({ dialogs: dataSource });
-  const filteredItems = useMemo(() => filterDialogs(dataSource, filterState), [dataSource, filterState]);
+  const { filters, getFilterLabel } = useFilters({ dialogs, viewType });
 
-  const isLoading = isLoadingParties || isFetchingSearchResults || isLoadingDialogs;
+  const isLoading = isLoadingParties || isLoadingDialogs;
   const { groupedDialogs, groups } = useGroupedDialogs({
-    items: filteredItems,
-    displaySearchResults,
+    items: dialogs,
+    displaySearchResults: displayAsSearchResults,
     filters: filterState,
     viewType,
     isLoading,
     isFetchingNextPage,
+    getCollapsedGroupTitle: (count) => t(`inbox.heading.title.${viewType}`, { count }),
+    collapseGroups: displayAsSearchResults,
   });
 
   if (unableToLoadParties) {
     return (
-      <section className={styles.noParties}>
+      <PageBase>
         <DsAlert data-color="danger">
           <Heading data-size="xs">{t('inbox.unable_to_load_parties.title')}</Heading>
           <DsParagraph>
@@ -93,27 +113,24 @@ export const Inbox = ({ viewType }: InboxProps) => {
             <a href="/api/logout">{t('inbox.unable_to_load_parties.link')}</a>
           </DsParagraph>
         </DsAlert>
-      </section>
+      </PageBase>
     );
   }
 
   if (partiesEmptyList) {
     return (
-      <section className={styles.noParties}>
+      <PageBase margin="page">
         <h1 className={styles.noPartiesText}>{t('inbox.no_parties_found')}</h1>
-      </section>
+      </PageBase>
     );
   }
 
-  const savedSearchDisabled = isSavedSearchDisabled(filterState, enteredSearchValue);
-
   return (
-    <>
-      <section className={styles.filtersArea} data-testid="inbox-toolbar">
+    <PageBase margin="page">
+      <section data-testid="inbox-toolbar">
         {selectedAccount ? (
           <>
             <Toolbar
-              key={`toolbar-${filters.length}`}
               data-testid="inbox-toolbar"
               accountMenu={{
                 accounts,
@@ -129,15 +146,24 @@ export const Inbox = ({ viewType }: InboxProps) => {
               filters={filters}
               showResultsLabel={t('filter.show_all_results')}
               removeButtonAltText={t('filter_bar.remove_filter')}
-              addFilterButtonLabel={t('filter_bar.add_filter')}
+              addFilterButtonLabel={hasValidFilters ? t('filter_bar.add') : t('filter_bar.add_filter')}
             >
-              <SaveSearchButton viewType={viewType} disabled={savedSearchDisabled} filterState={filterState} />
+              <SaveSearchButton viewType={viewType} disabled={!enableSavedSearch} filterState={filterState} />
             </Toolbar>
           </>
         ) : null}
       </section>
-      <Section spacing={3} margin="section">
-        {dataSourceSuccess && !filteredItems.length && <h1>{t(`inbox.heading.title.${viewType}`, { count: 0 })}</h1>}
+      <Section>
+        {dialogsSuccess && !dialogs.length && (
+          <EmptyState
+            title={
+              displayAsSearchResults ? t('inbox.no_results.title') : t(`inbox.heading.title.${viewType}`, { count: 0 })
+            }
+            description={
+              displayAsSearchResults ? t('inbox.no_results.description') : t(`inbox.heading.description.${viewType}`)
+            }
+          />
+        )}
         <DialogList
           items={groupedDialogs}
           groups={groups}
@@ -150,6 +176,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
           </DsButton>
         )}
       </Section>
-    </>
+    </PageBase>
   );
 };

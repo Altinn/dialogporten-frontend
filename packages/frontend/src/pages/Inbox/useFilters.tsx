@@ -1,41 +1,34 @@
 import type { ToolbarFilterProps, ToolbarProps } from '@altinn/altinn-components';
-import type { FilterState } from '@altinn/altinn-components/dist/types/lib/components/Toolbar/Toolbar';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSearchParams } from 'react-router-dom';
-import { createFiltersURLQuery } from '../../auth';
+import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
+import { useDialogsCount } from '../../api/hooks/useDialogsCount.tsx';
+import { getOrganization } from '../../api/utils/organizations.ts';
 import type { InboxItemInput } from './InboxItemInput.ts';
-import { FilterCategory, getFacets, readFiltersFromURLQuery } from './filters.ts';
+import { FilterCategory, getFilters } from './filters.ts';
+import { useOrganizations } from './useOrganizations.ts';
 
 interface UseFiltersOutput {
-  filterState: FilterState;
   filters: ToolbarFilterProps[];
-  onFiltersChange: (filters: FilterState) => void;
   getFilterLabel: ToolbarProps['getFilterLabel'];
 }
 
 interface UseFiltersProps {
   dialogs: InboxItemInput[];
+  viewType: InboxViewType;
 }
 
-export const useFilters = ({ dialogs }: UseFiltersProps): UseFiltersOutput => {
-  const [_, setSearchParams] = useSearchParams();
+export const useFilters = ({ dialogs, viewType }: UseFiltersProps): UseFiltersOutput => {
   const { t } = useTranslation();
-  const [filterState, setFilterState] = useState<FilterState>(readFiltersFromURLQuery(location.search));
+  const { dialogCounts: allDialogs } = useDialogsCount();
+  const { organizations } = useOrganizations();
 
-  const filters = useMemo(() => {
-    return getFacets(dialogs, filterState);
-  }, [dialogs, filterState]);
+  const filters = useMemo(
+    () => getFilters(dialogs, allDialogs, organizations, viewType),
+    [dialogs, allDialogs, organizations, viewType],
+  );
 
-  const onFiltersChange = (filters: FilterState) => {
-    const currentURL = new URL(window.location.href);
-    const filterKeys = Object.keys(filters);
-    const updatedURL = createFiltersURLQuery(filters, filterKeys, currentURL.toString());
-    setSearchParams(updatedURL.searchParams, { replace: true });
-    setFilterState(filters);
-  };
-
-  const getFilterLabel = (name: string, value: ToolbarFilterProps['value']) => {
+  const getFilterLabel = (name: string, value: (string | number)[] | undefined) => {
     const filter = filters.find((f) => f.name === name);
     if (!filter || !value) {
       return '';
@@ -49,14 +42,15 @@ export const useFilters = ({ dialogs }: UseFiltersProps): UseFiltersOutput => {
       return value.map((v) => t(`filter.date.${v.toString().toLowerCase()}`)).join(', ');
     }
 
-    if (name === FilterCategory.SENDER || name === FilterCategory.RECEIVER) {
+    if (name === FilterCategory.ORG) {
       if (value?.length === 1) {
-        return value.join('');
+        const serviceOwner = getOrganization(organizations, String(value[0]), 'nb');
+        return serviceOwner?.name || '';
       }
       return t('inbox.filter.multiple.sender', { count: value?.length });
     }
     return '';
   };
 
-  return { filterState: filterState || {}, filters, onFiltersChange, getFilterLabel };
+  return { filters, getFilterLabel };
 };
