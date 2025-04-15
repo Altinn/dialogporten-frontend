@@ -49,7 +49,12 @@ test.describe('LoginPartyContext', () => {
     expect(new URL(page.url()).searchParams.has('allParties')).toBe(false);
 
     await page.getByRole('button', { name: 'Firma AS' }).click();
-    await page.getByRole('menu').locator('a').filter({ hasText: 'TTestbedrift AS Avd Sub2' }).click();
+    await page
+      .getByTestId('inbox-toolbar')
+      .getByRole('group')
+      .locator('a')
+      .filter({ hasText: 'TTestbedrift AS Avd Sub2' })
+      .click();
 
     await expect(page.getByRole('button', { name: 'Testbedrift AS Avd Sub' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'This is a message 1 for Firma AS' })).not.toBeVisible();
@@ -61,7 +66,12 @@ test.describe('LoginPartyContext', () => {
     ).toBeVisible();
 
     await page.getByRole('button', { name: 'Testbedrift AS Avd Sub' }).click();
-    await page.getByRole('menu').locator('a').filter({ hasText: 'Alle virksomheter' }).click();
+    await page
+      .getByTestId('inbox-toolbar')
+      .getByRole('group')
+      .locator('a')
+      .filter({ hasText: 'FTT4Alle virksomheter5' })
+      .click();
 
     await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).not.toBeVisible();
     await expect(page.getByRole('link', { name: 'This is a message 1 for Firma AS' })).toBeVisible();
@@ -90,7 +100,7 @@ test.describe('LoginPartyContext', () => {
     await expectIsPersonPage(page);
 
     await page.getByRole('button', { name: 'Test Testesen' }).click();
-    await page.getByRole('menu').locator('a').filter({ hasText: 'Firma AS' }).click();
+    await page.getByTestId('inbox-toolbar').getByRole('group').locator('a').filter({ hasText: 'FFirma AS1' }).click();
 
     await expect(page.getByRole('button', { name: 'Firma AS' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'This is a message 1 for Firma AS' })).toBeVisible();

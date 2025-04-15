@@ -27,7 +27,12 @@ test.describe('Flattened parties and subparties', () => {
     expect(TestBedriftASAvdOslo.found).toEqual(true);
     expect(TestBedriftASAvdOslo.count).toEqual(1);
 
-    await page.getByRole('menu').locator('a').filter({ hasText: 'TTestbedrift AS2' }).click();
+    await page
+      .getByTestId('inbox-toolbar')
+      .getByRole('group')
+      .locator('a')
+      .filter({ hasText: 'TTestbedrift AS2' })
+      .click();
 
     await expect(page.getByRole('link', { name: 'Message for Test Testesen' })).not.toBeVisible();
     await expect(page.getByRole('button', { name: 'Testbedrift AS' })).toBeVisible();
@@ -41,14 +46,19 @@ test.describe('Flattened parties and subparties', () => {
     await expect(searchbarInput).toBeVisible();
 
     await searchbarInput.fill('test');
-    /* search box result */
+
     await expect(page.getByRole('banner').getByRole('link', { name: 'Message for Test Testesen' })).toBeVisible();
     await expect(page.getByRole('banner').getByRole('link', { name: 'Main party message' })).not.toBeVisible();
 
     await page.keyboard.press('Escape');
 
     await page.getByRole('button', { name: 'Test Testesen' }).click();
-    await page.getByRole('menu').locator('a').filter({ hasText: 'TTestbedrift AS2' }).click();
+    await page
+      .getByTestId('inbox-toolbar')
+      .getByRole('group')
+      .locator('a')
+      .filter({ hasText: 'TTestbedrift AS2' })
+      .click();
 
     await searchbarInput.fill('party');
     await expect(page.getByLabel('Message for Test Testesen')).not.toBeVisible();
@@ -57,13 +67,30 @@ test.describe('Flattened parties and subparties', () => {
 
   test('Filters shows merged parties if sub party has same name as main party', async ({ page }) => {
     await page.getByRole('button', { name: 'Test Testesen' }).click();
-    const menu = await page.getByRole('menu');
-    await menu.hover();
-    await page.mouse.wheel(0, 300);
-    await page.getByRole('menu').locator('a').filter({ hasText: 'Alle virksomheter' }).waitFor();
-    await page.getByRole('menu').locator('a').filter({ hasText: 'Alle virksomheter' }).click();
+
+    //only for virtualized (>20 actors)
+    // const menu = await page.getByRole('menu');
+    // await menu.hover();
+    // await page.mouse.wheel(0, 300);
+    // await page.getByRole('menu').locator('a').filter({ hasText: 'Alle virksomheter' }).waitFor();
+
+    await page
+      .getByTestId('inbox-toolbar')
+      .getByRole('group')
+      .locator('a')
+      .filter({ hasText: 'FTT5Alle virksomheter7' })
+      .click();
+
     await page.getByTestId('inbox-toolbar').getByRole('button', { name: 'add' }).click();
-    await page.getByRole('menu').locator('a').filter({ hasText: 'Velg mottaker' }).click();
-    await expect(page.getByRole('menu').getByText('checkboxMycompany AS Main2')).toBeVisible();
+    await page
+      .getByTestId('inbox-toolbar')
+      .getByRole('group')
+      .locator('a')
+      .filter({ hasText: 'Velg mottaker' })
+      .click();
+
+    await expect(
+      page.getByTestId('inbox-toolbar').getByRole('group').getByText('checkboxMycompany AS Main2'),
+    ).toBeVisible();
   });
 });
