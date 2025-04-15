@@ -16,7 +16,7 @@ describe('generateSendersAutocompleteBySearchString', () => {
         type: 'company',
         imageUrl: 'https://altinncdn.no/orgs/skd/skd.png',
       },
-      receiver: {
+      recipient: {
         name: 'Test Testesen',
         type: 'company',
       },
@@ -42,7 +42,7 @@ describe('generateSendersAutocompleteBySearchString', () => {
         type: 'company',
         imageUrl: 'https://altinncdn.no/orgs/ssb/ssb_dark.png',
       },
-      receiver: {
+      recipient: {
         name: 'Test Testesen',
         type: 'company',
       },

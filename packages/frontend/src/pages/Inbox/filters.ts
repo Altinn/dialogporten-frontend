@@ -1,4 +1,5 @@
 import type { FilterState, ToolbarFilterProps } from '@altinn/altinn-components';
+import { DialogStatus } from 'bff-types-generated';
 import { endOfDay, endOfMonth, endOfWeek, startOfDay, startOfMonth, startOfWeek, subMonths, subYears } from 'date-fns';
 import { t } from 'i18next';
 import type { InboxItemInput } from './InboxItemInput.ts';
@@ -26,22 +27,22 @@ export const filterDialogs = (dialogs: InboxItemInput[], activeFilters: FilterSt
   }
 
   return dialogs.filter((dialog) => {
-    const { sender, receiver } = dialog;
+    const { sender, recipient } = dialog;
 
     return Object.keys(activeFilters).every((filterId) => {
       if (!activeFilters[filterId]?.length) {
         return true;
       }
 
-      if (filterId === FilterCategory.SENDER) {
+      if (filterId === FilterCategory.ORG) {
         return activeFilters[filterId]?.some((filterValue) => {
           return filterValue === sender.name;
         });
       }
 
-      if (filterId === FilterCategory.RECEIVER) {
+      if (filterId === FilterCategory.RECIPIENT) {
         return activeFilters[filterId]?.some((filterValue) => {
-          return filterValue === receiver.name;
+          return filterValue === recipient.name;
         });
       }
 
@@ -88,8 +89,8 @@ export const filterDialogs = (dialogs: InboxItemInput[], activeFilters: FilterSt
 };
 
 export enum FilterCategory {
-  SENDER = 'sender',
-  RECEIVER = 'receiver',
+  ORG = 'org',
+  RECIPIENT = 'recipient',
   STATUS = 'status',
   UPDATED = 'updated',
 }
@@ -155,37 +156,34 @@ const getDateOptions = (dates: Date[]): ToolbarFilterProps['options'] => {
  * @returns {Array} - The array of filter settings.
  */
 export const getFacets = (dialogs: InboxItemInput[], currentFilterState: FilterState): ToolbarFilterProps[] => {
-  if (!dialogs.length) {
-    return [];
-  }
   const facets = [
     {
       label: t('filter_bar.label.choose_sender'),
-      name: FilterCategory.SENDER,
+      name: FilterCategory.ORG,
       removable: true,
       optionType: 'checkbox' as ToolbarFilterProps['optionType'],
       options: (() => {
-        const { [FilterCategory.SENDER]: _, ...otherFilters } = currentFilterState;
+        const { [FilterCategory.ORG]: _, ...otherFilters } = currentFilterState;
         const filteredDialogs = filterDialogs(dialogs, otherFilters);
-        const senders = filteredDialogs.map((p) => p.sender.name);
-        const senderCounts = countOccurrences(senders);
+        const serviceOwners = filteredDialogs.map((p) => p.org);
+        const serviceOwnersCount = countOccurrences(serviceOwners);
 
-        return Array.from(new Set(senders)).map((sender) => ({
+        return Array.from(new Set(serviceOwners)).map((sender) => ({
           label: sender,
           value: sender,
-          badge: senderCounts[sender] ? { label: String(senderCounts[sender]) } : undefined,
+          badge: serviceOwnersCount[sender] ? { label: String(serviceOwnersCount[sender]) } : undefined,
         }));
       })(),
     },
     {
       label: t('filter_bar.label.choose_recipient'),
-      name: FilterCategory.RECEIVER,
+      name: FilterCategory.RECIPIENT,
       removable: true,
       optionType: 'checkbox' as ToolbarFilterProps['optionType'],
       options: (() => {
-        const { [FilterCategory.RECEIVER]: _, ...otherFilters } = currentFilterState;
+        const { [FilterCategory.RECIPIENT]: _, ...otherFilters } = currentFilterState;
         const filteredDialogs = filterDialogs(dialogs, otherFilters);
-        const recipients = filteredDialogs.map((p) => p.receiver.name);
+        const recipients = filteredDialogs.map((p) => p.recipient.name);
         const recipientsCounts = countOccurrences(recipients);
 
         return Array.from(new Set(recipients)).map((recipient) => ({
@@ -200,17 +198,42 @@ export const getFacets = (dialogs: InboxItemInput[], currentFilterState: FilterS
       name: FilterCategory.STATUS,
       removable: true,
       optionType: 'checkbox' as ToolbarFilterProps['optionType'],
+      search: {
+        placeholder: t('filter_bar.label.search'),
+      },
+      optionGroups: {
+        'static-status': {
+          title: t('filter_bar.label.static_status'),
+          divider: true,
+        },
+        'dynamic-status': {
+          title: t('filter_bar.label.dynamic_status'),
+          divider: true,
+        },
+      },
       options: (() => {
         const { status: _, ...otherFilters } = currentFilterState;
         const filteredDialogs = filterDialogs(dialogs, otherFilters);
         const status = filteredDialogs.map((p) => p.status);
         const statusCount = countOccurrences(status);
+        const remainingStatus = Object.values(DialogStatus).filter((dialogStatus) => {
+          return !status.includes(dialogStatus);
+        });
 
-        return Array.from(new Set(status)).map((statusLabel) => ({
+        const dynamicOptions = Array.from(new Set(status)).map((statusLabel) => ({
           label: t(`status.${statusLabel.toLowerCase()}`),
+          groupId: 'dynamic-status',
           value: statusLabel,
           badge: statusCount[statusLabel] ? { label: String(statusCount[statusLabel]) } : undefined,
         }));
+
+        const staticOptions = remainingStatus.map((statusLabel) => ({
+          label: t(`status.${statusLabel.toLowerCase()}`),
+          groupId: 'static-status',
+          value: statusLabel,
+        }));
+
+        return [...dynamicOptions, ...staticOptions];
       })(),
     },
     {

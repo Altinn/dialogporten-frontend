@@ -100,6 +100,8 @@
   "status.completed": "Completed",
   "status.draft": "Draft",
   "status.new": "New",
+  "status.in_progress": "In progress",
+  "status.requires_attention": "Requires attention",
   "status.sent": "Sent",
   "word.back": "Back",
   "word.clock_prefix": "",

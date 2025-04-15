@@ -101,7 +101,7 @@ const useGroupedDialogs = ({
     sender: item.sender,
     summary: item.summary,
     state: getDialogState(viewType),
-    recipient: item.receiver,
+    recipient: item.recipient,
     attachmentsCount: item.guiAttachmentCount,
     seenBy: item.seenByLabel
       ? {

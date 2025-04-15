@@ -227,6 +227,7 @@ fragment SeenLogFields on SeenLog {
 
 fragment CountableDialogFields on SearchDialog {
   id
+  org
   party
   updatedAt
   status

@@ -101,6 +101,8 @@
   "status.draft": "Utkast",
   "status.new": "Nye",
   "status.sent": "Sendt",
+  "status.in_progress": "Under arbeid",
+  "status.requires_attention": "Krever oppmerksomhet",
   "word.back": "Tilbake",
   "word.clock_prefix": "kl",
   "word.close": "Lukk",

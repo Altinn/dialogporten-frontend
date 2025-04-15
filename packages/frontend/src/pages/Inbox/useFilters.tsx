@@ -1,39 +1,26 @@
 import type { ToolbarFilterProps, ToolbarProps } from '@altinn/altinn-components';
 import type { FilterState } from '@altinn/altinn-components/dist/types/lib/components/Toolbar/Toolbar';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSearchParams } from 'react-router-dom';
-import { createFiltersURLQuery } from '../../auth';
 import type { InboxItemInput } from './InboxItemInput.ts';
-import { FilterCategory, getFacets, readFiltersFromURLQuery } from './filters.ts';
+import { FilterCategory, getFacets } from './filters.ts';
 
 interface UseFiltersOutput {
-  filterState: FilterState;
   filters: ToolbarFilterProps[];
-  onFiltersChange: (filters: FilterState) => void;
   getFilterLabel: ToolbarProps['getFilterLabel'];
 }
 
 interface UseFiltersProps {
   dialogs: InboxItemInput[];
+  filterState: FilterState;
 }
 
-export const useFilters = ({ dialogs }: UseFiltersProps): UseFiltersOutput => {
-  const [_, setSearchParams] = useSearchParams();
+export const useFilters = ({ dialogs, filterState }: UseFiltersProps): UseFiltersOutput => {
   const { t } = useTranslation();
-  const [filterState, setFilterState] = useState<FilterState>(readFiltersFromURLQuery(location.search));
 
   const filters = useMemo(() => {
     return getFacets(dialogs, filterState);
   }, [dialogs, filterState]);
-
-  const onFiltersChange = (filters: FilterState) => {
-    const currentURL = new URL(window.location.href);
-    const filterKeys = Object.keys(filters);
-    const updatedURL = createFiltersURLQuery(filters, filterKeys, currentURL.toString());
-    setSearchParams(updatedURL.searchParams, { replace: true });
-    setFilterState(filters);
-  };
 
   const getFilterLabel = (name: string, value: ToolbarFilterProps['value']) => {
     const filter = filters.find((f) => f.name === name);
@@ -49,7 +36,7 @@ export const useFilters = ({ dialogs }: UseFiltersProps): UseFiltersOutput => {
       return value.map((v) => t(`filter.date.${v.toString().toLowerCase()}`)).join(', ');
     }
 
-    if (name === FilterCategory.SENDER || name === FilterCategory.RECEIVER) {
+    if (name === FilterCategory.ORG || name === FilterCategory.RECIPIENT) {
       if (value?.length === 1) {
         return value.join('');
       }
@@ -58,5 +45,5 @@ export const useFilters = ({ dialogs }: UseFiltersProps): UseFiltersOutput => {
     return '';
   };
 
-  return { filterState: filterState || {}, filters, onFiltersChange, getFilterLabel };
+  return { filters, getFilterLabel };
 };
