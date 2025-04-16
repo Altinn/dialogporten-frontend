@@ -11,15 +11,15 @@ test.describe('Language picker', () => {
 
     await page.getByRole('button', { name: 'Open language-switcher' }).click();
     await expect(page.getByRole('heading', { name: 'Språk/language' })).toBeVisible();
-    await expect(page.getByRole('menu').getByText('RadioNorsk Bokmål')).toBeVisible();
-    await expect(page.getByRole('menu').getByText('RadioNorsk Nynorsk')).toBeVisible();
-    await expect(page.getByRole('menu').getByText('RadioEnglish')).toBeVisible();
+    await expect(page.getByRole('banner').getByRole('group').getByText('RadioNorsk Bokmål')).toBeVisible();
+    await expect(page.getByRole('banner').getByRole('group').getByText('Norsk Nynorsk')).toBeVisible();
+    await expect(page.getByRole('banner').getByRole('group').getByText('English')).toBeVisible();
 
     const [response] = await Promise.all([
       page.waitForResponse(
         (res) => res.url().includes('/graphql') && res.request().method() === 'POST' && res.status() === 200,
       ),
-      page.getByRole('menu').getByText('RadioEnglish').click(),
+      page.getByRole('banner').getByRole('group').getByText('English').click(),
     ]);
     expect(response.status()).toBe(200);
     const body = await response.json();

@@ -133,19 +133,20 @@ test.describe('Axe test', () => {
     const accessibilityScanResultsSearchBar = await new AxeBuilder({ page }).withTags(WCAG_TAGS_CONFIG).analyze();
     expectWithFilterViolations(accessibilityScanResultsSearchBar.violations);
 
-    //TO-DO Uncomment after fixing the axe violations in altinn-components library
-    // await page.keyboard.press('Escape');
+    await page.keyboard.press('Escape');
 
-    // await page.getByRole('button', { name: 'Test Testesen' }).click();
-    // const accessibilityScanResultsPartyDropdown = await new AxeBuilder({ page }).withTags(WCAG_TAGS_CONFIG).analyze();
-    // expectWithFilterViolations(accessibilityScanResultsPartyDropdown.violations);
+    await page.getByRole('button', { name: 'Test Testesen' }).click();
+    const accessibilityScanResultsPartyDropdown = await new AxeBuilder({ page }).withTags(WCAG_TAGS_CONFIG).analyze();
+    expectWithFilterViolations(accessibilityScanResultsPartyDropdown.violations);
+    await page.keyboard.press('Escape');
 
-    // await page.getByRole('button', { name: 'Meny' }).click();
-    // const accessibilityScanResultsHeaderMenu = await new AxeBuilder({ page }).withTags(WCAG_TAGS_CONFIG).analyze();
-    // expectWithFilterViolations(accessibilityScanResultsHeaderMenu.violations);
+    await page.getByRole('button', { name: 'Meny' }).click();
+    const accessibilityScanResultsHeaderMenu = await new AxeBuilder({ page }).withTags(WCAG_TAGS_CONFIG).analyze();
+    expectWithFilterViolations(accessibilityScanResultsHeaderMenu.violations);
+    await page.keyboard.press('Escape');
 
-    // await page.getByRole('button', { name: 'add' }).click();
-    // const accessibilityScanResultsFilterDropdown = await new AxeBuilder({ page }).withTags(WCAG_TAGS_CONFIG).analyze();
-    // expectWithFilterViolations(accessibilityScanResultsFilterDropdown.violations);
+    await page.getByRole('button', { name: 'add' }).click();
+    const accessibilityScanResultsFilterDropdown = await new AxeBuilder({ page }).withTags(WCAG_TAGS_CONFIG).analyze();
+    expectWithFilterViolations(accessibilityScanResultsFilterDropdown.violations);
   });
 });
