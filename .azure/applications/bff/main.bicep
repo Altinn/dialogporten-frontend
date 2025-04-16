@@ -29,9 +29,6 @@ param containerAppEnvironmentName string
 @minLength(3)
 @secure()
 param appInsightConnectionString string
-@minLength(5)
-@secure()
-param appConfigurationName string
 @minLength(3)
 @secure()
 param environmentKeyVaultName string
@@ -45,10 +42,6 @@ var containerAppName = '${namePrefix}-bff'
 var tags = {
   Environment: environment
   Product: 'Arbeidsflate'
-}
-
-resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2023-03-01' existing = {
-  name: appConfigurationName
 }
 
 resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' existing = {
@@ -108,10 +101,6 @@ var containerAppEnvVars = concat([
   {
     name: 'APPLICATIONINSIGHTS_ENABLED'
     value: 'true'
-  }
-  {
-    name: 'AZURE_APPCONFIG_URI'
-    value: appConfiguration.properties.endpoint
   }
   {
     name: 'DB_CONNECTION_STRING'
@@ -187,14 +176,6 @@ module keyVaultReaderAccessPolicy '../../modules/keyvault/addReaderRoles.bicep' 
   name: 'keyVaultReaderAccessPolicy-${containerAppName}'
   params: {
     keyvaultName: environmentKeyVaultResource.name
-    principalIds: [containerApp.outputs.identityPrincipalId]
-  }
-}
-
-module appConfigReaderAccessPolicy '../../modules/appConfiguration/addReaderRoles.bicep' = {
-  name: 'appConfigReaderAccessPolicy-${containerAppName}'
-  params: {
-    appConfigurationName: appConfigurationName
     principalIds: [containerApp.outputs.identityPrincipalId]
   }
 }

@@ -15,9 +15,6 @@ param containerAppEnvironmentName string
 @minLength(3)
 @secure()
 param appInsightConnectionString string
-@minLength(5)
-@secure()
-param appConfigurationName string
 @minLength(3)
 @secure()
 param environmentKeyVaultName string
@@ -28,10 +25,6 @@ var containerAppJobName = '${namePrefix}-bff-migration-job'
 var tags = {
   Environment: environment
   Product: 'Arbeidsflate'
-}
-
-resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2023-03-01' existing = {
-  name: appConfigurationName
 }
 
 resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' existing = {
@@ -93,10 +86,6 @@ var containerAppEnvVars = [
     value: 'true'
   }
   {
-    name: 'AZURE_APPCONFIG_URI'
-    value: appConfiguration.properties.endpoint
-  }
-  {
     name: 'DB_CONNECTION_STRING'
     secretRef: dbConnectionStringSecret.name
   }
@@ -156,14 +145,6 @@ module keyVaultReaderAccessPolicy '../../modules/keyvault/addReaderRoles.bicep' 
   name: 'keyVaultReaderAccessPolicy-${containerAppJobName}'
   params: {
     keyvaultName: environmentKeyVaultResource.name
-    principalIds: [containerAppJob.outputs.identityPrincipalId]
-  }
-}
-
-module appConfigReaderAccessPolicy '../../modules/appConfiguration/addReaderRoles.bicep' = {
-  name: 'appConfigReaderAccessPolicy-${containerAppJobName}'
-  params: {
-    appConfigurationName: appConfigurationName
     principalIds: [containerAppJob.outputs.identityPrincipalId]
   }
 }
