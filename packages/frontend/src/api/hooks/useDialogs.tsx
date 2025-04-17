@@ -1,12 +1,12 @@
 import type { FilterState } from '@altinn/altinn-components/dist/types/lib/components/Toolbar/Toolbar';
 import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
-import type { DialogStatus, GetAllDialogsForPartiesQuery, PartyFieldsFragment } from 'bff-types-generated';
+import type { DialogStatus, GetAllDialogsForPartiesQuery, PartyFieldsFragment, SystemLabel } from 'bff-types-generated';
 import { useRef } from 'react';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
 import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
 import { graphQLSDK } from '../queries.ts';
-import { getPartyIds, getQueryVariables, mapDialogToToInboxItems } from '../utils/dialog.ts';
+import { getPartyIds, mapDialogToToInboxItems } from '../utils/dialog.ts';
 import { useParties } from './useParties.ts';
 
 export type InboxViewType = 'inbox' | 'drafts' | 'sent' | 'archive' | 'bin';
@@ -34,15 +34,13 @@ export const useDialogs = (
   const partyIds = getPartyIds(partiesToUse);
   const previousTokensRef = useRef<string>('');
   const viewTypeKey = viewType ?? 'global';
-  const queryVariables = getQueryVariables({
-    viewType,
-    variables: {
-      partyURIs: partyIds,
-      status: filterState?.status ? (filterState.status as [DialogStatus]) : undefined,
-      org: filterState?.org as string | undefined,
-      limit: 100,
-    },
-  });
+  const queryVariables = {
+    partyURIs: partyIds,
+    status: filterState?.status ? (filterState.status as [DialogStatus]) : undefined,
+    org: filterState?.org as string | undefined,
+    systemLabel: filterState?.systemLabel as SystemLabel | undefined,
+    limit: 100,
+  };
   const { data, isSuccess, isLoading, isError, fetchNextPage, isFetchingNextPage } =
     useInfiniteQuery<GetAllDialogsForPartiesQuery>({
       queryKey: [QUERY_KEYS.DIALOGS, partyIds, viewTypeKey, queryVariables],

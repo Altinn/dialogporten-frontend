@@ -1,7 +1,8 @@
 import type { FilterState, ToolbarFilterProps } from '@altinn/altinn-components';
-import { DialogStatus } from 'bff-types-generated';
+import { type CountableDialogFieldsFragment, DialogStatus, SystemLabel } from 'bff-types-generated';
 import { endOfDay, endOfMonth, endOfWeek, startOfDay, startOfMonth, startOfWeek, subMonths, subYears } from 'date-fns';
 import { t } from 'i18next';
+import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import type { InboxItemInput } from './InboxItemInput.ts';
 
 export const countOccurrences = (array: string[]): Record<string, number> => {
@@ -93,6 +94,7 @@ export enum FilterCategory {
   RECIPIENT = 'recipient',
   STATUS = 'status',
   UPDATED = 'updated',
+  SYSTEM_LABEL = 'systemLabel',
 }
 
 export enum DateFilterOption {
@@ -153,9 +155,14 @@ const getDateOptions = (dates: Date[]): ToolbarFilterProps['options'] => {
  *
  * @param {InboxItemInput[]} dialogs - The array of dialogs to filter.
  * @param currentFilterState
+ * @param allDialogs
  * @returns {Array} - The array of filter settings.
  */
-export const getFacets = (dialogs: InboxItemInput[], currentFilterState: FilterState): ToolbarFilterProps[] => {
+export const getFacets = (
+  dialogs: InboxItemInput[],
+  currentFilterState: FilterState,
+  allDialogs: CountableDialogFieldsFragment[],
+): ToolbarFilterProps[] => {
   const facets = [
     {
       label: t('filter_bar.label.choose_sender'),
@@ -163,16 +170,28 @@ export const getFacets = (dialogs: InboxItemInput[], currentFilterState: FilterS
       removable: true,
       optionType: 'checkbox' as ToolbarFilterProps['optionType'],
       options: (() => {
-        const { [FilterCategory.ORG]: _, ...otherFilters } = currentFilterState;
-        const filteredDialogs = filterDialogs(dialogs, otherFilters);
-        const serviceOwners = filteredDialogs.map((p) => p.org);
-        const serviceOwnersCount = countOccurrences(serviceOwners);
+        const { [FilterCategory.ORG]: _, ...filtersWithoutOrg } = currentFilterState;
+        const dialogsMatchingOtherFilters = filterDialogs(dialogs, filtersWithoutOrg);
 
-        return Array.from(new Set(serviceOwners)).map((sender) => ({
-          label: sender,
-          value: sender,
-          badge: serviceOwnersCount[sender] ? { label: String(serviceOwnersCount[sender]) } : undefined,
+        const allOrgs = Array.from(new Set(allDialogs.map((d) => d.org)));
+        const orgsInFilteredDialogs = dialogsMatchingOtherFilters.map((d) => d.org);
+        const orgCount = countOccurrences(orgsInFilteredDialogs);
+
+        const uniqueOrgsInFilteredDialogs = Array.from(new Set(orgsInFilteredDialogs));
+        const orgsWithoutData = allOrgs.filter((org) => !uniqueOrgsInFilteredDialogs.includes(org));
+
+        const activeOrgOptions = uniqueOrgsInFilteredDialogs.map((org) => ({
+          label: org,
+          value: org,
+          badge: orgCount[org] ? { label: String(orgCount[org]) } : undefined,
         }));
+
+        const inactiveOrgOptions = orgsWithoutData.map((org) => ({
+          label: org,
+          value: org,
+        }));
+
+        return [...activeOrgOptions, ...inactiveOrgOptions];
       })(),
     },
     {
@@ -191,6 +210,46 @@ export const getFacets = (dialogs: InboxItemInput[], currentFilterState: FilterS
           value: recipient,
           badge: recipientsCounts[recipient] ? { label: String(recipientsCounts[recipient]) } : undefined,
         }));
+      })(),
+    },
+    {
+      label: t('filter_bar.label.choose_system_label'),
+      name: FilterCategory.SYSTEM_LABEL,
+      removable: true,
+      optionType: 'checkbox' as ToolbarFilterProps['optionType'],
+      optionGroups: {
+        'static-label': {
+          title: t('filter_bar.label.static_label'),
+          divider: true,
+        },
+        'dynamic-label': {
+          title: t('filter_bar.label.dynamic_label'),
+          divider: true,
+        },
+      },
+      options: (() => {
+        const { systemLabel: _, ...otherFilters } = currentFilterState;
+        const filteredDialogs = filterDialogs(dialogs, otherFilters);
+        const labels = filteredDialogs.map((p) => p.label);
+        const labelCount = countOccurrences(labels);
+        const remainingLabels = Object.values(SystemLabel).filter((label) => {
+          return !labels.includes(label);
+        });
+
+        const dynamicOptions = Array.from(new Set(labels)).map((labelValue) => ({
+          label: t(`label.${labelValue.toLowerCase()}`),
+          groupId: 'dynamic-label',
+          value: labelValue,
+          badge: labelCount[labelValue] ? { label: String(labelCount[labelValue]) } : undefined,
+        }));
+
+        const staticOptions = remainingLabels.map((labelValue) => ({
+          label: t(`label.${labelValue.toLowerCase()}`),
+          groupId: 'static-label',
+          value: labelValue,
+        }));
+
+        return [...dynamicOptions, ...staticOptions];
       })(),
     },
     {

@@ -16,9 +16,10 @@ export type DialogsByViewCount = { [key in InboxViewType]: CountableDialogFields
 interface UseDialogsOutput {
   dialogCountInconclusive: boolean;
   dialogCountsByViewType: DialogsByViewCount;
+  dialogCounts: CountableDialogFieldsFragment[];
 }
 
-export const useDialogsCount = (parties: PartyFieldsFragment[], viewType?: InboxViewType): UseDialogsOutput => {
+export const useDialogsCount = (parties?: PartyFieldsFragment[], viewType?: InboxViewType): UseDialogsOutput => {
   const { selectedParties } = useParties();
   const partiesToUse = parties ? parties : selectedParties;
   const partyIds = getPartyIds(partiesToUse);
@@ -63,5 +64,6 @@ export const useDialogsCount = (parties: PartyFieldsFragment[], viewType?: Inbox
   return {
     dialogCountsByViewType,
     dialogCountInconclusive: data?.searchDialogs?.hasNextPage === true || data?.searchDialogs?.items === null,
+    dialogCounts: data?.searchDialogs?.items ?? [],
   };
 };

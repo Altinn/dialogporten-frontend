@@ -1,8 +1,9 @@
 import { DialogList, DsAlert, DsButton, DsParagraph, Heading, Section, Toolbar } from '@altinn/altinn-components';
 import type { FilterState } from '@altinn/altinn-components/dist/types/lib/components/Toolbar/Toolbar';
+import { DialogStatus, SystemLabel } from 'bff-types-generated';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { type InboxViewType, useDialogs } from '../../api/hooks/useDialogs.tsx';
 import { useDialogsCount } from '../../api/hooks/useDialogsCount.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
@@ -31,15 +32,66 @@ export const Inbox = ({ viewType }: InboxProps) => {
     isError: unableToLoadParties,
     isLoading: isLoadingParties,
   } = useParties();
-  const [filterState, setFilterState] = useState<FilterState>(readFiltersFromURLQuery(location.search));
+  const [filterState, setFilterState] = useState<FilterState>(readFiltersFromURLQuery(location.search, viewType));
   const [_, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  const presetFiltersByView: Record<InboxViewType, Partial<FilterState>> = {
+    inbox: {
+      status: [DialogStatus.New, DialogStatus.InProgress, DialogStatus.RequiresAttention, DialogStatus.Completed],
+      label: SystemLabel.Default,
+    },
+    drafts: {
+      status: [DialogStatus.Draft],
+      label: SystemLabel.Default,
+    },
+    sent: {
+      status: [DialogStatus.Sent],
+      label: SystemLabel.Default,
+    },
+    archive: {
+      systemLabel: SystemLabel.Archive,
+    },
+    bin: {
+      systemLabel: SystemLabel.Bin,
+    },
+  };
+
+  const shouldRedirectOutOfView = (viewType: InboxViewType, filters: FilterState): boolean => {
+    const preset = presetFiltersByView[viewType];
+    if (!preset || viewType === 'inbox') return false;
+
+    const presetKeys = Object.keys(preset);
+    const filterKeys = Object.keys(filters);
+
+    // If any preset filter (e.g. label or status) is missing from current filters
+    const isMissingPresetKey = ['label', 'status'].some((key) => {
+      const presetValue = preset[key];
+      const currentValue = filters[key];
+      if (!presetValue || !currentValue) return true;
+
+      return Array.isArray(presetValue)
+        ? !Array.isArray(currentValue) || !presetValue.every((v) => currentValue.includes(v))
+        : currentValue !== presetValue;
+    });
+
+    // If filters include additional keys beyond preset (scope widened)
+    const isWidenedScope = filterKeys.some((key) => !presetKeys.includes(key));
+
+    return isMissingPresetKey || isWidenedScope;
+  };
 
   const onFiltersChange = (filters: FilterState) => {
     const currentURL = new URL(window.location.href);
     const filterKeys = Object.keys(filters);
     const updatedURL = createFiltersURLQuery(filters, filterKeys, currentURL.toString());
-    setSearchParams(updatedURL.searchParams, { replace: true });
-    setFilterState(filters);
+
+    if (shouldRedirectOutOfView(viewType, filters)) {
+      navigate(PageRoutes.inbox + `?${updatedURL.searchParams.toString()}`);
+    } else {
+      setSearchParams(updatedURL.searchParams, { replace: true });
+      setFilterState(filters);
+    }
   };
 
   /* Used to populate account menu */
@@ -81,7 +133,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const dataSourceSuccess = displaySearchResults ? searchSuccess : dialogsSuccess;
   const dataSource = displaySearchResults ? searchResults : allDialogsForView;
   const { filters, getFilterLabel } = useFilters({ dialogs: dataSource, filterState });
-  //const filteredItems = useMemo(() => filterDialogs(dataSource, filterState), [dataSource, filterState]);
 
   const isLoading = isLoadingParties || isFetchingSearchResults || isLoadingDialogs;
   const { groupedDialogs, groups } = useGroupedDialogs({
@@ -116,8 +167,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
   }
 
   const savedSearchDisabled = isSavedSearchDisabled(filterState, enteredSearchValue);
-  console.info('filterState', filterState);
-  console.info('filters', filters);
 
   return (
     <>
