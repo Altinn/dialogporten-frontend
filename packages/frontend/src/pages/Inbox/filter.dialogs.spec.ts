@@ -20,25 +20,25 @@ describe('filterDialogs', () => {
       id: 1,
       sender: { name: 'Ole' },
       status: 'NEW',
-      receiver: { name: 'Kari' },
+      recipient: { name: 'Kari' },
       updatedAt: '2023-01-01T10:00:00Z',
     },
     {
       id: 2,
       sender: { name: 'Nils' },
-      receiver: { name: 'Liv' },
+      recipient: { name: 'Liv' },
       updatedAt: '2023-08-01T10:00:00Z',
     },
     {
       id: 3,
       sender: { name: 'Ole' },
-      receiver: { name: 'Eva' },
+      recipient: { name: 'Eva' },
       updatedAt: '2023-12-15T10:00:00Z',
     },
     {
       id: 4,
       sender: { name: 'Per' },
-      receiver: { name: 'Kari' },
+      recipient: { name: 'Kari' },
       updatedAt: '2024-02-01T08:00:00Z',
     },
   ] as unknown as InboxItemInput[];
@@ -109,8 +109,8 @@ describe('filterDialogs', () => {
     expect(filterDialogs(dialogs, activeFilters)).toEqual([dialogs[0], dialogs[1], dialogs[2]]);
   });
 
-  it('filters dialogs by sender and receiver (AND logic)', () => {
-    const activeFilters = { sender: ['Ole'], receiver: ['Kari'] };
+  it('filters dialogs by sender and recipient (AND logic)', () => {
+    const activeFilters = { sender: ['Ole'], recipient: ['Kari'] };
     expect(filterDialogs(dialogs, activeFilters)).toEqual([dialogs[0]]);
   });
 
@@ -118,7 +118,7 @@ describe('filterDialogs', () => {
     expect(
       filterDialogs(dialogs, {
         sender: ['Ole'],
-        receiver: ['Kari'],
+        recipient: ['Kari'],
         updated: ['OLDER_THAN_ONE_YEAR'],
       }),
     ).toEqual([dialogs[0]]);

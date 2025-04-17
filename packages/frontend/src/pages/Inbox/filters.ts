@@ -1,6 +1,8 @@
 import type { FilterState, ToolbarFilterProps } from '@altinn/altinn-components';
+import { type CountableDialogFieldsFragment, DialogStatus, SystemLabel } from 'bff-types-generated';
 import { endOfDay, endOfMonth, endOfWeek, startOfDay, startOfMonth, startOfWeek, subMonths, subYears } from 'date-fns';
 import { t } from 'i18next';
+import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import type { InboxItemInput } from './InboxItemInput.ts';
 
 export const countOccurrences = (array: string[]): Record<string, number> => {
@@ -26,22 +28,22 @@ export const filterDialogs = (dialogs: InboxItemInput[], activeFilters: FilterSt
   }
 
   return dialogs.filter((dialog) => {
-    const { sender, receiver } = dialog;
+    const { sender, recipient } = dialog;
 
     return Object.keys(activeFilters).every((filterId) => {
       if (!activeFilters[filterId]?.length) {
         return true;
       }
 
-      if (filterId === FilterCategory.SENDER) {
+      if (filterId === FilterCategory.ORG) {
         return activeFilters[filterId]?.some((filterValue) => {
           return filterValue === sender.name;
         });
       }
 
-      if (filterId === FilterCategory.RECEIVER) {
+      if (filterId === FilterCategory.RECIPIENT) {
         return activeFilters[filterId]?.some((filterValue) => {
-          return filterValue === receiver.name;
+          return filterValue === recipient.name;
         });
       }
 
@@ -88,10 +90,11 @@ export const filterDialogs = (dialogs: InboxItemInput[], activeFilters: FilterSt
 };
 
 export enum FilterCategory {
-  SENDER = 'sender',
-  RECEIVER = 'receiver',
+  ORG = 'org',
+  RECIPIENT = 'recipient',
   STATUS = 'status',
   UPDATED = 'updated',
+  SYSTEM_LABEL = 'systemLabel',
 }
 
 export enum DateFilterOption {
@@ -152,40 +155,54 @@ const getDateOptions = (dates: Date[]): ToolbarFilterProps['options'] => {
  *
  * @param {InboxItemInput[]} dialogs - The array of dialogs to filter.
  * @param currentFilterState
+ * @param allDialogs
  * @returns {Array} - The array of filter settings.
  */
-export const getFacets = (dialogs: InboxItemInput[], currentFilterState: FilterState): ToolbarFilterProps[] => {
-  if (!dialogs.length) {
-    return [];
-  }
+export const getFacets = (
+  dialogs: InboxItemInput[],
+  currentFilterState: FilterState,
+  allDialogs: CountableDialogFieldsFragment[],
+): ToolbarFilterProps[] => {
   const facets = [
     {
       label: t('filter_bar.label.choose_sender'),
-      name: FilterCategory.SENDER,
+      name: FilterCategory.ORG,
       removable: true,
       optionType: 'checkbox' as ToolbarFilterProps['optionType'],
       options: (() => {
-        const { [FilterCategory.SENDER]: _, ...otherFilters } = currentFilterState;
-        const filteredDialogs = filterDialogs(dialogs, otherFilters);
-        const senders = filteredDialogs.map((p) => p.sender.name);
-        const senderCounts = countOccurrences(senders);
+        const { [FilterCategory.ORG]: _, ...filtersWithoutOrg } = currentFilterState;
+        const dialogsMatchingOtherFilters = filterDialogs(dialogs, filtersWithoutOrg);
 
-        return Array.from(new Set(senders)).map((sender) => ({
-          label: sender,
-          value: sender,
-          badge: senderCounts[sender] ? { label: String(senderCounts[sender]) } : undefined,
+        const allOrgs = Array.from(new Set(allDialogs.map((d) => d.org)));
+        const orgsInFilteredDialogs = dialogsMatchingOtherFilters.map((d) => d.org);
+        const orgCount = countOccurrences(orgsInFilteredDialogs);
+
+        const uniqueOrgsInFilteredDialogs = Array.from(new Set(orgsInFilteredDialogs));
+        const orgsWithoutData = allOrgs.filter((org) => !uniqueOrgsInFilteredDialogs.includes(org));
+
+        const activeOrgOptions = uniqueOrgsInFilteredDialogs.map((org) => ({
+          label: org,
+          value: org,
+          badge: orgCount[org] ? { label: String(orgCount[org]) } : undefined,
         }));
+
+        const inactiveOrgOptions = orgsWithoutData.map((org) => ({
+          label: org,
+          value: org,
+        }));
+
+        return [...activeOrgOptions, ...inactiveOrgOptions];
       })(),
     },
     {
       label: t('filter_bar.label.choose_recipient'),
-      name: FilterCategory.RECEIVER,
+      name: FilterCategory.RECIPIENT,
       removable: true,
       optionType: 'checkbox' as ToolbarFilterProps['optionType'],
       options: (() => {
-        const { [FilterCategory.RECEIVER]: _, ...otherFilters } = currentFilterState;
+        const { [FilterCategory.RECIPIENT]: _, ...otherFilters } = currentFilterState;
         const filteredDialogs = filterDialogs(dialogs, otherFilters);
-        const recipients = filteredDialogs.map((p) => p.receiver.name);
+        const recipients = filteredDialogs.map((p) => p.recipient.name);
         const recipientsCounts = countOccurrences(recipients);
 
         return Array.from(new Set(recipients)).map((recipient) => ({
@@ -196,21 +213,86 @@ export const getFacets = (dialogs: InboxItemInput[], currentFilterState: FilterS
       })(),
     },
     {
+      label: t('filter_bar.label.choose_system_label'),
+      name: FilterCategory.SYSTEM_LABEL,
+      removable: true,
+      optionType: 'checkbox' as ToolbarFilterProps['optionType'],
+      optionGroups: {
+        'static-label': {
+          title: t('filter_bar.label.static_label'),
+          divider: true,
+        },
+        'dynamic-label': {
+          title: t('filter_bar.label.dynamic_label'),
+          divider: true,
+        },
+      },
+      options: (() => {
+        const { systemLabel: _, ...otherFilters } = currentFilterState;
+        const filteredDialogs = filterDialogs(dialogs, otherFilters);
+        const labels = filteredDialogs.map((p) => p.label);
+        const labelCount = countOccurrences(labels);
+        const remainingLabels = Object.values(SystemLabel).filter((label) => {
+          return !labels.includes(label);
+        });
+
+        const dynamicOptions = Array.from(new Set(labels)).map((labelValue) => ({
+          label: t(`label.${labelValue.toLowerCase()}`),
+          groupId: 'dynamic-label',
+          value: labelValue,
+          badge: labelCount[labelValue] ? { label: String(labelCount[labelValue]) } : undefined,
+        }));
+
+        const staticOptions = remainingLabels.map((labelValue) => ({
+          label: t(`label.${labelValue.toLowerCase()}`),
+          groupId: 'static-label',
+          value: labelValue,
+        }));
+
+        return [...dynamicOptions, ...staticOptions];
+      })(),
+    },
+    {
       label: t('filter_bar.label.choose_status'),
       name: FilterCategory.STATUS,
       removable: true,
       optionType: 'checkbox' as ToolbarFilterProps['optionType'],
+      search: {
+        placeholder: t('filter_bar.label.search'),
+      },
+      optionGroups: {
+        'static-status': {
+          title: t('filter_bar.label.static_status'),
+          divider: true,
+        },
+        'dynamic-status': {
+          title: t('filter_bar.label.dynamic_status'),
+          divider: true,
+        },
+      },
       options: (() => {
         const { status: _, ...otherFilters } = currentFilterState;
         const filteredDialogs = filterDialogs(dialogs, otherFilters);
         const status = filteredDialogs.map((p) => p.status);
         const statusCount = countOccurrences(status);
+        const remainingStatus = Object.values(DialogStatus).filter((dialogStatus) => {
+          return !status.includes(dialogStatus);
+        });
 
-        return Array.from(new Set(status)).map((statusLabel) => ({
+        const dynamicOptions = Array.from(new Set(status)).map((statusLabel) => ({
           label: t(`status.${statusLabel.toLowerCase()}`),
+          groupId: 'dynamic-status',
           value: statusLabel,
           badge: statusCount[statusLabel] ? { label: String(statusCount[statusLabel]) } : undefined,
         }));
+
+        const staticOptions = remainingStatus.map((statusLabel) => ({
+          label: t(`status.${statusLabel.toLowerCase()}`),
+          groupId: 'static-status',
+          value: statusLabel,
+        }));
+
+        return [...dynamicOptions, ...staticOptions];
       })(),
     },
     {

@@ -16,9 +16,10 @@ export type DialogsByViewCount = { [key in InboxViewType]: CountableDialogFields
 interface UseDialogsOutput {
   dialogCountInconclusive: boolean;
   dialogCountsByViewType: DialogsByViewCount;
+  dialogCounts: CountableDialogFieldsFragment[];
 }
 
-export const useDialogsCount = (parties: PartyFieldsFragment[], viewType?: InboxViewType): UseDialogsOutput => {
+export const useDialogsCount = (parties?: PartyFieldsFragment[], viewType?: InboxViewType): UseDialogsOutput => {
   const { selectedParties } = useParties();
   const partiesToUse = parties ? parties : selectedParties;
   const partyIds = getPartyIds(partiesToUse);
@@ -28,10 +29,14 @@ export const useDialogsCount = (parties: PartyFieldsFragment[], viewType?: Inbox
     staleTime: 1000 * 60 * 10,
     retry: 3,
     queryFn: () =>
-      graphQLSDK.getAllDialogsForCount({
-        partyURIs: partyIds,
-        ...getQueryVariables(viewType),
-      }),
+      graphQLSDK.getAllDialogsForCount(
+        getQueryVariables({
+          viewType,
+          variables: {
+            partyURIs: partyIds,
+          },
+        }),
+      ),
     enabled: partyIds.length > 0 && partyIds.length <= 20,
     gcTime: 10 * 1000,
     placeholderData: keepPreviousData,
@@ -59,5 +64,6 @@ export const useDialogsCount = (parties: PartyFieldsFragment[], viewType?: Inbox
   return {
     dialogCountsByViewType,
     dialogCountInconclusive: data?.searchDialogs?.hasNextPage === true || data?.searchDialogs?.items === null,
+    dialogCounts: data?.searchDialogs?.items ?? [],
   };
 };
