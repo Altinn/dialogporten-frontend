@@ -3,5 +3,45 @@ query profile {
     updatedAt
     language
     favoriteActors
+    user {
+      userId
+      userUuid
+      userName
+      email
+      isReserved
+
+      party {
+        partyId
+        partyUuid
+        partyTypeName
+        orgNumber
+        ssn
+        unitType
+        name
+        isDeleted
+        onlyHierarchyElementWithNoAccess
+
+        person {
+          ssn
+          name
+          firstName
+          middleName
+          lastName
+          telephoneNumber
+          mobileNumber
+          mailingAddress
+          mailingPostalCode
+          mailingPostalCity
+          addressMunicipalNumber
+          addressMunicipalName
+          addressStreetName
+          addressHouseNumber
+          addressHouseLetter
+          addressPostalCode
+          addressCity
+          dateOfDeath
+        }
+      }
+    }
   }
 }

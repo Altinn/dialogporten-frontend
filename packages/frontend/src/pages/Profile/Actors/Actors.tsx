@@ -9,7 +9,10 @@ export const Actors = () => {
   const [searchValue, setSearchValue] = useState('');
   const [showSubActors, setShowSubActors] = useState(false);
   const [showDeletedActors, setShowDeletedActors] = useState(false);
-  const { favoriteActors } = useProfile();
+  const { favoriteActors, user } = useProfile();
+
+  // TODO: Remove this when we have implemented the new profile API
+  console.info('Got user from Core Platform API: ', user);
 
   const { parties: normalParties, isLoading: isLoadingParties, deletedParties } = useParties();
 

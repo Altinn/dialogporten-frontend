@@ -1,3 +1,5 @@
+import axios from 'axios';
+import config from '../../config.ts';
 import { ProfileRepository } from '../../db.ts';
 import { ProfileTable } from '../../entities.ts';
 
@@ -68,6 +70,46 @@ export const deleteFavoriteActor = async (pid: string, actorId: string) => {
     throw new Error('Failed to delete profile');
   }
   return updatedProfile;
+};
+
+interface Context {
+  session: {
+    get: (key: string) => { access_token: string } | undefined;
+  };
+}
+
+export const getUserFromCore = async (pid: string, context: Context) => {
+  const { platformExchangeTokenEndpointURL, platformProfileAPI_url, ocpApimSubscriptionKey } = config;
+  const token = context.session.get('token');
+  if (!token) {
+    console.error('No token found in session');
+    return [];
+  }
+  const { data: newToken } = await axios.get(platformExchangeTokenEndpointURL, {
+    headers: {
+      Authorization: `Bearer ${token.access_token}`,
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+  });
+  const { data: coreProfileData } = await axios
+    .get(`${platformProfileAPI_url}users/current`, {
+      headers: {
+        Authorization: `Bearer ${newToken}`,
+        'Content-Type': 'application/json',
+        'Ocp-Apim-Subscription-Key': ocpApimSubscriptionKey,
+        Accept: 'application/json',
+      },
+    })
+    .catch((error) => {
+      console.error('Error fetching core profile data:', error);
+      throw new Error('Failed to fetch core profile data');
+    });
+  if (!coreProfileData) {
+    console.error('No core profile data found');
+    return [];
+  }
+  return coreProfileData;
 };
 
 export const updateLanguage = async (pid: string, language: string) => {
