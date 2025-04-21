@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import type { ProfileQuery } from 'bff-types-generated';
+import type { ProfileQuery, User } from 'bff-types-generated';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { profile } from '../api/queries.ts';
@@ -19,11 +19,11 @@ export const useProfile = () => {
       void i18n.changeLanguage(language);
     }
   }, [language]);
-
   return {
     profile: data?.profile,
     isLoading,
     language,
+    user: data?.profile?.user as User,
     favoriteActors: data?.profile?.favoriteActors,
   };
 };

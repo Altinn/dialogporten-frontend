@@ -1,6 +1,6 @@
 import { list, objectType } from 'nexus';
 import { SavedSearchRepository } from '../../db.ts';
-import { getOrCreateProfile } from '../functions/profile.ts';
+import { getOrCreateProfile, getUserFromCore } from '../functions/profile.ts';
 import { getOrganizationsFromRedis } from './organization.ts';
 
 export const Query = objectType({
@@ -12,15 +12,16 @@ export const Query = objectType({
         const pid = ctx.session.get('pid');
         const locale = ctx.session.get('locale');
         const profile = await getOrCreateProfile(pid, locale);
+        const user = await getUserFromCore(pid, ctx);
         const { favoriteActors, language, updatedAt } = profile;
         return {
           language,
           updatedAt,
           favoriteActors,
+          user,
         };
       },
     });
-
     t.field('organizations', {
       type: list('Organization'),
       resolve: async () => {
