@@ -10,6 +10,9 @@ param subnetId string = ''
 @description('The name of the Application Insights workspace associated with the container app environment')
 param appInsightWorkspaceName string
 
+@description('Whether to enable zone redundancy for the container app environment')
+param zoneRedundancyEnabled bool = false
+
 @description('The tags to apply to the resources')
 param tags object
 
@@ -32,10 +35,10 @@ resource containerAppEnv 'Microsoft.App/managedEnvironments@2024-10-02-preview' 
         sharedKey: appInsightsWorkspace.listKeys().primarySharedKey
       }
     }
-    zoneRedundant: true
-    availabilityZones: [
+    zoneRedundant: zoneRedundancyEnabled
+    availabilityZones: zoneRedundancyEnabled ? [
       '1', '2','3'
-    ]
+    ] : null
   }
   tags: tags
 }
