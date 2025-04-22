@@ -25,6 +25,9 @@ param sourceKeyVaultSshJumperSshPublicKey string
 @description('The object ID of the group to assign the Admin Login role for SSH Jumper')
 param sshJumperAdminLoginGroupObjectId string
 
+@description('Whether to enable zone redundancy for the container app environment')
+param containerAppEnvZoneRedundancyEnabled bool = false
+
 import { Sku as RedisSku } from '../modules/redis/main.bicep'
 param redisSku RedisSku
 @minLength(1)
@@ -126,6 +129,7 @@ module containerAppEnv '../modules/containerAppEnv/main.bicep' = {
     location: location
     appInsightWorkspaceName: appInsights.outputs.appInsightsWorkspaceName
     subnetId: vnet.outputs.containerAppEnvironmentSubnetId
+    zoneRedundancyEnabled: containerAppEnvZoneRedundancyEnabled
     tags: tags
   }
 }
