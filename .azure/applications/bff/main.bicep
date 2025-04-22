@@ -16,6 +16,12 @@ param oicdUrl string
 param minReplicas int
 param maxReplicas int
 
+param platformExchangeTokenEndpointUrl string
+param platformProfileApiUrl string
+
+@secure()
+param ocPApimSubscriptionKey string
+
 @description('Controls whether GraphiQL interface is enabled. Should be disabled in production.')
 @allowed([
   'false'
@@ -153,6 +159,18 @@ var containerAppEnvVars = concat([
   {
     name: 'ENABLE_GRAPHIQL'
     value: graphiQLEnabled
+  }
+  {
+    name: 'PLATFORM_EXCHANGE_TOKEN_ENDPOINT_URL'
+    value: platformExchangeTokenEndpointUrl
+  }
+  {
+    name: 'PLATFORM_PROFILE_API_URL'
+    value: platformProfileApiUrl
+  }
+  {
+    name: 'OCP_APIM_SUBSCRIPTION_KEY'
+    value: ocPApimSubscriptionKey
   }
 ], additionalEnvironmentVariables)
 
