@@ -142,6 +142,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
           items={groupedDialogs}
           groups={groups}
           sortGroupBy={([aKey], [bKey]) => (groups[bKey]?.orderIndex ?? 0) - (groups[aKey]?.orderIndex ?? 0)}
+          isLoading={isLoading}
         />
         {hasNextPage && (
           <DsButton aria-label={t('dialog.aria.fetch_more')} onClick={fetchNextPage} variant="tertiary">

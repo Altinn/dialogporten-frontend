@@ -1,5 +1,4 @@
 import {
-  Article,
   type DialogActionButtonProps,
   DialogActions,
   DialogAttachments,
@@ -8,6 +7,7 @@ import {
   DialogHeader,
   DialogHistory,
   DialogTabs,
+  Section,
 } from '@altinn/altinn-components';
 import type { DialogHistorySegmentProps } from '@altinn/altinn-components/dist/types/lib/components';
 import { DialogStatus } from 'bff-types-generated';
@@ -199,7 +199,7 @@ export const DialogDetails = ({ dialog, isLoading }: DialogDetailsProps): ReactE
 
   if (isLoading) {
     return (
-      <Article padding={6} spacing={6}>
+      <Section as="article" padding={6} spacing={6}>
         <DialogHeader
           loading
           dueAt={new Date().toISOString()}
@@ -214,18 +214,18 @@ export const DialogDetails = ({ dialog, isLoading }: DialogDetailsProps): ReactE
           updatedAtLabel={format(new Date(), 'do MMMM yyyy HH.mm').toString()}
           loading
         />
-      </Article>
+      </Section>
     );
   }
 
   if (!dialog) {
     return (
-      <Article padding={6} spacing={6}>
+      <Section as="article" padding={6} spacing={6}>
         <header className={styles.header} data-id="dialog-header">
           <h1 className={styles.title}>{t('error.dialog.not_found')}</h1>
         </header>
         <p className={styles.summary}>{t('dialog.error_message')}</p>
-      </Article>
+      </Section>
     );
   }
 
@@ -250,7 +250,7 @@ export const DialogDetails = ({ dialog, isLoading }: DialogDetailsProps): ReactE
   }));
 
   return (
-    <Article padding={6} spacing={6}>
+    <Section as="article" padding={6} spacing={6}>
       <DialogHeader
         dueAt={dialog.dueAt}
         dueAtLabel={dueAtLabel}
@@ -286,6 +286,6 @@ export const DialogDetails = ({ dialog, isLoading }: DialogDetailsProps): ReactE
         <AdditionalInfoContent mediaType={dialog.additionalInfo?.mediaType} value={dialog.additionalInfo?.value} />
       )}
       {activeTab === 'activities' && <DialogHistory items={activityHistoryItems} />}
-    </Article>
+    </Section>
   );
 };
