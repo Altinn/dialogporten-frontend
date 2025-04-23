@@ -17,6 +17,7 @@ query getAllDialogsForParties(
       orderBy: { createdAt: null, updatedAt: DESC, dueAt: null }
       systemLabel: $label
       limit: $limit
+      excludeApiOnly: true
     }
   ) {
     items {
@@ -42,6 +43,7 @@ query getAllDialogsForCount(
       status: $status
       orderBy: { createdAt: null, updatedAt: DESC, dueAt: null }
       systemLabel: $label
+      excludeApiOnly: true
     }
   ) {
     items {
@@ -59,6 +61,7 @@ query getSearchAutocompleteDialogs($partyURIs: [String!], $search: String, $org:
       org: $org
       status: $status
       orderBy: { createdAt: null, updatedAt: DESC, dueAt: null }
+      excludeApiOnly: true
     }
   ) {
     items {
