@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.27.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.26.0...v1.27.0) (2025-04-23)
+
+
+### Features
+
+* Added fetching of profile data from Core platform API ([346ea27](https://github.com/Altinn/dialogporten-frontend/commit/346ea27839935eae203630efd20e2f5e1d2a5b6c))
+* **infra:** enable HA for container app envs ([#2019](https://github.com/Altinn/dialogporten-frontend/issues/2019)) ([989a5d1](https://github.com/Altinn/dialogporten-frontend/commit/989a5d1e97012d471ffde21f50c88d85e0f237a9))
+
+
+### Bug Fixes
+
+* add isLoading to dialogList ([#2062](https://github.com/Altinn/dialogporten-frontend/issues/2062)) ([66d2fb0](https://github.com/Altinn/dialogporten-frontend/commit/66d2fb0a91d69f0c8822beb35a37b564d9e220a5))
+* **infra:** ensure only relevant envs has CAE HA ([#2066](https://github.com/Altinn/dialogporten-frontend/issues/2066)) ([bb76c60](https://github.com/Altinn/dialogporten-frontend/commit/bb76c60355fab886f0dc89890acbf3f7ac524eb0))
+* **infra:** ensure vm version is supported by auto vm patching ([#2064](https://github.com/Altinn/dialogporten-frontend/issues/2064)) ([d27e869](https://github.com/Altinn/dialogporten-frontend/commit/d27e86941f00e12e8d023e3cf5ca53344f866767))
+* **infra:** upgrade os version for virtual machines ([#2061](https://github.com/Altinn/dialogporten-frontend/issues/2061)) ([05903ad](https://github.com/Altinn/dialogporten-frontend/commit/05903ad0705b596be9fc34a7e9d64df3eb53f5fc))
+
 ## [1.26.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.25.0...v1.26.0) (2025-04-14)
 
 
