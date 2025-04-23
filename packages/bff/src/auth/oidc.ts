@@ -222,7 +222,7 @@ const redirectToAuthorizationURI = async (request: FastifyRequest, reply: Fastif
 
   const parameters: Record<string, string> = {
     redirect_uri: `${hostname}/api/cb`,
-    scope: 'digdir:dialogporten.noconsent openid altinn:profiles.read',
+    scope: 'digdir:dialogporten.noconsent openid altinn:portal/enduser',
     state,
     client_id,
     response_type: 'code',
