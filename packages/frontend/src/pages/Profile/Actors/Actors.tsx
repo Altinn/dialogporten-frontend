@@ -1,7 +1,9 @@
-import { DsAlert, DsChip, ListBase, PageNav, Toolbar, Typography } from '@altinn/altinn-components';
+import { DsAlert, DsChip, ListBase, PageBase, PageNav, Toolbar, Typography } from '@altinn/altinn-components';
+import { t } from 'i18next';
 import { useState } from 'react';
 import { useParties } from '../../../api/hooks/useParties';
 import { useProfile } from '../../../profile';
+import { PageRoutes } from '../../routes';
 import { PartyListItem } from './ActorListItem';
 import styles from './actors.module.css';
 
@@ -27,17 +29,20 @@ export const Actors = () => {
   const favoriteParties = parties.filter((party) => favoriteActors?.find((actor) => actor?.includes(party.party)));
   const nonFavoriteParties = parties.filter((party) => !favoriteActors?.find((actor) => actor?.includes(party.party)));
   return (
-    <div>
+    <PageBase>
       <PageNav
-        backButton={{
-          label: 'Tilbake',
-        }}
         breadcrumbs={[
           {
-            label: 'Profilinnstillinger',
+            label: t('word.frontpage'),
+            href: PageRoutes.inbox,
           },
           {
-            label: 'Mine aktører',
+            label: t('sidebar.profile'),
+            href: PageRoutes.profile,
+          },
+          {
+            label: t('sidebar.profile.actors'),
+            href: PageRoutes.actors,
           },
         ]}
       />
@@ -159,6 +164,6 @@ export const Actors = () => {
           </ListBase>
         </div>
       )}
-    </div>
+    </PageBase>
   );
 };

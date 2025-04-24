@@ -86,6 +86,7 @@ export const PageLayout: React.FC = () => {
   useProfile();
 
   const location = useLocation();
+  const isProfile = location.pathname.includes(PageRoutes.profile);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: runs synchronously after DOM mutations but before the browser paints.
   useLayoutEffect(() => {
@@ -163,9 +164,11 @@ export const PageLayout: React.FC = () => {
     },
   };
 
+  const color = isProfile ? 'neutral' : selectedProfile;
+
   const layoutProps: LayoutProps = {
     theme: 'subtle',
-    color: selectedProfile,
+    color,
     header: headerProps,
     footer,
     sidebar: {
@@ -178,7 +181,7 @@ export const PageLayout: React.FC = () => {
   return (
     <>
       <BetaBanner />
-      <Layout color={selectedProfile} {...layoutProps}>
+      <Layout {...layoutProps}>
         <Outlet />
         <Snackbar />
       </Layout>
