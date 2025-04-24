@@ -1,9 +1,13 @@
 import type { BadgeProps, MenuItemProps } from '@altinn/altinn-components';
 import {
   ArchiveIcon,
+  BellIcon,
   BookmarkIcon,
+  ClockDashedIcon,
+  CogIcon,
   DocPencilIcon,
   FileCheckmarkIcon,
+  HeartIcon,
   InboxFillIcon,
   MenuGridIcon,
   PersonChatIcon,
@@ -97,7 +101,7 @@ export const useGlobalMenu = ({
       }),
     },
   ];
-  const sidebar: MenuItemProps[] = [
+  const sidebarInbox: MenuItemProps[] = [
     {
       id: '1',
       groupId: 'global',
@@ -170,6 +174,65 @@ export const useGlobalMenu = ({
       ],
     },
   ];
+
+  const profileSidebar: MenuItemProps[] = [
+    {
+      id: '1',
+      groupId: 'global',
+      size: 'lg',
+      icon: { svgElement: InboxFillIcon, theme: 'base' },
+      title: t('sidebar.profile'),
+      selected: pathname === PageRoutes.profile,
+      expanded: true,
+      as: createMenuItemComponent({
+        to: PageRoutes.profile + globalSearchQueryParams,
+      }),
+      items: [
+        {
+          id: '2',
+          groupId: '2',
+          icon: { svgElement: HeartIcon, theme: 'default' },
+          title: t('sidebar.profile.actors'),
+          selected: pathname === PageRoutes.actors,
+          as: createMenuItemComponent({
+            to: PageRoutes.actors + globalSearchQueryParams,
+          }),
+        },
+        {
+          id: '3',
+          groupId: '2',
+          icon: { svgElement: BellIcon, theme: 'default' },
+          title: t('sidebar.profile.notifications'),
+          selected: pathname === PageRoutes.notifications,
+          as: createMenuItemComponent({
+            to: PageRoutes.notifications + globalSearchQueryParams,
+          }),
+        },
+        {
+          id: '4',
+          groupId: '3',
+          icon: { svgElement: CogIcon, theme: 'default' },
+          title: t('sidebar.profile.settings'),
+          selected: pathname === PageRoutes.settings,
+          as: createMenuItemComponent({
+            to: PageRoutes.settings + globalSearchQueryParams,
+          }),
+        },
+        {
+          id: '5',
+          groupId: '4',
+          icon: { svgElement: ClockDashedIcon, theme: 'default' },
+          title: t('sidebar.profile.activities'),
+          selected: pathname === PageRoutes.activities,
+          as: createMenuItemComponent({
+            to: PageRoutes.activities + globalSearchQueryParams,
+          }),
+        },
+      ],
+    },
+  ];
+
+  const sidebar = pathname.includes(PageRoutes.profile) ? profileSidebar : sidebarInbox;
 
   const global: MenuItemProps[] = [
     {

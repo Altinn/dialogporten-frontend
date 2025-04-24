@@ -5,6 +5,10 @@ export enum PageRoutes {
   drafts = '/drafts',
   savedSearches = '/saved-searches',
   archive = '/archive',
-  actors = '/actors',
   bin = '/bin',
+  profile = '/profile',
+  actors = '/profile/actors',
+  notifications = '/profile/notifications',
+  settings = '/profile/settings',
+  activities = '/profile/activities',
 }

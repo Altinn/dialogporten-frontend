@@ -3,7 +3,11 @@ import { ProtectedPageLayout } from './components/PageLayout/PageLayout.tsx';
 import { DialogDetailsPage } from './pages/DialogDetailsPage';
 import { Inbox } from './pages/Inbox';
 import { Logout } from './pages/LogoutPage';
+import { Activities } from './pages/Profile/Activities/Activities.tsx';
 import { Actors } from './pages/Profile/Actors/Actors.tsx';
+import { Notifications } from './pages/Profile/Notifications/Notifications.tsx';
+import { Profile } from './pages/Profile/Profile.tsx';
+import { Settings } from './pages/Profile/Settings/Settings.tsx';
 import { SavedSearchesPage } from './pages/SavedSearches';
 import { PageRoutes } from './pages/routes.ts';
 
@@ -22,6 +26,11 @@ function App() {
           <Route path={PageRoutes.bin} element={<Inbox key="bin" viewType={'bin'} />} />
           <Route path={PageRoutes.inboxItem} element={<DialogDetailsPage />} />
           <Route path={PageRoutes.savedSearches} element={<SavedSearchesPage />} />
+          <Route path={PageRoutes.profile} element={<Profile />} />
+          <Route path={PageRoutes.actors} element={<Actors />} />
+          <Route path={PageRoutes.notifications} element={<Notifications />} />
+          <Route path={PageRoutes.settings} element={<Settings />} />
+          <Route path={PageRoutes.activities} element={<Activities />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Route>
         <Route path="/loggedout" element={<Logout />} />
