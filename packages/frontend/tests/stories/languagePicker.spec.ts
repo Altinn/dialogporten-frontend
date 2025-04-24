@@ -1,13 +1,20 @@
-import { expect, test } from '@playwright/test';
 import { defaultAppURL } from '../';
+import { expect, test } from '../fixtures';
 
 test.describe('Language picker', () => {
-  test('Check language picker functionality and query', async ({ page }) => {
+  test('Check language picker functionality and query', async ({ page, isMobile }) => {
     await page.goto(defaultAppURL);
 
     await expect(page.getByTestId('searchbar-input')).toHaveAttribute('placeholder', 'Søk');
     await expect(page.getByRole('button', { name: 'add' })).toHaveText('Legg til');
-    await expect(page.getByRole('link', { name: 'Lagrede søk' })).toBeVisible();
+
+    if (isMobile) {
+      await page.getByRole('button', { name: 'Meny' }).click();
+      await expect(page.getByRole('link', { name: 'Lagrede søk' })).toBeVisible();
+      await page.getByRole('button', { name: 'Meny' }).click();
+    } else {
+      await expect(page.getByRole('link', { name: 'Lagrede søk' })).toBeVisible();
+    }
 
     await page.getByRole('button', { name: 'Open language-switcher' }).click();
     await expect(page.getByRole('heading', { name: 'Språk/language' })).toBeVisible();
@@ -27,7 +34,14 @@ test.describe('Language picker', () => {
 
     await expect(page.getByTestId('searchbar-input')).toHaveAttribute('placeholder', 'Search');
     await expect(page.getByRole('button', { name: 'add' })).toHaveText('Add filter');
-    await expect(page.getByRole('link', { name: 'Lagrede søk' })).not.toBeVisible();
-    await expect(page.getByRole('link', { name: 'Saved Searches' })).toBeVisible();
+
+    if (isMobile) {
+      await page.getByRole('button', { name: 'Menu' }).click();
+      await expect(page.getByRole('link', { name: 'Lagrede søk' })).not.toBeVisible();
+      await expect(page.getByRole('link', { name: 'Saved Searches' })).toBeVisible();
+    } else {
+      await expect(page.getByRole('link', { name: 'Lagrede søk' })).not.toBeVisible();
+      await expect(page.getByRole('link', { name: 'Saved Searches' })).toBeVisible();
+    }
   });
 });

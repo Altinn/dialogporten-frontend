@@ -49,6 +49,97 @@ make pull (optional)
 make dev
 ```
 
+## Playwright Testing Guidelines
+
+This describes how to work with Playwright tests in `/packages/frontend`.
+
+## Installation
+
+After installing project dependencies, ensure Playwright browsers are installed:
+
+```bash
+pnpm install:browsers
+```
+
+## Running Tests
+
+Run all tests:
+
+```bash
+pnpm test:playwright
+```
+
+Run code test generator (use app.localhost/?mock=true to access mock data):
+
+```bash
+pnpm codegen:playwright
+```
+
+### Common Flags
+
+| Flag        | Description                                   |
+|-------------|-----------------------------------------------|
+| `--debug`   | Runs tests in debug mode.                     |
+| `--ui`      | Opens Playwright’s test runner UI.            |
+| `--headed`  | Runs tests with a visible browser window.     |
+
+Example:
+
+```bash
+pnpm test:playwright --debug
+```
+
+### Running a Single Test
+
+```bash
+pnpm test:playwright -g 'myStory.spec.ts'
+```
+
+## Mock Data
+
+Mock data is located under `src/mocks/data`.
+
+- **Base:** Default dataset
+- **Stories:** Specific datasets used via `playwrightId`
+
+To run the app with mocks:
+
+```
+http://app.localhost/?mock=true
+```
+
+To specify a dataset:
+
+```
+http://app.localhost/?mock=true&playwrightId=<folder-name>
+```
+
+## Mobile Testing
+
+Run tests using a mobile viewport (iPhone 13):
+
+```bash
+pnpm test:playwright:mobile
+```
+
+The same test files are reused for mobile and desktop. Conditional logic within tests can detect the viewport.
+
+## Accessibility Tests
+
+Run accessibility tests:
+
+```bash
+pnpm test:accessibility
+```
+
+Accessibility logic resides in `axe.test.ts`. You can reuse `createHtmlReport` for reporting.
+
+## File Structure
+
+- Tests: `packages/frontend/tests`
+- Playwright config: `packages/frontend/playwright.config.ts`
+
+
 ## Documentation
 
 Our project documentation is built using [Docusaurus](https://docusaurus.io/), a modern static website generator. The documentation is located in the `packages/docs/` directory.

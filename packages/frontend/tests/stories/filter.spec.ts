@@ -1,6 +1,6 @@
-import { expect, test } from '@playwright/test';
 import { defaultAppURL } from '../';
 import { PageRoutes } from '../../src/pages/routes';
+import { expect, test } from '../fixtures';
 import { getSidebarMenuItem } from './common';
 
 test.describe('Testing filter bar', () => {
@@ -37,11 +37,17 @@ test.describe('Testing filter bar', () => {
     await expect(page.getByRole('link', { name: 'Søknad om personlig bilskilt' })).toBeVisible();
   });
 
-  test('should remove filters when changing view types', async ({ page }) => {
+  test('should remove filters when changing view types', async ({ page, isMobile }) => {
     expect(new URL(page.url()).searchParams.get('sender')).toEqual('Skatteetaten');
     await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).toBeVisible();
 
-    await getSidebarMenuItem(page, PageRoutes.drafts).click();
+    if (isMobile) {
+      await page.getByRole('button', { name: 'Meny' }).click();
+      await page.getByRole('link', { name: 'Utkast' }).click();
+      await page.getByRole('button', { name: 'Meny' }).click();
+    } else {
+      await getSidebarMenuItem(page, PageRoutes.drafts).click();
+    }
     expect(new URL(page.url()).searchParams.has('sender')).toEqual(false);
   });
 
