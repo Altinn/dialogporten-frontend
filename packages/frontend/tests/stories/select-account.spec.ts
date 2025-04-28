@@ -1,12 +1,19 @@
-import { expect, test } from '@playwright/test';
 import { PageRoutes } from '../../src/pages/routes';
+import { expect, test } from '../fixtures';
 import { appURLDrafts, appURLInbox, defaultAppURL, matchPathName } from '../index';
 import { getSidebarMenuItem } from './common';
 
-test('should navigate to inbox when account is chosen from global menu', async ({ page }) => {
+test('should navigate to inbox when account is chosen from global menu', async ({ page, isMobile }) => {
   await page.goto(defaultAppURL);
   /* click navigate to draft page */
-  await getSidebarMenuItem(page, PageRoutes.drafts).click();
+  if (isMobile) {
+    await page.getByRole('button', { name: 'Meny' }).click();
+    await page.getByRole('link', { name: 'Utkast' }).click();
+    await page.getByRole('button', { name: 'Meny' }).click();
+  } else {
+    await getSidebarMenuItem(page, PageRoutes.drafts).click();
+  }
+
   expect(page.url()).toEqual(appURLDrafts);
   /* chose all organizations from the global menu */
   await page.getByRole('button', { name: 'Meny' }).click();

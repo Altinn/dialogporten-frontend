@@ -1,5 +1,6 @@
-import { type Page, expect, test } from '@playwright/test';
+import type { Page } from '@playwright/test';
 import { appUrlWithPlaywrightId } from '../';
+import { expect, test } from '../fixtures';
 
 test.describe('Testing Sender Name', () => {
   test.beforeEach(async ({ page }: { page: Page }) => {

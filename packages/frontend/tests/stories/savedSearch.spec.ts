@@ -1,10 +1,10 @@
-import { expect, test } from '@playwright/test';
 import { defaultAppURL } from '../';
 import { PageRoutes } from '../../src/pages/routes';
+import { expect, test } from '../fixtures';
 import { expectIsCompanyPage, getSidebarMenuItem, getSidebarMenuItemBadge, performSearch } from './common';
 
 test.describe('Saved search', () => {
-  test('Create and delete saved search', async ({ page }) => {
+  test('Create and delete saved search', async ({ page, isMobile }) => {
     await page.goto(defaultAppURL);
     const toolbarArea = page.getByTestId('inbox-toolbar');
     await toolbarArea.getByRole('button', { name: 'add' }).click();
@@ -12,16 +12,26 @@ test.describe('Saved search', () => {
     await toolbarArea.getByText('Velg avsender').locator('visible=true').click();
     await toolbarArea.getByLabel('Oslo kommune').locator('visible=true').check();
 
-    await page.mouse.click(200, 0, { button: 'left' });
+    if (isMobile) {
+      await page.getByRole('button', { name: 'Vis alle resultater' }).click();
+    } else {
+      await page.mouse.click(200, 0, { button: 'left' });
+    }
 
     await page.getByRole('button', { name: 'Lagre søk' }).click();
     await expect(page.getByText('Søk lagret')).toBeVisible();
 
-    await expect(getSidebarMenuItemBadge(page, PageRoutes.savedSearches)).toContainText('1');
+    if (isMobile) {
+      await page.getByRole('button', { name: 'Meny' }).click();
+      await expect(getSidebarMenuItemBadge(page, PageRoutes.savedSearches)).toContainText('1');
+      await page.getByRole('link', { name: 'Lagrede søk' }).click();
+      await page.getByRole('button', { name: 'Meny' }).click();
+    } else {
+      await expect(getSidebarMenuItemBadge(page, PageRoutes.savedSearches)).toContainText('1');
+      await getSidebarMenuItem(page, PageRoutes.savedSearches).click();
+    }
 
-    await getSidebarMenuItem(page, PageRoutes.savedSearches).click();
     await expect(page.getByRole('main')).toContainText('1 lagret søk');
-
     await expect(page.locator('header').filter({ hasText: 'Oslo kommune' })).toBeVisible();
     await page.locator('header').filter({ hasText: 'Oslo kommune' }).getByRole('button').click();
 
@@ -46,7 +56,7 @@ test.describe('Saved search', () => {
     await expect(page.getByRole('button', { name: 'Lagre søk' })).toBeVisible();
   });
 
-  test('Saved search link shows correct result', async ({ page }) => {
+  test('Saved search link shows correct result', async ({ page, isMobile }) => {
     await page.goto(defaultAppURL);
 
     await page.getByRole('button', { name: 'Test Testesen' }).click();
@@ -59,7 +69,13 @@ test.describe('Saved search', () => {
 
     await page.getByRole('button', { name: 'Lagre søk' }).click();
 
-    await getSidebarMenuItem(page, PageRoutes.savedSearches).click();
+    if (isMobile) {
+      await page.getByRole('button', { name: 'Meny' }).click();
+      await page.getByRole('link', { name: 'Lagrede søk' }).click();
+      await page.getByRole('button', { name: 'Meny' }).click();
+    } else {
+      await getSidebarMenuItem(page, PageRoutes.savedSearches).click();
+    }
 
     await expect(page.getByRole('link', { name: 'Gi søket et navn' })).toBeVisible();
 

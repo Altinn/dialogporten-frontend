@@ -1,6 +1,7 @@
-import { type Page, expect, test } from '@playwright/test';
-import { appUrlWithPlaywrightId, defaultAppURL } from '..';
+import type { Page } from '@playwright/test';
+import { appUrlWithPlaywrightId } from '..';
 import { MOCKED_SYS_DATE } from '../../src/mocks/data/stories/date-2024/dialogs';
+import { expect, test } from '../fixtures';
 
 test.describe('Date filter, system date set 2024', () => {
   test.beforeEach(async ({ page }: { page: Page }) => {

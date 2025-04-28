@@ -1,5 +1,6 @@
-import { type Page, expect, test } from '@playwright/test';
+import type { Page } from '@playwright/test';
 import { appUrlWithPlaywrightId, defaultAppURL } from '..';
+import { expect, test } from '../fixtures';
 
 test.describe('Search suggests with senders', () => {
   test.beforeEach(async ({ page }: { page: Page }) => {

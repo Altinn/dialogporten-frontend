@@ -1,5 +1,5 @@
-import { expect, test } from '@playwright/test';
 import { appUrlWithPlaywrightId } from '../';
+import { expect, test } from '../fixtures';
 
 test.describe('Transmissions and dialog history', () => {
   test('basic navigation', async ({ page }) => {

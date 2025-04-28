@@ -33,6 +33,10 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
     {
+      name: 'playwright-mobile',
+      use: { ...devices['iPhone 13'] },
+    },
+    {
       name: 'accessibility',
       testDir: './tests/accessibility',
       use: { ...devices['Desktop Chrome'] },

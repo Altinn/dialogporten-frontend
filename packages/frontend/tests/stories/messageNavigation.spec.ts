@@ -1,6 +1,6 @@
-import { expect, test } from '@playwright/test';
 import { appUrlWithPlaywrightId } from '../';
 import { PageRoutes } from '../../src/pages/routes';
+import { expect, test } from '../fixtures';
 import { expectIsCompanyPage, expectIsPersonPage, getSidebarMenuItem } from './common';
 
 test.describe('Message navigation', () => {
@@ -38,7 +38,7 @@ test.describe('Message navigation', () => {
     await expectIsCompanyPage(page);
   });
 
-  test('Back button navigates to previous page the message has been opened from', async ({ page }) => {
+  test('Back button navigates to previous page the message has been opened from', async ({ page, isMobile }) => {
     await page.goto(pageWithMockOrganizations);
 
     await expect(page.locator('h2').filter({ hasText: /^Skatten din for 2022$/ })).toBeVisible();
@@ -46,7 +46,14 @@ test.describe('Message navigation', () => {
     await page.getByRole('button', { name: 'Flytt til papirkurv' }).click();
     await expect(page.getByText('Flyttet til papirkurv')).toBeVisible();
 
-    await getSidebarMenuItem(page, PageRoutes.bin).click();
+    if (isMobile) {
+      await page.getByRole('button', { name: 'Meny' }).click();
+      await page.getByRole('link', { name: 'Papirkurv' }).click();
+      await page.getByRole('button', { name: 'Meny' }).click();
+    } else {
+      await getSidebarMenuItem(page, PageRoutes.bin).click();
+    }
+
     await page.getByRole('link', { name: 'Skatten din for 2022' }).click();
     await page.getByRole('link', { name: 'Tilbake' }).click();
     await expect(page.getByRole('heading', { name: 'i papirkurv' })).toBeVisible();
