@@ -53,6 +53,12 @@ jobs:
               - '.azure/infrastructure/*'
               - '.azure/modules/**/*'
 
+      - name: Log infrastructure changes
+        run: |
+          echo "Infrastructure changes detected: ${{ steps.filter-infra.outputs.infrastructure_any_modified }}"
+          echo "Changed files:"
+          echo "${{ steps.filter-infra.outputs.infrastructure_modified_files }}"
+
       - uses: tj-actions/changed-files@2f7c5bfce28377bc069a65ba478de0a74aa0ca32 # v46.0.1
         id: filter-apps
         with:
@@ -71,3 +77,15 @@ jobs:
             nodeLogger:
               - '.github/**/*'
               - 'packages/node-logger/**/*'
+
+      - name: Log application changes
+        run: |
+          echo "Application changes detected: ${{ steps.filter-apps.outputs.applications_any_modified }}"
+          echo "Migration changes detected: ${{ steps.filter-apps.outputs.migrations_any_modified }}"
+          echo "Node Logger changes detected: ${{ steps.filter-apps.outputs.nodeLogger_any_modified }}"
+          echo "Changed application files:"
+          echo "${{ steps.filter-apps.outputs.applications_modified_files }}"
+          echo "Changed migration files:"
+          echo "${{ steps.filter-apps.outputs.migrations_modified_files }}"
+          echo "Changed node logger files:"
+          echo "${{ steps.filter-apps.outputs.nodeLogger_modified_files }}"
