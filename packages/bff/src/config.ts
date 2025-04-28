@@ -31,7 +31,7 @@ const envVariables = z.object({
   PLATFORM_PROFILE_API_URL: z.string().default(''),
   OCP_APIM_SUBSCRIPTION_KEY: z.string().default(''),
   MIGRATION_RUN: z.preprocess(stringToBoolean, z.boolean().default(false)),
-  DIALOGPORTEN_URL: z.string().default('https://altinn-dev-api.azure-api.net/dialogporten/graphql'),
+  DIALOGPORTEN_URL: z.string().default('https://altinn-tt02-api.azure-api.net/dialogporten/graphql'),
   CONTAINER_APP_REPLICA_NAME: z.string().default(''),
   ENABLE_GRAPHIQL: z.preprocess(stringToBoolean, z.boolean().default(true)),
 });
