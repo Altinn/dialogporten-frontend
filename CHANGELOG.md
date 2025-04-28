@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.28.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.27.0...v1.28.0) (2025-04-28)
+
+
+### Features
+
+* Added routes and skeleton for further development of profile pages ([d1c19a8](https://github.com/Altinn/dialogporten-frontend/commit/d1c19a88bc2ee82c9bfddbeb98e32a6e01bd6b4e))
+
 ## [1.27.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.26.0...v1.27.0) (2025-04-23)
 
 
