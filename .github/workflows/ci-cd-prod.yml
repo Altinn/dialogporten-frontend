@@ -41,8 +41,8 @@ jobs:
     needs: [get-versions-from-github]
     uses: ./.github/workflows/workflow-check-for-changes.yml
     with:
-      infra_base_sha: ${{ needs.get-versions-from-github.outputs.infra_base_sha }}
-      apps_base_sha: ${{ needs.get-versions-from-github.outputs.apps_base_sha }}
+      infra_base_sha: ${{ needs.get-versions-from-github.outputs.infra_version_sha }}
+      apps_base_sha: ${{ needs.get-versions-from-github.outputs.apps_version_sha }}
 
   deploy-infrastructure:
     name: Deploy infrastructure to prod

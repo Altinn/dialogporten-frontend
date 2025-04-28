@@ -39,6 +39,7 @@ jobs:
         if: vars.LATEST_DEPLOYED_INFRA_VERSION != ''
         run: |
           SHA=$(git rev-list -n 1 v${{ vars.LATEST_DEPLOYED_INFRA_VERSION }})
+          echo "Getting SHA for infra version v${{ vars.LATEST_DEPLOYED_INFRA_VERSION }}: $SHA"
           echo "sha=$SHA" >> $GITHUB_OUTPUT
 
       - name: Get Apps SHA
@@ -46,4 +47,5 @@ jobs:
         if: vars.LATEST_DEPLOYED_APPS_VERSION != ''
         run: |
           SHA=$(git rev-list -n 1 v${{ vars.LATEST_DEPLOYED_APPS_VERSION }})
+          echo "Getting SHA for apps version v${{ vars.LATEST_DEPLOYED_APPS_VERSION }}: $SHA"
           echo "sha=$SHA" >> $GITHUB_OUTPUT
