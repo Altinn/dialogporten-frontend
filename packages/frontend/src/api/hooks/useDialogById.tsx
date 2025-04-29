@@ -155,8 +155,8 @@ export function mapDialogToToInboxItem(
   const summaryObj = item?.content?.summary?.value;
   const mainContentReference = item?.content?.mainContentReference;
   const endUserParty = parties?.find((party) => party.isCurrentEndUser);
-  const dialogReceiverParty = parties?.find((party) => party.party === item.party);
-  const actualReceiverParty = dialogReceiverParty ?? endUserParty;
+  const dialogRecipientParty = parties?.find((party) => party.party === item.party);
+  const actualRecipientParty = dialogRecipientParty ?? endUserParty;
   const serviceOwner = getOrganization(organizations || [], item.org, 'nb');
   const senderName = item.content.senderName?.value;
   const { seenByLabel } = getSeenByLabel(item.seenSinceLastUpdate, t);
@@ -173,8 +173,8 @@ export function mapDialogToToInboxItem(
       imageUrlAlt: t('dialog.imageAltURL', { companyName: getPreferredPropertyByLocale(senderName)?.value }),
     },
     receiver: {
-      name: actualReceiverParty?.name ?? '',
-      type: actualReceiverParty?.partyType === 'Organization' ? 'company' : 'person',
+      name: actualRecipientParty?.name ?? '',
+      type: actualRecipientParty?.partyType === 'Organization' ? 'company' : 'person',
     },
     additionalInfo: {
       value: getPreferredPropertyByLocale(additionalInfoObj)?.value ?? '',

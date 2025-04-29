@@ -8,13 +8,13 @@ export interface InboxItemInput {
   title: string;
   summary: string;
   sender: AvatarProps;
-  receiver: AvatarProps;
+  recipient: AvatarProps;
   createdAt: string;
   updatedAt: string;
   status: DialogStatus;
   isSeenByEndUser: boolean;
   label: SystemLabel;
-  org?: string;
+  org: string;
   guiAttachmentCount: number;
   seenByOthersCount: number;
   seenByLabel?: string;

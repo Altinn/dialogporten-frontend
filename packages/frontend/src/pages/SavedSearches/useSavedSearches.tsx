@@ -13,15 +13,18 @@ import {
   type SavedSearchesFieldsFragment,
   type SavedSearchesQuery,
   type SearchDataValueFilter,
+  SystemLabel,
 } from 'bff-types-generated';
 import { type ChangeEvent, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps } from 'react-router-dom';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { createSavedSearch, deleteSavedSearch, fetchSavedSearches, updateSavedSearch } from '../../api/queries.ts';
+import { getOrganization } from '../../api/utils/organizations.ts';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useFormatDistance } from '../../i18n/useDateFnsLocale.tsx';
 import { DateFilterOption } from '../Inbox/filters.ts';
+import { useOrganizations } from '../Inbox/useOrganizations.ts';
 import { PageRoutes } from '../routes.ts';
 import { buildBookmarkURL } from './bookmarkURL.ts';
 import { autoFormatRelativeTime, getMostRecentSearchDate } from './searchUtils.ts';
@@ -52,10 +55,23 @@ const randomString = () => {
 
 const isPlaceholderValue = (value: string | undefined | null) => {
   if (value) {
-    const values = [...Object.values(DateFilterOption), ...Object.values(DialogStatus)] as string[];
+    const values = [
+      ...Object.values(DateFilterOption),
+      ...Object.values(DialogStatus),
+      ...Object.values(SystemLabel),
+    ] as string[];
     return value.toUpperCase() === value && values.includes(value);
   }
   return false;
+};
+
+export const fromPathToViewType = (path: string | null | undefined): InboxViewType | undefined => {
+  if (!path) {
+    return undefined;
+  }
+
+  const entry = Object.entries(PageRoutes).find(([, route]) => route === path);
+  return entry ? (entry[0] as InboxViewType) : 'inbox';
 };
 
 export const convertFilterStateToFilters = (filters: FilterState): SearchDataValueFilter[] => {
@@ -65,6 +81,33 @@ export const convertFilterStateToFilters = (filters: FilterState): SearchDataVal
     }
     return [];
   });
+};
+
+export const convertFiltersToFilterState = (
+  filters?:
+    | Array<{
+        __typename?: 'SearchDataValueFilter';
+        id?: string | null;
+        value?: string | null;
+      } | null>
+    | null
+    | undefined,
+): FilterState => {
+  const result: FilterState = {};
+  if (!filters) return result;
+
+  for (const filter of filters) {
+    if (!filter?.id || !filter.value) continue;
+
+    if (filter?.id && typeof filter.value !== 'undefined') {
+      if (!result[filter.id]) {
+        result[filter.id] = [];
+      }
+      result[filter.id]!.push(filter.value);
+    }
+  }
+
+  return result;
 };
 
 export const filterSavedSearches = (
@@ -91,6 +134,7 @@ export const filterSavedSearches = (
 export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesOutput => {
   const [isCTALoading, setIsCTALoading] = useState<boolean>(false);
   const [savedSearchInputValue, setSavedSearchInputValue] = useState<string>('');
+  const { organizations } = useOrganizations();
 
   const [expandedId, setExpandedId] = useState<string>('');
   const formatDistance = useFormatDistance();
@@ -209,13 +253,28 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
 
     const items: EditableBookmarkProps[] = currentPartySavedSearches.map((savedSearch) => {
       const bookmarkLink = buildBookmarkURL(savedSearch);
-      const params: QueryItemProps[] =
-        savedSearch.data?.filters?.map((filter) => ({
+      const params: QueryItemProps[] = (savedSearch.data?.filters ?? []).map((filter) => {
+        if (filter?.id === 'org') {
+          const org = getOrganization(organizations, filter.value ?? '', 'nb')?.name || filter.value;
+          return {
+            type: 'filter' as QueryItemType,
+            label: org ?? '',
+          };
+        }
+        return {
           type: 'filter' as QueryItemType,
           label: isPlaceholderValue(filter?.value)
             ? t(`filter.query.${(filter?.value ?? '').toLowerCase()}`)
             : (filter?.value ?? ''),
-        })) ?? [];
+        };
+      });
+
+      if (savedSearch.data?.fromView) {
+        const viewType = fromPathToViewType(savedSearch.data.fromView);
+        if (viewType !== 'inbox') {
+          params.push({ type: 'filter', label: t(`filter.query.${(viewType as string).toLowerCase()}`) });
+        }
+      }
 
       if (savedSearch.data?.searchString) {
         params.push({ type: 'search', label: savedSearch.data.searchString });

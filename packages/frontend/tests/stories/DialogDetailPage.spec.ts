@@ -38,7 +38,7 @@ test.describe('DialogDetailsPage', () => {
       await archiveLink.click();
     }
 
-    await expect(page.getByRole('heading', { name: 'arkivert' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: '1 treff i arkivet' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).toBeVisible();
 
     await page.getByRole('link', { name: 'Skatten din for 2022' }).click();
@@ -67,6 +67,6 @@ test.describe('DialogDetailsPage', () => {
     } else {
       await archiveLink.click();
     }
-    await expect(page.getByRole('heading', { name: 'Ingen arkiverte meldinger' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Arkivet er tomt' })).toBeVisible();
   });
 });

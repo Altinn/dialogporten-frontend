@@ -63,6 +63,7 @@ const getAllDialogsforCountMock = graphql.query('getAllDialogsForCount', ({ vari
       searchDialogs: {
         items: items?.map((item) => ({
           id: item.id,
+          org: item.org,
           party: item.party,
           updatedAt: item.updatedAt,
           status: item.status,
@@ -82,6 +83,8 @@ const getAllDialogsForPartiesMock = graphql.query('getAllDialogsForParties', ({ 
     org: variables.org,
     label: variables.label,
     status: variables.status,
+    updatedAfter: variables.updatedAfter,
+    updatedBefore: variables.updatedBefore,
   });
 
   return HttpResponse.json({

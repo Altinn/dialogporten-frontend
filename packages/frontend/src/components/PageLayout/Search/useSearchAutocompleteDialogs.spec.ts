@@ -2,7 +2,7 @@ import type { DialogStatus, SystemLabel } from 'bff-types-generated';
 import { describe, expect, it } from 'vitest';
 import type { InboxViewType } from '../../../api/hooks/useDialogs.tsx';
 import type { InboxItemInput } from '../../../pages/Inbox/InboxItemInput.ts';
-import { createSendersForAutocomplete } from './useSearchAutocompleteDialogs';
+import { createSendersForAutocomplete } from './useAutocomplete.tsx';
 
 describe('generateSendersAutocompleteBySearchString', () => {
   const mockDialogs: InboxItemInput[] = [
@@ -16,7 +16,7 @@ describe('generateSendersAutocompleteBySearchString', () => {
         type: 'company',
         imageUrl: 'https://altinncdn.no/orgs/skd/skd.png',
       },
-      receiver: {
+      recipient: {
         name: 'Test Testesen',
         type: 'company',
       },
@@ -42,7 +42,7 @@ describe('generateSendersAutocompleteBySearchString', () => {
         type: 'company',
         imageUrl: 'https://altinncdn.no/orgs/ssb/ssb_dark.png',
       },
-      receiver: {
+      recipient: {
         name: 'Test Testesen',
         type: 'company',
       },

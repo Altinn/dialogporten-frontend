@@ -1,3 +1,2 @@
-export * from './useSearchDialogs';
 export * from './useSearchString';
-export * from './useSearchAutocompleteDialogs';
+export * from './useAutocomplete.tsx';

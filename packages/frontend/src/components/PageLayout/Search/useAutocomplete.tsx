@@ -8,7 +8,7 @@ import type {
 } from 'bff-types-generated';
 import { t } from 'i18next';
 import { useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, type LinkProps } from 'react-router-dom';
 import { useDebounce } from 'use-debounce';
 import { useDialogs } from '../../../api/hooks/useDialogs.tsx';
 import { searchAutocompleteDialogs } from '../../../api/queries.ts';
@@ -20,8 +20,8 @@ import { getPartyIds } from '../../../api/utils/dialog.ts';
 import { getOrganization } from '../../../api/utils/organizations.ts';
 import { QUERY_KEYS } from '../../../constants/queryKeys.ts';
 import type { InboxItemInput } from '../../../pages/Inbox/InboxItemInput.ts';
+import { pruneSearchQueryParams } from '../../../pages/Inbox/queryParams.ts';
 import { useOrganizations } from '../../../pages/Inbox/useOrganizations.ts';
-import { useSearchString } from './useSearchString.tsx';
 
 interface searchDialogsProps {
   selectedParties: PartyFieldsFragment[];
@@ -53,31 +53,20 @@ const createAutocomplete = (
   searchResults: SearchAutocompleteDialogInput[],
   isLoading: boolean,
   searchValue?: string,
-  onSearch?: (searchString: string) => void,
 ): AutocompleteProps => {
-  const skeletonSize = 1;
   const resultsSize = 5;
   const isSearchable = (searchValue?.length ?? 0) > 2;
 
   const getScopeItem = (label: React.ReactNode, badgeLabel?: string) => ({
     id: 'inboxScope',
     type: 'scope',
-    disabled: searchResults.length === 0,
     ariaLabel: t('search.autocomplete.searchInInbox', { query: searchValue }),
-    as: 'button',
-    onClick: () => {
-      onSearch?.(searchValue ?? '');
-    },
-    badge: badgeLabel ? { label: badgeLabel } : undefined,
-    label,
-  });
-
-  const getInfoItem = (label: React.ReactNode, badgeLabel?: string) => ({
-    id: 'info',
-    type: 'info',
-    disabled: true,
-    interactive: false,
-    ariaLabel: t('search.autocomplete.searchInInbox', { query: searchValue }),
+    as: (props: AutocompleteItemProps) => (
+      <Link
+        {...(props as LinkProps)}
+        to={`/${pruneSearchQueryParams(location.search, { search: isSearchable ? (searchValue as string) : undefined })}`}
+      />
+    ),
     badge: badgeLabel ? { label: badgeLabel } : undefined,
     label,
   });
@@ -94,37 +83,14 @@ const createAutocomplete = (
       type: 'dialog',
     }));
 
-  if (isLoading) {
-    return {
-      items: [
-        getScopeItem(`${t('word.everything')} ${t('search.autocomplete.inInbox')}`),
-        ...getSkeletonItems(skeletonSize),
-      ],
-      groups: { searching: { title: `${t('search.searchFor')} «${searchValue}»...` } },
-    } as AutocompleteProps;
-  }
-
   if (!isSearchable) {
     return {
       items: [getScopeItem(`${t('word.everything')} ${t('search.autocomplete.inInbox')}`)],
     } as AutocompleteProps;
   }
 
-  const searchHits = mapSearchResults();
-
-  if (searchHits.length === 0) {
-    return {
-      items: [
-        getInfoItem(
-          <span>
-            <mark>{searchValue}</mark> {t('search.autocomplete.inInbox')}
-          </span>,
-          t('search.hits', { count: searchResults.length }),
-        ),
-      ],
-      groups: { noHits: { title: t('search.hits', { count: searchResults.length }) } },
-    } as AutocompleteProps;
-  }
+  const searchResult = mapSearchResults();
+  const suggestions = isLoading ? getSkeletonItems(resultsSize) : searchResult;
 
   return {
     items: [
@@ -134,7 +100,7 @@ const createAutocomplete = (
         </span>,
         t('search.hits', { count: searchResults.length }),
       ),
-      ...searchHits,
+      ...suggestions,
     ],
     groups: { searchResults: { title: t('search.autocomplete.recommendedHits') } },
   } as AutocompleteProps;
@@ -148,16 +114,11 @@ interface UseAutocompleteDialogsOutput {
   isFetching: boolean;
 }
 
-export const useSearchAutocompleteDialogs = ({
-  selectedParties,
-  searchValue,
-}: searchDialogsProps): UseAutocompleteDialogsOutput => {
+export const useAutocomplete = ({ selectedParties, searchValue }: searchDialogsProps): UseAutocompleteDialogsOutput => {
   const partyURIs = getPartyIds(selectedParties);
   const debouncedSearchString = useDebounce(searchValue, 300)[0];
-  const { onSearch } = useSearchString();
-  const { dialogs } = useDialogs(selectedParties);
+  const { dialogs } = useDialogs({ parties: selectedParties });
   const { organizations } = useOrganizations();
-
   const enabled = !!debouncedSearchString && debouncedSearchString.length > 2 && selectedParties.length > 0;
   const {
     data: hits,
@@ -172,12 +133,13 @@ export const useSearchAutocompleteDialogs = ({
     gcTime: 0,
   });
 
-  const suggestedSenders = createSendersForAutocomplete(searchValue!, dialogs, onSearch, organizations);
+  const suggestedSenders = createSendersForAutocomplete(searchValue!, dialogs, organizations);
 
   const autocomplete: AutocompleteProps = useMemo(() => {
     const results = hits?.searchDialogs?.items ?? [];
-    return createAutocomplete(mapAutocompleteDialogsDtoToInboxItem(results), isLoading, searchValue, onSearch);
-  }, [hits, isLoading, searchValue, onSearch]);
+    const items = mapAutocompleteDialogsDtoToInboxItem(results);
+    return createAutocomplete(items, isLoading, searchValue);
+  }, [hits, isLoading, searchValue]);
 
   const mergedAutocomplete = {
     groups: { ...autocomplete.groups, ...suggestedSenders.groups },
@@ -195,7 +157,6 @@ export const useSearchAutocompleteDialogs = ({
 export const createSendersForAutocomplete = (
   searchValue: string,
   dialogs: InboxItemInput[],
-  onSearch?: (searchString: string, sender?: string) => void,
   organizations?: OrganizationFieldsFragment[],
 ): AutocompleteProps => {
   const SENDERS_GROUP_ID = 'senders';
@@ -220,29 +181,35 @@ export const createSendersForAutocomplete = (
           dialog.sender.name.toLowerCase().includes(searchString.toLowerCase()),
       );
 
-      if (senderDetected) {
+      if (searchString.length >= 3 && senderDetected) {
         const serviceOwner = getOrganization(organizations || [], senderDetected.org ?? '', 'nb');
         const unmatchedSearchArr = array.filter((s) => s.toLowerCase() !== searchString.toLowerCase());
         const searchQuery = unmatchedSearchArr.join(' ');
-        const ariaLabelId = searchQuery
-          ? 'search.autocomplete.searchForSender.withQuery'
-          : 'search.autocomplete.searchForSender.withoutQuery';
+        const senderName = senderDetected.sender.name || senderDetected.org;
+
         if (!acc.items.some((existingItem) => existingItem.id === senderDetected.org)) {
           acc.items.push({
             id: senderDetected.org ?? serviceOwner?.name ?? '',
             groupId: SENDERS_GROUP_ID,
-            title: senderDetected.sender.name,
-            params: [{ type: 'filter', label: serviceOwner?.name }],
+            title: senderName,
+            params: [{ type: 'filter', label: senderName }],
             type: TYPE_SUGGEST,
-            as: 'button',
-            ariaLabel: t(ariaLabelId, {
-              sender: senderDetected.sender.name,
-              query: searchQuery,
-            }),
-            interactive: true,
-            onClick: () => {
-              onSearch?.(searchQuery, senderDetected.org);
+            as: (props: AutocompleteItemProps) => {
+              const messageId = searchQuery
+                ? 'search.autocomplete.searchForSender.withQuery'
+                : 'search.autocomplete.searchForSender.withoutQuery';
+              return (
+                <Link
+                  {...(props as LinkProps)}
+                  to={`/${pruneSearchQueryParams(location.search, { org: senderDetected.org, search: searchQuery })}`}
+                  aria-label={t(messageId, {
+                    sender: senderName,
+                    query: searchQuery ?? '',
+                  })}
+                />
+              );
             },
+            interactive: true,
           });
         }
       }

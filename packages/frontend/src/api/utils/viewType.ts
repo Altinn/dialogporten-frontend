@@ -7,38 +7,33 @@ type viewTypeDerivable = {
 };
 
 export const isBinDialog = (dialog: viewTypeDerivable): boolean => dialog.systemLabel === SystemLabel.Bin;
-
 export const isArchivedDialog = (dialog: viewTypeDerivable): boolean => dialog.systemLabel === SystemLabel.Archive;
+export const isDraftDialog = (dialog: viewTypeDerivable): boolean => dialog.status === DialogStatus.Draft;
+export const isSentDialog = (dialog: viewTypeDerivable): boolean => dialog.status === DialogStatus.Sent;
 
-export const isInboxDialog = (dialog: viewTypeDerivable): boolean =>
-  !isBinDialog(dialog) &&
-  !isArchivedDialog(dialog) &&
-  [DialogStatus.New, DialogStatus.InProgress, DialogStatus.RequiresAttention, DialogStatus.Completed].includes(
-    dialog.status,
-  );
-
-export const isDraftDialog = (dialog: viewTypeDerivable): boolean =>
-  !isBinDialog(dialog) && !isArchivedDialog(dialog) && dialog.status === DialogStatus.Draft;
-
-export const isSentDialog = (dialog: viewTypeDerivable): boolean =>
-  !isBinDialog(dialog) && !isArchivedDialog(dialog) && dialog.status === DialogStatus.Sent;
-
-export const getViewType = (dialog: viewTypeDerivable): InboxViewType => {
+export const getViewTypes = (dialog: viewTypeDerivable, includeInbox = true): InboxViewType[] => {
+  const viewTypes: InboxViewType[] = [];
   if (isDraftDialog(dialog)) {
-    return 'drafts';
+    viewTypes.push('drafts');
   }
   if (isArchivedDialog(dialog)) {
-    return 'archive';
+    viewTypes.push('archive');
   }
   if (isSentDialog(dialog)) {
-    return 'sent';
+    viewTypes.push('sent');
   }
   if (isBinDialog(dialog)) {
-    return 'bin';
+    viewTypes.push('bin');
   }
-  if (isInboxDialog(dialog)) {
-    return 'inbox';
+
+  if (includeInbox && !viewTypes.length) {
+    viewTypes.push('inbox');
   }
-  console.warn('Unknown dialog status, fallback=inbox', dialog.status);
-  return 'inbox';
+
+  const priorityViewTypes = ['archive', 'bin', 'sent', 'drafts', 'inbox'];
+  return viewTypes.sort((a, b) => {
+    const indexA = priorityViewTypes.indexOf(a);
+    const indexB = priorityViewTypes.indexOf(b);
+    return indexA - indexB;
+  });
 };

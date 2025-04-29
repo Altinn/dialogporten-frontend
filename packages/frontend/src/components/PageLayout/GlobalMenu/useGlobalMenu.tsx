@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import type { InboxViewType } from '../../../api/hooks/useDialogs.tsx';
 import { useParties } from '../../../api/hooks/useParties.ts';
-import { getGlobalSearchQueryParams } from '../../../pages/Inbox/queryParams.ts';
+import { pruneSearchQueryParams } from '../../../pages/Inbox/queryParams.ts';
 import { PageRoutes } from '../../../pages/routes.ts';
 import { useWindowSize } from '../useWindowSize.tsx';
 export type SideBarView = InboxViewType | 'saved-searches' | 'archive' | 'bin';
@@ -73,9 +73,8 @@ export const useGlobalMenu = ({
   dialogCountsInconclusive,
 }: UseSidebarProps): UseGlobalMenuProps => {
   const { t } = useTranslation();
-  const { pathname, search } = useLocation();
+  const { pathname, search: currentSearchQuery } = useLocation();
   const { selectedProfile } = useParties();
-  const globalSearchQueryParams = getGlobalSearchQueryParams(search);
   const { isTabletOrSmaller } = useWindowSize();
   const linksMenuItems: MenuItemProps[] = [
     {
@@ -113,7 +112,7 @@ export const useGlobalMenu = ({
       selected: pathname === PageRoutes.inbox,
       expanded: true,
       as: createMenuItemComponent({
-        to: PageRoutes.inbox + globalSearchQueryParams,
+        to: PageRoutes.inbox + pruneSearchQueryParams(currentSearchQuery),
       }),
       items: [
         {
@@ -124,7 +123,7 @@ export const useGlobalMenu = ({
           badge: getBadgeProps(itemsPerViewCount.drafts, dialogCountsInconclusive),
           selected: pathname === PageRoutes.drafts,
           as: createMenuItemComponent({
-            to: PageRoutes.drafts + globalSearchQueryParams,
+            to: PageRoutes.drafts + pruneSearchQueryParams(currentSearchQuery),
           }),
         },
         {
@@ -135,7 +134,7 @@ export const useGlobalMenu = ({
           badge: getBadgeProps(itemsPerViewCount.sent, dialogCountsInconclusive),
           selected: pathname === PageRoutes.sent,
           as: createMenuItemComponent({
-            to: PageRoutes.sent + globalSearchQueryParams,
+            to: PageRoutes.sent + pruneSearchQueryParams(currentSearchQuery),
           }),
         },
         {
@@ -146,7 +145,7 @@ export const useGlobalMenu = ({
           badge: getBadgeProps(itemsPerViewCount['saved-searches']),
           selected: pathname === PageRoutes.savedSearches,
           as: createMenuItemComponent({
-            to: PageRoutes.savedSearches + globalSearchQueryParams,
+            to: PageRoutes.savedSearches + pruneSearchQueryParams(currentSearchQuery),
           }),
         },
         {
@@ -157,7 +156,7 @@ export const useGlobalMenu = ({
           badge: getBadgeProps(itemsPerViewCount.archive, dialogCountsInconclusive),
           selected: pathname === PageRoutes.archive,
           as: createMenuItemComponent({
-            to: PageRoutes.archive + globalSearchQueryParams,
+            to: PageRoutes.archive + pruneSearchQueryParams(currentSearchQuery),
           }),
         },
         {
@@ -168,7 +167,7 @@ export const useGlobalMenu = ({
           badge: getBadgeProps(itemsPerViewCount.bin, dialogCountsInconclusive),
           selected: pathname === PageRoutes.bin,
           as: createMenuItemComponent({
-            to: PageRoutes.bin + globalSearchQueryParams,
+            to: PageRoutes.bin + pruneSearchQueryParams(currentSearchQuery),
           }),
         },
       ],
@@ -185,7 +184,7 @@ export const useGlobalMenu = ({
       selected: pathname === PageRoutes.profile,
       expanded: true,
       as: createMenuItemComponent({
-        to: PageRoutes.profile + globalSearchQueryParams,
+        to: PageRoutes.profile + pruneSearchQueryParams(currentSearchQuery),
       }),
       items: [
         {
@@ -195,7 +194,7 @@ export const useGlobalMenu = ({
           title: t('sidebar.profile.actors'),
           selected: pathname === PageRoutes.actors,
           as: createMenuItemComponent({
-            to: PageRoutes.actors + globalSearchQueryParams,
+            to: PageRoutes.actors + pruneSearchQueryParams(currentSearchQuery),
           }),
         },
         {
@@ -205,7 +204,7 @@ export const useGlobalMenu = ({
           title: t('sidebar.profile.notifications'),
           selected: pathname === PageRoutes.notifications,
           as: createMenuItemComponent({
-            to: PageRoutes.notifications + globalSearchQueryParams,
+            to: PageRoutes.notifications + pruneSearchQueryParams(currentSearchQuery),
           }),
         },
         {
@@ -215,7 +214,7 @@ export const useGlobalMenu = ({
           title: t('sidebar.profile.settings'),
           selected: pathname === PageRoutes.settings,
           as: createMenuItemComponent({
-            to: PageRoutes.settings + globalSearchQueryParams,
+            to: PageRoutes.settings + pruneSearchQueryParams(currentSearchQuery),
           }),
         },
         {
@@ -225,7 +224,7 @@ export const useGlobalMenu = ({
           title: t('sidebar.profile.activities'),
           selected: pathname === PageRoutes.activities,
           as: createMenuItemComponent({
-            to: PageRoutes.activities + globalSearchQueryParams,
+            to: PageRoutes.activities + pruneSearchQueryParams(currentSearchQuery),
           }),
         },
       ],

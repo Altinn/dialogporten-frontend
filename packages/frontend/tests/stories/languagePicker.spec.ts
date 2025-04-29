@@ -6,7 +6,7 @@ test.describe('Language picker', () => {
     await page.goto(defaultAppURL);
 
     await expect(page.getByTestId('searchbar-input')).toHaveAttribute('placeholder', 'Søk');
-    await expect(page.getByRole('button', { name: 'add' })).toHaveText('Legg til');
+    await expect(page.getByRole('button', { name: 'add' })).toHaveText('Legg til filter');
 
     if (isMobile) {
       await page.getByRole('button', { name: 'Meny' }).click();
