@@ -1,12 +1,22 @@
-import { Button, DashboardCard, DashboardHeader, Flex, PageBase, PageNav, Typography } from '@altinn/altinn-components';
+import {
+  Button,
+  DashboardCard,
+  DashboardHeader,
+  Flex,
+  Grid,
+  PageBase,
+  PageNav,
+  Typography,
+} from '@altinn/altinn-components';
+import { BellIcon, CogIcon, HeartIcon } from '@navikt/aksel-icons';
 import { t } from 'i18next';
 import { PageRoutes } from '../routes';
 // import { useProfile } from '../../profile';
+import styles from './profile.module.css';
 
 export const Profile = () => {
   // const { profile } = useProfile();
 
-  // console.log('Profile', profile);
   return (
     <PageBase>
       <PageNav
@@ -23,14 +33,20 @@ export const Profile = () => {
       />
 
       <DashboardHeader name="Ronald McDonald" description="Fødselsnummer: 26.06.1966 XX.XX.XX">
-        <Typography>
-          <h6>E-post</h6>
-          <p>mathias.dyngeland@brann.no</p>
-          <h6>Telefon</h6>
-          <p>55 00 00 00</p>
-          <h6>Adresse</h6>
-          <p>Idrettsveien 1, 5020 Bergen</p>
-        </Typography>
+        <Flex className={styles.contactInfoFlex}>
+          <Typography className={styles.contactInfo}>
+            <h6>E-post</h6>
+            <p>mathias.dyngeland@brann.no</p>
+          </Typography>
+          <Typography className={styles.contactInfo}>
+            <h6>Adresse</h6>
+            <p>Idrettsveien 1, 5020 Bergen</p>
+          </Typography>
+          <Typography className={styles.contactInfo}>
+            <h6>Telefon</h6>
+            <p>55 00 00 00</p>
+          </Typography>
+        </Flex>
         <Flex justify="start" spacing={2}>
           <Button variant="outline" size="sm" onClick={() => {}}>
             Endre telefon/e-post
@@ -40,32 +56,18 @@ export const Profile = () => {
           </Button>
         </Flex>
       </DashboardHeader>
-      <Flex spacing={4}>
-        <DashboardCard color="person">
-          <h1>heeeeelooo</h1>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus, sit amet dictum leo
-            consectetur in. Maecenas in libero euismod, facilisis ligula ut, efficitur nunc. Donec a diam lectus, sit
-            amet dictum leo consectetur in. Maecenas in libero euismod,{' '}
-          </p>
+
+      <Grid spacing={2} cols={3}>
+        <DashboardCard icon={{ svgElement: HeartIcon }} title="Mine aktører" color="person">
+          Sett opp favoritter og grupper for aktørene dine.
         </DashboardCard>
-        <DashboardCard color="person">
-          <h1>heeeeelooo</h1>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus, sit amet dictum leo
-            consectetur in. Maecenas in libero euismod, facilisis ligula ut, efficitur nunc. Donec a diam lectus, sit
-            amet dictum leo consectetur in. Maecenas in libero euismod,{' '}
-          </p>
+        <DashboardCard icon={{ svgElement: BellIcon }} title="Mine varslinger" color="person">
+          Endre innstilinger for varslinger.
         </DashboardCard>
-        <DashboardCard color="person">
-          <h1>heeeeelooo</h1>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus, sit amet dictum leo
-            consectetur in. Maecenas in libero euismod, facilisis ligula ut, efficitur nunc. Donec a diam lectus, sit
-            amet dictum leo consectetur in. Maecenas in libero euismod,{' '}
-          </p>
+        <DashboardCard icon={{ svgElement: CogIcon }} title="Flere innstillinger" color="person">
+          Språk og andre preferanser.
         </DashboardCard>
-      </Flex>
+      </Grid>
     </PageBase>
   );
 };
