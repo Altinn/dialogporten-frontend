@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.29.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.28.0...v1.29.0) (2025-04-29)
+
+
+### Features
+
+* scalable faceted search ([#2052](https://github.com/Altinn/dialogporten-frontend/issues/2052)) ([48f03cf](https://github.com/Altinn/dialogporten-frontend/commit/48f03cf7eaa31aa599b98c68b73d4eddf19710d7))
+
 ## [1.28.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.27.0...v1.28.0) (2025-04-28)
 
 
