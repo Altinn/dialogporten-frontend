@@ -1,0 +1,27 @@
+# How Dialogs Are Organized In Arbeidsflate
+
+Arbeidsflate displays messages and dialogs in a unified format (`dialogs`) provided by [Dialogporten](https://docs.altinn.studio/dialogporten/),
+and organize these dialogs into different views or folders based on their status or other attributes, reflecting their current state or location.
+Users can also navigate the inbox using the search bar and various filters to locate specific messages or dialogs.
+
+## Inbox element views in dialogporten-frontend
+
+| Folder/View | Status                                             | System Label    | Comment                                                           |
+|-------------|----------------------------------------------------|----------|-------------------------------------------------------------------|
+| New         | New, InProgress, RequiresAttention, Completed      | Default  | Landing page for search results                                   |
+| Drafts      | Draft                                              | Default  | Status and label can not be overidden                                      |
+| Sent        | Sent                                               | Default  | Status and label can not be overidden                              |
+| Archive     | *(no specific status filter)*                      | Archive  | Status and label can not be overidden                              |
+| Bin         | *(no specific status filter)*                      | Bin      | Status and label can not be overidden                              |
+
+
+### Filter Categories
+
+Three main filter types are generated:
+
+- **Sender (org):** Based on unique organization IDs present in the dialogs, e.g. SKD.
+- **Status:** Derived from `status` and `systemLabel` fields. These are grouped and mapped to human-readable labels. Normalization logic ensures system labels like `Archive` or `Bin` are treated as labels, not statuses.
+- **Updated date:** Calculated from dialog `updatedAt` timestamps, grouped into relative time ranges (e.g. *Today*, *This Week*, *Last Year*).
+
+These filters (when applied) are sent to Dialogporten as input parameters, together with (optional) search string (from searchbar) and selected authorized party.
+

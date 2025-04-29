@@ -1,7 +1,7 @@
 ---
-slug: welcome
-title: Welcome
-authors: [seanes, alexdigdir]
+slug: maintainers
+title: Maintainers
+authors: [seanes, alexdigdir, mbacherycz]
 tags: []
 ---
 
