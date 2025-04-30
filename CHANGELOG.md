@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.29.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.29.0...v1.29.1) (2025-04-30)
+
+
+### Bug Fixes
+
+* bump ac to 0.24.4 containing fix to prevent unneccessary reload of page on enter in search bar when item is rendered as link ([#2093](https://github.com/Altinn/dialogporten-frontend/issues/2093)) ([16db6e6](https://github.com/Altinn/dialogporten-frontend/commit/16db6e6950ea8a74ffae34b78c9cd14dcbfa0762))
+
 ## [1.29.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.28.0...v1.29.0) (2025-04-29)
 
 
