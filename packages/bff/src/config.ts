@@ -29,7 +29,6 @@ const envVariables = z.object({
   CLIENT_SECRET: z.string().default(''),
   PLATFORM_EXCHANGE_TOKEN_ENDPOINT_URL: z.string().default(''),
   PLATFORM_PROFILE_API_URL: z.string().default(''),
-  OCP_APIM_SUBSCRIPTION_KEY: z.string().default(''),
   MIGRATION_RUN: z.preprocess(stringToBoolean, z.boolean().default(false)),
   DIALOGPORTEN_URL: z.string().default('https://altinn-dev-api.azure-api.net/dialogporten/graphql'),
   CONTAINER_APP_REPLICA_NAME: z.string().default(''),
@@ -52,7 +51,6 @@ const config = {
   client_secret: env.CLIENT_SECRET,
   platformExchangeTokenEndpointURL: env.PLATFORM_EXCHANGE_TOKEN_ENDPOINT_URL,
   platformProfileAPI_url: env.PLATFORM_PROFILE_API_URL,
-  ocpApimSubscriptionKey: env.OCP_APIM_SUBSCRIPTION_KEY,
   applicationInsights: {
     enabled: env.APPLICATIONINSIGHTS_ENABLED,
     connectionString: env.APPLICATIONINSIGHTS_CONNECTION_STRING,
