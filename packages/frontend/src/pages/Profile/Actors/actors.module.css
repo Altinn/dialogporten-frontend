@@ -67,3 +67,22 @@
     display: block;
   }
 }
+
+.buttonContainer {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.actorInfoHeader {
+  font-weight: 400;
+  font-size: 0.875rem;
+  line-height: 1.3125rem;
+  letter-spacing: 0%;
+}
+
+.actorInfoValue {
+  font-weight: 400;
+  font-size: 1.125rem;
+  line-height: 1.6875rem;
+  letter-spacing: 0%;
+}
