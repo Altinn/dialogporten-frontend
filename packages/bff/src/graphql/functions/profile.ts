@@ -79,7 +79,7 @@ interface Context {
 }
 
 export const getUserFromCore = async (pid: string, context: Context) => {
-  const { platformExchangeTokenEndpointURL, platformProfileAPI_url, ocpApimSubscriptionKey } = config;
+  const { platformExchangeTokenEndpointURL, platformProfileAPI_url } = config;
   const token = context.session.get('token');
   if (!token) {
     console.error('No token found in session');
@@ -97,7 +97,6 @@ export const getUserFromCore = async (pid: string, context: Context) => {
       headers: {
         Authorization: `Bearer ${newToken}`,
         'Content-Type': 'application/json',
-        'Ocp-Apim-Subscription-Key': ocpApimSubscriptionKey,
         Accept: 'application/json',
       },
     })
