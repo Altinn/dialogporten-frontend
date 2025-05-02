@@ -45,6 +45,7 @@
   "filter.query.bin": "in bin",
   "filter.query.completed": "Completed",
   "filter.query.draft": "Draft",
+  "filter.query.drafts": "in drafts",
   "filter.query.in_progress": "In progress",
   "filter.query.last_six_months": "Last six months",
   "filter.query.last_twelve_months": "Last twelve months",
