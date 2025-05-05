@@ -23,5 +23,5 @@ export function formatNorwegianSSN(ssn: string | null | undefined): string {
     fullYear = 1900 + yearNumber;
   }
 
-  return `${day}.${month}.${fullYear} XXXXX`;
+  return `${day}.${month}.${fullYear} ${individNumber}`;
 }
