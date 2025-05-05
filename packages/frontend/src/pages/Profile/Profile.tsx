@@ -51,44 +51,48 @@ export const Profile = () => {
       <DashboardHeader
         loading={isLoading}
         name={user?.party?.person?.name || ''}
-        description={`Fødselsnummer: ${formatNorwegianSSN(user?.party?.person?.ssn)}`}
+        description={`${t('profile.landing.ssn')} ${formatNorwegianSSN(user?.party?.person?.ssn)}`}
       >
         <Flex className={styles.contactInfoFlex}>
           <Typography className={styles.contactInfo}>
-            <h6>E-post</h6>
+            <h6>{t('profile.landing.email')}</h6>
             <p>{user?.email || ' - '}</p>
           </Typography>
           <Typography className={styles.contactInfo}>
-            <h6>Adresse</h6>
+            <h6>{t('profile.landing.address')}</h6>
             <p>{buildAddressString(user?.party?.person)}</p>
           </Typography>
           <Typography className={styles.contactInfo}>
-            <h6>Telefon</h6>
+            <h6>{t('profile.landing.phone')}</h6>
             <p>{user?.party?.person?.mobileNumber || '-'}</p>
           </Typography>
         </Flex>
         <Flex justify="start" spacing={2}>
           <Button variant="outline" size="sm" onClick={() => {}}>
-            Endre e-post/telefon
+            {t('profile.landing.change.email.phone')}
           </Button>
           <Button variant="outline" size="sm" onClick={() => {}}>
-            Endre adresse
+            {t('profile.landing.change.address')}
           </Button>
         </Flex>
       </DashboardHeader>
 
       <Grid spacing={2} cols={3}>
         <Link to={PageRoutes.bin}>
-          <DashboardCard icon={{ svgElement: HeartIcon }} title="Mine aktører" color="person">
-            Sett opp favoritter og grupper for aktørene dine.
+          <DashboardCard
+            icon={{ svgElement: HeartIcon }}
+            title={t('profile.landing.card.title.favourites')}
+            color="person"
+          >
+            {t('profile.landing.card.favourites')}
           </DashboardCard>
         </Link>
 
-        <DashboardCard icon={{ svgElement: BellIcon }} title="Mine varslinger" color="person">
-          Endre innstilinger for varslinger.
+        <DashboardCard icon={{ svgElement: BellIcon }} title={t('profile.landing.card.title.settings')} color="person">
+          {t('profile.landing.card.settings')}
         </DashboardCard>
-        <DashboardCard icon={{ svgElement: CogIcon }} title="Flere innstillinger" color="person">
-          Språk og andre preferanser.
+        <DashboardCard icon={{ svgElement: CogIcon }} title={t('profile.landing.card.title.language')} color="person">
+          {t('profile.landing.card.language')}
         </DashboardCard>
       </Grid>
     </PageBase>
