@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.30.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.29.1...v1.30.0) (2025-05-05)
+
+
+### Features
+
+* profile landing page layout ([#2088](https://github.com/Altinn/dialogporten-frontend/issues/2088)) ([2559985](https://github.com/Altinn/dialogporten-frontend/commit/2559985d04d74e3db35f223f0b9cb5ac5625d544))
+
+
+### Bug Fixes
+
+* add missing translations for query drafts ([#2109](https://github.com/Altinn/dialogporten-frontend/issues/2109)) ([a61742b](https://github.com/Altinn/dialogporten-frontend/commit/a61742bdd5da37411554dbdc49a7a6e9728372f9))
+* bumpt to latest version of ac including fix badge height to be fixed ([#2116](https://github.com/Altinn/dialogporten-frontend/issues/2116)) ([09bbab9](https://github.com/Altinn/dialogporten-frontend/commit/09bbab96f0992d3fc717b7b2ce3110e14556d602))
+* Display full SSN and fix translations ([#2115](https://github.com/Altinn/dialogporten-frontend/issues/2115)) ([821ddf5](https://github.com/Altinn/dialogporten-frontend/commit/821ddf5f215ba4d11d745f3262e8b5aa1bf37c16))
+
 ## [1.29.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.29.0...v1.29.1) (2025-04-30)
 
 
