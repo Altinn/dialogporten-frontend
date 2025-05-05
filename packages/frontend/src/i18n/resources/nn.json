@@ -45,6 +45,7 @@
   "filter.query.bin": "i papirkorg",
   "filter.query.completed": "Avslutta",
   "filter.query.draft": "Utkast",
+  "filter.query.drafts": "i utkast",
   "filter.query.in_progress": "Under arbeid",
   "filter.query.last_six_months": "Siste seks månader",
   "filter.query.last_twelve_months": "Siste tolv månader",
