@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.31.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.30.2...v1.31.0) (2025-05-06)
+
+
+### Features
+
+* support upgrade of security level when needed for content ([#2122](https://github.com/Altinn/dialogporten-frontend/issues/2122)) ([1247bd5](https://github.com/Altinn/dialogporten-frontend/commit/1247bd5bda4ff643af0550a8ea67e415e5ca71fc))
+
 ## [1.30.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.30.1...v1.30.2) (2025-05-06)
 
 
