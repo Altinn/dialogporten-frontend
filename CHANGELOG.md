@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.30.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.30.1...v1.30.2) (2025-05-06)
+
+
+### Bug Fixes
+
+* Add links to profile dashboard cards, fix styling ([#2120](https://github.com/Altinn/dialogporten-frontend/issues/2120)) ([cb0c26b](https://github.com/Altinn/dialogporten-frontend/commit/cb0c26bf9c40dc0623dc3ebbc8aede105656186f))
+
 ## [1.30.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.30.0...v1.30.1) (2025-05-05)
 
 
