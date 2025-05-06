@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.30.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.30.1...v1.30.2) (2025-05-06)
+
+
+### Bug Fixes
+
+* Add links to profile dashboard cards, fix styling ([#2120](https://github.com/Altinn/dialogporten-frontend/issues/2120)) ([cb0c26b](https://github.com/Altinn/dialogporten-frontend/commit/cb0c26bf9c40dc0623dc3ebbc8aede105656186f))
+
+## [1.30.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.30.0...v1.30.1) (2025-05-05)
+
+
+### Bug Fixes
+
+* keep query params when navigated to inbox upon dialog delete ([#2118](https://github.com/Altinn/dialogporten-frontend/issues/2118)) ([65e77e6](https://github.com/Altinn/dialogporten-frontend/commit/65e77e67df8923ff0f0dd3364bcbd2fb1514574d))
+
 ## [1.30.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.29.1...v1.30.0) (2025-05-05)
 
 

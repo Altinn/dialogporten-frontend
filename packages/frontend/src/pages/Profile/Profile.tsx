@@ -78,7 +78,7 @@ export const Profile = () => {
       </DashboardHeader>
 
       <Grid spacing={2} cols={3}>
-        <Link to={PageRoutes.bin}>
+        <Link to={PageRoutes.actors} style={{ display: 'inherit' }}>
           <DashboardCard
             icon={{ svgElement: HeartIcon }}
             title={t('profile.landing.card.title.favourites')}
@@ -87,13 +87,20 @@ export const Profile = () => {
             {t('profile.landing.card.favourites')}
           </DashboardCard>
         </Link>
-
-        <DashboardCard icon={{ svgElement: BellIcon }} title={t('profile.landing.card.title.settings')} color="person">
-          {t('profile.landing.card.settings')}
-        </DashboardCard>
-        <DashboardCard icon={{ svgElement: CogIcon }} title={t('profile.landing.card.title.language')} color="person">
-          {t('profile.landing.card.language')}
-        </DashboardCard>
+        <Link to={PageRoutes.notifications} style={{ display: 'inherit' }}>
+          <DashboardCard
+            icon={{ svgElement: BellIcon }}
+            title={t('profile.landing.card.title.settings')}
+            color="person"
+          >
+            {t('profile.landing.card.settings')}
+          </DashboardCard>
+        </Link>
+        <Link to={PageRoutes.settings} style={{ display: 'inherit' }}>
+          <DashboardCard icon={{ svgElement: CogIcon }} title={t('profile.landing.card.title.language')} color="person">
+            {t('profile.landing.card.language')}
+          </DashboardCard>
+        </Link>
       </Grid>
     </PageBase>
   );
