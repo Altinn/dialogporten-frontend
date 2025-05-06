@@ -3,5 +3,9 @@ query getDialogById($id: UUID!) {
     dialog {
       ...DialogByIdFields
     }
+    errors {
+      __typename
+      message
+    }
   }
 }

@@ -86,6 +86,7 @@ interface UseDialogByIdOutput {
   isError: boolean;
   isLoading: boolean;
   dialog?: DialogByIdDetails;
+  isAuthLevelTooLow?: boolean;
 }
 export const getDialogsById = (id: string): Promise<GetDialogByIdQuery> =>
   graphQLSDK.getDialogById({
@@ -255,5 +256,7 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
     isSuccess,
     dialog: mapDialogToToInboxItem(data?.dialogById.dialog, parties, organizations, format),
     isError,
+    isAuthLevelTooLow:
+      data?.dialogById?.errors?.some((error) => error.__typename === 'DialogByIdForbiddenAuthLevelTooLow') ?? false,
   };
 };
