@@ -7,6 +7,9 @@ import {
   DialogHeader,
   DialogHistory,
   DialogTabs,
+  DsAlert,
+  DsParagraph,
+  Heading,
   Section,
 } from '@altinn/altinn-components';
 import type { DialogHistorySegmentProps } from '@altinn/altinn-components/dist/types/lib/components';
@@ -22,6 +25,7 @@ import styles from './dialogDetails.module.css';
 
 interface DialogDetailsProps {
   dialog: DialogByIdDetails | undefined | null;
+  isAuthLevelTooLow?: boolean;
   isLoading?: boolean;
 }
 
@@ -104,7 +108,7 @@ const handleDialogActionClick = async (
   }
 };
 
-export const DialogDetails = ({ dialog, isLoading }: DialogDetailsProps): ReactElement => {
+export const DialogDetails = ({ dialog, isLoading, isAuthLevelTooLow }: DialogDetailsProps): ReactElement => {
   const { t } = useTranslation();
   const [actionIdLoading, setActionIdLoading] = useState<string>('');
   const [activeTab, setActiveTab] = useState<ActivePageTab | undefined>();
@@ -218,13 +222,24 @@ export const DialogDetails = ({ dialog, isLoading }: DialogDetailsProps): ReactE
     );
   }
 
+  if (isAuthLevelTooLow) {
+    return (
+      <Section as="article" padding={6}>
+        <DsAlert data-color="danger">
+          <Heading data-size="xs">{t('error.dialog.auth_level_too_low')}</Heading>
+          <DsParagraph>
+            <a href="/api/login?idporten_loa_high=true">{t('error.dialog.auth_level_too_low.link')}</a>
+          </DsParagraph>
+        </DsAlert>
+      </Section>
+    );
+  }
+
   if (!dialog) {
     return (
-      <Section as="article" padding={6} spacing={6}>
-        <header className={styles.header} data-id="dialog-header">
-          <h1 className={styles.title}>{t('error.dialog.not_found')}</h1>
-        </header>
-        <p className={styles.summary}>{t('dialog.error_message')}</p>
+      <Section as="article" padding={6}>
+        <h2 className={styles.title}>{t('error.dialog.not_found')}</h2>
+        <span className={styles.summary}>{t('dialog.error_message.general')}</span>
       </Section>
     );
   }

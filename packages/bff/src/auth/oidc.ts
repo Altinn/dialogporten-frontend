@@ -1,13 +1,7 @@
 import crypto from 'node:crypto';
 import { logger } from '@digdir/dialogporten-node-logger';
 import axios from 'axios';
-import type {
-  FastifyInstance,
-  FastifyPluginAsync,
-  FastifyReply,
-  FastifyRequest,
-  HookHandlerDoneFunction,
-} from 'fastify';
+import type { FastifyPluginAsync, FastifyReply, FastifyRequest, HookHandlerDoneFunction } from 'fastify';
 import fp from 'fastify-plugin';
 import jwt from 'jsonwebtoken';
 import config from '../config.js';
@@ -21,17 +15,6 @@ declare module 'fastify' {
 
   interface FastifyRequest {
     tokenIsValid: boolean;
-  }
-
-  interface IdportenToken {
-    access_token: string;
-    refresh_token: string;
-    id_token: string;
-    scope: string;
-    token_type: string;
-    expires_in: number;
-    expires_at: string;
-    refresh_token_expires_in: number;
   }
 
   interface IdPortenUpdatedToken {
@@ -138,7 +121,7 @@ export const handleLogout = async (request: FastifyRequest, reply: FastifyReply)
   }
 };
 
-export const handleAuthRequest = async (request: FastifyRequest, reply: FastifyReply, fastify: FastifyInstance) => {
+export const handleAuthRequest = async (request: FastifyRequest, reply: FastifyReply) => {
   try {
     const now = new Date();
 
@@ -209,11 +192,13 @@ export const handleAuthRequest = async (request: FastifyRequest, reply: FastifyR
 
 const redirectToAuthorizationURI = async (request: FastifyRequest, reply: FastifyReply) => {
   const { hostname } = config;
-
   const codeVerifier = generateCodeVerifier();
   const codeChallenge = await generateCodeChallenge(codeVerifier);
   const state = crypto.randomBytes(16).toString('hex');
   const nonce = crypto.randomBytes(16).toString('hex');
+  const queryParameters = request.query as {
+    idporten_loa_high?: boolean;
+  };
 
   request.session.set('codeVerifier', codeVerifier);
   request.session.set('codeChallenge', codeChallenge);
@@ -223,6 +208,7 @@ const redirectToAuthorizationURI = async (request: FastifyRequest, reply: Fastif
   const parameters: Record<string, string> = {
     redirect_uri: `${hostname}/api/cb`,
     scope: 'digdir:dialogporten.noconsent openid altinn:portal/enduser',
+    acr_values: queryParameters?.idporten_loa_high ? 'idporten-loa-high' : 'idporten-loa-substantial',
     state,
     client_id,
     response_type: 'code',
@@ -260,7 +246,7 @@ const plugin: FastifyPluginAsync<CustomOICDPluginOptions> = async (fastify, opti
       }
 
       /* Handle the callback from the OIDC provider */
-      await handleAuthRequest(request, reply, fastify);
+      await handleAuthRequest(request, reply);
     } catch (e) {
       logger.error('callback error', e);
       reply.status(500);

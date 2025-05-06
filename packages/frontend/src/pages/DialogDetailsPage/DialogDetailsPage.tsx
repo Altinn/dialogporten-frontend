@@ -24,7 +24,7 @@ export const DialogDetailsPage = () => {
   const { parties } = useParties();
   const { t } = useTranslation();
   const location = useLocation();
-  const { dialog, isLoading: isLoadingDialog, isSuccess, isError } = useDialogById(parties, id);
+  const { dialog, isLoading: isLoadingDialog, isSuccess, isError, isAuthLevelTooLow } = useDialogById(parties, id);
   const [archiveLoading, setArchiveLoading] = useState<boolean>(false);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
   const [undoLoading, setUndoLoading] = useState<boolean>(false);
@@ -123,7 +123,7 @@ export const DialogDetailsPage = () => {
             as: (props: LinkProps) => <Link {...props} to={previousPath} />,
           }}
         />
-        <DialogDetails dialog={dialog} isLoading={isLoading} />
+        <DialogDetails dialog={dialog} isLoading={isLoading} isAuthLevelTooLow={isAuthLevelTooLow} />
       </Section>
       {showToolbar && (
         <DialogToolbar
