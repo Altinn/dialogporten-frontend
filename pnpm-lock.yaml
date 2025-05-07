@@ -30,8 +30,8 @@ importers:
         specifier: workspace:*
         version: link:../node-logger
       '@digdir/dialogporten-schema':
-        specifier: 1.62.5-ade2f11
-        version: 1.62.5-ade2f11
+        specifier: 1.63.0
+        version: 1.63.0
       '@fastify/cookie':
         specifier: ^11.0.2
         version: 11.0.2
@@ -1627,8 +1627,8 @@ packages:
   '@digdir/designsystemet-theme@1.0.3':
     resolution: {integrity: sha512-Fdx0tGknFxp+dyMU95QvkGe2yNevjPTuW1FIKFcmZx/ZF5Txd9oZsSK6ylutlEc9R+BMd7yk2o5JI64x4ZqTgg==}
 
-  '@digdir/dialogporten-schema@1.62.5-ade2f11':
-    resolution: {integrity: sha512-gEc5zsHvfSv8efsBggZcGB3rF0dSd/4YjHWdfFtG6o2gHG8yzOX6I4KLjs35OzGtUFQm1xtTwz2OA2OTMzMcDQ==}
+  '@digdir/dialogporten-schema@1.63.0':
+    resolution: {integrity: sha512-zfMC47ZrdjVsY93OQkZK2qlZwX1D1vodD2LZa8nke5soF+H+iDswi8VHXj+I3w5HeA+W6LXpalMkLY6xFUSxXQ==}
     engines: {node: '22'}
 
   '@discoveryjs/json-ext@0.5.7':
@@ -7596,6 +7596,7 @@ packages:
   node-domexception@1.0.0:
     resolution: {integrity: sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==}
     engines: {node: '>=10.5.0'}
+    deprecated: Use your platform's native DOMException instead
 
   node-emoji@2.2.0:
     resolution: {integrity: sha512-Z3lTE9pLaJF47NyMhd4ww1yFTAP8YhYI8SleJiHzM46Fgpm5cnNzSl9XfzFNqbaz+VlJrIj3fXQ4DeN1Rjm6cw==}
@@ -11675,7 +11676,7 @@ snapshots:
 
   '@digdir/designsystemet-theme@1.0.3': {}
 
-  '@digdir/dialogporten-schema@1.62.5-ade2f11': {}
+  '@digdir/dialogporten-schema@1.63.0': {}
 
   '@discoveryjs/json-ext@0.5.7': {}
 
