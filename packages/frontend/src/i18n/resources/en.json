@@ -126,6 +126,7 @@
   "profile.landing.email": "Email",
   "profile.landing.phone": "Phone",
   "profile.landing.ssn": "Security number:",
+  "profile.settings.heading": "Settings for:",
   "route.archived": "Archive",
   "route.deleted": "Trash",
   "savedSearches.bookmark.item_input_helper": "Give saved search a title",

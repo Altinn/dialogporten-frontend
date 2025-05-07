@@ -9,26 +9,13 @@ import {
   Typography,
 } from '@altinn/altinn-components';
 import { BellIcon, CogIcon, HeartIcon } from '@navikt/aksel-icons';
-import type { Person } from 'bff-types-generated';
 import { t } from 'i18next';
 import { Link } from 'react-router-dom';
 import { useProfile } from '../../profile';
+import { buildAddressString } from '../../profile/buildAddressString';
 import { formatNorwegianSSN } from '../../profile/formatSSN';
 import { PageRoutes } from '../routes';
 import styles from './profile.module.css';
-
-const buildAddressString = (person: Person | undefined | null) => {
-  if (!person) {
-    return '';
-  }
-  const street = person.addressStreetName || '';
-  const houseNumber = person.addressHouseNumber || '';
-  const houseLetter = person.addressHouseLetter || '';
-  const municipalNumber = person.addressMunicipalNumber || '';
-  const municipalName = person.addressMunicipalName || '';
-
-  return `${street} ${houseNumber}${houseLetter}, ${municipalNumber} ${municipalName}`;
-};
 
 export const Profile = () => {
   const { user, isLoading } = useProfile();
