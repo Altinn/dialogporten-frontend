@@ -148,7 +148,12 @@ export const PageLayout: React.FC = () => {
         accountSearch,
       }),
       currentEndUserLabel: t('parties.current_end_user', { name: currentEndUser?.name ?? 'n/a' }),
-      isVirtualized: accounts.length > 20,
+      menuItemsVirtual: {
+        isVirtualized: true,
+        scrollRefStyles: {
+          maxHeight: 'calc(80vh - 10rem)',
+        },
+      },
       logoutButton: {
         label: t('word.log_out'),
         onClick: () => {
