@@ -1,5 +1,11 @@
 import { extendType, intArg, nonNull, stringArg } from 'nexus';
-import { addFavoriteActor, deleteFavoriteActor, getOrCreateProfile, updateLanguage } from '../functions/profile.ts';
+import {
+  addFavoriteActor,
+  addFavoriteActorToGroup,
+  deleteFavoriteActor,
+  getOrCreateProfile,
+  updateLanguage,
+} from '../functions/profile.ts';
 import { createSavedSearch, deleteSavedSearch, updateSavedSearch } from '../functions/savedsearch.ts';
 import { Response, SavedSearchInput, SavedSearches } from './index.ts';
 
@@ -83,7 +89,29 @@ export const AddFavoriteActor = extendType({
           await addFavoriteActor(ctx.session.get('pid'), actorId);
           return { success: true, message: 'FavoriteActor added successfully' };
         } catch (error) {
-          console.error('Failed to create saved search:', error);
+          console.error('Failed to add favorite actor:', error);
+          return error;
+        }
+      },
+    });
+  },
+});
+
+export const AddFavoriteActorToGroup = extendType({
+  type: 'Mutation',
+  definition(t) {
+    t.field('addFavoriteActorToGroup', {
+      type: Response,
+      args: {
+        actorId: stringArg(),
+        groupName: stringArg(),
+      },
+      resolve: async (_, { actorId, groupName }, ctx) => {
+        try {
+          await addFavoriteActorToGroup(ctx.session.get('pid'), actorId, groupName);
+          return { success: true, message: 'FavoriteActor added successfully' };
+        } catch (error) {
+          console.error('Failed to add favorite actor:', error);
           return error;
         }
       },
@@ -98,13 +126,14 @@ export const DeleteFavoriteActor = extendType({
       type: Response,
       args: {
         actorId: stringArg(),
+        groupId: stringArg(),
       },
-      resolve: async (_, { actorId }, ctx) => {
+      resolve: async (_, { actorId, groupId }, ctx) => {
         try {
-          await deleteFavoriteActor(ctx.session.get('pid'), actorId);
-          return { success: true, message: 'FavoriteActor deleted successfully' };
+          await deleteFavoriteActor(ctx.session.get('pid'), actorId, groupId);
+          return { success: true, message: 'Favorite Actor deleted successfully' };
         } catch (error) {
-          console.error('Failed to create saved search:', error);
+          console.error('Failed to delete favorite actor:', error);
           return error;
         }
       },
