@@ -4,3 +4,10 @@ mutation AddFavoriteActor($actorId: String!) {
     message
   }
 }
+
+mutation AddFavoriteActorToGroup($actorId: String!, $groupName: String!) {
+  addFavoriteActorToGroup(actorId: $actorId, groupName: $groupName) {
+    success
+    message
+  }
+}

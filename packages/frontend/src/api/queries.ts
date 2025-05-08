@@ -1,5 +1,6 @@
 import {
   type AddFavoriteActorMutation,
+  type AddFavoriteActorToGroupMutation,
   type CreateSavedSearchMutation,
   type DeleteFavoriteActorMutation,
   type DeleteSavedSearchMutation,
@@ -26,8 +27,10 @@ export const updateSavedSearch = (id: number, name: string): Promise<UpdateSaved
   graphQLSDK.UpdateSavedSearch({ id, name });
 export const addFavoriteActor = (actorId: string): Promise<AddFavoriteActorMutation> =>
   graphQLSDK.AddFavoriteActor({ actorId });
-export const deleteFavoriteActor = (actorId: string): Promise<DeleteFavoriteActorMutation> =>
-  graphQLSDK.DeleteFavoriteActor({ actorId });
+export const addFavoriteActorToGroup = (actorId: string, groupName: string): Promise<AddFavoriteActorToGroupMutation> =>
+  graphQLSDK.AddFavoriteActorToGroup({ actorId, groupName });
+export const deleteFavoriteActor = (actorId: string, groupId: string): Promise<DeleteFavoriteActorMutation> =>
+  graphQLSDK.DeleteFavoriteActor({ actorId, groupId });
 export const createSavedSearch = (name: string, data: SavedSearchInput): Promise<CreateSavedSearchMutation> =>
   graphQLSDK.CreateSavedSearch({ name, data });
 export const updateSystemLabel = (dialogId: string, label: SystemLabel): Promise<UpdateSystemLabelMutation> =>

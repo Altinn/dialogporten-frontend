@@ -2,7 +2,13 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ProfileQuery, User } from 'bff-types-generated';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { addFavoriteActor, deleteFavoriteActor, profile } from '../api/queries.ts';
+import { useParties } from '../api/hooks/useParties.ts';
+import {
+  addFavoriteActor as addFavoriteActorRaw,
+  addFavoriteActorToGroup as addFavoriteActorToGroupRaw,
+  deleteFavoriteActor as deleteFavoriteActorRaw,
+  profile,
+} from '../api/queries.ts';
 import { QUERY_KEYS } from '../constants/queryKeys.ts';
 
 export const useProfile = () => {
@@ -11,9 +17,17 @@ export const useProfile = () => {
     queryFn: () => profile(),
     refetchOnWindowFocus: false,
   });
+  const { parties } = useParties();
   const { i18n } = useTranslation();
+  const groups = data?.profile?.groups || [];
   const language = data?.profile?.language || i18n.language || 'nb';
-  const favoriteActors = data?.profile?.favoriteActors;
+
+  const favoritesGroup = groups.find((group) => group!.isfavorite)?.parties || [];
+  const favoriteActors = parties.filter((party) => {
+    if (favoritesGroup?.find((actor) => actor?.id!.includes(party.party))) return true;
+    if (party.isCurrentEndUser) return true;
+    return false;
+  });
   const queryClient = useQueryClient();
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: Full control of what triggers this code is needed
@@ -23,18 +37,17 @@ export const useProfile = () => {
     }
   }, [language]);
 
-  const toggleFavoriteActor = (party: string) => {
-    const isFavorite = !!favoriteActors?.find((actor) => actor?.includes(party));
-
-    if (isFavorite) {
-      deleteFavoriteActor(party).then(() => {
-        void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PROFILE] });
-      });
-    } else {
-      addFavoriteActor(party).then(() => {
-        void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PROFILE] });
-      });
-    }
+  const deleteFavoriteActor = (partyId: string, groupId: string) =>
+    deleteFavoriteActorRaw(partyId, groupId).then(() => {
+      void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PROFILE] });
+    });
+  const addFavoriteActor = (partyId: string) =>
+    addFavoriteActorRaw(partyId).then(() => {
+      void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PROFILE] });
+    });
+  const addFavoriteActorToGroup = async (partyId: string, groupName: string) => {
+    await addFavoriteActorToGroupRaw(partyId, groupName);
+    void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PROFILE] });
   };
 
   return {
@@ -42,7 +55,10 @@ export const useProfile = () => {
     isLoading,
     language,
     user: data?.profile?.user as User,
+    groups,
     favoriteActors,
-    toggleFavoriteActor,
+    deleteFavoriteActor,
+    addFavoriteActor,
+    addFavoriteActorToGroup,
   };
 };
