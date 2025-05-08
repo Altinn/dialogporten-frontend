@@ -1,0 +1,36 @@
+
+> bff-types-generated@ build /Users/digdir/dialogporten-frontend/packages/bff-types-generated
+> pnpm generate:types-gql
+
+
+> bff-types-generated@ generate:types-gql /Users/digdir/dialogporten-frontend/packages/bff-types-generated
+> NODE_OPTIONS="--loader ts-node/esm --no-warnings=ExperimentalWarning" graphql-codegen-esm --config codegen.ts
+
+[STARTED] Parse Configuration
+[SUCCESS] Parse Configuration
+[STARTED] Generate outputs
+[STARTED] Generate to ./generated/sdk.ts
+[STARTED] Generate to ./generated/schema.graphql
+[STARTED] Load GraphQL schemas
+[STARTED] Load GraphQL schemas
+[SUCCESS] Generate outputs
+ ELIFECYCLE  Command failed with exit code 1.
+ ELIFECYCLE  Command failed with exit code 1.
+
+> bff-types-generated@ build /Users/digdir/dialogporten-frontend/packages/bff-types-generated
+> pnpm generate:types-gql
+
+
+> bff-types-generated@ generate:types-gql /Users/digdir/dialogporten-frontend/packages/bff-types-generated
+> NODE_OPTIONS="--loader ts-node/esm --no-warnings=ExperimentalWarning" graphql-codegen-esm --config codegen.ts
+
+[STARTED] Parse Configuration
+[SUCCESS] Parse Configuration
+[STARTED] Generate outputs
+[STARTED] Generate to ./generated/sdk.ts
+[STARTED] Generate to ./generated/schema.graphql
+[STARTED] Load GraphQL schemas
+[STARTED] Load GraphQL schemas
+[SUCCESS] Generate outputs
+ ELIFECYCLE  Command failed with exit code 1.
+ ELIFECYCLE  Command failed with exit code 1.

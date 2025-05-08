@@ -45,7 +45,7 @@ export const Actors = () => {
   const [searchValue, setSearchValue] = useState('');
   const showDeletedActors = false; // TODO: Implement toolbar filter for deleted actors
   const [isPreselectedActor, setIsPreselectedActor] = useState(false);
-  const { favoriteActors, profile, user, toggleFavoriteActor } = useProfile();
+  const { profile, user, toggleFavoriteActor } = useProfile();
   const navigate = useNavigate();
 
   // TODO: Remove this when we have implemented the new profile API
@@ -71,12 +71,12 @@ export const Actors = () => {
     );
   }
   const favoriteParties = parties.filter((party) => {
-    if (favoriteActors?.find((actor) => actor?.includes(party.party))) return true;
+    // if (favoriteActors?.find((actor) => actor?.includes(party.party))) return true;
     if (party.isCurrentEndUser) return true;
     return false;
   });
   const nonFavoriteParties = parties.filter((party) => {
-    if (!favoriteActors?.find((actor) => actor?.includes(party.party)) && !party.isCurrentEndUser) return true;
+    // if (!favoriteActors?.find((actor) => actor?.includes(party.party)) && !party.isCurrentEndUser) return true;
     return false;
   });
   const urnToOrgNr = (urn: string) => {
@@ -92,7 +92,7 @@ export const Actors = () => {
   const partyFieldFragmentToAccountListItem = (parties: PartyFieldsFragment[]) => {
     return parties.map((party) => {
       const isOrganization = party.partyType === 'Organization';
-      const favourite = !!favoriteActors?.find((actor) => actor?.includes(party.party));
+      const favourite = false; //!!favoriteActors?.find((actor) => actor?.includes(party.party));
       return {
         id: party.party,
         type: party.partyType as AccountListItemType,

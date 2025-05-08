@@ -3,6 +3,8 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryColumn,
@@ -21,8 +23,12 @@ export class ProfileTable {
   @OneToMany('saved_search', 'profile')
   savedSearches: SavedSearch[];
 
-  @Column('text', { array: true })
-  favoriteActors: string[];
+  @OneToMany(
+    () => Group,
+    (group) => group.profile,
+    { cascade: true },
+  )
+  groups: Group[];
 
   @CreateDateColumn()
   createdAt: Date;
@@ -34,6 +40,41 @@ export class ProfileTable {
   deletedAt: Date;
 }
 
+@Entity({ name: 'party' })
+export class Party {
+  @PrimaryColumn()
+  id: number;
+
+  @ManyToMany(
+    () => Group,
+    (group) => group.parties,
+  )
+  groups: Group[];
+}
+
+@Entity({ name: 'group' })
+export class Group {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
+  name: string;
+
+  @Column({ default: false })
+  isfavorite: boolean;
+
+  // Relationship to Profile
+  @ManyToOne(
+    () => ProfileTable,
+    (profile) => profile.groups,
+  )
+  profile: ProfileTable;
+
+  // Relationship to Parties (maintained from original design)
+  @ManyToMany(() => Party, { cascade: true })
+  @JoinTable()
+  parties: Party[];
+}
 export interface Filter {
   id: string;
   value: string;
@@ -43,6 +84,7 @@ export interface SavedSearchData {
   searchString?: string;
   fromView?: string;
 }
+
 @Entity({ name: 'saved_search' })
 export class SavedSearch {
   @PrimaryGeneratedColumn()

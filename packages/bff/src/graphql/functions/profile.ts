@@ -12,7 +12,7 @@ export const getOrCreateProfile = async (pid: string, sessionLocale: string): Pr
     const newProfile = new ProfileTable();
     newProfile.pid = pid;
     newProfile.language = sessionLocale || 'nb';
-    newProfile.favoriteActors = [];
+    newProfile.groups = [];
 
     const savedProfile = await ProfileRepository!.save(newProfile);
     if (!savedProfile) {
@@ -37,16 +37,16 @@ export const addFavoriteActor = async (pid: string, actorId: string) => {
   if (!currentProfile) {
     throw new Error('Profile not found');
   }
-  const currentFavorites = currentProfile.favoriteActors || [];
-  if (currentFavorites.includes(actorId)) {
-    console.info(`Actor ${actorId} already exists in favorites, skipping addition`);
-    return currentProfile;
-  }
+  // const currentFavorites = currentProfile.favoriteActors || [];
+  // if (currentFavorites.includes(actorId)) {
+  //   console.info(`Actor ${actorId} already exists in favorites, skipping addition`);
+  //   return currentProfile;
+  // }
 
-  const updatedFavorites = [...currentFavorites, actorId];
+  // const updatedFavorites = [...currentFavorites, actorId];
 
   const updatedProfile = await ProfileRepository!.update(pid, {
-    favoriteActors: updatedFavorites,
+    // favoriteActors: updatedFavorites,
   });
 
   if (!updatedProfile) {
@@ -64,7 +64,7 @@ export const deleteFavoriteActor = async (pid: string, actorId: string) => {
   }
   const updatedProfile = await ProfileRepository!.update(pid, {
     ...currentProfile,
-    favoriteActors: currentProfile.favoriteActors.filter((actor: string) => actor !== actorId),
+    // favoriteActors: [], // currentProfile.favoriteActors.filter((actor: string) => actor !== actorId),
   });
   if (!updatedProfile) {
     throw new Error('Failed to delete profile');

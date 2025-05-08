@@ -13,7 +13,7 @@ export const useProfile = () => {
   });
   const { i18n } = useTranslation();
   const language = data?.profile?.language || i18n.language || 'nb';
-  const favoriteActors = data?.profile?.favoriteActors;
+  const favoriteActors = undefined; //data?.profile?.groups;
   const queryClient = useQueryClient();
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: Full control of what triggers this code is needed
@@ -24,7 +24,7 @@ export const useProfile = () => {
   }, [language]);
 
   const toggleFavoriteActor = (party: string) => {
-    const isFavorite = !!favoriteActors?.find((actor) => actor?.includes(party));
+    const isFavorite = false; //!!favoriteActors?.find((actor) => actor?.includes(party));
 
     if (isFavorite) {
       deleteFavoriteActor(party).then(() => {
