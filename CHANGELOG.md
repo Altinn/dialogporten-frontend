@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.32.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.31.0...v1.32.0) (2025-05-09)
+
+
+### Features
+
+* Added profile data to Actor page. ([00bb414](https://github.com/Altinn/dialogporten-frontend/commit/00bb4141cf2fbff74c7b9a16c9f1df9537bb3a98))
+
+
+### Bug Fixes
+
+* Make actor lists responsive ([#2130](https://github.com/Altinn/dialogporten-frontend/issues/2130)) ([f8bcc33](https://github.com/Altinn/dialogporten-frontend/commit/f8bcc3384a8b19b1301fe55b882c4ddeda14ab99))
+
 ## [1.31.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.30.2...v1.31.0) (2025-05-06)
 
 
