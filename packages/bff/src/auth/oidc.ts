@@ -110,15 +110,41 @@ const providerConfig = await fetchOpenIDConfig(issuerURL);
 export const handleLogout = async (request: FastifyRequest, reply: FastifyReply) => {
   const { oidc_url, hostname } = config;
   const token: SessionStorageToken | undefined = request.session.get('token');
-  const postLogoutRedirectUri = `${hostname}/loggedout`;
 
   if (token?.id_token) {
+    const postLogoutRedirectUri = `${hostname}/loggedout`;
     const logoutRedirectUrl = `https://login.${oidc_url}/logout?post_logout_redirect_uri=${postLogoutRedirectUri}&id_token_hint=${token.id_token}`;
     await request.session.destroy();
     reply.redirect(logoutRedirectUrl);
   } else {
     reply.code(401);
   }
+};
+
+export const handleFrontChannelLogout = async (request: FastifyRequest, reply: FastifyReply) => {
+  const { iss, sid } = request.query as { iss?: string; sid?: string };
+  const issProvider = `https://${oidc_url}/`;
+
+  if (iss !== issProvider) {
+    return reply.status(400).send({ error: 'Invalid issuer' });
+  }
+
+  if (!sid) {
+    return reply.status(400).send({ error: 'Missing sid' });
+  }
+
+  const sessionStore = request.sessionStore;
+  sessionStore.get(sid, (err, result) => {
+    if (!err && result) {
+      sessionStore.destroy(sid, (err) => {
+        if (err) {
+          logger.error('Error destroying session:', err);
+          return reply.status(500).send({ error: 'Failed to destroy session' });
+        }
+        return reply.status(200).send();
+      });
+    }
+  });
 };
 
 export const handleAuthRequest = async (request: FastifyRequest, reply: FastifyReply) => {
@@ -254,6 +280,7 @@ const plugin: FastifyPluginAsync<CustomOICDPluginOptions> = async (fastify, opti
   });
 
   fastify.get('/api/logout', { preHandler: fastify.verifyToken(false) }, handleLogout);
+  fastify.get('/api/frontchannel-logout', handleFrontChannelLogout);
 };
 
 export default fp(plugin, {

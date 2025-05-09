@@ -1,1 +1,1 @@
-export { Logout } from './Logout';
+export { LoggedOut } from './LoggedOut.tsx';
