@@ -25,6 +25,7 @@ import { useAccounts } from './Accounts/useAccounts.tsx';
 import { useFooter } from './Footer';
 import { useGlobalMenu } from './GlobalMenu';
 import { useAutocomplete, useSearchString } from './Search';
+import { useWindowSize } from './useWindowSize.tsx';
 
 export const ProtectedPageLayout = () => {
   const { isAuthenticated } = useAuth();
@@ -119,6 +120,8 @@ export const PageLayout: React.FC = () => {
     }
   };
 
+  const windowSize = useWindowSize();
+
   const headerProps: HeaderProps = {
     currentAccount: selectedAccount,
     logo: {
@@ -151,7 +154,8 @@ export const PageLayout: React.FC = () => {
       menuItemsVirtual: {
         isVirtualized: true,
         scrollRefStyles: {
-          maxHeight: 'calc(80vh - 10rem)',
+          maxHeight: windowSize.isTabletOrSmaller ? 'calc(100vh - 14rem)' : 'calc(80vh - 10rem)',
+          paddingBottom: '0.5rem',
         },
       },
       logoutButton: {
