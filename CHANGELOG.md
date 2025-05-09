@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.33.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.32.1...v1.33.0) (2025-05-09)
+
+
+### Features
+
+* add route for front channel logout responsibility ([#2134](https://github.com/Altinn/dialogporten-frontend/issues/2134)) ([0085f1e](https://github.com/Altinn/dialogporten-frontend/commit/0085f1efa6933058ce6fa95474354d0e048bc7ac))
+
 ## [1.32.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.32.0...v1.32.1) (2025-05-09)
 
 
