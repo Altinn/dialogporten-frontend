@@ -19,6 +19,7 @@ import { createFiltersURLQuery } from '../../auth';
 import { EmptyState } from '../../components/EmptyState/EmptyState.tsx';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
 import { useSearchString } from '../../components/PageLayout/Search/';
+import { useWindowSize } from '../../components/PageLayout/useWindowSize.tsx';
 import { SaveSearchButton } from '../../components/SavedSearchButton/SaveSearchButton.tsx';
 import { isSavedSearchDisabled } from '../../components/SavedSearchButton/savedSearchEnabled.ts';
 import { PageRoutes } from '../routes.ts';
@@ -103,6 +104,8 @@ export const Inbox = ({ viewType }: InboxProps) => {
     collapseGroups: displayAsSearchResults,
   });
 
+  const windowSize = useWindowSize();
+
   if (unableToLoadParties) {
     return (
       <PageBase>
@@ -141,7 +144,8 @@ export const Inbox = ({ viewType }: InboxProps) => {
                 menuItemsVirtual: {
                   isVirtualized: true,
                   scrollRefStyles: {
-                    maxHeight: 'calc(80vh - 10rem)',
+                    maxHeight: windowSize.isTabletOrSmaller ? 'calc(100vh - 14rem)' : 'calc(80vh - 10rem)',
+                    paddingBottom: '0.5rem',
                   },
                 },
               }}
