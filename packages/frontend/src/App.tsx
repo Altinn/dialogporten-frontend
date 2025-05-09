@@ -2,7 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { ProtectedPageLayout } from './components/PageLayout/PageLayout.tsx';
 import { DialogDetailsPage } from './pages/DialogDetailsPage';
 import { Inbox } from './pages/Inbox';
-import { Logout } from './pages/LogoutPage';
+import { LoggedOut } from './pages/LogoutPage';
 import { Activities } from './pages/Profile/Activities/Activities.tsx';
 import { Actors } from './pages/Profile/Actors/Actors.tsx';
 import { Notifications } from './pages/Profile/Notifications/Notifications.tsx';
@@ -12,6 +12,7 @@ import { SavedSearchesPage } from './pages/SavedSearches';
 import { PageRoutes } from './pages/routes.ts';
 
 import './app.css';
+import { FrontChannelLogout } from './pages/LogoutPage/FrontChannelLogout.tsx';
 
 function App() {
   return (
@@ -33,7 +34,8 @@ function App() {
           <Route path={PageRoutes.activities} element={<Activities />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Route>
-        <Route path="/loggedout" element={<Logout />} />
+        <Route path="/loggedout" element={<LoggedOut />} />
+        <Route path="/logout" element={<FrontChannelLogout />} />
       </Routes>
     </div>
   );

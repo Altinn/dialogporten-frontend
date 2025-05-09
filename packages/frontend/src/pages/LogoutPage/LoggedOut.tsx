@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import styles from './logout.module.css';
 
-export const Logout = () => {
+export const LoggedOut = () => {
   const { t } = useTranslation();
   return (
     <main className={styles.logout}>
