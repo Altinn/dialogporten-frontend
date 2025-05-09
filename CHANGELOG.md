@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.32.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.32.0...v1.32.1) (2025-05-09)
+
+
+### Bug Fixes
+
+* Fix mobile actor list styles ([#2132](https://github.com/Altinn/dialogporten-frontend/issues/2132)) ([a603be7](https://github.com/Altinn/dialogporten-frontend/commit/a603be717147a03ce5a1549b81e0ea54863444b4))
+
 ## [1.32.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.31.0...v1.32.0) (2025-05-09)
 
 
