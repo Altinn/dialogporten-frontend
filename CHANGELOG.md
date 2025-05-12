@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.33.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.33.0...v1.33.1) (2025-05-12)
+
+
+### Bug Fixes
+
+* remove trailing slash in uri for issuer check ([#2137](https://github.com/Altinn/dialogporten-frontend/issues/2137)) ([f49faae](https://github.com/Altinn/dialogporten-frontend/commit/f49faae9aac6e8917517fe08e81dc4f024774688))
+
 ## [1.33.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.32.1...v1.33.0) (2025-05-09)
 
 
