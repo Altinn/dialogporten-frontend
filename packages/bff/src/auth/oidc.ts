@@ -123,7 +123,7 @@ export const handleLogout = async (request: FastifyRequest, reply: FastifyReply)
 
 export const handleFrontChannelLogout = async (request: FastifyRequest, reply: FastifyReply) => {
   const { iss, sid } = request.query as { iss?: string; sid?: string };
-  const issProvider = `https://${oidc_url}/`;
+  const issProvider = `https://${oidc_url}`;
 
   if (iss !== issProvider) {
     return reply.status(400).send({ error: 'Invalid issuer' });
