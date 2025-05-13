@@ -235,6 +235,7 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
   const { data, isSuccess, isLoading, isError } = useQuery<GetDialogByIdQuery>({
     queryKey: [QUERY_KEYS.DIALOG_BY_ID, id, organizations],
     staleTime: 1000 * 60 * 30,
+    refetchInterval: 1000 * 60 * 10,
     refetchOnWindowFocus: false,
     retry: 3,
     queryFn: () =>
