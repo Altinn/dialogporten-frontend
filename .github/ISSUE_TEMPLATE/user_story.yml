@@ -1,7 +1,7 @@
 name: User Story 😃
 description: Create a new user story
 labels: []
-type: user_story
+type: "user story"
 body:
   - type: markdown
     attributes:
