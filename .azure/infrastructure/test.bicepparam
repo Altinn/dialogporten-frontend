@@ -6,14 +6,6 @@ param redisVersion = '6.0'
 
 param keyVaultSourceKeys = json(readEnvironmentVariable('KEY_VAULT_SOURCE_KEYS'))
 
-// Container App Environment Configuration
-param containerAppEnvWorkloadProfiles = [
-  {
-    name: 'Consumption'
-    maximumCount: 10
-  }
-]
-
 // secrets
 param dialogportenPgAdminPassword = readEnvironmentVariable('PG_ADMIN_PASSWORD')
 param sourceKeyVaultSubscriptionId = readEnvironmentVariable('SOURCE_KEY_VAULT_SUBSCRIPTION_ID')
@@ -46,3 +38,11 @@ param applicationGatewayConfiguration = {
 
 // Altinn Product Dialogporten: Developers Dev
 param sshJumperAdminLoginGroupObjectId = 'c12e51e3-5cbd-4229-8a31-5394c423fb5f'
+
+// Container App Environment Configuration
+param containerAppEnvWorkloadProfiles = [
+  {
+    name: 'Consumption'
+    maximumCount: 10
+  }
+]

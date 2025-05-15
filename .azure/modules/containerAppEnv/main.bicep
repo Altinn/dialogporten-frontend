@@ -42,7 +42,7 @@ resource containerAppEnv 'Microsoft.App/managedEnvironments@2024-10-02-preview' 
     availabilityZones: zoneRedundancyEnabled ? [
       '1', '2','3'
     ] : null
-    workloadProfiles: !empty(workloadProfiles) ? workloadProfiles : null
+    workloadProfiles: workloadProfiles
   }
   tags: tags
 }
