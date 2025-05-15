@@ -375,3 +375,6 @@ $RECYCLE.BIN/
 
 # certs
 certs/*
+
+# Cursor IDE
+.cursor
