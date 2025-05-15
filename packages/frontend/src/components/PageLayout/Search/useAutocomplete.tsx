@@ -1,4 +1,4 @@
-import type { AutocompleteItemProps, AutocompleteProps } from '@altinn/altinn-components';
+import type { AutocompleteItemProps, AutocompleteProps, QueryItemType } from '@altinn/altinn-components';
 import { useQuery } from '@tanstack/react-query';
 import type {
   DialogStatus,
@@ -171,61 +171,87 @@ export const createSendersForAutocomplete = (
     };
   }
 
-  const splittedSearchValue = searchValue.split(/\s+/).filter(Boolean);
+  const searchTerms = searchValue.split(/\s+/).filter(Boolean);
+  const availableOrgs = dialogs.map((dialog) => dialog.org);
 
-  const { items } = splittedSearchValue.reduce(
-    (acc, searchString, _, array) => {
-      const senderDetected = dialogs.find(
-        (dialog) =>
-          dialog.org === searchString.toLowerCase() ||
-          dialog.sender.name.toLowerCase().includes(searchString.toLowerCase()),
+  const availableOrgsMatchPattern = availableOrgs.map((org) => {
+    const translatedOrgNames = ['nb', 'nn', 'en']
+      .map((lang) => {
+        const orgName = getOrganization(organizations || [], org, lang)?.name;
+        return orgName ? orgName.toLowerCase() : '';
+      })
+      .filter((a) => !!a);
+    return {
+      org,
+      content: translatedOrgNames,
+    };
+  });
+
+  const registeredOrgs: string[] = [];
+  const registeredSearchValues: string[] = [];
+
+  const items = searchTerms.map((searchTerm) => {
+    const searchTermLower = searchTerm.toLowerCase();
+    const matchedOrg = availableOrgsMatchPattern.find((availableOrg) => {
+      return (
+        (searchTermLower.length >= 3 && availableOrg.org.toLowerCase() === searchTermLower) ||
+        availableOrg.content.some((name) => name.includes(searchTermLower))
       );
+    });
 
-      if (searchString.length >= 3 && senderDetected) {
-        const serviceOwner = getOrganization(organizations || [], senderDetected.org ?? '', 'nb');
-        const unmatchedSearchArr = array.filter((s) => s.toLowerCase() !== searchString.toLowerCase());
-        const searchQuery = unmatchedSearchArr.join(' ');
-        const senderName = senderDetected.sender.name || senderDetected.org;
+    if (matchedOrg && searchTermLower.length >= 3) {
+      const serviceOwner = getOrganization(organizations || [], matchedOrg?.org, 'nb');
+      const searchCopy = [...searchTerms];
+      const matchIndex = searchCopy.findIndex((term) => term.toLowerCase() === searchTermLower);
+      if (matchIndex !== -1) {
+        searchCopy.splice(matchIndex, 1);
+      }
+      const searchQuery = searchCopy.join(' ');
 
-        if (!acc.items.some((existingItem) => existingItem.id === senderDetected.org)) {
-          acc.items.push({
-            id: senderDetected.org ?? serviceOwner?.name ?? '',
-            groupId: SENDERS_GROUP_ID,
-            title: senderName,
-            params: [{ type: 'filter', label: senderName }],
-            type: TYPE_SUGGEST,
-            as: (props: AutocompleteItemProps) => {
-              const messageId = searchQuery
-                ? 'search.autocomplete.searchForSender.withQuery'
-                : 'search.autocomplete.searchForSender.withoutQuery';
-              return (
-                <Link
-                  {...(props as LinkProps)}
-                  to={`/${pruneSearchQueryParams(location.search, { org: senderDetected.org, search: searchQuery })}`}
-                  aria-label={t(messageId, {
-                    sender: senderName,
-                    query: searchQuery ?? '',
-                  })}
-                />
-              );
-            },
-            interactive: true,
-          });
-        }
+      if (registeredSearchValues.includes(searchQuery)) {
+        return null;
       }
 
-      return acc;
-    },
-    {
-      items: [] as AutocompleteItemProps[],
-    },
-  );
+      registeredOrgs.push(matchedOrg.org);
+      registeredSearchValues.push(searchQuery);
 
-  const mappedSenderWithKeywords = items.map((item) => {
-    const filteredSearchValues = splittedSearchValue.filter(
+      const senderName = serviceOwner?.name || matchedOrg?.org;
+      const linkTitleMessageId = searchQuery
+        ? 'search.autocomplete.searchForSender.withQuery'
+        : 'search.autocomplete.searchForSender.withoutQuery';
+      const linkTitle = t(linkTitleMessageId, {
+        sender: senderName,
+        query: searchQuery,
+      });
+
+      return {
+        id: searchValue,
+        groupId: SENDERS_GROUP_ID,
+        title: linkTitle,
+        params: [
+          { type: 'filter', label: senderName },
+          ...(searchQuery ? [{ type: 'search' as QueryItemType, label: searchQuery }] : []),
+        ],
+        type: TYPE_SUGGEST,
+        as: (props: AutocompleteItemProps) => {
+          return (
+            <Link
+              {...(props as LinkProps)}
+              to={`/${pruneSearchQueryParams(location.search, { org: matchedOrg.org, search: searchQuery })}`}
+              aria-label={linkTitle}
+            />
+          );
+        },
+        interactive: true,
+      };
+    }
+  });
+
+  const mappedSenderWithKeywords = items.filter(Boolean).map((item) => {
+    const filteredSearchValues = searchTerms.filter(
       (searchString) =>
-        !item.title!.toLowerCase().includes(searchString.toLowerCase()) &&
-        !item.id!.toLowerCase().includes(searchString.toLowerCase()),
+        !item?.title!.toLowerCase().includes(searchString.toLowerCase()) &&
+        !item?.id!.toLowerCase().includes(searchString.toLowerCase()),
     );
 
     return {
@@ -242,7 +268,7 @@ export const createSendersForAutocomplete = (
   });
 
   return {
-    items: mappedSenderWithKeywords,
+    items: mappedSenderWithKeywords as AutocompleteItemProps[],
     groups: {
       [SENDERS_GROUP_ID]: { title: t('search.suggestions') },
     },

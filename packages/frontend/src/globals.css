@@ -5,8 +5,6 @@
   /* Layer 1 - Semantic colors */
   --text-neutral-subtle: #5b6471;
   --text-accent-subtle: #0163ba;
-  /* work-around until tinted is available for colors in brand/theme in altinn-components */
-  --ds-color-neutral-surface-default: var(--ds-color-neutral-surface-tinted);
 }
 
 body,

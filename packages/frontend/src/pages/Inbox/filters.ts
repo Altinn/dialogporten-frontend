@@ -265,6 +265,7 @@ export const readFiltersFromURLQuery = (query: string): FilterState => {
 interface NormalizeFilterDefaults {
   filters: Partial<FilterState>;
   viewType?: InboxViewType;
+  searchQuery?: string;
 }
 
 export const presetFiltersByView: Record<InboxViewType, Partial<GetAllDialogsForPartiesQueryVariables>> = {
@@ -308,6 +309,7 @@ export const presetFiltersByView: Record<InboxViewType, Partial<GetAllDialogsFor
 export const normalizeFilterDefaults = ({
   filters,
   viewType,
+  searchQuery,
 }: NormalizeFilterDefaults): GetAllDialogsForPartiesQueryVariables => {
   const SYSTEM_LABEL_STATUSES = [SystemLabel.Bin, SystemLabel.Archive] as string[];
   const { updatedAfter, ...baseFilters } = filters;
@@ -335,7 +337,7 @@ export const normalizeFilterDefaults = ({
   }
   normalized.status = remainingStatus.length > 0 ? remainingStatus : undefined;
 
-  if (hasFilters && viewType === 'inbox') {
+  if ((hasFilters || searchQuery) && viewType === 'inbox') {
     return normalized;
   }
 
