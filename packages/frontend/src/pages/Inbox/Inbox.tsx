@@ -11,7 +11,7 @@ import {
 import type { FilterState } from '@altinn/altinn-components/dist/types/lib/components/Toolbar/Toolbar';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSearchParams } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { type InboxViewType, useDialogs } from '../../api/hooks/useDialogs.tsx';
 import { useDialogsCount } from '../../api/hooks/useDialogsCount.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
@@ -42,6 +42,9 @@ export const Inbox = ({ viewType }: InboxProps) => {
     isError: unableToLoadParties,
     isLoading: isLoadingParties,
   } = useParties();
+
+  const location = useLocation();
+
   const [filterState, setFilterState] = useState<FilterState>(readFiltersFromURLQuery(location.search));
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -127,6 +130,17 @@ export const Inbox = ({ viewType }: InboxProps) => {
       </PageBase>
     );
   }
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: This hook does not specify all of its dependencies
+  useEffect(() => {
+    const scrollToId = location?.state?.scrollToId;
+    const listElToScroll = document.getElementById(scrollToId);
+    if (!isLoading) {
+      if (listElToScroll) {
+        listElToScroll.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }, [isLoading]);
 
   return (
     <PageBase margin="page">

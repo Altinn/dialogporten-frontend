@@ -120,7 +120,7 @@ export const DialogDetailsPage = () => {
           padding={2}
           backButton={{
             label: t('word.back'),
-            as: (props: LinkProps) => <Link {...props} to={previousPath} />,
+            as: (props: LinkProps) => <Link {...props} to={previousPath} state={{ scrollToId: id }} />,
           }}
         />
         <DialogDetails dialog={dialog} isLoading={isLoading} isAuthLevelTooLow={isAuthLevelTooLow} />
