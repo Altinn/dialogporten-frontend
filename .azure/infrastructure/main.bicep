@@ -74,6 +74,7 @@ module vnet '../modules/vnet/main.bicep' = {
     location: location
     tags: tags
     applicationGatewayWhitelistedIps: applicationGatewayWhitelistedIps
+    environment: environment
   }
 }
 

@@ -7,6 +7,9 @@ param location string
 @description('The tags to apply to the resources')
 param tags object
 
+@description('The environment for the deployment')
+param environment string
+
 @description('Optional list of IP addresses/ranges to whitelist for incoming traffic')
 param applicationGatewayWhitelistedIps array = []
 
@@ -375,6 +378,14 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-09-01' = {
             id: containerAppEnvironmentNSG.id
           }
           privateLinkServiceNetworkPolicies: 'Disabled'
+          delegations: [
+            {
+              name: 'containerAppEnvironment'
+              properties: {
+                serviceName: 'Microsoft.App/environments'
+              }
+            }
+          ]
         }
       }
       {
