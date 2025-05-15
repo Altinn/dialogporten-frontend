@@ -7,9 +7,6 @@ param location string
 @description('The tags to apply to the resources')
 param tags object
 
-@description('The environment for the deployment')
-param environment string
-
 @description('Optional list of IP addresses/ranges to whitelist for incoming traffic')
 param applicationGatewayWhitelistedIps array = []
 
