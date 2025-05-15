@@ -6,6 +6,14 @@ param redisVersion = '6.0'
 
 param keyVaultSourceKeys = json(readEnvironmentVariable('KEY_VAULT_SOURCE_KEYS'))
 
+// Container App Environment Configuration
+param containerAppEnvWorkloadProfiles = [
+  {
+    name: 'Consumption'
+    maximumCount: 10
+  }
+]
+
 // secrets
 param dialogportenPgAdminPassword = readEnvironmentVariable('PG_ADMIN_PASSWORD')
 param sourceKeyVaultSubscriptionId = readEnvironmentVariable('SOURCE_KEY_VAULT_SUBSCRIPTION_ID')
