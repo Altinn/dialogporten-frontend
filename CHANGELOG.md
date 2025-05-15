@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.34.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.33.1...v1.34.0) (2025-05-15)
+
+
+### Features
+
+* Scroll to previous position on going back from dialog details ([#2141](https://github.com/Altinn/dialogporten-frontend/issues/2141)) ([7987abe](https://github.com/Altinn/dialogporten-frontend/commit/7987abeb9c24d6fc310847091c540c01883d22f5))
+
+
+### Bug Fixes
+
+* ensure fresh dialog token by setting refetch interval of maximum 10 minutes ([#2142](https://github.com/Altinn/dialogporten-frontend/issues/2142)) ([b410039](https://github.com/Altinn/dialogporten-frontend/commit/b4100390f89ca7415561995f63f8db2c1377326d))
+
 ## [1.33.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.33.0...v1.33.1) (2025-05-12)
 
 
