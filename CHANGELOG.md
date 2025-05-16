@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.34.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.34.0...v1.34.1) (2025-05-16)
+
+
+### Bug Fixes
+
+* clear cookie (if present) after destroying session for front channel logout ([#2155](https://github.com/Altinn/dialogporten-frontend/issues/2155)) ([518092a](https://github.com/Altinn/dialogporten-frontend/commit/518092a794b72b57f2054eea011c2ab8c2f6da5d))
+* suggested order order + query will produce the same outcome ([#2153](https://github.com/Altinn/dialogporten-frontend/issues/2153)) ([6268645](https://github.com/Altinn/dialogporten-frontend/commit/6268645e4a368c6f86681990fedb9cb927e55937))
+
 ## [1.34.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.33.1...v1.34.0) (2025-05-15)
 
 
