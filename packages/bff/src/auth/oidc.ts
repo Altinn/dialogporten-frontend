@@ -141,6 +141,14 @@ export const handleFrontChannelLogout = async (request: FastifyRequest, reply: F
           logger.error('Error destroying session:', err);
           return reply.status(500).send({ error: 'Failed to destroy session' });
         }
+
+        // Clear the session cookie to prevent Fastify from creating a new session for a deleted session ID
+        reply.clearCookie('arbeidsflate', {
+          path: '/',
+          httpOnly: true,
+          secure: false,
+        });
+
         return reply.status(200).send();
       });
     }
