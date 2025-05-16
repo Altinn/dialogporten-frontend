@@ -1,6 +1,7 @@
 import type { DialogStatus, SystemLabel } from 'bff-types-generated';
 import { describe, expect, it } from 'vitest';
 import type { InboxViewType } from '../../../api/hooks/useDialogs.tsx';
+import { organizations } from '../../../mocks/data/base/organizations.ts';
 import type { InboxItemInput } from '../../../pages/Inbox/InboxItemInput.ts';
 import { createSendersForAutocomplete } from './useAutocomplete.tsx';
 
@@ -68,29 +69,29 @@ describe('generateSendersAutocompleteBySearchString', () => {
   });
 
   it('should return matched sender when search value matches sender name', () => {
-    const resultSKD = createSendersForAutocomplete('skat', mockDialogs as InboxItemInput[]);
-    const resultSSB = createSendersForAutocomplete('sentralby', mockDialogs as InboxItemInput[]);
+    const resultSKD = createSendersForAutocomplete('skat', mockDialogs as InboxItemInput[], organizations);
+    const resultSSB = createSendersForAutocomplete('sentralby', mockDialogs as InboxItemInput[], organizations);
 
     expect(resultSKD.items).toHaveLength(1);
-    expect(resultSKD.items[0].title).toBe('Skatteetaten');
+    expect(resultSKD.items[0].title).toBe('Søk etter avsender Skatteetaten');
     expect(resultSKD.groups).toEqual({
       senders: { title: 'Søkeforslag' },
     });
 
     expect(resultSSB.items).toHaveLength(1);
-    expect(resultSSB.items[0].title).toBe('Statistisk sentralbyrå');
+    expect(resultSSB.items[0].title).toBe('Søk etter avsender Statistisk sentralbyrå');
     expect(resultSSB.groups).toEqual({
       senders: { title: 'Søkeforslag' },
     });
   });
 
   it('should return matched sender and unmatched search string', () => {
-    const resultSKD = createSendersForAutocomplete('skat test1', mockDialogs as InboxItemInput[]);
+    const resultSKD = createSendersForAutocomplete('skat test1', mockDialogs as InboxItemInput[], organizations);
     //@ts-ignore Property 'params' does not exist on type 'AutocompleteItemProps'.
     const searchUnmatechedValue = resultSKD.items[0].params.find((item) => item.type === 'search');
     expect(searchUnmatechedValue.type === 'search');
     expect(searchUnmatechedValue.label === 'test1');
-    expect(resultSKD.items[0].title).toBe('Skatteetaten');
+    expect(resultSKD.items[0].title).toBe('Søk etter avsender Skatteetaten med fritekst test1');
     expect(resultSKD.items).toHaveLength(1);
 
     expect(resultSKD.groups).toEqual({
@@ -99,11 +100,11 @@ describe('generateSendersAutocompleteBySearchString', () => {
   });
 
   it('should return all matched senders and unmatched search string if provided', () => {
-    const result = createSendersForAutocomplete('skat sentralby test1', mockDialogs as InboxItemInput[]);
+    const result = createSendersForAutocomplete('skat sentralby test1', mockDialogs as InboxItemInput[], organizations);
     //@ts-ignore Property 'params' does not exist on type 'AutocompleteItemProps'.
-    const searchUnmatechedValueSKD = result.items[0].params.find((item) => item.type === 'search');
+    const searchUnmatechedValueSKD = result.items[0]?.params?.find((item) => item.type === 'search');
     //@ts-ignore Property 'params' does not exist on type 'AutocompleteItemProps'.
-    const searchUnmatechedValueSSB = result.items[1].params.find((item) => item.type === 'search');
+    const searchUnmatechedValueSSB = result.items[1]?.params?.find((item) => item.type === 'search');
 
     expect(searchUnmatechedValueSKD.type === 'search');
     expect(searchUnmatechedValueSKD.label === 'test1');
@@ -111,8 +112,8 @@ describe('generateSendersAutocompleteBySearchString', () => {
     expect(searchUnmatechedValueSSB.type === 'search');
     expect(searchUnmatechedValueSSB.label === 'test1');
 
-    expect(result.items[0].title).toBe('Skatteetaten');
-    expect(result.items[1].title).toBe('Statistisk sentralbyrå');
+    expect(result.items[0].title).toBe('Søk etter avsender Skatteetaten med fritekst sentralby test1');
+    expect(result.items[1].title).toBe('Søk etter avsender Statistisk sentralbyrå med fritekst skat test1');
     expect(result.items).toHaveLength(2);
 
     expect(result.groups).toEqual({

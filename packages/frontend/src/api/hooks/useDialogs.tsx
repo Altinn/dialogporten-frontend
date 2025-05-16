@@ -48,6 +48,7 @@ export const useDialogs = ({ parties, viewType, filterState, search }: UseDialog
       updatedAfter: filterState?.updated,
     },
     viewType,
+    searchQuery: search,
   });
 
   const { data, isSuccess, isLoading, isError, fetchNextPage, isFetchingNextPage } =
