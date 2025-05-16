@@ -17,6 +17,9 @@ param containerAppEnvironmentName string
 @secure()
 param applicationInsightsInstrumentationKey string
 
+@description('The workload profile name to use, defaults to "Consumption"')
+param workloadProfileName string = 'Consumption'
+
 var namePrefix = 'dp-fe-${environment}'
 var baseImageUrl = 'ghcr.io/altinn/dialogporten-frontend-'
 var serviceName = 'frontend'
@@ -75,6 +78,7 @@ module containerApp '../../modules/containerApp/main.bicep' = {
     maxReplicas: maxReplicas
     tags: tags
     environmentVariables: environmentVariables
+    workloadProfileName: workloadProfileName
   }
 }
 

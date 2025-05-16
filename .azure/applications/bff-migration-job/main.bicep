@@ -19,6 +19,9 @@ param appInsightConnectionString string
 @secure()
 param environmentKeyVaultName string
 
+@description('The workload profile name to use, defaults to "Consumption"')
+param workloadProfileName string = 'Consumption'
+
 var namePrefix = 'dp-fe-${environment}'
 var baseImageUrl = 'ghcr.io/altinn/dialogporten-frontend-'
 var containerAppJobName = '${namePrefix}-bff-migration-job'
@@ -138,6 +141,7 @@ module containerAppJob '../../modules/containerAppJob/main.bicep' = {
     secrets: secrets
     command: ['pnpm', '--filter', 'bff', 'run', 'start']
     tags: tags
+    workloadProfileName: workloadProfileName
   }
 }
 

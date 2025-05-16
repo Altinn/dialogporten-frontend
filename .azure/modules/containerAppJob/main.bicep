@@ -9,6 +9,8 @@ param command string[]
 param tags object
 
 param secrets { name: string, keyVaultUrl: string, identity: 'system' }[] = []
+@description('The workload profile name to use, defaults to "Consumption"')
+param workloadProfileName string = 'Consumption'
 
 var probes = [
   {
@@ -59,6 +61,7 @@ resource containerAppJob 'Microsoft.App/jobs@2024-03-01' = {
           command: command
         }
       ]
+      workloadProfileName: workloadProfileName
     }
   }
   tags: tags

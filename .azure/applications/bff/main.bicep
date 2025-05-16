@@ -42,6 +42,9 @@ param environmentKeyVaultName string
 @description('Additional environment variables to be added to the container app')
 param additionalEnvironmentVariables array = []
 
+@description('The workload profile name to use, defaults to "Consumption"')
+param workloadProfileName string = 'Consumption'
+
 var namePrefix = 'dp-fe-${environment}'
 var baseImageUrl = 'ghcr.io/altinn/dialogporten-frontend-'
 var containerAppName = '${namePrefix}-bff'
@@ -187,6 +190,7 @@ module containerApp '../../modules/containerApp/main.bicep' = {
     minReplicas: minReplicas
     maxReplicas: maxReplicas
     tags: tags
+    workloadProfileName: workloadProfileName
   }
 }
 
