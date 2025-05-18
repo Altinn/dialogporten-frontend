@@ -134,25 +134,27 @@ export const handleFrontChannelLogout = async (request: FastifyRequest, reply: F
   }
 
   const sessionStore = request.sessionStore;
-  sessionStore.get(sid, (err, result) => {
-    if (!err && result) {
-      sessionStore.destroy(sid, (err) => {
-        if (err) {
-          logger.error('Error destroying session:', err);
-          return reply.status(500).send({ error: 'Failed to destroy session' });
-        }
-
-        // Clear the session cookie to prevent Fastify from creating a new session for a deleted session ID
-        reply.clearCookie('arbeidsflate', {
-          path: '/',
-          httpOnly: true,
-          secure: false,
+  if (request.session) {
+    await request.session.destroy();
+    // Clear the session cookie to prevent Fastify from creating a new session for a deleted session ID
+    reply.clearCookie('arbeidsflate', {
+      path: '/',
+      httpOnly: true,
+      secure: false,
+    });
+  } else {
+    sessionStore.get(sid, (err, result) => {
+      if (!err && result) {
+        sessionStore.destroy(sid, (err) => {
+          if (err) {
+            logger.error('Error destroying session:', err);
+            return reply.status(500).send({ error: 'Failed to destroy session' });
+          }
+          return reply.status(200).send({ message: 'Session destroyed successfully' });
         });
-
-        return reply.status(200).send();
-      });
-    }
-  });
+      }
+    });
+  }
 };
 
 export const handleAuthRequest = async (request: FastifyRequest, reply: FastifyReply) => {
