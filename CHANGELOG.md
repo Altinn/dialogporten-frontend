@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.34.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.34.2...v1.34.3) (2025-05-19)
+
+
+### Bug Fixes
+
+* use idp sid instead of session id for destroying session correctly ([#2163](https://github.com/Altinn/dialogporten-frontend/issues/2163)) ([05610d1](https://github.com/Altinn/dialogporten-frontend/commit/05610d1adc1c4f0cdcbeea8407589a4e72273d5d))
+
 ## [1.34.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.34.1...v1.34.2) (2025-05-19)
 
 
