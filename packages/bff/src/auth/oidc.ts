@@ -5,6 +5,7 @@ import type { FastifyPluginAsync, FastifyReply, FastifyRequest, HookHandlerDoneF
 import fp from 'fastify-plugin';
 import jwt from 'jsonwebtoken';
 import config from '../config.js';
+import redisClient from '../redisClient.js';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -37,6 +38,7 @@ declare module 'fastify' {
     state?: string;
     verifier?: string;
     nonce?: string;
+    idpSid?: string;
   }
 }
 
@@ -56,6 +58,7 @@ export interface IdTokenPayload {
   locale: string;
   jwt: string;
   nonce: string;
+  sid: string;
 }
 
 /* interface is common denominator of /login and /token DTO */
@@ -133,27 +136,25 @@ export const handleFrontChannelLogout = async (request: FastifyRequest, reply: F
     return reply.status(400).send({ error: 'Missing sid' });
   }
 
-  const sessionStore = request.sessionStore;
-  if (request.session) {
-    await request.session.destroy();
-    // Clear the session cookie to prevent Fastify from creating a new session for a deleted session ID
-    reply.clearCookie('arbeidsflate', {
-      path: '/',
-      httpOnly: true,
-      secure: false,
+  try {
+    const appSessionId = await redisClient.get(`idp-sid:${sid}`);
+
+    if (!appSessionId) {
+      request.log.warn(`No session found for idp sid: ${sid}`);
+      return reply.status(200).type('text/html').send('<!DOCTYPE html><html><body>Logged out</body></html>');
+    }
+
+    await new Promise<void>((resolve, reject) => {
+      request.sessionStore.destroy(appSessionId, (err) => {
+        if (err) return reject(err);
+        resolve();
+      });
     });
-  } else {
-    sessionStore.get(sid, (err, result) => {
-      if (!err && result) {
-        sessionStore.destroy(sid, (err) => {
-          if (err) {
-            logger.error('Error destroying session:', err);
-            return reply.status(500).send({ error: 'Failed to destroy session' });
-          }
-          return reply.status(200).send({ message: 'Session destroyed successfully' });
-        });
-      }
-    });
+
+    await redisClient.del(`idp-sid:${sid}`);
+  } catch (err) {
+    request.log.error({ err }, 'Failed to destroy session via idp sid');
+    return reply.status(500).send({ error: 'Failed to destroy session' });
   }
 };
 
@@ -190,7 +191,7 @@ export const handleAuthRequest = async (request: FastifyRequest, reply: FastifyR
 
     const customToken: IdportenToken = token as unknown as IdportenToken;
     const decodedIDToken = jwt.decode(customToken.id_token) as IdTokenPayload;
-    const { pid, locale = 'nb', nonce: receivedNonce } = decodedIDToken;
+    const { pid, locale = 'nb', nonce: receivedNonce, sid: idpSid } = decodedIDToken;
 
     const nonceIsAMatch = storedNonceTruth === receivedNonce && storedNonceTruth !== '';
     const refreshTokenExpiresAt = new Date(now.getTime() + customToken.refresh_token_expires_in * 1000).toISOString();
@@ -214,6 +215,16 @@ export const handleAuthRequest = async (request: FastifyRequest, reply: FastifyR
     request.session.set('token', sessionStorageToken);
     request.session.set('pid', pid);
     request.session.set('locale', locale);
+
+    if (idpSid) {
+      request.session.set('idpSid', idpSid);
+
+      const appSessionId = request.session.sessionId;
+      if (!appSessionId) {
+        throw new Error('Session ID not available');
+      }
+      await redisClient.set(`idp-sid:${idpSid}`, appSessionId, 'EX', 3600 * 8);
+    }
 
     reply.redirect('/?loggedIn=true');
   } catch (e: unknown) {
