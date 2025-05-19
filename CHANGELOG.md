@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.34.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.34.1...v1.34.2) (2025-05-19)
+
+
+### Bug Fixes
+
+* destroy current session if found directly - terminated session immediately ([#2159](https://github.com/Altinn/dialogporten-frontend/issues/2159)) ([d34a416](https://github.com/Altinn/dialogporten-frontend/commit/d34a416fa0df2ef6fbfe02430ddc314760e75580))
+
 ## [1.34.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.34.0...v1.34.1) (2025-05-16)
 
 
