@@ -7,17 +7,19 @@
     "build": "tsc",
     "test": "npm run build && TEST_LOGGING=true node dist/index.js"
   },
-  "keywords": ["logging"],
+  "keywords": [
+    "logging"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "pino": "9.3.2",
-    "pino-pretty": "11.2.2"
+    "pino": "9.7.0",
+    "pino-pretty": "13.0.0"
   },
   "devDependencies": {
-    "@types/node": "22.5.1",
-    "typescript": "5.5.4",
-    "zod": "3.23.8"
+    "@types/node": "22.15.21",
+    "typescript": "5.8.3",
+    "zod": "3.25.20"
   },
   "repository": {
     "type": "git",
