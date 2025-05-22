@@ -17,10 +17,8 @@ const isValidURL = (url: string) => {
 
 const getContent = (mediaType: EmbeddableMediaType, data: string) => {
   switch (mediaType) {
-    case EmbeddableMediaType.markdown_deprecated:
     case EmbeddableMediaType.markdown:
       return <Markdown onError={(e) => console.error('Markdown error: ', e)}>{data}</Markdown>;
-    case EmbeddableMediaType.html_deprecated:
     case EmbeddableMediaType.html:
       return <Html onError={(e) => console.error('Html error: ', e)}>{data}</Html>;
     default:

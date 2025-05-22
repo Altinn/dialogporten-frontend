@@ -1,0 +1,41 @@
+# Emebdable content in Arbeidsflate
+
+Embadable content in Arbeidsflate is a feature that allows users to embed external content, such as markdown and html (only legacy content), directly in Arbeidsflate interface, provided
+a url to the content and a dialog token.
+
+Content (`text/plain`) adheres to the current version of [CommonMark](https://commonmark.org/) (0.31.2).
+For examples of how to use the markdown syntax, see [CommonMark examples](https://spec.commonmark.org/0.31.2/spec.json).
+
+## Process
+
+1. Embedable content is fetched from the provided URL:
+   - (For `mainContentReference`) The content is fetched from the URL specified in the `mainContentReference` field of the dialog on loading the dialog details.
+   - (For `contentReference` for transmissions) The content is fetched only when the user expands the transmission in the dialog details.
+2. The content is sanitized to ensure security and integrity and is transformed into a React component tree:
+   - (For Markdown) Transforms markdown into a sanitized, styled React component tree, allowing safe and customizable rendering.
+   - (For legacy HTML) Transforms raw HTML into sanitized, styled React components, ensuring safe display of dynamic HTML.
+3. The sanitized content is then displayed in the Arbeidsflate interface.
+
+## Restrictions
+
+For security reasons, the content is sanitized and only certain tags are allowed.
+
+### Allowed HTML tags
+
+| HTML Tag                 | Purpose                       | Markdown Equivalent                             |
+| ------------------------ | ----------------------------- | ----------------------------------------------- |
+| `<p>`                    | Paragraphs                    | Plain text separated by a blank line            |
+| `<em>`                   | Italic / emphasis             | `*italic*` or `_italic_`                        |
+| `<strong>`               | Bold / strong emphasis        | `**bold**` or `__bold__`                        |
+| `<ul>` / `<ol>` / `<li>` | Lists                         | `- item`, `1. item`                             |
+| `<a>`                    | Links                         | `[link](https://example.com)`                   |
+| `<code>`                 | Inline code                   | `` `inline code` ``                             |
+| `<pre><code>`            | Code blocks                   | ```js<br>const x = 1;<br>```                     |
+| `<blockquote>`           | Blockquotes                   | `> quoted text`                                 |
+| `<hr>`                   | Horizontal rule/separator     | `---` or `***`                                  |
+| `<h1>`–`<h6>`            | Headings                      | `# H1`, `## H2`, ..., `###### H6`               |
+| `<br>`                   | Line break                    | Line ends with 2+ spaces + Enter                |
+
+### Allowed Attributes
+
+Only `href` for `<a>` tags is allowed, and it must be a valid URL. All other attributes are stripped for security reasons.
