@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.34.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.34.3...v1.34.4) (2025-05-22)
+
+
+### Bug Fixes
+
+* Display raw ssn from profile api ([#2176](https://github.com/Altinn/dialogporten-frontend/issues/2176)) ([9daa7f1](https://github.com/Altinn/dialogporten-frontend/commit/9daa7f1405c2dfa109f90fcdb90abdbb4d6218aa))
+* sanitize html tags for embedable content + doc ([#2174](https://github.com/Altinn/dialogporten-frontend/issues/2174)) ([b3a2d12](https://github.com/Altinn/dialogporten-frontend/commit/b3a2d12976cf0d28ecb022015ba92df451ea0e08))
+
 ## [1.34.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.34.2...v1.34.3) (2025-05-19)
 
 
