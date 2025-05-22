@@ -3,7 +3,7 @@ import { type Page, expect } from '@playwright/test';
 export const getSidebar = (page: Page) => page.locator('aside');
 export const getSidebarMenuItem = (page: Page, route: string) => getSidebar(page).locator(`li a[href^="${route}?"]`);
 export const getSidebarMenuItemBadge = (page: Page, route: string) =>
-  getSidebarMenuItem(page, route).locator('div > span + span + span');
+  getSidebarMenuItem(page, route).locator('div > span + span');
 export const getSearchbarInput = (page: Page) => page.locator("[name='Søk']");
 
 export async function performSearch(page, query: string, action?: 'clear' | 'click' | 'enter') {

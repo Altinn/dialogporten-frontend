@@ -6,7 +6,8 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "react": ">=19"
+    "react": ">=19.0.0",
+    "react-dom": "^19.1.0"
   },
   "dependencies": {
     "mdast-util-to-hast": "^13.2.0",
