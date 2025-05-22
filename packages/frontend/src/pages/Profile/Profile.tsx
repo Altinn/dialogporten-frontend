@@ -13,7 +13,6 @@ import type { Person } from 'bff-types-generated';
 import { t } from 'i18next';
 import { Link } from 'react-router-dom';
 import { useProfile } from '../../profile';
-import { formatNorwegianSSN } from '../../profile/formatSSN';
 import { PageRoutes } from '../routes';
 import styles from './profile.module.css';
 
@@ -51,7 +50,7 @@ export const Profile = () => {
       <DashboardHeader
         loading={isLoading}
         name={user?.party?.person?.name || ''}
-        description={`${t('profile.landing.ssn')} ${formatNorwegianSSN(user?.party?.person?.ssn)}`}
+        description={`${t('profile.landing.ssn')} ${user?.party?.person?.ssn}`}
       >
         <Flex className={styles.contactInfoFlex}>
           <Typography className={styles.contactInfo}>
