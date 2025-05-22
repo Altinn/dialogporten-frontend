@@ -6,27 +6,27 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "react": ">=19"
+    "react": "19.1.0"
   },
   "dependencies": {
-    "mdast-util-to-hast": "^13.2.0",
-    "rehype-class-names": "^2.0.0",
-    "rehype-parse": "^9.0.0",
-    "rehype-react": "^8.0.0",
-    "rehype-sanitize": "^6.0.0",
+    "mdast-util-to-hast": "13.2.0",
+    "rehype-class-names": "2.0.0",
+    "rehype-parse": "9.0.1",
+    "rehype-react": "8.0.0",
+    "rehype-sanitize": "6.0.0",
     "remark-parse": "^11.0.0",
     "remark-rehype": "^11.1.0",
-    "unified": "^11.0.5"
+    "unified": "11.0.5"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "^6.6.3",
-    "hast-util-sanitize": "^5.0.2",
-    "@testing-library/react": "^16.2.0",
+    "@testing-library/jest-dom": "6.6.3",
+    "hast-util-sanitize": "5.0.2",
+    "@testing-library/react": "16.2.0",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
-    "@vitejs/plugin-react-swc": "^3.5.0",
-    "@vitest/expect": "^2.0.0",
-    "typescript": "^5.5.3",
+    "@vitejs/plugin-react-swc": "3.7.2",
+    "@vitest/expect": "2.1.8",
+    "typescript": "5.5.4",
     "vite": "^5.0.8",
     "vitest": "^2.0.0"
   },

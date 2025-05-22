@@ -10,24 +10,24 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@graphql-codegen/cli": "^5.0.2",
-    "@graphql-codegen/typescript-operations": "^4.2.0",
-    "@graphql-tools/stitch": "^9.2.7",
-    "@graphql-typed-document-node/core": "^3.2.0",
-    "@tsconfig/node22": "^22.0.0",
+    "@graphql-codegen/cli": "5.0.3",
+    "@graphql-codegen/typescript-operations": "4.4.0",
+    "@graphql-tools/stitch": "9.4.13",
+    "@graphql-typed-document-node/core": "3.2.0",
+    "@tsconfig/node22": "22.0.0",
     "bff": "workspace:*",
-    "graphql": "^16.8.1",
-    "graphql-request": "^6.1.0",
+    "graphql": "16.10.0",
+    "graphql-request": "6.1.0",
     "graphql-tag": "^2.12.6",
-    "nodemon": "^3.0.3"
+    "nodemon": "3.1.9"
   },
   "devDependencies": {
-    "@graphql-codegen/typescript": "^4.0.6",
-    "@graphql-codegen/typescript-graphql-request": "^6.2.0",
-    "@graphql-codegen/typescript-resolvers": "^4.0.6",
-    "@parcel/watcher": "^2.4.1",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.4.5",
+    "@graphql-codegen/typescript": "4.1.2",
+    "@graphql-codegen/typescript-graphql-request": "6.2.0",
+    "@graphql-codegen/typescript-resolvers": "4.4.1",
+    "@parcel/watcher": "2.5.0",
+    "ts-node": "10.9.2",
+    "typescript": "5.5.4",
     "vitest": "^2.0.0"
   },
   "type": "module"
