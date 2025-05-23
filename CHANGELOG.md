@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.35.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.35.0...v1.35.1) (2025-05-23)
+
+
+### Bug Fixes
+
+* **infra:** avoid issues with private link in app gateway ([#2184](https://github.com/Altinn/dialogporten-frontend/issues/2184)) ([c8e9284](https://github.com/Altinn/dialogporten-frontend/commit/c8e9284a60d4c095ad752dc47e340f3799e64596))
+* **infra:** use correct param for workload profile for apps ([#2186](https://github.com/Altinn/dialogporten-frontend/issues/2186)) ([469dc10](https://github.com/Altinn/dialogporten-frontend/commit/469dc107352bd1587bb3b318d9d8891c506805b8))
+
 ## [1.35.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.34.4...v1.35.0) (2025-05-23)
 
 
