@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.35.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.34.4...v1.35.0) (2025-05-23)
+
+
+### Features
+
+* **infra:** enable workload profiles for CAE ([#2154](https://github.com/Altinn/dialogporten-frontend/issues/2154)) ([a496c84](https://github.com/Altinn/dialogporten-frontend/commit/a496c848a44ee103e0d8192b28aa1d93d9d5b497))
+
+
+### Bug Fixes
+
+* Fix breaking changes after ac v28 update ([#2177](https://github.com/Altinn/dialogporten-frontend/issues/2177)) ([bb41503](https://github.com/Altinn/dialogporten-frontend/commit/bb415039ff0bedcaa567abb62d5a621024029150))
+* **infra:** avoid using containerappenv subnet for private link in app gateway ([#2183](https://github.com/Altinn/dialogporten-frontend/issues/2183)) ([d035bd0](https://github.com/Altinn/dialogporten-frontend/commit/d035bd0a5d68b71d93a7ddef2a03fb985c915722))
+* **infra:** set default workload profile for CAEs ([#2182](https://github.com/Altinn/dialogporten-frontend/issues/2182)) ([2682b14](https://github.com/Altinn/dialogporten-frontend/commit/2682b14e55a2c8a1162fa5eee90a4615b61e0ee4))
+
 ## [1.34.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.34.3...v1.34.4) (2025-05-22)
 
 
