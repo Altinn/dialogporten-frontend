@@ -50,6 +50,7 @@ resource containerAppJob 'Microsoft.App/jobs@2024-03-01' = {
         replicaCompletionCount: 1
       }
     }
+    workloadProfileName: workloadProfileName
     environmentId: containerAppEnvId
     template: {
       containers: [
@@ -61,7 +62,6 @@ resource containerAppJob 'Microsoft.App/jobs@2024-03-01' = {
           command: command
         }
       ]
-      workloadProfileName: workloadProfileName
     }
   }
   tags: tags
