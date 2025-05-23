@@ -121,6 +121,7 @@ const useGroupedDialogs = ({
     seen: item.isSeenByEndUser,
     updatedAt: item.updatedAt,
     updatedAtLabel: format(item.updatedAt, formatString),
+    ariaLabel: `${item.title}`,
     as: (props: LinkProps) => (
       <Link state={{ fromView: location.pathname }} {...props} to={`/inbox/${item.id}/${location.search}`} />
     ),

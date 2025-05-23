@@ -6,7 +6,7 @@ import {
   type Color,
   DsParagraph,
   Heading,
-  ListBase,
+  List,
   PageBase,
   PageNav,
   Section,
@@ -228,30 +228,30 @@ export const Actors = () => {
         {searchValue ? (
           <>
             <Heading size="lg">Søkeresultater:</Heading>
-            <ListBase>
+            <List>
               {partyFieldFragmentToAccountListItem(parties).map((party) => (
                 <PartyListItem key={party.id} party={party} />
               ))}
-            </ListBase>
+            </List>
           </>
         ) : (
           <>
             <Heading size="lg">Deg selv og favoritter</Heading>
-            <ListBase>
+            <List>
               {partyFieldFragmentToAccountListItem(favoriteParties).map((party) => (
                 <PartyListItem key={party.id} party={party} />
               ))}
-            </ListBase>
+            </List>
           </>
         )}
         {nonFavoriteParties.length > 0 && !searchValue && (
           <>
             <Heading size="lg">Andre aktører</Heading>
-            <ListBase>
+            <List>
               {partyFieldFragmentToAccountListItem(nonFavoriteParties).map((party) => (
                 <PartyListItem key={party.id} party={party} />
               ))}
-            </ListBase>
+            </List>
           </>
         )}
       </Section>
