@@ -52,6 +52,7 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
       activeRevisionsMode: 'Single'
       ingress: ingress
     }
+    workloadProfileName: workloadProfileName
     template: {
       containers: [
         {
@@ -65,7 +66,6 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
         minReplicas: minReplicas
         maxReplicas: maxReplicas
       }
-      workloadProfileName: workloadProfileName
     }
   }
   tags: tags
