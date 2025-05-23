@@ -362,6 +362,7 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-09-01' = {
         name: 'applicationGatewaySubnet'
         properties: {
           addressPrefix: applicationGatewaySubnetAddressPrefix
+          privateLinkServiceNetworkPolicies: 'Disabled'
           networkSecurityGroup: {
             id: applicationGatewayNSG.id
           }
