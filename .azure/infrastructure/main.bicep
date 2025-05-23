@@ -28,8 +28,13 @@ param sshJumperAdminLoginGroupObjectId string
 @description('Whether to enable zone redundancy for the container app environment')
 param containerAppEnvZoneRedundancyEnabled bool = false
 
-@description('The workload profiles for the container app environment')
-param containerAppEnvWorkloadProfiles array = []
+@description('Workload profiles to enable in the container app environment')
+param containerAppEnvWorkloadProfiles array = [
+  {
+    name: 'Consumption'
+    workloadProfileType: 'Consumption'
+  }
+]
 
 import { Sku as RedisSku } from '../modules/redis/main.bicep'
 param redisSku RedisSku
