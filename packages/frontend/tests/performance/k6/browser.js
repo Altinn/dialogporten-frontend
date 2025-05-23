@@ -28,11 +28,12 @@ export const options = {
   },
   summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(75)', 'p(95)', 'count'],
 };
-for (var label of queryLabels) {
-  options.thresholds[`http_req_duration{name:${label}}`] = [];
-  options.thresholds[`http_req_failed{name:${label}}`] = [];
+if (bffPercentage > 0) {
+  for (var label of queryLabels) {
+    options.thresholds[`http_req_duration{name:${label}}`] = [];
+    options.thresholds[`http_req_failed{name:${label}}`] = [];
+  }
 }
-
 export function setup() {
   // This function runs once before the test starts
   // Only use a few users for now
@@ -57,6 +58,7 @@ const loadSavedSearches = new Trend('load_saved_searches', true);
 const loadArchive = new Trend('load_archive', true);
 const loadBin = new Trend('load_bin', true);
 const backToInbox = new Trend('load_inbox_from_menu', true);
+const loadNextPage = new Trend('load_next_page', true);
 
 /**
  * Main function for the browser test.
@@ -107,6 +109,7 @@ export async function browserTest(data) {
     await selectSideMenuElement(page, 'a[href="/archive"]', loadArchive);
     await selectSideMenuElement(page, 'a[href="/bin"]', loadBin);
     await selectSideMenuElement(page, 'aside a[href="/"]', backToInbox);
+    //await selectNextPage(page, loadNextPage);
 
     // Set cookie so we don't have to login next time
     await addCookie(testData, context);
@@ -141,15 +144,33 @@ async function login(page, testData) {
  * @param {object} trend - Trend metric to track the action duration.
  */
 async function selectSideMenuElement(page, locator, trend) {
+  var menuElement = await page.waitForSelector(locator, { timeout: 500 }).catch(() => false);
   var startTime = new Date();
   await Promise.all([
-    page.locator(locator).click(),
-    page.waitForNavigation({ waitUntil: 'networkidle' }),
+    menuElement.click(),
+    page.waitForLoadState('networkidle'),
   ]);
   var endTime = new Date();
   trend.add(endTime - startTime);
-  await page.waitForTimeout(15);
-} 
+  //await page.waitForTimeout(15);
+}
+
+async function selectNextPage(page, trend) {
+  var next_page = await page.waitForSelector('button[class="ds-button"]', { timeout: 500 }).catch(() => false);
+  var iterations = 0;
+  while (next_page && iterations < 10) {
+    var startTime = new Date();
+    await Promise.all([
+      next_page.click(),
+      page.waitForLoadState('load'),
+    ]);
+    next_page = await page.waitForSelector('button[class="ds-button"]', { timeout: 500 }).catch(() => false);
+    var endTime = new Date();
+    trend.add(endTime - startTime);
+    iterations++;
+    //await page.waitForTimeout(2000);
+  }
+}
 
 /**
  * Async function to add a cookie to the test data if not already present.
@@ -161,7 +182,6 @@ async function addCookie(testData, context) {
     let cookies = await context.cookies();
     for (var cookie of cookies) {
       if (cookie.name == 'arbeidsflate') {
-        console.log('Cookie: ' + cookie.name + '=' + cookie.value);
         testData.cookie = cookie;
         break;
       }
@@ -175,7 +195,6 @@ async function addCookie(testData, context) {
  */
 function run_bff() {
   const randNumber = randomIntBetween(1, 100);
-  console.log('Random number: ' + randNumber);
   if (randNumber <= bffPercentage) {
     return true;
   }

@@ -17,16 +17,16 @@ export function openAf(testData) {
     const cookie = testData.cookie;
     const pid = testData.pid;
     var parties = getParties(cookie);
-    var organizations = getOrganizations(cookie);
-    var savedSearches = getSavedSearches(cookie);
-    var profile = getProfile(cookie);
-    var dialogsCount = getAllDialogsForCount(cookie, parties);
-    var dialogs = getAllDialogsForParty(cookie, parties, 100);
-    savedSearches = getSavedSearches(cookie);
+    getOrganizations(cookie);
+    getSavedSearches(cookie);
+    getProfile(cookie);
+    getAllDialogsForCount(cookie, parties);
+    getAllDialogsForParty(cookie, parties, 100);
+    getSavedSearches(cookie);
     const userParty = parties.filter((el) => el.includes(pid));
-    var dialogs = getAllDialogsForParty(cookie, [userParty[0]], 100, true);
-    dialogsCount = getAllDialogsForCount(cookie, [userParty[0]]);
-    dialogs = getAllDialogsForParty(cookie, [userParty[0]], 100);
+    getAllDialogsForParty(cookie, [userParty[0]], 100, true);
+    getAllDialogsForCount(cookie, [userParty[0]]);
+    getAllDialogsForParty(cookie, [userParty[0]], 100);
     return userParty;
 }
 
@@ -36,11 +36,11 @@ export function openAf(testData) {
  * @param {Array} parties - An array of party URIs.
  */
 export function selectMenuElements(cookie, parties) {
-    var drafts = getMenuElements(cookie, parties[0], "DRAFT");
-    var sent = getMenuElements(cookie, parties[0], "SENT");
-    var archive = getMenuElements(cookie, parties[0], "ARCHIVE");
-    var bin = getMenuElements(cookie, parties[0], "BIN");
-    var dialogs = getAllDialogsForParty(cookie, [parties[0]], 100, true);
+    getMenuElements(cookie, parties[0], "DRAFT");
+    getMenuElements(cookie, parties[0], "SENT");
+    getMenuElements(cookie, parties[0], "ARCHIVE");
+    getMenuElements(cookie, parties[0], "BIN");
+    getAllDialogsForParty(cookie, [parties[0]], 100, true);
 }
 
 /**
@@ -63,7 +63,6 @@ export function isAuthenticated(cookie, label) {
     if (resp.status !== 200) {
         console.log('isAuthenticated request failed: ' + resp.status);
     }
-    console.log('isAuthenticated: ' + resp.body);
     return resp
 }
 
@@ -82,8 +81,6 @@ export function getNextpage(cookie, parties) {
         dialogs = getAllDialogsForParty(cookie, [parties[0]], 100, true, continuationToken);
         iterations++;
     }
-    console.log('next iterations: ' + iterations);  
-
 }
 
 /**
