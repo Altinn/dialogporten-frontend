@@ -1,9 +1,11 @@
 import { browser } from 'k6/browser';
 import { check } from 'k6';
 import { Trend } from 'k6/metrics';
-import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
+import exec from 'k6/execution';
+import { randomIntBetween, randomItem } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
 import { openAf, selectMenuElements, isAuthenticated, getNextpage } from './bff.js'; 
 import { queryLabels, isAuthenticatedLabel } from './queries.js';
+export { setup as setup } from './readTestData.js';
 const bffPercentage = (__ENV.bffPercentage ??  90);
 
 export const options = {
@@ -34,21 +36,6 @@ if (bffPercentage > 0) {
     options.thresholds[`http_req_failed{name:${label}}`] = [];
   }
 }
-export function setup() {
-  // This function runs once before the test starts
-  // Only use a few users for now
-  var data = [
-    {
-      pid: '14886498226',
-      cookie: null
-    },
-    {
-      pid: '10865299538',
-      cookie: null
-    },
-  ]
-  return data;
-}
 
 // Define the trends for each page load
 const loadInbox = new Trend('load_inbox', true);
@@ -66,7 +53,8 @@ const loadNextPage = new Trend('load_next_page', true);
  * @param {object} data - Test data for the scenario.
  */
 export async function browserTest(data) {
-  var testData = data[__VU % data.length]; // ensure that no vus use the same data
+  const myEndUsers = data[exec.vu.idInTest - 1];
+  var testData = randomItem(myEndUsers);
 
   // If cookie and inside pffPercentage, run bff
   if (testData.cookie && run_bff()) {
@@ -144,7 +132,7 @@ async function login(page, testData) {
  * @param {object} trend - Trend metric to track the action duration.
  */
 async function selectSideMenuElement(page, locator, trend) {
-  var menuElement = await page.waitForSelector(locator, { timeout: 500 }).catch(() => false);
+  var menuElement = await page.waitForSelector(locator, { timeout: 2000 }).catch(() => false);
   var startTime = new Date();
   await Promise.all([
     menuElement.click(),
