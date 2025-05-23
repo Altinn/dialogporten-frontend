@@ -13,6 +13,9 @@ param appInsightWorkspaceName string
 @description('Whether to enable zone redundancy for the container app environment')
 param zoneRedundancyEnabled bool = false
 
+@description('The workload profiles for the container app environment')
+param workloadProfiles array = []
+
 @description('The tags to apply to the resources')
 param tags object
 
@@ -39,6 +42,7 @@ resource containerAppEnv 'Microsoft.App/managedEnvironments@2024-10-02-preview' 
     availabilityZones: zoneRedundancyEnabled ? [
       '1', '2','3'
     ] : null
+    workloadProfiles: workloadProfiles
   }
   tags: tags
 }
