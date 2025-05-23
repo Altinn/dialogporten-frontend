@@ -185,7 +185,6 @@ module applicationGateway '../modules/applicationGateway/main.bicep' = {
     location: location
     containerAppEnvName: containerAppEnv.outputs.name
     subnetId: vnet.outputs.applicationGatewaySubnetId
-    targetSubnetId: vnet.outputs.containerAppEnvironmentSubnetId
     configuration: applicationGatewayConfiguration
     appInsightWorkspaceName: appInsights.outputs.appInsightsWorkspaceName
     tags: tags
