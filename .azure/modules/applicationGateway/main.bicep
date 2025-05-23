@@ -209,7 +209,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2024-01-01' =
             id: resourceId(
               'Microsoft.Network/applicationGateways/privateLinkConfigurations',
               gatewayName,
-              '${gatewayName}-privateLinkConfig'
+              '${gatewayName}-plc'
             )
           }
         }
