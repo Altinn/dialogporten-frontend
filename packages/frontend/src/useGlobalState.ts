@@ -14,6 +14,7 @@ export function useGlobalState<T>(
     staleTime: Number.POSITIVE_INFINITY,
     enabled: false,
     initialData: defaultValue,
+    queryFn: async () => defaultValue,
   });
 
   const { mutate } = useMutation<T, unknown, T>({
