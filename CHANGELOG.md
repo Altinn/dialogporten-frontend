@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.36.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.35.1...v1.36.0) (2025-05-28)
+
+
+### Features
+
+* **infra:** enable HA and higher SKU for postgresql ([#2195](https://github.com/Altinn/dialogporten-frontend/issues/2195)) ([5cfc71f](https://github.com/Altinn/dialogporten-frontend/commit/5cfc71f09e22ee0ce97b4643edd3ee6f0aeedb2e))
+
+
+### Bug Fixes
+
+* Fix tanstack query console errors ([#2194](https://github.com/Altinn/dialogporten-frontend/issues/2194)) ([7f9ee7a](https://github.com/Altinn/dialogporten-frontend/commit/7f9ee7a0759ecaa538546f38376ab3bd354faa3b))
+* **infra:** add missing type for sku in postgresql ([#2198](https://github.com/Altinn/dialogporten-frontend/issues/2198)) ([a007a90](https://github.com/Altinn/dialogporten-frontend/commit/a007a908fee06e12d949e798104af5bb32ff5319))
+
 ## [1.35.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.35.0...v1.35.1) (2025-05-23)
 
 
