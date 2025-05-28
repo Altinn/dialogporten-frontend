@@ -39,7 +39,7 @@ param applicationGatewayConfiguration = {
 // PostgreSQL Configuration
 param postgresConfiguration = {
   sku: {
-    name: 'Standard_D4ads_v5'
+    name: 'Standard_D2ads_v5'
     tier: 'GeneralPurpose'
   }
   storage: {
