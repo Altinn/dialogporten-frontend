@@ -47,6 +47,20 @@ param applicationGatewayConfiguration ApplicationGatewayConfiguration
 @description('Optional list of IP addresses/ranges to whitelist for incoming traffic')
 param applicationGatewayWhitelistedIps array = []
 
+// PostgreSQL configuration parameters
+import { Sku as PostgreSQLSku } from '../modules/postgreSql/create.bicep'
+import { StorageConfiguration as PostgreSQLStorageConfiguration } from '../modules/postgreSql/create.bicep'
+import { HighAvailabilityConfiguration as PostgreSQLHighAvailabilityConfiguration } from '../modules/postgreSql/create.bicep'
+
+param postgresConfiguration {
+  sku: PostgreSQLSku
+  storage: PostgreSQLStorageConfiguration
+  highAvailability: PostgreSQLHighAvailabilityConfiguration?
+  backupRetentionDays: int
+  availabilityZone: string
+  version: string
+}
+
 var secrets = {
   dialogportenPgAdminPassword: dialogportenPgAdminPassword
   sourceKeyVaultSubscriptionId: sourceKeyVaultSubscriptionId
@@ -227,6 +241,12 @@ module postgresql '../modules/postgreSql/create.bicep' = {
       ? srcKeyVaultResource.getSecret('dialogportenPgAdminPassword${environment}')
       : secrets.dialogportenPgAdminPassword
     privateDnsZoneArmResourceId: postgresqlPrivateDnsZone.outputs.id
+    sku: postgresConfiguration.sku
+    storage: postgresConfiguration.storage
+    highAvailability: postgresConfiguration.?highAvailability
+    availabilityZone: postgresConfiguration.availabilityZone
+    backupRetentionDays: postgresConfiguration.backupRetentionDays
+    postgresVersion: postgresConfiguration.version
     tags: tags
   }
 }
