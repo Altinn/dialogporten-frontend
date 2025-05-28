@@ -18,7 +18,7 @@ test('should navigate to inbox when account is chosen from global menu', async (
   /* chose all organizations from the global menu */
   await page.getByRole('button', { name: 'Meny' }).click();
   await page.getByRole('button', { name: 'Test Testesen Bytt konto' }).click();
-  await page.locator('a').filter({ hasText: 'FTT4Alle virksomheter1' }).click();
+  await page.locator('a').filter({ hasText: 'FTT4Alle virksomheter' }).click();
 
   expect(new URL(page.url()).searchParams.get('allParties')).toBe('true');
   expect(new URL(page.url()).searchParams.get('party')).toBe(null);
