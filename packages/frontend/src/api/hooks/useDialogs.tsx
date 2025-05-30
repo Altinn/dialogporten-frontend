@@ -35,7 +35,7 @@ interface UseDialogsOutput {
 export const useDialogs = ({ parties, viewType, filterState, search }: UseDialogsProps): UseDialogsOutput => {
   const { organizations } = useOrganizations();
   const { selectedParties } = useParties();
-  const partiesToUse = parties ? parties : selectedParties;
+  const partiesToUse = selectedParties ?? parties ?? [];
   const partyIds = getPartyIds(partiesToUse);
   const previousTokensRef = useRef<string>('');
   const viewTypeKey = viewType ?? 'global';
