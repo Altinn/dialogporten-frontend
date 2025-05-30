@@ -105,6 +105,7 @@ const useGroupedDialogs = ({
         }
       : undefined,
     id: item.id,
+    recipientLabel: t('word.to'),
     sender: item.sender,
     summary: item.viewType === 'inbox' ? item.summary : undefined,
     state: getDialogState(item.viewType),
@@ -202,7 +203,6 @@ const useGroupedDialogs = ({
     if (isFetchingNextPage) {
       groupedDialogs.push(...renderLoadingItems(1));
     }
-
     return { groupedDialogs, groups };
   }, [items, displaySearchResults, t, format, isNotInbox, viewType, allWithinSameYear, isLoading]);
 };

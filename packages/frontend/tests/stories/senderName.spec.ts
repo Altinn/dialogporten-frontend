@@ -8,9 +8,12 @@ test.describe('Testing Sender Name', () => {
     await page.goto(dateScenarioPage);
   });
   test('Should display sender name if provided and org if not provided', async ({ page }) => {
-    const link = page.getByRole('link', { name: 'This has a sender name' });
-    await expect(link).toBeVisible();
-    await expect(page.getByRole('main')).toContainText('SENDER NAME Oslo Kommune to Test Testesensender');
+    const listItem = page.getByRole('listitem').filter({ hasText: 'This has a sender name defined' });
+    const timeElement = listItem.locator('time').filter({
+      hasText: 'SENDER NAME Oslo Kommune',
+    });
+
+    await expect(timeElement).toHaveText('SENDER NAME Oslo Kommune til Test Testesen');
   });
 
   test('If provided, sender name should be overwritten inside a dialog', async ({ page }) => {
