@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.36.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.36.0...v1.36.1) (2025-05-30)
+
+
+### Bug Fixes
+
+* translation of sender to recipient word ([#2203](https://github.com/Altinn/dialogporten-frontend/issues/2203)) ([dc4b1ba](https://github.com/Altinn/dialogporten-frontend/commit/dc4b1ba7764b4caebd6fa01f7796bceb63f29b88))
+
 ## [1.36.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.35.1...v1.36.0) (2025-05-28)
 
 
