@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.37.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.36.1...v1.37.0) (2025-06-03)
+
+
+### Features
+
+* Profile settings page ([#2125](https://github.com/Altinn/dialogporten-frontend/issues/2125)) ([2f585f2](https://github.com/Altinn/dialogporten-frontend/commit/2f585f23f3d67f35ab4f224ce4e38393281377ec))
+
+
+### Bug Fixes
+
+* disable getting dialogs for parties over 20 and render state as inconclusive if so ([#2205](https://github.com/Altinn/dialogporten-frontend/issues/2205)) ([1c38f89](https://github.com/Altinn/dialogporten-frontend/commit/1c38f8995eb124737140f89cbc69a689fdfe8229))
+
 ## [1.36.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.36.0...v1.36.1) (2025-05-30)
 
 
