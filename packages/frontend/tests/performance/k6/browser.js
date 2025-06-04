@@ -1,4 +1,5 @@
 import { browser } from 'k6/browser';
+import { expect } from 'https://jslib.k6.io/k6chaijs/4.3.4.3/index.js';
 import { check } from 'k6';
 import { Trend } from 'k6/metrics';
 import exec from 'k6/execution';
@@ -91,20 +92,26 @@ export async function browserTest(data) {
     });
 
     // press every menu item, return to inbox
-    await selectSideMenuElement(page, 'a[href="/drafts"]', loadDrafts);
-    await selectSideMenuElement(page, 'a[href="/sent"]', loadSent);
-    await selectSideMenuElement(page, 'a[href="/saved-searches"]', loadSavedSearches);
-    await selectSideMenuElement(page, 'a[href="/archive"]', loadArchive);
-    await selectSideMenuElement(page, 'a[href="/bin"]', loadBin);
-    await selectSideMenuElement(page, 'aside a[href="/"]', backToInbox);
-    //await selectNextPage(page, loadNextPage);
+    await selectSideMenuElement(page, 'a[href="/drafts"]', loadDrafts, "drafts");
+    await selectSideMenuElement(page, 'a[href="/sent"]', loadSent, "sent");
+    await selectSideMenuElement(page, 'a[href="/saved-searches"]', loadSavedSearches, "savedsearches");
+    await selectSideMenuElement(page, 'a[href="/archive"]', loadArchive, "archive");
+    await selectSideMenuElement(page, 'a[href="/bin"]', loadBin, "bin");
+    await selectSideMenuElement(page, 'aside a[href="/"]', backToInbox, "backinbox");
+    await selectNextPage(page, loadNextPage);
 
     // Set cookie so we don't have to login next time
     await addCookie(testData, context);
+    for (var endUser of myEndUsers) {
+      if (endUser.cookie) {
+        console.log(endUser.pid, endUser.cookie.value);
+      }
+    }
   } finally {
     await page.close();
   }
 }
+
 
 /**
  * Async function to handle the login process on a page.
@@ -131,32 +138,47 @@ async function login(page, testData) {
  * @param {string} locator - Locator for the menu element.
  * @param {object} trend - Trend metric to track the action duration.
  */
-async function selectSideMenuElement(page, locator, trend) {
+async function selectSideMenuElement(page, locator, trend, functionName) {
   var menuElement = await page.waitForSelector(locator, { timeout: 2000 }).catch(() => false);
   var startTime = new Date();
   await Promise.all([
     menuElement.click(),
-    page.waitForLoadState('networkidle'),
   ]);
+
+  // Wait for the page to load after clicking the menu element
+  await waitForPageLoaded(page);
+  // Track the time taken for the action
   var endTime = new Date();
   trend.add(endTime - startTime);
-  //await page.waitForTimeout(15);
+}
+
+async function waitForPageLoaded(page, empties = 1) {
+  var busyItems = await page.$$('li [aria-busy="true"]');
+  var noEmptys = 0;
+  while ( busyItems.length > 0 || noEmptys < empties) {
+    await page.waitForTimeout(10); // Wait for 10 ms before checking again
+    busyItems = await page.$$('li [aria-busy="true"]');
+    if (busyItems.length == 0) {
+      noEmptys++;
+    }
+  }
 }
 
 async function selectNextPage(page, trend) {
-  var next_page = await page.waitForSelector('button[class="ds-button"]', { timeout: 500 }).catch(() => false);
+  var next_page = await page.waitForSelector('button[class="ds-button"]', { state: 'attached', timeout: 500 }).catch(() => false);
   var iterations = 0;
   while (next_page && iterations < 10) {
     var startTime = new Date();
     await Promise.all([
       next_page.click(),
-      page.waitForLoadState('load'),
     ]);
-    next_page = await page.waitForSelector('button[class="ds-button"]', { timeout: 500 }).catch(() => false);
+   
+    // Wait for the page to load after clicking the next page button
+    await waitForPageLoaded(page, 2);
+    next_page = await page.waitForSelector('button[class="ds-button"]', { state: 'attached', timeout: 500 }).catch(() => false);
     var endTime = new Date();
     trend.add(endTime - startTime);
     iterations++;
-    //await page.waitForTimeout(2000);
   }
 }
 

@@ -7,6 +7,33 @@ import {
     getAllDialogsForCountQuery,
     getAllDialogsForPartyQuery
 } from './queries.js';
+import { queryLabels, isAuthenticatedLabel } from './queries.js';
+import { bffTestData } from './readTestData.js';
+import { randomItem } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
+import { describe, expect } from 'https://jslib.k6.io/k6chaijs/4.3.4.3/index.js';
+
+const baseUrl = 'https://af.yt.altinn.cloud/api';
+
+export let options = {
+    thresholds: {
+        checks: ['rate==1.0'],
+        
+    }
+}
+
+for (var label of queryLabels) {
+    options.thresholds[`http_req_duration{name:${label}}`] = [];
+    options.thresholds[`http_req_failed{name:${label}}`] = [];
+}
+
+export default function () {
+    var testData = randomItem(bffTestData);
+    const parties = openAf(testData);
+    selectMenuElements(testData.cookie, parties);
+    isAuthenticated(testData.cookie, isAuthenticatedLabel);
+    getNextpage(testData.cookie, parties);
+}
+
 
 /**
  * This function does the same bff-calls that af does freom the browser
@@ -22,7 +49,6 @@ export function openAf(testData) {
     getProfile(cookie);
     getAllDialogsForCount(cookie, parties);
     getAllDialogsForParty(cookie, parties, 100);
-    getSavedSearches(cookie);
     const userParty = parties.filter((el) => el.includes(pid));
     getAllDialogsForParty(cookie, [userParty[0]], 100, true);
     getAllDialogsForCount(cookie, [userParty[0]]);
@@ -50,7 +76,7 @@ export function selectMenuElements(cookie, parties) {
  * @return {Object} - The response object from the request.
  */
 export function isAuthenticated(cookie, label) {
-    const url = 'https://af.yt.altinn.cloud/api/isAuthenticated';
+    const url = baseUrl + '/isAuthenticated';
     const params = {
         headers: {
         'Content-Type': 'application/json',
@@ -206,12 +232,11 @@ function getAllDialogsForParty(cookie, parties, count, extraParams = false, cont
     }
 
     var resp = graphql(cookie, payload, queryLabel);
-    if (resp.status !== 200) {
+    if (resp.status !== 200) {  
         console.log('GraphQL request failed: ' + resp.status);
         return
     }
-    const data = resp.json();
-    return data;
+    return resp.json();
 }
 
 /**
@@ -238,7 +263,7 @@ function getMenuElements(cookie, party, menuElement) {
         console.log('GraphQL request failed: ' + resp.status);
         return
     }
-    return resp.json()
+    return resp.json();
 }
 
 /**
@@ -249,7 +274,7 @@ function getMenuElements(cookie, party, menuElement) {
  * @return {Object} - The response object from the request.
  */
 function graphql(cookie, query, label = null) {
-    const url = 'https://af.yt.altinn.cloud/api/graphql';
+    const url = baseUrl + '/graphql';
     const payload = JSON.stringify(query);
     var queryLabel = query.operationName;
     if (label) {
@@ -259,13 +284,22 @@ function graphql(cookie, query, label = null) {
         headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Cookie': cookie.name + '=' + cookie.value,
+        //'Cookie': cookie.name + '=' + cookie.value,
         },
         tags: { name: queryLabel },
     };
-    const resp = http.post(url, payload, params);
-    if (resp.status !== 200) {
-        console.log('GraphQL request failed: ' + resp.status);
+ 
+    if (cookie.name && cookie.value) {
+        params.headers.Cookie = cookie.name + '=' + cookie.value;
+    } else {
+        params.headers.Cookie = 'arbeidsflate=' + cookie;
     }
-    return resp
+    let r = null;
+    describe('graphQL request', () => {
+        console.log(`GraphQL request: ${queryLabel}`);
+        r = http.post(url, payload, params);
+        expect(r.status, "response status").to.equal(200);
+        expect(r, 'response').to.have.validJsonBody(); 
+    });   
+    return r;
 }
