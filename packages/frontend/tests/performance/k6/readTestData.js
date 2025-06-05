@@ -15,7 +15,7 @@ export const endUsers = new SharedArray('endUsers', function () {
   return readCsv(filenameEndusers);
 });
 
-const bffFilename = "bffTestData.csv";
+const bffFilename = "bffTestdata.csv";
 export const bffTestData = new SharedArray('bffTestData', function () {
   return readCsv(bffFilename);
 });
