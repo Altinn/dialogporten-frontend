@@ -4,7 +4,6 @@ import { DialogDetailsPage } from './pages/DialogDetailsPage';
 import { Inbox } from './pages/Inbox';
 import { LoggedOut } from './pages/LogoutPage';
 import { Activities } from './pages/Profile/Activities/Activities.tsx';
-import { Actors } from './pages/Profile/Actors/Actors.tsx';
 import { Notifications } from './pages/Profile/Notifications/Notifications.tsx';
 import { Profile } from './pages/Profile/Profile.tsx';
 import { Settings } from './pages/Profile/Settings/Settings.tsx';
@@ -13,6 +12,7 @@ import { PageRoutes } from './pages/routes.ts';
 
 import './app.css';
 import { FrontChannelLogout } from './pages/LogoutPage/FrontChannelLogout.tsx';
+import { PartiesOverviewPage } from './pages/Profile/Actors/PartiesOverviewPage.tsx';
 
 function App() {
   return (
@@ -20,7 +20,7 @@ function App() {
       <Routes>
         <Route element={<ProtectedPageLayout />}>
           <Route path={PageRoutes.inbox} element={<Inbox key="inbox" viewType={'inbox'} />} />
-          <Route path={PageRoutes.actors} element={<Actors key="actors" />} />
+          <Route path={PageRoutes.partiesOverview} element={<PartiesOverviewPage key="partys" />} />
           <Route path={PageRoutes.drafts} element={<Inbox key="draft" viewType={'drafts'} />} />
           <Route path={PageRoutes.sent} element={<Inbox key="sent" viewType={'sent'} />} />
           <Route path={PageRoutes.archive} element={<Inbox key="archive" viewType={'archive'} />} />
@@ -28,7 +28,6 @@ function App() {
           <Route path={PageRoutes.inboxItem} element={<DialogDetailsPage />} />
           <Route path={PageRoutes.savedSearches} element={<SavedSearchesPage />} />
           <Route path={PageRoutes.profile} element={<Profile />} />
-          <Route path={PageRoutes.actors} element={<Actors />} />
           <Route path={PageRoutes.notifications} element={<Notifications />} />
           <Route path={PageRoutes.settings} element={<Settings />} />
           <Route path={PageRoutes.activities} element={<Activities />} />

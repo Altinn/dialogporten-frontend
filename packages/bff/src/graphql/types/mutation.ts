@@ -1,8 +1,8 @@
 import { extendType, intArg, nonNull, stringArg } from 'nexus';
 import {
-  addFavoriteActor,
-  addFavoriteActorToGroup,
-  deleteFavoriteActor,
+  addFavoriteParty,
+  addFavoritePartyToGroup,
+  deleteFavoriteParty,
   getOrCreateProfile,
   updateLanguage,
 } from '../functions/profile.ts';
@@ -76,20 +76,20 @@ export const CreateSavedSearch = extendType({
   },
 });
 
-export const AddFavoriteActor = extendType({
+export const AddFavoriteParty = extendType({
   type: 'Mutation',
   definition(t) {
-    t.field('addFavoriteActor', {
+    t.field('addFavoriteParty', {
       type: Response,
       args: {
-        actorId: stringArg(),
+        partyId: stringArg(),
       },
-      resolve: async (_, { actorId }, ctx) => {
+      resolve: async (_, { partyId }, ctx) => {
         try {
-          await addFavoriteActor(ctx.session.get('pid'), actorId);
-          return { success: true, message: 'FavoriteActor added successfully' };
+          await addFavoriteParty(ctx.session.get('pid'), partyId);
+          return { success: true, message: 'FavoriteParty added successfully' };
         } catch (error) {
-          console.error('Failed to add favorite actor:', error);
+          console.error('Failed to add favorite party:', error);
           return error;
         }
       },
@@ -97,21 +97,21 @@ export const AddFavoriteActor = extendType({
   },
 });
 
-export const AddFavoriteActorToGroup = extendType({
+export const AddFavoritePartyToGroup = extendType({
   type: 'Mutation',
   definition(t) {
-    t.field('addFavoriteActorToGroup', {
+    t.field('addFavoritePartyToGroup', {
       type: Response,
       args: {
-        actorId: stringArg(),
+        partyId: stringArg(),
         groupName: stringArg(),
       },
-      resolve: async (_, { actorId, groupName }, ctx) => {
+      resolve: async (_, { partyId, groupName }, ctx) => {
         try {
-          await addFavoriteActorToGroup(ctx.session.get('pid'), actorId, groupName);
-          return { success: true, message: 'FavoriteActor added successfully' };
+          await addFavoritePartyToGroup(ctx.session.get('pid'), partyId, groupName);
+          return { success: true, message: 'FavoriteParty added successfully' };
         } catch (error) {
-          console.error('Failed to add favorite actor:', error);
+          console.error('Failed to add favorite party:', error);
           return error;
         }
       },
@@ -119,21 +119,21 @@ export const AddFavoriteActorToGroup = extendType({
   },
 });
 
-export const DeleteFavoriteActor = extendType({
+export const DeleteFavoriteParty = extendType({
   type: 'Mutation',
   definition(t) {
-    t.field('deleteFavoriteActor', {
+    t.field('deleteFavoriteParty', {
       type: Response,
       args: {
-        actorId: stringArg(),
+        partyId: stringArg(),
         groupId: stringArg(),
       },
-      resolve: async (_, { actorId, groupId }, ctx) => {
+      resolve: async (_, { partyId, groupId }, ctx) => {
         try {
-          await deleteFavoriteActor(ctx.session.get('pid'), actorId, groupId);
-          return { success: true, message: 'Favorite Actor deleted successfully' };
+          await deleteFavoriteParty(ctx.session.get('pid'), partyId, groupId);
+          return { success: true, message: 'Favorite Party deleted successfully' };
         } catch (error) {
-          console.error('Failed to delete favorite actor:', error);
+          console.error('Failed to delete favorite party:', error);
           return error;
         }
       },
