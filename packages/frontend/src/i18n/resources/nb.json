@@ -135,6 +135,17 @@
   "profile.settings.postal_address": "Postadresse",
   "profile.settings.notification_settings": "Varslingsinngstillinger",
   "profile.settings.contact_profiles": "Kontaktprofiler",
+  "profile.notifications.heading": "Varslingsinnstillinger",
+  "profile.notifications.heading_per_actor": "Varslinger per aktør",
+  "profile.notifications.are_on": "Varslinger er på",
+  "profile.notifications.no_notifications": "Ingen varslinger",
+  "profile.notifications.turn_on": "Skru på",
+  "profile.notifications.turn_off": "Skru av",
+  "profile.notifications.email_for_alerts": "Varslingsadresse for e-post",
+  "profile.notifications.change_phone": "Endre mobilnummer",
+  "profile.notifications.change_email": "Endre e-postadresse",
+  "profile.notifications.sms_alert": "Varsle på SMS",
+  "profile.notifications.email_alert": "Varsle på e-post",
   "route.archived": "Arkiv",
   "route.deleted": "Papirkurv",
   "savedSearches.bookmark.item_input_helper": "Gi bokmerket et navn",
@@ -206,5 +217,6 @@
   "word.seenBy": "Sett av",
   "word.to": "til",
   "word.unread": "Ulest",
-  "word.you": "deg"
+  "word.you": "deg",
+  "word.and": "og"
 }
