@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.38.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.37.0...v1.38.0) (2025-06-06)
+
+
+### Features
+
+* Add dummy profile activity page ([#2209](https://github.com/Altinn/dialogporten-frontend/issues/2209)) ([4f68bdc](https://github.com/Altinn/dialogporten-frontend/commit/4f68bdc91f4dea2b7804571d688e4dc5d1b2e8c0))
+* Added interim solution for actor favorite categories ([c7f198b](https://github.com/Altinn/dialogporten-frontend/commit/c7f198b519ea55cdfb29b319cc773c759b0da654))
+
+
+### Bug Fixes
+
+* remove quasi status DEFAULT from bookmark links ([#2220](https://github.com/Altinn/dialogporten-frontend/issues/2220)) ([474c014](https://github.com/Altinn/dialogporten-frontend/commit/474c01477f43cd96886911edf552a38163888ca8))
+
 ## [1.37.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.36.1...v1.37.0) (2025-06-03)
 
 
