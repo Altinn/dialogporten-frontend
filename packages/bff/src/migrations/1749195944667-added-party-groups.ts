@@ -1,7 +1,7 @@
 import type { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class AddedActorGroups1748946209349 implements MigrationInterface {
-  name = 'AddedActorGroups1748946209349';
+export class AddedPartyGroups1749195944667 implements MigrationInterface {
+  name = 'AddedPartyGroups1749195944667';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(

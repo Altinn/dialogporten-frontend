@@ -32,7 +32,7 @@ export const getOrCreateProfile = async (pid: string, sessionLocale: string): Pr
   return profile;
 };
 
-export const addFavoriteActor = async (pid: string, actorId: string) => {
+export const addFavoriteParty = async (pid: string, partyId: string) => {
   const categoryName = 'favorites';
   const currentProfile = await ProfileRepository!.findOne({
     where: { pid },
@@ -58,18 +58,18 @@ export const addFavoriteActor = async (pid: string, actorId: string) => {
     }
   }
   const currentParty = await PartyRepository!.findOne({
-    where: { id: actorId, groups: { id: group.id } },
+    where: { id: partyId, groups: { id: group.id } },
     relations: ['groups'],
   });
   if (currentParty) {
-    console.info(`Actor ${actorId} already exists in group ${categoryName}, skipping addition`);
+    console.info(`Party ${partyId} already exists in group ${categoryName}, skipping addition`);
     return currentProfile;
   }
 
-  let party = await PartyRepository!.findOne({ where: { id: actorId }, relations: ['groups'] });
+  let party = await PartyRepository!.findOne({ where: { id: partyId }, relations: ['groups'] });
   if (!party) {
     party = new Party();
-    party.id = actorId;
+    party.id = partyId;
     await PartyRepository!.save(party);
   }
 
@@ -83,7 +83,7 @@ export const addFavoriteActor = async (pid: string, actorId: string) => {
 
   const existingGroupNames = new Set(currentFavorites.map((g) => g.name));
   if (existingGroupNames.has(categoryName)) {
-    console.info(`Actor ${actorId} already exists in favorites for category ${categoryName}, skipping addition`);
+    console.info(`Party ${partyId} already exists in favorites for category ${categoryName}, skipping addition`);
     return currentProfile;
   }
 
@@ -100,7 +100,7 @@ export const addFavoriteActor = async (pid: string, actorId: string) => {
   return updatedProfile;
 };
 
-export const addFavoriteActorToGroup = async (pid: string, actorId: string, categoryName: string) => {
+export const addFavoritePartyToGroup = async (pid: string, partyId: string, categoryName: string) => {
   const currentProfile = await ProfileRepository!.findOne({
     where: { pid },
   });
@@ -117,26 +117,26 @@ export const addFavoriteActorToGroup = async (pid: string, actorId: string, cate
     if (!group) throw new Error('Fatal: Not able to create new group');
   }
 
-  let actor = await PartyRepository!.findOne({
-    where: { id: actorId },
+  let party = await PartyRepository!.findOne({
+    where: { id: partyId },
     relations: ['groups'],
   });
 
-  if (!actor) {
-    actor = new Party();
-    actor.id = actorId;
-    actor.groups = [group];
+  if (!party) {
+    party = new Party();
+    party.id = partyId;
+    party.groups = [group];
   } else {
-    const alreadyInGroup = actor.groups.some((g) => g.id === group.id);
+    const alreadyInGroup = party.groups.some((g) => g.id === group.id);
     if (!alreadyInGroup) {
-      actor.groups = [...actor.groups, group];
+      party.groups = [...party.groups, group];
     } else {
-      console.info(`Actor ${actorId} already exists in group ${categoryName}, skipping addition`);
+      console.info(`Party ${partyId} already exists in group ${categoryName}, skipping addition`);
       return currentProfile;
     }
   }
 
-  await PartyRepository!.save(actor);
+  await PartyRepository!.save(party);
 
   const updatedProfile = await ProfileRepository!.findOne({
     where: { pid: currentProfile.pid },
@@ -146,7 +146,7 @@ export const addFavoriteActorToGroup = async (pid: string, actorId: string, cate
   return updatedProfile;
 };
 
-export const deleteFavoriteActor = async (pid: string, partyId: string, groupId: string) => {
+export const deleteFavoriteParty = async (pid: string, partyId: string, groupId: string) => {
   try {
     const group = await GroupRepository!.findOne({
       where: { id: Number.parseInt(groupId), profile: { pid } },

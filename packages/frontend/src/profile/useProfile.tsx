@@ -4,9 +4,9 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParties } from '../api/hooks/useParties.ts';
 import {
-  addFavoriteActor as addFavoriteActorRaw,
-  addFavoriteActorToGroup as addFavoriteActorToGroupRaw,
-  deleteFavoriteActor as deleteFavoriteActorRaw,
+  addFavoriteParty as addFavoritePartyRaw,
+  addFavoritePartyToGroup as addFavoritePartyToGroupRaw,
+  deleteFavoriteParty as deleteFavoritePartyRaw,
   profile,
 } from '../api/queries.ts';
 import { QUERY_KEYS } from '../constants/queryKeys.ts';
@@ -23,8 +23,8 @@ export const useProfile = () => {
   const language = data?.profile?.language || i18n.language || 'nb';
 
   const favoritesGroup = groups.find((group) => group!.isfavorite)?.parties || [];
-  const favoriteActors = parties.filter((party) => {
-    if (favoritesGroup?.find((actor) => actor?.id!.includes(party.party))) return true;
+  const favoriteParties = parties.filter((party) => {
+    if (favoritesGroup?.find((favoriteParty) => favoriteParty?.id!.includes(party.party))) return true;
     if (party.isCurrentEndUser) return true;
     return false;
   });
@@ -37,16 +37,16 @@ export const useProfile = () => {
     }
   }, [language]);
 
-  const deleteFavoriteActor = (partyId: string, groupId: string) =>
-    deleteFavoriteActorRaw(partyId, groupId).then(() => {
+  const deleteFavoriteParty = (partyId: string, groupId: string) =>
+    deleteFavoritePartyRaw(partyId, groupId).then(() => {
       void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PROFILE] });
     });
-  const addFavoriteActor = (partyId: string) =>
-    addFavoriteActorRaw(partyId).then(() => {
+  const addFavoriteParty = (partyId: string) =>
+    addFavoritePartyRaw(partyId).then(() => {
       void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PROFILE] });
     });
-  const addFavoriteActorToGroup = async (partyId: string, groupName: string) => {
-    await addFavoriteActorToGroupRaw(partyId, groupName);
+  const addFavoritePartyToGroup = async (partyId: string, groupName: string) => {
+    await addFavoritePartyToGroupRaw(partyId, groupName);
     void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PROFILE] });
   };
 
@@ -56,9 +56,9 @@ export const useProfile = () => {
     language,
     user: data?.profile?.user as User,
     groups,
-    favoriteActors,
-    deleteFavoriteActor,
-    addFavoriteActor,
-    addFavoriteActorToGroup,
+    favoriteParties,
+    deleteFavoriteParty,
+    addFavoriteParty,
+    addFavoritePartyToGroup,
   };
 };

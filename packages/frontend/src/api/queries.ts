@@ -1,8 +1,8 @@
 import {
-  type AddFavoriteActorMutation,
-  type AddFavoriteActorToGroupMutation,
+  type AddFavoritePartyMutation,
+  type AddFavoritePartyToGroupMutation,
   type CreateSavedSearchMutation,
-  type DeleteFavoriteActorMutation,
+  type DeleteFavoritePartyMutation,
   type DeleteSavedSearchMutation,
   type GetAllDialogsForPartiesQuery,
   type GetSearchAutocompleteDialogsQuery,
@@ -25,12 +25,12 @@ export const deleteSavedSearch = (id: number): Promise<DeleteSavedSearchMutation
   graphQLSDK.DeleteSavedSearch({ id });
 export const updateSavedSearch = (id: number, name: string): Promise<UpdateSavedSearchMutation> =>
   graphQLSDK.UpdateSavedSearch({ id, name });
-export const addFavoriteActor = (actorId: string): Promise<AddFavoriteActorMutation> =>
-  graphQLSDK.AddFavoriteActor({ actorId });
-export const addFavoriteActorToGroup = (actorId: string, groupName: string): Promise<AddFavoriteActorToGroupMutation> =>
-  graphQLSDK.AddFavoriteActorToGroup({ actorId, groupName });
-export const deleteFavoriteActor = (actorId: string, groupId: string): Promise<DeleteFavoriteActorMutation> =>
-  graphQLSDK.DeleteFavoriteActor({ actorId, groupId });
+export const addFavoriteParty = (partyId: string): Promise<AddFavoritePartyMutation> =>
+  graphQLSDK.AddFavoriteParty({ partyId });
+export const addFavoritePartyToGroup = (partyId: string, groupName: string): Promise<AddFavoritePartyToGroupMutation> =>
+  graphQLSDK.AddFavoritePartyToGroup({ partyId, groupName });
+export const deleteFavoriteParty = (partyId: string, groupId: string): Promise<DeleteFavoritePartyMutation> =>
+  graphQLSDK.DeleteFavoriteParty({ partyId, groupId });
 export const createSavedSearch = (name: string, data: SavedSearchInput): Promise<CreateSavedSearchMutation> =>
   graphQLSDK.CreateSavedSearch({ name, data });
 export const updateSystemLabel = (dialogId: string, label: SystemLabel): Promise<UpdateSystemLabelMutation> =>

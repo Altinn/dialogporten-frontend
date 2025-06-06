@@ -7,7 +7,7 @@ export enum PageRoutes {
   archive = '/archive',
   bin = '/bin',
   profile = '/profile',
-  actors = '/profile/actors',
+  partiesOverview = '/profile/parties',
   notifications = '/profile/notifications',
   settings = '/profile/settings',
   activities = '/profile/activities',
