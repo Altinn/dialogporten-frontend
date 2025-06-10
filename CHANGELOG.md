@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.39.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.38.0...v1.39.0) (2025-06-10)
+
+
+### Features
+
+* Profile notifications dummy page ([#2197](https://github.com/Altinn/dialogporten-frontend/issues/2197)) ([c493deb](https://github.com/Altinn/dialogporten-frontend/commit/c493deb03c15f78865a0500d321c3b16b5f9d007))
+
 ## [1.38.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.37.0...v1.38.0) (2025-06-06)
 
 
