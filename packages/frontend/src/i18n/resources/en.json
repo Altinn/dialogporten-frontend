@@ -135,6 +135,17 @@
   "profile.settings.postal_address": "Postal address",
   "profile.settings.notification_settings": "Notification settings",
   "profile.settings.contact_profiles": "Contact profiles",
+  "profile.notifications.heading": "Notification settings",
+  "profile.notifications.heading_per_actor": "Notifications per actor",
+  "profile.notifications.are_on": "Notifications are on",
+  "profile.notifications.no_notifications": "No notifications",
+  "profile.notifications.turn_on": "Turn on",
+  "profile.notifications.turn_off": "Turn off",
+  "profile.notifications.email_for_alerts": "Email address for alerts",
+  "profile.notifications.change_phone": "Change phone number",
+  "profile.notifications.change_email": "Change email address",
+  "profile.notifications.sms_alert": "Notify via SMS",
+  "profile.notifications.email_alert": "Notify via email",
   "route.archived": "Archive",
   "route.deleted": "Trash",
   "savedSearches.bookmark.item_input_helper": "Give saved search a title",
@@ -206,5 +217,6 @@
   "word.seenBy": "Seen by",
   "word.to": "to",
   "word.unread": "Unread",
-  "word.you": "you"
+  "word.you": "you",
+  "word.and": "and"
 }
