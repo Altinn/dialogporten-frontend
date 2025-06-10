@@ -36,6 +36,7 @@ services:
     environment:
       PUID: 1000
       PGID: 1000
+      HOMEPAGE_ALLOWED_HOSTS: "localhost,127.0.0.1"
     volumes:
       - ./data/homepage/config:/app/config
       - ./data/homepage/icons:/app/public/icons
@@ -52,6 +53,7 @@ services:
       - "traefik.http.routers.http-catchall.entrypoints=web"
       - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+
     ports:
       - 3000:3000
       - 3000:3000
@@ -236,13 +238,6 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.docs.rule=Host(`docs.localhost`)"
       - "traefik.enable=true"
-      - "traefik.http.routers.homepage.rule=Host(`localhost`)"
-      - "traefik.http.routers.dashboard.tls=true"
-      - "traefik.http.routers.dashboard.tls.certresolver=default"
-      - "traefik.http.routers.http-catchall.rule=HostRegexp(`{host:.+}`)"
-      - "traefik.http.routers.http-catchall.entrypoints=web"
-      - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
-      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
     develop:
       watch:
         - action: sync
