@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.39.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.39.0...v1.39.1) (2025-06-11)
+
+
+### Bug Fixes
+
+* show counts only for contented that is fetched when filter is applied + group results ([#2225](https://github.com/Altinn/dialogporten-frontend/issues/2225)) ([530a663](https://github.com/Altinn/dialogporten-frontend/commit/530a663363a89bb673d0f32103680937dcaeb9ab))
+
 ## [1.39.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.38.0...v1.39.0) (2025-06-10)
 
 
