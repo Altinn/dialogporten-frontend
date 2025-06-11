@@ -140,7 +140,7 @@ export const getFilters = (
   allOrganizations: OrganizationFieldsFragment[],
   viewType: InboxViewType,
 ): ToolbarFilterProps[] => {
-  const orgsInFilteredDialogs = allDialogs.map((d) => d.org);
+  const orgsInFilteredDialogs = dialogs.map((d) => d.org);
   const orgCount = countOccurrences(orgsInFilteredDialogs);
   const orgsFoundInAllDialogs = Array.from(new Set(allDialogs.map((d) => d.org)));
 
@@ -158,8 +158,8 @@ export const getFilters = (
       .sort((a, b) => a.label?.localeCompare(b.label)),
   };
 
-  const statusList = allDialogs.map((p) => p.status);
-  const labelList = allDialogs.map((p) => p.systemLabel);
+  const statusList = dialogs.map((p) => p.status);
+  const labelList = dialogs.map((p) => p.label);
   const statusCount = countOccurrences(statusList);
   const labelCounts = countOccurrences(labelList);
 
