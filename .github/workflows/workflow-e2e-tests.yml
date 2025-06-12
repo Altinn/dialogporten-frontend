@@ -167,6 +167,9 @@ jobs:
       - name: Send Slack notification
         uses: slackapi/slack-github-action@b0fa283ad8fea605de13dc3f449259339835fc52 # v2.1.0
         with:
+          method: chat.postMessage
+          errors: true
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
           payload: |
             {
               "channel": "${{ secrets.SLACK_CHANNEL_ID }}",
@@ -223,8 +226,6 @@ jobs:
                 }
               ]
             }
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
   notify-success:
     needs: [e2e-tests, remove-failure-timestamp]
@@ -234,6 +235,9 @@ jobs:
       - name: Send Slack notification
         uses: slackapi/slack-github-action@b0fa283ad8fea605de13dc3f449259339835fc52 # v2.1.0
         with:
+          method: chat.postMessage
+          errors: true
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
           payload: |
             {
               "channel": "${{ secrets.SLACK_CHANNEL_ID }}",
@@ -290,5 +294,3 @@ jobs:
                 }
               ]
             }
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
