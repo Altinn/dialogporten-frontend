@@ -4,6 +4,9 @@ on:
   # todo: enable when tests are implemented
   # schedule:
   #   - cron: '*/30 * * * *'  # Run every 30 minutes
+  push:
+    branches:
+      - ci/add-e2e-workflow
   workflow_dispatch:
     inputs:
       dialog_id:

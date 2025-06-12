@@ -140,13 +140,14 @@ jobs:
     if: always() && !cancelled() && needs.e2e-tests.outputs.test_status == 'success' && needs.e2e-tests.outputs.had_previous_failure == 'true'
     runs-on: ubuntu-latest
     steps:
-      - name: Check if variable exists
-        id: check-variable
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Check if LAST_E2E_FAILURE variable exists
         run: |
           if gh variable list --env ${{ inputs.environment }} | grep -q "LAST_E2E_FAILURE"; then
-            echo "variable_exists=true" >> $GITHUB_OUTPUT
+            echo "Variable exists"
           else
-            echo "variable_exists=false" >> $GITHUB_OUTPUT
+            echo "Variable does not exist"
           fi
         env:
           GH_TOKEN: ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}
