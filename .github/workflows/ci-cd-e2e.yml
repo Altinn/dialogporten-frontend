@@ -28,3 +28,4 @@ jobs:
     secrets:
       SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
       SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_CI_CD_STATUS }}
+      RELEASE_VERSION_STORAGE_PAT: ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}

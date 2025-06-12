@@ -19,6 +19,8 @@ on:
         required: true
       SLACK_CHANNEL_ID:
         required: true
+      RELEASE_VERSION_STORAGE_PAT:
+        required: true
 
 jobs:
   e2e-tests:
@@ -115,7 +117,7 @@ jobs:
       variable_value: ${{ format('{0:%Y-%m-%dT%H:%M:%S}', github.event.repository.created_at) }}
       environment: ${{ inputs.environment }}
     secrets:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}
 
   remove-failure-timestamp:
     needs: e2e-tests
@@ -126,7 +128,7 @@ jobs:
       variable_value: ""
       environment: ${{ inputs.environment }}
     secrets:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}
 
   notify-failure:
     needs: [e2e-tests, store-failure-timestamp]
