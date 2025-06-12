@@ -112,7 +112,7 @@ jobs:
         run: |
           if [ -n "${{ steps.get-last-failure.outputs.last_failure }}" ]; then
             # Convert ISO timestamp to seconds since epoch for comparison
-            LAST_FAILURE_SECONDS=$(date -d "${{ steps.get-last-failure.outputs.last_failure }}" +%s)git
+            LAST_FAILURE_SECONDS=$(date -d "${{ steps.get-last-failure.outputs.last_failure }}" +%s)
             CURRENT_SECONDS=$(date +%s)
             TIME_DIFF=$((CURRENT_SECONDS - LAST_FAILURE_SECONDS))
             HOURS_DIFF=$((TIME_DIFF / 3600))
