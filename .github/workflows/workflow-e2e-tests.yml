@@ -109,8 +109,10 @@ jobs:
         if: failure()
         run: |
           if [ -z "${{ steps.get-last-failure.outputs.last_failure }}" ]; then
+            # Always notify on first failure
             echo "should_notify=true" >> $GITHUB_OUTPUT
           else
+            # For subsequent failures, check time since last failure
             last_failure=$(date -j -f "%Y-%m-%dT%H:%M:%S" "${{ steps.get-last-failure.outputs.last_failure }}" "+%s")
             current_time=$(date "+%s")
             time_diff=$((current_time - last_failure))
