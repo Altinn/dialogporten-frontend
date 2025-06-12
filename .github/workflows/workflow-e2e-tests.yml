@@ -25,6 +25,10 @@ jobs:
     name: Run E2E Tests
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
+    outputs:
+      test_status: ${{ steps.run-tests.outcome }}
+      failure_duration: ${{ steps.failure-duration.outputs.duration }}
+      should_notify: ${{ steps.should-notify.outputs.should_notify }}
     
     steps:
       - uses: actions/checkout@v4
@@ -101,19 +105,35 @@ jobs:
               echo "should_notify=false" >> $GITHUB_OUTPUT
             fi
           fi
-          
-      - name: Store failure timestamp
-        if: failure() && steps.should-notify.outputs.should_notify == 'true'
-        uses: ./.github/workflows/workflow-store-github-env-variable.yml
-        with:
-          variable_name: LAST_E2E_FAILURE
-          variable_value: ${{ format('{0:%Y-%m-%dT%H:%M:%S}', github.event.repository.created_at) }}
-          environment: ${{ inputs.environment }}
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
-      - name: Send Slack notification on failure
-        if: failure() && steps.should-notify.outputs.should_notify == 'true'
+
+  store-failure-timestamp:
+    needs: e2e-tests
+    if: needs.e2e-tests.outputs.test_status == 'failure' && needs.e2e-tests.outputs.should_notify == 'true'
+    uses: ./.github/workflows/workflow-store-github-env-variable.yml
+    with:
+      variable_name: LAST_E2E_FAILURE
+      variable_value: ${{ format('{0:%Y-%m-%dT%H:%M:%S}', github.event.repository.created_at) }}
+      environment: ${{ inputs.environment }}
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  remove-failure-timestamp:
+    needs: e2e-tests
+    if: needs.e2e-tests.outputs.test_status == 'success'
+    uses: ./.github/workflows/workflow-store-github-env-variable.yml
+    with:
+      variable_name: LAST_E2E_FAILURE
+      variable_value: ""
+      environment: ${{ inputs.environment }}
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  notify-failure:
+    needs: [e2e-tests, store-failure-timestamp]
+    if: needs.e2e-tests.outputs.test_status == 'failure' && needs.e2e-tests.outputs.should_notify == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Slack notification
         uses: slackapi/slack-github-action@v2.0.0
         with:
           payload: |
@@ -142,7 +162,7 @@ jobs:
                       "type": "section",
                       "text": {
                         "type": "mrkdwn",
-                        "text": "*Failure Duration:* ${{ steps.failure-duration.outputs.duration }}"
+                        "text": "*Failure Duration:* ${{ needs.e2e-tests.outputs.failure_duration }}"
                       }
                     },
                     {
@@ -174,19 +194,13 @@ jobs:
             }
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-          
-      - name: Remove failure timestamp on success
-        if: success()
-        uses: ./.github/workflows/workflow-store-github-env-variable.yml
-        with:
-          variable_name: LAST_E2E_FAILURE
-          variable_value: ""
-          environment: ${{ inputs.environment }}
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
-      - name: Send Slack notification on success
-        if: success() && vars.LAST_E2E_FAILURE != ''
+
+  notify-success:
+    needs: [e2e-tests, remove-failure-timestamp]
+    if: needs.e2e-tests.outputs.test_status == 'success' && vars.LAST_E2E_FAILURE != ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Slack notification
         uses: slackapi/slack-github-action@v2.0.0
         with:
           payload: |
@@ -215,7 +229,7 @@ jobs:
                       "type": "section",
                       "text": {
                         "type": "mrkdwn",
-                        "text": "*Issue Duration:* ${{ steps.failure-duration.outputs.duration }}"
+                        "text": "*Issue Duration:* ${{ needs.e2e-tests.outputs.failure_duration }}"
                       }
                     },
                     {
