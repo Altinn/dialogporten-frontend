@@ -34,9 +34,19 @@ jobs:
       test_status: ${{ steps.run-tests.outcome }}
       failure_duration: ${{ steps.failure-duration.outputs.duration }}
       should_notify: ${{ steps.should-notify.outputs.should_notify }}
+      had_previous_failure: ${{ steps.check-previous-failure.outputs.had_previous_failure }}
     
     steps:
       - uses: actions/checkout@v4
+      
+      - name: Check for previous failure
+        id: check-previous-failure
+        run: |
+          if [ -n "${{ vars.LAST_E2E_FAILURE }}" ]; then
+            echo "had_previous_failure=true" >> $GITHUB_OUTPUT
+          else
+            echo "had_previous_failure=false" >> $GITHUB_OUTPUT
+          fi
       
       - name: Simple Smoke Test
         id: run-tests
@@ -124,14 +134,16 @@ jobs:
 
   remove-failure-timestamp:
     needs: e2e-tests
-    if: needs.e2e-tests.outputs.test_status == 'success'
-    uses: ./.github/workflows/workflow-store-github-env-variable.yml
-    with:
-      variable_name: LAST_E2E_FAILURE
-      variable_value: ""
-      environment: ${{ inputs.environment }}
-    secrets:
-      GH_TOKEN: ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}
+    if: needs.e2e-tests.outputs.test_status == 'success' && needs.e2e-tests.outputs.had_previous_failure == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete failure timestamp variable
+        run: |
+          gh variable delete LAST_E2E_FAILURE \
+            --env ${{ inputs.environment }} \
+            --repo ${{ github.repository }}
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}
 
   notify-failure:
     needs: [e2e-tests, store-failure-timestamp]
@@ -202,7 +214,7 @@ jobs:
 
   notify-success:
     needs: [e2e-tests, remove-failure-timestamp]
-    if: needs.e2e-tests.outputs.test_status == 'success' && vars.LAST_E2E_FAILURE != ''
+    if: needs.e2e-tests.outputs.test_status == 'success' && needs.e2e-tests.outputs.had_previous_failure == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Send Slack notification
