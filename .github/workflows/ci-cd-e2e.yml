@@ -1,8 +1,8 @@
 ﻿name: E2E Tests Staging
 
 on:
-  schedule:
-    - cron: '*/2 * * * *'  # Run every 2 minutes
+  # schedule:
+  #   - cron: '*/2 * * * *'  # Run every 2 minutes
   push:
     branches:
       - ci/add-e2e-workflow

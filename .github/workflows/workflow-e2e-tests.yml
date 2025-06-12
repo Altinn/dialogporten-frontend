@@ -123,7 +123,7 @@ jobs:
 
   store-failure-timestamp:
     needs: e2e-tests
-    if: needs.e2e-tests.outputs.test_status == 'failure' && needs.e2e-tests.outputs.should_notify == 'true'
+    if: failure() && needs.e2e-tests.outputs.test_status == 'failure' && needs.e2e-tests.outputs.should_notify == 'true'
     uses: ./.github/workflows/workflow-store-github-env-variable.yml
     with:
       variable_name: LAST_E2E_FAILURE
@@ -137,7 +137,19 @@ jobs:
     if: needs.e2e-tests.outputs.test_status == 'success' && needs.e2e-tests.outputs.had_previous_failure == 'true'
     runs-on: ubuntu-latest
     steps:
+      - name: Check if variable exists
+        id: check-variable
+        run: |
+          if gh variable list --env ${{ inputs.environment }} | grep -q "LAST_E2E_FAILURE"; then
+            echo "variable_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "variable_exists=false" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}
+          
       - name: Delete failure timestamp variable
+        if: steps.check-variable.outputs.variable_exists == 'true'
         run: |
           gh variable delete LAST_E2E_FAILURE \
             --env ${{ inputs.environment }} \
@@ -147,7 +159,7 @@ jobs:
 
   notify-failure:
     needs: [e2e-tests, store-failure-timestamp]
-    if: needs.e2e-tests.outputs.test_status == 'failure' && needs.e2e-tests.outputs.should_notify == 'true'
+    if: failure() && needs.e2e-tests.outputs.test_status == 'failure' && needs.e2e-tests.outputs.should_notify == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Send Slack notification
