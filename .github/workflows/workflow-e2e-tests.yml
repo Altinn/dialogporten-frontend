@@ -112,7 +112,7 @@ jobs:
         run: |
           if [ -n "${{ steps.get-last-failure.outputs.last_failure }}" ]; then
             # Convert ISO timestamp to seconds since epoch for comparison
-            LAST_FAILURE_SECONDS=$(date -d "${{ steps.get-last-failure.outputs.last_failure }}" +%s)
+            LAST_FAILURE_SECONDS=$(date -d "${{ steps.get-last-failure.outputs.last_failure }}" +%s)git
             CURRENT_SECONDS=$(date +%s)
             TIME_DIFF=$((CURRENT_SECONDS - LAST_FAILURE_SECONDS))
             HOURS_DIFF=$((TIME_DIFF / 3600))
@@ -179,7 +179,7 @@ jobs:
           payload: |
             {
               "channel": "${{ secrets.SLACK_CHANNEL_ID }}",
-              "text": "E2E Tests Failed in ${{ inputs.environment }} environment",
+              "text": "❌ E2E Tests Failed in ${{ inputs.environment }} environment",
               "attachments": [
                 {
                   "color": "#FF0000",
@@ -194,37 +194,31 @@ jobs:
                     },
                     {
                       "type": "section",
-                      "text": {
-                        "type": "mrkdwn",
-                        "text": "*Environment:* ${{ inputs.environment }}"
-                      }
+                      "fields": [
+                        { "type": "mrkdwn", "text": "*Environment:*\n${{ inputs.environment }}" },
+                        { "type": "mrkdwn", "text": "*Branch:*\n${{ github.ref_name }}" },
+                        { "type": "mrkdwn", "text": "*Commit:*\n<${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha }} >" },
+                        { "type": "mrkdwn", "text": "*Dialog ID:*\n${{ inputs.dialog_id || 'N/A' }}" },
+                        { "type": "mrkdwn", "text": "*Party ID:*\n${{ inputs.party_id || 'N/A' }}" }
+                      ]
                     },
                     {
                       "type": "section",
-                      "text": {
-                        "type": "mrkdwn",
-                        "text": "*Failure Duration:* ${{ needs.e2e-tests.outputs.failure_duration }}"
-                      }
+                      "fields": [
+                        { "type": "mrkdwn", "text": "*Failure Duration:*\n${{ needs.e2e-tests.outputs.failure_duration }}" },
+                        { "type": "mrkdwn", "text": "*Time:*\n<!date^${{ github.run_id }}^{date_short} {time}|Run time>" }
+                      ]
                     },
                     {
                       "type": "section",
-                      "text": {
-                        "type": "mrkdwn",
-                        "text": "E2E tests have failed. Please check the workflow for more details."
-                      }
-                    },
-                    {
-                      "type": "divider"
+                      "text": { "type": "mrkdwn", "text": "E2E tests have failed. Please check the workflow for more details." }
                     },
                     {
                       "type": "actions",
                       "elements": [
                         {
                           "type": "button",
-                          "text": {
-                            "type": "plain_text",
-                            "text": "View Run"
-                          },
+                          "text": { "type": "plain_text", "text": "View Run" },
                           "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
                         }
                       ]
@@ -248,7 +242,7 @@ jobs:
           payload: |
             {
               "channel": "${{ secrets.SLACK_CHANNEL_ID }}",
-              "text": "E2E Tests Fixed in ${{ inputs.environment }} environment",
+              "text": "✅ E2E Tests Fixed in ${{ inputs.environment }} environment",
               "attachments": [
                 {
                   "color": "#00FF00",
@@ -263,37 +257,31 @@ jobs:
                     },
                     {
                       "type": "section",
-                      "text": {
-                        "type": "mrkdwn",
-                        "text": "*Environment:* ${{ inputs.environment }}"
-                      }
+                      "fields": [
+                        { "type": "mrkdwn", "text": "*Environment:*\n${{ inputs.environment }}" },
+                        { "type": "mrkdwn", "text": "*Branch:*\n${{ github.ref_name }}" },
+                        { "type": "mrkdwn", "text": "*Commit:*\n<${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha }} >" },
+                        { "type": "mrkdwn", "text": "*Dialog ID:*\n${{ inputs.dialog_id || 'N/A' }}" },
+                        { "type": "mrkdwn", "text": "*Party ID:*\n${{ inputs.party_id || 'N/A' }}" }
+                      ]
                     },
                     {
                       "type": "section",
-                      "text": {
-                        "type": "mrkdwn",
-                        "text": "*Issue Duration:* ${{ needs.e2e-tests.outputs.failure_duration }}"
-                      }
+                      "fields": [
+                        { "type": "mrkdwn", "text": "*Issue Duration:*\n${{ needs.e2e-tests.outputs.failure_duration }}" },
+                        { "type": "mrkdwn", "text": "*Time:*\n<!date^${{ github.run_id }}^{date_short} {time}|Run time>" }
+                      ]
                     },
                     {
                       "type": "section",
-                      "text": {
-                        "type": "mrkdwn",
-                        "text": "E2E tests are now passing. The issue has been resolved."
-                      }
-                    },
-                    {
-                      "type": "divider"
+                      "text": { "type": "mrkdwn", "text": "E2E tests are now passing. The issue has been resolved." }
                     },
                     {
                       "type": "actions",
                       "elements": [
                         {
                           "type": "button",
-                          "text": {
-                            "type": "plain_text",
-                            "text": "View Run"
-                          },
+                          "text": { "type": "plain_text", "text": "View Run" },
                           "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
                         }
                       ]
