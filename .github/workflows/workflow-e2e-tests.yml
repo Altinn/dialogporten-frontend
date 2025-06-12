@@ -195,18 +195,15 @@ jobs:
                     {
                       "type": "section",
                       "fields": [
-                        { "type": "mrkdwn", "text": "*Environment:*\n${{ inputs.environment }}" },
-                        { "type": "mrkdwn", "text": "*Branch:*\n${{ github.ref_name }}" },
-                        { "type": "mrkdwn", "text": "*Commit:*\n<${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha }} >" },
-                        { "type": "mrkdwn", "text": "*Dialog ID:*\n${{ inputs.dialog_id || 'N/A' }}" },
-                        { "type": "mrkdwn", "text": "*Party ID:*\n${{ inputs.party_id || 'N/A' }}" }
+                        { "type": "mrkdwn", "text": "*Commit:* <${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha }} >" },
+                        { "type": "mrkdwn", "text": "*Dialog ID:* ${{ inputs.dialog_id || 'N/A' }}" },
+                        { "type": "mrkdwn", "text": "*Party ID:* ${{ inputs.party_id || 'N/A' }}" }
                       ]
                     },
                     {
                       "type": "section",
                       "fields": [
-                        { "type": "mrkdwn", "text": "*Failure Duration:*\n${{ needs.e2e-tests.outputs.failure_duration }}" },
-                        { "type": "mrkdwn", "text": "*Time:*\n<!date^${{ github.run_id }}^{date_short} {time}|Run time>" }
+                        { "type": "mrkdwn", "text": "*Failure Duration:* ${{ needs.e2e-tests.outputs.failure_duration }}" }
                       ]
                     },
                     {
@@ -258,18 +255,15 @@ jobs:
                     {
                       "type": "section",
                       "fields": [
-                        { "type": "mrkdwn", "text": "*Environment:*\n${{ inputs.environment }}" },
-                        { "type": "mrkdwn", "text": "*Branch:*\n${{ github.ref_name }}" },
-                        { "type": "mrkdwn", "text": "*Commit:*\n<${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha }} >" },
-                        { "type": "mrkdwn", "text": "*Dialog ID:*\n${{ inputs.dialog_id || 'N/A' }}" },
-                        { "type": "mrkdwn", "text": "*Party ID:*\n${{ inputs.party_id || 'N/A' }}" }
+                        { "type": "mrkdwn", "text": "*Commit:* <${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha }} >" },
+                        { "type": "mrkdwn", "text": "*Dialog ID:* ${{ inputs.dialog_id || 'N/A' }}" },
+                        { "type": "mrkdwn", "text": "*Party ID:* ${{ inputs.party_id || 'N/A' }}" }
                       ]
                     },
                     {
                       "type": "section",
                       "fields": [
-                        { "type": "mrkdwn", "text": "*Issue Duration:*\n${{ needs.e2e-tests.outputs.failure_duration }}" },
-                        { "type": "mrkdwn", "text": "*Time:*\n<!date^${{ github.run_id }}^{date_short} {time}|Run time>" }
+                        { "type": "mrkdwn", "text": "*Failure Duration:* ${{ needs.e2e-tests.outputs.failure_duration }}" }
                       ]
                     },
                     {
