@@ -35,9 +35,14 @@ jobs:
       failure_duration: ${{ steps.failure-duration.outputs.duration }}
       should_notify: ${{ steps.should-notify.outputs.should_notify }}
       had_previous_failure: ${{ steps.check-previous-failure.outputs.had_previous_failure }}
+      failure_timestamp: ${{ steps.generate-timestamp.outputs.timestamp }}
     
     steps:
       - uses: actions/checkout@v4
+      
+      - name: Generate timestamp
+        id: generate-timestamp
+        run: echo "timestamp=$(date -u +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_OUTPUT
       
       - name: Check for previous failure
         id: check-previous-failure
@@ -129,7 +134,7 @@ jobs:
     uses: ./.github/workflows/workflow-store-github-env-variable.yml
     with:
       variable_name: LAST_E2E_FAILURE
-      variable_value: ${{ format('{0:%Y-%m-%dT%H:%M:%S}', github.event.repository.created_at) }}
+      variable_value: ${{ needs.e2e-tests.outputs.failure_timestamp }}
       environment: ${{ inputs.environment }}
     secrets:
       GH_TOKEN: ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}
