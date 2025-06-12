@@ -2,7 +2,10 @@
 
 on:
   schedule:
-    - cron: '*/30 * * * *'  # Run every 30 minutes
+    - cron: '*/2 * * * *'  # Run every 2 minutes
+  push:
+    branches:
+      - ci/add-e2e-workflow
   workflow_dispatch:
     inputs:
       dialog_id:
