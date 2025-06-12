@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.39.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.39.1...v1.39.2) (2025-06-12)
+
+
+### Bug Fixes
+
+* missing saved search for other folders than inbox ([#2232](https://github.com/Altinn/dialogporten-frontend/issues/2232)) ([b06f703](https://github.com/Altinn/dialogporten-frontend/commit/b06f70363f478e9946c42fd0d307a54cb20bc5af))
+
 ## [1.39.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.39.0...v1.39.1) (2025-06-11)
 
 
