@@ -61,14 +61,9 @@ jobs:
           echo "Dialog ID: ${{ inputs.dialog_id }}"
           echo "Party ID: ${{ inputs.party_id }}"
           
-          # Simulate a test that sometimes fails (for testing the notification system)
-          if [ $((RANDOM % 2)) -eq 0 ]; then
-            echo "Test failed"
-            exit 1
-          else
-            echo "Test passed"
-            exit 1
-          fi
+          # Temporarily always pass until real tests are implemented
+          echo "Test passed"
+          exit 0
           
       - name: Get last failure timestamp
         id: get-last-failure
