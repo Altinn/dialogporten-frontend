@@ -178,6 +178,7 @@ jobs:
           payload: |
             {
               "channel": "${{ secrets.SLACK_CHANNEL_ID }}",
+              "text": "E2E Tests Failed in ${{ inputs.environment }} environment",
               "attachments": [
                 {
                   "color": "#FF0000",
@@ -246,6 +247,7 @@ jobs:
           payload: |
             {
               "channel": "${{ secrets.SLACK_CHANNEL_ID }}",
+              "text": "E2E Tests Fixed in ${{ inputs.environment }} environment",
               "attachments": [
                 {
                   "color": "#00FF00",
