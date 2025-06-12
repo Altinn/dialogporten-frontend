@@ -110,9 +110,9 @@ jobs:
         id: should-notify
         if: failure()
         run: |
-          if [ -n "$LAST_FAILURE" ]; then
+          if [ -n "${{ steps.get-last-failure.outputs.last_failure }}" ]; then
             # Convert ISO timestamp to seconds since epoch for comparison
-            LAST_FAILURE_SECONDS=$(date -d "$LAST_FAILURE" +%s)
+            LAST_FAILURE_SECONDS=$(date -d "${{ steps.get-last-failure.outputs.last_failure }}" +%s)
             CURRENT_SECONDS=$(date +%s)
             TIME_DIFF=$((CURRENT_SECONDS - LAST_FAILURE_SECONDS))
             HOURS_DIFF=$((TIME_DIFF / 3600))
