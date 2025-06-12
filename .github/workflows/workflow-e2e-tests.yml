@@ -85,24 +85,21 @@ jobs:
         if: failure()
         run: |
           if [ -n "${{ steps.get-last-failure.outputs.last_failure }}" ]; then
-            last_failure=$(date -j -f "%Y-%m-%dT%H:%M:%S" "${{ steps.get-last-failure.outputs.last_failure }}" "+%s")
-            current_time=$(date "+%s")
-            time_diff=$((current_time - last_failure))
+            # Convert timestamps to seconds since epoch
+            last_failure_seconds=$(date -d "${{ steps.get-last-failure.outputs.last_failure }}" +%s)
+            current_seconds=$(date +%s)
+            duration_seconds=$((current_seconds - last_failure_seconds))
             
-            # Calculate days, hours, minutes
-            days=$((time_diff / 86400))
-            hours=$(( (time_diff % 86400) / 3600 ))
-            minutes=$(( (time_diff % 3600) / 60 ))
+            # Convert to hours and minutes
+            hours=$((duration_seconds / 3600))
+            minutes=$(( (duration_seconds % 3600) / 60 ))
             
             # Format duration string
-            duration=""
-            if [ $days -gt 0 ]; then
-              duration="${days}d "
+            if [ $hours -gt 0 ]; then
+              duration="${hours}h ${minutes}m"
+            else
+              duration="${minutes}m"
             fi
-            if [ $hours -gt 0 ] || [ $days -gt 0 ]; then
-              duration="${duration}${hours}h "
-            fi
-            duration="${duration}${minutes}m"
             
             echo "duration=$duration" >> $GITHUB_OUTPUT
           else
