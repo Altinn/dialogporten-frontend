@@ -1,11 +1,9 @@
 ﻿name: E2E Tests Staging
 
 on:
+  # todo: enable when tests are implemented
   # schedule:
-  #   - cron: '*/2 * * * *'  # Run every 2 minutes
-  push:
-    branches:
-      - ci/add-e2e-workflow
+  #   - cron: '*/30 * * * *'  # Run every 30 minutes
   workflow_dispatch:
     inputs:
       dialog_id:

@@ -183,7 +183,7 @@ jobs:
                       "type": "header",
                       "text": {
                         "type": "plain_text",
-                        "text": "❌ E2E Tests Failed",
+                        "text": "E2E Tests Failed",
                         "emoji": true
                       }
                     },
@@ -243,7 +243,7 @@ jobs:
                       "type": "header",
                       "text": {
                         "type": "plain_text",
-                        "text": "✅ E2E Tests Fixed",
+                        "text": "E2E Tests Succeeded",
                         "emoji": true
                       }
                     },
