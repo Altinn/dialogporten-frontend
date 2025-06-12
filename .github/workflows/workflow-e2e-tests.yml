@@ -67,7 +67,7 @@ jobs:
             exit 1
           else
             echo "Test passed"
-            exit 0
+            exit 1
           fi
           
       - name: Get last failure timestamp
@@ -113,19 +113,23 @@ jobs:
         id: should-notify
         if: failure()
         run: |
-          if [ -z "${{ steps.get-last-failure.outputs.last_failure }}" ]; then
-            # Always notify on first failure
-            echo "should_notify=true" >> $GITHUB_OUTPUT
-          else
-            # For subsequent failures, check time since last failure
-            last_failure=$(date -j -f "%Y-%m-%dT%H:%M:%S" "${{ steps.get-last-failure.outputs.last_failure }}" "+%s")
-            current_time=$(date "+%s")
-            time_diff=$((current_time - last_failure))
-            if [ $time_diff -ge 7200 ]; then  # 2 hours in seconds
+          if [ -n "$LAST_FAILURE" ]; then
+            # Convert ISO timestamp to seconds since epoch for comparison
+            LAST_FAILURE_SECONDS=$(date -d "$LAST_FAILURE" +%s)
+            CURRENT_SECONDS=$(date +%s)
+            TIME_DIFF=$((CURRENT_SECONDS - LAST_FAILURE_SECONDS))
+            HOURS_DIFF=$((TIME_DIFF / 3600))
+            
+            if [ $HOURS_DIFF -ge 2 ]; then
+              echo "More than 2 hours since last failure, should notify"
               echo "should_notify=true" >> $GITHUB_OUTPUT
             else
+              echo "Less than 2 hours since last failure, skipping notification"
               echo "should_notify=false" >> $GITHUB_OUTPUT
             fi
+          else
+            echo "No previous failure found, should notify"
+            echo "should_notify=true" >> $GITHUB_OUTPUT
           fi
 
   store-failure-timestamp:
