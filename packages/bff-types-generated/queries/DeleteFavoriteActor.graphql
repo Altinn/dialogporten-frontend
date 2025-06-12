@@ -1,5 +1,5 @@
-mutation DeleteFavoriteActor($actorId: String!) {
-  deleteFavoriteActor(actorId: $actorId) {
+mutation DeleteFavoriteParty($partyId: String!, $groupId: String!) {
+  deleteFavoriteParty(partyId: $partyId, groupId: $groupId) {
     success
     message
   }

@@ -1,5 +1,12 @@
-mutation AddFavoriteActor($actorId: String!) {
-  addFavoriteActor(actorId: $actorId) {
+mutation AddFavoriteParty($partyId: String!) {
+  addFavoriteParty(partyId: $partyId) {
+    success
+    message
+  }
+}
+
+mutation AddFavoritePartyToGroup($partyId: String!, $groupName: String!) {
+  addFavoritePartyToGroup(partyId: $partyId, groupName: $groupName) {
     success
     message
   }

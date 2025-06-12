@@ -63,8 +63,9 @@ export const Inbox = ({ viewType }: InboxProps) => {
 
   const validSearchString = enteredSearchValue.length > 2 ? enteredSearchValue : undefined;
   const hasValidFilters = Object.values(filterState).some((arr) => typeof arr !== 'undefined' && arr?.length > 0);
-  const displayAsSearchResults = hasValidFilters || !!validSearchString;
-  const enableSavedSearch = displayAsSearchResults && !isSavedSearchDisabled(filterState, enteredSearchValue);
+  const searchMode = viewType === 'inbox' && (hasValidFilters || !!validSearchString);
+  const enableSavedSearch =
+    (hasValidFilters || !!validSearchString) && !isSavedSearchDisabled(filterState, enteredSearchValue);
 
   const {
     dialogs,
@@ -98,13 +99,13 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const isLoading = isLoadingParties || isLoadingDialogs;
   const { groupedDialogs, groups } = useGroupedDialogs({
     items: dialogs,
-    displaySearchResults: displayAsSearchResults,
+    displaySearchResults: searchMode,
     filters: filterState,
     viewType,
     isLoading,
     isFetchingNextPage,
     getCollapsedGroupTitle: (count) => t(`inbox.heading.title.${viewType}`, { count }),
-    collapseGroups: displayAsSearchResults,
+    collapseGroups: viewType !== 'inbox',
   });
 
   const windowSize = useWindowSize();
@@ -179,12 +180,8 @@ export const Inbox = ({ viewType }: InboxProps) => {
       <Section>
         {dialogsSuccess && !dialogs.length && (
           <EmptyState
-            title={
-              displayAsSearchResults ? t('inbox.no_results.title') : t(`inbox.heading.title.${viewType}`, { count: 0 })
-            }
-            description={
-              displayAsSearchResults ? t('inbox.no_results.description') : t(`inbox.heading.description.${viewType}`)
-            }
+            title={searchMode ? t('inbox.no_results.title') : t(`inbox.heading.title.${viewType}`, { count: 0 })}
+            description={searchMode ? t('inbox.no_results.description') : t(`inbox.heading.description.${viewType}`)}
           />
         )}
         <DialogList

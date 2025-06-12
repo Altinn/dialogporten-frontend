@@ -227,7 +227,7 @@ describe('useGroupedDialogs', () => {
 
     expect(result.current.groupedDialogs).toHaveLength(7);
     expect(result.current.groups).toEqual({
-      inbox: { title: 'inbox.heading.search_results.inbox', orderIndex: null },
+      inbox: { title: 'inbox.heading.search_results.inbox', orderIndex: 4 },
     });
   });
 

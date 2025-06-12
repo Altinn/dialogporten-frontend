@@ -52,6 +52,25 @@ export const User = objectType({
   },
 });
 
+export const Group = objectType({
+  name: 'Group',
+  definition(t) {
+    t.int('id', { resolve: (group) => group.id });
+    t.string('name', { resolve: (group) => group.name });
+    t.boolean('isfavorite', { resolve: (group) => group.isfavorite });
+    t.string('profilePid', { resolve: (group) => group.profile?.pid });
+    t.list.field('parties', { type: 'PartyObject', resolve: (group) => group.parties });
+  },
+});
+
+export const PartyObject = objectType({
+  name: 'PartyObject',
+  definition(t) {
+    t.string('id', { resolve: (party) => party.id });
+    t.list.field('groups', { type: 'Group', resolve: (party) => party.groups });
+  },
+});
+
 export const Party = objectType({
   name: 'Party',
   definition(t) {
@@ -126,12 +145,6 @@ export const Profile = objectType({
         return profile.language;
       },
     });
-    t.list.string('favoriteActors', {
-      description: 'The users favorite actors',
-      resolve: (profile) => {
-        return profile.favoriteActors;
-      },
-    });
     t.field('user', {
       type: 'User',
       description: 'The users profile information',
@@ -139,6 +152,8 @@ export const Profile = objectType({
         return profile.user;
       },
     });
+    t.list.field('groups', { type: 'Group', resolve: (profile) => profile.groups || [] });
+
     t.string('updatedAt', {
       description: 'Last updated',
       resolve: (profile) => {

@@ -1,5 +1,39 @@
 # Changelog
 
+## [1.39.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.39.1...v1.39.2) (2025-06-12)
+
+
+### Bug Fixes
+
+* missing saved search for other folders than inbox ([#2232](https://github.com/Altinn/dialogporten-frontend/issues/2232)) ([b06f703](https://github.com/Altinn/dialogporten-frontend/commit/b06f70363f478e9946c42fd0d307a54cb20bc5af))
+
+## [1.39.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.39.0...v1.39.1) (2025-06-11)
+
+
+### Bug Fixes
+
+* show counts only for contented that is fetched when filter is applied + group results ([#2225](https://github.com/Altinn/dialogporten-frontend/issues/2225)) ([530a663](https://github.com/Altinn/dialogporten-frontend/commit/530a663363a89bb673d0f32103680937dcaeb9ab))
+
+## [1.39.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.38.0...v1.39.0) (2025-06-10)
+
+
+### Features
+
+* Profile notifications dummy page ([#2197](https://github.com/Altinn/dialogporten-frontend/issues/2197)) ([c493deb](https://github.com/Altinn/dialogporten-frontend/commit/c493deb03c15f78865a0500d321c3b16b5f9d007))
+
+## [1.38.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.37.0...v1.38.0) (2025-06-06)
+
+
+### Features
+
+* Add dummy profile activity page ([#2209](https://github.com/Altinn/dialogporten-frontend/issues/2209)) ([4f68bdc](https://github.com/Altinn/dialogporten-frontend/commit/4f68bdc91f4dea2b7804571d688e4dc5d1b2e8c0))
+* Added interim solution for actor favorite categories ([c7f198b](https://github.com/Altinn/dialogporten-frontend/commit/c7f198b519ea55cdfb29b319cc773c759b0da654))
+
+
+### Bug Fixes
+
+* remove quasi status DEFAULT from bookmark links ([#2220](https://github.com/Altinn/dialogporten-frontend/issues/2220)) ([474c014](https://github.com/Altinn/dialogporten-frontend/commit/474c01477f43cd96886911edf552a38163888ca8))
+
 ## [1.37.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.36.1...v1.37.0) (2025-06-03)
 
 

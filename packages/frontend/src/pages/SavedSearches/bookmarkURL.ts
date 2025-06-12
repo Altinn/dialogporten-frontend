@@ -1,5 +1,5 @@
-import type { SavedSearchesFieldsFragment } from 'bff-types-generated';
-import { aggregateFilterState } from '../Inbox/filters.ts';
+import { type SavedSearchesFieldsFragment, SystemLabel } from 'bff-types-generated';
+import { FilterCategory, aggregateFilterState } from '../Inbox/filters.ts';
 import { PageRoutes } from '../routes.ts';
 import { convertFiltersToFilterState, fromPathToViewType } from './useSavedSearches.tsx';
 
@@ -29,6 +29,9 @@ export const buildBookmarkURL = (savedSearch: SavedSearchesFieldsFragment) => {
   for (const [key, values] of Object.entries(aggregated)) {
     if (Array.isArray(values)) {
       for (const val of values) {
+        if (key === FilterCategory.STATUS && val === SystemLabel.Default) {
+          continue;
+        }
         queryParams.append(key, String(val));
       }
     } else if (values != null) {
