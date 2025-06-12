@@ -19,7 +19,7 @@ on:
         required: true
       SLACK_CHANNEL_ID:
         required: true
-      RELEASE_VERSION_STORAGE_PAT:
+      GITHUB_VARIABLE_STORAGE_PAT:
         required: true
 
 permissions:
@@ -133,7 +133,7 @@ jobs:
       variable_value: ${{ needs.e2e-tests.outputs.failure_timestamp }}
       environment: ${{ inputs.environment }}
     secrets:
-      GH_TOKEN: ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}
+      GH_TOKEN: ${{ secrets.GITHUB_VARIABLE_STORAGE_PAT }}
 
   remove-failure-timestamp:
     needs: e2e-tests
@@ -151,14 +151,14 @@ jobs:
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
         env:
-          GH_TOKEN: ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}
+          GH_TOKEN: ${{ secrets.GITHUB_VARIABLE_STORAGE_PAT }}
           
       - name: Delete LAST_E2E_FAILURE variable if it exists
         if: steps.check_variable.outputs.exists == 'true'
         run: |
           gh variable delete LAST_E2E_FAILURE --env ${{ inputs.environment }} --repo ${{ github.repository }}
         env:
-          GH_TOKEN: ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}
+          GH_TOKEN: ${{ secrets.GITHUB_VARIABLE_STORAGE_PAT }}
 
   notify-failure:
     needs: [e2e-tests, store-failure-timestamp]

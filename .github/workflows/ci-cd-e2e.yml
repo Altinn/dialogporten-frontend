@@ -4,9 +4,6 @@ on:
   # todo: enable when tests are implemented
   # schedule:
   #   - cron: '*/30 * * * *'  # Run every 30 minutes
-  push:
-    branches:
-      - ci/add-e2e-workflow
   workflow_dispatch:
     inputs:
       dialog_id:
@@ -29,4 +26,4 @@ jobs:
     secrets:
       SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
       SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_E2E_TESTS }}
-      RELEASE_VERSION_STORAGE_PAT: ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}
+      GITHUB_VARIABLE_STORAGE_PAT: ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}
