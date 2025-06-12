@@ -1,0 +1,249 @@
+name: E2E Tests Workflow
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      dialog_id:
+        required: false
+        type: string
+        default: ""
+      party_id:
+        required: false
+        type: string
+        default: ""
+    secrets:
+      SLACK_BOT_TOKEN:
+        required: true
+      SLACK_CHANNEL_ID:
+        required: true
+
+jobs:
+  e2e-tests:
+    name: Run E2E Tests
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Simple Smoke Test
+        id: run-tests
+        run: |
+          echo "TODO: Replace this with actual e2e tests"
+          echo "Current environment: ${{ inputs.environment }}"
+          echo "Dialog ID: ${{ inputs.dialog_id }}"
+          echo "Party ID: ${{ inputs.party_id }}"
+          
+          # Simulate a test that sometimes fails (for testing the notification system)
+          if [ $((RANDOM % 2)) -eq 0 ]; then
+            echo "Test failed"
+            exit 1
+          else
+            echo "Test passed"
+            exit 0
+          fi
+          
+      - name: Get last failure timestamp
+        id: get-last-failure
+        if: failure()
+        run: |
+          if [ -n "${{ vars.LAST_E2E_FAILURE }}" ]; then
+            echo "last_failure=${{ vars.LAST_E2E_FAILURE }}" >> $GITHUB_OUTPUT
+          else
+            echo "last_failure=" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Calculate failure duration
+        id: failure-duration
+        if: failure()
+        run: |
+          if [ -n "${{ steps.get-last-failure.outputs.last_failure }}" ]; then
+            last_failure=$(date -j -f "%Y-%m-%dT%H:%M:%S" "${{ steps.get-last-failure.outputs.last_failure }}" "+%s")
+            current_time=$(date "+%s")
+            time_diff=$((current_time - last_failure))
+            
+            # Calculate days, hours, minutes
+            days=$((time_diff / 86400))
+            hours=$(( (time_diff % 86400) / 3600 ))
+            minutes=$(( (time_diff % 3600) / 60 ))
+            
+            # Format duration string
+            duration=""
+            if [ $days -gt 0 ]; then
+              duration="${days}d "
+            fi
+            if [ $hours -gt 0 ] || [ $days -gt 0 ]; then
+              duration="${duration}${hours}h "
+            fi
+            duration="${duration}${minutes}m"
+            
+            echo "duration=$duration" >> $GITHUB_OUTPUT
+          else
+            echo "duration=0m" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Check if should notify
+        id: should-notify
+        if: failure()
+        run: |
+          if [ -z "${{ steps.get-last-failure.outputs.last_failure }}" ]; then
+            echo "should_notify=true" >> $GITHUB_OUTPUT
+          else
+            last_failure=$(date -j -f "%Y-%m-%dT%H:%M:%S" "${{ steps.get-last-failure.outputs.last_failure }}" "+%s")
+            current_time=$(date "+%s")
+            time_diff=$((current_time - last_failure))
+            if [ $time_diff -ge 7200 ]; then  # 2 hours in seconds
+              echo "should_notify=true" >> $GITHUB_OUTPUT
+            else
+              echo "should_notify=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+          
+      - name: Store failure timestamp
+        if: failure() && steps.should-notify.outputs.should_notify == 'true'
+        uses: ./.github/workflows/workflow-store-github-env-variable.yml
+        with:
+          variable_name: LAST_E2E_FAILURE
+          variable_value: ${{ format('{0:%Y-%m-%dT%H:%M:%S}', github.event.repository.created_at) }}
+          environment: ${{ inputs.environment }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Send Slack notification on failure
+        if: failure() && steps.should-notify.outputs.should_notify == 'true'
+        uses: slackapi/slack-github-action@v2.0.0
+        with:
+          payload: |
+            {
+              "channel": "${{ secrets.SLACK_CHANNEL_ID }}",
+              "attachments": [
+                {
+                  "color": "#FF0000",
+                  "blocks": [
+                    {
+                      "type": "header",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "❌ E2E Tests Failed",
+                        "emoji": true
+                      }
+                    },
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "*Environment:* ${{ inputs.environment }}"
+                      }
+                    },
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "*Failure Duration:* ${{ steps.failure-duration.outputs.duration }}"
+                      }
+                    },
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "E2E tests have failed. Please check the workflow for more details."
+                      }
+                    },
+                    {
+                      "type": "divider"
+                    },
+                    {
+                      "type": "actions",
+                      "elements": [
+                        {
+                          "type": "button",
+                          "text": {
+                            "type": "plain_text",
+                            "text": "View Run"
+                          },
+                          "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          
+      - name: Remove failure timestamp on success
+        if: success()
+        uses: ./.github/workflows/workflow-store-github-env-variable.yml
+        with:
+          variable_name: LAST_E2E_FAILURE
+          variable_value: ""
+          environment: ${{ inputs.environment }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Send Slack notification on success
+        if: success() && vars.LAST_E2E_FAILURE != ''
+        uses: slackapi/slack-github-action@v2.0.0
+        with:
+          payload: |
+            {
+              "channel": "${{ secrets.SLACK_CHANNEL_ID }}",
+              "attachments": [
+                {
+                  "color": "#00FF00",
+                  "blocks": [
+                    {
+                      "type": "header",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "✅ E2E Tests Fixed",
+                        "emoji": true
+                      }
+                    },
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "*Environment:* ${{ inputs.environment }}"
+                      }
+                    },
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "*Issue Duration:* ${{ steps.failure-duration.outputs.duration }}"
+                      }
+                    },
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "E2E tests are now passing. The issue has been resolved."
+                      }
+                    },
+                    {
+                      "type": "divider"
+                    },
+                    {
+                      "type": "actions",
+                      "elements": [
+                        {
+                          "type": "button",
+                          "text": {
+                            "type": "plain_text",
+                            "text": "View Run"
+                          },
+                          "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }} 
