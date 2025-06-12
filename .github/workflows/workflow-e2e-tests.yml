@@ -123,7 +123,7 @@ jobs:
 
   store-failure-timestamp:
     needs: e2e-tests
-    if: failure() && needs.e2e-tests.outputs.test_status == 'failure' && needs.e2e-tests.outputs.should_notify == 'true'
+    if: always() && !cancelled() && needs.e2e-tests.outputs.test_status == 'failure' && needs.e2e-tests.outputs.should_notify == 'true'
     uses: ./.github/workflows/workflow-store-github-env-variable.yml
     with:
       variable_name: LAST_E2E_FAILURE
@@ -134,7 +134,7 @@ jobs:
 
   remove-failure-timestamp:
     needs: e2e-tests
-    if: needs.e2e-tests.outputs.test_status == 'success' && needs.e2e-tests.outputs.had_previous_failure == 'true'
+    if: always() && !cancelled() && needs.e2e-tests.outputs.test_status == 'success' && needs.e2e-tests.outputs.had_previous_failure == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Check if variable exists
@@ -159,7 +159,7 @@ jobs:
 
   notify-failure:
     needs: [e2e-tests, store-failure-timestamp]
-    if: failure() && needs.e2e-tests.outputs.test_status == 'failure' && needs.e2e-tests.outputs.should_notify == 'true'
+    if: always() && !cancelled() && needs.e2e-tests.outputs.test_status == 'failure' && needs.e2e-tests.outputs.should_notify == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Send Slack notification
@@ -226,7 +226,7 @@ jobs:
 
   notify-success:
     needs: [e2e-tests, remove-failure-timestamp]
-    if: needs.e2e-tests.outputs.test_status == 'success' && needs.e2e-tests.outputs.had_previous_failure == 'true'
+    if: always() && !cancelled() && needs.e2e-tests.outputs.test_status == 'success' && needs.e2e-tests.outputs.had_previous_failure == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Send Slack notification
