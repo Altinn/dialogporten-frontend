@@ -13,7 +13,7 @@ set -euo pipefail
 # =========================================================================
 readonly PRODUCT_TAG="Arbeidsflate"
 readonly DEFAULT_POSTGRES_PORT=5432
-readonly DEFAULT_REDIS_PORT=6379
+readonly DEFAULT_REDIS_PORT=6380
 readonly VALID_ENVIRONMENTS=("test" "yt01" "staging" "prod")
 readonly VALID_DB_TYPES=("postgres" "redis")
 readonly SUBSCRIPTION_PREFIX="Dialogporten"
