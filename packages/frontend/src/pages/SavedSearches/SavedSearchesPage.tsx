@@ -26,9 +26,9 @@ export const SavedSearchesPage = () => {
           {selectedAccount ? (
             <Toolbar
               accountMenu={{
-                accounts,
-                accountSearch,
-                accountGroups,
+                items: accounts,
+                search: accountSearch,
+                groups: accountGroups,
                 currentAccount: selectedAccount,
                 onSelectAccount: (account: string) => onSelectAccount(account, PageRoutes.savedSearches),
               }}

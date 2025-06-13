@@ -115,6 +115,7 @@ export const PartiesOverviewPage = () => {
         type: party.partyType as AccountListItemType,
         favourite,
         title: party.name,
+        name: party.name,
         label: party.isCurrentEndUser ? 'Deg' : '',
         favouriteLabel: 'Favoritt',
         collapsible: true,

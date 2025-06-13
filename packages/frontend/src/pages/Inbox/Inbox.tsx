@@ -151,9 +151,9 @@ export const Inbox = ({ viewType }: InboxProps) => {
             <Toolbar
               data-testid="inbox-toolbar"
               accountMenu={{
-                accounts,
-                accountSearch,
-                accountGroups,
+                items: accounts,
+                search: accountSearch,
+                groups: accountGroups,
                 currentAccount: selectedAccount,
                 onSelectAccount: (account: string) => onSelectAccount(account, PageRoutes[viewType]),
                 menuItemsVirtual: {
