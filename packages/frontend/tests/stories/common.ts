@@ -1,9 +1,9 @@
 import { type Page, expect } from '@playwright/test';
 
 export const getSidebar = (page: Page) => page.locator('aside');
-export const getSidebarMenuItem = (page: Page, route: string) => getSidebar(page).locator(`li a[href^="${route}?"]`);
+export const getSidebarMenuItem = (page: Page, route: string) => getSidebar(page).locator(`a[href*="${route}?"]`);
 export const getSidebarMenuItemBadge = (page: Page, route: string) =>
-  getSidebarMenuItem(page, route).locator('div > span + span');
+  getSidebarMenuItem(page, route).locator('[data-variant="tinted"] span');
 export const getSearchbarInput = (page: Page) => page.locator("[name='Søk']");
 
 export async function performSearch(page, query: string, action?: 'clear' | 'click' | 'enter') {
@@ -47,25 +47,20 @@ export async function expectIsPersonPage(page: Page) {
 }
 export async function getToolbarAccountInfo(page: Page, name: string): Promise<{ found: boolean; count?: number }> {
   const toolbar = page.getByTestId('inbox-toolbar');
-  const liElements = toolbar.locator('li');
+  const items = toolbar.locator('li');
 
-  const matchingElement = liElements.filter({ hasText: name });
+  console.info(items);
+  // Find li with <a> containing the given name
+  const matchingItem = items.filter({ hasText: name });
 
-  if ((await matchingElement.count()) === 0) {
+  if ((await matchingItem.count()) === 0) {
     return { found: false };
   }
 
-  const index = await liElements
-    .locator('a > div')
-    .allTextContents()
-    .then((texts) => texts.findIndex((text) => text.match(new RegExp(`^[A-Za-z]\\s*${name}\\s*\\d+$`))));
+  const badgeLocator = matchingItem.first().locator('[data-variant="tinted"] span');
 
-  if (index === -1) {
-    return { found: false };
-  }
-
-  const matchingCount = await liElements.locator('a > div').nth(index).locator('span > span').nth(1).textContent();
-  const count = matchingCount ? Number(matchingCount.trim()) : undefined;
+  const badgeText = await badgeLocator.first().textContent();
+  const count = badgeText ? Number(badgeText.trim()) : undefined;
 
   return { found: true, count };
 }

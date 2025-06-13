@@ -29,7 +29,7 @@ test.describe('Testing filter bar', () => {
     await page.getByRole('button', { name: 'add' }).click();
 
     await page.getByTestId('inbox-toolbar').getByRole('group').locator('a').filter({ hasText: 'Velg status' }).click();
-    await page.getByTestId('inbox-toolbar').getByRole('group').getByText('checkboxAvsluttet2').click();
+    await page.getByTestId('inbox-toolbar').getByRole('group').getByText('Avsluttet').click();
     expect(new URL(page.url()).searchParams.get('status')).toEqual('COMPLETED');
 
     await page.mouse.click(200, 0, { button: 'left' });

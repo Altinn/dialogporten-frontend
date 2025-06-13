@@ -6,7 +6,7 @@ import {
   PageBase,
   PageNav,
   SettingsItem,
-  Settings as SettingsWrapper,
+  SettingsSection,
   Typography,
 } from '@altinn/altinn-components';
 import {
@@ -38,7 +38,7 @@ export const Settings = () => {
     } catch (error) {
       console.error('Failed to delete saved search:', error);
     } finally {
-      i18n.changeLanguage(language);
+      void i18n.changeLanguage(language);
     }
   };
 
@@ -62,7 +62,7 @@ export const Settings = () => {
       />
 
       <Heading size="xl">{t('profile.settings.contact_settings')}</Heading>
-      <SettingsWrapper>
+      <SettingsSection>
         <List size="sm">
           <SettingsItem
             icon={{ svgElement: PaperplaneIcon }}
@@ -88,9 +88,9 @@ export const Settings = () => {
             linkIcon
           />
         </List>
-      </SettingsWrapper>
+      </SettingsSection>
       <Heading size="xl">{t('profile.settings.more_contact_settings')}</Heading>
-      <SettingsWrapper>
+      <SettingsSection>
         <List>
           <SettingsItem
             as={(props) => <Link to={PageRoutes.notifications} {...props} />}
@@ -126,7 +126,7 @@ export const Settings = () => {
             />
           </SettingsItem>
         </List>
-      </SettingsWrapper>
+      </SettingsSection>
     </PageBase>
   );
 };

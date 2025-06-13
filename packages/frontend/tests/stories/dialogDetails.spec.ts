@@ -12,14 +12,14 @@ test.describe('Dialog details', () => {
     if (isMobile) {
       await page.getByRole('button', { name: 'Meny' }).click();
       await expect(page.getByRole('link', { name: 'Innboks 7' })).toBeVisible();
-      await expect(page.getByRole('link', { name: 'Innboks 7' }).locator('[data-color="alert"]')).toContainText('2');
+      await expect(page.getByRole('link', { name: 'Innboks 7' }).locator('[data-color="danger"]')).toContainText('2');
       await page.getByRole('button', { name: 'Meny' }).click();
       await page.getByRole('link', { name: 'Arbeidsavklaringspenger' }).click();
       await page.getByRole('button', { name: 'Meny' }).click();
-      await expect(page.getByRole('link', { name: 'Innboks 7' }).locator('[data-color="alert"]')).toContainText('1');
+      await expect(page.getByRole('link', { name: 'Innboks 7' }).locator('[data-color="danger"]')).toContainText('1');
     } else {
       await expect(getSidebarMenuItem(page, PageRoutes.inbox)).toBeVisible();
-      await expect(getSidebarMenuItem(page, PageRoutes.inbox).locator('[data-color="alert"]')).toContainText('2');
+      await expect(getSidebarMenuItem(page, PageRoutes.inbox).locator('[data-color="danger"]')).toContainText('2');
       await page.getByRole('link', { name: 'Arbeidsavklaringspenger' }).click();
       await expect(getSidebarMenuItem(page, PageRoutes.inbox)).toContainText('1');
     }

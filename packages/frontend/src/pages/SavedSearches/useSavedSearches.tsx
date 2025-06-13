@@ -183,7 +183,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
     } catch (error) {
       openSnackbar({
         message: t('savedSearches.saved_error'),
-        color: 'alert',
+        color: 'danger',
       });
       console.error('Error creating saved search: ', error);
     } finally {
@@ -205,7 +205,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
       console.error('Failed to delete saved search:', error);
       openSnackbar({
         message: t('savedSearches.delete_failed'),
-        color: 'alert',
+        color: 'danger',
       });
     } finally {
       setIsCTALoading(false);
@@ -224,7 +224,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
     } catch {
       openSnackbar({
         message: t('savedSearches.update_failed'),
-        color: 'alert',
+        color: 'danger',
       });
     }
   };

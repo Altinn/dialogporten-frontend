@@ -32,8 +32,9 @@ test.describe('Saved search', () => {
     }
 
     await expect(page.getByRole('main')).toContainText('1 lagret søk');
-    await expect(page.locator('header').filter({ hasText: 'Oslo kommune' })).toBeVisible();
-    await page.locator('header').filter({ hasText: 'Oslo kommune' }).getByRole('button').click();
+    await expect(page.locator('a[href*="org=ok"]')).toBeVisible();
+    const parentLi = page.locator('a[href*="org=ok"]').locator('xpath=ancestor::li[1]');
+    await parentLi.getByRole('button').click();
 
     await page.getByText('Slett').click();
     await expect(page.getByText('Søk slettet')).toBeVisible();
