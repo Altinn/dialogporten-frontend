@@ -1,11 +1,27 @@
-import { Button, DashboardHeader, Flex, PageBase, PageNav, Typography } from '@altinn/altinn-components';
+import { DashboardHeader, Divider, List, PageBase, PageNav, SettingsItem } from '@altinn/altinn-components';
+import { BellIcon, CogIcon } from '@navikt/aksel-icons';
 import { t } from 'i18next';
+import { Link } from 'react-router-dom';
 import { useProfile } from '../../profile';
 import { PageRoutes } from '../routes';
-import styles from './profile.module.css';
+
+const dummy = {
+  user: {
+    party: {
+      person: {
+        name: 'John Doe',
+        ssn: '12345678901',
+        mobileNumber: '12345678',
+      },
+    },
+    email: 'dummy@example.com',
+  },
+};
 
 export const Profile = () => {
-  const { user, isLoading } = useProfile();
+  //to update when backend is ready
+  const { user = dummy.user } = useProfile();
+  const isLoading = !user;
 
   return (
     <PageBase>
@@ -24,30 +40,27 @@ export const Profile = () => {
 
       <DashboardHeader
         loading={isLoading}
+        type="person"
         name={user?.party?.person?.name || ''}
         description={`${t('profile.landing.ssn')} ${user?.party?.person?.ssn}`}
       >
-        <Flex className={styles.contactInfoFlex}>
-          <Typography className={styles.contactInfo}>
-            <h6>{t('profile.landing.email')}</h6>
-            <p>{user?.email || ' - '}</p>
-          </Typography>
-          <Typography className={styles.contactInfo}>
-            <h6>{t('profile.landing.address')}</h6>
-          </Typography>
-          <Typography className={styles.contactInfo}>
-            <h6>{t('profile.landing.phone')}</h6>
-            <p>{user?.party?.person?.mobileNumber || '-'}</p>
-          </Typography>
-        </Flex>
-        <Flex justify="start" spacing={2}>
-          <Button variant="outline" size="sm" onClick={() => {}}>
-            {t('profile.landing.change.email.phone')}
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => {}}>
-            {t('profile.landing.change.address')}
-          </Button>
-        </Flex>
+        <List size="sm">
+          <SettingsItem
+            as={(props) => <Link {...props} to={PageRoutes.notifications} />}
+            icon={BellIcon}
+            title={t('profile.notifications.are_on')}
+            description="Alle varslinger"
+            badge={{ label: 'SMS og Epost' }}
+            linkIcon
+          />
+          <Divider as="li" />
+          <SettingsItem
+            icon={CogIcon}
+            title={t('profile.landing.more_settings')}
+            linkIcon
+            as={(props) => <Link {...props} to={PageRoutes.settings} />}
+          />
+        </List>
       </DashboardHeader>
     </PageBase>
   );
