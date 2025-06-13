@@ -7,9 +7,6 @@ param location string
 @description('The identifier of the subnet where the Application Gateway will be deployed.')
 param subnetId string
 
-@description('The identifier of the subnet where the Application Gateway will route requests.')
-param targetSubnetId string
-
 @description('The name of the existing container app environment to be used.')
 param containerAppEnvName string
 
@@ -192,7 +189,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2024-01-01' =
                 primary: true
                 privateIPAllocationMethod: 'Dynamic'
                 subnet: {
-                  id: targetSubnetId
+                  id: subnetId
                 }
               }
             }

@@ -1,34 +1,8 @@
-import {
-  Button,
-  DashboardCard,
-  DashboardHeader,
-  Flex,
-  Grid,
-  PageBase,
-  PageNav,
-  Typography,
-} from '@altinn/altinn-components';
-import { BellIcon, CogIcon, HeartIcon } from '@navikt/aksel-icons';
-import type { Person } from 'bff-types-generated';
+import { Button, DashboardHeader, Flex, PageBase, PageNav, Typography } from '@altinn/altinn-components';
 import { t } from 'i18next';
-import { Link } from 'react-router-dom';
 import { useProfile } from '../../profile';
-import { formatNorwegianSSN } from '../../profile/formatSSN';
 import { PageRoutes } from '../routes';
 import styles from './profile.module.css';
-
-const buildAddressString = (person: Person | undefined | null) => {
-  if (!person) {
-    return '';
-  }
-  const street = person.addressStreetName || '';
-  const houseNumber = person.addressHouseNumber || '';
-  const houseLetter = person.addressHouseLetter || '';
-  const municipalNumber = person.addressMunicipalNumber || '';
-  const municipalName = person.addressMunicipalName || '';
-
-  return `${street} ${houseNumber}${houseLetter}, ${municipalNumber} ${municipalName}`;
-};
 
 export const Profile = () => {
   const { user, isLoading } = useProfile();
@@ -51,7 +25,7 @@ export const Profile = () => {
       <DashboardHeader
         loading={isLoading}
         name={user?.party?.person?.name || ''}
-        description={`${t('profile.landing.ssn')} ${formatNorwegianSSN(user?.party?.person?.ssn)}`}
+        description={`${t('profile.landing.ssn')} ${user?.party?.person?.ssn}`}
       >
         <Flex className={styles.contactInfoFlex}>
           <Typography className={styles.contactInfo}>
@@ -60,7 +34,6 @@ export const Profile = () => {
           </Typography>
           <Typography className={styles.contactInfo}>
             <h6>{t('profile.landing.address')}</h6>
-            <p>{buildAddressString(user?.party?.person)}</p>
           </Typography>
           <Typography className={styles.contactInfo}>
             <h6>{t('profile.landing.phone')}</h6>
@@ -76,32 +49,6 @@ export const Profile = () => {
           </Button>
         </Flex>
       </DashboardHeader>
-
-      <Grid spacing={2} cols={3}>
-        <Link to={PageRoutes.actors} style={{ display: 'inherit' }}>
-          <DashboardCard
-            icon={{ svgElement: HeartIcon }}
-            title={t('profile.landing.card.title.favourites')}
-            color="person"
-          >
-            {t('profile.landing.card.favourites')}
-          </DashboardCard>
-        </Link>
-        <Link to={PageRoutes.notifications} style={{ display: 'inherit' }}>
-          <DashboardCard
-            icon={{ svgElement: BellIcon }}
-            title={t('profile.landing.card.title.settings')}
-            color="person"
-          >
-            {t('profile.landing.card.settings')}
-          </DashboardCard>
-        </Link>
-        <Link to={PageRoutes.settings} style={{ display: 'inherit' }}>
-          <DashboardCard icon={{ svgElement: CogIcon }} title={t('profile.landing.card.title.language')} color="person">
-            {t('profile.landing.card.language')}
-          </DashboardCard>
-        </Link>
-      </Grid>
     </PageBase>
   );
 };

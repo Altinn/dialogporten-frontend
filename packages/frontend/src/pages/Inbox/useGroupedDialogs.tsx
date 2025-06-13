@@ -36,7 +36,7 @@ interface UseGroupedDialogsProps {
   isFetchingNextPage?: boolean;
   /* true if the search results are displayed */
   displaySearchResults?: boolean;
-  /* collapse all groups into one group, default=false */
+  /* collapse all groups into one group, default=false 	(Only if displaySearchResults===true) */
   collapseGroups?: boolean;
   /* title for the collapsed group, only applicable if collapseGroups=true */
   getCollapsedGroupTitle?: (count: number) => string;
@@ -90,9 +90,8 @@ const useGroupedDialogs = ({
 
   const clockPrefix = t('word.clock_prefix');
   const formatString = `do MMMM yyyy ${clockPrefix ? `'${clockPrefix}' ` : ''}HH.mm`;
-
   const allWithinSameYear = items.every((d) => new Date(d.updatedAt).getFullYear() === new Date().getFullYear());
-  const isNotInbox = items.every((d) => ['drafts', 'sent', 'bin', 'archive'].includes(d.viewType));
+  const isInbox = viewType === 'inbox';
 
   const formatDialogItem = (item: InboxItemInput, groupId: string): DialogListItemProps => ({
     groupId,
@@ -105,6 +104,7 @@ const useGroupedDialogs = ({
         }
       : undefined,
     id: item.id,
+    recipientLabel: t('word.to'),
     sender: item.sender,
     summary: item.viewType === 'inbox' ? item.summary : undefined,
     state: getDialogState(item.viewType),
@@ -121,6 +121,7 @@ const useGroupedDialogs = ({
     seen: item.isSeenByEndUser,
     updatedAt: item.updatedAt,
     updatedAtLabel: format(item.updatedAt, formatString),
+    ariaLabel: `${item.title}`,
     as: (props: LinkProps) => (
       <Link state={{ fromView: location.pathname }} {...props} to={`/inbox/${item.id}/${location.search}`} />
     ),
@@ -137,7 +138,7 @@ const useGroupedDialogs = ({
       };
     }
 
-    if (!displaySearchResults && isNotInbox) {
+    if (!displaySearchResults && !isInbox) {
       const groupedDialogs = items.map((item) => formatDialogItem(item, item.viewType));
       if (isFetchingNextPage) {
         groupedDialogs.push(...renderLoadingItems(1));
@@ -181,7 +182,12 @@ const useGroupedDialogs = ({
         if (existingGroup) {
           existingGroup.items.push(item);
         } else {
-          const orderIndex = isDateKey ? (allWithinSameYear ? updatedAt.getMonth() : updatedAt.getFullYear()) : null;
+          const viewTypeIndex = ['bin', 'archive', 'sent', 'drafts', 'inbox'].indexOf(item.viewType);
+          const orderIndex = isDateKey
+            ? allWithinSameYear
+              ? updatedAt.getMonth()
+              : updatedAt.getFullYear()
+            : viewTypeIndex;
           acc.push({ id: groupKey, label, items: [item], orderIndex });
         }
 
@@ -198,12 +204,12 @@ const useGroupedDialogs = ({
     );
 
     const groupedDialogs = sortByUpdatedAt(mappedGroupedDialogs);
+
     if (isFetchingNextPage) {
       groupedDialogs.push(...renderLoadingItems(1));
     }
-
     return { groupedDialogs, groups };
-  }, [items, displaySearchResults, t, format, isNotInbox, viewType, allWithinSameYear, isLoading]);
+  }, [items, displaySearchResults, t, format, viewType, allWithinSameYear, isLoading]);
 };
 
 export default useGroupedDialogs;

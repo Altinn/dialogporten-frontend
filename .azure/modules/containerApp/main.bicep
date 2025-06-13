@@ -10,6 +10,8 @@ param maxReplicas int = 3
 @description('The tags to apply to the resources')
 param tags object
 param secrets { name: string, keyVaultUrl: string, identity: 'System' }[] = []
+@description('The workload profile name to use, defaults to "Consumption"')
+param workloadProfileName string = 'Consumption'
 
 var healthProbes = empty(probes)
   ? [
@@ -50,6 +52,7 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
       activeRevisionsMode: 'Single'
       ingress: ingress
     }
+    workloadProfileName: workloadProfileName
     template: {
       containers: [
         {

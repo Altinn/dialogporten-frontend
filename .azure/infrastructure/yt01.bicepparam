@@ -36,5 +36,24 @@ param applicationGatewayConfiguration = {
   }
 } 
 
+// PostgreSQL Configuration
+param postgresConfiguration = {
+  sku: {
+    name: 'Standard_D2ads_v5'
+    tier: 'GeneralPurpose'
+  }
+  storage: {
+    storageSizeGB: 256
+    autoGrow: 'Enabled'
+    type: 'Premium_LRS'
+  }
+  highAvailability: {
+    mode: 'Disabled'
+  }
+  backupRetentionDays: 7
+  availabilityZone: '1'
+  version: '15'
+}
+
 // Altinn Product Dialogporten: Developers Dev
 param sshJumperAdminLoginGroupObjectId = 'c12e51e3-5cbd-4229-8a31-5394c423fb5f'

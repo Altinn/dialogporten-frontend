@@ -4,8 +4,8 @@ import {
   type QueryItemType,
   useSnackbar,
 } from '@altinn/altinn-components';
+import type { QueryItemProps } from '@altinn/altinn-components';
 import type { EditableBookmarkProps } from '@altinn/altinn-components/dist/types/lib/components';
-import type { QueryItemProps } from '@altinn/altinn-components/dist/types/lib/components/Search/QueryLabel';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   DialogStatus,

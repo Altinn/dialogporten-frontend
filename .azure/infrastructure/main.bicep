@@ -28,6 +28,14 @@ param sshJumperAdminLoginGroupObjectId string
 @description('Whether to enable zone redundancy for the container app environment')
 param containerAppEnvZoneRedundancyEnabled bool = false
 
+@description('Workload profiles to enable in the container app environment')
+param containerAppEnvWorkloadProfiles array = [
+  {
+    name: 'Consumption'
+    workloadProfileType: 'Consumption'
+  }
+]
+
 import { Sku as RedisSku } from '../modules/redis/main.bicep'
 param redisSku RedisSku
 @minLength(1)
@@ -38,6 +46,20 @@ param applicationGatewayConfiguration ApplicationGatewayConfiguration
 
 @description('Optional list of IP addresses/ranges to whitelist for incoming traffic')
 param applicationGatewayWhitelistedIps array = []
+
+// PostgreSQL configuration parameters
+import { Sku as PostgreSQLSku } from '../modules/postgreSql/create.bicep'
+import { StorageConfiguration as PostgreSQLStorageConfiguration } from '../modules/postgreSql/create.bicep'
+import { HighAvailabilityConfiguration as PostgreSQLHighAvailabilityConfiguration } from '../modules/postgreSql/create.bicep'
+
+param postgresConfiguration {
+  sku: PostgreSQLSku
+  storage: PostgreSQLStorageConfiguration
+  highAvailability: PostgreSQLHighAvailabilityConfiguration?
+  backupRetentionDays: int
+  availabilityZone: string
+  version: string
+}
 
 var secrets = {
   dialogportenPgAdminPassword: dialogportenPgAdminPassword
@@ -130,6 +152,7 @@ module containerAppEnv '../modules/containerAppEnv/main.bicep' = {
     appInsightWorkspaceName: appInsights.outputs.appInsightsWorkspaceName
     subnetId: vnet.outputs.containerAppEnvironmentSubnetId
     zoneRedundancyEnabled: containerAppEnvZoneRedundancyEnabled
+    workloadProfiles: containerAppEnvWorkloadProfiles
     tags: tags
   }
 }
@@ -176,7 +199,6 @@ module applicationGateway '../modules/applicationGateway/main.bicep' = {
     location: location
     containerAppEnvName: containerAppEnv.outputs.name
     subnetId: vnet.outputs.applicationGatewaySubnetId
-    targetSubnetId: vnet.outputs.containerAppEnvironmentSubnetId
     configuration: applicationGatewayConfiguration
     appInsightWorkspaceName: appInsights.outputs.appInsightsWorkspaceName
     tags: tags
@@ -219,6 +241,12 @@ module postgresql '../modules/postgreSql/create.bicep' = {
       ? srcKeyVaultResource.getSecret('dialogportenPgAdminPassword${environment}')
       : secrets.dialogportenPgAdminPassword
     privateDnsZoneArmResourceId: postgresqlPrivateDnsZone.outputs.id
+    sku: postgresConfiguration.sku
+    storage: postgresConfiguration.storage
+    highAvailability: postgresConfiguration.?highAvailability
+    availabilityZone: postgresConfiguration.availabilityZone
+    backupRetentionDays: postgresConfiguration.backupRetentionDays
+    postgresVersion: postgresConfiguration.version
     tags: tags
   }
 }

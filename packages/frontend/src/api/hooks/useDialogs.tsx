@@ -66,7 +66,7 @@ export const useDialogs = ({ parties, viewType, filterState, search }: UseDialog
           search: searchString,
         });
       },
-      enabled: partyIds.length > 0,
+      enabled: partyIds.length > 0 && partyIds.length <= 20,
       gcTime: 0,
       getNextPageParam(lastPage: GetAllDialogsForPartiesQuery): unknown | undefined | null {
         const hasNextPage = lastPage?.searchDialogs?.hasNextPage;
@@ -87,7 +87,8 @@ export const useDialogs = ({ parties, viewType, filterState, search }: UseDialog
   const content = data?.pages.flatMap((page) => page.searchDialogs?.items ?? []) || [];
   const dialogCountInconclusive =
     data?.pages?.[data?.pages.length - 1]?.searchDialogs?.hasNextPage === true ||
-    data?.pages?.[data?.pages.length - 1]?.searchDialogs?.items === null;
+    data?.pages?.[data?.pages.length - 1]?.searchDialogs?.items === null ||
+    partyIds.length >= 20;
   const dialogs = mapDialogToToInboxItems(content, parties ?? [], organizations);
 
   return {

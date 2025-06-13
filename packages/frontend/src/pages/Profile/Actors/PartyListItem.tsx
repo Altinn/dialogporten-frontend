@@ -9,7 +9,6 @@ interface PartyListItemProps {
 
 export const PartyListItem = ({ party }: PartyListItemProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
-
   return (
     <AccountListItem {...party} as="button" expanded={isExpanded} onClick={() => setIsExpanded((prev) => !prev)}>
       {party.children}

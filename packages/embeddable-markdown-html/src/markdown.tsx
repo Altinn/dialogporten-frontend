@@ -3,15 +3,24 @@ import { type ReactElement, useEffect, useState } from 'react';
 import * as prod from 'react/jsx-runtime';
 import addClasses from 'rehype-class-names';
 import rehypeReact from 'rehype-react';
-import rehypeSanitize from 'rehype-sanitize';
+import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import remarkParse, { type Options as RemarkParseOptions } from 'remark-parse';
 import remarkToRehype from 'remark-rehype';
 import { unified } from 'unified';
 import { defaultClassMap } from './classMap.ts';
+import { allowedTags } from './tags.ts';
 
 import './styles.css';
 
 const production = { Fragment: prod.Fragment, jsx: prod.jsx, jsxs: prod.jsxs };
+
+const customSchema = {
+  ...defaultSchema,
+  tagNames: allowedTags,
+  attributes: {
+    a: ['href'],
+  },
+};
 
 /**
  * Renders markdown as React elements in common mark: https://spec.commonmark.org/0.31.2/spec.json.
@@ -32,7 +41,7 @@ export const Markdown: ({
     unified()
       .use(remarkParse, {} as RemarkParseOptions)
       .use(remarkToRehype, {} as RemarkRehypeOptions)
-      .use(rehypeSanitize)
+      .use(rehypeSanitize, customSchema)
       .use(addClasses, defaultClassMap)
       .use(rehypeReact, production)
       .process(children)

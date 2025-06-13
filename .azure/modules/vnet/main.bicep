@@ -362,6 +362,7 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-09-01' = {
         name: 'applicationGatewaySubnet'
         properties: {
           addressPrefix: applicationGatewaySubnetAddressPrefix
+          privateLinkServiceNetworkPolicies: 'Disabled'
           networkSecurityGroup: {
             id: applicationGatewayNSG.id
           }
@@ -375,6 +376,14 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-09-01' = {
             id: containerAppEnvironmentNSG.id
           }
           privateLinkServiceNetworkPolicies: 'Disabled'
+          delegations: [
+            {
+              name: 'containerAppEnvironment'
+              properties: {
+                serviceName: 'Microsoft.App/environments'
+              }
+            }
+          ]
         }
       }
       {

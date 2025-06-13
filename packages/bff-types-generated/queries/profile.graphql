@@ -2,7 +2,14 @@ query profile {
   profile {
     updatedAt
     language
-    favoriteActors
+    groups {
+      id
+      name
+      isfavorite
+      parties {
+        id
+      }
+    }
     user {
       userId
       userUuid

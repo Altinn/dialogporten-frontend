@@ -22,7 +22,7 @@ test.describe('Testing filter bar', () => {
     expect(new URL(page.url()).searchParams.get('org')).toEqual('skd');
     await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).toBeVisible();
 
-    await page.getByRole('button', { name: 'Fjern filter' }).click();
+    await page.getByRole('button', { name: 'Fjern filter' }).nth(1).click();
 
     expect(new URL(page.url()).searchParams.has('org')).toEqual(false);
 
