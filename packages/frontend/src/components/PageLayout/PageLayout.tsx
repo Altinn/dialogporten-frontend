@@ -116,7 +116,7 @@ export const PageLayout: React.FC = () => {
     } catch (error) {
       console.error('Failed to delete saved search:', error);
     } finally {
-      i18n.changeLanguage(language);
+      void i18n.changeLanguage(language);
     }
   };
 
@@ -125,7 +125,10 @@ export const PageLayout: React.FC = () => {
   const headerProps: HeaderProps = {
     currentAccount: selectedAccount,
     logo: {
-      as: (props: MenuItemProps) => <Link to="/" {...props} />,
+      as: (props: MenuItemProps) => {
+        // @ts-ignore
+        return <Link to="/" {...props} />;
+      },
     },
     search: {
       expanded: false,
@@ -142,20 +145,22 @@ export const PageLayout: React.FC = () => {
     menu: {
       menuLabel: t('word.menu'),
       items: global,
-      accountGroups,
-      accounts,
       onSelectAccount: (account: string) => onSelectAccount(account, PageRoutes.inbox),
       changeLabel: t('layout.menu.change_account'),
       backLabel: t('word.back'),
-      ...(accountSearch && {
-        accountSearch,
-      }),
       currentEndUserLabel: t('parties.current_end_user', { name: currentEndUser?.name ?? 'n/a' }),
-      menuItemsVirtual: {
-        isVirtualized: true,
-        scrollRefStyles: {
-          maxHeight: windowSize.isTabletOrSmaller ? 'calc(100vh - 14rem)' : 'calc(80vh - 10rem)',
-          paddingBottom: '0.5rem',
+      accountMenu: {
+        items: accounts,
+        groups: accountGroups,
+        ...(accountSearch && {
+          search: accountSearch,
+        }),
+        menuItemsVirtual: {
+          isVirtualized: true,
+          scrollRefStyles: {
+            maxHeight: windowSize.isTabletOrSmaller ? 'calc(100vh - 14rem)' : 'calc(80vh - 10rem)',
+            paddingBottom: '0.5rem',
+          },
         },
       },
       logoutButton: {

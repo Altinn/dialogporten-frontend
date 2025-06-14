@@ -70,10 +70,10 @@ export const DialogDetailsPage = () => {
         await invalidateQueries();
         showSnackbar(successMessageKey, 'success');
       } else {
-        showSnackbar(failureMessageKey, 'alert');
+        showSnackbar(failureMessageKey, 'danger');
       }
     } catch (error) {
-      showSnackbar(failureMessageKey, 'alert');
+      showSnackbar(failureMessageKey, 'danger');
     } finally {
       setLoading(false);
     }
