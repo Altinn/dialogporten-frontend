@@ -57,11 +57,11 @@ jobs:
         uses: ./.github/actions/install
 
       - name: Install Playwright dependencies
-        run: pnpm --filter e2e playwright install-deps chromium
+        run: pnpm --filter e2e install:browsers
 
       - name: Run E2E Tests
         id: run-tests
-        run: pnpm --filter e2e playwright test --headless
+        run: pnpm --filter e2e test:headless
         env:
           DIALOG_ID: ${{ inputs.dialog_id }}
           PARTY_ID: ${{ inputs.party_id }}
