@@ -36,8 +36,7 @@
     },
     "test": {
       "outputs": [],
-      "cache": false,
-      "filter": "!./packages/e2e"
+      "cache": false
     },
     "typecheck": {
       "outputs": [],

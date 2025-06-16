@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "playwright test",
-    "test:ci": "playwright test",
+    "e2e:test": "playwright test",
+    "e2e:ci": "playwright test",
     "install:browsers": "playwright install"
   },
   "keywords": [],
