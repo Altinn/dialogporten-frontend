@@ -119,14 +119,8 @@ export async function browserTest(data) {
     await selectSideMenuElement(page, 'a[href="/bin"]', loadBin);
     await selectSideMenuElement(page, 'aside a[href="/"]', backToInbox);
     await selectNextPage(page, loadNextPage);
-
     // Set cookie so we don't have to login next time
     await addCookie(testData, context);
-    for (var endUser of data) {
-      if (endUser.cookie) {
-        console.log(endUser.pid, endUser.cookie.name, endUser.cookie.value);
-      }
-    }
   } finally {
     await page.close();
   }
