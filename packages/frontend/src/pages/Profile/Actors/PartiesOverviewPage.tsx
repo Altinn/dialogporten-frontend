@@ -115,8 +115,10 @@ export const PartiesOverviewPage = () => {
         type: party.partyType as AccountListItemType,
         favourite,
         title: party.name,
-        label: party.isCurrentEndUser ? 'Deg' : '',
+        label: party.name,
+        name: party.name,
         favouriteLabel: 'Favoritt',
+        ariaLabel: party.name,
         collapsible: true,
         icon: {
           type: isOrganization ? ('company' as AvatarType) : ('person' as AvatarType),
@@ -316,8 +318,7 @@ export const PartiesOverviewPage = () => {
           <Section spacing={6}>
             {nonFavoritePartyGroups?.map((group) => {
               const currentGroupParties = parties.filter((favoriteParty) => {
-                if (group?.parties?.find((party) => party?.id!.includes(favoriteParty.party))) return true;
-                return false;
+                return !!group?.parties?.find((party) => party?.id!.includes(favoriteParty.party));
               });
               if (!currentGroupParties || currentGroupParties.length === 0) return null;
               return (

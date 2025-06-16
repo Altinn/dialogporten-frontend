@@ -43,7 +43,7 @@ export const getAlertBadgeProps = (count: number): BadgeProps | undefined => {
       label: count.toString(),
       size: 'xs',
       theme: 'base',
-      color: 'alert',
+      color: 'danger',
     };
   }
 };
@@ -65,7 +65,10 @@ const getBadgeProps = (count: number, countInconclusive?: boolean): BadgeProps |
 
 const createMenuItemComponent =
   ({ to, isExternal = false }: { to: string; isExternal?: boolean }): React.FC<MenuItemProps> =>
-  (props) => <Link {...props} to={to} {...(isExternal ? { target: '__blank', rel: 'noopener noreferrer' } : {})} />;
+  (props) => {
+    // @ts-ignore
+    return <Link {...props} to={to} {...(isExternal ? { target: '__blank', rel: 'noopener noreferrer' } : {})} />;
+  };
 
 export const useGlobalMenu = ({
   itemsPerViewCount,
