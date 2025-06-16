@@ -1,9 +1,8 @@
 ﻿name: E2E Tests Staging
 
 on:
-  # todo: enable when tests are implemented
-  # schedule:
-  #   - cron: '*/30 * * * *'  # Run every 30 minutes
+  schedule:
+    - cron: '*/30 * * * *'  # Run every 30 minutes
   workflow_dispatch:
     inputs:
       dialog_id:

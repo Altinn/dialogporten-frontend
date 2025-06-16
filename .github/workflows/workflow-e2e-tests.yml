@@ -52,18 +52,20 @@ jobs:
           else
             echo "had_previous_failure=false" >> $GITHUB_OUTPUT
           fi
-      
-      - name: Simple Smoke Test
+
+      - name: Install dependencies
+        uses: ./.github/actions/install
+
+      - name: Install Playwright dependencies
+        run: pnpm --filter e2e install:browsers
+
+      - name: Run E2E Tests
         id: run-tests
-        run: |
-          echo "TODO: Replace this with actual e2e tests"
-          echo "Current environment: ${{ inputs.environment }}"
-          echo "Dialog ID: ${{ inputs.dialog_id }}"
-          echo "Party ID: ${{ inputs.party_id }}"
-          
-          # Temporarily always pass until real tests are implemented
-          echo "Test passed"
-          exit 0
+        run: pnpm --filter e2e e2e:ci
+        env:
+          DIALOG_ID: ${{ inputs.dialog_id }}
+          PARTY_ID: ${{ inputs.party_id }}
+          E2E_BASE_URL: https://af.tt.altinn.no
           
       - name: Get last failure timestamp
         id: get-last-failure
@@ -174,7 +176,7 @@ jobs:
           payload: |
             {
               "channel": "${{ secrets.SLACK_CHANNEL_ID }}",
-              "text": "❌ E2E Tests Failed in ${{ inputs.environment }} environment",
+              "text": "E2E Tests Failed in ${{ inputs.environment }} environment",
               "attachments": [
                 {
                   "color": "#FF0000",
@@ -234,7 +236,7 @@ jobs:
           payload: |
             {
               "channel": "${{ secrets.SLACK_CHANNEL_ID }}",
-              "text": "✅ E2E Tests Fixed in ${{ inputs.environment }} environment",
+              "text": "E2E Tests Fixed in ${{ inputs.environment }} environment",
               "attachments": [
                 {
                   "color": "#00FF00",
