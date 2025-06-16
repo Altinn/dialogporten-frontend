@@ -2,18 +2,32 @@
   "$schema": "https://turbo.build/schema.json",
   "tasks": {
     "build:bff-types-generated": {
-      "dependsOn": ["^build"],
-      "outputs": ["generated/**"],
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "generated/**"
+      ],
       "cache": false
     },
     "build:@digdir/dialogporten-node-logger": {
-      "dependsOn": ["^build"],
-      "outputs": ["packages/node-logger/dist/**"],
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "packages/node-logger/dist/**"
+      ],
       "cache": false
     },
     "build": {
-      "env": ["BASEURL", "URL"],
-      "dependsOn": ["build:bff-types-generated", "build:@digdir/dialogporten-node-logger"],
+      "env": [
+        "BASEURL",
+        "URL"
+      ],
+      "dependsOn": [
+        "build:bff-types-generated",
+        "build:@digdir/dialogporten-node-logger"
+      ],
       "cache": false
     },
     "dev": {
@@ -22,7 +36,8 @@
     },
     "test": {
       "outputs": [],
-      "cache": false
+      "cache": false,
+      "filter": "!./packages/e2e"
     },
     "typecheck": {
       "outputs": [],
