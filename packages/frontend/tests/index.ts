@@ -9,6 +9,13 @@ export const appURLBin = baseURL + PageRoutes.bin + baseQueryParams;
 export const appURLSent = baseURL + PageRoutes.sent + baseQueryParams;
 export const appURLArchived = baseURL + PageRoutes.archive + baseQueryParams;
 export const appURLSavedSearches = baseURL + PageRoutes.savedSearches + baseQueryParams;
+
+export const appURLProfileLanding = baseURL + PageRoutes.profile + baseQueryParams;
+export const appURLProfileSettings = baseURL + PageRoutes.settings + baseQueryParams;
+export const appURLProfileNotifications = baseURL + PageRoutes.notifications + baseQueryParams;
+export const appURLProfilePartiesOverview = baseURL + PageRoutes.partiesOverview + baseQueryParams;
+export const appURLProfileActivities = baseURL + PageRoutes.activities + baseQueryParams;
+
 export const appUrlWithPlaywrightId = (id: string): string => {
   return appURLInbox + `&playwrightId=${id}`;
 };
