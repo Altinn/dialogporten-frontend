@@ -46,16 +46,17 @@ function generateFastifySession(accessToken, secret) {
         cookie: {
             expires: null,
             originalMaxAge: null,
-            sameSite: null,
+            sameSite: "",
             secure: false,
             path: '/',
             httpOnly: true,
-            domain: null,
+            domain: '',
+            url: ""
         },
         token: {
             access_token: accessToken,
             access_token_expires_at: expiresIn,
-            tokenUpdatedAt: now.toISOString(),
+            tokenUpdatedAt: now.toISOString()
         },
         pid,
         locale: 'en',
@@ -63,7 +64,13 @@ function generateFastifySession(accessToken, secret) {
 
     const cookie = {
         name: "arbeidsflate",
-        value: `${sessionId}.${signature}`
+        value: `${sessionId}.${signature}`,
+        domain: "af.yt.altinn.cloud",
+        path: "/",
+        httpOnly: true,
+        secure: false,
+        sameSite: "",
+        url: ""
     }
 
     return {

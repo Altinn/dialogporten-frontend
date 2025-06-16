@@ -75,9 +75,8 @@ export async function setup() {
  */
 export async function browserTest(data) {
   var testData = randomItem(data);
-
-  // If cookie and inside pffPercentage, run bff
-  if (testData.bffCookie && run_bff()) {
+  // If inside pffPercentage, run bff
+  if (run_bff()) {
     const parties = openAf(testData.pid, testData.bffCookie);
     selectMenuElements(testData.bffCookie, parties);
     isAuthenticated(testData.bffCookie, isAuthenticatedLabel);
@@ -87,20 +86,11 @@ export async function browserTest(data) {
 
   const context = await browser.newContext();
   const page = await context.newPage();
-  
   var startTime = new Date();
-  try {
-    // if cookie set, go stright to af
-    if (testData.cookie) { 
-      await context.addCookies([testData.cookie]);
-      await page.goto('http://af.yt.altinn.cloud', { waitUntil: 'networkidle' });
-    }
-    // if no cookie, go to login page
-    else {
-      await page.goto('http://af.yt.altinn.cloud', { waitUntil: 'networkidle' });
-      await login(page, testData);
 
-    }
+  try {
+    await context.addCookies([testData.bffCookie]);
+    await page.goto('http://af.yt.altinn.cloud', { waitUntil: 'networkidle' });
 
     // Check if we are on the right page
     const currentUrl = page.url();
@@ -119,8 +109,6 @@ export async function browserTest(data) {
     await selectSideMenuElement(page, 'a[href="/bin"]', loadBin);
     await selectSideMenuElement(page, 'aside a[href="/"]', backToInbox);
     await selectNextPage(page, loadNextPage);
-    // Set cookie so we don't have to login next time
-    await addCookie(testData, context);
   } finally {
     await page.close();
   }
