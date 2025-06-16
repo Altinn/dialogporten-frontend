@@ -3,38 +3,51 @@ import { check } from 'k6';
 import { Trend } from 'k6/metrics';
 import { openAf, selectMenuElements, isAuthenticated, getNextpage } from './bff.js'; 
 import { queryLabels, isAuthenticatedLabel } from './queries.js';
-import { getPersonalToken, randomIntBetween, randomItem } from './testimports.js';
+import { getPersonalToken, randomItem } from './testimports.js';
 import { getCookie } from './cookieGenk6.js';
-const bffPercentage = (__ENV.bffPercentage ??  90);
 
-export const options = {
-  scenarios: {
-    browser: {
-      executor: 'shared-iterations',
+const numberOfEndUsers = __ENV.NUMBER_OF_ENDUSERS || 30;
+
+function getOptions() {
+  const browser_vus = __ENV.BROWSER_VUS || 1;
+  const bff_vus = __ENV.BFF_VUS || 1;
+  const duration = __ENV.DURATION || '1m';
+  const options = {
+    scenarios: {},
+    thresholds: {
+    checks: ['rate==1.0']
+    },
+    summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(75)', 'p(95)', 'count'],
+  }
+  if (browser_vus > 0) {
+    options.scenarios.browser = {
+      executor: 'constant-vus',
       exec: 'browserTest',
-      vus: __ENV.VUS || 1,
-      iterations: __ENV.ITERATIONS || 2,
-      maxDuration: __ENV.MAX_DURATION || '20m',
+      vus: browser_vus,
+      duration: duration,
       options: {
         browser: {
           type: 'chromium',
         },
       },
-    },
-  },
-  thresholds: {
-    checks: ['rate==1.0'],
-    //browser_http_req_duration: ['p(95)<100'],
-    //browser_http_req_duration: ['max<200'],
-  },
-  summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(75)', 'p(95)', 'count'],
-};
-if (bffPercentage > 0) {
-  for (var label of queryLabels) {
-    options.thresholds[`http_req_duration{name:${label}}`] = [];
-    options.thresholds[`http_req_failed{name:${label}}`] = [];
+    };
   }
+  if (bff_vus > 0) {
+    options.scenarios.bff = {
+      executor: 'constant-vus',
+      exec: 'bffTest',
+      vus: bff_vus,
+      duration: duration,
+    };
+    for (var label of queryLabels) {
+      options.thresholds[`http_req_duration{name:${label}}`] = [];
+      options.thresholds[`http_req_failed{name:${label}}`] = [];
+    }
+  }
+  return options;
 }
+
+export const options = getOptions();
 
 // Define the trends for each page load
 const loadInbox = new Trend('load_inbox', true);
@@ -56,18 +69,19 @@ function getTokens(numberOfTokens = 1) {
 }
 
 export async function setup() {
-  const tokens = getTokens(3000);
+  const tokens = getTokens(numberOfEndUsers);
   const keys = Object.keys(tokens);
   let data = []
   for (var key of keys) {
       let cookie = await getCookie(tokens[key]);
       data.push({
-          bffCookie: cookie,
+          cookie: cookie,
           pid: key
       });
   }
   return data;
 } 
+
 /**
  * Main function for the browser test.
  * Executes the test scenario based on the provided data.
@@ -75,21 +89,13 @@ export async function setup() {
  */
 export async function browserTest(data) {
   var testData = randomItem(data);
-  // If inside pffPercentage, run bff
-  if (run_bff()) {
-    const parties = openAf(testData.pid, testData.bffCookie);
-    selectMenuElements(testData.bffCookie, parties);
-    isAuthenticated(testData.bffCookie, isAuthenticatedLabel);
-    getNextpage(testData.bffCookie, parties);
-    return;
-  }
 
   const context = await browser.newContext();
   const page = await context.newPage();
   var startTime = new Date();
 
   try {
-    await context.addCookies([testData.bffCookie]);
+    await context.addCookies([testData.cookie]);
     await page.goto('http://af.yt.altinn.cloud', { waitUntil: 'networkidle' });
 
     // Check if we are on the right page
@@ -114,25 +120,14 @@ export async function browserTest(data) {
   }
 }
 
-
-/**
- * Async function to handle the login process on a page.
- * @param {object} page - The page object to interact with.
- * @param {object} testData - Test data containing user information.
- */
-async function login(page, testData) {
-  await Promise.all([
-    page.locator('a[href="/authorize/testid1"]').click(),
-    page.waitForNavigation({ waitUntil: 'networkidle' }),
-  ]);
-
-  await page.locator('input[name="pid"]').type(testData.pid);
-
-  await Promise.all([
-    page.locator('button[id="submit"]').click(),
-    page.waitForNavigation({ waitUntil: 'networkidle' }),
-  ]);
+export function bffTest(data) {
+  var testData = randomItem(data);
+  const parties = openAf(testData.pid, testData.cookie);
+  selectMenuElements(testData.cookie, parties);
+  isAuthenticated(testData.cookie, isAuthenticatedLabel);
+  getNextpage(testData.cookie, parties);
 }
+
 
 /**
  * Async function to select a side menu element on a page.
@@ -182,33 +177,4 @@ async function selectNextPage(page, trend) {
     trend.add(endTime - startTime);
     iterations++;
   }
-}
-
-/**
- * Async function to add a cookie to the test data if not already present.
- * @param {object} testData - Test data containing user information.
- * @param {object} context - Browser context to access cookies.
- */
-async function addCookie(testData, context) {
-  if (!testData.cookie) {  
-    let cookies = await context.cookies();
-    for (var cookie of cookies) {
-      if (cookie.name == 'arbeidsflate') {
-        testData.cookie = cookie;
-        break;
-      }
-    }
-  }
-}
-
-/**
- * Function to determine whether to run the backend service based on a random percentage.
- * @returns {boolean} - True if the backend service should be run, false otherwise.
- */
-function run_bff() {
-  const randNumber = randomIntBetween(1, 100);
-  if (randNumber <= bffPercentage) {
-    return true;
-  }
-  return false;
 }
