@@ -61,7 +61,7 @@ jobs:
 
       - name: Run E2E Tests
         id: run-tests
-        run: pnpm --filter e2e test:headless
+        run: pnpm --filter e2e test:ci
         env:
           DIALOG_ID: ${{ inputs.dialog_id }}
           PARTY_ID: ${{ inputs.party_id }}

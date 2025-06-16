@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "playwright test",
-    "test:headless": "playwright test --headless",
+    "test:ci": "playwright test",
     "install:browsers": "playwright install"
   },
   "keywords": [],
