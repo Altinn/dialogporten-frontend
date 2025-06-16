@@ -7,48 +7,22 @@ import {
     getAllDialogsForCountQuery,
     getAllDialogsForPartyQuery
 } from './queries.js';
-import { queryLabels, isAuthenticatedLabel } from './queries.js';
-import { bffTestData } from './readTestData.js';
-import { randomItem } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
-import { describe, expect } from 'https://jslib.k6.io/k6chaijs/4.3.4.3/index.js';
+import { describe, expect } from './testimports.js';
 
 const baseUrl = 'https://af.yt.altinn.cloud/api';
-
-export let options = {
-    thresholds: {
-        checks: ['rate==1.0'],
-        
-    }
-}
-
-for (var label of queryLabels) {
-    options.thresholds[`http_req_duration{name:${label}}`] = [];
-    options.thresholds[`http_req_failed{name:${label}}`] = [];
-}
-
-export default function () {
-    var testData = randomItem(bffTestData);
-    const parties = openAf(testData);
-    selectMenuElements(testData.cookie, parties);
-    isAuthenticated(testData.cookie, isAuthenticatedLabel);
-    getNextpage(testData.cookie, parties);
-}
-
 
 /**
  * This function does the same bff-calls that af does freom the browser
  * @param {Object} testData - The test data containing cookie and pid.
  * @returns {Array} - An array containing user party information.
  */
-export function openAf(testData) {
-    const cookie = testData.cookie;
-    const pid = testData.pid;
+export function openAf(pid, cookie) {
     var parties = getParties(cookie);
     getOrganizations(cookie);
     getSavedSearches(cookie);
-    getProfile(cookie);
+    //getProfile(cookie);
     getAllDialogsForCount(cookie, parties);
-    getAllDialogsForParty(cookie, parties, 100);
+    getAllDialogsForParty(cookie, parties);
     const userParty = parties.filter((el) => el.includes(pid));
     getAllDialogsForParty(cookie, [userParty[0]], 100, true);
     getAllDialogsForCount(cookie, [userParty[0]]);
@@ -81,10 +55,14 @@ export function isAuthenticated(cookie, label) {
         headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Cookie': cookie.name + '=' + cookie.value,
         },
         tags: { name: label },
     };
+    if (cookie.name && cookie.value) {
+        params.headers.Cookie = cookie.name + '=' + cookie.value;
+    } else {
+        params.headers.Cookie = cookie;
+    }
     const resp = http.get(url, params);
     if (resp.status !== 200) {
         console.log('isAuthenticated request failed: ' + resp.status);
@@ -181,6 +159,7 @@ function getProfile(cookie) {
         return
     }
     const data = resp.json();
+    console.log('Profile retrieved: ' + resp.body);
     var profile = [];   
     profile.push(data.data.profile.user.userId);
     profile.push(data.data.profile.user.userUuid);
@@ -284,7 +263,6 @@ function graphql(cookie, query, label = null) {
         headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        //'Cookie': cookie.name + '=' + cookie.value,
         },
         tags: { name: queryLabel },
     };
@@ -292,11 +270,10 @@ function graphql(cookie, query, label = null) {
     if (cookie.name && cookie.value) {
         params.headers.Cookie = cookie.name + '=' + cookie.value;
     } else {
-        params.headers.Cookie = 'arbeidsflate=' + cookie;
+        params.headers.Cookie = cookie;
     }
     let r = null;
     describe('graphQL request', () => {
-        console.log(`GraphQL request: ${queryLabel}`);
         r = http.post(url, payload, params);
         expect(r.status, "response status").to.equal(200);
         expect(r, 'response').to.have.validJsonBody(); 

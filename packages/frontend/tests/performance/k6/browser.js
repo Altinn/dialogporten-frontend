@@ -1,12 +1,10 @@
 import { browser } from 'k6/browser';
-import { expect } from 'https://jslib.k6.io/k6chaijs/4.3.4.3/index.js';
 import { check } from 'k6';
 import { Trend } from 'k6/metrics';
-import exec from 'k6/execution';
-import { randomIntBetween, randomItem } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
 import { openAf, selectMenuElements, isAuthenticated, getNextpage } from './bff.js'; 
 import { queryLabels, isAuthenticatedLabel } from './queries.js';
-export { setup as setup } from './readTestData.js';
+import { getPersonalToken, randomIntBetween, randomItem } from './testimports.js';
+import { getCookie } from './cookieGenk6.js';
 const bffPercentage = (__ENV.bffPercentage ??  90);
 
 export const options = {
@@ -15,8 +13,8 @@ export const options = {
       executor: 'shared-iterations',
       exec: 'browserTest',
       vus: __ENV.VUS || 1,
-      iterations: __ENV.ITERATIONS || 1,
-      maxDuration: __ENV.MAX_DURATION || '10m',
+      iterations: __ENV.ITERATIONS || 2,
+      maxDuration: __ENV.MAX_DURATION || '20m',
       options: {
         browser: {
           type: 'chromium',
@@ -48,35 +46,54 @@ const loadBin = new Trend('load_bin', true);
 const backToInbox = new Trend('load_inbox_from_menu', true);
 const loadNextPage = new Trend('load_next_page', true);
 
+function getTokens(numberOfTokens = 1) {
+  const tokenParams = {
+      scopes: "digdir:dialogporten.noconsent openid altinn:portal/enduser",
+      bulkCount: numberOfTokens
+  }
+  const tokens = getPersonalToken(tokenParams);
+  return JSON.parse(tokens);
+}
+
+export async function setup() {
+  const tokens = getTokens(3000);
+  const keys = Object.keys(tokens);
+  let data = []
+  for (var key of keys) {
+      let cookie = await getCookie(tokens[key]);
+      data.push({
+          bffCookie: cookie,
+          pid: key
+      });
+  }
+  return data;
+} 
 /**
  * Main function for the browser test.
  * Executes the test scenario based on the provided data.
  * @param {object} data - Test data for the scenario.
  */
 export async function browserTest(data) {
-  const myEndUsers = data[exec.vu.idInTest - 1];
-  var testData = randomItem(myEndUsers);
+  var testData = randomItem(data);
 
   // If cookie and inside pffPercentage, run bff
-  if (testData.cookie && run_bff()) {
-    const parties = openAf(testData);
-    selectMenuElements(testData.cookie, parties);
-    isAuthenticated(testData.cookie, isAuthenticatedLabel);
-    getNextpage(testData.cookie, parties);
+  if (testData.bffCookie && run_bff()) {
+    const parties = openAf(testData.pid, testData.bffCookie);
+    selectMenuElements(testData.bffCookie, parties);
+    isAuthenticated(testData.bffCookie, isAuthenticatedLabel);
+    getNextpage(testData.bffCookie, parties);
     return;
   }
 
   const context = await browser.newContext();
   const page = await context.newPage();
   
+  var startTime = new Date();
   try {
     // if cookie set, go stright to af
-    if (testData.cookie) {   
+    if (testData.cookie) { 
       await context.addCookies([testData.cookie]);
-      var startTime = new Date();
       await page.goto('http://af.yt.altinn.cloud', { waitUntil: 'networkidle' });
-      var endTime = new Date();
-      loadInbox.add(endTime - startTime);
     }
     // if no cookie, go to login page
     else {
@@ -91,20 +108,23 @@ export async function browserTest(data) {
       currentUrl: (h) => h == 'https://af.yt.altinn.cloud/',
     });
 
+    var endTime = new Date();
+    loadInbox.add(endTime - startTime);
+
     // press every menu item, return to inbox
-    await selectSideMenuElement(page, 'a[href="/drafts"]', loadDrafts, "drafts");
-    await selectSideMenuElement(page, 'a[href="/sent"]', loadSent, "sent");
-    await selectSideMenuElement(page, 'a[href="/saved-searches"]', loadSavedSearches, "savedsearches");
-    await selectSideMenuElement(page, 'a[href="/archive"]', loadArchive, "archive");
-    await selectSideMenuElement(page, 'a[href="/bin"]', loadBin, "bin");
-    await selectSideMenuElement(page, 'aside a[href="/"]', backToInbox, "backinbox");
+    await selectSideMenuElement(page, 'a[href="/drafts"]', loadDrafts);
+    await selectSideMenuElement(page, 'a[href="/sent"]', loadSent);
+    await selectSideMenuElement(page, 'a[href="/saved-searches"]', loadSavedSearches);
+    await selectSideMenuElement(page, 'a[href="/archive"]', loadArchive);
+    await selectSideMenuElement(page, 'a[href="/bin"]', loadBin);
+    await selectSideMenuElement(page, 'aside a[href="/"]', backToInbox);
     await selectNextPage(page, loadNextPage);
 
     // Set cookie so we don't have to login next time
     await addCookie(testData, context);
-    for (var endUser of myEndUsers) {
+    for (var endUser of data) {
       if (endUser.cookie) {
-        console.log(endUser.pid, endUser.cookie.value);
+        console.log(endUser.pid, endUser.cookie.name, endUser.cookie.value);
       }
     }
   } finally {
@@ -138,7 +158,7 @@ async function login(page, testData) {
  * @param {string} locator - Locator for the menu element.
  * @param {object} trend - Trend metric to track the action duration.
  */
-async function selectSideMenuElement(page, locator, trend, functionName) {
+async function selectSideMenuElement(page, locator, trend) {
   var menuElement = await page.waitForSelector(locator, { timeout: 2000 }).catch(() => false);
   var startTime = new Date();
   await Promise.all([
