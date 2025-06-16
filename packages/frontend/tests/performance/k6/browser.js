@@ -1,3 +1,15 @@
+// This is a test script for performance testing the Altinn Frontend using k6 and browser automation.
+// Usage:
+// k6 run browser.js -e BROWSER_VUS=1 -e BFF_VUS=10 -e NUMBER_OF_ENDUSERS=30 -e DURATION=1m
+//  BROWSER_VUS: Number of virtual users for browser tests.
+//  BFF_VUS: Number of virtual users for backend-for-frontend (BFF) tests.
+//  NUMBER_OF_ENDUSERS: Number of end users to simulate.
+//  DURATION: Duration of the test run.
+// In addition, the following environment variables are required:
+//  REDIS_PASSWORD: Password for Redis.
+//  REDIS_URL: URL for Redis.
+//  REDIS_PORT: Port for Redis.
+//  SIGNATURE_SECRET: Secret for signing the session.
 import { browser } from 'k6/browser';
 import { check } from 'k6';
 import { Trend } from 'k6/metrics';
