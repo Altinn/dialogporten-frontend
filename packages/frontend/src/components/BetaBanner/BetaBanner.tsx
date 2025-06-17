@@ -1,8 +1,6 @@
-import { DsButton } from '@altinn/altinn-components';
-import { InformationSquareIcon, XMarkIcon } from '@navikt/aksel-icons';
+import { Banner } from '@altinn/altinn-components';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import styles from './betaBanner.module.css';
 
 export const BetaBanner = () => {
   const betaBannerKey = 'arbeidsflate:show_beta_banner';
@@ -11,7 +9,7 @@ export const BetaBanner = () => {
 
   const { t } = useTranslation();
 
-  const handleClick = () => {
+  const onClose = () => {
     setShowBetaBanner(false);
     localStorage.setItem(betaBannerKey, 'true');
   };
@@ -21,17 +19,12 @@ export const BetaBanner = () => {
   }
 
   return (
-    <section className={styles.betaBanner}>
-      <div className={styles.betaBannerTitle}>
-        <InformationSquareIcon className={styles.infoIcon} title={t('word.information')} />
-        <span>
-          Du ser nå på en beta-versjon av nye Altinn Innboks i et testmiljø. Alt innhold du ser her er basert på
-          testdata og kun ment for demonstrasjon.
-        </span>
-      </div>
-      <DsButton variant="tertiary" onClick={handleClick} type="button" className={styles.closeButton}>
-        <XMarkIcon className={styles.closeIcon} aria-label={t('word.close')} />
-      </DsButton>
-    </section>
+    <Banner
+      onClose={onClose}
+      text="Du ser nå på en beta-versjon av nye Altinn Innboks i et testmiljø. Alt innhold du ser her er basert på
+          testdata og kun ment for demonstrasjon."
+      color="warning"
+      closeTitle={t('word.close')}
+    />
   );
 };

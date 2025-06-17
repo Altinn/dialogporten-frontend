@@ -15,7 +15,7 @@ test.describe('Saved search', () => {
     if (isMobile) {
       await page.getByRole('button', { name: 'Vis alle resultater' }).click();
     } else {
-      await page.mouse.click(200, 0, { button: 'left' });
+      await page.keyboard.press('Escape');
     }
 
     await page.getByRole('button', { name: 'Lagre søk' }).click();

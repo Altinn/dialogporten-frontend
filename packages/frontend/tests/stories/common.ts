@@ -49,7 +49,6 @@ export async function getToolbarAccountInfo(page: Page, name: string): Promise<{
   const toolbar = page.getByTestId('inbox-toolbar');
   const items = toolbar.locator('li');
 
-  console.info(items);
   // Find li with <a> containing the given name
   const matchingItem = items.filter({ hasText: name });
 
