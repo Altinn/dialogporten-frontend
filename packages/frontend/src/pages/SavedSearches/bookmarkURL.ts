@@ -2,12 +2,11 @@ import { type SavedSearchesFieldsFragment, SystemLabel } from 'bff-types-generat
 import { FilterCategory, aggregateFilterState } from '../Inbox/filters.ts';
 import { PageRoutes } from '../routes.ts';
 import { convertFiltersToFilterState, fromPathToViewType } from './useSavedSearches.tsx';
+import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 
-export const buildBookmarkURL = (savedSearch: SavedSearchesFieldsFragment) => {
-  const { searchString, filters } = savedSearch.data;
+export const buildBookmarkURL = (searchString: string, filters: any, fromView: InboxViewType) => {
   const urlParams = new URLSearchParams(window.location.search);
   const allPartiesInURL = urlParams.get('allParties');
-
   const queryParams = new URLSearchParams(
     Object.entries({
       search: searchString,
@@ -22,7 +21,7 @@ export const buildBookmarkURL = (savedSearch: SavedSearchesFieldsFragment) => {
     ),
   );
 
-  const viewType = fromPathToViewType(savedSearch.data.fromView);
+  const viewType = fromPathToViewType(fromView);
   const filterState = convertFiltersToFilterState(filters);
   const aggregated = viewType !== 'inbox' && viewType ? aggregateFilterState(filterState, viewType) : filterState;
 

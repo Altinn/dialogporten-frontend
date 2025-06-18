@@ -1,11 +1,13 @@
 import type { FilterState } from '@altinn/altinn-components';
 
-export const isSavedSearchDisabled = (filterState: FilterState, enteredSearchValue: string) => {
-  if (enteredSearchValue.length > 0) {
-    return false;
+export const isSavedSearchDisabled = (filterState: FilterState, enteredSearchValue: string | undefined) => {
+  if ((enteredSearchValue ?? '')?.length <= 2) {
+    return true;
   }
 
-  if (!filterState || !Object.keys(filterState).length) {
+  const hasValidFilters = Object.values(filterState).some((arr) => typeof arr !== 'undefined' && arr?.length > 0);
+
+  if (!hasValidFilters) {
     return true;
   }
 

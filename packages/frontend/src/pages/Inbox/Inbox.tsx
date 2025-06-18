@@ -64,8 +64,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const validSearchString = enteredSearchValue.length > 2 ? enteredSearchValue : undefined;
   const hasValidFilters = Object.values(filterState).some((arr) => typeof arr !== 'undefined' && arr?.length > 0);
   const searchMode = viewType === 'inbox' && (hasValidFilters || !!validSearchString);
-  const enableSavedSearch =
-    (hasValidFilters || !!validSearchString) && !isSavedSearchDisabled(filterState, enteredSearchValue);
+  const enableSavedSearch = !isSavedSearchDisabled(filterState, enteredSearchValue);
 
   const {
     dialogs,
