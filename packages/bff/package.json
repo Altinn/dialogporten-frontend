@@ -19,7 +19,7 @@
   "dependencies": {
     "@azure/monitor-opentelemetry": "1.7.0",
     "@digdir/dialogporten-node-logger": "workspace:*",
-    "@digdir/dialogporten-schema": "1.62.5-ade2f11",
+    "@digdir/dialogporten-schema": "1.70.0-517290a",
     "@fastify/cookie": "^11.0.2",
     "@fastify/cors": "^10.1.0",
     "@fastify/formbody": "^8.0.2",

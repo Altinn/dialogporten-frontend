@@ -9,7 +9,7 @@ type viewTypeDerivable = {
 export const isBinDialog = (dialog: viewTypeDerivable): boolean => dialog.systemLabel === SystemLabel.Bin;
 export const isArchivedDialog = (dialog: viewTypeDerivable): boolean => dialog.systemLabel === SystemLabel.Archive;
 export const isDraftDialog = (dialog: viewTypeDerivable): boolean => dialog.status === DialogStatus.Draft;
-export const isSentDialog = (dialog: viewTypeDerivable): boolean => dialog.status === DialogStatus.Sent;
+export const isSentDialog = (dialog: viewTypeDerivable): boolean => dialog.status === DialogStatus.Awaiting;
 
 export const getViewTypes = (dialog: viewTypeDerivable, includeInbox = true): InboxViewType[] => {
   const viewTypes: InboxViewType[] = [];

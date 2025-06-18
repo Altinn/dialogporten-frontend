@@ -180,10 +180,10 @@ export const getFilters = (
     },
     options: [
       {
-        label: t('status.new'),
+        label: t('status.not_applicable'),
         groupId: 'status-group-0',
-        value: DialogStatus.New,
-        badge: getFilterBadgeProps(statusCount[DialogStatus.New]),
+        value: DialogStatus.NotApplicable,
+        badge: getFilterBadgeProps(statusCount[DialogStatus.NotApplicable]),
       },
       {
         label: t('status.requires_attention'),
@@ -210,10 +210,10 @@ export const getFilters = (
         badge: getFilterBadgeProps(statusCount[DialogStatus.Draft]),
       },
       {
-        label: t('status.sent'),
+        label: t('status.awaiting'),
         groupId: 'status-group-2',
-        value: DialogStatus.Sent,
-        badge: getFilterBadgeProps(statusCount[DialogStatus.Sent]),
+        value: DialogStatus.Awaiting,
+        badge: getFilterBadgeProps(statusCount[DialogStatus.Awaiting]),
       },
       {
         label: t('status.archive'),
@@ -270,7 +270,12 @@ interface NormalizeFilterDefaults {
 
 export const presetFiltersByView: Record<InboxViewType, Partial<GetAllDialogsForPartiesQueryVariables>> = {
   inbox: {
-    status: [DialogStatus.New, DialogStatus.InProgress, DialogStatus.RequiresAttention, DialogStatus.Completed],
+    status: [
+      DialogStatus.NotApplicable,
+      DialogStatus.InProgress,
+      DialogStatus.RequiresAttention,
+      DialogStatus.Completed,
+    ],
     label: [SystemLabel.Default],
   },
   drafts: {
@@ -278,7 +283,7 @@ export const presetFiltersByView: Record<InboxViewType, Partial<GetAllDialogsFor
     label: [SystemLabel.Default],
   },
   sent: {
-    status: [DialogStatus.Sent],
+    status: [DialogStatus.Awaiting],
     label: [SystemLabel.Default],
   },
   archive: {

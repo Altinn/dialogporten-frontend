@@ -96,7 +96,12 @@ interface QueryVariablesInput {
 
 const viewTypeQueryMap: Record<InboxViewType, Record<string, string[] | string | number>> = {
   inbox: {
-    status: [DialogStatus.New, DialogStatus.InProgress, DialogStatus.RequiresAttention, DialogStatus.Completed],
+    status: [
+      DialogStatus.NotApplicable,
+      DialogStatus.InProgress,
+      DialogStatus.RequiresAttention,
+      DialogStatus.Completed,
+    ],
     label: SystemLabel.Default,
   },
   drafts: {
@@ -104,7 +109,7 @@ const viewTypeQueryMap: Record<InboxViewType, Record<string, string[] | string |
     label: SystemLabel.Default,
   },
   sent: {
-    status: [DialogStatus.Sent],
+    status: [DialogStatus.Awaiting],
     label: SystemLabel.Default,
   },
   archive: {

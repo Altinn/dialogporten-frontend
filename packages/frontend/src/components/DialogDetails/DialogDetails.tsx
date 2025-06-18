@@ -208,7 +208,7 @@ export const DialogDetails = ({ dialog, isLoading, isAuthLevelTooLow }: DialogDe
           loading
           dueAt={new Date().toISOString()}
           dueAtLabel={format(new Date(), 'do MMMM yyyy HH.mm').toString()}
-          status={getDialogStatus(DialogStatus.New, t)}
+          status={getDialogStatus(DialogStatus.NotApplicable, t)}
           title={'???'}
         />
         <DialogBody
