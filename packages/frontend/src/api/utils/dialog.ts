@@ -47,7 +47,7 @@ export function mapDialogToToInboxItems(
 ): InboxItemInput[] {
   return input.map((item) => {
     const titleObj = item.content.title.value;
-    const summaryObj = item.content.summary.value;
+    const summaryObj = item.content.summary?.value;
     const endUserParty = parties?.find((party) => party.isCurrentEndUser);
     const senderName = item.content.senderName?.value;
 
@@ -79,11 +79,11 @@ export function mapDialogToToInboxItems(
       updatedAt: item.updatedAt,
       status: item.status ?? 'UnknownStatus',
       isSeenByEndUser,
-      label: item.systemLabel,
+      label: item.endUserContext?.systemLabels,
       org: item.org,
       seenByLabel,
       seenByOthersCount,
-      viewType: getViewTypes(item, true)?.[0],
+      viewType: getViewTypes({ status: item.status, systemLabel: item.endUserContext?.systemLabels }, true)?.[0],
     };
   });
 }

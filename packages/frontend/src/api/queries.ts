@@ -33,10 +33,10 @@ export const deleteFavoriteParty = (partyId: string, groupId: string): Promise<D
   graphQLSDK.DeleteFavoriteParty({ partyId, groupId });
 export const createSavedSearch = (name: string, data: SavedSearchInput): Promise<CreateSavedSearchMutation> =>
   graphQLSDK.CreateSavedSearch({ name, data });
-export const updateSystemLabel = (dialogId: string, label: SystemLabel): Promise<UpdateSystemLabelMutation> =>
+export const updateSystemLabel = (dialogId: string, labels: SystemLabel): Promise<UpdateSystemLabelMutation> =>
   graphQLSDK.updateSystemLabel({
     dialogId,
-    label,
+    labels,
   });
 export const searchDialogs = (
   partyURIs: string[],

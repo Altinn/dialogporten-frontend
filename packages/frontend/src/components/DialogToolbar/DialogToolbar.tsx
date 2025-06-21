@@ -13,11 +13,13 @@ interface DialogToolbarProps {
   archiveAction: ToolbarActionProps;
   deleteAction: ToolbarActionProps;
   undoAction: ToolbarActionProps;
-  currentLabel: SystemLabel;
+  currentLabels: SystemLabel[];
 }
 
-export const DialogToolbar = ({ archiveAction, deleteAction, undoAction, currentLabel }: DialogToolbarProps) => {
+export const DialogToolbar = ({ archiveAction, deleteAction, undoAction, currentLabels }: DialogToolbarProps) => {
   const { t } = useTranslation();
+  const EXCLUSIVE_LABELS = [SystemLabel.Default, SystemLabel.Archive, SystemLabel.Bin];
+  const currentLabel = currentLabels.find((label) => EXCLUSIVE_LABELS.includes(label)) || SystemLabel.Default;
   return (
     <section className={styles.dialogToolbar}>
       {[SystemLabel.Archive, SystemLabel.Bin].includes(currentLabel) && (

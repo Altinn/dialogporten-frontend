@@ -12,6 +12,13 @@ import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { getOrganization } from '../../api/utils/organizations.ts';
 import type { InboxItemInput } from './InboxItemInput.ts';
 
+export const getExclusiveLabel = (labels: string[]): SystemLabel => {
+  const EXCLUSIVE_LABELS = [SystemLabel.Default, SystemLabel.Archive, SystemLabel.Bin] as const;
+
+  const match = labels.find((label): label is SystemLabel => EXCLUSIVE_LABELS.includes(label as SystemLabel));
+  return match ?? SystemLabel.Default;
+};
+
 export const countOccurrences = (array: string[]): Record<string, number> => {
   return array.reduce(
     (acc, item) => {
@@ -160,8 +167,9 @@ export const getFilters = (
 
   const statusList = dialogs.map((p) => p.status);
   const labelList = dialogs.map((p) => p.label);
+  const systemLabels = labelList.map((label) => getExclusiveLabel(label));
   const statusCount = countOccurrences(statusList);
-  const labelCounts = countOccurrences(labelList);
+  const labelCounts = countOccurrences(systemLabels);
 
   const statusFilter: ToolbarFilterProps = {
     label: t('filter_bar.label.choose_status'),

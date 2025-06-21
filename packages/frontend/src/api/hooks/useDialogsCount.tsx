@@ -53,7 +53,7 @@ export const useDialogsCount = (parties?: PartyFieldsFragment[], viewType?: Inbo
     };
 
     for (const dialog of items) {
-      const viewType = getViewTypes(dialog)[0];
+      const viewType = getViewTypes({ status: dialog.status, systemLabel: dialog.endUserContext?.systemLabels })[0];
       if (viewType && counts[viewType]) {
         counts[viewType].push(dialog);
       }

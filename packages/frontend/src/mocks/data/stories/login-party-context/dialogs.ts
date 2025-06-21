@@ -4,7 +4,9 @@ import { dialogs as baseDialogs } from '../../base/dialogs'
 const organizationsDialogs: SearchDialogFieldsFragment[] = [
     {
         id: '019241f7-6f45-72fd-abcd-whydoesitnot',
-        systemLabel: SystemLabel.Default,
+        endUserContext: {
+            systemLabels: [SystemLabel.Default],
+        },
         party: 'urn:altinn:organization:identifier-no:1',
         org: 'ok',
         progress: null,
@@ -64,7 +66,9 @@ const organizationsDialogs: SearchDialogFieldsFragment[] = [
     },
     {
         id: '019241f7-6f45-72fd-abcd-nowitworksfi',
-        systemLabel: SystemLabel.Default,
+        endUserContext: {
+            systemLabels: [SystemLabel.Default],
+        },
         party: 'urn:altinn:organization:identifier-no:2',
         org: 'ok',
         progress: null,
@@ -124,8 +128,10 @@ const organizationsDialogs: SearchDialogFieldsFragment[] = [
     },
     {
         id: '019241f7-6f45-72fd-abcd-nowitworksfi',
-        systemLabel: SystemLabel.Default,
-        party: 'urn:altinn:organization:identifier-sub:1',
+        endUserContext: {
+          systemLabels: [SystemLabel.Default],
+        },
+      party: 'urn:altinn:organization:identifier-sub:1',
         org: 'ok',
         progress: null,
         guiAttachmentCount: 1,
@@ -184,7 +190,9 @@ const organizationsDialogs: SearchDialogFieldsFragment[] = [
     },
     {
         id: '019241f7-6f45-72fd-abcd-nowitworksfi',
-        systemLabel: SystemLabel.Default,
+        endUserContext: {
+          systemLabels: [SystemLabel.Default],
+        },
         party: 'urn:altinn:organization:identifier-sub:1',
         org: 'ok',
         progress: null,

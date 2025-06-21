@@ -2,7 +2,9 @@ import { ActorType, DialogStatus, type SearchDialogFieldsFragment, SystemLabel }
 export const dialogs: SearchDialogFieldsFragment[] = [
     {
         id: '1',
-        systemLabel: SystemLabel.Default,
+        endUserContext: {
+            systemLabels: [SystemLabel.Default],
+        },
         party: 'urn:altinn:person:identifier-no:1',
         org: 'nav',
         progress: null,
@@ -62,7 +64,9 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     },
     {
         id: '2',
-        systemLabel: SystemLabel.Default,
+        endUserContext: {
+          systemLabels: [SystemLabel.Default],
+        },
         party: 'urn:altinn:person:identifier-no:1',
         org: 'skd',
         progress: null,
@@ -122,7 +126,9 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     },
     {
         id: '3',
-        systemLabel: SystemLabel.Default,
+        endUserContext: {
+          systemLabels: [SystemLabel.Default],
+        },
         party: 'urn:altinn:person:identifier-no:1',
         org: 'skd',
         progress: null,

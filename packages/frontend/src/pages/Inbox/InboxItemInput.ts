@@ -13,7 +13,7 @@ export interface InboxItemInput {
   updatedAt: string;
   status: DialogStatus;
   isSeenByEndUser: boolean;
-  label: SystemLabel;
+  label: SystemLabel[];
   org: string;
   guiAttachmentCount: number;
   seenByOthersCount: number;
