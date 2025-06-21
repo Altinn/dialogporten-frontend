@@ -77,7 +77,7 @@ const createTransmissionItem = (
     variant: 'transmission' as DialogHistoryItemProps['variant'],
     byline: format(transmission.createdAt, formatString),
     title: getPreferredPropertyByLocale(transmission.content.title.value)?.value ?? '',
-    summary: getPreferredPropertyByLocale(transmission.content.summary.value)?.value ?? '',
+    summary: getPreferredPropertyByLocale(transmission.content.summary?.value)?.value ?? '',
     createdAt: transmission.createdAt,
     createdAtLabel: format(transmission.createdAt, formatString),
     type: transmission.type?.toLowerCase() as unknown as TransmissionType,

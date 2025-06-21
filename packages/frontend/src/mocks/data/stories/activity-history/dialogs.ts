@@ -3,7 +3,9 @@ import { ActorType, DialogStatus, type SearchDialogFieldsFragment, SystemLabel }
 export const dialogs: SearchDialogFieldsFragment[] = [
     {
         id: '019241f7-8218-7756-be82-123qwe456rtA',
-        systemLabel: SystemLabel.Default,
+        endUserContext: {
+          systemLabels: [SystemLabel.Default]
+        },
         party: 'urn:altinn:person:identifier-no:1',
         org: 'ok',
         progress: null,

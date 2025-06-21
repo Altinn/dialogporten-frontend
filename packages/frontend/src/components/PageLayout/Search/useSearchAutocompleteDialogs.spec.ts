@@ -1,4 +1,5 @@
-import type { DialogStatus, SystemLabel } from 'bff-types-generated';
+import type { DialogStatus } from 'bff-types-generated';
+import { SystemLabel } from 'bff-types-generated';
 import { describe, expect, it } from 'vitest';
 import type { InboxViewType } from '../../../api/hooks/useDialogs.tsx';
 import { organizations } from '../../../mocks/data/base/organizations.ts';
@@ -25,7 +26,7 @@ describe('generateSendersAutocompleteBySearchString', () => {
       updatedAt: '2023-07-15T08:45:00.000Z',
       status: 'COMPLETED' as DialogStatus,
       isSeenByEndUser: false,
-      label: 'DEFAULT' as SystemLabel,
+      label: [SystemLabel.Default],
       org: 'skd',
       guiAttachmentCount: 1,
       seenByOthersCount: 0,
@@ -55,7 +56,7 @@ describe('generateSendersAutocompleteBySearchString', () => {
       viewType: 'INBOX' as InboxViewType,
       status: 'REQUIRES_ATTENTION' as DialogStatus,
       isSeenByEndUser: true,
-      label: 'DEFAULT' as SystemLabel,
+      label: [SystemLabel.Default],
       updatedAt: '2023-05-17T09:30:00.000Z',
     },
   ];

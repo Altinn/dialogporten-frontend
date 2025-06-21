@@ -4,7 +4,9 @@ import { ActorType, DialogStatus, type SearchDialogFieldsFragment, SystemLabel }
 export const dialogs: SearchDialogFieldsFragment[] = [
     {
         id: '019241f7-6f45-72fd-abcd-whydoesitnot',
-        systemLabel: SystemLabel.Default,
+        endUserContext: {
+            systemLabels: [SystemLabel.Default],
+        },
         party: 'urn:altinn:person:identifier-no:1',
         org: 'ok',
         progress: null,
@@ -64,7 +66,9 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     },
     {
         id: '019241f7-6f45-72fd-abcd-whydoesitnot',
-        systemLabel: SystemLabel.Default,
+        endUserContext: {
+            systemLabels: [SystemLabel.Default],
+        },
         party: 'urn:altinn:organization:identifier-no:2',
         org: 'ok',
         progress: null,
@@ -124,7 +128,9 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     },
     {
         id: '019241f7-6f45-72fd-abcd-asddsaqwe123',
-        systemLabel: SystemLabel.Default,
+        endUserContext: {
+            systemLabels: [SystemLabel.Default],
+        },
         party: 'urn:altinn:organization:identifier-no:1',
         org: 'ok',
         progress: null,
@@ -184,7 +190,9 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     },
     {
         id: '019241f7-6f45-72fd-abcd-nowitworksfi',
-        systemLabel: SystemLabel.Default,
+        endUserContext: {
+              systemLabels: [SystemLabel.Default],
+        },
         party: 'urn:altinn:organization:identifier-sub:1',
         org: 'ok',
         progress: null,
@@ -244,7 +252,9 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     },
     {
         id: '019241f7-6f45-72fd-abcd-nowdsada',
-        systemLabel: SystemLabel.Default,
+        endUserContext: {
+            systemLabels: [SystemLabel.Default],
+        },
         party: 'urn:altinn:organization:identifier-sub:2',
         org: 'ok',
         progress: null,
@@ -304,7 +314,9 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     },
     {
         id: '019241f7-6f45-72fd-abcd-mycompanyas1',
-        systemLabel: SystemLabel.Default,
+        endUserContext: {
+          systemLabels: [SystemLabel.Default],
+        },
         party: 'urn:altinn:organization:identifier-mycompanyas-no:3',
         org: 'ok',
         progress: null,
@@ -364,7 +376,9 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     },
     {
         id: '019241f7-6f45-72fd-abcd-mycompanyas-sub1',
-        systemLabel: SystemLabel.Default,
+        endUserContext: {
+          systemLabels: [SystemLabel.Default],
+        },
         party: 'urn:altinn:organization:id-mycompanyas-sub:1',
         org: 'ok',
         progress: null,
@@ -424,7 +438,9 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     },
     {
         id: '019241f7-6f45-72fd-abcd-mycompanyas-sub2',
-        systemLabel: SystemLabel.Default,
+        endUserContext: {
+          systemLabels: [SystemLabel.Default],
+        },
         party: 'urn:altinn:organization:id-mycompanyas-sub:2',
         org: 'ok',
         progress: null,

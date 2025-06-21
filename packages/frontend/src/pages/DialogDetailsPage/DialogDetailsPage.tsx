@@ -127,7 +127,7 @@ export const DialogDetailsPage = () => {
       </Section>
       {showToolbar && (
         <DialogToolbar
-          currentLabel={dialog.label}
+          currentLabels={dialog.label}
           archiveAction={{ onClick: () => handleMoveDialogToArchive(id), isLoading: archiveLoading }}
           deleteAction={{ onClick: () => handleMoveDialogBin(id), isLoading: deleteLoading }}
           undoAction={{ onClick: () => handleUndoMoving(id), isLoading: undoLoading }}
