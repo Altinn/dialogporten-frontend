@@ -59,7 +59,9 @@ export const dialogs: SearchDialogFieldsFragment[] = [
       "senderName": null,
       "extendedStatus": null
     },
-    "systemLabel": SystemLabel.Default
+    endUserContext: {
+      "systemLabels": [SystemLabel.Default]
+    }
   },
   {
     "id": "01939be3-7990-73a5-9d74-2c73da20944d",
@@ -119,7 +121,9 @@ export const dialogs: SearchDialogFieldsFragment[] = [
       "senderName": null,
       "extendedStatus": null
     },
-    "systemLabel": SystemLabel.Default,
+    endUserContext: {
+      "systemLabels": [SystemLabel.Default]
+    }
   },
   {
     "id": "01939be3-131e-739d-ad97-119614c6d3c6",
@@ -179,7 +183,9 @@ export const dialogs: SearchDialogFieldsFragment[] = [
       "senderName": null,
       "extendedStatus": null
     },
-    "systemLabel": SystemLabel.Default
+    endUserContext: {
+      "systemLabels": [SystemLabel.Default]
+    }
   },
   {
     "id": "01939be2-817c-7426-9ad7-1d598c6caf16",
@@ -239,8 +245,10 @@ export const dialogs: SearchDialogFieldsFragment[] = [
       "senderName": null,
       "extendedStatus": null
     },
-    "systemLabel": SystemLabel.Default,
-  },
+    endUserContext: {
+      "systemLabels": [SystemLabel.Default]
+    }
+    },
   {
     "id": "01939be2-1b72-744e-a972-978f88f7829a",
     "party": "urn:altinn:organization:identifier-no:311615688",
@@ -299,7 +307,9 @@ export const dialogs: SearchDialogFieldsFragment[] = [
       "senderName": null,
       "extendedStatus": null
     },
-    "systemLabel": SystemLabel.Default,
+    endUserContext: {
+      "systemLabels": [SystemLabel.Default]
+    }
   },
   {
     "id": "01939be1-abaa-70e7-9301-2c96e773145c",
@@ -359,7 +369,9 @@ export const dialogs: SearchDialogFieldsFragment[] = [
       "senderName": null,
       "extendedStatus": null
     },
-    "systemLabel": SystemLabel.Default,
+    endUserContext: {
+      "systemLabels": [SystemLabel.Default]
+    },
   },
   {
     "id": "01939be1-3fc5-775e-8b7f-7710b348d210",
@@ -419,7 +431,9 @@ export const dialogs: SearchDialogFieldsFragment[] = [
       "senderName": null,
       "extendedStatus": null
     },
-    "systemLabel": SystemLabel.Default,
+    endUserContext: {
+      "systemLabels": [SystemLabel.Default]
+    }
   },
   {
     "id": "01939be0-a01f-71bb-8f01-9a3bbeaf3324",
@@ -479,7 +493,9 @@ export const dialogs: SearchDialogFieldsFragment[] = [
       "senderName": null,
       "extendedStatus": null
     },
-    "systemLabel": SystemLabel.Default,
+    endUserContext: {
+      "systemLabels": [SystemLabel.Default]
+    }
   },
   {
     "id": "01939be0-15e1-72ab-8261-2798d078b57c",
@@ -539,7 +555,9 @@ export const dialogs: SearchDialogFieldsFragment[] = [
       "senderName": null,
       "extendedStatus": null
     },
-    "systemLabel": SystemLabel.Default,
+    endUserContext: {
+      "systemLabels": [SystemLabel.Default]
+    }
   },
   {
     "id": "01939b61-8b48-778b-8132-b94bc5f05484",
@@ -610,6 +628,8 @@ export const dialogs: SearchDialogFieldsFragment[] = [
       "senderName": null,
       "extendedStatus": null
     },
-    "systemLabel": SystemLabel.Default,
+    endUserContext: {
+      "systemLabels": [SystemLabel.Default]
+    }
   }
 ]

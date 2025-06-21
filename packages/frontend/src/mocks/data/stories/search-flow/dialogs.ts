@@ -4,7 +4,9 @@ import { dialogs as baseDialogs } from '../../base/dialogs'
 const customDialogs: SearchDialogFieldsFragment[] = [
     {
         id: '019241f7-6f45-72fd-abcd-today83j1ks2',
-        systemLabel: SystemLabel.Default,
+        endUserContext: {
+            systemLabels: [SystemLabel.Default],
+        },
         party: 'urn:altinn:person:identifier-no:1',
         org: 'ok',
         progress: null,
@@ -64,7 +66,9 @@ const customDialogs: SearchDialogFieldsFragment[] = [
     },
     {
         id: '019241f7-6f45-72fd-abcd-today11111',
-        systemLabel: SystemLabel.Default,
+        endUserContext: {
+          systemLabels: [SystemLabel.Default],
+        },
         party: 'urn:altinn:person:identifier-no:1',
         org: 'ok',
         progress: null,
@@ -124,7 +128,9 @@ const customDialogs: SearchDialogFieldsFragment[] = [
     },
     {
         id: '019241f7-6f45-72fd-abcd-today22222',
-        systemLabel: SystemLabel.Default,
+        endUserContext: {
+          systemLabels: [SystemLabel.Default],
+        },
         party: 'urn:altinn:person:identifier-no:1',
         org: 'ok',
         progress: null,
@@ -184,7 +190,9 @@ const customDialogs: SearchDialogFieldsFragment[] = [
     },
     {
         id: '019241f7-6f45-72fd-abcd-today33333',
-        systemLabel: SystemLabel.Default,
+        endUserContext: {
+          systemLabels: [SystemLabel.Default],
+        },
         party: 'urn:altinn:person:identifier-no:1',
         org: 'ok',
         progress: null,
@@ -244,7 +252,9 @@ const customDialogs: SearchDialogFieldsFragment[] = [
     },
     {
         id: '019241f7-6f45-72fd-abcd-today55555',
-        systemLabel: SystemLabel.Default,
+        endUserContext: {
+            systemLabels: [SystemLabel.Default],
+        },
         party: 'urn:altinn:person:identifier-no:1',
         org: 'ok',
         progress: null,
@@ -304,7 +314,9 @@ const customDialogs: SearchDialogFieldsFragment[] = [
     },
     {
         id: '019241f7-6f45-72fd-abcd-today66666',
-        systemLabel: SystemLabel.Default,
+        endUserContext: {
+          systemLabels: [SystemLabel.Default],
+        },
         party: 'urn:altinn:person:identifier-no:1',
         org: 'ok',
         progress: null,

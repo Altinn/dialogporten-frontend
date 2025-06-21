@@ -6,7 +6,9 @@ export const MOCKED_SYS_DATE = new Date('2024-12-31T11:11:00Z');
 const dialogsWithMockedSystemDate: SearchDialogFieldsFragment[] = [
     {
         id: '019241f7-6f45-72fd-abcd-today83j1ks2',
-        systemLabel: SystemLabel.Default,
+        endUserContext: {
+          systemLabels: [SystemLabel.Default],
+        },
         party: 'urn:altinn:person:identifier-no:1',
         org: 'ok',
         progress: null,
@@ -66,7 +68,9 @@ const dialogsWithMockedSystemDate: SearchDialogFieldsFragment[] = [
     },
     {
         id: '019241f7-6f45-72fd-a574-jksit83j1ks2',
-        systemLabel: SystemLabel.Default,
+        endUserContext: {
+          systemLabels: [SystemLabel.Default],
+        },
         party: 'urn:altinn:person:identifier-no:1',
         org: 'ok',
         progress: null,
@@ -130,7 +134,9 @@ const dialogsWithMockedSystemDate: SearchDialogFieldsFragment[] = [
     },
     {
         id: '019241f7-8218-7756-be82-123qwe456rty',
-        systemLabel: SystemLabel.Default,
+        endUserContext: {
+            systemLabels: [SystemLabel.Default],
+        },
         party: 'urn:altinn:person:identifier-no:1',
         org: 'nav',
         progress: null,

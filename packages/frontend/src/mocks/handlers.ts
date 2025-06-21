@@ -2,7 +2,6 @@ import { graphql, http, HttpResponse } from 'msw';
 import { naiveSearchFilter } from './filters.ts';
 import {
   SavedSearchesFieldsFragment,
-  UpdateSystemLabelMutationVariables,
   DialogByIdFieldsFragment,
   Profile,
   SearchAutocompleteDialogFieldsFragment, SearchDialogFieldsFragment, PartyFieldsFragment, OrganizationFieldsFragment,
@@ -67,7 +66,9 @@ const getAllDialogsforCountMock = graphql.query('getAllDialogsForCount', ({ vari
           party: item.party,
           updatedAt: item.updatedAt,
           status: item.status,
-          systemLabel: item.systemLabel,
+          endUserContext: {
+            systemLabels: item.endUserContext?.systemLabels ?? [],
+          },
           seenSinceLastUpdate: item.seenSinceLastUpdate,
         })) ?? null,
       },
@@ -220,23 +221,21 @@ const mutateSavedSearchMock = graphql.mutation('CreateSavedSearch', (req) => {
 });
 
 const mutateUpdateSystemLabelMock = graphql.mutation('updateSystemLabel', (req) => {
-  const { dialogId, label } = req.variables;
+  const { dialogId, labels } = req.variables;
 
-  const updatedSystemLabel: UpdateSystemLabelMutationVariables = {
-    dialogId,
-    label,
-  };
-
+  /* Note: When other system labels that NOT are mutually exclusive will be introduced by Dialogporten, this handler needs to return existing labels as well, but make sure only one system label is included */
   inMemoryStore.dialogs = inMemoryStore.dialogs?.map((dialog) => {
     if (dialog.id === dialogId) {
-      dialog.systemLabel = label;
+      dialog.endUserContext = {
+        systemLabels: [labels]
+      }
     }
     return dialog;
   });
 
   return HttpResponse.json({
     data: {
-      setSystemLabel: { ...updatedSystemLabel, success: { success: true } },
+      setSystemLabel: { success: true }
     },
   });
 });

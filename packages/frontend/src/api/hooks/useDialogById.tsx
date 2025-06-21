@@ -66,7 +66,8 @@ export interface DialogByIdDetails {
   updatedAt: string;
   /* created timestamp */
   createdAt: string;
-  label: SystemLabel;
+  /* list of system labels for the dialog */
+  label: SystemLabel[];
   /* all transmissions for dialog, grouped by related transmissions */
   transmissions: DialogHistorySegmentProps[];
   /* a map of all content references for all content reference for transmission, used to dynamically embed content in the frontend from an external URL. */
@@ -182,7 +183,9 @@ export function mapDialogToToInboxItem(
     guiActions: item.guiActions.map((guiAction) => ({
       id: guiAction.id,
       url: guiAction.url,
-      hidden: !guiAction.isAuthorized || (guiAction.isDeleteDialogAction && item.systemLabel !== SystemLabel.Bin),
+      hidden:
+        !guiAction.isAuthorized ||
+        (guiAction.isDeleteDialogAction && !item.endUserContext?.systemLabels.includes(SystemLabel.Bin)),
       priority: guiAction.priority,
       httpMethod: guiAction.httpMethod,
       title: getPreferredPropertyByLocale(guiAction.title)?.value ?? '',
@@ -220,7 +223,7 @@ export function mapDialogToToInboxItem(
     transmissions: getDialogHistoryForTransmissions(item.transmissions, format, serviceOwner),
     createdAt: item.createdAt,
     updatedAt: item.updatedAt,
-    label: item.systemLabel,
+    label: item.endUserContext?.systemLabels,
     dueAt: item.dueAt,
   };
 }
