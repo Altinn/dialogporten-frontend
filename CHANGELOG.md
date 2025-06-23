@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.39.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.39.2...v1.39.3) (2025-06-23)
+
+
+### Bug Fixes
+
+* breaking changes from new-&gt;not_applicable and sent-&gt;awaiting ([#2261](https://github.com/Altinn/dialogporten-frontend/issues/2261)) ([a84d1e2](https://github.com/Altinn/dialogporten-frontend/commit/a84d1e271a8a30b95ff63ec853e65439ffcdefd4))
+* update to be compatible with dialogporten-schema v 1.70.0-29be76e - summary is now nullable and interface for retrieving system labels and mutating them have changed ([f23a07c](https://github.com/Altinn/dialogporten-frontend/commit/f23a07c04056fae5f0460b02aaaaddb6e66bd506))
+* update to latest version of altinn-components ([#2246](https://github.com/Altinn/dialogporten-frontend/issues/2246)) ([ec4d258](https://github.com/Altinn/dialogporten-frontend/commit/ec4d258dd524473beaa9b58bc2460c431330a3f7))
+* use the new beta banner from altinn-components ([#2252](https://github.com/Altinn/dialogporten-frontend/issues/2252)) ([8b4265f](https://github.com/Altinn/dialogporten-frontend/commit/8b4265fe5bf7befaf7655a4d8194a92bcda3cdc9))
+
 ## [1.39.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.39.1...v1.39.2) (2025-06-12)
 
 
