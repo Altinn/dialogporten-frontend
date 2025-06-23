@@ -114,9 +114,7 @@
   "parties.results": "{hits, plural, one {# hit} other {# hits}}",
   "parties.search": "Search for account",
   "parties.search.no_results": "No hits",
-
   "profile.landing.more_settings": "More settings",
-
   "profile.landing.ssn": "Security number:",
   "profile.settings.contact_settings": "Contact settings",
   "profile.settings.more_contact_settings": "More settings",
@@ -138,6 +136,8 @@
   "profile.notifications.change_email": "Change email address",
   "profile.notifications.sms_alert": "Notify via SMS",
   "profile.notifications.email_alert": "Notify via email",
+  "profile.authorize.header": "Users authorized to access your profile",
+  "profile.authorize.add_user": "New authorization",
   "route.archived": "Archive",
   "route.deleted": "Trash",
   "savedSearches.bookmark.item_input_helper": "Give saved search a title",
@@ -176,6 +176,7 @@
   "sidebar.profile.settings": "Settings",
   "sidebar.saved_searches": "Saved Searches",
   "sidebar.sent": "Sent",
+  "sidebar.profile.authorize": "Grant authorization",
   "status.archive": "Archive",
   "status.bin": "Bin",
   "status.completed": "Completed",
