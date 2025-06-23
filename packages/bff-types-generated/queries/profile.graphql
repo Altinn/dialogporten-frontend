@@ -16,6 +16,9 @@ query profile {
       userName
       email
       isReserved
+      phoneNumber
+      externalIdentity
+      partyId
 
       party {
         partyId

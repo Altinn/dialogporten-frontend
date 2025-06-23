@@ -6,8 +6,9 @@ import { Group, Party, ProfileTable } from '../../entities.ts';
 export const getOrCreateProfile = async (pid: string, sessionLocale: string): Promise<ProfileTable> => {
   const profile = await ProfileRepository!
     .createQueryBuilder('profile')
-    .leftJoinAndSelect('profile.groups', 'groups')
-    .leftJoinAndSelect('groups.parties', 'parties')
+    .leftJoinAndSelect('profile.groups', 'groups') // Profile's groups
+    .leftJoinAndSelect('groups.parties', 'parties') // Parties in those groups
+    .leftJoinAndSelect('parties.groups', 'partyGroups') // All groups linked to each party
     .where('profile.pid = :pid', { pid })
     .getOne();
 
@@ -28,7 +29,6 @@ export const getOrCreateProfile = async (pid: string, sessionLocale: string): Pr
     profile.language = sessionLocale || 'nb';
     await ProfileRepository!.save(profile);
   }
-
   return profile;
 };
 
@@ -154,9 +154,9 @@ export const deleteFavoriteParty = async (pid: string, partyId: string, groupId:
     });
 
     if (!group) {
+      console.info(`Group with ID ${groupId} not found for profile ${pid}`);
       throw new Error('Group not found or does not belong to this profile');
     }
-
     await GroupRepository!.createQueryBuilder().relation(Group, 'parties').of(groupId).remove(partyId);
 
     return { success: true };
