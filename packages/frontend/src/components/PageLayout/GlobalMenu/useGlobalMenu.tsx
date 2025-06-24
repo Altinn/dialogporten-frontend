@@ -196,7 +196,7 @@ export const useGlobalMenu = ({
           id: '2',
           groupId: '2',
           icon: { svgElement: HeartIcon, theme: 'default' },
-          title: t('sidebar.profile.actors'),
+          title: t('sidebar.profile.parties'),
           selected: pathname === PageRoutes.partiesOverview,
           as: createMenuItemComponent({
             to: PageRoutes.partiesOverview + pruneSearchQueryParams(currentSearchQuery),

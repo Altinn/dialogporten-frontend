@@ -13,7 +13,7 @@ import { SavedSearchesPage } from './pages/SavedSearches';
 import { PageRoutes } from './pages/routes.ts';
 import './app.css';
 import { FrontChannelLogout } from './pages/LogoutPage/FrontChannelLogout.tsx';
-import { PartiesOverviewPage } from './pages/Profile/Actors/PartiesOverviewPage.tsx';
+import { PartiesOverviewPage } from './pages/Profile/PartiesOverviewPage/PartiesOverviewPage.tsx';
 
 function App() {
   return (
