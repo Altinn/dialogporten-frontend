@@ -216,7 +216,7 @@ export const useGlobalMenu = ({
           id: '4',
           groupId: '3',
           icon: { svgElement: PadlockUnlockedIcon, theme: 'default' },
-          title: 'gi tilgang',
+          title: t('sidebar.profile.access'),
           selected: pathname === PageRoutes.access,
           as: createMenuItemComponent({
             to: PageRoutes.access + pruneSearchQueryParams(currentSearchQuery),
