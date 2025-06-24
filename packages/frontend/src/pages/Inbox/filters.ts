@@ -149,7 +149,10 @@ export const getFilters = (
 ): ToolbarFilterProps[] => {
   const orgsInFilteredDialogs = dialogs.map((d) => d.org);
   const orgCount = countOccurrences(orgsInFilteredDialogs);
-  const orgsFoundInAllDialogs = Array.from(new Set(allDialogs.map((d) => d.org)));
+
+  const allOrgsFromDialogs = dialogs.map((d) => d.org);
+  const allOrgsFromAllDialogs = allDialogs.map((d) => d.org);
+  const orgsFoundInAllDialogs = Array.from(new Set([...allOrgsFromDialogs, ...allOrgsFromAllDialogs]));
 
   const senderOrgFilter: ToolbarFilterProps = {
     label: t('filter_bar.label.choose_sender'),
