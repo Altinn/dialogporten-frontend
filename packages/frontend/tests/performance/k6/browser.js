@@ -24,6 +24,7 @@ function getOptions() {
   const browser_vus = __ENV.BROWSER_VUS || 1;
   const bff_vus = __ENV.BFF_VUS || 1;
   const duration = __ENV.DURATION || '1m';
+  
   const options = {
     scenarios: {},
     thresholds: {
@@ -31,6 +32,7 @@ function getOptions() {
     },
     summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(75)', 'p(95)', 'count'],
   }
+
   if (browser_vus > 0) {
     options.scenarios.browser = {
       executor: 'constant-vus',
@@ -44,6 +46,7 @@ function getOptions() {
       },
     };
   }
+
   if (bff_vus > 0) {
     options.scenarios.bff = {
       executor: 'constant-vus',
@@ -56,6 +59,7 @@ function getOptions() {
       options.thresholds[`http_req_failed{name:${label}}`] = [];
     }
   }
+  
   return options;
 }
 

@@ -2,10 +2,10 @@ import crypto from 'k6/crypto';
 import redis from 'k6/experimental/redis';
 import encoding from 'k6/encoding';
 
-const redisPwd = __ENV.REDIS_PASSWORD; 
-const redisUrl = __ENV.REDIS_URL; 
-const redisPort = __ENV.REDIS_PORT; 
-const signatureSecret = __ENV.SIGNATURE_SECRET;
+const redisPwd = __ENV.REDIS_PASSWORD || 'secret'; // Use environment variable for Redis password
+const redisUrl = __ENV.REDIS_URL || 'localhost'; // Use environment variable for Redis URL
+const redisPort = __ENV.REDIS_PORT || '6379'; // Use environment variable for Redis port
+const signatureSecret = __ENV.SIGNATURE_SECRET; // Use environment variable for signature secret
 
 const redisHost = `rediss://:${redisPwd}=@${redisUrl}:${redisPort}`; // Use environment variables for password, URL, and port
 const redisClient = new redis.Client(redisHost);
