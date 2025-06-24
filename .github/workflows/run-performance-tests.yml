@@ -1,0 +1,60 @@
+name: Run k6 performance tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      configFilePath:
+        description: "Configuration file for the test runs"
+        required: true
+        default: "packages/frontend/tests/performance/k6/conf.yaml"
+
+      
+  push:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  k6-functional:
+    runs-on: ubuntu-latest
+    environment: at22 # TODO: No clue what to configure here; ask Andreas
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+    #   - name: OIDC Login to Azure Public Cloud
+    #     uses: azure/login@v2
+    #     with:
+    #       client-id: ${{ vars.ARM_CLIENT_ID }}
+    #       tenant-id: ${{ vars.ARM_TENANT_ID }}
+    #       allow-no-subscriptions: true
+
+    #   - name: Populate kubeconfig with k6 context
+    #     id: populate_kubeconfig_with_k6_context
+    #     shell: bash
+    #     run: |
+    #       if ! az aks install-cli; then
+    #         echo "Failed to install kubectl CLI"
+    #         exit 1
+    #       fi
+
+    #       if ! az aks get-credentials --resource-group k6tests-rg --name k6tests-cluster; then
+    #         echo "Failed to populate kubeconfig"
+    #         exit 1
+    #       fi
+
+    #       if ! kubelogin convert-kubeconfig -l azurecli; then
+    #         echo "Failed to convert kubeconfig"
+    #         exit 1
+    #       fi
+
+      - name: Generate k8s manifests
+        uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
+        with:
+          config_file: "${{ inputs.configFilePath || 'packages/frontend/tests/performance/k6/conf.yaml' }}" # No inputs when running as a cron
+
+      - name: Apply k8s manifests
+        shell: bash
+        run: |
+            tree .dist
