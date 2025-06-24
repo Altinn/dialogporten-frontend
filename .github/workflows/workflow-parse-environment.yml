@@ -1,0 +1,30 @@
+name: Parse Environment
+permissions: {}
+on:
+  workflow_call:
+    inputs:
+      environment_input:
+        description: "Environment input that may contain descriptive text (e.g., 'test (af.at.altinn.cloud)')"
+        required: true
+        type: string
+    outputs:
+      environment:
+        description: "Clean environment name extracted from input (e.g., 'test')"
+        value: ${{ jobs.parse-environment.outputs.environment }}
+
+jobs:
+  parse-environment:
+    name: Parse environment name
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.parse.outputs.environment }}
+    steps:
+      - name: Parse environment name
+        id: parse
+        run: |
+          # Extract environment name by taking everything before the first space
+          ENVIRONMENT="${{ inputs.environment_input }}"
+          CLEAN_ENV=$(echo "$ENVIRONMENT" | cut -d' ' -f1)
+          echo "Original input: $ENVIRONMENT"
+          echo "Parsed environment: $CLEAN_ENV"
+          echo "environment=$CLEAN_ENV" >> $GITHUB_OUTPUT 

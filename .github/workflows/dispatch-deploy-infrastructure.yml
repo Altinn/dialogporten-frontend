@@ -1,4 +1,4 @@
-﻿name: Dispatch Deploy Infrastructure
+﻿name: Deploy Infrastructure (Manual)
 
 on:
   workflow_dispatch:
@@ -9,26 +9,34 @@ on:
         default: "test"
         type: choice
         options:
-          - test
-          - yt01
-          - staging
-          - prod
+          - test (af.at.altinn.cloud)
+          - yt01 (af.yt.altinn.cloud)
+          - staging (af.tt.altinn.no)
+          - prod (af.altinn.no)
       version:
         description: "Version to deploy. Needs to be a git tag (exclude the v prefix)"
         required: true
         type: string
 
+run-name: Deploy infrastructure ${{ inputs.environment }} v${{ inputs.version }}
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}-${{ inputs.environment }}
 
 jobs:
+  parse-environment:
+    name: Parse environment name
+    uses: ./.github/workflows/workflow-parse-environment.yml
+    with:
+      environment_input: ${{ inputs.environment }}
+
   generate-git-short-sha:
     name: Generate git short sha
     uses: ./.github/workflows/workflow-generate-git-short-sha.yml
 
   deploy-infra:
-    name: Deploy infra to ${{ inputs.environment }}
-    needs: [generate-git-short-sha]
+    name: Deploy infra to ${{ needs.parse-environment.outputs.environment }}
+    needs: [parse-environment, generate-git-short-sha]
     uses: ./.github/workflows/workflow-deploy-infrastructure.yml
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -40,7 +48,7 @@ jobs:
       AZURE_CERTIFICATE_KEY_VAULT_NAME: ${{ secrets.AZURE_CERTIFICATE_KEY_VAULT_NAME }}
       AZURE_SOURCE_KEY_VAULT_SSH_JUMPER_SSH_PUBLIC_KEY: ${{ secrets.AZURE_SOURCE_KEY_VAULT_SSH_JUMPER_SSH_PUBLIC_KEY }}
     with:
-      environment: ${{ inputs.environment }}
+      environment: ${{ needs.parse-environment.outputs.environment }}
       region: norwayeast
       version: ${{ inputs.version }}
       ref: "refs/tags/v${{ inputs.version }}"
