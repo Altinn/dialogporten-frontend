@@ -1,4 +1,4 @@
-name: Dispatch Deploy Apps
+name: Deploy Apps (Manual)
 
 on:
   workflow_dispatch:
@@ -9,12 +9,12 @@ on:
         default: "test"
         type: choice
         options:
-          - test
-          - yt01
-          - staging
-          - prod
+          - test (af.at.altinn.cloud)
+          - yt01 (af.yt.altinn.cloud)
+          - staging (af.tt.altinn.no)
+          - prod (af.altinn.no)
       version:
-        description: "Version to deploy. Needs to be a git tag (exclude the v prefix)"
+        description: "Version to deploy (e.g., `1.23.4`)"
         required: true
         type: string
       runMigration:
@@ -23,10 +23,18 @@ on:
         required: false
         type: boolean
 
+run-name: Deploy apps ${{ inputs.environment }} v${{ inputs.version }}
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}-${{ inputs.environment }}
 
 jobs:
+  parse-environment:
+    name: Parse environment name
+    uses: ./.github/workflows/workflow-parse-environment.yml
+    with:
+      environment_input: ${{ inputs.environment }}
+
   generate-git-short-sha:
     name: Generate git short sha
     uses: ./.github/workflows/workflow-generate-git-short-sha.yml
@@ -40,8 +48,9 @@ jobs:
     uses: ./.github/workflows/workflow-check-for-changes.yml
 
   deploy-apps:
-    name: Deploy apps to ${{ inputs.environment }}
+    name: Deploy apps to ${{ needs.parse-environment.outputs.environment }}
     needs:
+      - parse-environment
       - generate-git-short-sha
       - get-current-version
       - check-for-changes
@@ -57,6 +66,6 @@ jobs:
       AZURE_APPLICATION_INSIGHTS_INSTRUMENTATION_KEY: ${{ secrets.AZURE_APPLICATION_INSIGHTS_INSTRUMENTATION_KEY }}
       OCP_APIM_SUBSCRIPTION_KEY: ${{ secrets.OCP_APIM_SUBSCRIPTION_KEY }}
     with:
-      environment: ${{ inputs.environment }}
+      environment: ${{ needs.parse-environment.outputs.environment }}
       version: ${{ inputs.version }}
       runMigration: ${{ inputs.runMigration }}
