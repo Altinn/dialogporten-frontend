@@ -1,89 +1,34 @@
-import type { FastifyInstance, FastifyPluginAsync } from 'fastify';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
 import fp from 'fastify-plugin';
+import type { FastifyPluginAsync } from 'fastify';
 
 type Options = {
-  url: string;
-  graphqlURL: string;
+  url: string; // e.g. "/api/graphiql"
+  graphqlURL: string; // e.g. "/api/graphql"
 };
 
-const plugin: FastifyPluginAsync<Options> = async (fastify: FastifyInstance, opts) => {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const graphiqlPlugin: FastifyPluginAsync<Options> = async (fastify, opts) => {
   const { url, graphqlURL } = opts;
-  fastify.get(url, (request, reply) => {
-    reply.type('text/html');
-    reply.send(
-      `
-<!--
- *  Copyright (c) 2021 GraphQL Contributors
- *  All rights reserved.
- *
- *  This source code is licensed under the license found in the
- *  LICENSE file in the root directory of this source tree.
--->
-<!doctype html>
-<html lang="en">
-  <head>
-    <title>GraphiQL</title>
-    <style>
-      body {
-        height: 100%;
-        margin: 0;
-        width: 100%;
-        overflow: hidden;
-      }
 
-      #graphiql {
-        height: 100vh;
-      }
-    </style>
-    <!--
-      This GraphiQL example depends on Promise and fetch, which are available in
-      modern browsers, but can be "polyfilled" for older browsers.
-      GraphiQL itself depends on React DOM.
-      If you do not want to rely on a CDN, you can host these files locally or
-      include them directly in your favored resource bundler.
-    -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  fastify.register(import('@fastify/static'), {
+    root: join(__dirname, '../dist'),
+    prefix: '/api/public/',
+    decorateReply: false,
+  });
 
-    <!--
-      These two files can be found in the npm module, however you may wish to
-      copy them directly into your environment, or perhaps include them in your
-      favored resource bundler.
-     -->
-    <script src="https://unpkg.com/graphiql/graphiql.min.js" type="application/javascript"></script>
-    <link rel="stylesheet" href="https://unpkg.com/graphiql/graphiql.min.css" />
-
-    <!--
-      These are imports for the GraphIQL Explorer plugin.
-     -->
-    <script src="https://unpkg.com/@graphiql/plugin-explorer/dist/index.umd.js" crossorigin></script>
-    <link rel="stylesheet" href="https://unpkg.com/@graphiql/plugin-explorer/dist/style.css" />
-  </head>
-  <body>
-    <div id="graphiql">Loading...</div>
-    <script>
-      const root = ReactDOM.createRoot(document.getElementById('graphiql'));
-      const fetcher = GraphiQL.createFetcher({
-        url: '${graphqlURL}',
-        subscriptionUrl: '${graphqlURL}',
-      });
-      const explorerPlugin = GraphiQLPluginExplorer.explorerPlugin();
-      root.render(
-        React.createElement(GraphiQL, {
-          fetcher,
-          defaultEditorToolsVisibility: true,
-          plugins: [explorerPlugin],
-        }),
-      );
-    </script>
-  </body>
-</html>
-`,
-    );
+  // Serve index.html with injected GraphQL URL
+  fastify.get(url, (_, reply) => {
+    const html = readFileSync(join(__dirname, '../dist/index.html'), 'utf8');
+    reply.type('text/html').send(html.replace('__GRAPHQL_URL__', graphqlURL));
   });
 };
 
-export default fp(plugin, {
-  fastify: '5.x',
+export default fp(graphiqlPlugin, {
   name: 'fastify-graphiql',
+  fastify: '5.x',
 });
