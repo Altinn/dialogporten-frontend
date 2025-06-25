@@ -3,10 +3,19 @@ name: Run k6 performance tests
 on:
   workflow_dispatch:
     inputs:
+      vus:
+        description: 'Number of VUS'
+        required: true
+        default: 1
+        type: number
       configFilePath:
         description: "Configuration file for the test runs"
         required: true
-        default: "packages/frontend/tests/performance/k6/conf.yaml"
+        default: "packages/frontend/tests/performance/k6/conf-browser.yaml"
+        type: choice
+        options:
+          - 'packages/frontend/tests/performance/k6/conf.yaml'
+          - 'packages/frontend/tests/performance/k6/conf-browser.yaml'
 
       
   push:
@@ -53,8 +62,10 @@ jobs:
         uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
         with:
           config_file: "${{ inputs.configFilePath || 'packages/frontend/tests/performance/k6/conf.yaml' }}" # No inputs when running as a cron
-
+        env:
+            BROWSER_VUS: ${{ inputs.vus }}
       - name: Apply k8s manifests
         shell: bash
         run: |
-            tree .dist
+            run: |
+            kubectl apply --server-side=true -f .dist/ -R
