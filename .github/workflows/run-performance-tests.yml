@@ -8,14 +8,24 @@ on:
         required: true
         default: 1
         type: number
+      evironment:
+        description: "Environment to run the tests in"
+        required: true
+        default: "yt01"
+        type: string
       configFilePath:
         description: "Configuration file for the test runs"
         required: true
         default: "packages/frontend/tests/performance/k6/conf-browser.yaml"
+      testname:
+        description: "Name of the test to run"
+        required: true
+        default: "browser-no-cookie"
         type: choice
         options:
-          - 'packages/frontend/tests/performance/k6/conf.yaml'
-          - 'packages/frontend/tests/performance/k6/conf-browser.yaml'
+          - browser-no-cookie
+          - browser
+        
 
       
   push:
@@ -67,5 +77,5 @@ jobs:
       - name: Apply k8s manifests
         shell: bash
         run: |
-            run: |
-            kubectl apply --server-side=true -f .dist/ -R
+            testname=${{ inputs.evironment }}-${{ inputs.testname  }}
+            kubectl apply --server-side=true -f .dist/$testname -R
