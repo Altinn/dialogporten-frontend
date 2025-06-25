@@ -79,4 +79,5 @@ jobs:
         run: |
             testname=${{ inputs.evironment }}-${{ inputs.testname  }}
             kubectl apply --server-side=true -f .dist/yt01-browser-no-cookie -R
+            kubectl config set-context --current --namespace=dialogporten
             kubectl get pods -l k6-test=${{ steps.generate_k8s_manifests.outputs.yt01-browser-no-cookie }} -o name
