@@ -78,4 +78,4 @@ jobs:
         shell: bash
         run: |
             testname=${{ inputs.evironment }}-${{ inputs.testname  }}
-            kubectl apply --server-side=true -f .dist/$testname -R
+            kubectl apply --server-side=true -f .dist/yt01-browser-no-cookie -R
