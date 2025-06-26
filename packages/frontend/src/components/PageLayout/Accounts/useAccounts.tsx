@@ -102,6 +102,7 @@ export const useAccounts = ({
   const { setSelectedPartyIds } = useParties();
   const [searchString, setSearchString] = useState<string>('');
   const accountSearchThreshold = 2;
+
   const showSearch = parties.length > accountSearchThreshold;
 
   const endUser = parties.find((party) => party.partyType === 'Person' && party.isCurrentEndUser);
