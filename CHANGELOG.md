@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.41.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.40.1...v1.41.0) (2025-06-26)
+
+
+### Features
+
+* add grant_access profil page ([#2291](https://github.com/Altinn/dialogporten-frontend/issues/2291)) ([87dd69f](https://github.com/Altinn/dialogporten-frontend/commit/87dd69ff5e9326a2ff042d6fd5a8681fdfed2fa3))
+
+
+### Bug Fixes
+
+* add mock for show more logic ([#2278](https://github.com/Altinn/dialogporten-frontend/issues/2278)) ([a927072](https://github.com/Altinn/dialogporten-frontend/commit/a92707201b34fc420a8542aa49aa21bca1bd2d36))
+
 ## [1.40.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.40.0...v1.40.1) (2025-06-26)
 
 
