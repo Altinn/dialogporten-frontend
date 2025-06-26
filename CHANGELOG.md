@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.40.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.39.3...v1.40.0) (2025-06-26)
+
+
+### Features
+
+* add profile grant-access page ([#2265](https://github.com/Altinn/dialogporten-frontend/issues/2265)) ([eb7f80e](https://github.com/Altinn/dialogporten-frontend/commit/eb7f80e7861c1a04744ddbf1fe23914349240eeb))
+* Implemented AC components, grouped favorites, design implementation ([#2228](https://github.com/Altinn/dialogporten-frontend/issues/2228)) ([4c3c95a](https://github.com/Altinn/dialogporten-frontend/commit/4c3c95a20850e764cf8030a9108a3aafc643b3bb))
+
+
+### Bug Fixes
+
+* **deps:** change (downgrade) missing cdn links that disappeared ([#2287](https://github.com/Altinn/dialogporten-frontend/issues/2287)) ([f2710e2](https://github.com/Altinn/dialogporten-frontend/commit/f2710e27a65e805bb322a8a28319157a46bfe42b))
+* remove Altinn As from footer ([#2283](https://github.com/Altinn/dialogporten-frontend/issues/2283)) ([01e7eb9](https://github.com/Altinn/dialogporten-frontend/commit/01e7eb9ac95dd7b4cd5f766206fd1693f4ef4566))
+
 ## [1.39.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.39.2...v1.39.3) (2025-06-23)
 
 
