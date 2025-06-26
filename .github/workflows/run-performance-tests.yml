@@ -3,32 +3,39 @@ name: Run k6 performance tests
 on:
   workflow_dispatch:
     inputs:
-      vus:
-        description: 'Number of VUS'
+      browserVus:
+        description: 'Number of Browser VUS'
         required: true
         default: 1
         type: number
+      bffVus:
+        description: 'Number of BFF VUS'
+        required: true
+        default: 1
+        type: number
+      duration:
+        description: 'Duration of test, ie 30s, 1m, 10m'
+        required: true
+        default: 1m
+        type: string
+      parallelism:
+        description: 'Number of parallel test runs'
+        required: true
+        default: 1
+        type: number 
       evironment:
         description: "Environment to run the tests in"
         required: true
         default: "yt01"
         type: string
-      configFilePath:
-        description: "Configuration file for the test runs"
+      testSuitePath:
+        description: 'Path to test suite to run'
         required: true
-        default: "packages/frontend/tests/performance/k6/conf-browser.yaml"
-      testname:
-        description: "Name of the test to run"
-        required: true
-        default: "browser-no-cookie"
+        default: 'packages/frontend/tests/performance/k6/browser-no-cookie.js'
         type: choice
         options:
-          - browser-no-cookie
-          - browser
-        
-
-      
-  push:
+          - 'packages/frontend/tests/performance/k6/browser-no-cookie.js'
+          - 'packages/frontend/tests/performance/k6/browser.js'
 
 permissions:
   id-token: write
@@ -67,18 +74,20 @@ jobs:
             echo "Failed to convert kubeconfig"
             exit 1
           fi
-
-      - name: Generate k8s manifests
-        uses: Altinn/altinn-platform/actions/generate-k6-manifests@main
-        with:
-          config_file: "${{ inputs.configFilePath || 'packages/frontend/tests/performance/k6/conf.yaml' }}" # No inputs when running as a cron
-        env:
-            BROWSER_VUS: ${{ inputs.vus }}
-      - name: Apply k8s manifests
-        shell: bash
+      - name: Setup k6
+        uses: grafana/setup-k6-action@v1
+      - name: Run K6 tests (${{ inputs.testSuitePath }})
         run: |
-            testname=${{ inputs.evironment }}-${{ inputs.testname  }}
-            kubectl apply --server-side=true -f .dist/yt01-browser-no-cookie -R
-            kubectl config set-context --current --namespace=dialogporten
-            kubectl wait --for=jsonpath='{.status.stage}'=finished testrun/${{ steps.generate_k8s_manifests.outputs.yt01-browser-no-cookie }} --timeout=90s
-            kubectl get pods -l k6-test=${{ steps.generate_k8s_manifests.outputs.yt01-browser-no-cookie }} -o name
+            echo "Running k6 test suite ${{ inputs.testSuitePath }} with ${{ inputs.browserVus }}/${{ inputs.bffVus }} BrowserVUs/BffVus for ${{ inputs.duration }} on ${{ inputs.parallelism }} parallelism"
+            k6configName=$(basename "${{ inputs.testSuitePath }}" .js)
+            k6configName="k6-${k6configName}"
+            ./Test/Altinn.Correspondence.LoadTests/correspondence/run-test-in-k8s.sh \
+              -f "${{ inputs.testSuitePath }}" \
+              -c "$k6configName" \
+              -n "$k6configName" \
+              -v "${{ inputs.browserVus }}" \
+              -w "${{ inputs.bffVus }}" \
+              -d "${{ inputs.duration }}" \
+              -p "${{ inputs.parallelism }}"
+
+      

@@ -87,8 +87,7 @@ export async function browserTest(data) {
     // if no cookie, go to login page
     else {
       await page.goto('http://af.yt.altinn.cloud', { waitUntil: 'networkidle' });
-      await login(page, testData);
-
+      startTime = await login(page, testData);
     }
 
     // Check if we are on the right page
@@ -124,6 +123,7 @@ export async function browserTest(data) {
  * @param {object} testData - Test data containing user information.
  */
 async function login(page, testData) {
+  var startTime = new Date();
   await Promise.all([
     page.locator('a[href="/authorize/testid1"]').click(),
     page.waitForNavigation({ waitUntil: 'networkidle' }),
@@ -133,8 +133,10 @@ async function login(page, testData) {
 
   await Promise.all([
     page.locator('button[id="submit"]').click(),
+    startTime = new Date(),
     page.waitForNavigation({ waitUntil: 'networkidle' }),
   ]);
+  return startTime;
 }
 
 /**
