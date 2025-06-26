@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.40.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.40.0...v1.40.1) (2025-06-26)
+
+
+### Bug Fixes
+
+* exclude parent parties when user only has access to sub partieds from party list ([#2293](https://github.com/Altinn/dialogporten-frontend/issues/2293)) ([16ad4c1](https://github.com/Altinn/dialogporten-frontend/commit/16ad4c169e9e8ebdad68bf9ee3e32cab07f5fdcf))
+
 ## [1.40.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.39.3...v1.40.0) (2025-06-26)
 
 
