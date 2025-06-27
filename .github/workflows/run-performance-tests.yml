@@ -81,7 +81,7 @@ jobs:
             echo "Running k6 test suite ${{ inputs.testSuitePath }} with ${{ inputs.browserVus }}/${{ inputs.bffVus }} BrowserVUs/BffVus for ${{ inputs.duration }} on ${{ inputs.parallelism }} parallelism"
             k6configName=$(basename "${{ inputs.testSuitePath }}" .js)
             k6configName="k6-${k6configName}"
-            ./Test/Altinn.Correspondence.LoadTests/correspondence/run-test-in-k8s.sh \
+            ./packages/frontend/tests/performance/k6/run-test-in-k8s.sh \
               -f "${{ inputs.testSuitePath }}" \
               -c "$k6configName" \
               -n "$k6configName" \
