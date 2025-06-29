@@ -15,7 +15,7 @@ export default () => {
       __APP_VERSION__: JSON.stringify(pkg.version),
     },
     build: {
-      sourcemap: true,
+      sourcemap: 'hidden',
     },
   });
 };
