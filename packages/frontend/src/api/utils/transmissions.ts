@@ -1,11 +1,14 @@
-import type { DialogHistoryItemProps, TransmissionType } from '@altinn/altinn-components';
-import type { DialogHistorySegmentProps } from '@altinn/altinn-components/dist/types/lib/components';
+import type { TimelineSegmentProps, TransmissionProps, TransmissionTypeValue } from '@altinn/altinn-components';
 import type { TransmissionFieldsFragment } from 'bff-types-generated';
 import { t } from 'i18next';
 import { getPreferredPropertyByLocale } from '../../i18n/property.ts';
 import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
 import { getActorProps, getAttachmentLinks } from '../hooks/useDialogById.tsx';
 import type { OrganizationOutput } from './organizations.ts';
+
+export interface TimelineSegmentWithTransmissions extends TimelineSegmentProps {
+  items: TransmissionProps[];
+}
 
 export const groupTransmissions = (transmissions: TransmissionFieldsFragment[]): TransmissionFieldsFragment[][] => {
   const relatedMap = new Map<string, Set<string>>();
@@ -70,57 +73,41 @@ const createTransmissionItem = (
   transmission: TransmissionFieldsFragment,
   format: FormatFunction,
   serviceOwner?: OrganizationOutput,
-): DialogHistoryItemProps => {
+): TransmissionProps => {
   const formatString = getClockFormatString();
+  const sender = getActorProps(transmission.sender, serviceOwner);
   return {
     id: transmission.id,
-    variant: 'transmission' as DialogHistoryItemProps['variant'],
-    byline: format(transmission.createdAt, formatString),
+    byline: transmission?.createdAt ? `${sender.name}, ${format(transmission.createdAt, getClockFormatString())}` : '',
     title: getPreferredPropertyByLocale(transmission.content.title.value)?.value ?? '',
     summary: getPreferredPropertyByLocale(transmission.content.summary?.value)?.value ?? '',
     createdAt: transmission.createdAt,
     createdAtLabel: format(transmission.createdAt, formatString),
-    type: transmission.type?.toLowerCase() as unknown as TransmissionType,
-    sender: getActorProps(transmission.sender, serviceOwner),
+    type: {
+      value: transmission.type?.toLowerCase() as TransmissionTypeValue,
+      label: t(`transmission.type.${transmission.type?.toLowerCase()}`),
+    },
+    sender,
     attachments: {
       items: getAttachmentLinks(transmission.attachments),
     },
-    items: [],
   };
 };
 
-export const getTransmissionItems = (
+export const getTransmissions = (
   transmissions: TransmissionFieldsFragment[],
   format: FormatFunction,
   serviceOwner?: OrganizationOutput,
-) => {
-  return transmissions.map((transmission) => createTransmissionItem(transmission, format, serviceOwner));
-};
-
-export const getDialogHistoryForTransmissions = (
-  transmissions: TransmissionFieldsFragment[],
-  format: FormatFunction,
-  serviceOwner?: OrganizationOutput,
-): DialogHistorySegmentProps[] => {
+): TimelineSegmentWithTransmissions[] => {
   return groupTransmissions(transmissions).map((group) => {
     const sortedGroup = [...group].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-    const [lastTransmission, ...otherTransmissions] = sortedGroup;
-
+    const [lastTransmission] = sortedGroup;
+    const items: TransmissionProps[] = sortedGroup.map((transmission) =>
+      createTransmissionItem(transmission, format, serviceOwner),
+    );
     return {
       id: lastTransmission.id,
-      expanded: group.length === 2,
-      items: [
-        {
-          ...createTransmissionItem(lastTransmission, format, serviceOwner),
-          items: otherTransmissions.map((item) => createTransmissionItem(item, format, serviceOwner)),
-        },
-      ],
-      datetime: lastTransmission.createdAt,
-      type: lastTransmission.type?.toLowerCase() as unknown as TransmissionType,
-      sender: getActorProps(lastTransmission.sender, serviceOwner),
-      createdAtLabel: format(lastTransmission.createdAt, getClockFormatString()),
-      collapseLabel: t('dialog.transmission.collapseLabel'),
-      expandLabel: `${t('dialog.transmission.expandLabel')} ${getPreferredPropertyByLocale(otherTransmissions[otherTransmissions.length - 1]?.content.title.value)?.value ?? ''}`,
+      items,
     };
   });
 };

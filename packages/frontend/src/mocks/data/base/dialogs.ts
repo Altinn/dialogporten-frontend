@@ -266,6 +266,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     status: DialogStatus.NotApplicable,
     createdAt: '2023-04-18T10:55:00.000Z',
     updatedAt: '2023-04-18T10:55:00.000Z',
+    dueAt: '2028-05-04T11:45:00.000Z',
     extendedStatus: null,
     seenSinceLastUpdate: [
       {

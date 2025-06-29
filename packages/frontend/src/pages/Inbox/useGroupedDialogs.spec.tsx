@@ -39,6 +39,19 @@ const mockData: InboxItemInput[] = [
     seenByLabel: 'Sett av deg',
     seenByOthersCount: 0,
     viewType: 'inbox' as InboxViewType,
+    seenByLog: {
+      collapsible: true,
+      endUserLabel: 'Sett av deg',
+      items: [
+        {
+          id: 'urn:altinn:person:identifier-no:14886498226',
+          seenAt: '2025-02-24T14:02:58.540Z',
+          isEndUser: true,
+          seenAtLabel: '24.02.2025 15:02',
+          name: 'Hjelpelinje Ordinær',
+        },
+      ],
+    },
   },
   {
     id: '0195383e-0d9a-73b1-b96b-73c49e31097d',
@@ -63,6 +76,19 @@ const mockData: InboxItemInput[] = [
     seenByLabel: 'Sett av deg',
     seenByOthersCount: 0,
     viewType: 'inbox' as InboxViewType,
+    seenByLog: {
+      collapsible: true,
+      endUserLabel: 'Sett av deg',
+      items: [
+        {
+          id: 'urn:altinn:person:identifier-no:14886498226',
+          seenAt: '2025-02-24T13:55:45.689Z',
+          isEndUser: true,
+          seenAtLabel: '24.02.2025 14:55',
+          name: 'Hjelpelinje Ordinær',
+        },
+      ],
+    },
   },
   {
     id: '0195383b-6068-726a-b632-1ff3cc836e9a',
@@ -87,6 +113,19 @@ const mockData: InboxItemInput[] = [
     seenByLabel: 'Sett av deg',
     seenByOthersCount: 0,
     viewType: 'inbox' as InboxViewType,
+    seenByLog: {
+      collapsible: true,
+      endUserLabel: 'Sett av deg',
+      items: [
+        {
+          id: 'urn:altinn:person:identifier-no:14886498226',
+          seenAt: '2025-02-24T13:52:50.280Z',
+          isEndUser: true,
+          seenAtLabel: '24.02.2025 14:52',
+          name: 'Hjelpelinje Ordinær',
+        },
+      ],
+    },
   },
   {
     id: '01937766-ff24-7305-9361-d14743d2db30',
@@ -111,6 +150,19 @@ const mockData: InboxItemInput[] = [
     seenByLabel: 'Sett av deg',
     seenByOthersCount: 0,
     viewType: 'inbox' as InboxViewType,
+    seenByLog: {
+      collapsible: true,
+      endUserLabel: 'Sett av deg',
+      items: [
+        {
+          id: 'urn:altinn:person:identifier-no:14886498226',
+          seenAt: '2024-11-29T10:10:58.980Z',
+          isEndUser: true,
+          seenAtLabel: '29.11.2024 11:10',
+          name: 'Hjelpelinje Ordinær',
+        },
+      ],
+    },
   },
   {
     id: '01936e30-ac82-70f3-96ba-eb3ccd31586a',
@@ -135,6 +187,19 @@ const mockData: InboxItemInput[] = [
     seenByLabel: 'Sett av deg',
     seenByOthersCount: 0,
     viewType: 'inbox' as InboxViewType,
+    seenByLog: {
+      collapsible: true,
+      endUserLabel: 'Sett av deg',
+      items: [
+        {
+          id: 'urn:altinn:person:identifier-no:14886498226',
+          seenAt: '2024-11-27T15:15:03.934Z',
+          isEndUser: true,
+          seenAtLabel: '27.11.2024 16:15',
+          name: 'Hjelpelinje Ordinær',
+        },
+      ],
+    },
   },
   {
     id: 'f67d9101-5149-6377-95db-6146e6b2e196',
@@ -160,6 +225,19 @@ const mockData: InboxItemInput[] = [
     seenByLabel: 'Sett av deg',
     seenByOthersCount: 0,
     viewType: 'inbox' as InboxViewType,
+    seenByLog: {
+      collapsible: true,
+      endUserLabel: 'Sett av deg',
+      items: [
+        {
+          id: 'urn:altinn:person:identifier-no:14886498226',
+          seenAt: '2024-08-23T06:39:38.321Z',
+          isEndUser: true,
+          seenAtLabel: '23.08.2024 07:39',
+          name: 'Hjelpelinje Ordinær',
+        },
+      ],
+    },
   },
   {
     id: 'f57d9101-e17a-8b76-94ba-c6d63f56b96f',
@@ -185,6 +263,19 @@ const mockData: InboxItemInput[] = [
     seenByLabel: 'Sett av deg',
     seenByOthersCount: 0,
     viewType: 'inbox' as InboxViewType,
+    seenByLog: {
+      collapsible: true,
+      endUserLabel: 'Sett av deg',
+      items: [
+        {
+          id: 'urn:altinn:person:identifier-no:14886498226',
+          seenAt: '2024-08-23T06:38:45.473Z',
+          isEndUser: true,
+          seenAtLabel: '23.08.2024 07:38',
+          name: 'Hjelpelinje Ordinær',
+        },
+      ],
+    },
   },
 ];
 

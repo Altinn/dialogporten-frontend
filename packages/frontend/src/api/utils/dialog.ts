@@ -1,3 +1,4 @@
+import type { SeenByLogItem } from '@altinn/altinn-components';
 import {
   DialogStatus,
   type GetAllDialogsForPartiesQueryVariables,
@@ -6,6 +7,7 @@ import {
   type SearchDialogFieldsFragment,
   SystemLabel,
 } from 'bff-types-generated';
+import { format } from 'date-fns';
 import { type TFunction, t } from 'i18next';
 import { getPreferredPropertyByLocale } from '../../i18n/property.ts';
 import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
@@ -23,12 +25,20 @@ export const getPartyIds = (partiesToUse: PartyFieldsFragment[]) => {
   return [...partyURIs, ...subPartyURIs] as string[];
 };
 
+export const getSeenAtLabel = (seenAt: string, t: TFunction<'translation', undefined>): string => {
+  const clockPrefix = t('word.clock_prefix');
+  const formatString = `do MMMM yyyy ${clockPrefix ? `'${clockPrefix}' ` : ''}HH.mm`;
+  return format(new Date(seenAt), formatString);
+};
+
 export const getSeenByLabel = (
   seenBy: SeenByItem[],
+
   t: TFunction<'translation', undefined>,
 ): { isSeenByEndUser: boolean; seenByOthersCount: number; seenByLabel: string | undefined } => {
   const isSeenByEndUser = seenBy?.some((item) => item.isCurrentEndUser);
   const seenByOthersCount = seenBy?.filter((item) => !item.isCurrentEndUser).length;
+
   let seenByLabel: string | undefined = undefined;
   if (isSeenByEndUser) {
     seenByLabel = `${t('word.seenBy')} ${t('word.you')}`;
@@ -63,6 +73,7 @@ export function mapDialogToToInboxItems(
       id: item.id,
       party: item.party,
       title: getPreferredPropertyByLocale(titleObj)?.value ?? '',
+      dueAt: item.dueAt,
       summary: getPreferredPropertyByLocale(summaryObj)?.value ?? '',
       sender: {
         name: getPreferredPropertyByLocale(senderName)?.value || serviceOwner?.name || '',
@@ -83,6 +94,19 @@ export function mapDialogToToInboxItems(
       org: item.org,
       seenByLabel,
       seenByOthersCount,
+      seenByLog: {
+        collapsible: true,
+        endUserLabel: seenByLabel,
+        items: item.seenSinceLastUpdate.map((seenBy) => {
+          return {
+            id: seenBy.id,
+            type: 'person' as SeenByLogItem['type'],
+            name: seenBy.seenBy?.actorName ?? '',
+            seenAt: seenBy.seenAt,
+            seenAtLabel: getSeenAtLabel(seenBy.seenAt, t),
+          };
+        }),
+      },
       viewType: getViewTypes({ status: item.status, systemLabel: item.endUserContext?.systemLabels }, true)?.[0],
     };
   });
