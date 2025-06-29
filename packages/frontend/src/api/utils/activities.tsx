@@ -1,5 +1,4 @@
-import type { AvatarProps, DialogHistoryItemProps, TimelineLinkProps } from '@altinn/altinn-components';
-import type { DialogHistorySegmentProps } from '@altinn/altinn-components/dist/types/lib/components';
+import type { AvatarProps, DialogHistoryItemProps } from '@altinn/altinn-components';
 import { ActivityType, type DialogActivityFragment, type TransmissionFieldsFragment } from 'bff-types-generated';
 import { t } from 'i18next';
 import { getPreferredPropertyByLocale } from '../../i18n/property.ts';
@@ -63,12 +62,16 @@ const getActivityText = (
   }
 };
 
+export type DialogHistorySegmentItem = DialogHistoryItemProps & {
+  type?: 'activity' | 'transmission';
+};
+
 export const getDialogHistoryForActivities = (
   activities: DialogActivityFragment[],
   format: FormatFunction,
   transmissions: TransmissionFieldsFragment[],
   serviceOwner?: OrganizationOutput,
-): DialogHistorySegmentProps[] => {
+): DialogHistorySegmentItem[] => {
   return activities.map((activity) => {
     const clockPrefix = t('word.clock_prefix');
     const formatString = `do MMMM yyyy ${clockPrefix ? `'${clockPrefix}' ` : ''}HH.mm`;
@@ -79,33 +82,17 @@ export const getDialogHistoryForActivities = (
     const items: DialogHistoryItemProps[] = [
       {
         id: activity.id,
-        children: getActivityText(activity.type, actorProps, description, transmissionTitle),
+        summary: getActivityText(activity.type, actorProps, description, transmissionTitle),
         byline: format(activity.createdAt, formatString),
         datetime: activity.createdAt,
-        sender: actorProps,
-        // @ts-ignore
-        variant: 'activity' as DialogHistorySegmentProps['variant'],
       },
     ];
     return {
       id: activity.id,
       items,
+      type: 'activity',
     };
   });
-};
-
-const getRelatedTransmissionLink = (transmission?: TransmissionFieldsFragment): TimelineLinkProps | undefined => {
-  if (transmission) {
-    const title = getPreferredPropertyByLocale(transmission.content.title.value)?.value;
-    return {
-      label: `${t('dialog.transmission.expandLabel')} ${title}`,
-      as: 'button',
-      onClick: () => {
-        const element = document.getElementById(transmission.id);
-        element?.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
-      },
-    };
-  }
 };
 
 /**
@@ -122,26 +109,16 @@ export const getActivityHistory = (
   transmissions: TransmissionFieldsFragment[],
   format: FormatFunction,
   serviceOwner?: OrganizationOutput,
-): DialogHistorySegmentProps[] => {
+): DialogHistorySegmentItem[] => {
   const activityItems = getDialogHistoryForActivities(activities, format, transmissions, serviceOwner);
-  const transmissionItems: DialogHistorySegmentProps[] = getTransmissionItems(transmissions, format, serviceOwner).map(
+  const transmissionItems: DialogHistorySegmentItem[] = getTransmissionItems(transmissions, format, serviceOwner).map(
     (item) => {
-      const relatedTransmission = transmissions.find((transmission) => transmission.relatedTransmissionId === item.id);
-      const link = getRelatedTransmissionLink(relatedTransmission);
       return {
         id: item.id,
-        items: [
-          {
-            ...item,
-            link,
-          },
-        ],
+        items: [item],
+        type: 'transmission',
       };
     },
   );
-  return [...activityItems, ...transmissionItems].sort((a, b) => {
-    const dateA = a.items[0].datetime || a.items[0].createdAt || '';
-    const dateB = b.items[0].datetime || b.items[0].createdAt || '';
-    return new Date(dateB).getTime() - new Date(dateA).getTime();
-  });
+  return [...activityItems, ...transmissionItems];
 };

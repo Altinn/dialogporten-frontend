@@ -1,11 +1,11 @@
-import type { DialogHistoryItemProps, TransmissionType } from '@altinn/altinn-components';
+import type { TransmissionProps, TransmissionTypeValue } from '@altinn/altinn-components';
 import type { DialogHistorySegmentProps } from '@altinn/altinn-components/dist/types/lib/components';
-import type { TransmissionFieldsFragment } from 'bff-types-generated';
 import { t } from 'i18next';
 import { getPreferredPropertyByLocale } from '../../i18n/property.ts';
 import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
 import { getActorProps, getAttachmentLinks } from '../hooks/useDialogById.tsx';
 import type { OrganizationOutput } from './organizations.ts';
+import type { TransmissionFieldsFragment } from 'bff-types-generated';
 
 export const groupTransmissions = (transmissions: TransmissionFieldsFragment[]): TransmissionFieldsFragment[][] => {
   const relatedMap = new Map<string, Set<string>>();
@@ -70,22 +70,23 @@ const createTransmissionItem = (
   transmission: TransmissionFieldsFragment,
   format: FormatFunction,
   serviceOwner?: OrganizationOutput,
-): DialogHistoryItemProps => {
+): TransmissionProps => {
   const formatString = getClockFormatString();
   return {
     id: transmission.id,
-    variant: 'transmission' as DialogHistoryItemProps['variant'],
     byline: format(transmission.createdAt, formatString),
     title: getPreferredPropertyByLocale(transmission.content.title.value)?.value ?? '',
     summary: getPreferredPropertyByLocale(transmission.content.summary?.value)?.value ?? '',
     createdAt: transmission.createdAt,
     createdAtLabel: format(transmission.createdAt, formatString),
-    type: transmission.type?.toLowerCase() as unknown as TransmissionType,
+    type: {
+      value: transmission.type?.toLowerCase() as TransmissionTypeValue,
+      label: t(`transmission.type.${transmission.type?.toLowerCase()}`),
+    },
     sender: getActorProps(transmission.sender, serviceOwner),
     attachments: {
       items: getAttachmentLinks(transmission.attachments),
     },
-    items: [],
   };
 };
 
@@ -93,7 +94,7 @@ export const getTransmissionItems = (
   transmissions: TransmissionFieldsFragment[],
   format: FormatFunction,
   serviceOwner?: OrganizationOutput,
-) => {
+): TransmissionProps[] => {
   return transmissions.map((transmission) => createTransmissionItem(transmission, format, serviceOwner));
 };
 
@@ -116,7 +117,7 @@ export const getDialogHistoryForTransmissions = (
         },
       ],
       datetime: lastTransmission.createdAt,
-      type: lastTransmission.type?.toLowerCase() as unknown as TransmissionType,
+      type: lastTransmission.type?.toLowerCase() as TransmissionTypeValue,
       sender: getActorProps(lastTransmission.sender, serviceOwner),
       createdAtLabel: format(lastTransmission.createdAt, getClockFormatString()),
       collapseLabel: t('dialog.transmission.collapseLabel'),
