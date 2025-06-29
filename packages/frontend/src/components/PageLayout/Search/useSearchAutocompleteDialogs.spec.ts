@@ -32,6 +32,20 @@ describe('generateSendersAutocompleteBySearchString', () => {
       seenByOthersCount: 0,
       seenByLabel: 'Sett av deg',
       viewType: 'INBOX' as InboxViewType,
+      seenByLog: {
+        collapsible: true,
+        title: 'Sett av deg',
+        items: [
+          {
+            id: '1',
+            type: 'person',
+            name: 'Test Testesen',
+            isEndUser: true,
+            seenAt: '2023-07-15 08:45',
+            seenAtLabel: '15. juli kl 08.45',
+          },
+        ],
+      },
     },
     {
       id: '019241f7-812c-71c8-8e68-94a0b771fa10',
@@ -58,6 +72,27 @@ describe('generateSendersAutocompleteBySearchString', () => {
       isSeenByEndUser: true,
       label: [SystemLabel.Default],
       updatedAt: '2023-05-17T09:30:00.000Z',
+      seenByLog: {
+        collapsible: true,
+        title: 'Sett av deg',
+        items: [
+          {
+            id: '1',
+            type: 'person',
+            name: 'Test Testesen',
+            isEndUser: true,
+            seenAt: '2023-05-17 09:30',
+            seenAtLabel: '17. mai kl 09.30',
+          },
+          {
+            id: '2',
+            type: 'person',
+            name: 'Test Bruker',
+            seenAt: '2023-05-18 10:00',
+            seenAtLabel: '18. mai kl 10.00',
+          },
+        ],
+      },
     },
   ];
 

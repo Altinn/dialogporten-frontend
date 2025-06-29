@@ -110,15 +110,8 @@ const useGroupedDialogs = ({
     state: getDialogState(item.viewType),
     recipient: item.recipient,
     attachmentsCount: item.guiAttachmentCount,
-    seenBy: item.seenByLabel
-      ? {
-          seenByEndUser: item.isSeenByEndUser,
-          seenByOthersCount: item.seenByOthersCount,
-          label: item.seenByLabel,
-        }
-      : undefined,
+    seenByLog: item.seenByLog,
     status: getDialogStatus(item.status, t),
-    seen: item.isSeenByEndUser,
     updatedAt: item.updatedAt,
     updatedAtLabel: format(item.updatedAt, formatString),
     ariaLabel: `${item.title}`,

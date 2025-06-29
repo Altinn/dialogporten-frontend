@@ -12,6 +12,8 @@ import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
 import type { InboxViewType } from '../hooks/useDialogs.tsx';
 import { getOrganization } from './organizations.ts';
 import { getViewTypes } from './viewType.ts';
+import { format } from 'date-fns';
+import type { SeenByLogItem } from '@altinn/altinn-components';
 
 interface SeenByItem {
   isCurrentEndUser: boolean;
@@ -23,12 +25,20 @@ export const getPartyIds = (partiesToUse: PartyFieldsFragment[]) => {
   return [...partyURIs, ...subPartyURIs] as string[];
 };
 
+export const getSeenAtLabel = (seenAt: string, t: TFunction<'translation', undefined>): string => {
+  const clockPrefix = t('word.clock_prefix');
+  const formatString = `do MMMM yyyy ${clockPrefix ? `'${clockPrefix}' ` : ''}HH.mm`;
+  return format(new Date(seenAt), formatString);
+};
+
 export const getSeenByLabel = (
   seenBy: SeenByItem[],
+
   t: TFunction<'translation', undefined>,
 ): { isSeenByEndUser: boolean; seenByOthersCount: number; seenByLabel: string | undefined } => {
   const isSeenByEndUser = seenBy?.some((item) => item.isCurrentEndUser);
   const seenByOthersCount = seenBy?.filter((item) => !item.isCurrentEndUser).length;
+
   let seenByLabel: string | undefined = undefined;
   if (isSeenByEndUser) {
     seenByLabel = `${t('word.seenBy')} ${t('word.you')}`;
@@ -83,6 +93,17 @@ export function mapDialogToToInboxItems(
       org: item.org,
       seenByLabel,
       seenByOthersCount,
+      seenByLog: {
+        collapsible: true,
+        endUserLabel: seenByLabel,
+        items: item.seenSinceLastUpdate.map((seenBy) => ({
+          id: seenBy.id,
+          type: 'person' as SeenByLogItem['type'],
+          name: seenBy.seenBy?.actorName ?? '',
+          seenAt: seenBy.seenAt,
+          seenAtLabel: getSeenAtLabel(seenBy.seenAt, t),
+        })),
+      },
       viewType: getViewTypes({ status: item.status, systemLabel: item.endUserContext?.systemLabels }, true)?.[0],
     };
   });

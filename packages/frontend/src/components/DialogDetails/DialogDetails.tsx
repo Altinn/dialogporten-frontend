@@ -11,6 +11,7 @@ import {
   DsParagraph,
   Heading,
   Section,
+  TransmissionList,
 } from '@altinn/altinn-components';
 import type { DialogHistorySegmentProps } from '@altinn/altinn-components/dist/types/lib/components';
 import { DialogStatus } from 'bff-types-generated';
@@ -22,6 +23,7 @@ import { getDialogStatus } from '../../pages/Inbox/status.ts';
 import { AdditionalInfoContent } from '../AdditonalInfoContent';
 import { MainContentReference } from '../MainContentReference';
 import styles from './dialogDetails.module.css';
+import type { DialogHistorySegmentItem } from '../../api/utils/activities.tsx';
 
 interface DialogDetailsProps {
   dialog: DialogByIdDetails | undefined | null;
@@ -181,20 +183,24 @@ export const DialogDetails = ({ dialog, isLoading, isAuthLevelTooLow }: DialogDe
     if (!dialog?.activityHistory) {
       return [];
     }
-    return dialog.activityHistory.map((dialogHistoryItem: DialogHistorySegmentProps) => {
-      if (dialogHistoryItem.items[0]?.variant === 'transmission') {
+    return dialog.activityHistory.map((dialogHistoryItem: DialogHistorySegmentItem) => {
+      if (dialogHistoryItem.type === 'transmission') {
         return {
           ...dialogHistoryItem,
-          items: dialogHistoryItem.items.map((item) => ({
-            ...item,
-            children: dialog.contentReferenceForTransmissions[item.id] ? (
-              <MainContentReference
-                id={item.id}
-                content={dialog.contentReferenceForTransmissions[item.id]}
-                dialogToken={dialog.dialogToken}
-              />
-            ) : null,
-          })),
+          children: (
+            <TransmissionList
+              items={dialogHistoryItem.items.map((item) => ({
+                ...item,
+                children: dialog.contentReferenceForTransmissions[item.id] ? (
+                  <MainContentReference
+                    id={item.id}
+                    content={dialog.contentReferenceForTransmissions[item.id]}
+                    dialogToken={dialog.dialogToken}
+                  />
+                ) : null,
+              }))}
+            />
+          ),
         };
       }
       return dialogHistoryItem;
