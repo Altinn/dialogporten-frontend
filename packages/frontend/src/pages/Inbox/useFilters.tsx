@@ -1,6 +1,7 @@
 import type { ToolbarFilterProps, ToolbarProps } from '@altinn/altinn-components';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { useDialogsCount } from '../../api/hooks/useDialogsCount.tsx';
 import { getOrganization } from '../../api/utils/organizations.ts';
@@ -23,9 +24,12 @@ export const useFilters = ({ dialogs, viewType }: UseFiltersProps): UseFiltersOu
   const { dialogCounts: allDialogs } = useDialogsCount();
   const { organizations } = useOrganizations();
 
+  const [params] = useSearchParams();
+  const orgsFromSearchState = params.getAll('org');
+
   const filters = useMemo(
-    () => getFilters(dialogs, allDialogs, organizations, viewType),
-    [dialogs, allDialogs, organizations, viewType],
+    () => getFilters({ dialogs, allDialogs, allOrganizations: organizations, viewType, orgsFromSearchState }),
+    [dialogs, allDialogs, organizations, viewType, orgsFromSearchState],
   );
 
   const getFilterLabel = (name: string, value: (string | number)[] | undefined) => {
