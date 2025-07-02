@@ -14,11 +14,13 @@ import { useDialogs } from '../../api/hooks/useDialogs.tsx';
 import { useDialogsCount } from '../../api/hooks/useDialogsCount.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { updateLanguage } from '../../api/queries.ts';
+import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { i18n } from '../../i18n/config.ts';
 import { getSearchStringFromQueryParams } from '../../pages/Inbox/queryParams.ts';
 import { useSavedSearches } from '../../pages/SavedSearches/useSavedSearches.tsx';
 import { PageRoutes } from '../../pages/routes.ts';
 import { useProfile } from '../../profile';
+import { useGlobalState } from '../../useGlobalState.ts';
 import { BetaBanner } from '../BetaBanner/BetaBanner';
 import { useAuth } from '../Login/AuthContext.tsx';
 import { useAccounts } from './Accounts/useAccounts.tsx';
@@ -122,6 +124,8 @@ export const PageLayout: React.FC = () => {
 
   const windowSize = useWindowSize();
 
+  const [isErrorState] = useGlobalState<boolean>(QUERY_KEYS.ERROR_STATE, false);
+
   const headerProps: HeaderProps = {
     currentAccount: selectedAccount,
     logo: {
@@ -184,11 +188,12 @@ export const PageLayout: React.FC = () => {
   const color = isProfile ? 'neutral' : selectedProfile;
 
   const layoutProps: LayoutProps = {
-    theme: 'subtle',
+    theme: isErrorState ? 'default' : 'subtle',
     color,
     header: headerProps,
     footer,
     sidebar: {
+      hidden: isErrorState,
       menu: {
         items: sidebar,
       },
