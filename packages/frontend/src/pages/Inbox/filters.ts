@@ -141,18 +141,29 @@ const getDateOptions = (dates: string[]): ToolbarFilterProps['options'] => {
  * @param viewType
  * @returns {Array} - The array of filter settings.
  */
-export const getFilters = (
-  dialogs: InboxItemInput[],
-  allDialogs: CountableDialogFieldsFragment[],
-  allOrganizations: OrganizationFieldsFragment[],
-  viewType: InboxViewType,
-): ToolbarFilterProps[] => {
+
+export const getFilters = ({
+  dialogs,
+  allDialogs,
+  allOrganizations,
+  viewType,
+  orgsFromSearchState = [],
+}: {
+  dialogs: InboxItemInput[];
+  allDialogs: CountableDialogFieldsFragment[];
+  allOrganizations: OrganizationFieldsFragment[];
+  viewType: InboxViewType;
+  orgsFromSearchState?: string[];
+}): ToolbarFilterProps[] => {
   const orgsInFilteredDialogs = dialogs.map((d) => d.org);
   const orgCount = countOccurrences(orgsInFilteredDialogs);
 
   const allOrgsFromDialogs = dialogs.map((d) => d.org);
   const allOrgsFromAllDialogs = allDialogs.map((d) => d.org);
-  const orgsFoundInAllDialogs = Array.from(new Set([...allOrgsFromDialogs, ...allOrgsFromAllDialogs]));
+
+  const orgsFoundInAllDialogs = Array.from(
+    new Set([...allOrgsFromDialogs, ...allOrgsFromAllDialogs, ...orgsFromSearchState]),
+  );
 
   const senderOrgFilter: ToolbarFilterProps = {
     label: t('filter_bar.label.choose_sender'),
