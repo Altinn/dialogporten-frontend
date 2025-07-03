@@ -3,7 +3,7 @@ import { type Page, expect } from '@playwright/test';
 export const getSidebar = (page: Page) => page.locator('aside');
 export const getSidebarMenuItem = (page: Page, route: string) => getSidebar(page).locator(`a[href*="${route}?"]`);
 export const getSidebarMenuItemBadge = (page: Page, route: string) =>
-  getSidebarMenuItem(page, route).locator('[data-variant="tinted"] span');
+  getSidebarMenuItem(page, route).locator('[data-variant="subtle"] span');
 export const getSearchbarInput = (page: Page) => page.locator("[name='Søk']");
 
 export async function performSearch(page, query: string, action?: 'clear' | 'click' | 'enter') {
@@ -56,7 +56,7 @@ export async function getToolbarAccountInfo(page: Page, name: string): Promise<{
     return { found: false };
   }
 
-  const badgeLocator = matchingItem.first().locator('[data-variant="tinted"] span');
+  const badgeLocator = matchingItem.first().locator('[data-variant="subtle"] span');
 
   const badgeText = await badgeLocator.first().textContent();
   const count = badgeText ? Number(badgeText.trim()) : undefined;

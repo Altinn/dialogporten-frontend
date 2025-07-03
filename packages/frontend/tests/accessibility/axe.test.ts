@@ -44,7 +44,7 @@ const testAccessibility = async (page: Page, url: string, name: string) => {
 
   console.info(`Accessibility report generated: ${reportPath}`);
 
-  expectWithFilterViolations(accessibilityScanResults.violations);
+  await expectWithFilterViolations(accessibilityScanResults.violations);
 };
 
 test.describe('Axe test', () => {
@@ -82,11 +82,11 @@ test.describe('Axe test', () => {
     await expect(page.getByRole('main')).toContainText('1 lagret søk');
 
     const accessibilityScanResults = await new AxeBuilder({ page }).withTags(WCAG_TAGS_CONFIG).analyze();
-    expectWithFilterViolations(accessibilityScanResults.violations);
+    await expectWithFilterViolations(accessibilityScanResults.violations);
 
     await page.getByRole('button', { name: 'savedSearches.' }).click();
     const accessibilityScanResultsMenuOpen = await new AxeBuilder({ page }).withTags(WCAG_TAGS_CONFIG).analyze();
-    expectWithFilterViolations(accessibilityScanResultsMenuOpen.violations);
+    await expectWithFilterViolations(accessibilityScanResultsMenuOpen.violations);
   });
 
   test('should not have any automatically detectable accessibility issues for the Bin and Archived pages with items', async ({
@@ -99,13 +99,13 @@ test.describe('Axe test', () => {
     await expect(page.getByText('Flyttet til papirkurv')).toBeVisible();
     await getSidebarMenuItem(page, PageRoutes.bin).click();
     const accessibilityScanResultsBin = await new AxeBuilder({ page }).withTags(WCAG_TAGS_CONFIG).analyze();
-    expectWithFilterViolations(accessibilityScanResultsBin.violations);
+    await expectWithFilterViolations(accessibilityScanResultsBin.violations);
 
     await page.getByRole('link', { name: 'Skatten din for 2022' }).click();
     await page.getByRole('button', { name: 'Flytt til arkiv' }).click();
     await getSidebarMenuItem(page, PageRoutes.archive).click();
     const accessibilityScanResultsArchive = await new AxeBuilder({ page }).withTags(WCAG_TAGS_CONFIG).analyze();
-    expectWithFilterViolations(accessibilityScanResultsArchive.violations);
+    await expectWithFilterViolations(accessibilityScanResultsArchive.violations);
   });
 
   test('should not have any automatically detectable accessibility issues for the dialog detailed view', async ({
@@ -116,11 +116,11 @@ test.describe('Axe test', () => {
     await page.getByRole('link', { name: 'Skatten din for 2022' }).click();
 
     const accessibilityScanResults = await new AxeBuilder({ page }).withTags(WCAG_TAGS_CONFIG).analyze();
-    expectWithFilterViolations(accessibilityScanResults.violations);
+    await expectWithFilterViolations(accessibilityScanResults.violations);
 
     await page.locator('a').filter({ hasText: 'Aktivitetslogg' }).click();
     const accessibilityScanResultsActivityLogTab = await new AxeBuilder({ page }).withTags(WCAG_TAGS_CONFIG).analyze();
-    expectWithFilterViolations(accessibilityScanResultsActivityLogTab.violations);
+    await expectWithFilterViolations(accessibilityScanResultsActivityLogTab.violations);
   });
 
   test('should not have any automatically detectable accessibility issues for menus and dropdowns', async ({
@@ -131,22 +131,22 @@ test.describe('Axe test', () => {
     await page.getByTestId('searchbar-input').fill('mel');
 
     const accessibilityScanResultsSearchBar = await new AxeBuilder({ page }).withTags(WCAG_TAGS_CONFIG).analyze();
-    expectWithFilterViolations(accessibilityScanResultsSearchBar.violations);
+    await expectWithFilterViolations(accessibilityScanResultsSearchBar.violations);
 
     await page.keyboard.press('Escape');
 
     await page.getByRole('button', { name: 'Test Testesen' }).click();
     const accessibilityScanResultsPartyDropdown = await new AxeBuilder({ page }).withTags(WCAG_TAGS_CONFIG).analyze();
-    expectWithFilterViolations(accessibilityScanResultsPartyDropdown.violations);
+    await expectWithFilterViolations(accessibilityScanResultsPartyDropdown.violations);
     await page.keyboard.press('Escape');
 
     await page.getByRole('button', { name: 'Meny' }).click();
     const accessibilityScanResultsHeaderMenu = await new AxeBuilder({ page }).withTags(WCAG_TAGS_CONFIG).analyze();
-    expectWithFilterViolations(accessibilityScanResultsHeaderMenu.violations);
+    await expectWithFilterViolations(accessibilityScanResultsHeaderMenu.violations);
     await page.keyboard.press('Escape');
 
     await page.getByRole('button', { name: 'add' }).click();
     const accessibilityScanResultsFilterDropdown = await new AxeBuilder({ page }).withTags(WCAG_TAGS_CONFIG).analyze();
-    expectWithFilterViolations(accessibilityScanResultsFilterDropdown.violations);
+    await expectWithFilterViolations(accessibilityScanResultsFilterDropdown.violations);
   });
 });

@@ -1,6 +1,7 @@
 import { DialogSection } from '@altinn/altinn-components';
 import { Html, Markdown } from 'embeddable-markdown-html';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface AdditionalInfoContentProps {
   mediaType: string | undefined;
@@ -8,6 +9,7 @@ interface AdditionalInfoContentProps {
 }
 
 export const AdditionalInfoContent = memo(({ mediaType, value }: AdditionalInfoContentProps) => {
+  const { t } = useTranslation();
   if (!value) {
     return null;
   }
@@ -25,5 +27,5 @@ export const AdditionalInfoContent = memo(({ mediaType, value }: AdditionalInfoC
     }
   };
 
-  return <DialogSection>{getContent(mediaType ?? 'text/plain')}</DialogSection>;
+  return <DialogSection title={t('additional_info.title')}>{getContent(mediaType ?? 'text/plain')}</DialogSection>;
 });

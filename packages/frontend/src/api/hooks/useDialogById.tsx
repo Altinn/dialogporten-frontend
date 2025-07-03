@@ -1,5 +1,4 @@
 import type { AttachmentLinkProps, AvatarProps, SeenByLogProps } from '@altinn/altinn-components';
-import type { DialogHistorySegmentProps } from '@altinn/altinn-components/dist/types/lib/components';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   type Actor,
@@ -22,10 +21,10 @@ import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
 import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
 import { toTitleCase } from '../../profile';
 import { graphQLSDK } from '../queries.ts';
-import { getActivityHistory } from '../utils/activities.tsx';
+import { type ActivityLogEntry, getActivityHistory } from '../utils/activities.tsx';
 import { getSeenByLabel } from '../utils/dialog.ts';
 import { type OrganizationOutput, getOrganization } from '../utils/organizations.ts';
-import { getDialogHistoryForTransmissions } from '../utils/transmissions.ts';
+import { type TimelineSegmentWithTransmissions, getTransmissions } from '../utils/transmissions.ts';
 
 export enum EmbeddableMediaType {
   markdown = 'application/vnd.dialogporten.frontchannelembed-url;type=text/markdown',
@@ -61,15 +60,15 @@ export interface DialogByIdDetails {
   /* main content reference for dialog, used to dynamically embed content in the frontend from an external URL. */
   mainContentReference?: EmbeddedContent;
   /* all activities for dialog, including transmissions */
-  activityHistory: DialogHistorySegmentProps[];
+  activityHistory: ActivityLogEntry[];
   /* last updated timestamp */
   updatedAt: string;
   /* created timestamp */
   createdAt: string;
   /* list of system labels for the dialog */
   label: SystemLabel[];
-  /* all transmissions for dialog, grouped by related transmissions */
-  transmissions: DialogHistorySegmentProps[];
+  /* all transmissions for dialog, grouped by relationship */
+  transmissions: TimelineSegmentWithTransmissions[];
   /* a map of all content references for all content reference for transmission, used to dynamically embed content in the frontend from an external URL. */
   contentReferenceForTransmissions: Record<string, EmbeddedContent>;
   /* dialog status */
@@ -220,7 +219,7 @@ export function mapDialogToToInboxItem(
       })),
     },
     activityHistory: getActivityHistory(item.activities, item.transmissions, format, serviceOwner),
-    transmissions: getDialogHistoryForTransmissions(item.transmissions, format, serviceOwner),
+    transmissions: getTransmissions(item.transmissions, format, serviceOwner),
     createdAt: item.createdAt,
     updatedAt: item.updatedAt,
     label: item.endUserContext?.systemLabels,

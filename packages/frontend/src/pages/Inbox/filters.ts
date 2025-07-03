@@ -139,6 +139,7 @@ const getDateOptions = (dates: string[]): ToolbarFilterProps['options'] => {
  * @param allDialogs
  * @param allOrganizations
  * @param viewType
+ * @param orgsFromSearchState
  * @returns {Array} - The array of filter settings.
  */
 

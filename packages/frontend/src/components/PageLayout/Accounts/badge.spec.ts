@@ -4,7 +4,7 @@ import type { InboxItemInput } from '../../../pages/Inbox/InboxItemInput.ts';
 import { getAccountBadge } from './useAccounts';
 
 describe('getCountBadge', () => {
-  const dialogs: InboxItemInput[] = [
+  const dialogs: Partial<InboxItemInput>[] = [
     {
       party: 'party1',
       org: 'org1',
@@ -109,7 +109,7 @@ describe('getCountBadge', () => {
   };
 
   it('should return undefined if no party is provided', () => {
-    expect(getAccountBadge(dialogs)).toBeUndefined();
+    expect(getAccountBadge(dialogs as InboxItemInput[])).toBeUndefined();
   });
 
   it('should return undefined if no dialogs are provided', () => {
@@ -117,7 +117,7 @@ describe('getCountBadge', () => {
   });
 
   it('should return a badge with the correct count, including sub party', () => {
-    const badge = getAccountBadge(dialogs, party);
+    const badge = getAccountBadge(dialogs as InboxItemInput[], party);
     expect(badge).toEqual({ label: '2', size: 'sm' });
   });
 
@@ -133,7 +133,7 @@ describe('getCountBadge', () => {
       party: 'party3',
       subParties: [],
     };
-    expect(getAccountBadge(dialogs, nonMatchingParty)).toBeUndefined();
+    expect(getAccountBadge(dialogs as InboxItemInput[], nonMatchingParty)).toBeUndefined();
   });
 
   it('should return a badge with the correct count for multiple parties', () => {
@@ -161,7 +161,7 @@ describe('getCountBadge', () => {
         isDeleted: false,
       },
     ];
-    const badge = getAccountBadge(dialogs, multipleParties);
+    const badge = getAccountBadge(dialogs as InboxItemInput[], multipleParties);
     expect(badge).toEqual({ label: '2', size: 'sm' });
   });
 });

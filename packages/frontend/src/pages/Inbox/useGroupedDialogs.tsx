@@ -96,11 +96,12 @@ const useGroupedDialogs = ({
   const formatDialogItem = (item: InboxItemInput, groupId: string): DialogListItemProps => ({
     groupId,
     title: item.title,
-    label: !item.isSeenByEndUser ? t('word.new') : undefined,
+    // TODO: Change condition of !item.isSeenByEndUser to check for attribute `hasUnopenedContent` of dialog instead, cf. https://github.com/Altinn/dialogporten-frontend/issues/2230
     badge: !item.isSeenByEndUser
       ? {
           label: t('word.unread'),
-          theme: 'surface-hover',
+          size: 'xs',
+          variant: 'tinted',
         }
       : undefined,
     id: item.id,
@@ -110,18 +111,15 @@ const useGroupedDialogs = ({
     state: getDialogState(item.viewType),
     recipient: item.recipient,
     attachmentsCount: item.guiAttachmentCount,
-    seenBy: item.seenByLabel
-      ? {
-          seenByEndUser: item.isSeenByEndUser,
-          seenByOthersCount: item.seenByOthersCount,
-          label: item.seenByLabel,
-        }
-      : undefined,
+    seenByLog: item.seenByLog,
+    // TODO: Change !item.seenByLog.items.length to seenSinceLastContentUpdate when available, cf.https://github.com/Altinn/dialogporten-frontend/issues/2305
+    unread: !item.seenByLog.items.length,
     status: getDialogStatus(item.status, t),
-    seen: item.isSeenByEndUser,
     updatedAt: item.updatedAt,
     updatedAtLabel: format(item.updatedAt, formatString),
-    ariaLabel: `${item.title}`,
+    dueAtLabel: item.dueAt ? t('dialog.due_at', { date: format(item.dueAt, formatString) }) : undefined,
+    dueAt: item.dueAt,
+    ariaLabel: item.title,
     as: (props: LinkProps) => (
       <Link state={{ fromView: location.pathname }} {...props} to={`/inbox/${item.id}/${location.search}`} />
     ),
