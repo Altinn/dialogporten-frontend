@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.42.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.41.0...v1.42.0) (2025-07-03)
+
+
+### Features
+
+* add badge for archived and binned dialogs in listview and dialog details ([#2313](https://github.com/Altinn/dialogporten-frontend/issues/2313)) ([aa22156](https://github.com/Altinn/dialogporten-frontend/commit/aa2215606512c308d8930d56bef01cc3a9aaf83c))
+* add error page and error boundary logic ([#2303](https://github.com/Altinn/dialogporten-frontend/issues/2303)) ([3fa233d](https://github.com/Altinn/dialogporten-frontend/commit/3fa233d5ea8e347d0ce88af13546a064da30d0dc))
+* structural updates to transmissions and activities ([#2298](https://github.com/Altinn/dialogporten-frontend/issues/2298)) ([8163d8a](https://github.com/Altinn/dialogporten-frontend/commit/8163d8ad5b9ed463091251c9785e14030cbb9e95))
+
+
+### Bug Fixes
+
+* disable errorBoundary in dev ([#2312](https://github.com/Altinn/dialogporten-frontend/issues/2312)) ([92117d8](https://github.com/Altinn/dialogporten-frontend/commit/92117d830cdb3e4aa20ae7e69f0ca3c27272c6c5))
+* Include senders from search params in filters ([#2301](https://github.com/Altinn/dialogporten-frontend/issues/2301)) ([32c38dd](https://github.com/Altinn/dialogporten-frontend/commit/32c38dd027ac44c881bbc8b5f4fb07e45f177d99))
+
 ## [1.41.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.40.1...v1.41.0) (2025-06-26)
 
 
