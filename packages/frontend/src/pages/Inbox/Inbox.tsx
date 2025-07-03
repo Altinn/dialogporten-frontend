@@ -143,6 +143,12 @@ export const Inbox = ({ viewType }: InboxProps) => {
     }
   }, [isLoading]);
 
+  const isMock = searchParams.get('mock') === 'true';
+  const simulateError = searchParams.get('simulateError') === 'true';
+  if (isMock && simulateError) {
+    throw new Error('Simulated error for testing purposes');
+  }
+
   return (
     <PageBase margin="page">
       <section data-testid="inbox-toolbar">

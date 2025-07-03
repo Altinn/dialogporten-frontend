@@ -17,4 +17,5 @@ export const QUERY_KEYS = {
   SET_ARCHIVE_LABEL_LOADING: 'setArchiveLabelLoading',
   SET_DELETE_LABEL_LOADING: 'setDeleteLabelLoading',
   SET_UNDO_LABEL_LOADING: 'setUndoLabelLoading',
+  ERROR_STATE: 'errorState',
 };

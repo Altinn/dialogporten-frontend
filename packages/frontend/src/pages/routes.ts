@@ -13,4 +13,5 @@ export enum PageRoutes {
   notifications = '/profile/notifications',
   settings = '/profile/settings',
   activities = '/profile/activities',
+  error = '/error',
 }
