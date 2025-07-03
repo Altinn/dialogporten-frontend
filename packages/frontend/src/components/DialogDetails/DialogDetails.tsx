@@ -9,7 +9,6 @@ import {
   DialogBody,
   type DialogButtonPriority,
   DialogHeader,
-  type DialogHeaderProps,
   Divider,
   DsAlert,
   DsParagraph,

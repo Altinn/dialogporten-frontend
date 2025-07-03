@@ -1,4 +1,7 @@
 import type {
+  BadgeColor,
+  BadgeSize,
+  BadgeVariant,
   DialogListGroupProps,
   DialogListItemProps,
   DialogListItemState,
@@ -82,17 +85,17 @@ const getDialogState = (viewType: InboxViewType): DialogListItemState => {
 const getItemBadge = (viewType: InboxViewType, isSeenByEndUser: boolean, t: (key: string) => string) => {
   if (viewType === 'bin' || viewType === 'archive') {
     return {
-      color: 'neutral',
+      color: 'neutral' as BadgeColor,
       label: t(`status.${viewType}`),
-      size: 'sm',
-      variant: 'subtle',
+      size: 'sm' as BadgeSize,
+      variant: 'subtle' as BadgeVariant,
     };
   }
   if (!isSeenByEndUser) {
     return {
       label: t('word.unread'),
-      size: 'xs',
-      variant: 'tinted',
+      size: 'xs' as BadgeSize,
+      variant: 'tinted' as BadgeVariant,
     };
   }
   return undefined;
