@@ -27,35 +27,39 @@ vi.mock('../../api/queries', () => ({
 
 describe('useDialogActions', () => {
   it('returns archive and delete actions for Default (inbox)', () => {
-    const { result } = renderHook(() => useDialogActions('abc123', [SystemLabel.Default]));
+    const { result } = renderHook(() => useDialogActions());
+    const actions = result.current('abc123', [SystemLabel.Default]);
 
-    const ids = result.current.map((item) => item.id);
+    const ids = actions.map((item) => item.id);
     expect(ids).toContain('archive');
     expect(ids).toContain('delete');
     expect(ids).not.toContain('undo');
   });
 
   it('returns undo and delete actions for Archive', () => {
-    const { result } = renderHook(() => useDialogActions('abc123', [SystemLabel.Archive]));
+    const { result } = renderHook(() => useDialogActions());
+    const actions = result.current('abc123', [SystemLabel.Archive]);
 
-    const ids = result.current.map((item) => item.id);
+    const ids = actions.map((item) => item.id);
     expect(ids).toContain('undo');
     expect(ids).toContain('delete');
     expect(ids).not.toContain('archive');
   });
 
   it('returns undo and archive actions for Bin', () => {
-    const { result } = renderHook(() => useDialogActions('abc123', [SystemLabel.Bin]));
+    const { result } = renderHook(() => useDialogActions());
+    const actions = result.current('abc123', [SystemLabel.Bin]);
 
-    const ids = result.current.map((item) => item.id);
+    const ids = actions.map((item) => item.id);
     expect(ids).toContain('undo');
     expect(ids).toContain('archive');
     expect(ids).not.toContain('delete');
   });
 
   it('returns empty array if dialogId is undefined', () => {
-    const { result } = renderHook(() => useDialogActions(undefined, [SystemLabel.Default]));
+    const { result } = renderHook(() => useDialogActions());
+    const actions = result.current(undefined, [SystemLabel.Default]);
 
-    expect(result.current).toEqual([]);
+    expect(actions).toEqual([]);
   });
 });

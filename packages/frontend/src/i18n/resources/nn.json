@@ -18,6 +18,7 @@
   "activity.status.transmission_opened": "{transmission} opna av {actor}.",
   "additional_info.title": "Meir informasjon",
   "dialog.aria.fetch_more": "Hent og vis fleire dialogar",
+  "dialog.context_menu.label": "Kontekstmeny for dialog med tittel {title}",
   "dialog.due_at": "Frist: {date}",
   "dialog.error_message.general": "Dialogen du prøver å opna kan ikkje visast.",
   "dialog.fetch_more": "Vis fleire ...",

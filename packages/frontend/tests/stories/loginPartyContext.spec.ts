@@ -49,7 +49,7 @@ test.describe('LoginPartyContext', () => {
     expect(new URL(page.url()).searchParams.has('party')).toBe(true);
     expect(new URL(page.url()).searchParams.has('allParties')).toBe(false);
 
-    await page.getByRole('button', { name: 'Firma AS' }).click();
+    await page.getByRole('button', { name: 'Firma AS' }).first().click();
     await page
       .getByTestId('inbox-toolbar')
       .getByRole('group')
@@ -107,12 +107,12 @@ test.describe('LoginPartyContext', () => {
     await expect(page.getByRole('link', { name: 'This is a message 1 for Firma AS' })).toBeVisible();
 
     await expectIsCompanyPage(page);
-    await expect(page.getByRole('button', { name: 'Firma AS' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Firma AS' }).first()).toBeVisible();
     await expect(page.getByRole('link', { name: 'This is a message 1 for Firma AS' })).toBeVisible();
 
     await page.reload();
     await expectIsCompanyPage(page);
-    await expect(page.getByRole('button', { name: 'Firma AS' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Firma AS' }).first()).toBeVisible();
     await expect(page.getByRole('link', { name: 'This is a message 1 for Firma AS' })).toBeVisible();
   });
 

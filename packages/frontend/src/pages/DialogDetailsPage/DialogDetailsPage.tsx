@@ -1,4 +1,4 @@
-import { DialogLayout } from '@altinn/altinn-components';
+import { type ContextMenuProps, DialogLayout } from '@altinn/altinn-components';
 import { ClockDashedIcon } from '@navikt/aksel-icons';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,7 +8,6 @@ import { useDialogByIdSubscription } from '../../api/hooks/useDialogByIdSubscrip
 import { useParties } from '../../api/hooks/useParties.ts';
 import { DialogDetails } from '../../components';
 import { useDialogActions } from './useDialogActions.tsx';
-import { useDialogContextMenu } from './useDialogContextMenu.tsx';
 
 export const DialogDetailsPage = () => {
   const { id: dialogId } = useParams();
@@ -24,13 +23,14 @@ export const DialogDetailsPage = () => {
     isAuthLevelTooLow,
   } = useDialogById(parties, dialogId);
   const isLoading = isLoadingDialog || (!isSuccess && !isError);
-  const showToolbar = !!(dialogId && dialog && !isLoading);
-  const systemLabelActions = useDialogActions(dialogId, dialog?.label);
-  const contextMenu = useDialogContextMenu({
+  const displayDialogActions = !!(dialogId && dialog && !isLoading);
+  const systemLabelActions = useDialogActions();
+  const contextMenu: ContextMenuProps = {
     id: 'dialog-context-menu',
-    dialogId,
-    dialogActions: [
-      ...systemLabelActions,
+    placement: 'right',
+    ariaLabel: t('dialog.context_menu.label', { title: dialog?.title }),
+    items: [
+      ...systemLabelActions(dialogId, dialog?.label),
       {
         id: 'activity-log',
         groupId: 'logs',
@@ -40,7 +40,7 @@ export const DialogDetailsPage = () => {
         onClick: () => setIsActivityLogOpen(true),
       },
     ],
-  });
+  };
 
   useDialogByIdSubscription(dialog?.id, dialog?.dialogToken);
 
@@ -52,8 +52,8 @@ export const DialogDetailsPage = () => {
         label: t('word.back'),
         as: (props: LinkProps) => <Link {...props} to={previousPath} state={{ scrollToId: dialogId }} />,
       }}
-      pageMenu={showToolbar ? { items: systemLabelActions } : undefined}
-      contextMenu={contextMenu}
+      pageMenu={displayDialogActions ? { items: systemLabelActions(dialogId, dialog?.label) } : undefined}
+      contextMenu={displayDialogActions ? contextMenu : undefined}
     >
       <DialogDetails
         dialog={dialog}

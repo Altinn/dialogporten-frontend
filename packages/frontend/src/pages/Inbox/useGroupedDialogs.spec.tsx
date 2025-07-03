@@ -2,6 +2,7 @@ import { renderHook } from '@testing-library/react';
 import { type DialogStatus, SystemLabel } from 'bff-types-generated';
 import { useTranslation } from 'react-i18next';
 import { type Mock, beforeEach, describe, expect, it, vi } from 'vitest';
+import { createCustomWrapper } from '../../../utils/test-utils.tsx';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import type { InboxItemInput } from './InboxItemInput.ts';
@@ -14,6 +15,15 @@ vi.mock('react-i18next', () => ({
 vi.mock('../../i18n/useDateFnsLocale.tsx', () => ({
   useFormat: vi.fn(),
 }));
+
+vi.mock('@tanstack/react-query', async () => {
+  const actual = await vi.importActual<typeof import('@tanstack/react-query')>('@tanstack/react-query');
+
+  return {
+    ...actual,
+    useQuery: vi.fn().mockReturnValue({ data: undefined, isLoading: false }),
+  };
+});
 
 const mockData: InboxItemInput[] = [
   {
@@ -289,13 +299,17 @@ describe('useGroupedDialogs', () => {
   });
 
   it('should return loading items when isLoading is true', () => {
-    const { result } = renderHook(() =>
-      useGroupedDialogs({
-        items: [],
-        displaySearchResults: false,
-        viewType: 'inbox',
-        isLoading: true,
-      }),
+    const { result } = renderHook(
+      () =>
+        useGroupedDialogs({
+          items: [],
+          displaySearchResults: false,
+          viewType: 'inbox',
+          isLoading: true,
+        }),
+      {
+        wrapper: createCustomWrapper(),
+      },
     );
 
     expect(result.current.groupedDialogs).toHaveLength(5);
@@ -303,13 +317,17 @@ describe('useGroupedDialogs', () => {
   });
 
   it('should return grouped dialogs when isLoading is false', () => {
-    const { result } = renderHook(() =>
-      useGroupedDialogs({
-        items: mockData,
-        displaySearchResults: true,
-        viewType: 'inbox',
-        isLoading: false,
-      }),
+    const { result } = renderHook(
+      () =>
+        useGroupedDialogs({
+          items: mockData,
+          displaySearchResults: true,
+          viewType: 'inbox',
+          isLoading: false,
+        }),
+      {
+        wrapper: createCustomWrapper(),
+      },
     );
 
     expect(result.current.groupedDialogs).toHaveLength(7);
@@ -319,13 +337,17 @@ describe('useGroupedDialogs', () => {
   });
 
   it('should generat groups orderIndex correctly', () => {
-    const { result } = renderHook(() =>
-      useGroupedDialogs({
-        items: mockData,
-        displaySearchResults: false,
-        viewType: 'inbox',
-        isLoading: false,
-      }),
+    const { result } = renderHook(
+      () =>
+        useGroupedDialogs({
+          items: mockData,
+          displaySearchResults: false,
+          viewType: 'inbox',
+          isLoading: false,
+        }),
+      {
+        wrapper: createCustomWrapper(),
+      },
     );
 
     const groups = result.current.groups;

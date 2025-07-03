@@ -11,11 +11,11 @@ test.describe('Flattened parties and subparties', () => {
 
   test('Renders correctly', async ({ page }) => {
     await expect(page.getByRole('link', { name: 'Message for Test Testesen' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Test Testesen' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Test Testesen' }).first()).toBeVisible();
   });
 
   test('Party and subparty with same name are merged as one', async ({ page }) => {
-    await page.getByRole('button', { name: 'Test Testesen' }).click();
+    await page.getByRole('button', { name: 'Test Testesen' }).first().click();
     const FirmaAS = await getToolbarAccountInfo(page, 'Firma AS');
     expect(FirmaAS.found).toEqual(true);
     expect(FirmaAS.count).toEqual(1);
@@ -53,7 +53,7 @@ test.describe('Flattened parties and subparties', () => {
 
     await page.keyboard.press('Escape');
 
-    await page.getByRole('button', { name: 'Test Testesen' }).click();
+    await page.getByRole('button', { name: 'Test Testesen' }).first().click();
     await page
       .getByTestId('inbox-toolbar')
       .getByRole('group')
@@ -67,7 +67,7 @@ test.describe('Flattened parties and subparties', () => {
   });
 
   test('Filters shows merged parties if sub party has same name as main party', async ({ page }) => {
-    await page.getByRole('button', { name: 'Test Testesen' }).click();
+    await page.getByRole('button', { name: 'Test Testesen' }).first().click();
 
     //only for virtualized (>20 actors)
     // const menu = await page.getByRole('menu');
