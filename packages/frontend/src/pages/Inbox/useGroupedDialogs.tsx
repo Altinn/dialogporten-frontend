@@ -1,4 +1,7 @@
 import type {
+  BadgeColor,
+  BadgeSize,
+  BadgeVariant,
   DialogListGroupProps,
   DialogListItemProps,
   DialogListItemState,
@@ -76,6 +79,28 @@ const getDialogState = (viewType: InboxViewType): DialogListItemState => {
   }
 };
 
+/* TODO: Change condition of !item.isSeenByEndUser to check for attribute `hasUnopenedContent` of dialog instead,
+ cf. https://github.com/Altinn/dialogporten-frontend/issues/2230
+ but badge for bin and archive should have priority over unread badge */
+const getItemBadge = (viewType: InboxViewType, isSeenByEndUser: boolean, t: (key: string) => string) => {
+  if (viewType === 'bin' || viewType === 'archive') {
+    return {
+      color: 'neutral' as BadgeColor,
+      label: t(`status.${viewType}`),
+      size: 'sm' as BadgeSize,
+      variant: 'subtle' as BadgeVariant,
+    };
+  }
+  if (!isSeenByEndUser) {
+    return {
+      label: t('word.unread'),
+      size: 'xs' as BadgeSize,
+      variant: 'tinted' as BadgeVariant,
+    };
+  }
+  return undefined;
+};
+
 const useGroupedDialogs = ({
   items,
   displaySearchResults,
@@ -96,14 +121,7 @@ const useGroupedDialogs = ({
   const formatDialogItem = (item: InboxItemInput, groupId: string): DialogListItemProps => ({
     groupId,
     title: item.title,
-    // TODO: Change condition of !item.isSeenByEndUser to check for attribute `hasUnopenedContent` of dialog instead, cf. https://github.com/Altinn/dialogporten-frontend/issues/2230
-    badge: !item.isSeenByEndUser
-      ? {
-          label: t('word.unread'),
-          size: 'xs',
-          variant: 'tinted',
-        }
-      : undefined,
+    badge: getItemBadge(item.viewType, item.isSeenByEndUser, t),
     id: item.id,
     recipientLabel: t('word.to'),
     sender: item.sender,

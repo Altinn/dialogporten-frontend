@@ -25,6 +25,8 @@ import { type ActivityLogEntry, getActivityHistory } from '../utils/activities.t
 import { getSeenByLabel } from '../utils/dialog.ts';
 import { type OrganizationOutput, getOrganization } from '../utils/organizations.ts';
 import { type TimelineSegmentWithTransmissions, getTransmissions } from '../utils/transmissions.ts';
+import { getViewTypes } from '../utils/viewType.ts';
+import type { InboxViewType } from './useDialogs.tsx';
 
 export enum EmbeddableMediaType {
   markdown = 'application/vnd.dialogporten.frontchannelembed-url;type=text/markdown',
@@ -77,6 +79,8 @@ export interface DialogByIdDetails {
   seenByLog: SeenByLogProps;
   /* due date for dialog: This is the last date when the dialog is expected to be completed. */
   dueAt?: string;
+  /* view type of dialog, used for grouping in inbox */
+  viewType: InboxViewType;
 }
 
 interface UseDialogByIdOutput {
@@ -223,6 +227,7 @@ export function mapDialogToToInboxItem(
     createdAt: item.createdAt,
     updatedAt: item.updatedAt,
     label: item.endUserContext?.systemLabels,
+    viewType: getViewTypes({ status: item.status, systemLabel: item.endUserContext?.systemLabels }, true)?.[0],
     dueAt: item.dueAt,
   };
 }

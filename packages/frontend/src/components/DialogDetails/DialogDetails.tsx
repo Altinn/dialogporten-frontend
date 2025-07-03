@@ -1,4 +1,7 @@
 import {
+  type BadgeColor,
+  type BadgeSize,
+  type BadgeVariant,
   Button,
   type DialogActionButtonProps,
   DialogActions,
@@ -238,6 +241,16 @@ export const DialogDetails = ({
     },
   }));
 
+  const headerBadge =
+    dialog.viewType === 'bin' || dialog.viewType === 'archive'
+      ? {
+          label: t(`status.${dialog.viewType}`),
+          size: 'sm' as BadgeSize,
+          variant: 'subtle' as BadgeVariant,
+          color: 'neutral' as BadgeColor,
+        }
+      : undefined;
+
   return (
     <>
       <DialogHeader
@@ -246,6 +259,7 @@ export const DialogDetails = ({
         dueAt={dialog.dueAt}
         dueAtLabel={dueAtLabel}
         status={getDialogStatus(dialog.status, t)}
+        badge={headerBadge}
         title={dialog.title}
         activityLog={{
           onClick: () => {
