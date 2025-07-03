@@ -31,7 +31,10 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 
   render() {
-    if (this.state.hasError) {
+    const params = new URLSearchParams(window.location.search);
+    const isMock = params.get('mock') === 'true' && params.get('simulateError') === 'true';
+
+    if (isMock || (this.state.hasError && import.meta.env.PROD)) {
       return (
         <Navigate
           to={PageRoutes.error}
