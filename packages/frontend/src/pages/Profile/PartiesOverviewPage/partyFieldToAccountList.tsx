@@ -1,11 +1,19 @@
-import type { AccountListItemType, AvatarSize, AvatarType, BadgeProps } from '@altinn/altinn-components';
-import { HeartFillIcon, HeartIcon, InboxIcon, PlusCircleIcon } from '@navikt/aksel-icons';
+import {
+  type AccountListItemProps,
+  type AccountListItemType,
+  Avatar,
+  type AvatarProps,
+  type AvatarSize,
+  type AvatarType,
+  type BadgeProps,
+} from '@altinn/altinn-components';
+import { ArrowDownRightIcon, HeartFillIcon, HeartIcon, InboxIcon, PlusCircleIcon } from '@navikt/aksel-icons';
 import type { GroupObject, PartyFieldsFragment, User } from 'bff-types-generated';
 import { t } from 'i18next';
 import type { ReactNode } from 'react';
 import { toTitleCase } from '../../../profile';
 import { PageRoutes } from '../../routes';
-import { type AccountListItemProps, CompanyDetails, GroupDetails, UserDetails } from './DetailsComponents';
+import { CompanyDetails, GroupDetails, UserDetails } from './DetailsComponents';
 
 export const urnToOrgNr = (urn: string) => {
   if (!urn) return '';
@@ -42,6 +50,9 @@ function filterGroupsByPartyId(groups: GroupObject[], targetPartyId: number): Gr
   );
 }
 
+interface PartyFields extends PartyFieldsFragment {
+  isSubParty?: boolean;
+}
 export interface PartyFieldFragmentToAccountListItemProps {
   parties: PartyFieldsFragment[];
   dialogRef: React.RefObject<HTMLDialogElement | null>;
@@ -54,6 +65,7 @@ export interface PartyFieldFragmentToAccountListItemProps {
   groups: GroupObject[];
   setChosenParty: (party: PartyFieldsFragment) => void;
   navigate: (route: PageRoutes) => void;
+  disableFavoriteGroups?: boolean;
 }
 
 export const partyFieldFragmentToAccountListItem = ({
@@ -68,11 +80,25 @@ export const partyFieldFragmentToAccountListItem = ({
   groups,
   setChosenParty,
   navigate,
+  disableFavoriteGroups = true,
 }: PartyFieldFragmentToAccountListItemProps) => {
   if (!parties || parties.length === 0) {
     return [];
   }
-  const retVal = parties.map((party) => {
+  const flattenedParties: PartyFields[] = [];
+  for (const party of parties) {
+    flattenedParties.push(party);
+    if (party.subParties) {
+      for (const subParty of party.subParties) {
+        flattenedParties.push({
+          ...subParty,
+          isSubParty: true,
+        } as PartyFields);
+      }
+    }
+  }
+
+  const retVal = flattenedParties.map((party) => {
     const favourite = !!favoritesGroup?.parties?.find((p) => p?.id?.includes(party.party));
     let group: GroupObject | undefined = undefined;
     if (favourite) group = favoritesGroup;
@@ -86,9 +112,39 @@ export const partyFieldFragmentToAccountListItem = ({
     } else {
       groupId = 'secondary';
     }
+
+    let icon: AvatarProps | ReactNode = {
+      type: isOrganization ? ('company' as AvatarType) : ('person' as AvatarType),
+      name: party.name,
+      size: 'md' as AvatarSize,
+    };
+
+    if (party.isSubParty) {
+      icon = (
+        <span style={{ position: 'relative' }}>
+          <Avatar name={party.name} type={isOrganization ? ('company' as AvatarType) : ('person' as AvatarType)} />
+          <div
+            data-theme="default"
+            style={{
+              display: 'flex',
+              position: 'absolute',
+              fontSize: '.5em',
+              bottom: 0,
+              right: 0,
+              padding: '.125em',
+              marginBottom: '-.25em',
+              marginRight: '-.5em',
+            }}
+          >
+            <ArrowDownRightIcon style={{ fontSize: '1em' }} aria-label="Subunit" />
+          </div>
+        </span>
+      );
+    }
+
     const contactInfo = party.isCurrentEndUser
       ? {
-          email: user.email || '',
+          email: user?.email || '',
           phone: user?.phoneNumber || '',
           address: `${user?.party?.person?.mailingAddress || ''}, ${user?.party?.person?.mailingPostalCode || ''} ${user?.party?.person?.mailingPostalCity || ''}`,
           name: `${user?.party?.person?.firstName || ''} ${user?.party?.person?.lastName || ''}`,
@@ -120,12 +176,8 @@ export const partyFieldFragmentToAccountListItem = ({
       expanded: isExpanded(party.party),
       onClick: () => toggleExpanded(party.party),
       as: 'button',
-      icon: {
-        type: isOrganization ? ('company' as AvatarType) : ('person' as AvatarType),
-        name: party.name,
-        size: 'md' as AvatarSize,
-      },
-      description: `${isOrganization ? 'Org.nr. ' : 'Fødselsnummer: '} ${urnToOrgNr(party.party)}`,
+      icon,
+      description: `${isOrganization ? 'Org.nr. ' : 'Fødselsnummer: '} ${urnToOrgNr(party.party)}${party.isSubParty ? `, del av ${party.name}` : ''}`,
     };
     let children: ReactNode = null;
 
@@ -224,17 +276,22 @@ export const partyFieldFragmentToAccountListItem = ({
                 },
               ]
             : []),
-          {
-            id: party.party + 'new-group',
-            groupId: 'NewGroup',
-            icon: PlusCircleIcon,
-            title: 'Legg til i ny gruppe',
-            onClick: () => {
-              dialogRef?.current?.showModal();
-              console.info('ChosenParty: ', party);
-              setChosenParty(party);
-            },
-          },
+
+          ...(!disableFavoriteGroups
+            ? [
+                {
+                  id: party.party + 'new-group',
+                  groupId: 'NewGroup',
+                  icon: PlusCircleIcon,
+                  title: 'Legg til i ny gruppe',
+                  onClick: () => {
+                    dialogRef?.current?.showModal();
+                    console.info('ChosenParty: ', party);
+                    setChosenParty(party);
+                  },
+                },
+              ]
+            : []),
         ],
       },
     } as AccountListItemProps;

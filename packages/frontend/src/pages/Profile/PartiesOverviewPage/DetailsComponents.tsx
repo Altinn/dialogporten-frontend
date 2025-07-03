@@ -1,5 +1,5 @@
 import {
-  type AccountListItemType,
+  type AccountListItemProps,
   Badge,
   type BadgeProps,
   Button,
@@ -11,10 +11,10 @@ import {
   IconButton,
   List,
   ListItemControls,
-  type ListItemProps,
   Section,
   SettingsItem,
 } from '@altinn/altinn-components';
+import type { AccountListItemControlsProps } from '@altinn/altinn-components/dist/types/lib/components/Account/AccountListItemControls';
 import {
   BellIcon,
   Buildings2Icon,
@@ -49,21 +49,6 @@ export const AccountToolbar = ({ id, type }: AccountDetailsProps) => {
   );
 };
 
-export interface AccountListItemProps extends ListItemProps, AccountListItemControlsProps {
-  id: string;
-  type: AccountListItemType;
-  name: string;
-  title?: string;
-  groupId?: string; // Optional, used for grouping accounts
-  uniqueId?: string; // Organization number or personal identification number
-  parentId?: string; // Optional, used for hierarchical relationships
-  accountIds?: string[]; // Optional, used for grouping accounts
-  isCurrentEndUser?: boolean; // Indicates if this account is the current end user
-  isDeleted?: boolean; // Indicates that the account has been deleted
-  contextMenu?: ContextMenuProps;
-  label?: string;
-}
-
 interface AccountDetailsProps extends AccountListItemProps {
   smsAlerts?: boolean;
   emailAlerts?: boolean;
@@ -79,7 +64,8 @@ export const GroupDetails = ({ items, id = 'group', accountIds }: AccountDetails
     ? items?.filter((item) => accountIds.includes(item.id))
     : items?.filter((item) => item.type === 'company');
 
-  const groupName = groups.find((group) => group.id === Number.parseInt(id))?.name || 'Gruppe';
+  const currentGroup = groups.find((group) => group.id === Number.parseInt(id));
+  const groupName = currentGroup?.name || 'Gruppe';
 
   return (
     <Section color="company" padding={6} spacing={2}>
@@ -96,7 +82,7 @@ export const GroupDetails = ({ items, id = 'group', accountIds }: AccountDetails
             };
 
             return (
-              <Fragment key={item.title}>
+              <Fragment key={`${item.id}-${index}`}>
                 {index > 0 && <Divider />}
                 <SettingsItem
                   icon={item.icon}
@@ -123,7 +109,8 @@ export const GroupDetails = ({ items, id = 'group', accountIds }: AccountDetails
                             items: [
                               {
                                 id: groupName + item.id + 'favremgroup',
-                                groupId: 'context',
+                                groupId: currentGroup?.id?.toString(),
+                                type: 'group',
                                 icon: MinusCircleIcon,
                                 title: `Fjern fra "${groupName}"`,
                                 onClick: onRemoveFromGroup,
@@ -237,20 +224,6 @@ export const CompanyDetails = ({ ...props }: AccountDetailsProps) => {
     </Section>
   );
 };
-
-export interface AccountListItemControlsProps {
-  id: string;
-  type: AccountListItemType;
-  isCurrentEndUser?: boolean; // Optional, used to indicate if this account is the current end user
-  isDeleted?: boolean;
-  favourite?: boolean; // Optional, used for marking favourite accounts
-  favouriteLabel?: string; // Optional, label for the favourite icon
-  onToggleFavourite?: (id: string) => void; // Optional, callback for toggling favourite status
-  accountLabel?: string; // Optional, used for displaying a badge
-  contextMenu?: ContextMenuProps;
-  loading?: boolean;
-  badge?: BadgeProps | ReactNode;
-}
 
 export const AccountListItemControls = ({
   id,
