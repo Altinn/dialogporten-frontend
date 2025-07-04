@@ -6,9 +6,15 @@ interface Organization {
     nb: string;
     nn: string;
   };
+  emblem?: string;
   logo?: string;
   orgnr: string;
   homepage: string;
+  contact?: {
+    email?: string;
+    phone?: string;
+    url?: string;
+  };
   environments: string[];
 }
 
@@ -49,29 +55,33 @@ async function fetchOrganizations() {
     throw error;
   }
 }
-async function storeOrganizationsInRedis() {
+async function storeOrganizationsInRedis(): Promise<TransformedOrganization[]> {
   try {
     const { default: redisClient } = await import('../../redisClient.ts');
     const organizations = await fetchOrganizations();
-    const transformedOrganizations = organizations!.flatMap((org) => convertOrgsToJson(org));
-    await redisClient.set(organizationsRedisKey, JSON.stringify(transformedOrganizations), 'EX', 86400);
+    if (organizations && Array.isArray(organizations)) {
+      const transformedOrganizations = organizations!.flatMap((org) => convertOrgsToJson(org));
+      await redisClient.set(organizationsRedisKey, JSON.stringify(transformedOrganizations), 'EX', 86400);
+      return transformedOrganizations;
+    }
+    return [];
   } catch (error) {
     console.error('Error storing organizations in Redis:', error);
+    return [];
   }
 }
 
-export async function getOrganizationsFromRedis() {
+export async function getOrganizationsFromRedis(): Promise<TransformedOrganization[]> {
   try {
     const { default: redisClient } = await import('../../redisClient.ts');
     const data = await redisClient.get(organizationsRedisKey);
     if (data) {
       return JSON.parse(data);
     }
-    await storeOrganizationsInRedis();
-    return await getOrganizationsFromRedis();
+    return await storeOrganizationsInRedis();
   } catch (error) {
     console.error('Error retrieving organizations from Redis:', error);
-    return null;
+    return [];
   }
 }
 
@@ -132,9 +142,9 @@ export const Organization = objectType({
       },
     });
     t.string('logo', {
-      description: 'URL to the organization logo',
+      description: 'URL to the organization logo, preferably an emblem over the logo',
       resolve: (organization) => {
-        return organization.logo;
+        return organization.emblem || organization.logo;
       },
     });
     t.string('orgnr', {
