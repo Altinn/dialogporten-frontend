@@ -15,6 +15,7 @@ import { Link, type LinkProps } from 'react-router-dom';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { useDialogActions } from '../DialogDetailsPage/useDialogActions.tsx';
+import type { CurrentSeenByLog } from './Inbox.tsx';
 import type { InboxItemInput } from './InboxItemInput.ts';
 import { getDialogStatus } from './status.ts';
 
@@ -46,6 +47,8 @@ interface UseGroupedDialogsProps {
   collapseGroups?: boolean;
   /* title for the collapsed group, only applicable if collapseGroups=true */
   getCollapsedGroupTitle?: (count: number) => string;
+  /* used to open modal with seen by log */
+  onSeenByLogModalChange: (input: CurrentSeenByLog) => void;
 }
 
 const sortByUpdatedAt = (arr: DialogListItemProps[]) => {
@@ -112,6 +115,7 @@ const useGroupedDialogs = ({
   isFetchingNextPage,
   getCollapsedGroupTitle,
   collapseGroups = false,
+  onSeenByLogModalChange,
 }: UseGroupedDialogsProps): UseGroupedDialogsOutput => {
   const { t } = useTranslation();
   const format = useFormat();
@@ -126,7 +130,24 @@ const useGroupedDialogs = ({
     const contextMenu: ContextMenuProps = {
       id: 'dialog-context-menu-' + item.id,
       placement: 'right',
-      items: systemLabelActions(item.id, item.label),
+      items: [
+        ...systemLabelActions(item.id, item.label),
+        {
+          id: 'seenby-log',
+          groupId: 'logs',
+          label: item.seenByLabel,
+          as: 'button',
+          icon: item.seenByLog,
+          hidden: !item.seenByLabel,
+          onClick: () => {
+            onSeenByLogModalChange({
+              title: item.title,
+              dialogId: item.id,
+              items: item.seenByLog.items,
+            });
+          },
+        },
+      ],
       ariaLabel: t('dialog.context_menu.label', { title: item.title }),
     };
 

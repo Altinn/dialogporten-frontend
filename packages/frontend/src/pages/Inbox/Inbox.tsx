@@ -6,6 +6,7 @@ import {
   Heading,
   PageBase,
   Section,
+  type SeenByLogItemProps,
   Toolbar,
 } from '@altinn/altinn-components';
 import type { FilterState } from '@altinn/altinn-components/dist/types/lib/components/Toolbar/Toolbar';
@@ -22,6 +23,7 @@ import { useSearchString } from '../../components/PageLayout/Search/';
 import { useWindowSize } from '../../components/PageLayout/useWindowSize.tsx';
 import { SaveSearchButton } from '../../components/SavedSearchButton/SaveSearchButton.tsx';
 import { isSavedSearchDisabled } from '../../components/SavedSearchButton/savedSearchEnabled.ts';
+import { SeenByModal } from '../../components/SeenByModal/SeenByModal.tsx';
 import { PageRoutes } from '../routes.ts';
 import { FilterCategory, readFiltersFromURLQuery } from './filters.ts';
 import styles from './inbox.module.css';
@@ -30,6 +32,12 @@ import useGroupedDialogs from './useGroupedDialogs.tsx';
 
 interface InboxProps {
   viewType: InboxViewType;
+}
+
+export interface CurrentSeenByLog {
+  title: string;
+  dialogId: string;
+  items: SeenByLogItemProps[];
 }
 
 export const Inbox = ({ viewType }: InboxProps) => {
@@ -46,6 +54,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const location = useLocation();
 
   const [filterState, setFilterState] = useState<FilterState>(readFiltersFromURLQuery(location.search));
+  const [currentSeenByLogModal, setCurrentSeenByLogModal] = useState<CurrentSeenByLog | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
 
   const onFiltersChange = (filters: FilterState) => {
@@ -98,6 +107,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
 
   const isLoading = isLoadingParties || isLoadingDialogs;
   const { groupedDialogs, groups } = useGroupedDialogs({
+    onSeenByLogModalChange: setCurrentSeenByLogModal,
     items: dialogs,
     displaySearchResults: searchMode,
     filters: filterState,
@@ -202,6 +212,12 @@ export const Inbox = ({ viewType }: InboxProps) => {
           </DsButton>
         )}
       </Section>
+      <SeenByModal
+        title={currentSeenByLogModal?.title}
+        items={currentSeenByLogModal?.items}
+        isOpen={!!currentSeenByLogModal}
+        onClose={() => setCurrentSeenByLogModal(null)}
+      />
     </PageBase>
   );
 };

@@ -1,4 +1,3 @@
-import type { SeenByLogItem } from '@altinn/altinn-components';
 import {
   DialogStatus,
   type GetAllDialogsForPartiesQueryVariables,
@@ -7,10 +6,11 @@ import {
   type SearchDialogFieldsFragment,
   SystemLabel,
 } from 'bff-types-generated';
-import { format } from 'date-fns';
 import { type TFunction, t } from 'i18next';
 import { getPreferredPropertyByLocale } from '../../i18n/property.ts';
+import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
 import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
+import { toTitleCase } from '../../profile';
 import type { InboxViewType } from '../hooks/useDialogs.tsx';
 import { getOrganization } from './organizations.ts';
 import { getViewTypes } from './viewType.ts';
@@ -25,7 +25,7 @@ export const getPartyIds = (partiesToUse: PartyFieldsFragment[]) => {
   return [...partyURIs, ...subPartyURIs] as string[];
 };
 
-export const getSeenAtLabel = (seenAt: string, t: TFunction<'translation', undefined>): string => {
+export const getSeenAtLabel = (seenAt: string, format: FormatFunction): string => {
   const clockPrefix = t('word.clock_prefix');
   const formatString = `do MMMM yyyy ${clockPrefix ? `'${clockPrefix}' ` : ''}HH.mm`;
   return format(new Date(seenAt), formatString);
@@ -33,7 +33,6 @@ export const getSeenAtLabel = (seenAt: string, t: TFunction<'translation', undef
 
 export const getSeenByLabel = (
   seenBy: SeenByItem[],
-
   t: TFunction<'translation', undefined>,
 ): { isSeenByEndUser: boolean; seenByOthersCount: number; seenByLabel: string | undefined } => {
   const isSeenByEndUser = seenBy?.some((item) => item.isCurrentEndUser);
@@ -54,6 +53,7 @@ export function mapDialogToToInboxItems(
   input: SearchDialogFieldsFragment[],
   parties: PartyFieldsFragment[],
   organizations: OrganizationFieldsFragment[],
+  format: FormatFunction,
 ): InboxItemInput[] {
   return input.map((item) => {
     const titleObj = item.content.title.value;
@@ -96,14 +96,15 @@ export function mapDialogToToInboxItems(
       seenByOthersCount,
       seenByLog: {
         collapsible: true,
-        endUserLabel: seenByLabel,
+        endUserLabel: t('word.you'),
         items: item.seenSinceLastUpdate.map((seenBy) => {
+          const actorName = toTitleCase(seenBy.seenBy?.actorName ?? '');
           return {
             id: seenBy.id,
-            type: 'person' as SeenByLogItem['type'],
-            name: seenBy.seenBy?.actorName ?? '',
+            name: actorName,
             seenAt: seenBy.seenAt,
-            seenAtLabel: getSeenAtLabel(seenBy.seenAt, t),
+            seenAtLabel: getSeenAtLabel(seenBy.seenAt, format),
+            isEndUser: seenBy.isCurrentEndUser,
           };
         }),
       },
