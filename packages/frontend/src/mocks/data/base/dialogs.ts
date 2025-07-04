@@ -21,9 +21,29 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         seenBy: {
           actorType: null,
           actorId: 'urn:altinn:person:identifier-ephemeral:2b34ab491b',
-          actorName: 'SØSTER FANTASIFULL',
+          actorName: 'TEST TESTESEN',
         },
         isCurrentEndUser: true,
+      },
+      {
+        id: 'c4f4d846-2fe7-4172-badc-abc48f9af8a1',
+        seenAt: '2024-09-30T11:36:01.572Z',
+        seenBy: {
+          actorType: null,
+          actorId: 'urn:altinn:person:identifier-ephemeral:2b34ab491b',
+          actorName: 'ANNA FANTASIFULL',
+        },
+        isCurrentEndUser: false,
+      },
+      {
+        id: 'c4f4d846-2fe7-4172-badc-abc48f9af8a3',
+        seenAt: '2024-09-30T11:36:01.572Z',
+        seenBy: {
+          actorType: null,
+          actorId: 'urn:altinn:person:identifier-ephemeral:2b34ab491b',
+          actorName: 'PER GÅTEFULL',
+        },
+        isCurrentEndUser: false,
       },
     ],
     latestActivity: {

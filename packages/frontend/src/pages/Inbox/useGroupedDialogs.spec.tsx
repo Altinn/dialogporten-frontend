@@ -306,6 +306,7 @@ describe('useGroupedDialogs', () => {
           displaySearchResults: false,
           viewType: 'inbox',
           isLoading: true,
+          onSeenByLogModalChange: () => {},
         }),
       {
         wrapper: createCustomWrapper(),
@@ -324,6 +325,7 @@ describe('useGroupedDialogs', () => {
           displaySearchResults: true,
           viewType: 'inbox',
           isLoading: false,
+          onSeenByLogModalChange: () => {},
         }),
       {
         wrapper: createCustomWrapper(),
@@ -344,6 +346,7 @@ describe('useGroupedDialogs', () => {
           displaySearchResults: false,
           viewType: 'inbox',
           isLoading: false,
+          onSeenByLogModalChange: () => {},
         }),
       {
         wrapper: createCustomWrapper(),
