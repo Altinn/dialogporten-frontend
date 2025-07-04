@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.43.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.42.0...v1.43.0) (2025-07-04)
+
+
+### Features
+
+* add context menu to dialog list item with functionality for archiving and putting to bin ([#2316](https://github.com/Altinn/dialogporten-frontend/issues/2316)) ([4af10c1](https://github.com/Altinn/dialogporten-frontend/commit/4af10c1edc4ce960b8e30a03d78bc7682e672dc6))
+* add seen by log details in modal from dialog list view ([#2318](https://github.com/Altinn/dialogporten-frontend/issues/2318)) ([6d8c24b](https://github.com/Altinn/dialogporten-frontend/commit/6d8c24b9126f432122548eb12cc1add0a766d9b2))
+* Added filters to PartiesOverview and added Feature Toggle ([13e73c6](https://github.com/Altinn/dialogporten-frontend/commit/13e73c648ce26d637a51d7cb37720c8000f211f6))
+* **orgs:** prioritize emblem over logo for org avatar with generic logo as fallback ([#2315](https://github.com/Altinn/dialogporten-frontend/issues/2315)) ([c2e5dc0](https://github.com/Altinn/dialogporten-frontend/commit/c2e5dc0b4eaa59c803ee46e061d401235fb2fe09))
+
 ## [1.42.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.41.0...v1.42.0) (2025-07-03)
 
 
