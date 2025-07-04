@@ -72,6 +72,7 @@ export function mapDialogToToInboxItems(
     return {
       id: item.id,
       party: item.party,
+      hasUnopenedContent: item.hasUnopenedContent,
       title: getPreferredPropertyByLocale(titleObj)?.value ?? '',
       dueAt: item.dueAt,
       summary: getPreferredPropertyByLocale(summaryObj)?.value ?? '',
