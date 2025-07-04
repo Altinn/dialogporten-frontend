@@ -8,6 +8,7 @@ fragment SearchDialogFields on SearchDialog {
   createdAt
   updatedAt
   dueAt
+  hasUnopenedContent
   extendedStatus
   seenSinceLastUpdate {
     ...SeenLogFields

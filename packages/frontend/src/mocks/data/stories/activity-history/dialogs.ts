@@ -9,7 +9,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         party: 'urn:altinn:person:identifier-no:1',
         org: 'ok',
         progress: null,
-        guiAttachmentCount: 1,
+        hasUnopenedContent: false, guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-05-23T23:00:00.000Z',
         updatedAt: '2024-10-25T11:34:00.000Z',
