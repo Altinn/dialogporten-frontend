@@ -16,7 +16,7 @@ test('should navigate to inbox when account is chosen from global menu', async (
 
   expect(page.url()).toEqual(appURLDrafts);
   /* chose all organizations from the global menu */
-  await page.getByRole('button', { name: 'Meny' }).click();
+  await page.getByRole('button', { name: 'Meny' }).first().click();
   await page.getByRole('banner').getByRole('button', { name: 'Test Testesen' }).click();
   await page.locator('a').filter({ hasText: 'FTT4Alle virksomheter1' }).click();
 

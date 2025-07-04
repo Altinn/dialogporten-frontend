@@ -178,7 +178,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
       await createSavedSearch('', data);
       openSnackbar({
         message: t('savedSearches.saved_success'),
-        color: 'success',
+        color: 'accent',
       });
     } catch (error) {
       openSnackbar({
@@ -198,7 +198,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
       await deleteSavedSearch(savedSearchId);
       openSnackbar({
         message: t('savedSearches.deleted_success'),
-        color: 'success',
+        color: 'accent',
       });
       await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.SAVED_SEARCHES] });
     } catch (error) {
@@ -217,7 +217,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
       await updateSavedSearch(id, savedSearchInputValue ?? '');
       openSnackbar({
         message: t('savedSearches.update_success'),
-        color: 'success',
+        color: 'accent',
       });
       void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.SAVED_SEARCHES] });
       setExpandedId('');

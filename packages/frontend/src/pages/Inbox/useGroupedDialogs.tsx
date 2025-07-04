@@ -1,17 +1,20 @@
-import type {
-  BadgeColor,
-  BadgeSize,
-  BadgeVariant,
-  DialogListGroupProps,
-  DialogListItemProps,
-  DialogListItemState,
-  FilterState,
+import {
+  type BadgeColor,
+  type BadgeSize,
+  type BadgeVariant,
+  ContextMenu,
+  type ContextMenuProps,
+  type DialogListGroupProps,
+  type DialogListItemProps,
+  type DialogListItemState,
+  type FilterState,
 } from '@altinn/altinn-components';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps } from 'react-router-dom';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
+import { useDialogActions } from '../DialogDetailsPage/useDialogActions.tsx';
 import type { InboxItemInput } from './InboxItemInput.ts';
 import { getDialogStatus } from './status.ts';
 
@@ -112,36 +115,47 @@ const useGroupedDialogs = ({
 }: UseGroupedDialogsProps): UseGroupedDialogsOutput => {
   const { t } = useTranslation();
   const format = useFormat();
+  const systemLabelActions = useDialogActions();
 
   const clockPrefix = t('word.clock_prefix');
   const formatString = `do MMMM yyyy ${clockPrefix ? `'${clockPrefix}' ` : ''}HH.mm`;
   const allWithinSameYear = items.every((d) => new Date(d.updatedAt).getFullYear() === new Date().getFullYear());
   const isInbox = viewType === 'inbox';
 
-  const formatDialogItem = (item: InboxItemInput, groupId: string): DialogListItemProps => ({
-    groupId,
-    title: item.title,
-    badge: getItemBadge(item.viewType, item.isSeenByEndUser, t),
-    id: item.id,
-    recipientLabel: t('word.to'),
-    sender: item.sender,
-    summary: item.viewType === 'inbox' ? item.summary : undefined,
-    state: getDialogState(item.viewType),
-    recipient: item.recipient,
-    attachmentsCount: item.guiAttachmentCount,
-    seenByLog: item.seenByLog,
-    // TODO: Change !item.seenByLog.items.length to seenSinceLastContentUpdate when available, cf.https://github.com/Altinn/dialogporten-frontend/issues/2305
-    unread: !item.seenByLog.items.length,
-    status: getDialogStatus(item.status, t),
-    updatedAt: item.updatedAt,
-    updatedAtLabel: format(item.updatedAt, formatString),
-    dueAtLabel: item.dueAt ? t('dialog.due_at', { date: format(item.dueAt, formatString) }) : undefined,
-    dueAt: item.dueAt,
-    ariaLabel: item.title,
-    as: (props: LinkProps) => (
-      <Link state={{ fromView: location.pathname }} {...props} to={`/inbox/${item.id}/${location.search}`} />
-    ),
-  });
+  const formatDialogItem = (item: InboxItemInput, groupId: string): DialogListItemProps => {
+    const contextMenu: ContextMenuProps = {
+      id: 'dialog-context-menu-' + item.id,
+      placement: 'right',
+      items: systemLabelActions(item.id, item.label),
+      ariaLabel: t('dialog.context_menu.label', { title: item.title }),
+    };
+
+    return {
+      groupId,
+      title: item.title,
+      badge: getItemBadge(item.viewType, item.isSeenByEndUser, t),
+      id: item.id,
+      recipientLabel: t('word.to'),
+      sender: item.sender,
+      summary: item.viewType === 'inbox' ? item.summary : undefined,
+      state: getDialogState(item.viewType),
+      recipient: item.recipient,
+      attachmentsCount: item.guiAttachmentCount,
+      seenByLog: item.seenByLog,
+      // TODO: Change !item.seenByLog.items.length to seenSinceLastContentUpdate when available, cf.https://github.com/Altinn/dialogporten-frontend/issues/2305
+      unread: !item.seenByLog.items.length,
+      status: getDialogStatus(item.status, t),
+      controls: <ContextMenu {...contextMenu} />,
+      updatedAt: item.updatedAt,
+      updatedAtLabel: format(item.updatedAt, formatString),
+      dueAtLabel: item.dueAt ? t('dialog.due_at', { date: format(item.dueAt, formatString) }) : undefined,
+      dueAt: item.dueAt,
+      ariaLabel: item.title,
+      as: (props: LinkProps) => (
+        <Link state={{ fromView: location.pathname }} {...props} to={`/inbox/${item.id}/${location.search}`} />
+      ),
+    };
+  };
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   return useMemo(() => {
