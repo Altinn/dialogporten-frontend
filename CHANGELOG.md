@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.44.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.43.0...v1.44.0) (2025-07-04)
+
+
+### Features
+
+* Added hasUnopenedContent to dialog list view [#2230](https://github.com/Altinn/dialogporten-frontend/issues/2230) ([7d94562](https://github.com/Altinn/dialogporten-frontend/commit/7d94562c79216d71983d042c2e6f04572f2b8a77))
+
 ## [1.43.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.42.0...v1.43.0) (2025-07-04)
 
 
