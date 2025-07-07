@@ -1,40 +1,46 @@
-import { Article, ArticleContact, ArticleHeader, Breadcrumbs, PageBase, Typography } from '@altinn/altinn-components';
-import { useLocation } from 'react-router-dom';
+import { Article, ArticleHeader, Breadcrumbs, Button, PageBase, Typography } from '@altinn/altinn-components';
+import { useTranslation } from 'react-i18next';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { PageRoutes } from '../routes';
 
 export const ErrorPage = () => {
   const location = useLocation();
   const { componentName } = location.state || { componentName: 'Unknown Component' };
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  const handleGoBack = () => {
+    navigate(-1);
+  };
 
   return (
     <PageBase>
       <Article>
-        <Breadcrumbs items={[{ label: 'Forside', href: '#' }, { label: 'Error' }]} />
+        <Breadcrumbs
+          items={[
+            {
+              label: t('word.frontpage'),
+              href: PageRoutes.inbox,
+            },
+            {
+              label: t('word.error'),
+              href: PageRoutes.error,
+            },
+          ]}
+        />
         <ArticleHeader title={`Unexpected error in ${componentName}`}>
           <Typography>
-            <p>A short explanation of what went wrong:</p>
-            <ul>
-              <li>
-                <a href="#d">Helpful link 1</a>
-              </li>
-              <li>
-                <a href="#a">Helpful link 2</a>
-              </li>
-              <li>
-                <a href="#s">Helpful link 3</a>
-              </li>
-            </ul>
+            <p>
+              {t('error.check_status_on')}{' '}
+              <a target="_blank" href="https://info.altinn.no/om-altinn/driftsmeldinger/" rel="noreferrer">
+                {t('error.service_status')}
+              </a>
+            </p>
+            <p>
+              {t('word.or')} <Button onClick={handleGoBack} label={t('error.go_back')} />
+            </p>
           </Typography>
         </ArticleHeader>
-        <ArticleContact
-          title="Trenger du hjelp?"
-          items={[{ label: 'Chat med en veileder' }, { label: 'Ring 75 00 60 00' }, { label: 'Skriv til Altinn' }]}
-        >
-          <p>
-            Maecenas sed diam eget risus varius blandit sit amet non magna. Vivamus sagittis lacus vel augue laoreet
-            rutrum faucibus dolor auctor. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia
-            odio sem nec elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sed odio dui.
-          </p>
-        </ArticleContact>
       </Article>
     </PageBase>
   );

@@ -38,6 +38,9 @@
   "error.dialog.auth_level_too_low": "Du må logge inn med høgare tryggleiksnivå",
   "error.dialog.auth_level_too_low.link": "Logg inn med høgare tryggleiksnivå",
   "error.dialog.not_found": "Dialog ikkje funnen",
+  "error.check_status_on": "Sjekk status på",
+  "error.service_status": "Driftsmeldingar",
+  "error.go_back": "Gå tilbake",
   "filter.date.last_six_months": "Siste seks månader",
   "filter.date.last_twelve_months": "Siste tolv månader",
   "filter.date.older_than_one_year": "Eldre enn eitt år",
@@ -215,5 +218,7 @@
   "word.to": "til",
   "word.unread": "Ulest",
   "word.you": "deg",
-  "word.and": "og"
+  "word.and": "og",
+  "word.or": "eller",
+  "word.error": "Error"
 }
