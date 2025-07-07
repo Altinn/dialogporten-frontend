@@ -38,6 +38,9 @@
   "error.dialog.auth_level_too_low": "You need to sign in with a higher level of security",
   "error.dialog.auth_level_too_low.link": "Log in with a higher level of security.",
   "error.dialog.not_found": "Dialog not found",
+  "error.check_status_on": "Check the status on",
+  "error.service_status": "Service status",
+  "error.go_back": "Go back",
   "filter.date.last_six_months": "Last six months",
   "filter.date.last_twelve_months": "Last twelve months",
   "filter.date.older_than_one_year": "Older than one year",
@@ -215,5 +218,7 @@
   "word.to": "to",
   "word.unread": "Unread",
   "word.you": "you",
-  "word.and": "and"
+  "word.and": "and",
+  "word.or": "or",
+  "word.error": "Error"
 }
