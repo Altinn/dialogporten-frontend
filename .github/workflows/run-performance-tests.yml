@@ -47,10 +47,10 @@ jobs:
     environment: yt01 # TODO: No clue what to configure here; ask Andreas
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: OIDC Login to Azure Public Cloud
-        uses: azure/login@v2
+        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 #v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
@@ -75,7 +75,7 @@ jobs:
             exit 1
           fi
       - name: Setup k6
-        uses: grafana/setup-k6-action@v1
+        uses: grafana/setup-k6-action@ffe7d7290dfa715e48c2ccc924d068444c94bde2 # v1.0.0
       - name: Run K6 tests (${{ inputs.testSuitePath }})
         run: |
             echo "Running k6 test suite ${{ inputs.testSuitePath }} with ${{ inputs.browserVus }}/${{ inputs.bffVus }} BrowserVUs/BffVus for ${{ inputs.duration }} on ${{ inputs.parallelism }} parallelism"
@@ -88,6 +88,6 @@ jobs:
               -v "${{ inputs.browserVus }}" \
               -w "${{ inputs.bffVus }}" \
               -d "${{ inputs.duration }}" \
-              -p "${{ inputs.parallelism }}"
+              -p "${{ inputs.parallelism }}" 
 
       
