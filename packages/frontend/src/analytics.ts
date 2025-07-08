@@ -13,6 +13,19 @@ if (config.applicationInsightsInstrumentationKey && import.meta.env.PROD) {
         instrumentationKey: config.applicationInsightsInstrumentationKey,
         extensions: [reactPlugin as unknown as ITelemetryPlugin],
         enableAutoRouteTracking: true,
+        autoTrackPageVisitTime: true,
+        enableCorsCorrelation: true,
+        enableUnhandledPromiseRejectionTracking: true,
+        enableAjaxErrorStatusText: true,
+        enableRequestHeaderTracking: true,
+        enableResponseHeaderTracking: true,
+        enableAjaxPerfTracking: true,
+        enablePerfMgr: true,
+        disableCookiesUsage: false,
+        // TODO: set to a lower value in production
+        samplingPercentage: 100,
+        appId: 'arbeidsflate-frontend',
+        enableDebug: false,
       },
     });
     applicationInsights.loadAppInsights();
