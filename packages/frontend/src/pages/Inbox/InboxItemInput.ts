@@ -14,6 +14,7 @@ export interface InboxItemInput {
   status: DialogStatus;
   isSeenByEndUser: boolean;
   hasUnopenedContent: boolean;
+  contentUpdatedAt: string;
   label: SystemLabel[];
   org: string;
   guiAttachmentCount: number;
