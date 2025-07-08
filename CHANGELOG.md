@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.44.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.43.0...v1.44.0) (2025-07-08)
+
+
+### Features
+
+* Added hasUnopenedContent to dialog list view [#2230](https://github.com/Altinn/dialogporten-frontend/issues/2230) ([7d94562](https://github.com/Altinn/dialogporten-frontend/commit/7d94562c79216d71983d042c2e6f04572f2b8a77))
+* Dialog list view now sorting by contentUpdatedAt prop ([#2231](https://github.com/Altinn/dialogporten-frontend/issues/2231)) ([eb20f60](https://github.com/Altinn/dialogporten-frontend/commit/eb20f6098e11a81def3093305f04daafc8a4e3ac))
+* Update error page content ([#2321](https://github.com/Altinn/dialogporten-frontend/issues/2321)) ([df3ecaa](https://github.com/Altinn/dialogporten-frontend/commit/df3ecaab673d85b137eab562384f29ca1f5acba4))
+
 ## [1.43.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.42.0...v1.43.0) (2025-07-04)
 
 
