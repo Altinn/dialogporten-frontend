@@ -17,6 +17,7 @@ import { openAf, selectMenuElements, isAuthenticated, getNextpage } from './bff.
 import { queryLabels, isAuthenticatedLabel } from './queries.js';
 import { getPersonalToken, randomItem } from './testimports.js';
 import { getCookie } from './cookieGenk6.js';
+import { afUrl } from './config.js';
 
 const numberOfEndUsers = __ENV.NUMBER_OF_ENDUSERS || 30;
 
@@ -24,6 +25,8 @@ function getOptions() {
   const browser_vus = __ENV.BROWSER_VUS || 1;
   const bff_vus = __ENV.BFF_VUS || 1;
   const duration = __ENV.DURATION || '1m';
+  const breakpoint = __ENV.BREAKPOINT || false;
+  const abort_on_fail = __ENV.ABORT_ON_FAIL || false;
   
   const options = {
     scenarios: {},
@@ -49,17 +52,31 @@ function getOptions() {
 
   if (bff_vus > 0) {
     options.scenarios.bff = {
-      executor: 'constant-vus',
       exec: 'bffTest',
-      vus: bff_vus,
-      duration: duration,
     };
-    for (var label of queryLabels) {
-      options.thresholds[`http_req_duration{name:${label}}`] = [];
-      options.thresholds[`http_req_failed{name:${label}}`] = [];
+    if (breakpoint) {
+      options.scenarios.bff.executor = 'ramping-vus',
+      options.scenarios.bff.stages = [
+        {
+          duration: duration,
+          target: bff_vus,
+        },
+      ]
+      for (var label of queryLabels) {
+        options.thresholds[[`http_req_duration{name:${label}}`]] = [{ threshold: "max<5000", abortOnFail: abort_on_fail }];
+        options.thresholds[[`http_req_failed{name:${label}}`]] = [{ threshold: 'rate<=0.0', abortOnFail: abort_on_fail }];
+      }
+    } 
+    else {
+      options.scenarios.bff.executor = 'constant-vus';
+      options.scenarios.bff.vus = bff_vus;
+      options.scenarios.bff.duration = duration;
+      for (var label of queryLabels) {
+        options.thresholds[`http_req_duration{name:${label}}`] = [];
+        options.thresholds[`http_req_failed{name:${label}}`] = [];
+      }
     }
   }
-  
   return options;
 }
 
@@ -112,12 +129,12 @@ export async function browserTest(data) {
 
   try {
     await context.addCookies([testData.cookie]);
-    await page.goto('http://af.yt.altinn.cloud', { waitUntil: 'networkidle' });
+    await page.goto(afUrl, { waitUntil: 'networkidle' });
 
     // Check if we are on the right page
     const currentUrl = page.url();
     check(currentUrl, {
-      currentUrl: (h) => h == 'https://af.yt.altinn.cloud/',
+      currentUrl: (h) => h == afUrl,
     });
 
     var endTime = new Date();

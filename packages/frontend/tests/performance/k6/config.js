@@ -1,0 +1,8 @@
+export const afUrl = ( function () {
+    switch (__ENV.ENVIRONMENT) {
+      case 'yt': return 'https://af.yt.altinn.cloud/';
+      case 'tt': return 'https://af.tt.altinn.no/';
+      case 'at': return 'https://af.at.altinn.cloud/';
+      default: return 'https://af.yt.altinn.cloud/';
+    }
+  }) ();

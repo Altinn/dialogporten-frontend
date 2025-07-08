@@ -26,7 +26,7 @@ on:
       evironment:
         description: "Environment to run the tests in"
         required: true
-        default: "yt01"
+        default: "yt"
         type: string
       testSuitePath:
         description: 'Path to test suite to run'

@@ -8,8 +8,9 @@ import {
     getAllDialogsForPartyQuery
 } from './queries.js';
 import { describe, expect } from './testimports.js';
+import { afUrl } from './config.js';
 
-const baseUrl = 'https://af.yt.altinn.cloud/api';
+const baseUrl = afUrl + 'api';
 
 /**
  * This function does the same bff-calls that af does freom the browser

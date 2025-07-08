@@ -4,9 +4,11 @@ import { Trend } from 'k6/metrics';
 import papaparse from 'https://jslib.k6.io/papaparse/5.1.1/index.js';
 import { SharedArray } from 'k6/data';
 import { randomIntBetween, randomItem } from './testimports.js';
+import { afUrl } from './config.js';
 
 const browser_vus = __ENV.BROWSER_VUS || 1;
 const duration = __ENV.DURATION || '1m';
+
 
 function readCsv(filename) {
   try {
@@ -82,18 +84,18 @@ export async function browserTest(data) {
     // if cookie set, go stright to af
     if (testData.cookie) { 
       await context.addCookies([testData.cookie]);
-      await page.goto('http://af.yt.altinn.cloud', { waitUntil: 'networkidle' });
+      await page.goto(afUrl, { waitUntil: 'networkidle' });
     }
     // if no cookie, go to login page
     else {
-      await page.goto('http://af.yt.altinn.cloud', { waitUntil: 'networkidle' });
+      await page.goto(afUrl, { waitUntil: 'networkidle' });
       startTime = await login(page, testData);
     }
 
     // Check if we are on the right page
     const currentUrl = page.url();
     check(currentUrl, {
-      currentUrl: (h) => h == 'https://af.yt.altinn.cloud/',
+      currentUrl: (h) => h == afUrl,        
     });
 
     var endTime = new Date();
@@ -159,7 +161,7 @@ async function selectSideMenuElement(page, locator, trend) {
   trend.add(endTime - startTime);
 }
 
-async function waitForPageLoaded(page, empties = 1) {
+async function waitForPageLoaded(page, empties = 2) {
   var busyItems = await page.$$('li [aria-busy="true"]');
   var noEmptys = 0;
   while ( busyItems.length > 0 || noEmptys < empties) {

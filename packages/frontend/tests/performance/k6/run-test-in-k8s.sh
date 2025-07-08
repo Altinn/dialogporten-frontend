@@ -12,6 +12,7 @@ help() {
     echo "  -f, --filename       Specify the filename of the k6 script archive"
     echo "  -c, --configmapname  Specify the name of the configmap to create"
     echo "  -n, --name           Specify the name of the test run"
+    echo "  -e, --env            Specify the environment the test shall run against"
     echo "  -v, --vus            Specify the number of virtual browser users"
     echo "  -w, --wus            Specify the number of virtual bff users"
     echo "  -d, --duration       Specify the duration of the test"
@@ -50,6 +51,7 @@ print_logs() {
 
 breakpoint=false
 abort_on_fail=false
+environment="yt"
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -66,6 +68,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         -n|--name)
             name="$2"
+            shift 2
+            ;;
+        -e|--env)
+            environment="$2"
             shift 2
             ;;
         -v|--vus)
@@ -119,7 +125,7 @@ configmapname=$(echo "$configmapname" | tr '[:upper:]' '[:lower:]')
 # Set testid to name + timestamp
 testid="${name}_$(date '+%Y%m%dT%H%M%S')"
 
-archive_args="-e BROWSER_VUS=$browserVus -e BFF_VUS=$bffVus -e DURATION=$duration"
+archive_args="-e BROWSER_VUS=$browserVus -e BFF_VUS=$bffVus -e DURATION=$duration -e ENVIRONMENT=$environment"
 if $breakpoint; then
     archive_args="-e breakpoint=true -e stages_target=$vus -e stages_duration=$duration -e abort_on_fail=$abort_on_fail"
 fi
