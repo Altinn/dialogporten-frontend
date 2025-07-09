@@ -50,6 +50,8 @@ resource sourceMapContainer 'Microsoft.Storage/storageAccounts/blobServices/cont
   ]
 }
 
+var sourceMapUri = 'https://${sourceMapStorageAccountName}.blob.${environment().suffixes.storage}/${sourceMapContainerName}'
+
 resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: '${namePrefix}-applicationInsights'
   location: location
@@ -59,8 +61,7 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
     WorkspaceResourceId: appInsightsWorkspace.id
   }
   tags: union(tags, {
-    SourceMapStorageAccountName: sourceMapStorageAccountName
-    SourceMapContainerName: sourceMapContainerName
+    'hidden-link:Insights.Sourcemap.Storage': json('{"Uri": "${sourceMapUri}"}')
   })
 }
 

@@ -13,13 +13,10 @@ param allowBlobPublicAccess bool = false
 @description('Whether to enable hierarchical namespace (Data Lake Storage Gen2)')
 param enableHierarchicalNamespace bool = false
 
-@description('Optional explicit storage account name (must be globally unique, 3-24 lowercase letters and numbers)')
-param storageAccountName string = ''
+var storageAccountName = take('${namePrefix}storage${uniqueString(resourceGroup().id)}', 24)
 
-var resolvedStorageAccountName = empty(storageAccountName) ? take('${namePrefix}storage${uniqueString(resourceGroup().id)}', 24) : storageAccountName
-
-resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
-  name: resolvedStorageAccountName
+resource storageAccount 'Microsoft.Storage/storageAccounts@2025-01-01' = {
+  name: storageAccountName
   location: location
   sku: {
     name: 'Standard_LRS'
