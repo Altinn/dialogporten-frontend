@@ -20,7 +20,7 @@ test.describe('Message navigation', () => {
     await page.getByRole('button', { name: 'Test Testesen' }).click();
     await toolbarArea.locator('li').filter({ hasText: 'Firma AS' }).locator('visible=true').click();
 
-    await expect(page.getByRole('button', { name: 'Firma AS' })).toBeVisible();
+    await expect(page.getByTestId('inbox-toolbar').getByRole('button', { name: 'Firma AS' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'This is a message 1 for Firma AS' })).toBeVisible();
     await page.getByRole('link', { name: 'This is a message 1 for Firma AS' }).click();
     await page.getByRole('link', { name: 'Tilbake' }).click();

@@ -6,7 +6,7 @@ import {
   Profile,
   SearchAutocompleteDialogFieldsFragment, SearchDialogFieldsFragment, PartyFieldsFragment, OrganizationFieldsFragment,
 } from 'bff-types-generated';
-import {convertToDialogByIdTemplate, filterDialogs} from './data/base/helper.ts';
+import { convertToDialogByIdTemplate, filterDialogs } from './data/base/helper.ts';
 import { getMockedData } from './data.ts';
 
 const data = await getMockedData(window.location.href);
@@ -25,17 +25,18 @@ let inMemoryStore: InMemoryStore = {
   parties: data.parties,
   organizations: data.organizations,
 };
- 
+
 const isAuthenticatedMock = http.get('/api/isAuthenticated', () => {
   return HttpResponse.json({ authenticated: true });
 });
 
 export const streamMock = http.get('/api/graphql/stream', async () => {
   const stream = new ReadableStream({
-    start( {
+    start({
       /* Create a readable stream that sends events if needed for testing in the future and remember to close stream controller */
     }) {
-  }});
+    }
+  });
 
   return new Response(stream, {
     headers: {
@@ -118,13 +119,13 @@ const getDialogByIdMock = graphql.query('getDialogById', (options) => {
         isCurrentEndUser: true,
       },
     ];
-    inMemoryStore.dialogs = dialog 
+    inMemoryStore.dialogs = dialog
       ? inMemoryStore.dialogs?.map((d) => (d.id === id ? dialog : d))
       : inMemoryStore.dialogs;
   }
 
-  const dialogDetails: DialogByIdFieldsFragment | null = dialog 
-    ? convertToDialogByIdTemplate(dialog) as DialogByIdFieldsFragment 
+  const dialogDetails: DialogByIdFieldsFragment | null = dialog
+    ? convertToDialogByIdTemplate(dialog) as DialogByIdFieldsFragment
     : null;
 
   return HttpResponse.json({
@@ -151,7 +152,7 @@ Dette er HTML som er generert fra markdown.
 `);
 });
 
-const getContentMarkdownMock = http.get('https://dialogporten-serviceprovider.net/fce-markdown-transmission', ({request}) => {
+const getContentMarkdownMock = http.get('https://dialogporten-serviceprovider.net/fce-markdown-transmission', ({ request }) => {
   const url = new URL(request.url)
   const productId = url.searchParams.get('id')
   return HttpResponse.text(`# Info i markdown for transmission (id=${productId})`);
@@ -249,6 +250,7 @@ const searchAutocompleteDialogsMock = graphql.query('getSearchAutocompleteDialog
   const autoCompleteItems: SearchAutocompleteDialogFieldsFragment[] = filteredItems?.map(item => ({
     id: item.id,
     seenSinceLastUpdate: item.seenSinceLastUpdate,
+    seenSinceLastContentUpdate: item.seenSinceLastContentUpdate,
     content: {
       __typename: "SearchContent",
       title: {

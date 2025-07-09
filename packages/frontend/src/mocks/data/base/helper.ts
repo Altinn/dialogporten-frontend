@@ -8,8 +8,8 @@ import {
   SearchDialogFieldsFragment,
   TransmissionType,
 } from 'bff-types-generated';
-import {naiveSearchFilter} from "../../filters.ts";
-import {InMemoryStore} from "../../handlers.ts";
+import { naiveSearchFilter } from "../../filters.ts";
+import { InMemoryStore } from "../../handlers.ts";
 
 export const filterDialogs = ({
   inMemoryStore,
@@ -20,7 +20,7 @@ export const filterDialogs = ({
   status,
   updatedAfter,
   updatedBefore,
- }: {
+}: {
   inMemoryStore: InMemoryStore;
   partyURIs: string[];
   search?: string;
@@ -208,14 +208,14 @@ export const getMockedTransmissions = (dialogId: string) => {
         },
         "content": {
           "title": {
-            "value": [ {
+            "value": [{
               value: 'Tittel',
               languageCode: 'nb',
             }],
             "mediaType": "text/plain"
           },
           "summary": {
-            "value": [ {
+            "value": [{
               value: 'Oppsummering',
               languageCode: 'nb',
             }],
@@ -238,14 +238,14 @@ export const getMockedTransmissions = (dialogId: string) => {
         },
         "content": {
           "title": {
-            "value": [ {
+            "value": [{
               value: 'Tittel 2',
               languageCode: 'nb',
             }],
             "mediaType": "text/pla  in"
           },
           "summary": {
-            "value": [ {
+            "value": [{
               value: 'Oppsummering 2',
               languageCode: 'nb',
             }],
@@ -267,7 +267,7 @@ export const getMockedTransmissions = (dialogId: string) => {
         },
         "content": {
           "title": {
-            "value": [ {
+            "value": [{
               value: 'Tittel 3',
               languageCode: 'nb',
             }],
@@ -275,7 +275,7 @@ export const getMockedTransmissions = (dialogId: string) => {
           },
           "contentReference": getMockedUnauthorizedFCEContent(),
           "summary": {
-            "value": [ {
+            "value": [{
               value: 'Oppsummering 3',
               languageCode: 'nb',
             }],
@@ -297,7 +297,7 @@ export const getMockedTransmissions = (dialogId: string) => {
         },
         "content": {
           "title": {
-            "value": [ {
+            "value": [{
               value: 'Tittel 4',
               languageCode: 'nb',
             }],
@@ -305,7 +305,7 @@ export const getMockedTransmissions = (dialogId: string) => {
           },
           "contentReference": getMockedFCEContent('transmission-4'),
           "summary": {
-            "value": [ {
+            "value": [{
               value: 'Oppsummering 4',
               languageCode: 'nb',
             }],

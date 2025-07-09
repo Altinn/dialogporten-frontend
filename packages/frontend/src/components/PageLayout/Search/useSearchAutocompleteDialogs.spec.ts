@@ -34,6 +34,7 @@ describe('generateSendersAutocompleteBySearchString', () => {
       seenByOthersCount: 0,
       seenByLabel: 'Sett av deg',
       viewType: 'INBOX' as InboxViewType,
+      seenSinceLastContentUpdate: [],
       seenByLog: {
         collapsible: true,
         title: 'Sett av deg',
@@ -76,6 +77,7 @@ describe('generateSendersAutocompleteBySearchString', () => {
       isSeenByEndUser: true,
       label: [SystemLabel.Default],
       updatedAt: '2023-05-17T09:30:00.000Z',
+      seenSinceLastContentUpdate: [],
       seenByLog: {
         collapsible: true,
         title: 'Sett av deg',

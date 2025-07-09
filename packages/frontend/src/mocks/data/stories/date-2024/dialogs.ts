@@ -7,16 +7,17 @@ const dialogsWithMockedSystemDate: SearchDialogFieldsFragment[] = [
     {
         id: '019241f7-6f45-72fd-abcd-today83j1ks2',
         endUserContext: {
-          systemLabels: [SystemLabel.Default],
+            systemLabels: [SystemLabel.Default],
         },
         party: 'urn:altinn:person:identifier-no:1',
         org: 'ok',
         progress: null,
-        hasUnopenedContent: false,  contentUpdatedAt: MOCKED_SYS_DATE, guiAttachmentCount: 1,
+        hasUnopenedContent: false, contentUpdatedAt: MOCKED_SYS_DATE, guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-05-23T23:00:00.000Z',
         updatedAt: MOCKED_SYS_DATE,
         extendedStatus: null,
+        seenSinceLastContentUpdate: [],
         seenSinceLastUpdate: [
             {
                 id: 'c4f4d846-2fe7-4172-badc-abc48f9af8a5',
@@ -69,12 +70,13 @@ const dialogsWithMockedSystemDate: SearchDialogFieldsFragment[] = [
     {
         id: '019241f7-6f45-72fd-a574-jksit83j1ks2',
         endUserContext: {
-          systemLabels: [SystemLabel.Default],
+            systemLabels: [SystemLabel.Default],
         },
         party: 'urn:altinn:person:identifier-no:1',
         org: 'ok',
+        seenSinceLastContentUpdate: [],
         progress: null,
-        hasUnopenedContent: false,  contentUpdatedAt: MOCKED_SYS_DATE, guiAttachmentCount: 1,
+        hasUnopenedContent: false, contentUpdatedAt: MOCKED_SYS_DATE, guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-05-23T23:00:00.000Z',
         updatedAt: '2024-10-25T11:34:00.000Z',
@@ -137,10 +139,11 @@ const dialogsWithMockedSystemDate: SearchDialogFieldsFragment[] = [
         endUserContext: {
             systemLabels: [SystemLabel.Default],
         },
+        seenSinceLastContentUpdate: [],
         party: 'urn:altinn:person:identifier-no:1',
         org: 'nav',
         progress: null,
-        hasUnopenedContent: false,  contentUpdatedAt: MOCKED_SYS_DATE, guiAttachmentCount: 0,
+        hasUnopenedContent: false, contentUpdatedAt: MOCKED_SYS_DATE, guiAttachmentCount: 0,
         status: DialogStatus.RequiresAttention,
         createdAt: '2023-12-04T11:45:00.000Z',
         updatedAt: '2024-05-04T11:45:00.000Z',

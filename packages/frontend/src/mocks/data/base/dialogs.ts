@@ -9,11 +9,12 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     party: 'urn:altinn:person:identifier-no:1',
     org: 'ok',
     progress: null,
-    hasUnopenedContent: false,  contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 1,
+    hasUnopenedContent: false, contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 1,
     status: DialogStatus.RequiresAttention,
     createdAt: '2023-12-23T23:00:00.000Z',
     updatedAt: '2023-12-25T11:34:00.000Z',
     extendedStatus: null,
+    seenSinceLastContentUpdate: [],
     seenSinceLastUpdate: [
       {
         id: 'c4f4d846-2fe7-4172-badc-abc48f9af8a5',
@@ -95,11 +96,12 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     party: 'urn:altinn:person:identifier-no:1',
     org: 'ok',
     progress: null,
-    hasUnopenedContent: false,  contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 1,
+    hasUnopenedContent: false, contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 1,
     status: DialogStatus.Awaiting,
     createdAt: '2023-12-15T06:33:00.000Z',
     updatedAt: '2023-12-15T06:33:00.000Z',
     extendedStatus: null,
+    seenSinceLastContentUpdate: [],
     seenSinceLastUpdate: [],
     latestActivity: null,
     content: {
@@ -133,11 +135,12 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     party: 'urn:altinn:organization:identifier-sub:2',
     org: 'fors',
     progress: null,
-    hasUnopenedContent: false,  contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 1,
+    hasUnopenedContent: false, contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2023-12-12T09:15:00.000Z',
     updatedAt: '2023-12-12T09:15:00.000Z',
     extendedStatus: null,
+    seenSinceLastContentUpdate: [],
     seenSinceLastUpdate: [
       {
         id: '03d5e075-9a8b-48b7-bb0a-99733ee3e572',
@@ -182,11 +185,12 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     party: 'urn:altinn:person:identifier-no:1',
     org: 'nav',
     progress: null,
-    hasUnopenedContent: false,  contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 0,
+    hasUnopenedContent: false, contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 0,
     status: DialogStatus.RequiresAttention,
     createdAt: '2023-12-04T11:45:00.000Z',
     updatedAt: '2023-12-04T11:45:00.000Z',
     extendedStatus: null,
+    seenSinceLastContentUpdate: [],
     seenSinceLastUpdate: [],
     latestActivity: {
       description: [
@@ -232,11 +236,12 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     party: 'urn:altinn:person:identifier-no:1',
     org: 'ssb',
     progress: null,
-    hasUnopenedContent: false,  contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 0,
+    hasUnopenedContent: false, contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 0,
     status: DialogStatus.RequiresAttention,
     createdAt: '2023-05-17T09:30:00.000Z',
     updatedAt: '2023-05-17T09:30:00.000Z',
     extendedStatus: null,
+    seenSinceLastContentUpdate: [],
     seenSinceLastUpdate: [
       {
         id: '268edfdb-1843-4a18-a8c7-5d45fe7f7fc8',
@@ -282,12 +287,13 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     party: 'urn:altinn:person:identifier-no:1',
     org: 'dibk',
     progress: null,
-    hasUnopenedContent: false,  contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 8,
+    hasUnopenedContent: false, contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 8,
     status: DialogStatus.NotApplicable,
     createdAt: '2023-04-18T10:55:00.000Z',
     updatedAt: '2023-04-18T10:55:00.000Z',
     dueAt: '2028-05-04T11:45:00.000Z',
     extendedStatus: null,
+    seenSinceLastContentUpdate: [],
     seenSinceLastUpdate: [
       {
         id: 'a06fa273-7aa7-41dc-911c-b0fb60640a6b',
@@ -332,11 +338,12 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     party: 'urn:altinn:person:identifier-no:1',
     org: 'skd',
     progress: null,
-    hasUnopenedContent: false,  contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 1,
+    hasUnopenedContent: false, contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 1,
     status: DialogStatus.Completed,
     createdAt: '2023-03-11T07:00:00.000Z',
     updatedAt: '2023-07-15T08:45:00.000Z',
     extendedStatus: null,
+    seenSinceLastContentUpdate: [],
     seenSinceLastUpdate: [],
     latestActivity: {
       description: [
@@ -382,11 +389,12 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     party: 'urn:altinn:person:identifier-no:1',
     org: 'dibk',
     progress: null,
-    hasUnopenedContent: false,  contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 9,
+    hasUnopenedContent: false, contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 9,
     status: DialogStatus.NotApplicable,
     createdAt: '2022-04-13T09:25:00.000Z',
     updatedAt: '2022-04-13T09:25:00.000Z',
     extendedStatus: null,
+    seenSinceLastContentUpdate: [],
     seenSinceLastUpdate: [
       {
         id: '90801e39-23a4-4086-9e9a-f56811f75ff3',
@@ -431,11 +439,12 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     party: 'urn:altinn:person:identifier-no:1',
     org: 'svv',
     progress: null,
-    hasUnopenedContent: false,  contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 1,
+    hasUnopenedContent: false, contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 1,
     status: DialogStatus.Completed,
     createdAt: '2022-01-05T07:00:00.000Z',
     updatedAt: '2022-02-20T08:35:00.000Z',
     extendedStatus: null,
+    seenSinceLastContentUpdate: [],
     seenSinceLastUpdate: [
       {
         id: '3553a0ad-1458-47b2-b1b0-8d325b39f4b0',
@@ -492,11 +501,12 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     party: 'urn:altinn:person:identifier-no:1',
     org: 'svv',
     progress: null,
-    hasUnopenedContent: false,  contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 0,
+    hasUnopenedContent: false, contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 0,
     status: DialogStatus.Draft,
     createdAt: '2001-04-05T22:00:00.000Z',
     updatedAt: '2001-04-05T22:00:00.000Z',
     extendedStatus: null,
+    seenSinceLastContentUpdate: [],
     seenSinceLastUpdate: [],
     latestActivity: null,
     content: {
