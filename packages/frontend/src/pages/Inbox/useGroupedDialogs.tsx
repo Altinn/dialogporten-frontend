@@ -164,7 +164,7 @@ const useGroupedDialogs = ({
       attachmentsCount: item.guiAttachmentCount,
       seenByLog: item.seenByLog,
       // TODO: Change !item.seenByLog.items.length to seenSinceLastContentUpdate when available, cf.https://github.com/Altinn/dialogporten-frontend/issues/2305
-      unread: !item.seenByLog.items.length,
+      unread: !item.seenSinceLastContentUpdate.find((d) => d.isCurrentEndUser),
       status: getDialogStatus(item.status, t),
       controls: <ContextMenu {...contextMenu} />,
       updatedAt: item.updatedAt,

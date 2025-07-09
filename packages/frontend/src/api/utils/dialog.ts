@@ -86,6 +86,7 @@ export function mapDialogToToInboxItems(
         name: actualReceiverParty?.name ?? dialogReceiverSubParty?.name ?? '',
         type: 'person',
       },
+      seenSinceLastContentUpdate: item.seenSinceLastContentUpdate,
       contentUpdatedAt: item.contentUpdatedAt,
       guiAttachmentCount: item.guiAttachmentCount ?? 0,
       createdAt: item.createdAt,
