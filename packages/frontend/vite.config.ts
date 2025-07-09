@@ -14,14 +14,5 @@ export default () => {
     define: {
       __APP_VERSION__: JSON.stringify(pkg.version),
     },
-    build: {
-      sourcemap: true,
-      rollupOptions: {
-        output: {
-          // Ensure source maps are generated with proper naming
-          sourcemapExcludeSources: false,
-        },
-      },
-    },
   });
 };

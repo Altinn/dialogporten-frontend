@@ -77,27 +77,6 @@ jobs:
       region: norwayeast
       version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
 
-  upload-source-maps:
-    name: Upload source maps to Application Insights
-    needs:
-      [
-        get-current-version,
-        check-for-changes,
-        generate-git-short-sha,
-        build-and-test
-      ]
-    if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasApplicationChanges == 'true') }}
-    uses: ./.github/workflows/workflow-upload-source-maps.yml
-    secrets:
-      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-    with:
-      environment: test
-      version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
-      appInsightsName: dp-fe-test-applicationInsights
-      resourceGroupName: dp-fe-test-rg
-
   deploy-apps:
     name: Deploy apps to test
     needs:
@@ -106,8 +85,7 @@ jobs:
         check-for-changes,
         generate-git-short-sha,
         docker-build-and-push,
-        deploy-infrastructure,
-        upload-source-maps
+        deploy-infrastructure
       ]
     # we want deployment of apps to be dependent on deployment of infrastructure, but if infrastructure is skipped, we still want to deploy the apps
     if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasApplicationChanges == 'true') }}
@@ -134,7 +112,6 @@ jobs:
       build-and-test,
       docker-build-and-push,
       deploy-infrastructure,
-      upload-source-maps,
       deploy-apps,
     ]
     if: ${{ always() && failure() && !cancelled() }}
@@ -144,7 +121,6 @@ jobs:
       build_and_test_status: ${{ needs.build-and-test.result }}
       docker_build_and_push_status: ${{ needs.docker-build-and-push.result }}
       infra_status: ${{ needs.deploy-infrastructure.result }}
-      source_maps_upload_status: ${{ needs.upload-source-maps.result }}
       apps_status: ${{ needs.deploy-apps.result }}
     secrets:
       SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}

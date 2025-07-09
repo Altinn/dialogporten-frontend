@@ -22,10 +22,6 @@ on:
         type: string
         description: "Status of the build and test job"
         default: "skipped"
-      source_maps_upload_status:
-        type: string
-        description: "Status of the source maps upload job"
-        default: "skipped"
       publish_node_logger_to_npm_status:
         type: string
         description: "Status of the publish node logger to npm job"
@@ -69,7 +65,6 @@ jobs:
             echo "INFRA_EMOJI=$(determine_emoji "${{ inputs.infra_status }}")"
             echo "APPS_EMOJI=$(determine_emoji "${{ inputs.apps_status }}")"
             echo "BUILD_AND_TEST_EMOJI=$(determine_emoji "${{ inputs.build_and_test_status }}")"
-            echo "SOURCE_MAPS_UPLOAD_EMOJI=$(determine_emoji "${{ inputs.source_maps_upload_status }}")"
             echo "DOCKER_BUILD_AND_PUSH_EMOJI=$(determine_emoji "${{ inputs.docker_build_and_push_status }}")"
             echo "PUBLISH_NODE_LOGGER_TO_NPM_EMOJI=$(determine_emoji "${{ inputs.publish_node_logger_to_npm_status }}")"
             echo "RELEASE_PLEASE_EMOJI=$(determine_emoji "${{ inputs.release_please_status }}")"
@@ -86,7 +81,6 @@ jobs:
           INFRA_STATUS: "${{ steps.status-emojis.outputs.INFRA_EMOJI }}"
           APPS_STATUS: "${{ steps.status-emojis.outputs.APPS_EMOJI }}"
           BUILD_AND_TEST_STATUS: "${{ steps.status-emojis.outputs.BUILD_AND_TEST_EMOJI }}"
-          SOURCE_MAPS_UPLOAD_STATUS: "${{ steps.status-emojis.outputs.SOURCE_MAPS_UPLOAD_EMOJI }}"
           DOCKER_BUILD_AND_PUSH_STATUS: "${{ steps.status-emojis.outputs.DOCKER_BUILD_AND_PUSH_EMOJI }}"
           PUBLISH_NODE_LOGGER_TO_NPM_STATUS: "${{ steps.status-emojis.outputs.PUBLISH_NODE_LOGGER_TO_NPM_EMOJI }}"
           RELEASE_PLEASE_STATUS: "${{ steps.status-emojis.outputs.RELEASE_PLEASE_EMOJI }}"
