@@ -61,7 +61,7 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
     WorkspaceResourceId: appInsightsWorkspace.id
   }
   tags: union(tags, {
-    'hidden-link:Insights.Sourcemap.Storage': json('{"Uri": "${sourceMapUri}"}')
+    'hidden-link:Insights.Sourcemap.Storage': '{"Uri": "${sourceMapUri}"}'
   })
 }
 
