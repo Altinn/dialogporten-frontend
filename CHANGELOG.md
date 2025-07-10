@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.45.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.44.0...v1.45.0) (2025-07-10)
+
+
+### Features
+
+* Added information to Archive and Bin ([5c5fd98](https://github.com/Altinn/dialogporten-frontend/commit/5c5fd98550b442a188509889826c23a9f9ec6897))
+
+
+### Bug Fixes
+
+* **infra:** ensure name is correctly formatted for storage-account ([54c4790](https://github.com/Altinn/dialogporten-frontend/commit/54c4790ac97979a944885d887cb000c0a91504f5))
+* **infra:** ensure tags are correctly formatted for app insights ([2fdb849](https://github.com/Altinn/dialogporten-frontend/commit/2fdb849501cdc554d3a86600d4fc2e6fd85c2555))
+
 ## [1.44.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.43.0...v1.44.0) (2025-07-08)
 
 
