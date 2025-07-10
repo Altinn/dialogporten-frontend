@@ -57,12 +57,33 @@ jobs:
     secrets:
       GH_TOKEN: ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}
 
+  upload-source-maps:
+    name: Upload source maps to Application Insights
+    needs:
+      [
+        check-for-changes,
+        deploy-infrastructure,
+      ]
+    if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasApplicationChanges == 'true') }}
+    uses: ./.github/workflows/workflow-upload-source-maps.yml
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_SOURCE_MAPS_STORAGE_ACCOUNT_NAME: ${{ secrets.AZURE_SOURCE_MAPS_STORAGE_ACCOUNT_NAME }}
+      AZURE_SOURCE_MAPS_CONTAINER_NAME: ${{ secrets.AZURE_SOURCE_MAPS_CONTAINER_NAME }}
+    with:
+      environment: staging
+      version: ${{ github.event.client_payload.version }}
+      ref: "refs/tags/v${{ github.event.client_payload.version }}"
+
   deploy-apps:
     name: Deploy apps to staging
     needs:
       [
         check-for-changes,
         deploy-infrastructure,
+        upload-source-maps
       ]
     # we want deployment of apps to be dependent on deployment of infrastructure, but if infrastructure is skipped, we still want to deploy the apps
     if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasApplicationChanges == 'true') }}
@@ -111,6 +132,7 @@ jobs:
     name: Send Slack message on failure
     needs: [
       deploy-infrastructure,
+      upload-source-maps,
       deploy-apps,
       publish-node-logger-to-npm,
     ]
@@ -119,6 +141,7 @@ jobs:
     with:
       environment: staging
       infra_status: ${{ needs.deploy-infrastructure.result }}
+      source_maps_upload_status: ${{ needs.upload-source-maps.result }}
       apps_status: ${{ needs.deploy-apps.result }}
       publish_node_logger_to_npm_status: ${{ needs.publish-node-logger-to-npm.result }}
     secrets:

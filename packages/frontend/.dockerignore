@@ -1,0 +1,2 @@
+# Ignore source maps in the frontend build output
+dist/**/*.map 

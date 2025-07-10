@@ -23,7 +23,7 @@
           "type": "section",
           "text": {
             "type": "mrkdwn",
-            "text": "*Job Status:*\n• Infrastructure: ${{ env.INFRA_STATUS }}\n• Apps: ${{ env.APPS_STATUS }}\n• Build and Test: ${{ env.BUILD_AND_TEST_STATUS }}\n• Docker Build and Push: ${{ env.DOCKER_BUILD_AND_PUSH_STATUS }}\n• Publish Node Logger to NPM: ${{ env.PUBLISH_NODE_LOGGER_TO_NPM_STATUS }}\n• Release Please: ${{ env.RELEASE_PLEASE_STATUS }}\n• Notify Release Created: ${{ env.NOTIFY_RELEASE_CREATED_STATUS }}"
+            "text": "*Job Status:*\n• Infrastructure: ${{ env.INFRA_STATUS }}\n• Apps: ${{ env.APPS_STATUS }}\n• Build and Test: ${{ env.BUILD_AND_TEST_STATUS }}\n• Source Maps Upload: ${{ env.SOURCE_MAPS_UPLOAD_STATUS }}\n• Docker Build and Push: ${{ env.DOCKER_BUILD_AND_PUSH_STATUS }}\n• Publish Node Logger to NPM: ${{ env.PUBLISH_NODE_LOGGER_TO_NPM_STATUS }}\n• Release Please: ${{ env.RELEASE_PLEASE_STATUS }}\n• Notify Release Created: ${{ env.NOTIFY_RELEASE_CREATED_STATUS }}"
           }
         },
         {
