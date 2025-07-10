@@ -75,8 +75,6 @@ jobs:
     with:
       environment: staging
       version: ${{ github.event.client_payload.version }}
-      appInsightsName: dp-fe-staging-applicationInsights
-      resourceGroupName: dp-fe-staging-rg
       ref: "refs/tags/v${{ github.event.client_payload.version }}"
 
   deploy-apps:
