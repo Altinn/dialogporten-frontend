@@ -78,6 +78,8 @@
   "footer.nav.privacy_policy": "Privacy policy",
   "footer.nav.service_messages": "Service messages",
   "inbox.filter.multiple.sender": "{count, plural, =0 {Choose sender} one {# sender} other {# senders}}",
+  "inbox.archive.info_message": "Here you will find conversations you have chosen to archive. This is not a record-keeping or archiving system. If the conversation is updated, you will find it again in your inbox.",
+  "inbox.bin.info_message": "Here you will find conversations you have moved to the trash. If the conversation is updated, you will find it again in your inbox.",
   "inbox.heading.attachments": "{count, plural, =0 {No attachments} one {# attachment} other {# attachments}}",
   "inbox.heading.choose_all": "Select All",
   "inbox.heading.description.archive": "Here you find content you have moved to the archive.",
