@@ -92,6 +92,8 @@ jobs:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_SOURCE_MAPS_STORAGE_ACCOUNT_NAME: ${{ secrets.AZURE_SOURCE_MAPS_STORAGE_ACCOUNT_NAME }}
+      AZURE_SOURCE_MAPS_CONTAINER_NAME: ${{ secrets.AZURE_SOURCE_MAPS_CONTAINER_NAME }}
     with:
       environment: test
       version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}

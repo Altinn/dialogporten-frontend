@@ -56,6 +56,28 @@ jobs:
       environment: yt01
     secrets:
       GH_TOKEN: ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}
+
+  upload-source-maps:
+    name: Upload source maps to Application Insights
+    needs:
+      [
+        check-for-changes,
+        deploy-infrastructure,
+      ]
+    if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasApplicationChanges == 'true') }}
+    uses: ./.github/workflows/workflow-upload-source-maps.yml
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_SOURCE_MAPS_STORAGE_ACCOUNT_NAME: ${{ secrets.AZURE_SOURCE_MAPS_STORAGE_ACCOUNT_NAME }}
+      AZURE_SOURCE_MAPS_CONTAINER_NAME: ${{ secrets.AZURE_SOURCE_MAPS_CONTAINER_NAME }}
+    with:
+      environment: yt01
+      version: ${{ github.event.client_payload.version }}
+      appInsightsName: dp-fe-yt01-applicationInsights
+      resourceGroupName: dp-fe-yt01-rg
+      ref: "refs/tags/v${{ github.event.client_payload.version }}"
       
   deploy-apps:
     name: Deploy apps to YT01
@@ -63,6 +85,7 @@ jobs:
       [
         check-for-changes,
         deploy-infrastructure,
+        upload-source-maps
       ]
     if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasApplicationChanges == 'true') }}
     uses: ./.github/workflows/workflow-deploy-apps.yml
@@ -98,6 +121,7 @@ jobs:
     name: Send Slack message on failure
     needs: [
       deploy-infrastructure,
+      upload-source-maps,
       deploy-apps,
     ]
     if: ${{ always() && failure() && !cancelled() }}
@@ -105,6 +129,7 @@ jobs:
     with:
       environment: yt01
       infra_status: ${{ needs.deploy-infrastructure.result }}
+      source_maps_upload_status: ${{ needs.upload-source-maps.result }}
       apps_status: ${{ needs.deploy-apps.result }}
     secrets:
       SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}

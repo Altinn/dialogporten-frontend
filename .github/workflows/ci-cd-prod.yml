@@ -77,12 +77,35 @@ jobs:
     secrets:
       GH_TOKEN: ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}
 
+  upload-source-maps:
+    name: Upload source maps to Application Insights
+    needs:
+      [
+        check-for-changes,
+        deploy-infrastructure
+      ]
+    if: ${{ always() && !failure() && !cancelled() && (needs.check-for-changes.outputs.hasApplicationChanges == 'true') }}
+    uses: ./.github/workflows/workflow-upload-source-maps.yml
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_SOURCE_MAPS_STORAGE_ACCOUNT_NAME: ${{ secrets.AZURE_SOURCE_MAPS_STORAGE_ACCOUNT_NAME }}
+      AZURE_SOURCE_MAPS_CONTAINER_NAME: ${{ secrets.AZURE_SOURCE_MAPS_CONTAINER_NAME }}
+    with:
+      environment: prod
+      version: ${{ inputs.version }}
+      appInsightsName: dp-fe-prod-applicationInsights
+      resourceGroupName: dp-fe-prod-rg
+      ref: "refs/tags/v${{ inputs.version }}"
+
   deploy-apps:
     name: Deploy apps to prod
     needs:
       [
         check-for-changes,
-        deploy-infrastructure
+        deploy-infrastructure,
+        upload-source-maps
       ]
     # we want deployment of apps to be dependent on a dry-run deployment of apps, but if deploying infrastructure is skipped, we still want to deploy the apps
     if: ${{ always() && !failure() && !cancelled() && (needs.check-for-changes.outputs.hasApplicationChanges == 'true') }}
@@ -120,6 +143,7 @@ jobs:
     name: Send Slack message on failure
     needs: [
       deploy-infrastructure,
+      upload-source-maps,
       deploy-apps,
     ]
     if: ${{ always() && failure() && !cancelled() }}
@@ -127,6 +151,7 @@ jobs:
     with:
       environment: prod
       infra_status: ${{ needs.deploy-infrastructure.result }}
+      source_maps_upload_status: ${{ needs.upload-source-maps.result }}
       apps_status: ${{ needs.deploy-apps.result }}
     secrets:
       SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}

@@ -27,6 +27,12 @@ on:
         required: true
       AZURE_SUBSCRIPTION_ID:
         required: true
+      AZURE_SOURCE_MAPS_STORAGE_ACCOUNT_NAME:
+        description: "The Azure Storage Account name for source maps"
+        required: true
+      AZURE_SOURCE_MAPS_CONTAINER_NAME:
+        description: "The Azure Blob Storage container name for source maps"
+        required: true
 
 jobs:
   upload-source-maps:
@@ -56,26 +62,6 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Get storage account name
-        id: get-storage
-        run: |
-          STORAGE_ACCOUNT_NAME=$(az deployment group show \
-            --resource-group "${{ inputs.resourceGroupName }}" \
-            --name "main" \
-            --query "properties.outputs.storageAccountName.value" \
-            --output tsv)
-          
-          echo "storage_account_name=$STORAGE_ACCOUNT_NAME" >> $GITHUB_OUTPUT
-
-      - name: Create blob container for source maps
-        run: |
-          # Create a private blob container for source maps
-          az storage container create \
-            --account-name "${{ steps.get-storage.outputs.storage_account_name }}" \
-            --name "sourcemaps-${{ inputs.environment }}" \
-            --public-access off \
-            --auth-mode login
-
       - name: Upload source maps to blob storage
         id: upload-source-maps
         run: |
@@ -86,13 +72,10 @@ jobs:
             if [ -f "$mapfile" ]; then
               echo "Uploading $mapfile..."
               
-              # Get the corresponding JS file name
-              jsfile="${mapfile%.map}"
-              
               # Upload with version prefix
               az storage blob upload \
-                --account-name "${{ steps.get-storage.outputs.storage_account_name }}" \
-                --container-name "sourcemaps-${{ inputs.environment }}" \
+                --account-name "${{ secrets.AZURE_SOURCE_MAPS_STORAGE_ACCOUNT_NAME }}" \
+                --container-name "${{ secrets.AZURE_SOURCE_MAPS_CONTAINER_NAME }}" \
                 --name "${{ inputs.version }}/$mapfile" \
                 --file "$mapfile" \
                 --auth-mode login
@@ -102,22 +85,6 @@ jobs:
           done
           
           echo "source_maps_uploaded=true" >> $GITHUB_OUTPUT
-
-      - name: Configure Application Insights to use source maps
-        run: |
-          # Configure Application Insights to read source maps from blob storage
-          # This is done by setting the source map URL in the Application Insights configuration
-          # The URL format is: https://<storage-account>.blob.core.windows.net/<container>/<version>/<source-map-file>
-          
-          STORAGE_URL="https://${{ steps.get-storage.outputs.storage_account_name }}.blob.core.windows.net/sourcemaps-${{ inputs.environment }}"
-          
-          echo "Source maps are available at: $STORAGE_URL"
-          echo "Application Insights will automatically detect and use source maps from this location"
-
-      - name: Note about source map cleanup
-        run: |
-          echo "Source map cleanup is handled automatically by Application Insights"
-          echo "The service will retain source maps for a configurable period"
 
       - name: Logout from Azure
         if: always()

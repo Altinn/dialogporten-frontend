@@ -15,7 +15,7 @@ export default () => {
       __APP_VERSION__: JSON.stringify(pkg.version),
     },
     build: {
-      sourcemap: true,
+      sourcemap: 'hidden',
       rollupOptions: {
         output: {
           // Ensure source maps are generated with proper naming
