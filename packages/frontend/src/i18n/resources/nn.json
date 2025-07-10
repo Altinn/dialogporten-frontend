@@ -78,6 +78,8 @@
   "footer.nav.privacy_policy": "Personvern",
   "footer.nav.service_messages": "Driftsmeldingar",
   "inbox.filter.multiple.sender": "{count, plural, =0 {Vel avsendar} one {# avsendar} other {# avsendarar}}",
+  "inbox.archive.info_message": "Her finn du dialogar du har valt å arkivere. Dette er ikkje eit journal- og arkivsystem. Om dialogen blir oppdatert, vil du finne han igjen i innboksen.",
+  "inbox.bin.info_message": "Her finn du dialogar du har lagt i papirkorga. Om dialogen blir oppdatert, vil du finne han igjen i innboksen.",
   "inbox.heading.attachments": "{count, plural, =0 {Ingen vedlegg} one {# vedlegg} other {# vedlegg}}",
   "inbox.heading.choose_all": "Vel alle",
   "inbox.heading.description.archive": "Her finn du innhald du sjølv har lagt i arkivet.",

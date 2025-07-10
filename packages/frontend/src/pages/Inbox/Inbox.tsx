@@ -193,6 +193,11 @@ export const Inbox = ({ viewType }: InboxProps) => {
           </>
         ) : null}
       </section>
+      {(viewType === 'archive' || viewType === 'bin') && (
+        <Section>
+          <p>{t(`inbox.${viewType}.info_message`)}</p>
+        </Section>
+      )}
       <Section>
         {dialogsSuccess && !dialogs.length && (
           <EmptyState
