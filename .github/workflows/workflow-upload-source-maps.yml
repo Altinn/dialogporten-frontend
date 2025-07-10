@@ -9,12 +9,6 @@ on:
       version:
         required: true
         type: string
-      appInsightsName:
-        required: true
-        type: string
-      resourceGroupName:
-        required: true
-        type: string
       ref:
         description: "The branch or tag ref to use. Using default checkout ref if not provided."
         required: false

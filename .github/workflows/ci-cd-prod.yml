@@ -95,8 +95,6 @@ jobs:
     with:
       environment: prod
       version: ${{ inputs.version }}
-      appInsightsName: dp-fe-prod-applicationInsights
-      resourceGroupName: dp-fe-prod-rg
       ref: "refs/tags/v${{ inputs.version }}"
 
   deploy-apps:

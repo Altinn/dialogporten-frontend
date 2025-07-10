@@ -75,8 +75,6 @@ jobs:
     with:
       environment: yt01
       version: ${{ github.event.client_payload.version }}
-      appInsightsName: dp-fe-yt01-applicationInsights
-      resourceGroupName: dp-fe-yt01-rg
       ref: "refs/tags/v${{ github.event.client_payload.version }}"
       
   deploy-apps:

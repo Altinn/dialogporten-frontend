@@ -97,8 +97,6 @@ jobs:
     with:
       environment: test
       version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
-      appInsightsName: dp-fe-test-applicationInsights
-      resourceGroupName: dp-fe-test-rg
 
   deploy-apps:
     name: Deploy apps to test
