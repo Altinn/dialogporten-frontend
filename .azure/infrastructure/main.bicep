@@ -280,3 +280,5 @@ module copySecrets '../modules/keyvault/copySecrets.bicep' = {
 
 output resourceGroupName string = resourceGroup.name
 output postgreServerName string = postgresql.outputs.serverName
+output appInsightsSourceMapStorageAccountName string = appInsights.outputs.sourceMapStorageAccountName
+output appInsightsSourceMapContainerName string = appInsights.outputs.sourceMapContainerName
