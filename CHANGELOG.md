@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.46.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.45.0...v1.46.0) (2025-07-11)
+
+
+### Features
+
+* Mark unread based on seenSinceLastContentUpdate ([#2330](https://github.com/Altinn/dialogporten-frontend/issues/2330)) ([dd0b79e](https://github.com/Altinn/dialogporten-frontend/commit/dd0b79e43f178935da49bc2ae47c2cbedb4c9eae))
+
+
+### Bug Fixes
+
+* **infra:** ensure correct role assignment for uploading source maps ([#2337](https://github.com/Altinn/dialogporten-frontend/issues/2337)) ([d4edaad](https://github.com/Altinn/dialogporten-frontend/commit/d4edaadb4f20fd71f49ee484af53c171db8eae11))
+
 ## [1.45.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.44.0...v1.45.0) (2025-07-10)
 
 
