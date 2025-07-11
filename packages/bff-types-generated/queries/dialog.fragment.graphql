@@ -11,6 +11,8 @@ fragment SearchDialogFields on SearchDialog {
   contentUpdatedAt
   hasUnopenedContent
   extendedStatus
+  fromServiceOwnerTransmissionsCount
+  fromPartyTransmissionsCount
   seenSinceLastUpdate {
     ...SeenLogFields
   }
