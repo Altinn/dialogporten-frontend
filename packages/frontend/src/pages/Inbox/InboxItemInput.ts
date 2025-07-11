@@ -19,6 +19,8 @@ export interface InboxItemInput {
   org: string;
   guiAttachmentCount: number;
   seenByOthersCount: number;
+  fromServiceOwnerTransmissionsCount: number;
+  fromPartyTransmissionsCount: number;
   seenByLabel?: string;
   viewType: InboxViewType;
   seenByLog: SeenByLogProps;
