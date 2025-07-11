@@ -7,8 +7,6 @@ param tags object
 @description('The blob container name for source maps')
 param sourceMapContainerName string = 'sourcemaps'
 
-
-
 var sourceMapStorageAccountName = substring(replace('${namePrefix}sourcemaps${uniqueString(resourceGroup().id)}', '-', ''), 0, 24)
 
 resource appInsightsWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
