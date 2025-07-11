@@ -170,6 +170,8 @@ const useGroupedDialogs = ({
       updatedAtLabel: format(item.updatedAt, formatString),
       dueAtLabel: item.dueAt ? t('dialog.due_at', { date: format(item.dueAt, formatString) }) : undefined,
       dueAt: item.dueAt,
+      sentCount: item.fromServiceOwnerTransmissionsCount ?? 0,
+      receivedCount: item.fromPartyTransmissionsCount ?? 0,
       ariaLabel: item.title,
       as: (props: LinkProps) => (
         <Link state={{ fromView: location.pathname }} {...props} to={`/inbox/${item.id}/${location.search}`} />
