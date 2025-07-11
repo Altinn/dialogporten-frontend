@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.46.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.46.0...v1.46.1) (2025-07-11)
+
+
+### Bug Fixes
+
+* Org logo looks off on dialog list item ([#2338](https://github.com/Altinn/dialogporten-frontend/issues/2338)) ([e1180b1](https://github.com/Altinn/dialogporten-frontend/commit/e1180b152ae1a800cb73720ec3dbc9aa205dcc79))
+
 ## [1.46.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.45.0...v1.46.0) (2025-07-11)
 
 
