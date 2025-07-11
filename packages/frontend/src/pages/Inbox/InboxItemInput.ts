@@ -1,5 +1,5 @@
 import type { AvatarProps, SeenByLogProps } from '@altinn/altinn-components';
-import type { DialogStatus, SystemLabel } from 'bff-types-generated';
+import type { DialogStatus, SeenLogFieldsFragment, SystemLabel } from 'bff-types-generated';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 
 export interface InboxItemInput {
@@ -23,4 +23,5 @@ export interface InboxItemInput {
   viewType: InboxViewType;
   seenByLog: SeenByLogProps;
   dueAt?: string;
+  seenSinceLastContentUpdate: SeenLogFieldsFragment[];
 }

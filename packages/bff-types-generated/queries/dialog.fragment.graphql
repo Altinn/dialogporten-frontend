@@ -11,6 +11,9 @@ fragment SearchDialogFields on SearchDialog {
   contentUpdatedAt
   hasUnopenedContent
   extendedStatus
+  seenSinceLastContentUpdate {
+    ...SeenLogFields
+  }
   seenSinceLastUpdate {
     ...SeenLogFields
   }
