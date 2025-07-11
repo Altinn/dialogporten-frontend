@@ -18,6 +18,8 @@ Use the following steps:
 
 - From the infrastructure resources created, add the following GitHub secrets in the new environment (this will not be necessary in the future as secrets would be added directly from infrastructure deployment): `AZURE_APP_INSIGHTS_CONNECTION_STRING`, `AZURE_CONTAINER_APP_ENVIRONMENT_NAME`, `AZURE_ENVIRONMENT_KEY_VAULT_NAME`, `AZURE_RESOURCE_GROUP_NAME`, `AZURE_SOURCE_MAPS_STORAGE_ACCOUNT_NAME`, and `AZURE_SOURCE_MAPS_CONTAINER_NAME`
 
+**Note:** The source maps storage account and container are automatically created by the infrastructure, and the necessary role assignments are automatically configured for the service principal.
+
 - Add new parameter files for the environment in all applications `.azure/applications/*/<env>.bicepparam`
 
 - Run the GitHub action `Dispatch applications` in order to deploy all applications to the new environment.
