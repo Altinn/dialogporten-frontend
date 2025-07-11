@@ -77,8 +77,6 @@ jobs:
               echo "Uploaded $mapfile successfully"
             fi
           done
-          
-          echo "source_maps_uploaded=true" >> $GITHUB_OUTPUT
 
       - name: Logout from Azure
         if: always()
