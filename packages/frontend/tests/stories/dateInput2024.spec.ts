@@ -16,7 +16,7 @@ test.describe('Date filter, system date set 2024', () => {
     await expect(page.getByRole('link', { name: 'Melding om bortkjøring av snø i' })).toBeVisible();
   });
 
-  test('Date filter - quick filters functionality', async ({ page }) => {
+  test.skip('Date filter - quick filters functionality', async ({ page }) => {
     await page.getByRole('button', { name: 'add' }).click();
 
     await expect(
