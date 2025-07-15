@@ -17,6 +17,7 @@
   "activity.status.signature_provided": "Signert av {actor}.",
   "activity.status.transmission_opened": "{transmission} åpnet av {actor}.",
   "additional_info.title": "Mer informasjon",
+  "beta.banner": "Velkommen til vår nye beta. Vi jobber fortsatt med å utvikle den, så alt er enda ikke på plass. Du vil måtte gå tilbake til <a href=\"https://tt02.altinn.no/\">innboksen</a> om du ikke finner meldingen du ser etter her.",
   "dialog.aria.fetch_more": "Hent og vis flere dialoger",
   "dialog.context_menu.label": "Kontekstmeny for dialog med tittel {title}",
   "dialog.due_at": "Frist: {date}",

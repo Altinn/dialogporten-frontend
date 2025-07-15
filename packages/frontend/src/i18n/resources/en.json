@@ -16,6 +16,7 @@
   "activity.status.sent_to_signing": "Sent to signing by {actor}.",
   "activity.status.signature_provided": "Signature provided by {actor}.",
   "activity.status.transmission_opened": "{transmission} opened by {actor}.",
+  "beta.banner": "Welcome to our new beta. We are still working on developing it, so not everything is in place yet. You will have to go back to the <a href=\"https://tt02.altinn.no/\">inbox</a> if you cannot find the message you are looking for here.",
   "additional_info.title": "More information",
   "dialog.aria.fetch_more": "Fetch and show more dialogs",
   "dialog.context_menu.label": "Context menu for dialog with title {title}",
