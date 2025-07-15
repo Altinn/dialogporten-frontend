@@ -1,5 +1,5 @@
 import type { TimelineSegmentProps, TransmissionProps, TransmissionTypeValue } from '@altinn/altinn-components';
-import type { TransmissionFieldsFragment } from 'bff-types-generated';
+import { ActivityType, type DialogActivityFragment, type TransmissionFieldsFragment } from 'bff-types-generated';
 import { t } from 'i18next';
 import { getPreferredPropertyByLocale } from '../../i18n/property.ts';
 import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
@@ -72,10 +72,22 @@ const getClockFormatString = () => {
 const createTransmissionItem = (
   transmission: TransmissionFieldsFragment,
   format: FormatFunction,
+  activities?: DialogActivityFragment[],
   serviceOwner?: OrganizationOutput,
 ): TransmissionProps => {
   const formatString = getClockFormatString();
   const sender = getActorProps(transmission.sender, serviceOwner);
+  let unread = true;
+  if (activities && activities.length > 0) {
+    for (let i = 0; i < activities.length; i++) {
+      const activity = activities[i];
+      if (activity.transmissionId === transmission.id && activity.type === ActivityType.TransmissionOpened) {
+        unread = false;
+        break;
+      }
+    }
+  }
+
   return {
     id: transmission.id,
     byline: transmission?.createdAt ? `${sender.name}, ${format(transmission.createdAt, getClockFormatString())}` : '',
@@ -87,6 +99,10 @@ const createTransmissionItem = (
       value: transmission.type?.toLowerCase() as TransmissionTypeValue,
       label: t(`transmission.type.${transmission.type?.toLowerCase()}`),
     },
+    ...(unread && {
+      unread: true,
+      badge: { color: 'company' },
+    }),
     sender,
     attachments: {
       items: getAttachmentLinks(transmission.attachments),
@@ -97,14 +113,16 @@ const createTransmissionItem = (
 export const getTransmissions = (
   transmissions: TransmissionFieldsFragment[],
   format: FormatFunction,
+  activities?: DialogActivityFragment[],
   serviceOwner?: OrganizationOutput,
 ): TimelineSegmentWithTransmissions[] => {
   return groupTransmissions(transmissions).map((group) => {
     const sortedGroup = [...group].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     const [lastTransmission] = sortedGroup;
     const items: TransmissionProps[] = sortedGroup.map((transmission) =>
-      createTransmissionItem(transmission, format, serviceOwner),
+      createTransmissionItem(transmission, format, activities, serviceOwner),
     );
+
     return {
       id: lastTransmission.id,
       items,
