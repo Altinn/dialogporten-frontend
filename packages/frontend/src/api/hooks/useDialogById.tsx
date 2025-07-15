@@ -150,7 +150,6 @@ export function mapDialogToToInboxItem(
   if (!item) {
     return undefined;
   }
-
   const clockPrefix = t('word.clock_prefix');
   const formatString = `do MMMM yyyy ${clockPrefix ? `'${clockPrefix}' ` : ''}HH.mm`;
   const titleObj = item?.content?.title?.value;
@@ -223,7 +222,7 @@ export function mapDialogToToInboxItem(
       })),
     },
     activityHistory: getActivityHistory(item.activities, item.transmissions, format, serviceOwner),
-    transmissions: getTransmissions(item.transmissions, format, serviceOwner),
+    transmissions: getTransmissions(item.transmissions, format, item.activities, serviceOwner),
     createdAt: item.createdAt,
     updatedAt: item.updatedAt,
     label: item.endUserContext?.systemLabels,
