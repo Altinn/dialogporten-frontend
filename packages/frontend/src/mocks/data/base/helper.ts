@@ -49,15 +49,24 @@ export const filterDialogs = ({
   const labels = normalizeArray(label);
   const statuses = normalizeArray(status);
 
-  return inMemoryStore.dialogs.filter((dialog) =>
-    partyURIs.includes(dialog.party) &&
-    (!updatedBefore || dialog.updatedAt < updatedBefore) &&
-    (!updatedAfter || dialog.updatedAt > updatedAfter) &&
-    (!org || !org.length || org.includes(dialog.org)) &&
-    (!labels.length || labels.some((l) => dialog.endUserContext?.systemLabels?.some(label => l.includes(label)))) &&
-    (!statuses.length || statuses.includes(dialog.status)) &&
-    naiveSearchFilter(dialog, search)
-  );
+  return inMemoryStore.dialogs.filter((dialog) => {
+    const matchesParty = partyURIs.includes(dialog.party);
+
+    const matchesTimeRange =
+      (!updatedBefore || dialog.contentUpdatedAt < updatedBefore) &&
+      (!updatedAfter || dialog.contentUpdatedAt > updatedAfter);
+
+
+
+    const matchesOrg = !org?.length || org.includes(dialog.org);
+    const matchesLabels = !labels.length ||
+      labels.some(l => dialog.endUserContext?.systemLabels?.some(label => l.includes(label)));
+    const matchesStatus = !statuses.length || statuses.includes(dialog.status);
+    const matchesSearch = naiveSearchFilter(dialog, search);
+
+    return matchesParty && matchesTimeRange && matchesOrg &&
+      matchesLabels && matchesStatus && matchesSearch;
+  });
 
 };
 

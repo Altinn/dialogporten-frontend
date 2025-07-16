@@ -15,6 +15,10 @@ import type { InboxItemInput } from './InboxItemInput.ts';
 export const getExclusiveLabel = (labels: string[]): SystemLabel => {
   const EXCLUSIVE_LABELS = [SystemLabel.Default, SystemLabel.Archive, SystemLabel.Bin] as const;
 
+  if (!labels || !Array.isArray(labels)) {
+    return SystemLabel.Default;
+  }
+
   const match = labels.find((label): label is SystemLabel => EXCLUSIVE_LABELS.includes(label as SystemLabel));
   return match ?? SystemLabel.Default;
 };
@@ -53,6 +57,7 @@ export const getDateRange = (unit: 'day' | 'week' | 'month' | 'sixMonths' | 'yea
       return { start: subYears(now, 1), end: endOfDay(now) };
   }
 };
+
 const filterRanges: Record<DateFilterOption, { start?: Date; end?: Date }> = {
   [DateFilterOption.TODAY]: getDateRange('day'),
   [DateFilterOption.THIS_WEEK]: getDateRange('week'),
@@ -70,18 +75,12 @@ export enum FilterCategory {
 
 const getFilterBadgeProps = (filterCount: number | undefined): BadgeProps => {
   if (typeof filterCount === 'number' && filterCount > 0) {
-    return {
-      label: String(filterCount),
-      size: 'sm',
-    };
+    return { label: String(filterCount), size: 'sm' };
   }
-  return {
-    size: 'xs',
-    label: '',
-  };
+  return { size: 'xs', label: '' };
 };
 
-const getDateOptions = (dates: string[]): ToolbarFilterProps['options'] => {
+const createDateOptions = (dates: string[]): ToolbarFilterProps['options'] => {
   const now = new Date();
   const startOfSixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
   const sameDateLastYear = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
@@ -132,46 +131,23 @@ const getDateOptions = (dates: string[]): ToolbarFilterProps['options'] => {
   });
 };
 
-/**
- * Generates filters with suggestions, including count of available items.
- *
- * @param {InboxItemInput[]} dialogs - The array of dialogs to filter.
- * @param allDialogs
- * @param allOrganizations
- * @param viewType
- * @param orgsFromSearchState
- * @returns {Array} - The array of filter settings.
- */
-
-export const getFilters = ({
-  dialogs,
-  allDialogs,
-  allOrganizations,
-  viewType,
-  orgsFromSearchState = [],
-}: {
-  dialogs: InboxItemInput[];
-  allDialogs: CountableDialogFieldsFragment[];
-  allOrganizations: OrganizationFieldsFragment[];
-  viewType: InboxViewType;
-  orgsFromSearchState?: string[];
-}): ToolbarFilterProps[] => {
-  const orgsInFilteredDialogs = dialogs.map((d) => d.org);
-  const orgCount = countOccurrences(orgsInFilteredDialogs);
-
-  const allOrgsFromDialogs = dialogs.map((d) => d.org);
-  const allOrgsFromAllDialogs = allDialogs.map((d) => d.org);
-
-  const orgsFoundInAllDialogs = Array.from(
-    new Set([...allOrgsFromDialogs, ...allOrgsFromAllDialogs, ...orgsFromSearchState]),
+const createSenderOrgFilter = (
+  allDialogs: CountableDialogFieldsFragment[],
+  dialogs: InboxItemInput[],
+  allOrganizations: OrganizationFieldsFragment[],
+  orgsFromSearchState: string[],
+): ToolbarFilterProps => {
+  const orgCount = countOccurrences(allDialogs.map((d) => d.org));
+  const uniqueOrgs = Array.from(
+    new Set([...dialogs.map((d) => d.org), ...allDialogs.map((d) => d.org), ...orgsFromSearchState]),
   );
 
-  const senderOrgFilter: ToolbarFilterProps = {
+  return {
     label: t('filter_bar.label.choose_sender'),
     name: FilterCategory.ORG,
     removable: true,
     optionType: 'checkbox',
-    options: orgsFoundInAllDialogs
+    options: uniqueOrgs
       .map((org) => ({
         label: getOrganization(allOrganizations, org, 'nb')?.name || org,
         value: org,
@@ -179,14 +155,16 @@ export const getFilters = ({
       }))
       .sort((a, b) => a.label?.localeCompare(b.label)),
   };
+};
 
-  const statusList = dialogs.map((p) => p.status);
-  const labelList = dialogs.map((p) => p.label);
-  const systemLabels = labelList.map((label) => getExclusiveLabel(label));
-  const statusCount = countOccurrences(statusList);
+const createStatusFilter = (allDialogs: CountableDialogFieldsFragment[]): ToolbarFilterProps => {
+  const statusCount = countOccurrences(allDialogs.map((d) => d.status));
+  const systemLabels = allDialogs
+    .map((d) => d.endUserContext?.systemLabels || [])
+    .map((labels) => getExclusiveLabel(labels));
   const labelCounts = countOccurrences(systemLabels);
 
-  const statusFilter: ToolbarFilterProps = {
+  return {
     label: t('filter_bar.label.choose_status'),
     name: FilterCategory.STATUS,
     removable: true,
@@ -252,20 +230,46 @@ export const getFilters = ({
       },
     ],
   };
+};
 
-  const updatedAtFilter: ToolbarFilterProps = {
-    id: FilterCategory.UPDATED,
-    name: FilterCategory.UPDATED,
-    label: t('filter_bar.label.updated'),
-    optionType: 'radio',
-    removable: true,
-    options: getDateOptions(dialogs.map((d) => d.updatedAt)),
-  };
+const createUpdatedAtFilter = (allDialogs: CountableDialogFieldsFragment[]): ToolbarFilterProps => ({
+  id: FilterCategory.UPDATED,
+  name: FilterCategory.UPDATED,
+  label: t('filter_bar.label.updated'),
+  optionType: 'radio',
+  removable: true,
+  options: createDateOptions(allDialogs.map((d) => d.updatedAt)),
+});
 
-  if (viewType === 'inbox') {
-    return [senderOrgFilter, statusFilter, updatedAtFilter];
-  }
-  return [senderOrgFilter, updatedAtFilter];
+/**
+ * Generates filters with suggestions, including count of available items.
+ *
+ * @param {InboxItemInput[]} dialogs - The array of dialogs to filter.
+ * @param allDialogs
+ * @param allOrganizations
+ * @param viewType
+ * @param orgsFromSearchState
+ * @returns {Array} - The array of filter settings.
+ */
+
+export const getFilters = ({
+  dialogs,
+  allDialogs,
+  allOrganizations,
+  viewType,
+  orgsFromSearchState = [],
+}: {
+  dialogs: InboxItemInput[];
+  allDialogs: CountableDialogFieldsFragment[];
+  allOrganizations: OrganizationFieldsFragment[];
+  viewType: InboxViewType;
+  orgsFromSearchState?: string[];
+}): ToolbarFilterProps[] => {
+  const senderOrgFilter = createSenderOrgFilter(allDialogs, dialogs, allOrganizations, orgsFromSearchState);
+  const statusFilter = createStatusFilter(allDialogs);
+  const updatedAtFilter = createUpdatedAtFilter(allDialogs);
+
+  return viewType === 'inbox' ? [senderOrgFilter, statusFilter, updatedAtFilter] : [senderOrgFilter, updatedAtFilter];
 };
 
 export const readFiltersFromURLQuery = (query: string): FilterState => {
@@ -273,14 +277,12 @@ export const readFiltersFromURLQuery = (query: string): FilterState => {
   const allowedFilterKeys = Object.values(FilterCategory) as string[];
   const filters: FilterState = {};
 
-  searchParams.forEach((value, key) => {
+  for (const [key, value] of searchParams) {
     if (allowedFilterKeys.includes(key) && value) {
-      if (!filters[key]) {
-        filters[key] = [];
-      }
+      filters[key] = filters[key] || [];
       filters[key].push(value);
     }
-  });
+  }
 
   return filters;
 };
@@ -334,6 +336,7 @@ export const presetFiltersByView: Record<InboxViewType, Partial<GetAllDialogsFor
  * @param {InboxViewType} [params.viewType] - The current inbox view, used to determine which presets to apply.
  * @returns {GetAllDialogsForPartiesQueryVariables} A normalized and preset-merged filter state object.
  */
+
 export const normalizeFilterDefaults = ({
   filters,
   viewType,
@@ -348,12 +351,8 @@ export const normalizeFilterDefaults = ({
 
   if (updatedAfter && filterRanges[updatedAfter as unknown as DateFilterOption]) {
     const { start, end } = filterRanges[updatedAfter as unknown as DateFilterOption];
-    if (start) {
-      normalized.updatedAfter = start.toISOString();
-    }
-    if (end) {
-      normalized.updatedBefore = end.toISOString();
-    }
+    if (start) normalized.updatedAfter = start.toISOString();
+    if (end) normalized.updatedBefore = end.toISOString();
   }
 
   const normalizedStatus = (normalized.status ?? []) as string[];
@@ -372,7 +371,7 @@ export const normalizeFilterDefaults = ({
   return mergeFilterDefaults(normalized, viewType);
 };
 
-function mergeWithPresets<T extends Record<string, unknown>>(current: T, presets: Partial<T>): T {
+const mergeWithPresets = <T extends Record<string, unknown>>(current: T, presets: Partial<T>): T => {
   const merged = { ...current };
 
   for (const key of Object.keys(presets) as (keyof T)[]) {
@@ -389,7 +388,7 @@ function mergeWithPresets<T extends Record<string, unknown>>(current: T, presets
   }
 
   return merged;
-}
+};
 
 export const mergeFilterDefaults = (
   currentFilters: GetAllDialogsForPartiesQueryVariables,
