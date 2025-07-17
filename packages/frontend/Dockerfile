@@ -1,4 +1,4 @@
-FROM node:22.0.0-slim AS build
+FROM node:22.17.0-slim@sha256:b04ce4ae4e95b522112c2e5c52f781471a5cbc3b594527bcddedee9bc48c03a0 AS build
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN npm i -g corepack@latest
@@ -17,7 +17,7 @@ CMD ["pnpm", "--filter", "frontend", "run", "dev", "--host", "0.0.0.0"]
 
 # ---
 
-FROM nginx:1.25-alpine
+FROM nginx:1.27-alpine@sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10
 
 # Install envsubst for environment variable substitution
 RUN apk add --no-cache gettext
