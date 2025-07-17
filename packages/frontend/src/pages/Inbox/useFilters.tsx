@@ -6,7 +6,7 @@ import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { useDialogsCount } from '../../api/hooks/useDialogsCount.tsx';
 import { getOrganization } from '../../api/utils/organizations.ts';
 import type { InboxItemInput } from './InboxItemInput.ts';
-import { FilterCategory, getFilters } from './filters.ts';
+import { FilterCategory, getFilters, readFiltersFromURLQuery } from './filters.ts';
 import { useOrganizations } from './useOrganizations.ts';
 
 interface UseFiltersOutput {
@@ -27,9 +27,21 @@ export const useFilters = ({ dialogs, viewType }: UseFiltersProps): UseFiltersOu
   const [params] = useSearchParams();
   const orgsFromSearchState = params.getAll('org');
 
+  const currentFilters = useMemo(() => {
+    return readFiltersFromURLQuery(params.toString());
+  }, [params]);
+
   const filters = useMemo(
-    () => getFilters({ dialogs, allDialogs, allOrganizations: organizations, viewType, orgsFromSearchState }),
-    [dialogs, allDialogs, organizations, viewType, orgsFromSearchState],
+    () =>
+      getFilters({
+        dialogs,
+        allDialogs,
+        allOrganizations: organizations,
+        viewType,
+        orgsFromSearchState,
+        currentFilters,
+      }),
+    [dialogs, allDialogs, organizations, viewType, orgsFromSearchState, currentFilters],
   );
 
   const getFilterLabel = (name: string, value: (string | number)[] | undefined) => {
