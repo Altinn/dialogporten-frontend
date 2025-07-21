@@ -80,6 +80,47 @@ const getFilterBadgeProps = (filterCount: number | undefined): BadgeProps => {
   return { size: 'xs', label: '' };
 };
 
+const getFilteredDialogs = (
+  dialogs: CountableDialogFieldsFragment[],
+  currentFilters: FilterState,
+  excludeFilterCategory?: FilterCategory,
+): CountableDialogFieldsFragment[] => {
+  return dialogs.filter((dialog) => {
+    if (excludeFilterCategory !== FilterCategory.ORG && currentFilters.org?.length) {
+      if (!currentFilters.org.includes(dialog.org)) {
+        return false;
+      }
+    }
+
+    if (excludeFilterCategory !== FilterCategory.STATUS && currentFilters.status?.length) {
+      const dialogSystemLabel = getExclusiveLabel(dialog.endUserContext?.systemLabels || []);
+      const hasMatchingStatus = currentFilters.status.some((status) => {
+        if ([SystemLabel.Archive, SystemLabel.Bin].includes(status as SystemLabel)) {
+          return dialogSystemLabel === status;
+        }
+        return dialog.status === status;
+      });
+
+      if (!hasMatchingStatus) {
+        return false;
+      }
+    }
+
+    if (excludeFilterCategory !== FilterCategory.UPDATED && currentFilters.updated?.length) {
+      const dateFilter = currentFilters.updated[0] as DateFilterOption;
+      if (dateFilter && filterRanges[dateFilter]) {
+        const dialogDate = new Date(dialog.updatedAt);
+        const { start, end } = filterRanges[dateFilter];
+
+        if (start && dialogDate < start) return false;
+        if (end && dialogDate > end) return false;
+      }
+    }
+
+    return true;
+  });
+};
+
 const createDateOptions = (dates: string[]): ToolbarFilterProps['options'] => {
   const now = new Date();
   const startOfSixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
@@ -136,8 +177,11 @@ const createSenderOrgFilter = (
   dialogs: InboxItemInput[],
   allOrganizations: OrganizationFieldsFragment[],
   orgsFromSearchState: string[],
+  currentFilters: FilterState = {},
 ): ToolbarFilterProps => {
-  const orgCount = countOccurrences(allDialogs.map((d) => d.org));
+  const filteredDialogs = getFilteredDialogs(allDialogs, currentFilters, FilterCategory.ORG);
+  const orgCount = countOccurrences(filteredDialogs.map((d) => d.org));
+
   const uniqueOrgs = Array.from(
     new Set([...dialogs.map((d) => d.org), ...allDialogs.map((d) => d.org), ...orgsFromSearchState]),
   );
@@ -157,9 +201,14 @@ const createSenderOrgFilter = (
   };
 };
 
-const createStatusFilter = (allDialogs: CountableDialogFieldsFragment[]): ToolbarFilterProps => {
-  const statusCount = countOccurrences(allDialogs.map((d) => d.status));
-  const systemLabels = allDialogs
+const createStatusFilter = (
+  allDialogs: CountableDialogFieldsFragment[],
+  currentFilters: FilterState = {},
+): ToolbarFilterProps => {
+  const filteredDialogs = getFilteredDialogs(allDialogs, currentFilters, FilterCategory.STATUS);
+  const statusCount = countOccurrences(filteredDialogs.map((d) => d.status));
+
+  const systemLabels = filteredDialogs
     .map((d) => d.endUserContext?.systemLabels || [])
     .map((labels) => getExclusiveLabel(labels));
   const labelCounts = countOccurrences(systemLabels);
@@ -232,14 +281,21 @@ const createStatusFilter = (allDialogs: CountableDialogFieldsFragment[]): Toolba
   };
 };
 
-const createUpdatedAtFilter = (allDialogs: CountableDialogFieldsFragment[]): ToolbarFilterProps => ({
-  id: FilterCategory.UPDATED,
-  name: FilterCategory.UPDATED,
-  label: t('filter_bar.label.updated'),
-  optionType: 'radio',
-  removable: true,
-  options: createDateOptions(allDialogs.map((d) => d.updatedAt)),
-});
+const createUpdatedAtFilter = (
+  allDialogs: CountableDialogFieldsFragment[],
+  currentFilters: FilterState = {},
+): ToolbarFilterProps => {
+  const filteredDialogs = getFilteredDialogs(allDialogs, currentFilters, FilterCategory.UPDATED);
+
+  return {
+    id: FilterCategory.UPDATED,
+    name: FilterCategory.UPDATED,
+    label: t('filter_bar.label.updated'),
+    optionType: 'radio',
+    removable: true,
+    options: createDateOptions(filteredDialogs.map((d) => d.updatedAt)),
+  };
+};
 
 /**
  * Generates filters with suggestions, including count of available items.
@@ -249,6 +305,7 @@ const createUpdatedAtFilter = (allDialogs: CountableDialogFieldsFragment[]): Too
  * @param allOrganizations
  * @param viewType
  * @param orgsFromSearchState
+ * @param currentFilters - The current filter state to calculate accurate counts
  * @returns {Array} - The array of filter settings.
  */
 
@@ -258,16 +315,24 @@ export const getFilters = ({
   allOrganizations,
   viewType,
   orgsFromSearchState = [],
+  currentFilters = {},
 }: {
   dialogs: InboxItemInput[];
   allDialogs: CountableDialogFieldsFragment[];
   allOrganizations: OrganizationFieldsFragment[];
   viewType: InboxViewType;
   orgsFromSearchState?: string[];
+  currentFilters?: FilterState;
 }): ToolbarFilterProps[] => {
-  const senderOrgFilter = createSenderOrgFilter(allDialogs, dialogs, allOrganizations, orgsFromSearchState);
-  const statusFilter = createStatusFilter(allDialogs);
-  const updatedAtFilter = createUpdatedAtFilter(allDialogs);
+  const senderOrgFilter = createSenderOrgFilter(
+    allDialogs,
+    dialogs,
+    allOrganizations,
+    orgsFromSearchState,
+    currentFilters,
+  );
+  const statusFilter = createStatusFilter(allDialogs, currentFilters);
+  const updatedAtFilter = createUpdatedAtFilter(allDialogs, currentFilters);
 
   return viewType === 'inbox' ? [senderOrgFilter, statusFilter, updatedAtFilter] : [senderOrgFilter, updatedAtFilter];
 };
