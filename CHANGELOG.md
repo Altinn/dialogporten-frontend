@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.47.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.46.1...v1.47.0) (2025-07-22)
+
+
+### Features
+
+* Banner now without close/hide button. Updated text with translations. ([fd5f089](https://github.com/Altinn/dialogporten-frontend/commit/fd5f0893dbfc1950721aae3463732fad4038361a))
+* Show number of sent/received transmissions ([50bd06f](https://github.com/Altinn/dialogporten-frontend/commit/50bd06f0a31453c365abcf3ae0413ad8bc3a1dda))
+* Transmission will now be shown as read based on activities ([554f6d8](https://github.com/Altinn/dialogporten-frontend/commit/554f6d831b1178164456b2708cbeccf65e37eb62))
+
+
+### Bug Fixes
+
+* Filters calculating label dynamically based on all views and providing expected result ([#2348](https://github.com/Altinn/dialogporten-frontend/issues/2348)) ([af8b98d](https://github.com/Altinn/dialogporten-frontend/commit/af8b98dae8991e42cf32403c1a59ada32163b907))
+* Filters now showing count label of all dialogs found ([#2341](https://github.com/Altinn/dialogporten-frontend/issues/2341)) ([afe5471](https://github.com/Altinn/dialogporten-frontend/commit/afe5471f6f7ada3bb6184ab93c2c7dcd21ec9be5))
+* Update filters number label dynamically ([#2347](https://github.com/Altinn/dialogporten-frontend/issues/2347)) ([6fc506a](https://github.com/Altinn/dialogporten-frontend/commit/6fc506ad56e0fabcfa28dd7ad382029fe8560bcc))
+
 ## [1.46.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.46.0...v1.46.1) (2025-07-11)
 
 
