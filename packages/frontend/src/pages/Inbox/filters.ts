@@ -10,7 +10,6 @@ import { endOfDay, endOfMonth, endOfWeek, startOfDay, startOfMonth, startOfWeek,
 import { t } from 'i18next';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { getOrganization } from '../../api/utils/organizations.ts';
-import type { InboxItemInput } from './InboxItemInput.ts';
 
 export const getExclusiveLabel = (labels: string[]): SystemLabel => {
   const EXCLUSIVE_LABELS = [SystemLabel.Default, SystemLabel.Archive, SystemLabel.Bin] as const;
@@ -123,58 +122,89 @@ const getFilteredDialogs = (
 
 const createDateOptions = (dates: string[]): ToolbarFilterProps['options'] => {
   const now = new Date();
-  const startOfSixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
-  const sameDateLastYear = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+  const startOfSixMonthsAgo = subMonths(now, 6);
+  const sameDateLastYear = subYears(now, 1);
+
+  const dateCounts: Record<DateFilterOption, number> = {
+    [DateFilterOption.TODAY]: 0,
+    [DateFilterOption.THIS_WEEK]: 0,
+    [DateFilterOption.THIS_MONTH]: 0,
+    [DateFilterOption.LAST_SIX_MONTHS]: 0,
+    [DateFilterOption.LAST_TWELVE_MONTHS]: 0,
+    [DateFilterOption.OLDER_THAN_ONE_YEAR]: 0,
+  };
+
+  for (const dateStr of dates) {
+    const date = new Date(dateStr);
+
+    // TODAY
+    if (startOfDay(date).toISOString() === startOfDay(now).toISOString()) {
+      dateCounts[DateFilterOption.TODAY]++;
+    }
+
+    // THIS_WEEK
+    if (startOfWeek(date, { weekStartsOn: 0 }).toISOString() === startOfWeek(now, { weekStartsOn: 0 }).toISOString()) {
+      dateCounts[DateFilterOption.THIS_WEEK]++;
+    }
+
+    // THIS_MONTH
+    if (startOfMonth(date).toISOString() === startOfMonth(now).toISOString()) {
+      dateCounts[DateFilterOption.THIS_MONTH]++;
+    }
+
+    // LAST_SIX_MONTHS
+    if (date >= startOfSixMonthsAgo && date <= endOfDay(now)) {
+      dateCounts[DateFilterOption.LAST_SIX_MONTHS]++;
+    }
+
+    // LAST_TWELVE_MONTHS
+    if (date >= sameDateLastYear && date <= endOfDay(now)) {
+      dateCounts[DateFilterOption.LAST_TWELVE_MONTHS]++;
+    }
+
+    // OLDER_THAN_ONE_YEAR
+    if (date < sameDateLastYear) {
+      dateCounts[DateFilterOption.OLDER_THAN_ONE_YEAR]++;
+    }
+  }
 
   const options = [
     {
       value: DateFilterOption.TODAY,
-      match: (date: Date) => startOfDay(date).toISOString() === startOfDay(now).toISOString(),
       groupId: 'group-0',
     },
     {
       value: DateFilterOption.THIS_WEEK,
-      match: (date: Date) =>
-        startOfWeek(date, { weekStartsOn: 0 }).toISOString() === startOfWeek(now, { weekStartsOn: 0 }).toISOString(),
       groupId: 'group-0',
     },
     {
       value: DateFilterOption.THIS_MONTH,
-      match: (date: Date) => startOfMonth(date).toISOString() === startOfMonth(now).toISOString(),
       groupId: 'group-0',
     },
     {
       value: DateFilterOption.LAST_SIX_MONTHS,
-      match: (date: Date) => date >= startOfSixMonthsAgo,
       groupId: 'group-1',
     },
     {
       value: DateFilterOption.LAST_TWELVE_MONTHS,
-      match: (date: Date) => date >= sameDateLastYear,
       groupId: 'group-1',
     },
     {
       value: DateFilterOption.OLDER_THAN_ONE_YEAR,
-      match: (date: Date) => date < sameDateLastYear,
       groupId: 'group-2',
     },
   ];
 
-  return options.map((option) => {
-    const count = dates.filter((d) => option.match(new Date(d))).length;
-
-    return {
-      label: t(`filter.date.${option.value.toLowerCase()}`),
-      value: option.value,
-      badge: getFilterBadgeProps(count),
-      groupId: option.groupId,
-    };
-  });
+  return options.map((option) => ({
+    label: t(`filter.date.${option.value.toLowerCase()}`),
+    value: option.value,
+    badge: getFilterBadgeProps(dateCounts[option.value]),
+    groupId: option.groupId,
+  }));
 };
 
 const createSenderOrgFilter = (
   allDialogs: CountableDialogFieldsFragment[],
-  dialogs: InboxItemInput[],
   allOrganizations: OrganizationFieldsFragment[],
   orgsFromSearchState: string[],
   currentFilters: FilterState = {},
@@ -182,9 +212,7 @@ const createSenderOrgFilter = (
   const filteredDialogs = getFilteredDialogs(allDialogs, currentFilters, FilterCategory.ORG);
   const orgCount = countOccurrences(filteredDialogs.map((d) => d.org));
 
-  const uniqueOrgs = Array.from(
-    new Set([...dialogs.map((d) => d.org), ...allDialogs.map((d) => d.org), ...orgsFromSearchState]),
-  );
+  const uniqueOrgs = Array.from(new Set([...allDialogs.map((d) => d.org), ...orgsFromSearchState]));
 
   return {
     label: t('filter_bar.label.choose_sender'),
@@ -195,7 +223,7 @@ const createSenderOrgFilter = (
       .map((org) => ({
         label: getOrganization(allOrganizations, org, 'nb')?.name || org,
         value: org,
-        badge: getFilterBadgeProps(orgCount[org]),
+        badge: getFilterBadgeProps(orgCount[org] || 0),
       }))
       .sort((a, b) => a.label?.localeCompare(b.label)),
   };
@@ -233,49 +261,49 @@ const createStatusFilter = (
         label: t('status.not_applicable'),
         groupId: 'status-group-0',
         value: DialogStatus.NotApplicable,
-        badge: getFilterBadgeProps(statusCount[DialogStatus.NotApplicable]),
+        badge: getFilterBadgeProps(statusCount[DialogStatus.NotApplicable] || 0),
       },
       {
         label: t('status.requires_attention'),
         groupId: 'status-group-1',
         value: DialogStatus.RequiresAttention,
-        badge: getFilterBadgeProps(statusCount[DialogStatus.RequiresAttention]),
+        badge: getFilterBadgeProps(statusCount[DialogStatus.RequiresAttention] || 0),
       },
       {
         label: t('status.in_progress'),
         groupId: 'status-group-1',
         value: DialogStatus.InProgress,
-        badge: getFilterBadgeProps(statusCount[DialogStatus.InProgress]),
+        badge: getFilterBadgeProps(statusCount[DialogStatus.InProgress] || 0),
       },
       {
         label: t('status.completed'),
         groupId: 'status-group-1',
         value: DialogStatus.Completed,
-        badge: getFilterBadgeProps(statusCount[DialogStatus.Completed]),
+        badge: getFilterBadgeProps(statusCount[DialogStatus.Completed] || 0),
       },
       {
         label: t('status.draft'),
         groupId: 'status-group-2',
         value: DialogStatus.Draft,
-        badge: getFilterBadgeProps(statusCount[DialogStatus.Draft]),
+        badge: getFilterBadgeProps(statusCount[DialogStatus.Draft] || 0),
       },
       {
         label: t('status.awaiting'),
         groupId: 'status-group-2',
         value: DialogStatus.Awaiting,
-        badge: getFilterBadgeProps(statusCount[DialogStatus.Awaiting]),
+        badge: getFilterBadgeProps(statusCount[DialogStatus.Awaiting] || 0),
       },
       {
         label: t('status.archive'),
         groupId: 'status-group-3',
         value: SystemLabel.Archive,
-        badge: getFilterBadgeProps(labelCounts[SystemLabel.Archive]),
+        badge: getFilterBadgeProps(labelCounts[SystemLabel.Archive] || 0),
       },
       {
         label: t('status.bin'),
         groupId: 'status-group-3',
         value: SystemLabel.Bin,
-        badge: getFilterBadgeProps(labelCounts[SystemLabel.Bin]),
+        badge: getFilterBadgeProps(labelCounts[SystemLabel.Bin] || 0),
       },
     ],
   };
@@ -299,9 +327,9 @@ const createUpdatedAtFilter = (
 
 /**
  * Generates filters with suggestions, including count of available items.
+ * Counts are calculated across ALL views, not just the current view.
  *
- * @param {InboxItemInput[]} dialogs - The array of dialogs to filter.
- * @param allDialogs
+ * @param allDialogs - All dialogs from all views for accurate counting
  * @param allOrganizations
  * @param viewType
  * @param orgsFromSearchState
@@ -310,27 +338,19 @@ const createUpdatedAtFilter = (
  */
 
 export const getFilters = ({
-  dialogs,
   allDialogs,
   allOrganizations,
   viewType,
   orgsFromSearchState = [],
   currentFilters = {},
 }: {
-  dialogs: InboxItemInput[];
   allDialogs: CountableDialogFieldsFragment[];
   allOrganizations: OrganizationFieldsFragment[];
   viewType: InboxViewType;
   orgsFromSearchState?: string[];
   currentFilters?: FilterState;
 }): ToolbarFilterProps[] => {
-  const senderOrgFilter = createSenderOrgFilter(
-    allDialogs,
-    dialogs,
-    allOrganizations,
-    orgsFromSearchState,
-    currentFilters,
-  );
+  const senderOrgFilter = createSenderOrgFilter(allDialogs, allOrganizations, orgsFromSearchState, currentFilters);
   const statusFilter = createStatusFilter(allDialogs, currentFilters);
   const updatedAtFilter = createUpdatedAtFilter(allDialogs, currentFilters);
 

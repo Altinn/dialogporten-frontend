@@ -103,7 +103,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     dialogCountInconclusive: dialogForAllPartiesCountInconclusive,
   });
 
-  const { filters, getFilterLabel } = useFilters({ dialogs, viewType });
+  const { filters, getFilterLabel } = useFilters({ viewType });
 
   const isLoading = isLoadingParties || isLoadingDialogs;
   const { groupedDialogs, groups } = useGroupedDialogs({
