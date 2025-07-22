@@ -28,9 +28,10 @@ const envVariables = z.object({
   CLIENT_ID: z.string().default(''),
   CLIENT_SECRET: z.string().default(''),
   PLATFORM_EXCHANGE_TOKEN_ENDPOINT_URL: z.string().default(''),
-  PLATFORM_PROFILE_API_URL: z.string().default(''),
+  PLATFORM_PROFILE_API_URL: z.string().default('https://platform.tt02.altinn.no/profile/api/v1/'),
   MIGRATION_RUN: z.preprocess(stringToBoolean, z.boolean().default(false)),
-  DIALOGPORTEN_URL: z.string().default('https://altinn-dev-api.azure-api.net/dialogporten/graphql'),
+  // DIALOGPORTEN_URL: z.string().default('https://altinn-dev-api.azure-api.net/dialogporten/graphql'),
+  DIALOGPORTEN_URL: z.string().default('https://platform.tt02.altinn.no/dialogporten/graphql'),
   CONTAINER_APP_REPLICA_NAME: z.string().default(''),
   ENABLE_GRAPHIQL: z.preprocess(stringToBoolean, z.boolean().default(true)),
 });

@@ -174,6 +174,13 @@ interface Context {
 
 export const getUserFromCore = async (pid: string, context: Context) => {
   const { platformExchangeTokenEndpointURL, platformProfileAPI_url } = config;
+  // const favs = await getFavoritesFromCore(pid, context);
+  // console.info('Fetching favorites from core profile API', favs);
+  // const notifications = await getNotificationsFromCore(pid, context);
+  // console.info('Fetching notifications from core profile API', notifications);
+  const organisations = await getOrganisationsFromCore(pid, context);
+  console.info('Fetching Organisations from core profile API', organisations);
+
   const token = context.session.get('token');
   if (!token) {
     console.error('No token found in session');
@@ -200,6 +207,108 @@ export const getUserFromCore = async (pid: string, context: Context) => {
     });
   if (!coreProfileData) {
     console.error('No core profile data found');
+    return [];
+  }
+  return coreProfileData;
+};
+
+export const getFavoritesFromCore = async (pid: string, context: Context) => {
+  const { platformExchangeTokenEndpointURL, platformProfileAPI_url } = config;
+  const token = context.session.get('token');
+  if (!token) {
+    console.error('No token found in session');
+    return [];
+  }
+  const { data: newToken } = await axios.get(platformExchangeTokenEndpointURL, {
+    headers: {
+      Authorization: `Bearer ${token.access_token}`,
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+  });
+  const { data: coreProfileData } = await axios
+    .get(`${platformProfileAPI_url}users/current/party-groups/favorites`, {
+      headers: {
+        Authorization: `Bearer ${newToken}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    })
+    .catch((error) => {
+      console.error('Error fetching core profile data:', error);
+      throw new Error('Failed to fetch core profile data');
+    });
+  if (!coreProfileData) {
+    console.error('No core profile data found');
+    return [];
+  }
+  return coreProfileData;
+};
+
+export const getNotificationsFromCore = async (pid: string, context: Context) => {
+  const { platformExchangeTokenEndpointURL, platformProfileAPI_url } = config;
+  const token = context.session.get('token');
+  if (!token) {
+    console.error('No token found in session');
+    return [];
+  }
+  const { data: newToken } = await axios.get(platformExchangeTokenEndpointURL, {
+    headers: {
+      Authorization: `Bearer ${token.access_token}`,
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+  });
+  const partyUuid = '053c8c93-b3ba-44f4-b6fb-fdecc333c749'; // Replace with actual party UUID if needed
+  console.info('!!!!!!!!!!!!! platformProfileAPI_url', platformProfileAPI_url);
+  const { data: coreProfileData } = await axios
+    .get(`${platformProfileAPI_url}users/current/notificationsettings/parties/${partyUuid}`, {
+      headers: {
+        Authorization: `Bearer ${newToken}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    })
+    .catch((error) => {
+      console.error('Error fetching core profile data:', error);
+      throw new Error('Failed to fetch core profile data');
+    });
+  if (!coreProfileData) {
+    console.error('No core profile data found');
+    return [];
+  }
+  return coreProfileData;
+};
+
+export const getOrganisationsFromCore = async (pid: string, context: Context) => {
+  const { platformExchangeTokenEndpointURL, platformProfileAPI_url } = config;
+  const token = context.session.get('token');
+  if (!token) {
+    console.error('No token found in session');
+    return [];
+  }
+  const { data: newToken } = await axios.get(platformExchangeTokenEndpointURL, {
+    headers: {
+      Authorization: `Bearer ${token.access_token}`,
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+  });
+  const organizationNumber = '310412406'; // Replace with actual party UUID if needed
+  const { data: coreProfileData } = await axios
+    .get(`${platformProfileAPI_url}organizations/${organizationNumber}/notificationaddresses/mandatory`, {
+      headers: {
+        Authorization: `Bearer ${newToken}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    })
+    .catch((error) => {
+      console.error('Error fetching core Organisations data:', error);
+      throw new Error('Failed to fetch core Organisations data');
+    });
+  if (!coreProfileData) {
+    console.error('No core Organisationsv data found');
     return [];
   }
   return coreProfileData;

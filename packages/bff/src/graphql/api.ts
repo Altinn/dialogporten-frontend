@@ -9,6 +9,7 @@ import config from '../config.ts';
 import { bffSchema, dialogportenSchema } from './schema.ts';
 
 const plugin: FastifyPluginAsync = async (fastify) => {
+  console.info('Registering GraphQL API plugin', config.dialogportenURL);
   const remoteExecutor: AsyncExecutor = async ({ document, variables, operationName, context }) => {
     const query = print(document);
     const token = context!.session.get('token');

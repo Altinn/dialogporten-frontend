@@ -10,6 +10,7 @@ fragment partyFields on AuthorizedParty {
   name
   isCurrentEndUser
   isDeleted
+  partyUuid
 }
 
 fragment subPartyFields on AuthorizedSubParty {

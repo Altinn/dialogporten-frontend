@@ -170,7 +170,7 @@ export const useParties = (): UsePartiesOutput => {
     isCompanyFromParams || allOrganizationsSelected || selectedParties?.[0]?.partyType === 'Organization';
 
   const selectedProfile = (isCompanyProfile ? 'company' : 'person') as 'company' | 'person';
-
+  console.info('Parties: ', data?.parties ?? []);
   return {
     isLoading,
     isSuccess,

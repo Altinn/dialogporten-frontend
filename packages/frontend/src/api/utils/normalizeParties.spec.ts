@@ -7,11 +7,12 @@ describe('normalizeParties', () => {
     {
       party: 'urn:altinn:person:identifier-no:1337',
       partyType: 'Person',
+      partyUuid: '23e32',
       subParties: [],
       hasOnlyAccessToSubParties: false,
       isAccessManager: true,
       isMainAdministrator: false,
-      name: 'EDEL REIERSEN',
+      name: 'EDEL REIERSEN',2
       isCurrentEndUser: true,
       isDeleted: false,
     },
@@ -19,6 +20,7 @@ describe('normalizeParties', () => {
       party: 'urn:altinn:organization:identifier-no:1',
       partyType: 'Organization',
       hasOnlyAccessToSubParties: false,
+      partyUuid: '23e32',
       subParties: [
         {
           party: 'urn:altinn:organization:identifier-no:2',
@@ -52,6 +54,7 @@ describe('normalizeParties', () => {
       {
         ...parties[0],
         name: 'Matching Party',
+        partyUuid: '23e32',
         subParties: [
           {
             ...parties[0],
@@ -81,6 +84,7 @@ describe('normalizeParties', () => {
         party: 'urn:altinn:organization:identifier-no:parent',
         partyType: 'Organization',
         hasOnlyAccessToSubParties: true,
+        partyUuid: '23e32',
         subParties: [
           {
             party: 'urn:altinn:organization:identifier-no:sub',
@@ -114,6 +118,7 @@ describe('normalizeParties', () => {
         party: 'urn:altinn:organization:identifier-no:parent',
         partyType: 'Organization',
         hasOnlyAccessToSubParties: true,
+        partyUuid: '23e32',
         subParties: [
           {
             party: 'urn:altinn:organization:identifier-no:sub1',
