@@ -11,6 +11,7 @@ export const parties: PartyFieldsFragment[] = [
     "isCurrentEndUser": true,
     "isDeleted": false,
     "hasOnlyAccessToSubParties": false,
+"partyUuid": "party:uuid:here",
   },
   {
     "party": "urn:altinn:organization:identifier-no:213294342",
@@ -24,6 +25,7 @@ export const parties: PartyFieldsFragment[] = [
         "isMainAdministrator": true,
         "name": "LATTERMILD ORIENTAL TIGER AS",
         "isCurrentEndUser": false,
+        "partyUuid": "urn:altinn:person:identifier-no:1337",
         "isDeleted": false
       }
     ],
@@ -31,7 +33,8 @@ export const parties: PartyFieldsFragment[] = [
     "isMainAdministrator": true,
     "name": "LATTERMILD ORIENTAL TIGER AS",
     "isCurrentEndUser": false,
-    "isDeleted": false
+    "isDeleted": false,
+"partyUuid": "party:uuid:here"
   },
   {
     "party": "urn:altinn:organization:identifier-no:313549461",
@@ -45,6 +48,7 @@ export const parties: PartyFieldsFragment[] = [
         "isMainAdministrator": true,
         "name": "DYPSINDIG FUNKSJONELL FJELLREV",
         "isCurrentEndUser": false,
+        "partyUuid": "urn:altinn:person:identifier-no:1337",
         "isDeleted": false
       },
       {
@@ -54,6 +58,7 @@ export const parties: PartyFieldsFragment[] = [
         "isMainAdministrator": true,
         "name": "UPRESIS KONSENTRISK FJELLREV",
         "isCurrentEndUser": false,
+        "partyUuid": "urn:altinn:person:identifier-no:1337",
         "isDeleted": false
       }
     ],
@@ -61,7 +66,8 @@ export const parties: PartyFieldsFragment[] = [
     "isMainAdministrator": true,
     "name": "ORDENTLIG VIRTUELL TIGER AS",
     "isCurrentEndUser": false,
-    "isDeleted": false
+    "isDeleted": false,
+"partyUuid": "party:uuid:here"
   },
   {
     "party": "urn:altinn:organization:identifier-no:313776816",
@@ -75,6 +81,7 @@ export const parties: PartyFieldsFragment[] = [
         "isMainAdministrator": false,
         "name": "PLUTSELIG NYBAKT TIGER AS",
         "isCurrentEndUser": false,
+        "partyUuid": "urn:altinn:person:identifier-no:1337",
         "isDeleted": false
       }
     ],
@@ -82,7 +89,8 @@ export const parties: PartyFieldsFragment[] = [
     "isMainAdministrator": false,
     "name": "PLUTSELIG NYBAKT TIGER AS",
     "isCurrentEndUser": false,
-    "isDeleted": false
+    "isDeleted": false,
+"partyUuid": "party:uuid:here"
   },
   {
     "party": "urn:altinn:organization:identifier-no:312409216",
@@ -96,6 +104,7 @@ export const parties: PartyFieldsFragment[] = [
         "isMainAdministrator": false,
         "name": "STYRBAR UTTRYKKSFULL TIGER AS",
         "isCurrentEndUser": false,
+        "partyUuid": "urn:altinn:person:identifier-no:1337",
         "isDeleted": false
       }
     ],
@@ -103,6 +112,7 @@ export const parties: PartyFieldsFragment[] = [
     "isMainAdministrator": false,
     "name": "STYRBAR UTTRYKKSFULL TIGER AS",
     "isCurrentEndUser": false,
-    "isDeleted": false
+    "isDeleted": false,
+"partyUuid": "party:uuid:here"
   }
 ]

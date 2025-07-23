@@ -14,6 +14,7 @@ describe('normalizeParties', () => {
       name: 'EDEL REIERSEN',
       isCurrentEndUser: true,
       isDeleted: false,
+      partyUuid: 'urn:altinn:person:identifier-no:1337',
     },
     {
       party: 'urn:altinn:organization:identifier-no:1',
@@ -27,6 +28,7 @@ describe('normalizeParties', () => {
           isMainAdministrator: true,
           name: 'STEINKJER OG FLATEBY',
           isCurrentEndUser: false,
+          partyUuid: 'urn:altinn:person:identifier-no:1337',
           isDeleted: false,
         },
       ],
@@ -35,6 +37,7 @@ describe('normalizeParties', () => {
       name: 'MYSUSÆTER OG ØSTRE GAUSDAL',
       isCurrentEndUser: false,
       isDeleted: false,
+      partyUuid: 'urn:altinn:person:identifier-no:1338',
     },
   ];
 
@@ -90,6 +93,7 @@ describe('normalizeParties', () => {
             isMainAdministrator: false,
             isCurrentEndUser: false,
             isDeleted: false,
+            partyUuid: 'urn:altinn:person:identifier-no:1337',
             __typename: 'AuthorizedSubParty',
           },
         ],
@@ -98,6 +102,7 @@ describe('normalizeParties', () => {
         name: 'Matching Name',
         isCurrentEndUser: false,
         isDeleted: false,
+        partyUuid: 'urn:altinn:person:identifier-no:1337',
       },
     ];
 
@@ -123,6 +128,7 @@ describe('normalizeParties', () => {
             isMainAdministrator: false,
             isCurrentEndUser: false,
             isDeleted: false,
+            partyUuid: 'urn:altinn:person:identifier-no:1337',
             __typename: 'AuthorizedSubParty',
           },
         ],
@@ -131,6 +137,7 @@ describe('normalizeParties', () => {
         name: 'Parent Org',
         isCurrentEndUser: false,
         isDeleted: false,
+        partyUuid: 'urn:altinn:person:identifier-no:1337',
       },
     ];
 
