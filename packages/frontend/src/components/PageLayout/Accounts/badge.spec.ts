@@ -95,6 +95,7 @@ describe('getCountBadge', () => {
     name: 'party1',
     partyType: 'Person',
     party: 'party1',
+    partyUuid: 'party:uuid:here',
     subParties: [
       {
         name: 'party1',
@@ -103,6 +104,7 @@ describe('getCountBadge', () => {
         isAccessManager: false,
         isMainAdministrator: false,
         isCurrentEndUser: false,
+        partyUuid: 'urn:altinn:person:identifier-no:1337',
         isDeleted: false,
       },
     ],
@@ -132,6 +134,7 @@ describe('getCountBadge', () => {
       partyType: '',
       party: 'party3',
       subParties: [],
+      partyUuid: 'party:uuid:here',
     };
     expect(getAccountBadge(dialogs as InboxItemInput[], nonMatchingParty)).toBeUndefined();
   });
@@ -148,6 +151,7 @@ describe('getCountBadge', () => {
         isCurrentEndUser: false,
         hasOnlyAccessToSubParties: false,
         isDeleted: false,
+        partyUuid: 'party:uuid:here',
       },
       {
         party: 'party2',
@@ -159,6 +163,7 @@ describe('getCountBadge', () => {
         isCurrentEndUser: false,
         hasOnlyAccessToSubParties: false,
         isDeleted: false,
+        partyUuid: 'party:uuid:here',
       },
     ];
     const badge = getAccountBadge(dialogs as InboxItemInput[], multipleParties);
