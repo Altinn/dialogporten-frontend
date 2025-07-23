@@ -8,9 +8,10 @@ test.describe('Profile Notifications Page', () => {
 
     await expect(page.getByRole('heading', { name: 'Varslingsinnstillinger' })).toBeVisible();
 
-    await expect(page.locator('div').filter({ hasText: /^Varslinger er på$/ })).toBeVisible();
-    await expect(page.locator('div').filter({ hasText: /^Varslingsadresse for e-post$/ })).toBeVisible();
-    await expect(page.locator('div').filter({ hasText: /^SMS-varslinger$/ })).toBeVisible();
+    await expect(page.getByText('Varslinger er på', { exact: false })).toBeVisible();
+    await expect(page.getByText('Varslingsadresse for e-post', { exact: false })).toBeVisible();
+    await expect(page.getByText('SMS-varslinger', { exact: false })).toBeVisible();
+
     await expect(page.getByRole('button', { name: 'Kristian Haugen' })).toBeVisible();
   });
 
@@ -22,14 +23,15 @@ test.describe('Profile Notifications Page', () => {
 
     await expect(page.locator('div').filter({ hasText: /^Ingen varslinger$/ })).toBeVisible();
 
-    await expect(page.locator('div').filter({ hasText: /^Varslinger er på$/ })).not.toBeVisible();
-    await expect(page.locator('div').filter({ hasText: /^Varslingsadresse for e-post$/ })).not.toBeVisible();
-    await expect(page.locator('div').filter({ hasText: /^SMS-varslinger$/ })).not.toBeVisible();
+    await expect(page.getByText('Varslinger er på', { exact: false })).not.toBeVisible();
+    await expect(page.getByText('Varslingsadresse for e-post', { exact: false })).not.toBeVisible();
+    await expect(page.getByText('SMS-varslinger', { exact: false })).not.toBeVisible();
 
     await page.getByRole('switch', { name: 'Skru på' }).check();
-    await expect(page.locator('div').filter({ hasText: /^Varslinger er på$/ })).toBeVisible();
-    await expect(page.locator('div').filter({ hasText: /^Varslingsadresse for e-post$/ })).toBeVisible();
-    await expect(page.locator('div').filter({ hasText: /^SMS-varslinger$/ })).toBeVisible();
+
+    await expect(page.getByText('Varslinger er på', { exact: false })).toBeVisible();
+    await expect(page.getByText('Varslingsadresse for e-post', { exact: false })).toBeVisible();
+    await expect(page.getByText('SMS-varslinger', { exact: false })).toBeVisible();
   });
 
   test('Actor shows options on click', async ({ page }: { page: Page }) => {
