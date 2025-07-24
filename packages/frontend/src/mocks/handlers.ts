@@ -66,6 +66,7 @@ const getAllDialogsforCountMock = graphql.query('getAllDialogsForCount', ({ vari
           org: item.org,
           party: item.party,
           updatedAt: item.updatedAt,
+          contentUpdatedAt: item.contentUpdatedAt,
           status: item.status,
           endUserContext: {
             systemLabels: item.endUserContext?.systemLabels ?? [],

@@ -79,7 +79,7 @@ const dialogsWithMockedSystemDate: SearchDialogFieldsFragment[] = [
         hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0,  contentUpdatedAt: MOCKED_SYS_DATE, guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-05-23T23:00:00.000Z',
-        updatedAt: '2024-10-25T11:34:00.000Z',
+        updatedAt: MOCKED_SYS_DATE,
         extendedStatus: null,
         seenSinceLastUpdate: [
             {
@@ -146,7 +146,7 @@ const dialogsWithMockedSystemDate: SearchDialogFieldsFragment[] = [
         hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0,  contentUpdatedAt: MOCKED_SYS_DATE, guiAttachmentCount: 0,
         status: DialogStatus.RequiresAttention,
         createdAt: '2023-12-04T11:45:00.000Z',
-        updatedAt: '2024-05-04T11:45:00.000Z',
+        updatedAt: MOCKED_SYS_DATE,
         extendedStatus: null,
         seenSinceLastUpdate: [],
         latestActivity: {
