@@ -5,10 +5,8 @@ query profile {
     groups {
       id
       name
-      isfavorite
-      parties {
-        id
-      }
+      isFavorite
+      parties
     }
     user {
       userId

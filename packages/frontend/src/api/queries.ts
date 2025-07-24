@@ -29,8 +29,8 @@ export const addFavoriteParty = (partyId: string): Promise<AddFavoritePartyMutat
   graphQLSDK.AddFavoriteParty({ partyId });
 export const addFavoritePartyToGroup = (partyId: string, groupName: string): Promise<AddFavoritePartyToGroupMutation> =>
   graphQLSDK.AddFavoritePartyToGroup({ partyId, groupName });
-export const deleteFavoriteParty = (partyId: string, groupId: string): Promise<DeleteFavoritePartyMutation> =>
-  graphQLSDK.DeleteFavoriteParty({ partyId, groupId });
+export const deleteFavoriteParty = (partyId: string): Promise<DeleteFavoritePartyMutation> =>
+  graphQLSDK.DeleteFavoriteParty({ partyId });
 export const createSavedSearch = (name: string, data: SavedSearchInput): Promise<CreateSavedSearchMutation> =>
   graphQLSDK.CreateSavedSearch({ name, data });
 export const updateSystemLabel = (dialogId: string, labels: SystemLabel): Promise<UpdateSystemLabelMutation> =>

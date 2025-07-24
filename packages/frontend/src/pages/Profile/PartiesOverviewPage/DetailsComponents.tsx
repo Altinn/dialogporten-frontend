@@ -76,7 +76,7 @@ export const GroupDetails = ({ items, id = 'group', accountIds }: AccountDetails
         <List size="sm" spacing={0}>
           {groupItems?.map((item, index) => {
             const onRemoveFromGroup = async () => {
-              await deleteFavoriteParty(item.id, `${id}`).then((res) => {
+              await deleteFavoriteParty(item.id).then((res) => {
                 console.info('Removed ', item.id, ' from group ', id, res);
               });
             };

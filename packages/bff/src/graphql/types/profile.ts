@@ -57,9 +57,9 @@ export const GroupObject = objectType({
   definition(t) {
     t.int('id', { resolve: (group) => group.id });
     t.string('name', { resolve: (group) => group.name });
-    t.boolean('isfavorite', { resolve: (group) => group.isfavorite });
+    t.boolean('isFavorite', { resolve: (group) => group.isFavorite });
     t.string('profilePid', { resolve: (group) => group.profile?.pid });
-    t.list.field('parties', { type: 'PartyObject', resolve: (group) => group.parties });
+    t.list.string('parties', { resolve: (group) => group.parties });
   },
 });
 
