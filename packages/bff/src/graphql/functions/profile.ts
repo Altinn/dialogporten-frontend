@@ -2,15 +2,28 @@ import axios from 'axios';
 import config from '../../config.ts';
 import { GroupRepository, PartyRepository, ProfileRepository } from '../../db.ts';
 import { Group, Party, ProfileTable } from '../../entities.ts';
+const { platformProfileAPI_url, platformExchangeTokenEndpointURL } = config;
 
-export const getOrCreateProfile = async (pid: string, sessionLocale: string): Promise<ProfileTable> => {
-  const profile = await ProfileRepository!
-    .createQueryBuilder('profile')
-    .leftJoinAndSelect('profile.groups', 'groups') // Profile's groups
-    .leftJoinAndSelect('groups.parties', 'parties') // Parties in those groups
-    .leftJoinAndSelect('parties.groups', 'partyGroups') // All groups linked to each party
-    .where('profile.pid = :pid', { pid })
-    .getOne();
+export const exchangeToken = async (context: Context): Promise<string> => {
+  const token = context.session.get('token');
+  if (!token) {
+    console.error('No token found in session');
+    return '';
+  }
+  const { data: newToken } = await axios.get(platformExchangeTokenEndpointURL, {
+    headers: {
+      Authorization: `Bearer ${token.access_token}`,
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+  });
+  return newToken;
+};
+
+export const getOrCreateProfile = async (pid: string, sessionLocale: string, token: string): Promise<ProfileTable> => {
+  const profile = await ProfileRepository!.createQueryBuilder('profile').where('profile.pid = :pid', { pid }).getOne();
+
+  const groups = await getFavoritesFromCore(token);
 
   if (!profile) {
     const newProfile = new ProfileTable();
@@ -25,6 +38,7 @@ export const getOrCreateProfile = async (pid: string, sessionLocale: string): Pr
     return savedProfile;
   }
 
+  profile.groups = groups;
   if (!profile.language) {
     profile.language = sessionLocale || 'nb';
     await ProfileRepository!.save(profile);
@@ -32,72 +46,31 @@ export const getOrCreateProfile = async (pid: string, sessionLocale: string): Pr
   return profile;
 };
 
-export const addFavoriteParty = async (pid: string, partyId: string) => {
-  const categoryName = 'favorites';
-  const currentProfile = await ProfileRepository!.findOne({
-    where: { pid },
-  });
-
-  if (!currentProfile) {
-    throw new Error('Profile not found');
+export const addFavoriteParty = async (context: Context, partyUuid: string) => {
+  const token = context.session.get('token');
+  if (!token) {
+    console.error('No token found in session');
+    return [];
   }
+  const newToken = await exchangeToken(context);
 
-  let group = await GroupRepository!.findOne({
-    where: { isfavorite: true, profile: { pid } },
-  });
-
-  if (!group) {
-    const newGroup = new Group();
-    newGroup.profile = currentProfile;
-    newGroup.name = 'Favorites';
-    newGroup.isfavorite = true;
-    group = await GroupRepository!.save(newGroup);
-
-    if (!newGroup) {
-      throw new Error('Fatal: Not able to create favorite group');
-    }
+  try {
+    const response = await axios.put(
+      `${platformProfileAPI_url}users/current/party-groups/favorites/${partyUuid}`,
+      null,
+      {
+        headers: {
+          Authorization: `Bearer ${newToken}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+      },
+    );
+    return [response.data as Group];
+  } catch (error) {
+    console.error('Error adding favorite:', error);
+    throw new Error('Failed to add favorite');
   }
-  const currentParty = await PartyRepository!.findOne({
-    where: { id: partyId, groups: { id: group.id } },
-    relations: ['groups'],
-  });
-  if (currentParty) {
-    console.info(`Party ${partyId} already exists in group ${categoryName}, skipping addition`);
-    return currentProfile;
-  }
-
-  let party = await PartyRepository!.findOne({ where: { id: partyId }, relations: ['groups'] });
-  if (!party) {
-    party = new Party();
-    party.id = partyId;
-    await PartyRepository!.save(party);
-  }
-
-  await PartyRepository!.createQueryBuilder().relation(Party, 'groups').of(party.id).add(group.id);
-
-  if (!party) {
-    throw new Error('Fatal: Not able to create new party');
-  }
-
-  const currentFavorites = currentProfile.groups || [];
-
-  const existingGroupNames = new Set(currentFavorites.map((g) => g.name));
-  if (existingGroupNames.has(categoryName)) {
-    console.info(`Party ${partyId} already exists in favorites for category ${categoryName}, skipping addition`);
-    return currentProfile;
-  }
-
-  await ProfileRepository!.createQueryBuilder().relation(ProfileTable, 'groups').of(currentProfile.pid).add(group.id);
-
-  const updatedProfile = await ProfileRepository!.findOne({
-    where: { pid: currentProfile.pid },
-    relations: ['groups'],
-  });
-
-  if (!updatedProfile) {
-    throw new Error('Failed to update profile');
-  }
-  return updatedProfile;
 };
 
 export const addFavoritePartyToGroup = async (pid: string, partyId: string, categoryName: string) => {
@@ -146,23 +119,26 @@ export const addFavoritePartyToGroup = async (pid: string, partyId: string, cate
   return updatedProfile;
 };
 
-export const deleteFavoriteParty = async (pid: string, partyId: string, groupId: string) => {
+export const deleteFavoriteParty = async (context: Context, partyUuid: string) => {
+  const token = context.session.get('token');
+  if (!token) {
+    console.error('No token found in session');
+    return [];
+  }
+  const newToken = await exchangeToken(context);
+
   try {
-    const group = await GroupRepository!.findOne({
-      where: { id: Number.parseInt(groupId), profile: { pid } },
-      relations: ['profile'],
+    const response = await axios.delete(`${platformProfileAPI_url}users/current/party-groups/favorites/${partyUuid}`, {
+      headers: {
+        Authorization: `Bearer ${newToken}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
     });
-
-    if (!group) {
-      console.info(`Group with ID ${groupId} not found for profile ${pid}`);
-      throw new Error('Group not found or does not belong to this profile');
-    }
-    await GroupRepository!.createQueryBuilder().relation(Group, 'parties').of(groupId).remove(partyId);
-
-    return { success: true };
+    return [response.data as Group];
   } catch (error) {
-    console.error('Error deleting party from group:', error);
-    throw error;
+    console.error('Error deleting favorite:', error);
+    throw new Error('Failed to delete favorite');
   }
 };
 
@@ -172,24 +148,12 @@ interface Context {
   };
 }
 
-export const getUserFromCore = async (pid: string, context: Context) => {
-  const { platformExchangeTokenEndpointURL, platformProfileAPI_url } = config;
-  const token = context.session.get('token');
-  if (!token) {
-    console.error('No token found in session');
-    return [];
-  }
-  const { data: newToken } = await axios.get(platformExchangeTokenEndpointURL, {
-    headers: {
-      Authorization: `Bearer ${token.access_token}`,
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
-  });
+export const getUserFromCore = async (token: string) => {
+  const { platformProfileAPI_url } = config;
   const { data: coreProfileData } = await axios
     .get(`${platformProfileAPI_url}users/current`, {
       headers: {
-        Authorization: `Bearer ${newToken}`,
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
@@ -203,6 +167,27 @@ export const getUserFromCore = async (pid: string, context: Context) => {
     return [];
   }
   return coreProfileData;
+};
+
+export const getFavoritesFromCore = async (token: string) => {
+  const { data: coreFavoritesData } = await axios
+    .get(`${platformProfileAPI_url}users/current/party-groups/favorites`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    })
+    .catch((error) => {
+      console.error('Error fetching core profile data:', error);
+      throw new Error('Failed to fetch core profile data');
+    });
+  if (!coreFavoritesData) {
+    console.error('No core profile data found');
+    return [];
+  }
+
+  return [coreFavoritesData as Group];
 };
 
 export const updateLanguage = async (pid: string, language: string) => {

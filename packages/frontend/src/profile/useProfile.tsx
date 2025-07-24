@@ -19,8 +19,7 @@ export const useProfile = () => {
   const { i18n } = useTranslation();
   const groups = (data?.profile?.groups as GroupObject[]) || ([] as GroupObject[]);
   const language = data?.profile?.language || i18n.language || 'nb';
-
-  const favoritesGroup = groups.find((group) => group!.isfavorite) as GroupObject;
+  const favoritesGroup = groups.find((group) => group!.isFavorite) as GroupObject;
 
   const queryClient = useQueryClient();
 
@@ -31,8 +30,8 @@ export const useProfile = () => {
     }
   }, [language]);
 
-  const deleteFavoriteParty = (partyId: string, groupId: string) =>
-    deleteFavoritePartyRaw(partyId, groupId).then(() => {
+  const deleteFavoriteParty = (partyId: string) =>
+    deleteFavoritePartyRaw(partyId).then(() => {
       void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PROFILE] });
     });
   const addFavoriteParty = (partyId: string) =>

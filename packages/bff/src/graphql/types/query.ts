@@ -1,6 +1,6 @@
 import { list, objectType } from 'nexus';
 import { SavedSearchRepository } from '../../db.ts';
-import { getOrCreateProfile, getUserFromCore } from '../functions/profile.ts';
+import { exchangeToken, getFavoritesFromCore, getOrCreateProfile, getUserFromCore } from '../functions/profile.ts';
 import { getOrganizationsFromRedis } from './organization.ts';
 
 export const Query = objectType({
@@ -9,10 +9,11 @@ export const Query = objectType({
     t.field('profile', {
       type: 'Profile',
       resolve: async (_source, _args, ctx) => {
+        const token = await exchangeToken(ctx);
         const pid = ctx.session.get('pid');
         const locale = ctx.session.get('locale');
-        const profile = await getOrCreateProfile(pid, locale);
-        const user = await getUserFromCore(pid, ctx);
+        const profile = await getOrCreateProfile(pid, locale, token);
+        const user = await getUserFromCore(token);
         const { language, groups, updatedAt } = profile;
         return {
           language,
