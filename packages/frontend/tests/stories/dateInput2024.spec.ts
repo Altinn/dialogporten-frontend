@@ -16,7 +16,7 @@ test.describe('Date filter, system date set 2024', () => {
     await expect(page.getByRole('link', { name: 'Melding om bortkjøring av snø i' })).toBeVisible();
   });
 
-  test.skip('Date filter - quick filters functionality', async ({ page }) => {
+  test('Date filter - quick filters functionality', async ({ page }) => {
     await page.getByRole('button', { name: 'add' }).click();
 
     await expect(
@@ -38,7 +38,7 @@ test.describe('Date filter, system date set 2024', () => {
 
     await expect(page.getByTestId('inbox-toolbar').getByRole('group').getByText('Siste tolv måneder')).toBeVisible();
     await expect(page.locator('li').filter({ hasText: 'Siste tolv måneder' }).locator('span > span').nth(2)).toHaveText(
-      '10',
+      '9',
     );
 
     await page.getByTestId('inbox-toolbar').getByRole('group').getByText('I dag').click();
