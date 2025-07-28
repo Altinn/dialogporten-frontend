@@ -91,7 +91,7 @@ resource sourceMapStorageBlobDataContributorRole 'Microsoft.Authorization/roleAs
   }
 }
 
-// Role assignment for source maps storage account - assign to the developers group (if provided)
+// Role assignment for source maps storage account - assign to the developers group
 resource sourceMapStorageBlobDataReaderRole 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid('${namePrefix}-sourcemaps-reader', sourceMapsReaderGroupObjectId, storageBlobDataReaderRoleDefinition.id)
   scope: sourceMapStorageAccount
