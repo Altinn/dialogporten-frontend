@@ -7,6 +7,9 @@ param tags object
 @description('The blob container name for source maps')
 param sourceMapContainerName string = 'sourcemaps'
 
+@description('The object ID of the group to assign the Storage Blob Data Reader role to')
+param sourceMapsReaderGroupObjectId string
+
 var sourceMapStorageAccountName = substring(replace('${namePrefix}sourcemaps${uniqueString(resourceGroup().id)}', '-', ''), 0, 24)
 
 resource appInsightsWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
@@ -71,6 +74,12 @@ resource storageBlobDataContributorRoleDefinition 'Microsoft.Authorization/roleD
   name: 'ba92f5b4-2d11-453d-a403-e96b0029c9fe'
 }
 
+@description('This is the built-in Storage Blob Data Reader role. See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#storage')
+resource storageBlobDataReaderRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  scope: subscription()
+  name: '2a2b9908-6ea1-4ae2-8e65-a410df84e7d1'
+}
+
 // Role assignment for source maps storage account - assign to the deployer
 resource sourceMapStorageBlobDataContributorRole 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid('${namePrefix}-sourcemaps-storage', deployer().objectId, storageBlobDataContributorRoleDefinition.id)
@@ -79,6 +88,17 @@ resource sourceMapStorageBlobDataContributorRole 'Microsoft.Authorization/roleAs
     roleDefinitionId: storageBlobDataContributorRoleDefinition.id
     principalId: deployer().objectId
     principalType: 'ServicePrincipal'
+  }
+}
+
+// Role assignment for source maps storage account - assign to the developers group (if provided)
+resource sourceMapStorageBlobDataReaderRole 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid('${namePrefix}-sourcemaps-reader', sourceMapsReaderGroupObjectId, storageBlobDataReaderRoleDefinition.id)
+  scope: sourceMapStorageAccount
+  properties: {
+    roleDefinitionId: storageBlobDataReaderRoleDefinition.id
+    principalId: sourceMapsReaderGroupObjectId
+    principalType: 'Group'
   }
 }
 
