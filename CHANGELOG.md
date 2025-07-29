@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.48.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.47.0...v1.48.0) (2025-07-23)
+
+
+### Features
+
+* Added partyUuid to parties ([334c30d](https://github.com/Altinn/dialogporten-frontend/commit/334c30d54ad9ad8d9edd0cd79e0fcef10bd55f0b))
+
+
+### Bug Fixes
+
+* Fix logo on dialog detailed view ([#2353](https://github.com/Altinn/dialogporten-frontend/issues/2353)) ([05a1702](https://github.com/Altinn/dialogporten-frontend/commit/05a170248d87a038b5821bec667b2e3dbebe2bcb))
+
 ## [1.47.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.46.1...v1.47.0) (2025-07-22)
 
 
