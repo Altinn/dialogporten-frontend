@@ -1,6 +1,7 @@
 FROM node:22.0.0-slim AS build
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
+ENV CI=true
 RUN npm i -g corepack@latest
 RUN corepack enable
 
@@ -8,9 +9,15 @@ RUN corepack enable
 ARG BUILD_VERSION
 ENV BUILD_VERSION=${BUILD_VERSION}
 
+# First copy altinn-components to root to match the file path reference
+COPY altinn-components/ /altinn-components/
+# Build altinn-components first
+WORKDIR /altinn-components
+# Only rebuild if package.json changed, otherwise use cached build
+RUN pnpm install && pnpm run build
+# Now proceed with main project
 WORKDIR /app
-COPY . .
-
+COPY dialogporten-frontend/ ./
 RUN pnpm install --frozen-lockfile
 RUN pnpm --filter frontend run build
 
@@ -30,10 +37,10 @@ RUN apk add --no-cache gettext
 COPY --from=build /app/packages/frontend/dist/ /usr/share/nginx/html/
 
 # Copy nginx configuration
-COPY ./packages/frontend/nginx.conf /etc/nginx/conf.d/default.conf
+COPY ./dialogporten-frontend/packages/frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Add the startup script
-COPY ./packages/frontend/start.sh /start.sh
+COPY ./dialogporten-frontend/packages/frontend/start.sh /start.sh
 RUN chmod +x /start.sh
 
 # Expose port 80

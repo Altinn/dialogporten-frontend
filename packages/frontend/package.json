@@ -16,13 +16,13 @@
     "test:accessibility": "npx playwright test --project=accessibility",
     "install:browsers": "playwright install",
     "test:watch": "vitest watch",
-    "build:docker": "docker build -f ./Dockerfile -t frontend ../..",
+    "build:docker": "cd ../../../.. && docker build -f ./dialogporten-frontend/packages/frontend/Dockerfile -t frontend .",
     "run:docker": "docker run -it -p 80:80 frontend",
     "i18n:check": "tsx ./src/i18n/check.ts",
     "i18n:sort": "tsx ./src/i18n/check.ts --sort"
   },
   "dependencies": {
-    "@altinn/altinn-components": "^0.38.10",
+    "@altinn/altinn-components": "file:../../../altinn-components",
     "@microsoft/applicationinsights-react-js": "19.3.6",
     "@microsoft/applicationinsights-web": "3.3.9",
     "@navikt/aksel-icons": "^7.22.0",
