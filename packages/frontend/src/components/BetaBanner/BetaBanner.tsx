@@ -11,6 +11,7 @@ export const BetaBanner = () => {
       text={<Trans i18nKey="beta.banner" components={{ span: <span />, a: <a /> }} />}
       color="warning"
       closeTitle={t('word.close')}
+      sticky={false}
     />
   );
 };
