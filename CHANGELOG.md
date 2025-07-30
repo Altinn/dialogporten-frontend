@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.49.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.48.0...v1.49.0) (2025-07-30)
+
+
+### Features
+
+* Implement read/add/remove favorites from Core ([556a207](https://github.com/Altinn/dialogporten-frontend/commit/556a2074646903c517b2b6edaf6c4f8f1f1333e6))
+
+
+### Bug Fixes
+
+* Banner no longer covers filters on mobile ([6892d21](https://github.com/Altinn/dialogporten-frontend/commit/6892d216c4221fb7cc450bf31386a104ba0aa64d))
+* Context menu is now opening modal ([#2368](https://github.com/Altinn/dialogporten-frontend/issues/2368)) ([3da84a8](https://github.com/Altinn/dialogporten-frontend/commit/3da84a853afaac6e9dddf94de82b7a0bd761e39b))
+* Updated graphql files according to changes in DP schema ([1ca773a](https://github.com/Altinn/dialogporten-frontend/commit/1ca773a172f69694a9edd05cf2ac732c3ad9cd82))
+
 ## [1.48.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.47.0...v1.48.0) (2025-07-23)
 
 
