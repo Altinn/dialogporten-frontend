@@ -56,8 +56,6 @@ export const filterDialogs = ({
       (!updatedBefore || dialog.contentUpdatedAt < updatedBefore) &&
       (!updatedAfter || dialog.contentUpdatedAt > updatedAfter);
 
-
-
     const matchesOrg = !org?.length || org.includes(dialog.org);
     const matchesLabels = !labels.length ||
       labels.some(l => dialog.endUserContext?.systemLabels?.some(label => l.includes(label)));
@@ -67,7 +65,6 @@ export const filterDialogs = ({
     return matchesParty && matchesTimeRange && matchesOrg &&
       matchesLabels && matchesStatus && matchesSearch;
   });
-
 };
 
 export const getMockedMainContent = (dialogId: string) => {
