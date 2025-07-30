@@ -222,13 +222,18 @@ const mutateSavedSearchMock = graphql.mutation('CreateSavedSearch', (req) => {
 });
 
 const mutateUpdateSystemLabelMock = graphql.mutation('updateSystemLabel', (req) => {
-  const { dialogId, labels } = req.variables;
-
+  // const { dialogId, labels } = req.variables;
+  const { dialogId, addLabels, removeLabels } = req.variables;
   /* Note: When other system labels that NOT are mutually exclusive will be introduced by Dialogporten, this handler needs to return existing labels as well, but make sure only one system label is included */
   inMemoryStore.dialogs = inMemoryStore.dialogs?.map((dialog) => {
     if (dialog.id === dialogId) {
       dialog.endUserContext = {
-        systemLabels: [labels]
+        systemLabels: [addLabels].flat().filter((label) => {
+          if (Array.isArray(removeLabels) && removeLabels.length > 0) {
+            return !removeLabels.includes(label);
+          }
+          return true;
+        }) 
       }
     }
     return dialog;
