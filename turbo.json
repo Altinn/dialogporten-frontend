@@ -12,7 +12,7 @@
       "cache": false
     },
     "build": {
-      "env": ["BASEURL", "URL"],
+      "env": ["BASEURL", "URL", "BUILD_VERSION"],
       "dependsOn": ["build:bff-types-generated", "build:@digdir/dialogporten-node-logger"],
       "cache": false
     },

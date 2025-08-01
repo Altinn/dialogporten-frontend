@@ -63,3 +63,5 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha,scope=${{ matrix.imageName }}
           cache-to: type=gha,mode=max,scope=${{ matrix.imageName }}
+          build-args: |
+            BUILD_VERSION=${{ inputs.version }}

@@ -4,6 +4,10 @@ ENV PATH="$PNPM_HOME:$PATH"
 RUN npm i -g corepack@latest
 RUN corepack enable
 
+# Accept build version as build argument
+ARG BUILD_VERSION
+ENV BUILD_VERSION=${BUILD_VERSION}
+
 WORKDIR /app
 COPY . .
 
