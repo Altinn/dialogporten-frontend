@@ -6,6 +6,10 @@ on:
       environment:
         required: true
         type: string
+      version:
+        description: "Version to use for build file naming"
+        required: false
+        type: string
 
 permissions:
     pull-requests: write
@@ -82,3 +86,5 @@ jobs:
 
       - name: 'Building'
         run: pnpm turbo build
+        env:
+          BUILD_VERSION: ${{ inputs.version || 'dev' }}

@@ -33,10 +33,11 @@ jobs:
 
   build-and-test:
     uses: ./.github/workflows/workflow-build-and-test.yml
-    needs: [check-for-changes]
+    needs: [check-for-changes, get-current-version, generate-git-short-sha]
     if: ${{ github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasApplicationChanges == 'true' }}
     with:
       environment: test
+      version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
 
   docker-build-and-push:
     name: Build and publish docker images
