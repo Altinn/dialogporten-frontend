@@ -76,10 +76,3 @@ assetFileNames: (assetInfo) => {
   // ... version-based naming for all assets
 }
 ```
-
-## Benefits
-
-1. **Consistent file names**: Deployed files and source maps have matching names
-2. **Better debugging**: Application Insights can correctly map stack traces to source code
-3. **Version tracking**: File names include version information for easier debugging
-4. **Smart fallback**: Uses Vite's built-in hash system for local development 
