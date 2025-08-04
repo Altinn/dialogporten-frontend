@@ -85,9 +85,6 @@ const getDialogState = (viewType: InboxViewType): DialogListItemState => {
   }
 };
 
-/* TODO: Change condition of !item.isSeenByEndUser to check for attribute `hasUnopenedContent` of dialog instead,
- cf. https://github.com/Altinn/dialogporten-frontend/issues/2230
- but badge for bin and archive should have priority over unread badge */
 const getItemBadge = (viewType: InboxViewType, hasUnopenedContent: boolean, t: (key: string) => string) => {
   if (viewType === 'bin' || viewType === 'archive') {
     return {
