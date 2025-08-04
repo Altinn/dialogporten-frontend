@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.49.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.49.0...v1.49.1) (2025-08-04)
+
+
+### Bug Fixes
+
+* ensure source map filenames matches build filenames ([#2375](https://github.com/Altinn/dialogporten-frontend/issues/2375)) ([760810b](https://github.com/Altinn/dialogporten-frontend/commit/760810bd607e2a791d9ca6a8464e664445142537))
+* Giving list items a unique key prop ([d9d3fe7](https://github.com/Altinn/dialogporten-frontend/commit/d9d3fe78e08a0f204471bc5a9982f894ae4abd85))
+* **infra:** ensure devs has access to source maps in appinsights ([#2357](https://github.com/Altinn/dialogporten-frontend/issues/2357)) ([9011d1c](https://github.com/Altinn/dialogporten-frontend/commit/9011d1c8e0ebddf26d03d0ec2390e2ec81b82143))
+* prioritize emblem over logo for org avatar with generic logo as fallback ([#2379](https://github.com/Altinn/dialogporten-frontend/issues/2379)) ([83de458](https://github.com/Altinn/dialogporten-frontend/commit/83de458ad1baa39a6ebfacf5d0cdf9ae115edb7e))
+
 ## [1.49.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.48.0...v1.49.0) (2025-07-30)
 
 
