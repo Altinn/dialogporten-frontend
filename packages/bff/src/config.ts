@@ -33,6 +33,7 @@ const envVariables = z.object({
   DIALOGPORTEN_URL: z.string().default('https://altinn-dev-api.azure-api.net/dialogporten/graphql'),
   CONTAINER_APP_REPLICA_NAME: z.string().default(''),
   ENABLE_GRAPHIQL: z.preprocess(stringToBoolean, z.boolean().default(true)),
+  ENABLE_INIT_SESSION_ENDPOINT: z.preprocess(stringToBoolean, z.boolean().default(false)),
 });
 
 const env = envVariables.parse(process.env);
@@ -69,6 +70,7 @@ const config = {
   migrationRun: env.MIGRATION_RUN,
   dialogportenURL: env.DIALOGPORTEN_URL,
   enableGraphiql: env.ENABLE_GRAPHIQL,
+  enableInitSessionEndpoint: env.ENABLE_INIT_SESSION_ENDPOINT,
 };
 
 export default config;
