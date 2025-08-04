@@ -6,7 +6,7 @@ interface Organization {
     nb: string;
     nn: string;
   };
-  emblem?: string;
+  emblem?: string; // preferred this logo, if available
   logo?: string;
   orgnr: string;
   homepage: string;
@@ -37,7 +37,7 @@ interface TransformedOrganization {
   environments: string[];
 }
 
-const organizationsRedisKey = 'transformedOrganizations';
+const organizationsRedisKey = 'arbeidsflate-organizations:v1';
 
 async function fetchOrganizations() {
   try {
@@ -61,7 +61,7 @@ async function storeOrganizationsInRedis(): Promise<TransformedOrganization[]> {
     const organizations = await fetchOrganizations();
     if (organizations && Array.isArray(organizations)) {
       const transformedOrganizations = organizations!.flatMap((org) => convertOrgsToJson(org));
-      await redisClient.set(organizationsRedisKey, JSON.stringify(transformedOrganizations), 'EX', 86400);
+      await redisClient.set(organizationsRedisKey, JSON.stringify(transformedOrganizations), 'EX', 60 * 60 * 24); // Store for 24 hours
       return transformedOrganizations;
     }
     return [];
@@ -88,11 +88,11 @@ export async function getOrganizationsFromRedis(): Promise<TransformedOrganizati
 function convertOrgsToJson(orgs: Orgs): TransformedOrganization[] {
   const result: TransformedOrganization[] = [];
   for (const [id, details] of Object.entries(orgs)) {
-    const { name, logo, orgnr, homepage, environments } = details;
+    const { name, logo, orgnr, homepage, environments, emblem } = details;
     result.push({
       id,
       name,
-      logo,
+      logo: emblem || logo,
       orgnr,
       homepage,
       environments,
@@ -144,7 +144,7 @@ export const Organization = objectType({
     t.string('logo', {
       description: 'URL to the organization logo, preferably an emblem over the logo',
       resolve: (organization) => {
-        return organization.emblem || organization.logo;
+        return organization.logo;
       },
     });
     t.string('orgnr', {
