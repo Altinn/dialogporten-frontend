@@ -3,9 +3,9 @@ import { defineConfig } from 'vite';
 
 // https://vitejs.dev/config/
 export default () => {
-  // Get version from environment variable or use package.json version as fallback
+  // Get version from environment variable or use hash as the fallback
   // For CI/CD, BUILD_VERSION will be set to version-gitSha (e.g., "1.49.0-a1b2c3d")
-  // For local development, it will fall back to package.json version
+  // For local development, it will fall back to hash
   const buildVersion = process.env.BUILD_VERSION;
 
   return defineConfig({
