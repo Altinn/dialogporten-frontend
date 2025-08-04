@@ -8,57 +8,58 @@ import type { OrganizationOutput } from './organizations.ts';
 import { getTransmissions } from './transmissions.ts';
 
 const getActivityText = (
-  activityType: DialogActivityFragment['type'],
+  activity: DialogActivityFragment,
   actorProps: AvatarProps,
   description?: string,
   relatedTransmissionTitle?: string,
 ) => {
+  const activityType = activity.type as ActivityType;
   const name = actorProps?.name ?? '';
   switch (activityType) {
     case ActivityType.Information:
-      return <>{t('activity.status.information', { actor: <strong>{name}</strong>, description })}</>;
+      return <>{t('activity.status.information', { actor: <strong key={activity.id}>{name}</strong>, description })}</>;
     case ActivityType.CorrespondenceConfirmed:
-      return <>{t('activity.status.correspondence_confirmed', { actor: <strong>{name}</strong> })}</>;
+      return <>{t('activity.status.correspondence_confirmed', { actor: <strong key={activity.id}>{name}</strong> })}</>;
     case ActivityType.CorrespondenceOpened:
-      return <>{t('activity.status.correspondence_opened', { actor: <strong>{name}</strong> })}</>;
+      return <>{t('activity.status.correspondence_opened', { actor: <strong key={activity.id}>{name}</strong> })}</>;
     case ActivityType.DialogClosed:
-      return <>{t('activity.status.dialog_closed', { actor: <strong>{name}</strong> })}</>;
+      return <>{t('activity.status.dialog_closed', { actor: <strong key={activity.id}>{name}</strong> })}</>;
     case ActivityType.DialogCreated:
-      return <>{t('activity.status.dialog_created', { actor: <strong>{name}</strong> })}</>;
+      return <>{t('activity.status.dialog_created', { actor: <strong key={activity.id}>{name}</strong> })}</>;
     case ActivityType.DialogDeleted:
-      return <>{t('activity.status.dialog_deleted', { actor: <strong>{name}</strong> })}</>;
+      return <>{t('activity.status.dialog_deleted', { actor: <strong key={activity.id}>{name}</strong> })}</>;
     case ActivityType.DialogOpened:
-      return <>{t('activity.status.dialog_opened', { actor: <strong>{name}</strong> })}</>;
+      return <>{t('activity.status.dialog_opened', { actor: <strong key={activity.id}>{name}</strong> })}</>;
     case ActivityType.DialogRestored:
-      return <>{t('activity.status.dialog_restored', { actor: <strong>{name}</strong> })}</>;
+      return <>{t('activity.status.dialog_restored', { actor: <strong key={activity.id}>{name}</strong> })}</>;
     case ActivityType.FormSaved:
-      return <>{t('activity.status.form_saved', { actor: <strong>{name}</strong> })}</>;
+      return <>{t('activity.status.form_saved', { actor: <strong key={activity.id}>{name}</strong> })}</>;
     case ActivityType.FormSubmitted:
-      return <>{t('activity.status.form_submitted', { actor: <strong>{name}</strong> })}</>;
+      return <>{t('activity.status.form_submitted', { actor: <strong key={activity.id}>{name}</strong> })}</>;
     case ActivityType.PaymentMade:
-      return <>{t('activity.status.payment_made', { actor: <strong>{name}</strong> })}</>;
+      return <>{t('activity.status.payment_made', { actor: <strong key={activity.id}>{name}</strong> })}</>;
     case ActivityType.SentToFormFill:
-      return <>{t('activity.status.sent_to_form_fill', { actor: <strong>{name}</strong> })}</>;
+      return <>{t('activity.status.sent_to_form_fill', { actor: <strong key={activity.id}>{name}</strong> })}</>;
     case ActivityType.SentToPayment:
-      return <>{t('activity.status.sent_to_payment', { actor: <strong>{name}</strong> })}</>;
+      return <>{t('activity.status.sent_to_payment', { actor: <strong key={activity.id}>{name}</strong> })}</>;
     case ActivityType.SentToSendIn:
-      return <>{t('activity.status.sent_to_send_in', { actor: <strong>{name}</strong> })}</>;
+      return <>{t('activity.status.sent_to_send_in', { actor: <strong key={activity.id}>{name}</strong> })}</>;
     case ActivityType.SentToSigning:
-      return <>{t('activity.status.sent_to_signing', { actor: <strong>{name}</strong> })}</>;
+      return <>{t('activity.status.sent_to_signing', { actor: <strong key={activity.id}>{name}</strong> })}</>;
     case ActivityType.SignatureProvided:
-      return <>{t('activity.status.signature_provided', { actor: <strong>{name}</strong> })}</>;
+      return <>{t('activity.status.signature_provided', { actor: <strong key={activity.id}>{name}</strong> })}</>;
     case ActivityType.TransmissionOpened:
       return (
         <>
           {t('activity.status.transmission_opened', {
             transmission: relatedTransmissionTitle,
-            actor: <strong>{name}</strong>,
+            actor: <strong key={activity.id}>{name}</strong>,
           })}
         </>
       );
 
     default:
-      return <strong>{activityType}</strong>;
+      return <strong key={activity.id}>{activityType}</strong>;
   }
 };
 
@@ -77,7 +78,7 @@ export const getDialogHistoryForActivities = (
     const actorProps = getActorProps(activity.performedBy, serviceOwner);
     return {
       id: activity.id,
-      summary: getActivityText(activity.type, actorProps, description, transmissionTitle),
+      summary: getActivityText(activity, actorProps, description, transmissionTitle),
       byline: format(activity.createdAt, formatString),
       datetime: activity.createdAt,
       type: 'activity',
