@@ -18,6 +18,7 @@ export const getExclusiveLabel = (labels: string[]): SystemLabel => {
     return SystemLabel.Default;
   }
 
+  //@ts-ignore - TO-DO fix label as system label
   const match = labels.find((label): label is SystemLabel => EXCLUSIVE_LABELS.includes(label as SystemLabel));
   return match ?? SystemLabel.Default;
 };
