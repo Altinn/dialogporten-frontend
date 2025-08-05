@@ -21,8 +21,15 @@ export const exchangeToken = async (context: Context): Promise<string> => {
 };
 
 export const getOrCreateProfile = async (pid: string, sessionLocale: string, token: string): Promise<ProfileTable> => {
+  if (!pid) {
+    console.error('No pid provided');
+    throw new Error('PID is required to get or create a profile');
+  }
+  if (!token) {
+    console.error('No token provided');
+    throw new Error('token is required to get or create a profile');
+  }
   const profile = await ProfileRepository!.createQueryBuilder('profile').where('profile.pid = :pid', { pid }).getOne();
-
   const groups = await getFavoritesFromCore(token);
 
   if (!profile) {
@@ -170,24 +177,22 @@ export const getUserFromCore = async (token: string) => {
 };
 
 export const getFavoritesFromCore = async (token: string) => {
-  const { data: coreFavoritesData } = await axios
-    .get(`${platformProfileAPI_url}users/current/party-groups/favorites`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
+  try {
+    const { data: coreFavoritesData } = await axios.get(
+      `${platformProfileAPI_url}users/current/party-groups/favorites`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
       },
-    })
-    .catch((error) => {
-      console.error('Error fetching core profile data:', error);
-      throw new Error('Failed to fetch core profile data');
-    });
-  if (!coreFavoritesData) {
-    console.error('No core profile data found');
+    );
+    return [coreFavoritesData as Group];
+  } catch {
+    console.info('getFavoritesFromCore: Error fetching core profile favorite data, returning empty array');
     return [];
   }
-
-  return [coreFavoritesData as Group];
 };
 
 export const updateLanguage = async (pid: string, language: string) => {

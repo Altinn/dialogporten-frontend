@@ -68,13 +68,13 @@ export const CreateSavedSearch = extendType({
           const profile = await getOrCreateProfile(
             ctx.session.get('pid'),
             ctx.session.get('locale'),
-            ctx.session.get('access_token'),
+            ctx.session.get('token'),
           );
           if (!profile) {
             throw new Error('Profile not found or could not be created');
           }
-          if (!name || !data) {
-            throw new Error('Name and data are required to create a saved search');
+          if (!data) {
+            throw new Error('Data are required to create a saved search');
           }
           return await createSavedSearch({ name, data, profile });
         } catch (error) {
