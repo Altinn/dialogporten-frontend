@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.50.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.49.1...v1.50.0) (2025-08-05)
+
+
+### Features
+
+* **bff:** add /init-session endpoint for performance testing ([#2380](https://github.com/Altinn/dialogporten-frontend/issues/2380)) ([9d42a5f](https://github.com/Altinn/dialogporten-frontend/commit/9d42a5fec78b1799632c9760b57115c20e391988))
+
 ## [1.49.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.49.0...v1.49.1) (2025-08-04)
 
 
