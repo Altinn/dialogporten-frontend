@@ -28,7 +28,7 @@ param ocPApimSubscriptionKey string
   'true'
 ])
 param graphiQLEnabled string = 'true'
-param enableInitSessionEndpoint string = 'false'
+param enableInitSessionEndpoint string = 'true'
 
 @minLength(3)
 @secure()

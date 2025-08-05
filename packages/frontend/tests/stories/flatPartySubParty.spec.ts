@@ -52,6 +52,7 @@ test.describe('Flattened parties and subparties', () => {
     await expect(page.getByRole('banner').getByRole('link', { name: 'Main party message' })).not.toBeVisible();
 
     await page.keyboard.press('Escape');
+    await page.keyboard.press('Escape');
 
     await page.getByRole('button', { name: 'Test Testesen' }).first().click();
     await page

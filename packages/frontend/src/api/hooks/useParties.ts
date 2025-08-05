@@ -11,6 +11,8 @@ import { useGlobalState } from '../../useGlobalState.ts';
 import { graphQLSDK } from '../queries.ts';
 import { normalizeFlattenParties } from '../utils/normalizeFlattenParties.ts';
 
+export type SelectedPartyType = 'company' | 'person';
+
 interface UsePartiesOutput {
   parties: PartyFieldsFragment[];
   deletedParties: PartyFieldsFragment[];
@@ -23,7 +25,7 @@ interface UsePartiesOutput {
   setSelectedPartyIds: (parties: string[], allOrganizationsSelected: boolean) => void;
   currentEndUser: PartyFieldsFragment | undefined;
   allOrganizationsSelected: boolean;
-  selectedProfile: 'company' | 'person';
+  selectedProfile: SelectedPartyType;
   partiesEmptyList: boolean;
 }
 

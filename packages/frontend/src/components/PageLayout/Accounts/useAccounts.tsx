@@ -11,7 +11,7 @@ import type { PartyFieldsFragment } from 'bff-types-generated';
 import { type ChangeEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useParties } from '../../../api/hooks/useParties.ts';
+import { type SelectedPartyType, useParties } from '../../../api/hooks/useParties.ts';
 import { getPartyIds } from '../../../api/utils/dialog.ts';
 import type { PageRoutes } from '../../../pages/routes.ts';
 import { getAlertBadgeProps } from '../GlobalMenu';
@@ -60,13 +60,15 @@ export const getAccountAlertBadge = (
 
 export const getAccountBadge = (
   items: CountableItem[],
-  party?: PartyFieldsFragment | PartyFieldsFragment[],
-  dialogCountInconclusive?: boolean,
+  party: PartyFieldsFragment | PartyFieldsFragment[] | undefined,
+  dialogCountInconclusive: boolean,
+  selectedProfile?: SelectedPartyType,
 ): BadgeProps | undefined => {
   if (dialogCountInconclusive) {
     return {
       size: 'xs',
       label: '',
+      color: selectedProfile,
     };
   }
 
@@ -81,6 +83,7 @@ export const getAccountBadge = (
     return {
       label: count.toString(),
       size: 'sm',
+      color: selectedProfile,
     };
   }
 };
@@ -98,6 +101,7 @@ export const useAccounts = ({
 }: UseAccountsProps): UseAccountsOutput => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { selectedProfile } = useParties();
   const location = useLocation();
   const { setSelectedPartyIds } = useParties();
   const [searchString, setSearchString] = useState<string>('');
@@ -136,7 +140,7 @@ export const useAccounts = ({
     name: endUser?.name ?? '',
     type: 'person' as AccountMenuItemProps['type'],
     groupId: 'primary',
-    badge: getAccountBadge(countableItems, endUser, dialogCountInconclusive),
+    badge: getAccountBadge(countableItems, endUser, dialogCountInconclusive, selectedProfile),
     iconBadge: getAccountAlertBadge(countableItems, endUser),
     icon: { name: endUser?.name ?? '', type: 'person' as AvatarType },
   };
@@ -147,7 +151,7 @@ export const useAccounts = ({
       name: noEnderUserParty.name,
       type: 'person' as AccountMenuItemProps['type'],
       groupId: 'other_users',
-      badge: getAccountBadge(countableItems, noEnderUserParty, dialogCountInconclusive),
+      badge: getAccountBadge(countableItems, noEnderUserParty, dialogCountInconclusive, selectedProfile),
       iconBadge: getAccountAlertBadge(countableItems, noEnderUserParty),
       icon: { name: noEnderUserParty.name, type: 'person' as AvatarType },
     };
@@ -159,7 +163,7 @@ export const useAccounts = ({
       name: party.name,
       type: 'company' as AccountMenuItemProps['type'],
       groupId: 'secondary',
-      badge: getAccountBadge(countableItems, party, dialogCountInconclusive),
+      badge: getAccountBadge(countableItems, party, dialogCountInconclusive, selectedProfile),
       iconBadge: getAccountAlertBadge(countableItems, party),
       icon: { name: party.name, type: 'company' as AvatarType },
     };
@@ -178,7 +182,7 @@ export const useAccounts = ({
         type: 'company' as AccountMenuItemProps['type'],
       })),
     } as AvatarGroupProps,
-    badge: getAccountBadge(countableItems, organizations, dialogCountInconclusive),
+    badge: getAccountBadge(countableItems, organizations, dialogCountInconclusive, selectedProfile),
     iconBadge: getAccountAlertBadge(countableItems, organizations),
   };
 

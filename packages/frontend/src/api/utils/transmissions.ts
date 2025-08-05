@@ -1,4 +1,9 @@
-import type { TimelineSegmentProps, TransmissionProps, TransmissionTypeValue } from '@altinn/altinn-components';
+import type {
+  AvatarProps,
+  TimelineSegmentProps,
+  TransmissionProps,
+  TransmissionTypeValue,
+} from '@altinn/altinn-components';
 import { ActivityType, type DialogActivityFragment, type TransmissionFieldsFragment } from 'bff-types-generated';
 import { t } from 'i18next';
 import { getPreferredPropertyByLocale } from '../../i18n/property.ts';
@@ -74,6 +79,7 @@ const createTransmissionItem = (
   format: FormatFunction,
   activities?: DialogActivityFragment[],
   serviceOwner?: OrganizationOutput,
+  selectedProfile?: AvatarProps['type'],
 ): TransmissionProps => {
   const formatString = getClockFormatString();
   const sender = getActorProps(transmission.sender, serviceOwner);
@@ -101,7 +107,7 @@ const createTransmissionItem = (
     },
     ...(unread && {
       unread: true,
-      badge: { color: 'company' },
+      badge: { color: selectedProfile === 'person' ? 'person' : 'company' },
     }),
     sender,
     attachments: {
@@ -110,17 +116,24 @@ const createTransmissionItem = (
   };
 };
 
-export const getTransmissions = (
-  transmissions: TransmissionFieldsFragment[],
-  format: FormatFunction,
-  activities?: DialogActivityFragment[],
-  serviceOwner?: OrganizationOutput,
-): TimelineSegmentWithTransmissions[] => {
+export const getTransmissions = ({
+  transmissions,
+  format,
+  activities,
+  serviceOwner,
+  selectedProfile,
+}: {
+  transmissions: TransmissionFieldsFragment[];
+  format: FormatFunction;
+  activities?: DialogActivityFragment[];
+  serviceOwner?: OrganizationOutput;
+  selectedProfile?: AvatarProps['type'];
+}): TimelineSegmentWithTransmissions[] => {
   return groupTransmissions(transmissions).map((group) => {
     const sortedGroup = [...group].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     const [lastTransmission] = sortedGroup;
     const items: TransmissionProps[] = sortedGroup.map((transmission) =>
-      createTransmissionItem(transmission, format, activities, serviceOwner),
+      createTransmissionItem(transmission, format, activities, serviceOwner, selectedProfile),
     );
 
     return {

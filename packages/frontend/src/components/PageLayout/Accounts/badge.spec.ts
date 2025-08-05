@@ -111,16 +111,16 @@ describe('getCountBadge', () => {
   };
 
   it('should return undefined if no party is provided', () => {
-    expect(getAccountBadge(dialogs as InboxItemInput[])).toBeUndefined();
+    expect(getAccountBadge(dialogs as InboxItemInput[], undefined, false, 'person')).toBeUndefined();
   });
 
   it('should return undefined if no dialogs are provided', () => {
-    expect(getAccountBadge([], party)).toBeUndefined();
+    expect(getAccountBadge([], party, false, 'person')).toBeUndefined();
   });
 
   it('should return a badge with the correct count, including sub party', () => {
-    const badge = getAccountBadge(dialogs as InboxItemInput[], party);
-    expect(badge).toEqual({ label: '2', size: 'sm' });
+    const badge = getAccountBadge(dialogs as InboxItemInput[], party, false, 'person');
+    expect(badge).toEqual({ label: '2', size: 'sm', color: 'person' });
   });
 
   it('should return undefined if no matching dialogs are found', () => {
@@ -136,7 +136,7 @@ describe('getCountBadge', () => {
       subParties: [],
       partyUuid: 'party:uuid:here',
     };
-    expect(getAccountBadge(dialogs as InboxItemInput[], nonMatchingParty)).toBeUndefined();
+    expect(getAccountBadge(dialogs as InboxItemInput[], nonMatchingParty, false, 'person')).toBeUndefined();
   });
 
   it('should return a badge with the correct count for multiple parties', () => {
@@ -166,7 +166,7 @@ describe('getCountBadge', () => {
         partyUuid: 'party:uuid:here',
       },
     ];
-    const badge = getAccountBadge(dialogs as InboxItemInput[], multipleParties);
-    expect(badge).toEqual({ label: '2', size: 'sm' });
+    const badge = getAccountBadge(dialogs as InboxItemInput[], multipleParties, false, 'company');
+    expect(badge).toEqual({ label: '2', size: 'sm', color: 'company' });
   });
 });

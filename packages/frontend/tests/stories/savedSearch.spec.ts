@@ -44,7 +44,7 @@ test.describe('Saved search', () => {
   test('Saved search based on searchbar value', async ({ page }) => {
     await page.goto(defaultAppURL);
 
-    await performSearch(page, 'skatten');
+    await performSearch(page, 'skatten', 'enter');
 
     await page.getByRole('button', { name: 'Lagre søk' }).click();
     await expect(page.getByRole('button', { name: 'Lagret søk' })).toBeVisible();
