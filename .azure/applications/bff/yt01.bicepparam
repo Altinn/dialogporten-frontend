@@ -9,7 +9,6 @@ param oicdUrl = 'test.idporten.no'
 param minReplicas = 2
 param maxReplicas = 3
 param workloadProfileName = 'Consumption'
-param enableInitSessionEndpoint = 'true'
 
 param platformExchangeTokenEndpointUrl = 'https://platform.yt01.altinn.cloud/authentication/api/v1/exchange/id-porten?test=true'
 param platformProfileApiUrl = 'https://platform.yt01.altinn.cloud/profile/api/v1/'

@@ -127,12 +127,12 @@ export const getActivityHistory = (
     date: activity.datetime ?? new Date().toISOString(),
   }));
 
-  const dialogHistoryTransmissions: ActivityLogEntry[] = getTransmissions(
+  const dialogHistoryTransmissions: ActivityLogEntry[] = getTransmissions({
     transmissions,
     format,
     activities,
     serviceOwner,
-  ).map((transmission) => ({
+  }).map((transmission) => ({
     id: transmission.id ?? '',
     type: 'transmission',
     date: transmission.datetime ?? new Date().toISOString(),

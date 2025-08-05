@@ -13,6 +13,7 @@ param workloadProfileName = 'Consumption'
 
 param platformExchangeTokenEndpointUrl = 'https://platform.altinn.no/authentication/api/v1/exchange/id-porten'
 param platformProfileApiUrl = 'https://platform.altinn.no/profile/api/v1/'
+param enableInitSessionEndpoint = 'false'
 
 param ocPApimSubscriptionKey = readEnvironmentVariable('OCP_APIM_SUBSCRIPTION_KEY')
 

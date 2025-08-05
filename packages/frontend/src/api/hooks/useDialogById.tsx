@@ -27,6 +27,7 @@ import { type OrganizationOutput, getOrganization } from '../utils/organizations
 import { type TimelineSegmentWithTransmissions, getTransmissions } from '../utils/transmissions.ts';
 import { getViewTypes } from '../utils/viewType.ts';
 import type { InboxViewType } from './useDialogs.tsx';
+import { type SelectedPartyType, useParties } from './useParties.ts';
 
 export enum EmbeddableMediaType {
   markdown = 'application/vnd.dialogporten.frontchannelembed-url;type=text/markdown',
@@ -129,7 +130,7 @@ const getMainContentReference = (
 export const getActorProps = (actor: Actor, serviceOwner?: OrganizationOutput) => {
   const isCompany =
     actor.actorType === ActorType.ServiceOwner || (actor.actorId ?? '').includes('urn:altinn:organization:');
-  const type = isCompany ? 'company' : ('person' as AvatarProps['type']);
+  const type: AvatarProps['type'] = isCompany ? 'company' : 'person';
   const hasSenderName = (actor.actorName?.length ?? 0) > 0;
   const senderName = hasSenderName ? toTitleCase(actor.actorName) : (serviceOwner?.name ?? '');
   const senderLogo = isCompany ? serviceOwner?.logo : undefined;
@@ -146,6 +147,7 @@ export function mapDialogToToInboxItem(
   parties: PartyFieldsFragment[],
   organizations: OrganizationFieldsFragment[],
   format: FormatFunction,
+  selectedProfile: SelectedPartyType,
 ): DialogByIdDetails | undefined {
   if (!item) {
     return undefined;
@@ -222,7 +224,13 @@ export function mapDialogToToInboxItem(
       })),
     },
     activityHistory: getActivityHistory(item.activities, item.transmissions, format, serviceOwner),
-    transmissions: getTransmissions(item.transmissions, format, item.activities, serviceOwner),
+    transmissions: getTransmissions({
+      transmissions: item.transmissions,
+      format,
+      activities: item.activities,
+      serviceOwner,
+      selectedProfile,
+    }),
     createdAt: item.createdAt,
     updatedAt: item.updatedAt,
     label: item.endUserContext?.systemLabels,
@@ -235,6 +243,7 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
   const queryClient = useQueryClient();
   const format = useFormat();
   const { organizations, isLoading: isOrganizationsLoading } = useOrganizations();
+  const { selectedProfile } = useParties();
   const partyURIs = parties.map((party) => party.party);
   const { data, isSuccess, isLoading, isError } = useQuery<GetDialogByIdQuery>({
     queryKey: [QUERY_KEYS.DIALOG_BY_ID, id, organizations],
@@ -259,7 +268,7 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
   return {
     isLoading,
     isSuccess,
-    dialog: mapDialogToToInboxItem(data?.dialogById.dialog, parties, organizations, format),
+    dialog: mapDialogToToInboxItem(data?.dialogById.dialog, parties, organizations, format, selectedProfile),
     isError,
     isAuthLevelTooLow:
       data?.dialogById?.errors?.some((error) => error.__typename === 'DialogByIdForbiddenAuthLevelTooLow') ?? false,
