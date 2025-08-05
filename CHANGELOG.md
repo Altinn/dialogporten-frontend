@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.50.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.50.0...v1.50.1) (2025-08-05)
+
+
+### Bug Fixes
+
+* Fixes saved search bug ([e092c73](https://github.com/Altinn/dialogporten-frontend/commit/e092c73d64ccb8aeeb899591f06bde41c48ec362))
+* incorrect badge color ([#2385](https://github.com/Altinn/dialogporten-frontend/issues/2385)) ([97f4164](https://github.com/Altinn/dialogporten-frontend/commit/97f41640bad9ce4898cb7a7a904248f8ef7f6a2a))
+
 ## [1.50.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.49.1...v1.50.0) (2025-08-05)
 
 
