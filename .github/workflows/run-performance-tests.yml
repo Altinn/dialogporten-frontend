@@ -87,7 +87,7 @@ jobs:
               -v "${{ inputs.browserVus }}" \
               -w "${{ inputs.bffVus }}" \
               -d "${{ inputs.duration }}" \
-              -p "${{ inputs.parallelism }}" 
+              -p "${{ inputs.parallelism }}" \
               -e "${{ inputs.environment }}"
 
       
