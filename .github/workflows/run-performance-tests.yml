@@ -31,10 +31,9 @@ on:
       testSuitePath:
         description: 'Path to test suite to run'
         required: true
-        default: 'packages/frontend/tests/performance/k6/browser-no-cookie.js'
+        default: 'packages/frontend/tests/performance/k6/browser.js'
         type: choice
         options:
-          - 'packages/frontend/tests/performance/k6/browser-no-cookie.js'
           - 'packages/frontend/tests/performance/k6/browser.js'
 
 permissions:
