@@ -77,7 +77,7 @@ jobs:
         uses: grafana/setup-k6-action@ffe7d7290dfa715e48c2ccc924d068444c94bde2 # v1.0.0
       - name: Run K6 tests (${{ inputs.testSuitePath }})
         run: |
-            echo "Running k6 test suite ${{ inputs.testSuitePath }} with ${{ inputs.browserVus }}/${{ inputs.bffVus }} BrowserVUs/BffVus for ${{ inputs.duration }} on ${{ inputs.parallelism }} parallelism"
+            echo "Running k6 test suite ${{ inputs.testSuitePath }} with ${{ inputs.browserVus }}/${{ inputs.bffVus }} BrowserVUs/BffVus for ${{ inputs.duration }} on ${{ inputs.parallelism }} parallelism at ${{ inputs.environment }} environment"
             k6configName=$(basename "${{ inputs.testSuitePath }}" .js)
             k6configName="k6-${k6configName}"
             ./packages/frontend/tests/performance/k6/run-test-in-k8s.sh \
