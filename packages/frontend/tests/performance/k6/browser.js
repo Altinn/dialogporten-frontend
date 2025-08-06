@@ -16,7 +16,7 @@ import { queryLabels, isAuthenticatedLabel } from './queries.js';
 import { getPersonalToken, randomItem } from './testimports.js';
 import { getCookie } from './getCookie.js';
 import { afUrl } from './config.js';
-import { readCsv } from './readTestdata.js';
+import { readCsv } from './readCsv.js';
 
 const environment = __ENV.ENVIRONMENT || 'yt';
 
