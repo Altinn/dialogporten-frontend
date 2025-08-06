@@ -73,7 +73,7 @@ export function setup() {
  * @param {object} data - Test data for the scenario.
  */
 export async function browserTest(data) {
-  var testData = randomItem(data);
+  var testData = data[0]; //randomItem(data);
 
 
   const context = await browser.newContext();

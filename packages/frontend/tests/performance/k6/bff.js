@@ -81,7 +81,7 @@ export function isAuthenticated(cookie, label) {
 export function getNextpage(cookie, parties) {
     var dialogs = getAllDialogsForParty(cookie, [parties[0]], 100, true, null);
     var iterations = 0;
-    while (dialogs.data.searchDialogs.hasNextPage && iterations < 10) {
+    while (dialogs.data && dialogs.data.searchDialogs.hasNextPage && iterations < 10) {
         var continuationToken = dialogs.data.searchDialogs.continuationToken;
         dialogs = getAllDialogsForParty(cookie, [parties[0]], 100, true, continuationToken);
         iterations++;
@@ -160,7 +160,6 @@ function getProfile(cookie) {
         return
     }
     const data = resp.json();
-    console.log('Profile retrieved: ' + resp.body);
     var profile = [];   
     profile.push(data.data.profile.user.userId);
     profile.push(data.data.profile.user.userUuid);
@@ -202,7 +201,7 @@ function getAllDialogsForParty(cookie, parties, count, extraParams = false, cont
     }
     payload.variables.limit = count;
     if (extraParams) {
-        payload.variables.status = ["NEW","IN_PROGRESS","REQUIRES_ATTENTION","COMPLETED"];
+        payload.variables.status = ["IN_PROGRESS","REQUIRES_ATTENTION","COMPLETED"];
         payload.variables.label = ["DEFAULT"];
     }
     var queryLabel = payload.operationName;
