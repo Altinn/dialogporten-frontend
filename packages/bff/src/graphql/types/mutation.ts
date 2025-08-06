@@ -65,7 +65,17 @@ export const CreateSavedSearch = extendType({
       },
       resolve: async (_, { name, data }, ctx) => {
         try {
-          const profile = await getOrCreateProfile(ctx.session.get('pid'), ctx.session.get('locale'));
+          const profile = await getOrCreateProfile(
+            ctx.session.get('pid'),
+            ctx.session.get('locale'),
+            ctx.session.get('token'),
+          );
+          if (!profile) {
+            throw new Error('Profile not found or could not be created');
+          }
+          if (!data) {
+            throw new Error('Data are required to create a saved search');
+          }
           return await createSavedSearch({ name, data, profile });
         } catch (error) {
           console.error('Failed to create saved search:', error);
@@ -86,7 +96,7 @@ export const AddFavoriteParty = extendType({
       },
       resolve: async (_, { partyId }, ctx) => {
         try {
-          await addFavoriteParty(ctx.session.get('pid'), partyId);
+          await addFavoriteParty(ctx, partyId);
           return { success: true, message: 'FavoriteParty added successfully' };
         } catch (error) {
           console.error('Failed to add favorite party:', error);
@@ -126,11 +136,10 @@ export const DeleteFavoriteParty = extendType({
       type: Response,
       args: {
         partyId: stringArg(),
-        groupId: stringArg(),
       },
-      resolve: async (_, { partyId, groupId }, ctx) => {
+      resolve: async (_, { partyId }, ctx) => {
         try {
-          await deleteFavoriteParty(ctx.session.get('pid'), partyId, groupId);
+          await deleteFavoriteParty(ctx, partyId);
           return { success: true, message: 'Favorite Party deleted successfully' };
         } catch (error) {
           console.error('Failed to delete favorite party:', error);

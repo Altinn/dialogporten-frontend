@@ -126,8 +126,6 @@ services:
       target: build
     environment:
       DB_CONNECTION_STRING: postgres://postgres:mysecretpassword@db:5432/dialogporten
-      PLATFORM_EXCHANGE_TOKEN_ENDPOINT_URL: https://platform.at22.altinn.cloud/authentication/api/v1/exchange/id-porten?test=true
-      PLATFORM_PROFILE_API_URL: https://platform.at22.altinn.cloud/profile/api/v1/
       HOSTNAME: https://app.localhost
       CLIENT_ID: ${CLIENT_ID}
       CLIENT_SECRET: ${CLIENT_SECRET}
@@ -139,6 +137,7 @@ services:
       COOKIE_SECURE: false
       APPLICATIONINSIGHTS_CONNECTION_STRING: ${APPLICATIONINSIGHTS_CONNECTION_STRING}
       APPLICATIONINSIGHTS_ENABLED: ${APPLICATIONINSIGHTS_ENABLED}
+      ENABLE_INIT_SESSION_ENDPOINT: true
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.bff.rule=Host(`app.localhost`) && PathPrefix(`/api`)"

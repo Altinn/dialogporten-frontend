@@ -14,4 +14,8 @@ export const QUERY_KEYS = {
   ORGANIZATIONS: 'organizations',
   SEARCH_VALUE: 'searchValue',
   ENTERED_SEARCH_VALUE: 'enteredSearchValue',
+  SET_ARCHIVE_LABEL_LOADING: 'setArchiveLabelLoading',
+  SET_DELETE_LABEL_LOADING: 'setDeleteLabelLoading',
+  SET_UNDO_LABEL_LOADING: 'setUndoLabelLoading',
+  ERROR_STATE: 'errorState',
 };

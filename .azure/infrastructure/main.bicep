@@ -22,8 +22,8 @@ param sourceKeyVaultName string
 @minLength(3)
 param sourceKeyVaultSshJumperSshPublicKey string
 
-@description('The object ID of the group to assign the Admin Login role for SSH Jumper')
-param sshJumperAdminLoginGroupObjectId string
+@description('The object ID of the group to assign the Admin Login role for SSH Jumper and Storage Blob Data Reader role for source maps')
+param entraDevelopersGroupId string
 
 @description('Whether to enable zone redundancy for the container app environment')
 param containerAppEnvZoneRedundancyEnabled bool = false
@@ -116,6 +116,7 @@ module appInsights '../modules/applicationInsights/create.bicep' = {
     namePrefix: namePrefix
     location: location
     tags: tags
+    sourceMapsReaderGroupObjectId: entraDevelopersGroupId
   }
 }
 
@@ -260,7 +261,7 @@ module sshJumper '../modules/ssh-jumper/main.bicep' = {
     subnetId: vnet.outputs.sshJumperSubnetId
     tags: tags
     sshPublicKey: secrets.sourceKeyVaultSshJumperSshPublicKey
-    adminLoginGroupObjectId: sshJumperAdminLoginGroupObjectId
+    adminLoginGroupObjectId: entraDevelopersGroupId
   }
 }
 
@@ -280,3 +281,5 @@ module copySecrets '../modules/keyvault/copySecrets.bicep' = {
 
 output resourceGroupName string = resourceGroup.name
 output postgreServerName string = postgresql.outputs.serverName
+output appInsightsSourceMapStorageAccountName string = appInsights.outputs.sourceMapStorageAccountName
+output appInsightsSourceMapContainerName string = appInsights.outputs.sourceMapContainerName

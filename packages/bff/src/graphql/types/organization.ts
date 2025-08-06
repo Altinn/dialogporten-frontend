@@ -6,9 +6,15 @@ interface Organization {
     nb: string;
     nn: string;
   };
+  emblem?: string; // preferred this logo, if available
   logo?: string;
   orgnr: string;
   homepage: string;
+  contact?: {
+    email?: string;
+    phone?: string;
+    url?: string;
+  };
   environments: string[];
 }
 
@@ -31,7 +37,7 @@ interface TransformedOrganization {
   environments: string[];
 }
 
-const organizationsRedisKey = 'transformedOrganizations';
+const organizationsRedisKey = 'arbeidsflate-organizations:v1';
 
 async function fetchOrganizations() {
   try {
@@ -49,40 +55,44 @@ async function fetchOrganizations() {
     throw error;
   }
 }
-async function storeOrganizationsInRedis() {
+async function storeOrganizationsInRedis(): Promise<TransformedOrganization[]> {
   try {
     const { default: redisClient } = await import('../../redisClient.ts');
     const organizations = await fetchOrganizations();
-    const transformedOrganizations = organizations!.flatMap((org) => convertOrgsToJson(org));
-    await redisClient.set(organizationsRedisKey, JSON.stringify(transformedOrganizations), 'EX', 86400);
+    if (organizations && Array.isArray(organizations)) {
+      const transformedOrganizations = organizations!.flatMap((org) => convertOrgsToJson(org));
+      await redisClient.set(organizationsRedisKey, JSON.stringify(transformedOrganizations), 'EX', 60 * 60 * 24); // Store for 24 hours
+      return transformedOrganizations;
+    }
+    return [];
   } catch (error) {
     console.error('Error storing organizations in Redis:', error);
+    return [];
   }
 }
 
-export async function getOrganizationsFromRedis() {
+export async function getOrganizationsFromRedis(): Promise<TransformedOrganization[]> {
   try {
     const { default: redisClient } = await import('../../redisClient.ts');
     const data = await redisClient.get(organizationsRedisKey);
     if (data) {
       return JSON.parse(data);
     }
-    await storeOrganizationsInRedis();
-    return await getOrganizationsFromRedis();
+    return await storeOrganizationsInRedis();
   } catch (error) {
     console.error('Error retrieving organizations from Redis:', error);
-    return null;
+    return [];
   }
 }
 
 function convertOrgsToJson(orgs: Orgs): TransformedOrganization[] {
   const result: TransformedOrganization[] = [];
   for (const [id, details] of Object.entries(orgs)) {
-    const { name, logo, orgnr, homepage, environments } = details;
+    const { name, logo, orgnr, homepage, environments, emblem } = details;
     result.push({
       id,
       name,
-      logo,
+      logo: emblem || logo,
       orgnr,
       homepage,
       environments,
@@ -132,7 +142,7 @@ export const Organization = objectType({
       },
     });
     t.string('logo', {
-      description: 'URL to the organization logo',
+      description: 'URL to the organization logo, preferably an emblem over the logo',
       resolve: (organization) => {
         return organization.logo;
       },

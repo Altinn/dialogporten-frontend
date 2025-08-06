@@ -12,7 +12,7 @@ export function mapAutocompleteDialogsDtoToInboxItem(
 ): SearchAutocompleteDialogInput[] {
   return input.map((item) => {
     const titleObj = item.content.title.value;
-    const summaryObj = item.content.summary.value;
+    const summaryObj = item.content.summary?.value;
     const isSeenByEndUser =
       item.seenSinceLastUpdate.find((seenLogEntry) => seenLogEntry.isCurrentEndUser) !== undefined;
     return {

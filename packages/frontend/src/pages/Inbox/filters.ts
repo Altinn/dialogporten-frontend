@@ -10,7 +10,18 @@ import { endOfDay, endOfMonth, endOfWeek, startOfDay, startOfMonth, startOfWeek,
 import { t } from 'i18next';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { getOrganization } from '../../api/utils/organizations.ts';
-import type { InboxItemInput } from './InboxItemInput.ts';
+
+export const getExclusiveLabel = (labels: string[]): SystemLabel => {
+  const EXCLUSIVE_LABELS = [SystemLabel.Default, SystemLabel.Archive, SystemLabel.Bin] as const;
+
+  if (!labels || !Array.isArray(labels)) {
+    return SystemLabel.Default;
+  }
+
+  //@ts-ignore - TO-DO fix label as system label
+  const match = labels.find((label): label is SystemLabel => EXCLUSIVE_LABELS.includes(label as SystemLabel));
+  return match ?? SystemLabel.Default;
+};
 
 export const countOccurrences = (array: string[]): Record<string, number> => {
   return array.reduce(
@@ -46,6 +57,7 @@ export const getDateRange = (unit: 'day' | 'week' | 'month' | 'sixMonths' | 'yea
       return { start: subYears(now, 1), end: endOfDay(now) };
   }
 };
+
 const filterRanges: Record<DateFilterOption, { start?: Date; end?: Date }> = {
   [DateFilterOption.TODAY]: getDateRange('day'),
   [DateFilterOption.THIS_WEEK]: getDateRange('week'),
@@ -63,107 +75,174 @@ export enum FilterCategory {
 
 const getFilterBadgeProps = (filterCount: number | undefined): BadgeProps => {
   if (typeof filterCount === 'number' && filterCount > 0) {
-    return {
-      label: String(filterCount),
-      size: 'sm',
-    };
+    return { label: String(filterCount), size: 'sm' };
   }
-  return {
-    size: 'xs',
-    label: '',
-  };
+  return { size: 'xs', label: '' };
 };
 
-const getDateOptions = (dates: string[]): ToolbarFilterProps['options'] => {
+const getFilteredDialogs = (
+  dialogs: CountableDialogFieldsFragment[],
+  currentFilters: FilterState,
+  excludeFilterCategory?: FilterCategory,
+): CountableDialogFieldsFragment[] => {
+  return dialogs.filter((dialog) => {
+    if (excludeFilterCategory !== FilterCategory.ORG && currentFilters.org?.length) {
+      if (!currentFilters.org.includes(dialog.org)) {
+        return false;
+      }
+    }
+
+    if (excludeFilterCategory !== FilterCategory.STATUS && currentFilters.status?.length) {
+      const dialogSystemLabel = getExclusiveLabel(dialog.endUserContext?.systemLabels || []);
+      const hasMatchingStatus = currentFilters.status.some((status) => {
+        if ([SystemLabel.Archive, SystemLabel.Bin].includes(status as SystemLabel)) {
+          return dialogSystemLabel === status;
+        }
+        return dialog.status === status;
+      });
+
+      if (!hasMatchingStatus) {
+        return false;
+      }
+    }
+
+    if (excludeFilterCategory !== FilterCategory.UPDATED && currentFilters.updated?.length) {
+      const dateFilter = currentFilters.updated[0] as DateFilterOption;
+      if (dateFilter && filterRanges[dateFilter]) {
+        const dialogDate = new Date(dialog.updatedAt);
+        const { start, end } = filterRanges[dateFilter];
+
+        if (start && dialogDate < start) return false;
+        if (end && dialogDate > end) return false;
+      }
+    }
+
+    return true;
+  });
+};
+
+const createDateOptions = (dates: string[]): ToolbarFilterProps['options'] => {
   const now = new Date();
-  const startOfSixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
-  const sameDateLastYear = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+  const startOfSixMonthsAgo = subMonths(now, 6);
+  const sameDateLastYear = subYears(now, 1);
+
+  const dateCounts: Record<DateFilterOption, number> = {
+    [DateFilterOption.TODAY]: 0,
+    [DateFilterOption.THIS_WEEK]: 0,
+    [DateFilterOption.THIS_MONTH]: 0,
+    [DateFilterOption.LAST_SIX_MONTHS]: 0,
+    [DateFilterOption.LAST_TWELVE_MONTHS]: 0,
+    [DateFilterOption.OLDER_THAN_ONE_YEAR]: 0,
+  };
+
+  for (const dateStr of dates) {
+    const date = new Date(dateStr);
+
+    // TODAY
+    if (startOfDay(date).toISOString() === startOfDay(now).toISOString()) {
+      dateCounts[DateFilterOption.TODAY]++;
+    }
+
+    // THIS_WEEK
+    if (startOfWeek(date, { weekStartsOn: 0 }).toISOString() === startOfWeek(now, { weekStartsOn: 0 }).toISOString()) {
+      dateCounts[DateFilterOption.THIS_WEEK]++;
+    }
+
+    // THIS_MONTH
+    if (startOfMonth(date).toISOString() === startOfMonth(now).toISOString()) {
+      dateCounts[DateFilterOption.THIS_MONTH]++;
+    }
+
+    // LAST_SIX_MONTHS
+    if (date >= startOfSixMonthsAgo && date <= endOfDay(now)) {
+      dateCounts[DateFilterOption.LAST_SIX_MONTHS]++;
+    }
+
+    // LAST_TWELVE_MONTHS
+    if (date >= sameDateLastYear && date <= endOfDay(now)) {
+      dateCounts[DateFilterOption.LAST_TWELVE_MONTHS]++;
+    }
+
+    // OLDER_THAN_ONE_YEAR
+    if (date < sameDateLastYear) {
+      dateCounts[DateFilterOption.OLDER_THAN_ONE_YEAR]++;
+    }
+  }
 
   const options = [
     {
       value: DateFilterOption.TODAY,
-      match: (date: Date) => startOfDay(date).toISOString() === startOfDay(now).toISOString(),
       groupId: 'group-0',
     },
     {
       value: DateFilterOption.THIS_WEEK,
-      match: (date: Date) =>
-        startOfWeek(date, { weekStartsOn: 0 }).toISOString() === startOfWeek(now, { weekStartsOn: 0 }).toISOString(),
       groupId: 'group-0',
     },
     {
       value: DateFilterOption.THIS_MONTH,
-      match: (date: Date) => startOfMonth(date).toISOString() === startOfMonth(now).toISOString(),
       groupId: 'group-0',
     },
     {
       value: DateFilterOption.LAST_SIX_MONTHS,
-      match: (date: Date) => date >= startOfSixMonthsAgo,
       groupId: 'group-1',
     },
     {
       value: DateFilterOption.LAST_TWELVE_MONTHS,
-      match: (date: Date) => date >= sameDateLastYear,
       groupId: 'group-1',
     },
     {
       value: DateFilterOption.OLDER_THAN_ONE_YEAR,
-      match: (date: Date) => date < sameDateLastYear,
       groupId: 'group-2',
     },
   ];
 
-  return options.map((option) => {
-    const count = dates.filter((d) => option.match(new Date(d))).length;
-
-    return {
-      label: t(`filter.date.${option.value.toLowerCase()}`),
-      value: option.value,
-      badge: getFilterBadgeProps(count),
-      groupId: option.groupId,
-    };
-  });
+  return options.map((option) => ({
+    label: t(`filter.date.${option.value.toLowerCase()}`),
+    value: option.value,
+    badge: getFilterBadgeProps(dateCounts[option.value]),
+    groupId: option.groupId,
+  }));
 };
 
-/**
- * Generates filters with suggestions, including count of available items.
- *
- * @param {InboxItemInput[]} dialogs - The array of dialogs to filter.
- * @param allDialogs
- * @param allOrganizations
- * @param viewType
- * @returns {Array} - The array of filter settings.
- */
-export const getFilters = (
-  dialogs: InboxItemInput[],
+const createSenderOrgFilter = (
   allDialogs: CountableDialogFieldsFragment[],
   allOrganizations: OrganizationFieldsFragment[],
-  viewType: InboxViewType,
-): ToolbarFilterProps[] => {
-  const orgsInFilteredDialogs = dialogs.map((d) => d.org);
-  const orgCount = countOccurrences(orgsInFilteredDialogs);
-  const orgsFoundInAllDialogs = Array.from(new Set(allDialogs.map((d) => d.org)));
+  orgsFromSearchState: string[],
+  currentFilters: FilterState = {},
+): ToolbarFilterProps => {
+  const filteredDialogs = getFilteredDialogs(allDialogs, currentFilters, FilterCategory.ORG);
+  const orgCount = countOccurrences(filteredDialogs.map((d) => d.org));
 
-  const senderOrgFilter: ToolbarFilterProps = {
+  const uniqueOrgs = Array.from(new Set([...allDialogs.map((d) => d.org), ...orgsFromSearchState]));
+
+  return {
     label: t('filter_bar.label.choose_sender'),
     name: FilterCategory.ORG,
     removable: true,
     optionType: 'checkbox',
-    options: orgsFoundInAllDialogs
+    options: uniqueOrgs
       .map((org) => ({
         label: getOrganization(allOrganizations, org, 'nb')?.name || org,
         value: org,
-        badge: getFilterBadgeProps(orgCount[org]),
+        badge: getFilterBadgeProps(orgCount[org] || 0),
       }))
       .sort((a, b) => a.label?.localeCompare(b.label)),
   };
+};
 
-  const statusList = dialogs.map((p) => p.status);
-  const labelList = dialogs.map((p) => p.label);
-  const statusCount = countOccurrences(statusList);
-  const labelCounts = countOccurrences(labelList);
+const createStatusFilter = (
+  allDialogs: CountableDialogFieldsFragment[],
+  currentFilters: FilterState = {},
+): ToolbarFilterProps => {
+  const filteredDialogs = getFilteredDialogs(allDialogs, currentFilters, FilterCategory.STATUS);
+  const statusCount = countOccurrences(filteredDialogs.map((d) => d.status));
 
-  const statusFilter: ToolbarFilterProps = {
+  const systemLabels = filteredDialogs
+    .map((d) => d.endUserContext?.systemLabels || [])
+    .map((labels) => getExclusiveLabel(labels));
+  const labelCounts = countOccurrences(systemLabels);
+
+  return {
     label: t('filter_bar.label.choose_status'),
     name: FilterCategory.STATUS,
     removable: true,
@@ -180,69 +259,103 @@ export const getFilters = (
     },
     options: [
       {
-        label: t('status.new'),
+        label: t('status.not_applicable'),
         groupId: 'status-group-0',
-        value: DialogStatus.New,
-        badge: getFilterBadgeProps(statusCount[DialogStatus.New]),
+        value: DialogStatus.NotApplicable,
+        badge: getFilterBadgeProps(statusCount[DialogStatus.NotApplicable] || 0),
       },
       {
         label: t('status.requires_attention'),
         groupId: 'status-group-1',
         value: DialogStatus.RequiresAttention,
-        badge: getFilterBadgeProps(statusCount[DialogStatus.RequiresAttention]),
+        badge: getFilterBadgeProps(statusCount[DialogStatus.RequiresAttention] || 0),
       },
       {
         label: t('status.in_progress'),
         groupId: 'status-group-1',
         value: DialogStatus.InProgress,
-        badge: getFilterBadgeProps(statusCount[DialogStatus.InProgress]),
+        badge: getFilterBadgeProps(statusCount[DialogStatus.InProgress] || 0),
       },
       {
         label: t('status.completed'),
         groupId: 'status-group-1',
         value: DialogStatus.Completed,
-        badge: getFilterBadgeProps(statusCount[DialogStatus.Completed]),
+        badge: getFilterBadgeProps(statusCount[DialogStatus.Completed] || 0),
       },
       {
         label: t('status.draft'),
         groupId: 'status-group-2',
         value: DialogStatus.Draft,
-        badge: getFilterBadgeProps(statusCount[DialogStatus.Draft]),
+        badge: getFilterBadgeProps(statusCount[DialogStatus.Draft] || 0),
       },
       {
-        label: t('status.sent'),
+        label: t('status.awaiting'),
         groupId: 'status-group-2',
-        value: DialogStatus.Sent,
-        badge: getFilterBadgeProps(statusCount[DialogStatus.Sent]),
+        value: DialogStatus.Awaiting,
+        badge: getFilterBadgeProps(statusCount[DialogStatus.Awaiting] || 0),
       },
       {
         label: t('status.archive'),
         groupId: 'status-group-3',
         value: SystemLabel.Archive,
-        badge: getFilterBadgeProps(labelCounts[SystemLabel.Archive]),
+        badge: getFilterBadgeProps(labelCounts[SystemLabel.Archive] || 0),
       },
       {
         label: t('status.bin'),
         groupId: 'status-group-3',
         value: SystemLabel.Bin,
-        badge: getFilterBadgeProps(labelCounts[SystemLabel.Bin]),
+        badge: getFilterBadgeProps(labelCounts[SystemLabel.Bin] || 0),
       },
     ],
   };
+};
 
-  const updatedAtFilter: ToolbarFilterProps = {
+const createUpdatedAtFilter = (
+  allDialogs: CountableDialogFieldsFragment[],
+  currentFilters: FilterState = {},
+): ToolbarFilterProps => {
+  const filteredDialogs = getFilteredDialogs(allDialogs, currentFilters, FilterCategory.UPDATED);
+
+  return {
     id: FilterCategory.UPDATED,
     name: FilterCategory.UPDATED,
     label: t('filter_bar.label.updated'),
     optionType: 'radio',
     removable: true,
-    options: getDateOptions(dialogs.map((d) => d.updatedAt)),
+    options: createDateOptions(filteredDialogs.map((d) => d.updatedAt)),
   };
+};
 
-  if (viewType === 'inbox') {
-    return [senderOrgFilter, statusFilter, updatedAtFilter];
-  }
-  return [senderOrgFilter, updatedAtFilter];
+/**
+ * Generates filters with suggestions, including count of available items.
+ * Counts are calculated across ALL views, not just the current view.
+ *
+ * @param allDialogs - All dialogs from all views for accurate counting
+ * @param allOrganizations
+ * @param viewType
+ * @param orgsFromSearchState
+ * @param currentFilters - The current filter state to calculate accurate counts
+ * @returns {Array} - The array of filter settings.
+ */
+
+export const getFilters = ({
+  allDialogs,
+  allOrganizations,
+  viewType,
+  orgsFromSearchState = [],
+  currentFilters = {},
+}: {
+  allDialogs: CountableDialogFieldsFragment[];
+  allOrganizations: OrganizationFieldsFragment[];
+  viewType: InboxViewType;
+  orgsFromSearchState?: string[];
+  currentFilters?: FilterState;
+}): ToolbarFilterProps[] => {
+  const senderOrgFilter = createSenderOrgFilter(allDialogs, allOrganizations, orgsFromSearchState, currentFilters);
+  const statusFilter = createStatusFilter(allDialogs, currentFilters);
+  const updatedAtFilter = createUpdatedAtFilter(allDialogs, currentFilters);
+
+  return viewType === 'inbox' ? [senderOrgFilter, statusFilter, updatedAtFilter] : [senderOrgFilter, updatedAtFilter];
 };
 
 export const readFiltersFromURLQuery = (query: string): FilterState => {
@@ -250,14 +363,12 @@ export const readFiltersFromURLQuery = (query: string): FilterState => {
   const allowedFilterKeys = Object.values(FilterCategory) as string[];
   const filters: FilterState = {};
 
-  searchParams.forEach((value, key) => {
+  for (const [key, value] of searchParams) {
     if (allowedFilterKeys.includes(key) && value) {
-      if (!filters[key]) {
-        filters[key] = [];
-      }
+      filters[key] = filters[key] || [];
       filters[key].push(value);
     }
-  });
+  }
 
   return filters;
 };
@@ -270,7 +381,12 @@ interface NormalizeFilterDefaults {
 
 export const presetFiltersByView: Record<InboxViewType, Partial<GetAllDialogsForPartiesQueryVariables>> = {
   inbox: {
-    status: [DialogStatus.New, DialogStatus.InProgress, DialogStatus.RequiresAttention, DialogStatus.Completed],
+    status: [
+      DialogStatus.NotApplicable,
+      DialogStatus.InProgress,
+      DialogStatus.RequiresAttention,
+      DialogStatus.Completed,
+    ],
     label: [SystemLabel.Default],
   },
   drafts: {
@@ -278,7 +394,7 @@ export const presetFiltersByView: Record<InboxViewType, Partial<GetAllDialogsFor
     label: [SystemLabel.Default],
   },
   sent: {
-    status: [DialogStatus.Sent],
+    status: [DialogStatus.Awaiting],
     label: [SystemLabel.Default],
   },
   archive: {
@@ -306,6 +422,7 @@ export const presetFiltersByView: Record<InboxViewType, Partial<GetAllDialogsFor
  * @param {InboxViewType} [params.viewType] - The current inbox view, used to determine which presets to apply.
  * @returns {GetAllDialogsForPartiesQueryVariables} A normalized and preset-merged filter state object.
  */
+
 export const normalizeFilterDefaults = ({
   filters,
   viewType,
@@ -320,12 +437,8 @@ export const normalizeFilterDefaults = ({
 
   if (updatedAfter && filterRanges[updatedAfter as unknown as DateFilterOption]) {
     const { start, end } = filterRanges[updatedAfter as unknown as DateFilterOption];
-    if (start) {
-      normalized.updatedAfter = start.toISOString();
-    }
-    if (end) {
-      normalized.updatedBefore = end.toISOString();
-    }
+    if (start) normalized.updatedAfter = start.toISOString();
+    if (end) normalized.updatedBefore = end.toISOString();
   }
 
   const normalizedStatus = (normalized.status ?? []) as string[];
@@ -344,7 +457,7 @@ export const normalizeFilterDefaults = ({
   return mergeFilterDefaults(normalized, viewType);
 };
 
-function mergeWithPresets<T extends Record<string, unknown>>(current: T, presets: Partial<T>): T {
+const mergeWithPresets = <T extends Record<string, unknown>>(current: T, presets: Partial<T>): T => {
   const merged = { ...current };
 
   for (const key of Object.keys(presets) as (keyof T)[]) {
@@ -361,7 +474,7 @@ function mergeWithPresets<T extends Record<string, unknown>>(current: T, presets
   }
 
   return merged;
-}
+};
 
 export const mergeFilterDefaults = (
   currentFilters: GetAllDialogsForPartiesQueryVariables,

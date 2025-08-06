@@ -6,15 +6,19 @@ test.describe('Activity history - transmissions and activities', () => {
     await page.goto(appUrlWithPlaywrightId('activity-history'));
     // Go to details for dialog with activity history
     await page.getByRole('link', { name: 'This has a sender name defined' }).click();
-    await page.locator('a').filter({ hasText: 'Aktivitetslogg' }).click();
-    await page.getByText('Skatteetaten: Meldingen ble sendt.').click();
-    await expect(page.getByText('Skatteetaten: Meldingen ble sendt.')).toBeVisible();
-    await page.getByText('Skatteetaten: Meldingen ble åpnet.').click();
-    await page.getByRole('button', { name: 'Tittel', exact: true }).click();
-    await page.getByText('Oppsummering').click();
-    await page.getByText('Skatteetaten: Denne meldingen er utløpt.').click();
-    /* Click on link to scroll to transmission-2 */
-    await page.getByRole('button', { name: 'Svar på Tittel 2' }).click();
-    expect(page.getByRole('button', { name: 'Tittel 2', exact: true }));
+    // Open modal dialog with activity history
+    await page.getByRole('button', { name: 'Aktivitetslogg' }).first().click();
+
+    const dialog = page.getByRole('dialog');
+
+    await dialog.getByText('Skatteetaten: Meldingen ble sendt.').click();
+    await expect(dialog.getByText('Skatteetaten: Meldingen ble sendt.')).toBeVisible();
+    await dialog.getByText('Skatteetaten: Meldingen ble åpnet.').click();
+    await dialog.getByRole('button', { name: 'Tittel', exact: true }).click();
+    await dialog.getByText('Oppsummering').click();
+    await dialog.getByText('Skatteetaten: Denne meldingen er utløpt.').click();
+
+    await dialog.getByRole('button', { name: 'Lukk' }).click();
+    await expect(dialog).not.toBeVisible;
   });
 });

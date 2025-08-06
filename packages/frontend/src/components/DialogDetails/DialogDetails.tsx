@@ -1,40 +1,43 @@
 import {
+  type BadgeColor,
+  type BadgeSize,
+  type BadgeVariant,
+  Button,
   type DialogActionButtonProps,
   DialogActions,
   DialogAttachments,
   DialogBody,
   type DialogButtonPriority,
   DialogHeader,
-  DialogHistory,
-  DialogTabs,
+  Divider,
   DsAlert,
   DsParagraph,
   Heading,
-  Section,
+  Timeline,
+  TimelineSegment,
+  TransmissionList,
+  Typography,
 } from '@altinn/altinn-components';
-import type { DialogHistorySegmentProps } from '@altinn/altinn-components/dist/types/lib/components';
+import type { ActivityLogSegmentProps } from '@altinn/altinn-components/dist/types/lib/components';
 import { DialogStatus } from 'bff-types-generated';
 import { type ReactElement, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { DialogByIdDetails } from '../../api/hooks/useDialogById.tsx';
+import type { TimelineSegmentWithTransmissions } from '../../api/utils/transmissions.ts';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { getDialogStatus } from '../../pages/Inbox/status.ts';
+import { ActivityLogModal } from '../ActivityLog/activityLogModal.tsx';
 import { AdditionalInfoContent } from '../AdditonalInfoContent';
 import { MainContentReference } from '../MainContentReference';
-import styles from './dialogDetails.module.css';
 
 interface DialogDetailsProps {
   dialog: DialogByIdDetails | undefined | null;
+  activityModalProps: {
+    isOpen: boolean;
+    setIsOpen: (isOpen: boolean) => void;
+  };
   isAuthLevelTooLow?: boolean;
   isLoading?: boolean;
-}
-
-type ActivePageTab = 'additional_info' | 'activities' | 'transmissions';
-
-interface PageTab {
-  id: ActivePageTab;
-  title: string;
-  onClick: () => void;
 }
 
 /**
@@ -108,145 +111,119 @@ const handleDialogActionClick = async (
   }
 };
 
-export const DialogDetails = ({ dialog, isLoading, isAuthLevelTooLow }: DialogDetailsProps): ReactElement => {
+export const DialogDetails = ({
+  dialog,
+  isLoading,
+  isAuthLevelTooLow,
+  activityModalProps,
+}: DialogDetailsProps): ReactElement => {
   const { t } = useTranslation();
   const [actionIdLoading, setActionIdLoading] = useState<string>('');
-  const [activeTab, setActiveTab] = useState<ActivePageTab | undefined>();
+  const [showAllTransmissions, setShowAllTransmissions] = useState<boolean>(false);
+
   const format = useFormat();
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: full control
-  const dialogTabs = useMemo(() => {
-    if (!dialog) {
-      return [];
-    }
-    const tabs: PageTab[] = [];
-    if (dialog.transmissions.length > 0) {
-      tabs.push({
-        id: 'transmissions',
-        title: t('dialog.tabs.transmissions'),
-        onClick: () => setActiveTab('transmissions'),
-      });
-    }
-    if (dialog.additionalInfo?.value) {
-      tabs.push({
-        id: 'additional_info',
-        title: t('dialog.tabs.additional_info'),
-        onClick: () => setActiveTab('additional_info'),
-      });
-    }
-    if (dialog.activityHistory.length > 0) {
-      tabs.push({
-        id: 'activities',
-        title: t('dialog.tabs.activities'),
-        onClick: () => setActiveTab('activities'),
-      });
-    }
-    if (tabs.length > 0 && (activeTab === undefined || !tabs.map((tab) => tab.id).includes(activeTab))) {
-      setActiveTab(tabs[0].id);
-    }
-    return tabs;
-  }, [dialog, activeTab]);
-
-  const transmissions = useMemo(() => {
+  const transmissions: TimelineSegmentWithTransmissions[] = useMemo(() => {
     if (!dialog?.transmissions) {
       return [];
     }
+
     /* Add content reference to each item in the transmission - ensure they are not eagerly loaded, will only render on expand */
-    return dialog.transmissions.map((transmission: DialogHistorySegmentProps) => ({
+    return dialog.transmissions.map((transmission) => ({
       ...transmission,
-      items: transmission.items.map((item) => ({
-        ...item,
-        children: dialog.contentReferenceForTransmissions[item.id] ? (
-          <MainContentReference
-            id={item.id}
-            content={dialog.contentReferenceForTransmissions[item.id]}
-            dialogToken={dialog.dialogToken}
-          />
-        ) : null,
-        items: item.items?.map((subItem) => ({
-          ...subItem,
-          children: dialog.contentReferenceForTransmissions[subItem.id] ? (
+      items: transmission.items?.map((item, index) => {
+        return {
+          ...item,
+          children: dialog.contentReferenceForTransmissions[item.id as string] ? (
             <MainContentReference
-              id={subItem.id}
-              content={dialog.contentReferenceForTransmissions[subItem.id]}
+              id={item.id ?? `${transmission.id}-${index}`}
+              content={dialog.contentReferenceForTransmissions[item.id as string]}
               dialogToken={dialog.dialogToken}
             />
           ) : null,
-        })),
-      })),
+        };
+      }),
     }));
   }, [dialog]);
 
-  const activityHistoryItems = useMemo(() => {
+  // biome-ignore lint/correctness/useExhaustiveDependencies: no need with format
+  const activityHistoryItems: ActivityLogSegmentProps[] = useMemo(() => {
     if (!dialog?.activityHistory) {
       return [];
     }
-    return dialog.activityHistory.map((dialogHistoryItem: DialogHistorySegmentProps) => {
-      if (dialogHistoryItem.items[0]?.variant === 'transmission') {
-        return {
-          ...dialogHistoryItem,
-          items: dialogHistoryItem.items.map((item) => ({
-            ...item,
-            children: dialog.contentReferenceForTransmissions[item.id] ? (
-              <MainContentReference
-                id={item.id}
-                content={dialog.contentReferenceForTransmissions[item.id]}
-                dialogToken={dialog.dialogToken}
-              />
-            ) : null,
-          })),
-        };
-      }
-      return dialogHistoryItem;
+
+    return dialog.activityHistory.map((dialogHistoryItem) => {
+      return {
+        id: dialogHistoryItem.id,
+        datetime: dialogHistoryItem.date,
+        items: dialogHistoryItem.items.map((item) => ({
+          id: item.id,
+          summary: dialogHistoryItem.type === 'activity' ? item.summary : '',
+          datetime: item.datetime,
+          byline: item.datetime ? format(item.datetime, 'do MMMM yyyy HH.mm') : '',
+        })),
+        children:
+          dialogHistoryItem.type === 'transmission' ? (
+            <TransmissionList
+              items={dialogHistoryItem.items.map((item) => ({
+                ...item,
+                children: dialog.contentReferenceForTransmissions[item.id as string] ? (
+                  <MainContentReference
+                    id={item.id}
+                    content={dialog.contentReferenceForTransmissions[item.id as string]}
+                    dialogToken={dialog.dialogToken}
+                  />
+                ) : null,
+              }))}
+            />
+          ) : null,
+      };
     });
   }, [dialog]);
 
   if (isLoading) {
     return (
-      <Section as="article" padding={6} spacing={6}>
+      <>
         <DialogHeader
           loading
-          dueAt={new Date().toISOString()}
-          dueAtLabel={format(new Date(), 'do MMMM yyyy HH.mm').toString()}
-          status={getDialogStatus(DialogStatus.New, t)}
-          title={'???'}
-        />
-        <DialogBody
-          sender={{ name: 'XXX' }}
-          recipient={{ name: 'YYY' }}
           updatedAt={new Date().toISOString()}
           updatedAtLabel={format(new Date(), 'do MMMM yyyy HH.mm').toString()}
-          loading
+          dueAt={new Date().toISOString()}
+          dueAtLabel={format(new Date(), 'do MMMM yyyy HH.mm').toString()}
+          status={getDialogStatus(DialogStatus.NotApplicable, t)}
+          title={'???'}
         />
-      </Section>
+        <DialogBody sender={{ name: 'XXX' }} recipient={{ name: 'YYY' }} loading />
+      </>
     );
   }
 
   if (isAuthLevelTooLow) {
     return (
-      <Section as="article" padding={6}>
+      <>
         <DsAlert data-color="danger">
           <Heading data-size="xs">{t('error.dialog.auth_level_too_low')}</Heading>
           <DsParagraph>
             <a href="/api/login?idporten_loa_high=true">{t('error.dialog.auth_level_too_low.link')}</a>
           </DsParagraph>
         </DsAlert>
-      </Section>
+      </>
     );
   }
 
   if (!dialog) {
     return (
-      <Section as="article" padding={6}>
-        <h2 className={styles.title}>{t('error.dialog.not_found')}</h2>
-        <span className={styles.summary}>{t('dialog.error_message.general')}</span>
-      </Section>
+      <Typography>
+        <h1>{t('error.dialog.not_found')}</h1>
+        <p>{t('dialog.error_message.general')}</p>
+      </Typography>
     );
   }
 
   const clockPrefix = t('word.clock_prefix');
   const formatString = clockPrefix ? `do MMMM yyyy '${clockPrefix}' HH.mm` : `do MMMM yyyy HH.mm`;
-  const dueAtLabel = dialog.dueAt ? format(dialog.dueAt, formatString) : '';
+  const dueAtLabel = dialog.dueAt ? t('dialog.due_at', { date: format(dialog.dueAt, formatString) }) : '';
+  const numberOfTransmissionGroups = 3;
 
   const dialogActions: DialogActionButtonProps[] = dialog.guiActions.map((action) => ({
     id: action.id,
@@ -264,19 +241,37 @@ export const DialogDetails = ({ dialog, isLoading, isAuthLevelTooLow }: DialogDe
     },
   }));
 
+  const headerBadge =
+    dialog.viewType === 'bin' || dialog.viewType === 'archive'
+      ? {
+          label: t(`status.${dialog.viewType}`),
+          size: 'sm' as BadgeSize,
+          variant: 'subtle' as BadgeVariant,
+          color: 'neutral' as BadgeColor,
+        }
+      : undefined;
+
   return (
-    <Section as="article" padding={6} spacing={6}>
+    <>
       <DialogHeader
+        updatedAt={dialog.updatedAt}
+        updatedAtLabel={format(dialog.updatedAt, formatString)}
         dueAt={dialog.dueAt}
         dueAtLabel={dueAtLabel}
         status={getDialogStatus(dialog.status, t)}
+        badge={headerBadge}
         title={dialog.title}
+        activityLog={{
+          onClick: () => {
+            activityModalProps.setIsOpen(true);
+          },
+          label: t('dialog.activity_log.title'),
+        }}
+        attachmentsCount={dialog.attachments?.length}
       />
       <DialogBody
         sender={dialog.sender}
         recipient={dialog.receiver}
-        updatedAt={dialog.updatedAt}
-        updatedAtLabel={format(dialog.updatedAt, formatString)}
         recipientLabel={t('word.to')}
         seenByLog={dialog.seenByLog}
       >
@@ -290,17 +285,41 @@ export const DialogDetails = ({ dialog, isLoading, isAuthLevelTooLow }: DialogDe
         )}
         <DialogActions items={dialogActions} />
       </DialogBody>
-      <DialogTabs
-        items={dialogTabs.map((item) => ({
-          ...item,
-          selected: item.id === activeTab,
-        }))}
-      />
-      {activeTab === 'transmissions' && <DialogHistory items={transmissions} collapsible />}
-      {activeTab === 'additional_info' && (
-        <AdditionalInfoContent mediaType={dialog.additionalInfo?.mediaType} value={dialog.additionalInfo?.value} />
+      {transmissions?.length > 0 && (
+        <Timeline>
+          {transmissions
+            .slice(0, showAllTransmissions ? undefined : numberOfTransmissionGroups)
+            .map(({ items, ...timelineSegmentProps }) => {
+              return (
+                <TimelineSegment key={timelineSegmentProps.id} {...timelineSegmentProps}>
+                  {transmissions?.length > 0 && <TransmissionList items={items} />}
+                </TimelineSegment>
+              );
+            })}
+        </Timeline>
       )}
-      {activeTab === 'activities' && <DialogHistory items={activityHistoryItems} />}
-    </Section>
+      {dialog.transmissions.length > numberOfTransmissionGroups && !showAllTransmissions && (
+        <Button variant="outline" onClick={() => setShowAllTransmissions(true)}>
+          {t('dialog.transmission.expandLabel')}
+        </Button>
+      )}
+      {showAllTransmissions && (
+        <Button variant="outline" onClick={() => setShowAllTransmissions(false)}>
+          {t('dialog.transmission.collapseLabel')}
+        </Button>
+      )}
+      {dialog.additionalInfo?.value && (
+        <>
+          <Divider />
+          <AdditionalInfoContent mediaType={dialog.additionalInfo.mediaType} value={dialog.additionalInfo.value} />
+        </>
+      )}
+      <ActivityLogModal
+        title={dialog.title}
+        items={activityHistoryItems}
+        isOpen={activityModalProps.isOpen}
+        setIsOpen={activityModalProps.setIsOpen}
+      />
+    </>
   );
 };

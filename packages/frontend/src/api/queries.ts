@@ -29,14 +29,19 @@ export const addFavoriteParty = (partyId: string): Promise<AddFavoritePartyMutat
   graphQLSDK.AddFavoriteParty({ partyId });
 export const addFavoritePartyToGroup = (partyId: string, groupName: string): Promise<AddFavoritePartyToGroupMutation> =>
   graphQLSDK.AddFavoritePartyToGroup({ partyId, groupName });
-export const deleteFavoriteParty = (partyId: string, groupId: string): Promise<DeleteFavoritePartyMutation> =>
-  graphQLSDK.DeleteFavoriteParty({ partyId, groupId });
+export const deleteFavoriteParty = (partyId: string): Promise<DeleteFavoritePartyMutation> =>
+  graphQLSDK.DeleteFavoriteParty({ partyId });
 export const createSavedSearch = (name: string, data: SavedSearchInput): Promise<CreateSavedSearchMutation> =>
   graphQLSDK.CreateSavedSearch({ name, data });
-export const updateSystemLabel = (dialogId: string, label: SystemLabel): Promise<UpdateSystemLabelMutation> =>
+export const updateSystemLabel = (
+  dialogId: string,
+  addLabels: SystemLabel | SystemLabel[],
+  removeLabels: SystemLabel | SystemLabel[] = [],
+): Promise<UpdateSystemLabelMutation> =>
   graphQLSDK.updateSystemLabel({
     dialogId,
-    label,
+    addLabels,
+    removeLabels,
   });
 export const searchDialogs = (
   partyURIs: string[],

@@ -1,5 +1,5 @@
-import type { AvatarProps } from '@altinn/altinn-components';
-import type { DialogStatus, SystemLabel } from 'bff-types-generated';
+import type { AvatarProps, SeenByLogProps } from '@altinn/altinn-components';
+import type { DialogStatus, SeenLogFieldsFragment, SystemLabel } from 'bff-types-generated';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 
 export interface InboxItemInput {
@@ -13,10 +13,17 @@ export interface InboxItemInput {
   updatedAt: string;
   status: DialogStatus;
   isSeenByEndUser: boolean;
-  label: SystemLabel;
+  hasUnopenedContent: boolean;
+  contentUpdatedAt: string;
+  label: SystemLabel[];
   org: string;
   guiAttachmentCount: number;
   seenByOthersCount: number;
+  fromServiceOwnerTransmissionsCount: number;
+  fromPartyTransmissionsCount: number;
   seenByLabel?: string;
   viewType: InboxViewType;
+  seenByLog: SeenByLogProps;
+  dueAt?: string;
+  seenSinceLastContentUpdate: SeenLogFieldsFragment[];
 }

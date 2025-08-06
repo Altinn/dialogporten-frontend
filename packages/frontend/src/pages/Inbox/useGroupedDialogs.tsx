@@ -1,14 +1,21 @@
-import type {
-  DialogListGroupProps,
-  DialogListItemProps,
-  DialogListItemState,
-  FilterState,
+import {
+  type BadgeColor,
+  type BadgeSize,
+  type BadgeVariant,
+  ContextMenu,
+  type ContextMenuProps,
+  type DialogListGroupProps,
+  type DialogListItemProps,
+  type DialogListItemState,
+  type FilterState,
 } from '@altinn/altinn-components';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps } from 'react-router-dom';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
+import { useDialogActions } from '../DialogDetailsPage/useDialogActions.tsx';
+import type { CurrentSeenByLog } from './Inbox.tsx';
 import type { InboxItemInput } from './InboxItemInput.ts';
 import { getDialogStatus } from './status.ts';
 
@@ -40,6 +47,8 @@ interface UseGroupedDialogsProps {
   collapseGroups?: boolean;
   /* title for the collapsed group, only applicable if collapseGroups=true */
   getCollapsedGroupTitle?: (count: number) => string;
+  /* used to open modal with seen by log */
+  onSeenByLogModalChange: (input: CurrentSeenByLog) => void;
 }
 
 const sortByUpdatedAt = (arr: DialogListItemProps[]) => {
@@ -76,6 +85,25 @@ const getDialogState = (viewType: InboxViewType): DialogListItemState => {
   }
 };
 
+const getItemBadge = (viewType: InboxViewType, hasUnopenedContent: boolean, t: (key: string) => string) => {
+  if (viewType === 'bin' || viewType === 'archive') {
+    return {
+      color: 'neutral' as BadgeColor,
+      label: t(`status.${viewType}`),
+      size: 'sm' as BadgeSize,
+      variant: 'subtle' as BadgeVariant,
+    };
+  }
+  if (hasUnopenedContent) {
+    return {
+      label: t('word.unread'),
+      size: 'xs' as BadgeSize,
+      variant: 'tinted' as BadgeVariant,
+    };
+  }
+  return undefined;
+};
+
 const useGroupedDialogs = ({
   items,
   displaySearchResults,
@@ -84,48 +112,69 @@ const useGroupedDialogs = ({
   isFetchingNextPage,
   getCollapsedGroupTitle,
   collapseGroups = false,
+  onSeenByLogModalChange,
 }: UseGroupedDialogsProps): UseGroupedDialogsOutput => {
   const { t } = useTranslation();
   const format = useFormat();
+  const systemLabelActions = useDialogActions();
 
   const clockPrefix = t('word.clock_prefix');
   const formatString = `do MMMM yyyy ${clockPrefix ? `'${clockPrefix}' ` : ''}HH.mm`;
   const allWithinSameYear = items.every((d) => new Date(d.updatedAt).getFullYear() === new Date().getFullYear());
   const isInbox = viewType === 'inbox';
 
-  const formatDialogItem = (item: InboxItemInput, groupId: string): DialogListItemProps => ({
-    groupId,
-    title: item.title,
-    label: !item.isSeenByEndUser ? t('word.new') : undefined,
-    badge: !item.isSeenByEndUser
-      ? {
-          label: t('word.unread'),
-          theme: 'surface-hover',
-        }
-      : undefined,
-    id: item.id,
-    recipientLabel: t('word.to'),
-    sender: item.sender,
-    summary: item.viewType === 'inbox' ? item.summary : undefined,
-    state: getDialogState(item.viewType),
-    recipient: item.recipient,
-    attachmentsCount: item.guiAttachmentCount,
-    seenBy: item.seenByLabel
-      ? {
-          seenByEndUser: item.isSeenByEndUser,
-          seenByOthersCount: item.seenByOthersCount,
+  const formatDialogItem = (item: InboxItemInput, groupId: string): DialogListItemProps => {
+    const contextMenu: ContextMenuProps = {
+      id: 'dialog-context-menu-' + item.id,
+      placement: 'right',
+      items: [
+        ...systemLabelActions(item.id, item.label),
+        {
+          id: 'seenby-log',
+          groupId: 'logs',
           label: item.seenByLabel,
-        }
-      : undefined,
-    status: getDialogStatus(item.status, t),
-    seen: item.isSeenByEndUser,
-    updatedAt: item.updatedAt,
-    updatedAtLabel: format(item.updatedAt, formatString),
-    ariaLabel: `${item.title}`,
-    as: (props: LinkProps) => (
-      <Link state={{ fromView: location.pathname }} {...props} to={`/inbox/${item.id}/${location.search}`} />
-    ),
-  });
+          as: 'button',
+          icon: item.seenByLog,
+          hidden: !item.seenByLabel,
+          onClick: () => {
+            onSeenByLogModalChange({
+              title: item.title,
+              dialogId: item.id,
+              items: item.seenByLog.items,
+            });
+          },
+        },
+      ],
+      ariaLabel: t('dialog.context_menu.label', { title: item.title }),
+    };
+
+    return {
+      groupId,
+      title: item.title,
+      badge: getItemBadge(item.viewType, item.hasUnopenedContent, t),
+      id: item.id,
+      recipientLabel: t('word.to'),
+      sender: item.sender,
+      summary: item.viewType === 'inbox' ? item.summary : undefined,
+      state: getDialogState(item.viewType),
+      recipient: item.recipient,
+      attachmentsCount: item.guiAttachmentCount,
+      seenByLog: item.seenByLog,
+      unread: !item.seenSinceLastContentUpdate.find((d) => d.isCurrentEndUser),
+      status: getDialogStatus(item.status, t),
+      controls: <ContextMenu {...contextMenu} />,
+      updatedAt: item.updatedAt,
+      updatedAtLabel: format(item.updatedAt, formatString),
+      dueAtLabel: item.dueAt ? t('dialog.due_at', { date: format(item.dueAt, formatString) }) : undefined,
+      dueAt: item.dueAt,
+      sentCount: item.fromPartyTransmissionsCount ?? 0,
+      receivedCount: item.fromServiceOwnerTransmissionsCount ?? 0,
+      ariaLabel: item.title,
+      as: (props: LinkProps) => (
+        <Link state={{ fromView: location.pathname }} {...props} to={`/inbox/${item.id}/${location.search}`} />
+      ),
+    };
+  };
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   return useMemo(() => {

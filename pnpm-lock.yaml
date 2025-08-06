@@ -30,8 +30,8 @@ importers:
         specifier: workspace:*
         version: link:../node-logger
       '@digdir/dialogporten-schema':
-        specifier: 1.62.5-ade2f11
-        version: 1.62.5-ade2f11
+        specifier: 1.75.0-339ffad
+        version: 1.75.0-339ffad
       '@fastify/cookie':
         specifier: ^11.0.2
         version: 11.0.2
@@ -188,7 +188,7 @@ importers:
     dependencies:
       '@graphql-codegen/cli':
         specifier: ^5.0.6
-        version: 5.0.6(@parcel/watcher@2.5.1)(@types/node@22.15.21)(graphql@16.11.0)(typescript@5.8.3)
+        version: 5.0.6(@parcel/watcher@2.5.1)(@types/node@24.0.1)(graphql@16.11.0)(typescript@5.8.3)
       '@graphql-codegen/typescript-operations':
         specifier: ^4.6.1
         version: 4.6.1(graphql@16.11.0)
@@ -231,13 +231,13 @@ importers:
         version: 2.5.1
       ts-node:
         specifier: ^10.9.2
-        version: 10.9.2(@swc/core@1.11.29)(@types/node@22.15.21)(typescript@5.8.3)
+        version: 10.9.2(@swc/core@1.11.29)(@types/node@24.0.1)(typescript@5.8.3)
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
       vitest:
         specifier: ^2.1.9
-        version: 2.1.9(@types/node@22.15.21)(jsdom@24.1.3)(lightningcss@1.29.1)(msw@2.8.4(@types/node@22.15.21)(typescript@5.8.3))(terser@5.37.0)
+        version: 2.1.9(@types/node@24.0.1)(jsdom@24.1.3)(lightningcss@1.29.1)(msw@2.8.4(@types/node@24.0.1)(typescript@5.8.3))(terser@5.37.0)
 
   packages/docs:
     dependencies:
@@ -294,6 +294,15 @@ importers:
         specifier: ~5.5.4
         version: 5.5.4
 
+  packages/e2e:
+    devDependencies:
+      '@playwright/test':
+        specifier: ^1.52.0
+        version: 1.52.0
+      '@types/node':
+        specifier: ^24.0.1
+        version: 24.0.1
+
   packages/embeddable-markdown-html:
     dependencies:
       mdast-util-to-hast:
@@ -341,7 +350,7 @@ importers:
         version: 19.1.5(@types/react@19.1.5)
       '@vitejs/plugin-react-swc':
         specifier: ^3.9.0
-        version: 3.10.0(vite@5.4.19(@types/node@22.15.21)(lightningcss@1.29.1)(terser@5.37.0))
+        version: 3.10.0(vite@5.4.19(@types/node@24.0.1)(lightningcss@1.29.1)(terser@5.37.0))
       '@vitest/expect':
         specifier: ^2.1.9
         version: 2.1.9
@@ -353,10 +362,10 @@ importers:
         version: 5.8.3
       vite:
         specifier: ^5.4.19
-        version: 5.4.19(@types/node@22.15.21)(lightningcss@1.29.1)(terser@5.37.0)
+        version: 5.4.19(@types/node@24.0.1)(lightningcss@1.29.1)(terser@5.37.0)
       vitest:
         specifier: ^2.1.9
-        version: 2.1.9(@types/node@22.15.21)(jsdom@24.1.3)(lightningcss@1.29.1)(msw@2.8.4(@types/node@22.15.21)(typescript@5.8.3))(terser@5.37.0)
+        version: 2.1.9(@types/node@24.0.1)(jsdom@24.1.3)(lightningcss@1.29.1)(msw@2.8.4(@types/node@24.0.1)(typescript@5.8.3))(terser@5.37.0)
 
   packages/fastify-graphiql:
     dependencies:
@@ -369,19 +378,19 @@ importers:
     devDependencies:
       vitest:
         specifier: ^2.1.9
-        version: 2.1.9(@types/node@22.15.21)(jsdom@24.1.3)(lightningcss@1.29.1)(msw@2.8.4(@types/node@22.15.21)(typescript@5.8.3))(terser@5.37.0)
+        version: 2.1.9(@types/node@24.0.1)(jsdom@24.1.3)(lightningcss@1.29.1)(msw@2.8.4(@types/node@24.0.1)(typescript@5.8.3))(terser@5.37.0)
 
   packages/frontend:
     dependencies:
       '@altinn/altinn-components':
-        specifier: ^0.28.2
-        version: 0.28.2(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        specifier: ^0.36.1
+        version: 0.36.1(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@microsoft/applicationinsights-react-js':
-        specifier: 17.3.2
-        version: 17.3.2(history@4.10.1)(react@19.1.0)(tslib@2.8.1)
+        specifier: 19.3.6
+        version: 19.3.6(history@4.10.1)(react@19.1.0)(tslib@2.8.1)
       '@microsoft/applicationinsights-web':
-        specifier: 3.3.3
-        version: 3.3.3(tslib@2.8.1)
+        specifier: 3.3.9
+        version: 3.3.9(tslib@2.8.1)
       '@navikt/aksel-icons':
         specifier: ^7.22.0
         version: 7.22.0
@@ -585,8 +594,8 @@ packages:
     resolution: {integrity: sha512-p6t8ue0XZNjcRiqNkb5QAM0qQRAKsCiebZ6n9JjWA+p8fWf8BvnhO55y2fO28g3GW0Imj7PrAuyBuxq8aDVQwQ==}
     engines: {node: '>= 14.0.0'}
 
-  '@altinn/altinn-components@0.28.2':
-    resolution: {integrity: sha512-bKmG9mleROdYG1RC4XP8XoHrZ1EB02SU0di934TkL6cqdhOJYKB/xxeVvlklNn8wnHTC6ckS7SYUMcqqxEYv6g==}
+  '@altinn/altinn-components@0.36.1':
+    resolution: {integrity: sha512-FdbGVmolhC6d7eYuxFwa+PVxavrs4QwVwYqIjv1432JhnTSVRnhTkPUE3graag0/QPXWL49hIhRpjdxorrASqA==}
     peerDependencies:
       react: '>=18.3.1 || ^19.0.0'
       react-dom: '>=18.3.1 || ^19.0.0'
@@ -1629,8 +1638,8 @@ packages:
   '@digdir/designsystemet-theme@1.0.6':
     resolution: {integrity: sha512-Cj8aaQ5GtnJTdzHmOHap0B9ldGItRQ3NKpqlz4VF+wda0YQIgXlsiWi01ayYhU344u1gSGxdj3Dh3gg9GMOAfw==}
 
-  '@digdir/dialogporten-schema@1.62.5-ade2f11':
-    resolution: {integrity: sha512-gEc5zsHvfSv8efsBggZcGB3rF0dSd/4YjHWdfFtG6o2gHG8yzOX6I4KLjs35OzGtUFQm1xtTwz2OA2OTMzMcDQ==}
+  '@digdir/dialogporten-schema@1.75.0-339ffad':
+    resolution: {integrity: sha512-vdGFxdmXllxhnh2gXaAJQsrGMQIAp8Y84xueslfmhLJzDAOfEHaC4oR/cGT+I4BEezvR5uh8TZXERAX+Nv8JRg==}
     engines: {node: '22'}
 
   '@discoveryjs/json-ext@0.5.7':
@@ -2674,56 +2683,46 @@ packages:
   '@mermaid-js/parser@0.3.0':
     resolution: {integrity: sha512-HsvL6zgE5sUPGgkIDlmAWR1HTNHz2Iy11BAWPTa4Jjabkpguy4Ze2gzfLrg6pdRuBvFwgUYyxiaNqZwrEEXepA==}
 
-  '@microsoft/applicationinsights-analytics-js@3.3.3':
-    resolution: {integrity: sha512-Lh6/KRPCyiAyL8SjBB02HMUyL1YUhbBAeehbCqTElkhIwXjzHtKCCuefkbtDQda4V/ikYRNMoRzb/2cgaKQcBg==}
+  '@microsoft/applicationinsights-analytics-js@3.3.9':
+    resolution: {integrity: sha512-HJ7W4L4RYt7ozbwIsxjllJTk48ER0mbUOGrCSIIf7j3z3R/Kn/eTEBMNE073oV970nPEMzajvMZa2tDcsLLGzw==}
     peerDependencies:
       tslib: '>= 1.0.0'
 
-  '@microsoft/applicationinsights-cfgsync-js@3.3.3':
-    resolution: {integrity: sha512-NDSObvyTF+3thARGYcTw2MRiw181aOT8jGimavKEvm4jm6IAVodqkO1Yp482Dy9x/Ug4OMajV82OtGaazy9IIQ==}
+  '@microsoft/applicationinsights-cfgsync-js@3.3.9':
+    resolution: {integrity: sha512-/7HpyjvKnKp4UGZ6U3pNXjpdPWRXcDyxlAkE3D3/TtgLbiTLfraLQuQAi/zTnJPFqkb3/TcS3wmDtnVea83w2Q==}
     peerDependencies:
       tslib: '>= 1.0.0'
 
-  '@microsoft/applicationinsights-channel-js@3.3.3':
-    resolution: {integrity: sha512-a6a1pig2V6L3cB9R7fAk9IsVB9FDJ89WBUZIUEJIpdTbhJ4AsIYUvhIuHkWYjVIzKhmaeXI1szf54mJWyb5rPQ==}
+  '@microsoft/applicationinsights-channel-js@3.3.9':
+    resolution: {integrity: sha512-/yEgSe6vT2ycQJkXu6VF04TB5XBurk46ECV7uo6KkNhWyDEctAk1VDWB7EqXYdwLhKMbNOYX1pvz7fj43fGNqg==}
     peerDependencies:
       tslib: '>= 1.0.0'
 
-  '@microsoft/applicationinsights-common@3.3.3':
-    resolution: {integrity: sha512-WB6iOVjXuBfyNiYL7gyg5S2KveK8zrgPH94llbUCMw+qWX0yENQQf/r3k1PzybxkWwy/8hwAmrV+ACvLcQrdcw==}
+  '@microsoft/applicationinsights-common@3.3.9':
+    resolution: {integrity: sha512-IgruOuDBxmBK9jYo7SqLJG7Z9OwmAmlvHET49srpN6pqQlEjRpjD1nfA3Ps4RSEbF89a/ad2phQaBp8jvm122g==}
     peerDependencies:
       tslib: '>= 1.0.0'
 
-  '@microsoft/applicationinsights-common@3.3.4':
-    resolution: {integrity: sha512-4ms16MlIvcP4WiUPqopifNxcWCcrXQJ2ADAK/75uok2mNQe6ZNRsqb/P+pvhUxc8A5HRlvoXPP1ptDSN5Girgw==}
+  '@microsoft/applicationinsights-core-js@3.3.9':
+    resolution: {integrity: sha512-xliiE9H09xCycndlua4QjajN8q5k/ET6VCv+e0Jjodxr9+cmoOP/6QY9dun9ptokuwR8TK0qOaIJ8z4fgslVSA==}
     peerDependencies:
       tslib: '>= 1.0.0'
 
-  '@microsoft/applicationinsights-core-js@3.3.3':
-    resolution: {integrity: sha512-U+IaAx/RS60jl8TAgtKzAeojbJgI+eCnYQGSvVE7IxdHgsmQ3hV3IYrBEf98q5nZD4U1zGoKtI8VEpkepoaYhQ==}
+  '@microsoft/applicationinsights-dependencies-js@3.3.9':
+    resolution: {integrity: sha512-I8MiU0S2EB0H+Pz2X5PaV1BcqLHmWRSJDVhvxATvLGshwCRNSoXPSNf4Ami2mjVBKNH9GrSj01s6vrSUrSBsoQ==}
     peerDependencies:
       tslib: '>= 1.0.0'
 
-  '@microsoft/applicationinsights-core-js@3.3.4':
-    resolution: {integrity: sha512-MummANF0mgKIkdvVvfmHQTBliK114IZLRhTL0X0Ep+zjDwWMHqYZgew0nlFKAl6ggu42abPZFK5afpE7qjtYJA==}
+  '@microsoft/applicationinsights-properties-js@3.3.9':
+    resolution: {integrity: sha512-8CPrqLgFCrFMaUWQoHEXMGSG6Ykn9wxfDxBeEHI6yUSvnkeolnP0Mwg+6NRdHcVbiNnO4itGBJC+Icu0Eq7Xeg==}
     peerDependencies:
       tslib: '>= 1.0.0'
 
-  '@microsoft/applicationinsights-dependencies-js@3.3.3':
-    resolution: {integrity: sha512-zBuDx9+go15R32haBq+m8LWRfUmtJh9SH6MrxDEOy7O+KACGNumqIkOqc7zyX38HqCOzjSD2RKfPP7+6HisRPg==}
-    peerDependencies:
-      tslib: '>= 1.0.0'
-
-  '@microsoft/applicationinsights-properties-js@3.3.3':
-    resolution: {integrity: sha512-Ir08rSSEG3Z1XXa66Vgkv88LTdJolTbbU7CPHti/6j4avaA3WbfIUAfxlNJZ2v3oIVccIg52Wh5bkDEvX2dT8g==}
-    peerDependencies:
-      tslib: '>= 1.0.0'
-
-  '@microsoft/applicationinsights-react-js@17.3.2':
-    resolution: {integrity: sha512-QeKZoIYG7I4V0BiKaVeNScQORlXVcUvI3fYlIntkTIWixRK1dWirunRJ92tMwSWnpKmLK06/XgLIK5W6xp8hHg==}
+  '@microsoft/applicationinsights-react-js@19.3.6':
+    resolution: {integrity: sha512-Zoe1wrSewLRG6Q3nLhDvrXrx0XLBYakbwWRS5ktOrzvou+AI+lxLQg936M9FcQ5279xuvUQDOvDV2IhS9G862g==}
     peerDependencies:
       history: '>= 4.10.1'
-      react: '>= 17.0.1'
+      react: '>= 19.0.0'
       tslib: '*'
 
   '@microsoft/applicationinsights-shims@3.0.1':
@@ -2732,8 +2731,8 @@ packages:
   '@microsoft/applicationinsights-web-snippet@1.2.1':
     resolution: {integrity: sha512-+Cy9zFqdQgdAbMK1dpm7B+3DUnrByai0Tq6XG9v737HJpW6G1EiNNbTuFeXdPWyGaq6FIx9jxm/SUcxA6/Rxxg==}
 
-  '@microsoft/applicationinsights-web@3.3.3':
-    resolution: {integrity: sha512-EQUGGYTMEQRLWIBXXuYfv6WYcm7O9wFHq0EIJ5qN+Fh3SyGOL34RzU+3TQ9eCrz6GCtRZwlbcwWPi83l4q952w==}
+  '@microsoft/applicationinsights-web@3.3.9':
+    resolution: {integrity: sha512-sphOpJwjq0AVcUCxaoZYeB9nsMcxRgpZ6Jt8raqMIn0WdvgcSi51yFW4BE2gk8G8z4E8umnkEvYIb8SmEpkm1A==}
     peerDependencies:
       tslib: '>= 1.0.0'
 
@@ -2770,6 +2769,9 @@ packages:
 
   '@nevware21/ts-utils@0.11.6':
     resolution: {integrity: sha512-OUUJTh3fnaUSzg9DEHgv3d7jC+DnPL65mIO7RaR+jWve7+MmcgIvF79gY97DPQ4frH+IpNR78YAYd/dW4gK3kg==}
+
+  '@nevware21/ts-utils@0.12.5':
+    resolution: {integrity: sha512-JPQZWPKQJjj7kAftdEZL0XDFfbMgXCGiUAZe0d7EhLC3QlXTlZdSckGqqRIQ2QNl0VTEZyZUvRBw6Ednw089Fw==}
 
   '@node-rs/jieba-android-arm-eabi@1.10.4':
     resolution: {integrity: sha512-MhyvW5N3Fwcp385d0rxbCWH42kqDBatQTyP8XbnYbju2+0BO/eTeCCLYj7Agws4pwxn2LtdldXRSKavT7WdzNA==}
@@ -4135,6 +4137,9 @@ packages:
 
   '@types/node@22.5.1':
     resolution: {integrity: sha512-KkHsxej0j9IW1KKOOAA/XBA0z08UFSrRQHErzEfA3Vgq57eXIMYboIlHJuYIfd+lwCQjtKqUu3UnmKbtUc9yRw==}
+
+  '@types/node@24.0.1':
+    resolution: {integrity: sha512-MX4Zioh39chHlDJbKmEgydJDS3tspMP/lnQC67G3SWsTnb9NeYVWOjkxpOSy4oMfPs4StcWHwBrvUb4ybfnuaw==}
 
   '@types/parse-json@4.0.2':
     resolution: {integrity: sha512-dISoDXWWQwUquiKsyZ4Ng+HX2KsPL7LyHKHQwgGFEA3IaKac4Obd+h2a/a6waisAoepJlBcx9paWqjA8/HVjCw==}
@@ -9717,6 +9722,9 @@ packages:
   undici-types@6.21.0:
     resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
 
+  undici-types@7.8.0:
+    resolution: {integrity: sha512-9UJ2xGDvQ43tYyVMpuHlsgApydB8ZKfVYTsLDhXkFL/6gfkp+U8xTGdh8pMJv1SpZna0zxG1DwsKZsreLbXBxw==}
+
   undici@6.21.0:
     resolution: {integrity: sha512-BUgJXc752Kou3oOIuU1i+yZZypyZRqNPW0vqoMPl8VaoalSfeR0D8/t4iAS3yirs79SSMTxTag+ZC86uswv+Cw==}
     engines: {node: '>=18.17'}
@@ -10353,7 +10361,7 @@ snapshots:
     dependencies:
       '@algolia/client-common': 5.19.0
 
-  '@altinn/altinn-components@0.28.2(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+  '@altinn/altinn-components@0.36.1(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
     dependencies:
       '@digdir/designsystemet-css': 1.0.6
       '@digdir/designsystemet-react': 1.0.6(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -11679,7 +11687,7 @@ snapshots:
 
   '@digdir/designsystemet-theme@1.0.6': {}
 
-  '@digdir/dialogporten-schema@1.62.5-ade2f11': {}
+  '@digdir/dialogporten-schema@1.75.0-339ffad': {}
 
   '@discoveryjs/json-ext@0.5.7': {}
 
@@ -12881,7 +12889,7 @@ snapshots:
       graphql: 16.11.0
       tslib: 2.6.3
 
-  '@graphql-codegen/cli@5.0.6(@parcel/watcher@2.5.1)(@types/node@22.15.21)(graphql@16.11.0)(typescript@5.8.3)':
+  '@graphql-codegen/cli@5.0.6(@parcel/watcher@2.5.1)(@types/node@24.0.1)(graphql@16.11.0)(typescript@5.8.3)':
     dependencies:
       '@babel/generator': 7.26.3
       '@babel/template': 7.25.9
@@ -12892,12 +12900,12 @@ snapshots:
       '@graphql-tools/apollo-engine-loader': 8.0.13(graphql@16.11.0)
       '@graphql-tools/code-file-loader': 8.1.13(graphql@16.11.0)
       '@graphql-tools/git-loader': 8.0.17(graphql@16.11.0)
-      '@graphql-tools/github-loader': 8.0.13(@types/node@22.15.21)(graphql@16.11.0)
+      '@graphql-tools/github-loader': 8.0.13(@types/node@24.0.1)(graphql@16.11.0)
       '@graphql-tools/graphql-file-loader': 8.0.11(graphql@16.11.0)
       '@graphql-tools/json-file-loader': 8.0.11(graphql@16.11.0)
       '@graphql-tools/load': 8.1.0(graphql@16.11.0)
-      '@graphql-tools/prisma-loader': 8.0.17(@types/node@22.15.21)(graphql@16.11.0)
-      '@graphql-tools/url-loader': 8.0.24(@types/node@22.15.21)(graphql@16.11.0)
+      '@graphql-tools/prisma-loader': 8.0.17(@types/node@24.0.1)(graphql@16.11.0)
+      '@graphql-tools/url-loader': 8.0.24(@types/node@24.0.1)(graphql@16.11.0)
       '@graphql-tools/utils': 10.8.6(graphql@16.11.0)
       '@whatwg-node/fetch': 0.10.3
       chalk: 4.1.2
@@ -12905,7 +12913,7 @@ snapshots:
       debounce: 1.2.1
       detect-indent: 6.1.0
       graphql: 16.11.0
-      graphql-config: 5.1.3(@types/node@22.15.21)(graphql@16.11.0)(typescript@5.8.3)
+      graphql-config: 5.1.3(@types/node@24.0.1)(graphql@16.11.0)(typescript@5.8.3)
       inquirer: 8.2.6
       is-glob: 4.0.3
       jiti: 1.21.7
@@ -13203,6 +13211,21 @@ snapshots:
     transitivePeerDependencies:
       - '@types/node'
 
+  '@graphql-tools/executor-http@1.3.3(@types/node@24.0.1)(graphql@16.11.0)':
+    dependencies:
+      '@graphql-hive/signal': 1.0.0
+      '@graphql-tools/executor-common': 0.0.4(graphql@16.11.0)
+      '@graphql-tools/utils': 10.8.6(graphql@16.11.0)
+      '@repeaterjs/repeater': 3.0.6
+      '@whatwg-node/disposablestack': 0.0.6
+      '@whatwg-node/fetch': 0.10.8
+      '@whatwg-node/promise-helpers': 1.3.2
+      graphql: 16.11.0
+      meros: 1.3.0(@types/node@24.0.1)
+      tslib: 2.8.1
+    transitivePeerDependencies:
+      - '@types/node'
+
   '@graphql-tools/executor-legacy-ws@1.1.10(graphql@16.11.0)':
     dependencies:
       '@graphql-tools/utils': 10.8.6(graphql@16.11.0)
@@ -13237,9 +13260,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@graphql-tools/github-loader@8.0.13(@types/node@22.15.21)(graphql@16.11.0)':
+  '@graphql-tools/github-loader@8.0.13(@types/node@24.0.1)(graphql@16.11.0)':
     dependencies:
-      '@graphql-tools/executor-http': 1.3.3(@types/node@22.15.21)(graphql@16.11.0)
+      '@graphql-tools/executor-http': 1.3.3(@types/node@24.0.1)(graphql@16.11.0)
       '@graphql-tools/graphql-tag-pluck': 8.3.12(graphql@16.11.0)
       '@graphql-tools/utils': 10.8.6(graphql@16.11.0)
       '@whatwg-node/fetch': 0.10.3
@@ -13318,9 +13341,9 @@ snapshots:
       graphql: 16.11.0
       tslib: 2.8.1
 
-  '@graphql-tools/prisma-loader@8.0.17(@types/node@22.15.21)(graphql@16.11.0)':
+  '@graphql-tools/prisma-loader@8.0.17(@types/node@24.0.1)(graphql@16.11.0)':
     dependencies:
-      '@graphql-tools/url-loader': 8.0.24(@types/node@22.15.21)(graphql@16.11.0)
+      '@graphql-tools/url-loader': 8.0.24(@types/node@24.0.1)(graphql@16.11.0)
       '@graphql-tools/utils': 10.8.6(graphql@16.11.0)
       '@types/js-yaml': 4.0.9
       '@whatwg-node/fetch': 0.10.3
@@ -13384,10 +13407,10 @@ snapshots:
       graphql: 16.11.0
       tslib: 2.8.1
 
-  '@graphql-tools/url-loader@8.0.24(@types/node@22.15.21)(graphql@16.11.0)':
+  '@graphql-tools/url-loader@8.0.24(@types/node@24.0.1)(graphql@16.11.0)':
     dependencies:
       '@graphql-tools/executor-graphql-ws': 1.3.7(graphql@16.11.0)
-      '@graphql-tools/executor-http': 1.3.3(@types/node@22.15.21)(graphql@16.11.0)
+      '@graphql-tools/executor-http': 1.3.3(@types/node@24.0.1)(graphql@16.11.0)
       '@graphql-tools/executor-legacy-ws': 1.1.10(graphql@16.11.0)
       '@graphql-tools/utils': 10.8.6(graphql@16.11.0)
       '@graphql-tools/wrap': 10.0.36(graphql@16.11.0)
@@ -13488,6 +13511,13 @@ snapshots:
       '@inquirer/type': 3.0.2(@types/node@22.15.21)
       '@types/node': 22.15.21
 
+  '@inquirer/confirm@5.1.1(@types/node@24.0.1)':
+    dependencies:
+      '@inquirer/core': 10.1.2(@types/node@24.0.1)
+      '@inquirer/type': 3.0.2(@types/node@24.0.1)
+      '@types/node': 24.0.1
+    optional: true
+
   '@inquirer/core@10.1.2(@types/node@22.15.21)':
     dependencies:
       '@inquirer/figures': 1.0.9
@@ -13502,11 +13532,31 @@ snapshots:
     transitivePeerDependencies:
       - '@types/node'
 
+  '@inquirer/core@10.1.2(@types/node@24.0.1)':
+    dependencies:
+      '@inquirer/figures': 1.0.9
+      '@inquirer/type': 3.0.2(@types/node@24.0.1)
+      ansi-escapes: 4.3.2
+      cli-width: 4.1.0
+      mute-stream: 2.0.0
+      signal-exit: 4.1.0
+      strip-ansi: 6.0.1
+      wrap-ansi: 6.2.0
+      yoctocolors-cjs: 2.1.2
+    transitivePeerDependencies:
+      - '@types/node'
+    optional: true
+
   '@inquirer/figures@1.0.9': {}
 
   '@inquirer/type@3.0.2(@types/node@22.15.21)':
     dependencies:
       '@types/node': 22.15.21
+
+  '@inquirer/type@3.0.2(@types/node@24.0.1)':
+    dependencies:
+      '@types/node': 24.0.1
+    optional: true
 
   '@ioredis/commands@1.2.0': {}
 
@@ -13603,90 +13653,74 @@ snapshots:
     dependencies:
       langium: 3.0.0
 
-  '@microsoft/applicationinsights-analytics-js@3.3.3(tslib@2.8.1)':
+  '@microsoft/applicationinsights-analytics-js@3.3.9(tslib@2.8.1)':
     dependencies:
-      '@microsoft/applicationinsights-common': 3.3.3(tslib@2.8.1)
-      '@microsoft/applicationinsights-core-js': 3.3.3(tslib@2.8.1)
+      '@microsoft/applicationinsights-common': 3.3.9(tslib@2.8.1)
+      '@microsoft/applicationinsights-core-js': 3.3.9(tslib@2.8.1)
       '@microsoft/applicationinsights-shims': 3.0.1
       '@microsoft/dynamicproto-js': 2.0.3
-      '@nevware21/ts-utils': 0.11.6
+      '@nevware21/ts-utils': 0.12.5
       tslib: 2.8.1
 
-  '@microsoft/applicationinsights-cfgsync-js@3.3.3(tslib@2.8.1)':
+  '@microsoft/applicationinsights-cfgsync-js@3.3.9(tslib@2.8.1)':
     dependencies:
-      '@microsoft/applicationinsights-common': 3.3.3(tslib@2.8.1)
-      '@microsoft/applicationinsights-core-js': 3.3.3(tslib@2.8.1)
-      '@microsoft/applicationinsights-shims': 3.0.1
-      '@microsoft/dynamicproto-js': 2.0.3
-      '@nevware21/ts-async': 0.5.4
-      '@nevware21/ts-utils': 0.11.6
-      tslib: 2.8.1
-
-  '@microsoft/applicationinsights-channel-js@3.3.3(tslib@2.8.1)':
-    dependencies:
-      '@microsoft/applicationinsights-common': 3.3.3(tslib@2.8.1)
-      '@microsoft/applicationinsights-core-js': 3.3.3(tslib@2.8.1)
+      '@microsoft/applicationinsights-common': 3.3.9(tslib@2.8.1)
+      '@microsoft/applicationinsights-core-js': 3.3.9(tslib@2.8.1)
       '@microsoft/applicationinsights-shims': 3.0.1
       '@microsoft/dynamicproto-js': 2.0.3
       '@nevware21/ts-async': 0.5.4
-      '@nevware21/ts-utils': 0.11.6
+      '@nevware21/ts-utils': 0.12.5
       tslib: 2.8.1
 
-  '@microsoft/applicationinsights-common@3.3.3(tslib@2.8.1)':
+  '@microsoft/applicationinsights-channel-js@3.3.9(tslib@2.8.1)':
     dependencies:
-      '@microsoft/applicationinsights-core-js': 3.3.3(tslib@2.8.1)
+      '@microsoft/applicationinsights-common': 3.3.9(tslib@2.8.1)
+      '@microsoft/applicationinsights-core-js': 3.3.9(tslib@2.8.1)
       '@microsoft/applicationinsights-shims': 3.0.1
       '@microsoft/dynamicproto-js': 2.0.3
-      '@nevware21/ts-utils': 0.11.6
+      '@nevware21/ts-async': 0.5.4
+      '@nevware21/ts-utils': 0.12.5
       tslib: 2.8.1
 
-  '@microsoft/applicationinsights-common@3.3.4(tslib@2.8.1)':
+  '@microsoft/applicationinsights-common@3.3.9(tslib@2.8.1)':
     dependencies:
-      '@microsoft/applicationinsights-core-js': 3.3.4(tslib@2.8.1)
+      '@microsoft/applicationinsights-core-js': 3.3.9(tslib@2.8.1)
       '@microsoft/applicationinsights-shims': 3.0.1
       '@microsoft/dynamicproto-js': 2.0.3
-      '@nevware21/ts-utils': 0.11.6
+      '@nevware21/ts-utils': 0.12.5
       tslib: 2.8.1
 
-  '@microsoft/applicationinsights-core-js@3.3.3(tslib@2.8.1)':
+  '@microsoft/applicationinsights-core-js@3.3.9(tslib@2.8.1)':
     dependencies:
       '@microsoft/applicationinsights-shims': 3.0.1
       '@microsoft/dynamicproto-js': 2.0.3
       '@nevware21/ts-async': 0.5.4
-      '@nevware21/ts-utils': 0.11.6
+      '@nevware21/ts-utils': 0.12.5
       tslib: 2.8.1
 
-  '@microsoft/applicationinsights-core-js@3.3.4(tslib@2.8.1)':
+  '@microsoft/applicationinsights-dependencies-js@3.3.9(tslib@2.8.1)':
     dependencies:
+      '@microsoft/applicationinsights-common': 3.3.9(tslib@2.8.1)
+      '@microsoft/applicationinsights-core-js': 3.3.9(tslib@2.8.1)
       '@microsoft/applicationinsights-shims': 3.0.1
       '@microsoft/dynamicproto-js': 2.0.3
       '@nevware21/ts-async': 0.5.4
-      '@nevware21/ts-utils': 0.11.6
+      '@nevware21/ts-utils': 0.12.5
       tslib: 2.8.1
 
-  '@microsoft/applicationinsights-dependencies-js@3.3.3(tslib@2.8.1)':
+  '@microsoft/applicationinsights-properties-js@3.3.9(tslib@2.8.1)':
     dependencies:
-      '@microsoft/applicationinsights-common': 3.3.3(tslib@2.8.1)
-      '@microsoft/applicationinsights-core-js': 3.3.3(tslib@2.8.1)
+      '@microsoft/applicationinsights-common': 3.3.9(tslib@2.8.1)
+      '@microsoft/applicationinsights-core-js': 3.3.9(tslib@2.8.1)
       '@microsoft/applicationinsights-shims': 3.0.1
       '@microsoft/dynamicproto-js': 2.0.3
-      '@nevware21/ts-async': 0.5.4
-      '@nevware21/ts-utils': 0.11.6
+      '@nevware21/ts-utils': 0.12.5
       tslib: 2.8.1
 
-  '@microsoft/applicationinsights-properties-js@3.3.3(tslib@2.8.1)':
+  '@microsoft/applicationinsights-react-js@19.3.6(history@4.10.1)(react@19.1.0)(tslib@2.8.1)':
     dependencies:
-      '@microsoft/applicationinsights-common': 3.3.3(tslib@2.8.1)
-      '@microsoft/applicationinsights-core-js': 3.3.3(tslib@2.8.1)
-      '@microsoft/applicationinsights-shims': 3.0.1
-      '@microsoft/dynamicproto-js': 2.0.3
-      '@nevware21/ts-utils': 0.11.6
-      tslib: 2.8.1
-
-  '@microsoft/applicationinsights-react-js@17.3.2(history@4.10.1)(react@19.1.0)(tslib@2.8.1)':
-    dependencies:
-      '@microsoft/applicationinsights-common': 3.3.4(tslib@2.8.1)
-      '@microsoft/applicationinsights-core-js': 3.3.4(tslib@2.8.1)
+      '@microsoft/applicationinsights-common': 3.3.9(tslib@2.8.1)
+      '@microsoft/applicationinsights-core-js': 3.3.9(tslib@2.8.1)
       '@microsoft/applicationinsights-shims': 3.0.1
       '@microsoft/dynamicproto-js': 2.0.3
       '@nevware21/ts-utils': 0.11.6
@@ -13700,19 +13734,19 @@ snapshots:
 
   '@microsoft/applicationinsights-web-snippet@1.2.1': {}
 
-  '@microsoft/applicationinsights-web@3.3.3(tslib@2.8.1)':
+  '@microsoft/applicationinsights-web@3.3.9(tslib@2.8.1)':
     dependencies:
-      '@microsoft/applicationinsights-analytics-js': 3.3.3(tslib@2.8.1)
-      '@microsoft/applicationinsights-cfgsync-js': 3.3.3(tslib@2.8.1)
-      '@microsoft/applicationinsights-channel-js': 3.3.3(tslib@2.8.1)
-      '@microsoft/applicationinsights-common': 3.3.3(tslib@2.8.1)
-      '@microsoft/applicationinsights-core-js': 3.3.3(tslib@2.8.1)
-      '@microsoft/applicationinsights-dependencies-js': 3.3.3(tslib@2.8.1)
-      '@microsoft/applicationinsights-properties-js': 3.3.3(tslib@2.8.1)
+      '@microsoft/applicationinsights-analytics-js': 3.3.9(tslib@2.8.1)
+      '@microsoft/applicationinsights-cfgsync-js': 3.3.9(tslib@2.8.1)
+      '@microsoft/applicationinsights-channel-js': 3.3.9(tslib@2.8.1)
+      '@microsoft/applicationinsights-common': 3.3.9(tslib@2.8.1)
+      '@microsoft/applicationinsights-core-js': 3.3.9(tslib@2.8.1)
+      '@microsoft/applicationinsights-dependencies-js': 3.3.9(tslib@2.8.1)
+      '@microsoft/applicationinsights-properties-js': 3.3.9(tslib@2.8.1)
       '@microsoft/applicationinsights-shims': 3.0.1
       '@microsoft/dynamicproto-js': 2.0.3
       '@nevware21/ts-async': 0.5.4
-      '@nevware21/ts-utils': 0.11.6
+      '@nevware21/ts-utils': 0.12.5
       tslib: 2.8.1
 
   '@microsoft/dynamicproto-js@2.0.3':
@@ -13760,9 +13794,11 @@ snapshots:
 
   '@nevware21/ts-async@0.5.4':
     dependencies:
-      '@nevware21/ts-utils': 0.11.6
+      '@nevware21/ts-utils': 0.12.5
 
   '@nevware21/ts-utils@0.11.6': {}
+
+  '@nevware21/ts-utils@0.12.5': {}
 
   '@node-rs/jieba-android-arm-eabi@1.10.4':
     optional: true
@@ -15090,6 +15126,10 @@ snapshots:
     dependencies:
       undici-types: 6.19.8
 
+  '@types/node@24.0.1':
+    dependencies:
+      undici-types: 7.8.0
+
   '@types/parse-json@4.0.2': {}
 
   '@types/pg-pool@2.0.4':
@@ -15289,6 +15329,14 @@ snapshots:
     transitivePeerDependencies:
       - '@swc/helpers'
 
+  '@vitejs/plugin-react-swc@3.10.0(vite@5.4.19(@types/node@24.0.1)(lightningcss@1.29.1)(terser@5.37.0))':
+    dependencies:
+      '@rolldown/pluginutils': 1.0.0-beta.9
+      '@swc/core': 1.11.29
+      vite: 5.4.19(@types/node@24.0.1)(lightningcss@1.29.1)(terser@5.37.0)
+    transitivePeerDependencies:
+      - '@swc/helpers'
+
   '@vitest/expect@2.1.9':
     dependencies:
       '@vitest/spy': 2.1.9
@@ -15304,6 +15352,15 @@ snapshots:
     optionalDependencies:
       msw: 2.8.4(@types/node@22.15.21)(typescript@5.8.3)
       vite: 5.4.19(@types/node@22.15.21)(lightningcss@1.29.1)(terser@5.37.0)
+
+  '@vitest/mocker@2.1.9(msw@2.8.4(@types/node@24.0.1)(typescript@5.8.3))(vite@5.4.19(@types/node@24.0.1)(lightningcss@1.29.1)(terser@5.37.0))':
+    dependencies:
+      '@vitest/spy': 2.1.9
+      estree-walker: 3.0.3
+      magic-string: 0.30.17
+    optionalDependencies:
+      msw: 2.8.4(@types/node@24.0.1)(typescript@5.8.3)
+      vite: 5.4.19(@types/node@24.0.1)(lightningcss@1.29.1)(terser@5.37.0)
 
   '@vitest/pretty-format@2.1.9':
     dependencies:
@@ -17593,13 +17650,13 @@ snapshots:
 
   graphemer@1.4.0: {}
 
-  graphql-config@5.1.3(@types/node@22.15.21)(graphql@16.11.0)(typescript@5.8.3):
+  graphql-config@5.1.3(@types/node@24.0.1)(graphql@16.11.0)(typescript@5.8.3):
     dependencies:
       '@graphql-tools/graphql-file-loader': 8.0.11(graphql@16.11.0)
       '@graphql-tools/json-file-loader': 8.0.11(graphql@16.11.0)
       '@graphql-tools/load': 8.1.0(graphql@16.11.0)
       '@graphql-tools/merge': 9.0.17(graphql@16.11.0)
-      '@graphql-tools/url-loader': 8.0.24(@types/node@22.15.21)(graphql@16.11.0)
+      '@graphql-tools/url-loader': 8.0.24(@types/node@24.0.1)(graphql@16.11.0)
       '@graphql-tools/utils': 10.8.6(graphql@16.11.0)
       cosmiconfig: 8.3.6(typescript@5.8.3)
       graphql: 16.11.0
@@ -18926,6 +18983,10 @@ snapshots:
     optionalDependencies:
       '@types/node': 22.15.21
 
+  meros@1.3.0(@types/node@24.0.1):
+    optionalDependencies:
+      '@types/node': 24.0.1
+
   methods@1.1.2: {}
 
   micromark-core-commonmark@2.0.2:
@@ -19329,6 +19390,32 @@ snapshots:
       typescript: 5.8.3
     transitivePeerDependencies:
       - '@types/node'
+
+  msw@2.8.4(@types/node@24.0.1)(typescript@5.8.3):
+    dependencies:
+      '@bundled-es-modules/cookie': 2.0.1
+      '@bundled-es-modules/statuses': 1.0.1
+      '@bundled-es-modules/tough-cookie': 0.1.6
+      '@inquirer/confirm': 5.1.1(@types/node@24.0.1)
+      '@mswjs/interceptors': 0.37.5
+      '@open-draft/deferred-promise': 2.2.0
+      '@open-draft/until': 2.1.0
+      '@types/cookie': 0.6.0
+      '@types/statuses': 2.0.5
+      graphql: 16.11.0
+      headers-polyfill: 4.0.3
+      is-node-process: 1.2.0
+      outvariant: 1.4.3
+      path-to-regexp: 6.3.0
+      picocolors: 1.1.1
+      strict-event-emitter: 0.5.1
+      type-fest: 4.32.0
+      yargs: 17.7.2
+    optionalDependencies:
+      typescript: 5.8.3
+    transitivePeerDependencies:
+      - '@types/node'
+    optional: true
 
   multicast-dns@7.2.5:
     dependencies:
@@ -21454,6 +21541,26 @@ snapshots:
     optionalDependencies:
       '@swc/core': 1.11.29
 
+  ts-node@10.9.2(@swc/core@1.11.29)(@types/node@24.0.1)(typescript@5.8.3):
+    dependencies:
+      '@cspotcode/source-map-support': 0.8.1
+      '@tsconfig/node10': 1.0.11
+      '@tsconfig/node12': 1.0.11
+      '@tsconfig/node14': 1.0.3
+      '@tsconfig/node16': 1.0.4
+      '@types/node': 24.0.1
+      acorn: 8.14.1
+      acorn-walk: 8.3.4
+      arg: 4.1.3
+      create-require: 1.1.1
+      diff: 4.0.2
+      make-error: 1.3.6
+      typescript: 5.8.3
+      v8-compile-cache-lib: 3.0.1
+      yn: 3.1.1
+    optionalDependencies:
+      '@swc/core': 1.11.29
+
   tsconfig-paths@4.2.0:
     dependencies:
       json5: 2.2.3
@@ -21566,6 +21673,8 @@ snapshots:
   undici-types@6.19.8: {}
 
   undici-types@6.21.0: {}
+
+  undici-types@7.8.0: {}
 
   undici@6.21.0: {}
 
@@ -21749,6 +21858,24 @@ snapshots:
       - supports-color
       - terser
 
+  vite-node@2.1.9(@types/node@24.0.1)(lightningcss@1.29.1)(terser@5.37.0):
+    dependencies:
+      cac: 6.7.14
+      debug: 4.4.0(supports-color@5.5.0)
+      es-module-lexer: 1.6.0
+      pathe: 1.1.2
+      vite: 5.4.19(@types/node@24.0.1)(lightningcss@1.29.1)(terser@5.37.0)
+    transitivePeerDependencies:
+      - '@types/node'
+      - less
+      - lightningcss
+      - sass
+      - sass-embedded
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+
   vite@5.4.19(@types/node@22.15.21)(lightningcss@1.29.1)(terser@5.37.0):
     dependencies:
       esbuild: 0.21.5
@@ -21756,6 +21883,17 @@ snapshots:
       rollup: 4.30.1
     optionalDependencies:
       '@types/node': 22.15.21
+      fsevents: 2.3.3
+      lightningcss: 1.29.1
+      terser: 5.37.0
+
+  vite@5.4.19(@types/node@24.0.1)(lightningcss@1.29.1)(terser@5.37.0):
+    dependencies:
+      esbuild: 0.21.5
+      postcss: 8.4.49
+      rollup: 4.30.1
+    optionalDependencies:
+      '@types/node': 24.0.1
       fsevents: 2.3.3
       lightningcss: 1.29.1
       terser: 5.37.0
@@ -21784,6 +21922,42 @@ snapshots:
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 22.15.21
+      jsdom: 24.1.3
+    transitivePeerDependencies:
+      - less
+      - lightningcss
+      - msw
+      - sass
+      - sass-embedded
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+
+  vitest@2.1.9(@types/node@24.0.1)(jsdom@24.1.3)(lightningcss@1.29.1)(msw@2.8.4(@types/node@24.0.1)(typescript@5.8.3))(terser@5.37.0):
+    dependencies:
+      '@vitest/expect': 2.1.9
+      '@vitest/mocker': 2.1.9(msw@2.8.4(@types/node@24.0.1)(typescript@5.8.3))(vite@5.4.19(@types/node@24.0.1)(lightningcss@1.29.1)(terser@5.37.0))
+      '@vitest/pretty-format': 2.1.9
+      '@vitest/runner': 2.1.9
+      '@vitest/snapshot': 2.1.9
+      '@vitest/spy': 2.1.9
+      '@vitest/utils': 2.1.9
+      chai: 5.2.0
+      debug: 4.4.0(supports-color@5.5.0)
+      expect-type: 1.1.0
+      magic-string: 0.30.17
+      pathe: 1.1.2
+      std-env: 3.8.0
+      tinybench: 2.9.0
+      tinyexec: 0.3.2
+      tinypool: 1.0.2
+      tinyrainbow: 1.2.0
+      vite: 5.4.19(@types/node@24.0.1)(lightningcss@1.29.1)(terser@5.37.0)
+      vite-node: 2.1.9(@types/node@24.0.1)(lightningcss@1.29.1)(terser@5.37.0)
+      why-is-node-running: 2.3.0
+    optionalDependencies:
+      '@types/node': 24.0.1
       jsdom: 24.1.3
     transitivePeerDependencies:
       - less

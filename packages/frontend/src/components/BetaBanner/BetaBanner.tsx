@@ -1,37 +1,17 @@
-import { DsButton } from '@altinn/altinn-components';
-import { InformationSquareIcon, XMarkIcon } from '@navikt/aksel-icons';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import styles from './betaBanner.module.css';
+import { Banner } from '@altinn/altinn-components';
+import { Trans, useTranslation } from 'react-i18next';
 
 export const BetaBanner = () => {
-  const betaBannerKey = 'arbeidsflate:show_beta_banner';
-  const isPreviouslyDismissed = localStorage.getItem(betaBannerKey) === 'true';
-  const [showBetaBanner, setShowBetaBanner] = useState<boolean>(!isPreviouslyDismissed);
-
   const { t } = useTranslation();
 
-  const handleClick = () => {
-    setShowBetaBanner(false);
-    localStorage.setItem(betaBannerKey, 'true');
-  };
-
-  if (!showBetaBanner) {
-    return null;
-  }
-
   return (
-    <section className={styles.betaBanner}>
-      <div className={styles.betaBannerTitle}>
-        <InformationSquareIcon className={styles.infoIcon} title={t('word.information')} />
-        <span>
-          Du ser nå på en beta-versjon av nye Altinn Innboks i et testmiljø. Alt innhold du ser her er basert på
-          testdata og kun ment for demonstrasjon.
-        </span>
-      </div>
-      <DsButton variant="tertiary" onClick={handleClick} type="button" className={styles.closeButton}>
-        <XMarkIcon className={styles.closeIcon} aria-label={t('word.close')} />
-      </DsButton>
-    </section>
+    <Banner
+      // biome-ignore lint/a11y/useValidAnchor:
+      // biome-ignore lint/a11y/useAnchorContent:
+      text={<Trans i18nKey="beta.banner" components={{ span: <span />, a: <a /> }} />}
+      color="warning"
+      closeTitle={t('word.close')}
+      sticky={false}
+    />
   );
 };

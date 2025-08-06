@@ -1,5 +1,188 @@
 # Changelog
 
+## [1.50.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.50.1...v1.50.2) (2025-08-06)
+
+
+### Bug Fixes
+
+* couple of missing aria attributes in search bar by upgrading to latest version of altinn-components ([#2390](https://github.com/Altinn/dialogporten-frontend/issues/2390)) ([ede71fb](https://github.com/Altinn/dialogporten-frontend/commit/ede71fb99bf57b007cadb023ff9018021ae59d30))
+
+## [1.50.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.50.0...v1.50.1) (2025-08-05)
+
+
+### Bug Fixes
+
+* Fixes saved search bug ([e092c73](https://github.com/Altinn/dialogporten-frontend/commit/e092c73d64ccb8aeeb899591f06bde41c48ec362))
+* incorrect badge color ([#2385](https://github.com/Altinn/dialogporten-frontend/issues/2385)) ([97f4164](https://github.com/Altinn/dialogporten-frontend/commit/97f41640bad9ce4898cb7a7a904248f8ef7f6a2a))
+
+## [1.50.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.49.1...v1.50.0) (2025-08-05)
+
+
+### Features
+
+* **bff:** add /init-session endpoint for performance testing ([#2380](https://github.com/Altinn/dialogporten-frontend/issues/2380)) ([9d42a5f](https://github.com/Altinn/dialogporten-frontend/commit/9d42a5fec78b1799632c9760b57115c20e391988))
+
+## [1.49.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.49.0...v1.49.1) (2025-08-04)
+
+
+### Bug Fixes
+
+* ensure source map filenames matches build filenames ([#2375](https://github.com/Altinn/dialogporten-frontend/issues/2375)) ([760810b](https://github.com/Altinn/dialogporten-frontend/commit/760810bd607e2a791d9ca6a8464e664445142537))
+* Giving list items a unique key prop ([d9d3fe7](https://github.com/Altinn/dialogporten-frontend/commit/d9d3fe78e08a0f204471bc5a9982f894ae4abd85))
+* **infra:** ensure devs has access to source maps in appinsights ([#2357](https://github.com/Altinn/dialogporten-frontend/issues/2357)) ([9011d1c](https://github.com/Altinn/dialogporten-frontend/commit/9011d1c8e0ebddf26d03d0ec2390e2ec81b82143))
+* prioritize emblem over logo for org avatar with generic logo as fallback ([#2379](https://github.com/Altinn/dialogporten-frontend/issues/2379)) ([83de458](https://github.com/Altinn/dialogporten-frontend/commit/83de458ad1baa39a6ebfacf5d0cdf9ae115edb7e))
+
+## [1.49.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.48.0...v1.49.0) (2025-07-30)
+
+
+### Features
+
+* Implement read/add/remove favorites from Core ([556a207](https://github.com/Altinn/dialogporten-frontend/commit/556a2074646903c517b2b6edaf6c4f8f1f1333e6))
+
+
+### Bug Fixes
+
+* Banner no longer covers filters on mobile ([6892d21](https://github.com/Altinn/dialogporten-frontend/commit/6892d216c4221fb7cc450bf31386a104ba0aa64d))
+* Context menu is now opening modal ([#2368](https://github.com/Altinn/dialogporten-frontend/issues/2368)) ([3da84a8](https://github.com/Altinn/dialogporten-frontend/commit/3da84a853afaac6e9dddf94de82b7a0bd761e39b))
+* Updated graphql files according to changes in DP schema ([1ca773a](https://github.com/Altinn/dialogporten-frontend/commit/1ca773a172f69694a9edd05cf2ac732c3ad9cd82))
+
+## [1.48.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.47.0...v1.48.0) (2025-07-23)
+
+
+### Features
+
+* Added partyUuid to parties ([334c30d](https://github.com/Altinn/dialogporten-frontend/commit/334c30d54ad9ad8d9edd0cd79e0fcef10bd55f0b))
+
+
+### Bug Fixes
+
+* Fix logo on dialog detailed view ([#2353](https://github.com/Altinn/dialogporten-frontend/issues/2353)) ([05a1702](https://github.com/Altinn/dialogporten-frontend/commit/05a170248d87a038b5821bec667b2e3dbebe2bcb))
+
+## [1.47.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.46.1...v1.47.0) (2025-07-22)
+
+
+### Features
+
+* Banner now without close/hide button. Updated text with translations. ([fd5f089](https://github.com/Altinn/dialogporten-frontend/commit/fd5f0893dbfc1950721aae3463732fad4038361a))
+* Show number of sent/received transmissions ([50bd06f](https://github.com/Altinn/dialogporten-frontend/commit/50bd06f0a31453c365abcf3ae0413ad8bc3a1dda))
+* Transmission will now be shown as read based on activities ([554f6d8](https://github.com/Altinn/dialogporten-frontend/commit/554f6d831b1178164456b2708cbeccf65e37eb62))
+
+
+### Bug Fixes
+
+* Filters calculating label dynamically based on all views and providing expected result ([#2348](https://github.com/Altinn/dialogporten-frontend/issues/2348)) ([af8b98d](https://github.com/Altinn/dialogporten-frontend/commit/af8b98dae8991e42cf32403c1a59ada32163b907))
+* Filters now showing count label of all dialogs found ([#2341](https://github.com/Altinn/dialogporten-frontend/issues/2341)) ([afe5471](https://github.com/Altinn/dialogporten-frontend/commit/afe5471f6f7ada3bb6184ab93c2c7dcd21ec9be5))
+* Update filters number label dynamically ([#2347](https://github.com/Altinn/dialogporten-frontend/issues/2347)) ([6fc506a](https://github.com/Altinn/dialogporten-frontend/commit/6fc506ad56e0fabcfa28dd7ad382029fe8560bcc))
+
+## [1.46.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.46.0...v1.46.1) (2025-07-11)
+
+
+### Bug Fixes
+
+* Org logo looks off on dialog list item ([#2338](https://github.com/Altinn/dialogporten-frontend/issues/2338)) ([e1180b1](https://github.com/Altinn/dialogporten-frontend/commit/e1180b152ae1a800cb73720ec3dbc9aa205dcc79))
+
+## [1.46.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.45.0...v1.46.0) (2025-07-11)
+
+
+### Features
+
+* Mark unread based on seenSinceLastContentUpdate ([#2330](https://github.com/Altinn/dialogporten-frontend/issues/2330)) ([dd0b79e](https://github.com/Altinn/dialogporten-frontend/commit/dd0b79e43f178935da49bc2ae47c2cbedb4c9eae))
+
+
+### Bug Fixes
+
+* **infra:** ensure correct role assignment for uploading source maps ([#2337](https://github.com/Altinn/dialogporten-frontend/issues/2337)) ([d4edaad](https://github.com/Altinn/dialogporten-frontend/commit/d4edaadb4f20fd71f49ee484af53c171db8eae11))
+
+## [1.45.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.44.0...v1.45.0) (2025-07-10)
+
+
+### Features
+
+* Added information to Archive and Bin ([5c5fd98](https://github.com/Altinn/dialogporten-frontend/commit/5c5fd98550b442a188509889826c23a9f9ec6897))
+
+
+### Bug Fixes
+
+* **infra:** ensure name is correctly formatted for storage-account ([54c4790](https://github.com/Altinn/dialogporten-frontend/commit/54c4790ac97979a944885d887cb000c0a91504f5))
+* **infra:** ensure tags are correctly formatted for app insights ([2fdb849](https://github.com/Altinn/dialogporten-frontend/commit/2fdb849501cdc554d3a86600d4fc2e6fd85c2555))
+
+## [1.44.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.43.0...v1.44.0) (2025-07-08)
+
+
+### Features
+
+* Added hasUnopenedContent to dialog list view [#2230](https://github.com/Altinn/dialogporten-frontend/issues/2230) ([7d94562](https://github.com/Altinn/dialogporten-frontend/commit/7d94562c79216d71983d042c2e6f04572f2b8a77))
+* Dialog list view now sorting by contentUpdatedAt prop ([#2231](https://github.com/Altinn/dialogporten-frontend/issues/2231)) ([eb20f60](https://github.com/Altinn/dialogporten-frontend/commit/eb20f6098e11a81def3093305f04daafc8a4e3ac))
+* Update error page content ([#2321](https://github.com/Altinn/dialogporten-frontend/issues/2321)) ([df3ecaa](https://github.com/Altinn/dialogporten-frontend/commit/df3ecaab673d85b137eab562384f29ca1f5acba4))
+
+## [1.43.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.42.0...v1.43.0) (2025-07-04)
+
+
+### Features
+
+* add context menu to dialog list item with functionality for archiving and putting to bin ([#2316](https://github.com/Altinn/dialogporten-frontend/issues/2316)) ([4af10c1](https://github.com/Altinn/dialogporten-frontend/commit/4af10c1edc4ce960b8e30a03d78bc7682e672dc6))
+* add seen by log details in modal from dialog list view ([#2318](https://github.com/Altinn/dialogporten-frontend/issues/2318)) ([6d8c24b](https://github.com/Altinn/dialogporten-frontend/commit/6d8c24b9126f432122548eb12cc1add0a766d9b2))
+* Added filters to PartiesOverview and added Feature Toggle ([13e73c6](https://github.com/Altinn/dialogporten-frontend/commit/13e73c648ce26d637a51d7cb37720c8000f211f6))
+* **orgs:** prioritize emblem over logo for org avatar with generic logo as fallback ([#2315](https://github.com/Altinn/dialogporten-frontend/issues/2315)) ([c2e5dc0](https://github.com/Altinn/dialogporten-frontend/commit/c2e5dc0b4eaa59c803ee46e061d401235fb2fe09))
+
+## [1.42.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.41.0...v1.42.0) (2025-07-03)
+
+
+### Features
+
+* add badge for archived and binned dialogs in listview and dialog details ([#2313](https://github.com/Altinn/dialogporten-frontend/issues/2313)) ([aa22156](https://github.com/Altinn/dialogporten-frontend/commit/aa2215606512c308d8930d56bef01cc3a9aaf83c))
+* add error page and error boundary logic ([#2303](https://github.com/Altinn/dialogporten-frontend/issues/2303)) ([3fa233d](https://github.com/Altinn/dialogporten-frontend/commit/3fa233d5ea8e347d0ce88af13546a064da30d0dc))
+* structural updates to transmissions and activities ([#2298](https://github.com/Altinn/dialogporten-frontend/issues/2298)) ([8163d8a](https://github.com/Altinn/dialogporten-frontend/commit/8163d8ad5b9ed463091251c9785e14030cbb9e95))
+
+
+### Bug Fixes
+
+* disable errorBoundary in dev ([#2312](https://github.com/Altinn/dialogporten-frontend/issues/2312)) ([92117d8](https://github.com/Altinn/dialogporten-frontend/commit/92117d830cdb3e4aa20ae7e69f0ca3c27272c6c5))
+* Include senders from search params in filters ([#2301](https://github.com/Altinn/dialogporten-frontend/issues/2301)) ([32c38dd](https://github.com/Altinn/dialogporten-frontend/commit/32c38dd027ac44c881bbc8b5f4fb07e45f177d99))
+
+## [1.41.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.40.1...v1.41.0) (2025-06-26)
+
+
+### Features
+
+* add grant_access profil page ([#2291](https://github.com/Altinn/dialogporten-frontend/issues/2291)) ([87dd69f](https://github.com/Altinn/dialogporten-frontend/commit/87dd69ff5e9326a2ff042d6fd5a8681fdfed2fa3))
+
+
+### Bug Fixes
+
+* add mock for show more logic ([#2278](https://github.com/Altinn/dialogporten-frontend/issues/2278)) ([a927072](https://github.com/Altinn/dialogporten-frontend/commit/a92707201b34fc420a8542aa49aa21bca1bd2d36))
+
+## [1.40.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.40.0...v1.40.1) (2025-06-26)
+
+
+### Bug Fixes
+
+* exclude parent parties when user only has access to sub partieds from party list ([#2293](https://github.com/Altinn/dialogporten-frontend/issues/2293)) ([16ad4c1](https://github.com/Altinn/dialogporten-frontend/commit/16ad4c169e9e8ebdad68bf9ee3e32cab07f5fdcf))
+
+## [1.40.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.39.3...v1.40.0) (2025-06-26)
+
+
+### Features
+
+* add profile grant-access page ([#2265](https://github.com/Altinn/dialogporten-frontend/issues/2265)) ([eb7f80e](https://github.com/Altinn/dialogporten-frontend/commit/eb7f80e7861c1a04744ddbf1fe23914349240eeb))
+* Implemented AC components, grouped favorites, design implementation ([#2228](https://github.com/Altinn/dialogporten-frontend/issues/2228)) ([4c3c95a](https://github.com/Altinn/dialogporten-frontend/commit/4c3c95a20850e764cf8030a9108a3aafc643b3bb))
+
+
+### Bug Fixes
+
+* **deps:** change (downgrade) missing cdn links that disappeared ([#2287](https://github.com/Altinn/dialogporten-frontend/issues/2287)) ([f2710e2](https://github.com/Altinn/dialogporten-frontend/commit/f2710e27a65e805bb322a8a28319157a46bfe42b))
+* remove Altinn As from footer ([#2283](https://github.com/Altinn/dialogporten-frontend/issues/2283)) ([01e7eb9](https://github.com/Altinn/dialogporten-frontend/commit/01e7eb9ac95dd7b4cd5f766206fd1693f4ef4566))
+
+## [1.39.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.39.2...v1.39.3) (2025-06-23)
+
+
+### Bug Fixes
+
+* breaking changes from new-&gt;not_applicable and sent-&gt;awaiting ([#2261](https://github.com/Altinn/dialogporten-frontend/issues/2261)) ([a84d1e2](https://github.com/Altinn/dialogporten-frontend/commit/a84d1e271a8a30b95ff63ec853e65439ffcdefd4))
+* update to be compatible with dialogporten-schema v 1.70.0-29be76e - summary is now nullable and interface for retrieving system labels and mutating them have changed ([f23a07c](https://github.com/Altinn/dialogporten-frontend/commit/f23a07c04056fae5f0460b02aaaaddb6e66bd506))
+* update to latest version of altinn-components ([#2246](https://github.com/Altinn/dialogporten-frontend/issues/2246)) ([ec4d258](https://github.com/Altinn/dialogporten-frontend/commit/ec4d258dd524473beaa9b58bc2460c431330a3f7))
+* use the new beta banner from altinn-components ([#2252](https://github.com/Altinn/dialogporten-frontend/issues/2252)) ([8b4265f](https://github.com/Altinn/dialogporten-frontend/commit/8b4265fe5bf7befaf7655a4d8194a92bcda3cdc9))
+
 ## [1.39.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.39.1...v1.39.2) (2025-06-12)
 
 

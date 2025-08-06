@@ -46,6 +46,7 @@ query getAllDialogsForCount(
   $createdBefore: DateTime
   $updatedAfter: DateTime
   $updatedBefore: DateTime
+  $limit: Int
 ) {
   searchDialogs(
     input: {
@@ -59,6 +60,7 @@ query getAllDialogsForCount(
       createdBefore: $createdBefore
       updatedAfter: $updatedAfter
       updatedBefore: $updatedBefore
+      limit: $limit
       excludeApiOnly: true
     }
   ) {

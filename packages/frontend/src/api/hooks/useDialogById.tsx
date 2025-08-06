@@ -1,5 +1,4 @@
 import type { AttachmentLinkProps, AvatarProps, SeenByLogProps } from '@altinn/altinn-components';
-import type { DialogHistorySegmentProps } from '@altinn/altinn-components/dist/types/lib/components';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   type Actor,
@@ -22,10 +21,13 @@ import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
 import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
 import { toTitleCase } from '../../profile';
 import { graphQLSDK } from '../queries.ts';
-import { getActivityHistory } from '../utils/activities.tsx';
+import { type ActivityLogEntry, getActivityHistory } from '../utils/activities.tsx';
 import { getSeenByLabel } from '../utils/dialog.ts';
 import { type OrganizationOutput, getOrganization } from '../utils/organizations.ts';
-import { getDialogHistoryForTransmissions } from '../utils/transmissions.ts';
+import { type TimelineSegmentWithTransmissions, getTransmissions } from '../utils/transmissions.ts';
+import { getViewTypes } from '../utils/viewType.ts';
+import type { InboxViewType } from './useDialogs.tsx';
+import { type SelectedPartyType, useParties } from './useParties.ts';
 
 export enum EmbeddableMediaType {
   markdown = 'application/vnd.dialogporten.frontchannelembed-url;type=text/markdown',
@@ -61,14 +63,15 @@ export interface DialogByIdDetails {
   /* main content reference for dialog, used to dynamically embed content in the frontend from an external URL. */
   mainContentReference?: EmbeddedContent;
   /* all activities for dialog, including transmissions */
-  activityHistory: DialogHistorySegmentProps[];
+  activityHistory: ActivityLogEntry[];
   /* last updated timestamp */
   updatedAt: string;
   /* created timestamp */
   createdAt: string;
-  label: SystemLabel;
-  /* all transmissions for dialog, grouped by related transmissions */
-  transmissions: DialogHistorySegmentProps[];
+  /* list of system labels for the dialog */
+  label: SystemLabel[];
+  /* all transmissions for dialog, grouped by relationship */
+  transmissions: TimelineSegmentWithTransmissions[];
   /* a map of all content references for all content reference for transmission, used to dynamically embed content in the frontend from an external URL. */
   contentReferenceForTransmissions: Record<string, EmbeddedContent>;
   /* dialog status */
@@ -77,6 +80,8 @@ export interface DialogByIdDetails {
   seenByLog: SeenByLogProps;
   /* due date for dialog: This is the last date when the dialog is expected to be completed. */
   dueAt?: string;
+  /* view type of dialog, used for grouping in inbox */
+  viewType: InboxViewType;
 }
 
 interface UseDialogByIdOutput {
@@ -125,7 +130,7 @@ const getMainContentReference = (
 export const getActorProps = (actor: Actor, serviceOwner?: OrganizationOutput) => {
   const isCompany =
     actor.actorType === ActorType.ServiceOwner || (actor.actorId ?? '').includes('urn:altinn:organization:');
-  const type = isCompany ? 'company' : ('person' as AvatarProps['type']);
+  const type: AvatarProps['type'] = isCompany ? 'company' : 'person';
   const hasSenderName = (actor.actorName?.length ?? 0) > 0;
   const senderName = hasSenderName ? toTitleCase(actor.actorName) : (serviceOwner?.name ?? '');
   const senderLogo = isCompany ? serviceOwner?.logo : undefined;
@@ -142,11 +147,11 @@ export function mapDialogToToInboxItem(
   parties: PartyFieldsFragment[],
   organizations: OrganizationFieldsFragment[],
   format: FormatFunction,
+  selectedProfile: SelectedPartyType,
 ): DialogByIdDetails | undefined {
   if (!item) {
     return undefined;
   }
-
   const clockPrefix = t('word.clock_prefix');
   const formatString = `do MMMM yyyy ${clockPrefix ? `'${clockPrefix}' ` : ''}HH.mm`;
   const titleObj = item?.content?.title?.value;
@@ -182,7 +187,9 @@ export function mapDialogToToInboxItem(
     guiActions: item.guiActions.map((guiAction) => ({
       id: guiAction.id,
       url: guiAction.url,
-      hidden: !guiAction.isAuthorized || (guiAction.isDeleteDialogAction && item.systemLabel !== SystemLabel.Bin),
+      hidden:
+        !guiAction.isAuthorized ||
+        (guiAction.isDeleteDialogAction && !item.endUserContext?.systemLabels.includes(SystemLabel.Bin)),
       priority: guiAction.priority,
       httpMethod: guiAction.httpMethod,
       title: getPreferredPropertyByLocale(guiAction.title)?.value ?? '',
@@ -217,10 +224,17 @@ export function mapDialogToToInboxItem(
       })),
     },
     activityHistory: getActivityHistory(item.activities, item.transmissions, format, serviceOwner),
-    transmissions: getDialogHistoryForTransmissions(item.transmissions, format, serviceOwner),
+    transmissions: getTransmissions({
+      transmissions: item.transmissions,
+      format,
+      activities: item.activities,
+      serviceOwner,
+      selectedProfile,
+    }),
     createdAt: item.createdAt,
     updatedAt: item.updatedAt,
-    label: item.systemLabel,
+    label: item.endUserContext?.systemLabels,
+    viewType: getViewTypes({ status: item.status, systemLabel: item.endUserContext?.systemLabels }, true)?.[0],
     dueAt: item.dueAt,
   };
 }
@@ -229,6 +243,7 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
   const queryClient = useQueryClient();
   const format = useFormat();
   const { organizations, isLoading: isOrganizationsLoading } = useOrganizations();
+  const { selectedProfile } = useParties();
   const partyURIs = parties.map((party) => party.party);
   const { data, isSuccess, isLoading, isError } = useQuery<GetDialogByIdQuery>({
     queryKey: [QUERY_KEYS.DIALOG_BY_ID, id, organizations],
@@ -253,7 +268,7 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
   return {
     isLoading,
     isSuccess,
-    dialog: mapDialogToToInboxItem(data?.dialogById.dialog, parties, organizations, format),
+    dialog: mapDialogToToInboxItem(data?.dialogById.dialog, parties, organizations, format, selectedProfile),
     isError,
     isAuthLevelTooLow:
       data?.dialogById?.errors?.some((error) => error.__typename === 'DialogByIdForbiddenAuthLevelTooLow') ?? false,

@@ -178,12 +178,12 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
       await createSavedSearch('', data);
       openSnackbar({
         message: t('savedSearches.saved_success'),
-        color: 'success',
+        color: 'accent',
       });
     } catch (error) {
       openSnackbar({
         message: t('savedSearches.saved_error'),
-        color: 'alert',
+        color: 'danger',
       });
       console.error('Error creating saved search: ', error);
     } finally {
@@ -198,14 +198,14 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
       await deleteSavedSearch(savedSearchId);
       openSnackbar({
         message: t('savedSearches.deleted_success'),
-        color: 'success',
+        color: 'accent',
       });
       await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.SAVED_SEARCHES] });
     } catch (error) {
       console.error('Failed to delete saved search:', error);
       openSnackbar({
         message: t('savedSearches.delete_failed'),
-        color: 'alert',
+        color: 'danger',
       });
     } finally {
       setIsCTALoading(false);
@@ -217,14 +217,14 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
       await updateSavedSearch(id, savedSearchInputValue ?? '');
       openSnackbar({
         message: t('savedSearches.update_success'),
-        color: 'success',
+        color: 'accent',
       });
       void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.SAVED_SEARCHES] });
       setExpandedId('');
     } catch {
       openSnackbar({
         message: t('savedSearches.update_failed'),
-        color: 'alert',
+        color: 'danger',
       });
     }
   };

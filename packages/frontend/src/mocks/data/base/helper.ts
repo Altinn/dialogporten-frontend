@@ -8,8 +8,8 @@ import {
   SearchDialogFieldsFragment,
   TransmissionType,
 } from 'bff-types-generated';
-import {naiveSearchFilter} from "../../filters.ts";
-import {InMemoryStore} from "../../handlers.ts";
+import { naiveSearchFilter } from "../../filters.ts";
+import { InMemoryStore } from "../../handlers.ts";
 
 export const filterDialogs = ({
   inMemoryStore,
@@ -20,7 +20,7 @@ export const filterDialogs = ({
   status,
   updatedAfter,
   updatedBefore,
- }: {
+}: {
   inMemoryStore: InMemoryStore;
   partyURIs: string[];
   search?: string;
@@ -49,16 +49,22 @@ export const filterDialogs = ({
   const labels = normalizeArray(label);
   const statuses = normalizeArray(status);
 
-  return inMemoryStore.dialogs.filter((dialog) =>
-    partyURIs.includes(dialog.party) &&
-    (!updatedBefore || dialog.updatedAt < updatedBefore) &&
-    (!updatedAfter || dialog.updatedAt > updatedAfter) &&
-    (!org || !org.length || org.includes(dialog.org)) &&
-    (!labels.length || labels.some((l) => dialog.systemLabel?.includes(l))) &&
-    (!statuses.length || statuses.includes(dialog.status)) &&
-    naiveSearchFilter(dialog, search)
-  );
+  return inMemoryStore.dialogs.filter((dialog) => {
+    const matchesParty = partyURIs.includes(dialog.party);
 
+    const matchesTimeRange =
+      (!updatedBefore || dialog.contentUpdatedAt < updatedBefore) &&
+      (!updatedAfter || dialog.contentUpdatedAt > updatedAfter);
+
+    const matchesOrg = !org?.length || org.includes(dialog.org);
+    const matchesLabels = !labels.length ||
+      labels.some(l => dialog.endUserContext?.systemLabels?.some(label => l.includes(label)));
+    const matchesStatus = !statuses.length || statuses.includes(dialog.status);
+    const matchesSearch = naiveSearchFilter(dialog, search);
+
+    return matchesParty && matchesTimeRange && matchesOrg &&
+      matchesLabels && matchesStatus && matchesSearch;
+  });
 };
 
 export const getMockedMainContent = (dialogId: string) => {
@@ -111,7 +117,7 @@ export const getMockedUnauthorizedFCEContent = () => {
   };
 }
 
-export const getMockedActivities = (latestActivity: SearchDialogFieldsFragment['latestActivity'], id: string) => {
+export const getMockedActivities = (latestActivity: SearchDialogFieldsFragment['latestActivity'], id: string): DialogByIdFieldsFragment['activities'] => {
   if (id === '019241f7-8218-7756-be82-123qwe456rtA') {
     return [
       {
@@ -176,16 +182,15 @@ export const getMockedActivities = (latestActivity: SearchDialogFieldsFragment['
       },
     ]
   }
-
   return [
     {
       id: Math.random() + '-activity',
       performedBy: {
-        actorType: latestActivity!.performedBy.actorType as ActorType,
-        actorId: latestActivity!.performedBy.actorId,
-        actorName: latestActivity!.performedBy.actorName,
+        actorType: latestActivity?.performedBy.actorType as ActorType,
+        actorId: latestActivity?.performedBy.actorId,
+        actorName: latestActivity?.performedBy.actorName,
       },
-      description: latestActivity!.description!,
+      description: latestActivity?.description || [],
       type: ActivityType.Information,
       createdAt: new Date().toISOString(),
     },
@@ -209,14 +214,14 @@ export const getMockedTransmissions = (dialogId: string) => {
         },
         "content": {
           "title": {
-            "value": [ {
+            "value": [{
               value: 'Tittel',
               languageCode: 'nb',
             }],
             "mediaType": "text/plain"
           },
           "summary": {
-            "value": [ {
+            "value": [{
               value: 'Oppsummering',
               languageCode: 'nb',
             }],
@@ -239,14 +244,14 @@ export const getMockedTransmissions = (dialogId: string) => {
         },
         "content": {
           "title": {
-            "value": [ {
+            "value": [{
               value: 'Tittel 2',
               languageCode: 'nb',
             }],
             "mediaType": "text/pla  in"
           },
           "summary": {
-            "value": [ {
+            "value": [{
               value: 'Oppsummering 2',
               languageCode: 'nb',
             }],
@@ -268,7 +273,7 @@ export const getMockedTransmissions = (dialogId: string) => {
         },
         "content": {
           "title": {
-            "value": [ {
+            "value": [{
               value: 'Tittel 3',
               languageCode: 'nb',
             }],
@@ -276,7 +281,7 @@ export const getMockedTransmissions = (dialogId: string) => {
           },
           "contentReference": getMockedUnauthorizedFCEContent(),
           "summary": {
-            "value": [ {
+            "value": [{
               value: 'Oppsummering 3',
               languageCode: 'nb',
             }],
@@ -298,7 +303,7 @@ export const getMockedTransmissions = (dialogId: string) => {
         },
         "content": {
           "title": {
-            "value": [ {
+            "value": [{
               value: 'Tittel 4',
               languageCode: 'nb',
             }],
@@ -306,7 +311,7 @@ export const getMockedTransmissions = (dialogId: string) => {
           },
           "contentReference": getMockedFCEContent('transmission-4'),
           "summary": {
-            "value": [ {
+            "value": [{
               value: 'Oppsummering 4',
               languageCode: 'nb',
             }],
@@ -327,7 +332,7 @@ export const convertToDialogByIdTemplate = (input: SearchDialogFieldsFragment): 
     party: input.party,
     org: input.org,
     progress: input.progress,
-    systemLabel: input.systemLabel,
+    endUserContext: input.endUserContext,
     attachments: [
       {
         id: input.id,

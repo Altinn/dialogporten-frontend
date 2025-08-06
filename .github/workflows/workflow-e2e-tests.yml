@@ -1,0 +1,283 @@
+name: E2E Tests
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      dialog_id:
+        required: false
+        type: string
+        default: ""
+      party_id:
+        required: false
+        type: string
+        default: ""
+    secrets:
+      SLACK_BOT_TOKEN:
+        required: true
+      SLACK_CHANNEL_ID:
+        required: true
+      GITHUB_VARIABLE_STORAGE_PAT:
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  e2e-tests:
+    name: Run E2E Tests
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    outputs:
+      test_status: ${{ steps.run-tests.outcome }}
+      failure_duration: ${{ steps.failure-duration.outputs.duration }}
+      should_notify: ${{ steps.should-notify.outputs.should_notify }}
+      had_previous_failure: ${{ steps.check-previous-failure.outputs.had_previous_failure }}
+      failure_timestamp: ${{ steps.generate-timestamp.outputs.timestamp }}
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Generate timestamp
+        id: generate-timestamp
+        run: echo "timestamp=$(date -u +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_OUTPUT
+      
+      - name: Check for previous failure
+        id: check-previous-failure
+        run: |
+          if [ -n "${{ vars.LAST_E2E_FAILURE }}" ]; then
+            echo "had_previous_failure=true" >> $GITHUB_OUTPUT
+          else
+            echo "had_previous_failure=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install dependencies
+        uses: ./.github/actions/install
+
+      - name: Install Playwright dependencies
+        run: pnpm --filter e2e install:browsers
+
+      - name: Run E2E Tests
+        id: run-tests
+        run: pnpm --filter e2e e2e:ci
+        env:
+          DIALOG_ID: ${{ inputs.dialog_id }}
+          PARTY_ID: ${{ inputs.party_id }}
+          E2E_BASE_URL: https://af.tt.altinn.no
+          
+      - name: Get last failure timestamp
+        id: get-last-failure
+        if: failure()
+        run: |
+          if [ -n "${{ vars.LAST_E2E_FAILURE }}" ]; then
+            echo "last_failure=${{ vars.LAST_E2E_FAILURE }}" >> $GITHUB_OUTPUT
+          else
+            echo "last_failure=" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Calculate failure duration
+        id: failure-duration
+        if: failure()
+        run: |
+          if [ -n "${{ steps.get-last-failure.outputs.last_failure }}" ]; then
+            # Convert timestamps to seconds since epoch
+            last_failure_seconds=$(date -d "${{ steps.get-last-failure.outputs.last_failure }}" +%s)
+            current_seconds=$(date +%s)
+            duration_seconds=$((current_seconds - last_failure_seconds))
+            
+            # Convert to hours and minutes
+            hours=$((duration_seconds / 3600))
+            minutes=$(( (duration_seconds % 3600) / 60 ))
+            
+            # Format duration string
+            if [ $hours -gt 0 ]; then
+              duration="${hours}h ${minutes}m"
+            else
+              duration="${minutes}m"
+            fi
+            
+            echo "duration=$duration" >> $GITHUB_OUTPUT
+          else
+            echo "duration=0m" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Check if should notify
+        id: should-notify
+        if: failure()
+        run: |
+          if [ -n "${{ steps.get-last-failure.outputs.last_failure }}" ]; then
+            # Convert ISO timestamp to seconds since epoch for comparison
+            LAST_FAILURE_SECONDS=$(date -d "${{ steps.get-last-failure.outputs.last_failure }}" +%s)
+            CURRENT_SECONDS=$(date +%s)
+            TIME_DIFF=$((CURRENT_SECONDS - LAST_FAILURE_SECONDS))
+            HOURS_DIFF=$((TIME_DIFF / 3600))
+            
+            if [ $HOURS_DIFF -ge 2 ]; then
+              echo "More than 2 hours since last failure, should notify"
+              echo "should_notify=true" >> $GITHUB_OUTPUT
+            else
+              echo "Less than 2 hours since last failure, skipping notification"
+              echo "should_notify=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "No previous failure found, should notify"
+            echo "should_notify=true" >> $GITHUB_OUTPUT
+          fi
+
+  store-failure-timestamp:
+    needs: e2e-tests
+    if: always() && !cancelled() && needs.e2e-tests.outputs.test_status == 'failure' && needs.e2e-tests.outputs.should_notify == 'true'
+    uses: ./.github/workflows/workflow-store-github-env-variable.yml
+    with:
+      variable_name: LAST_E2E_FAILURE
+      variable_value: ${{ needs.e2e-tests.outputs.failure_timestamp }}
+      environment: ${{ inputs.environment }}
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_VARIABLE_STORAGE_PAT }}
+
+  remove-failure-timestamp:
+    needs: e2e-tests
+    if: always() && !cancelled() && needs.e2e-tests.outputs.test_status == 'success' && needs.e2e-tests.outputs.had_previous_failure == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Check if LAST_E2E_FAILURE variable exists
+        id: check_variable
+        run: |
+          if gh variable list --env ${{ inputs.environment }} | grep -q "LAST_E2E_FAILURE"; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_VARIABLE_STORAGE_PAT }}
+          
+      - name: Delete LAST_E2E_FAILURE variable if it exists
+        if: steps.check_variable.outputs.exists == 'true'
+        run: |
+          gh variable delete LAST_E2E_FAILURE --env ${{ inputs.environment }} --repo ${{ github.repository }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_VARIABLE_STORAGE_PAT }}
+
+  notify-failure:
+    needs: [e2e-tests, store-failure-timestamp]
+    if: always() && !cancelled() && needs.e2e-tests.outputs.test_status == 'failure' && needs.e2e-tests.outputs.should_notify == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Slack notification
+        uses: slackapi/slack-github-action@b0fa283ad8fea605de13dc3f449259339835fc52 # v2.1.0
+        with:
+          method: chat.postMessage
+          errors: true
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          payload: |
+            {
+              "channel": "${{ secrets.SLACK_CHANNEL_ID }}",
+              "text": "E2E Tests Failed in ${{ inputs.environment }} environment",
+              "attachments": [
+                {
+                  "color": "#FF0000",
+                  "blocks": [
+                    {
+                      "type": "header",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "E2E Tests Failed",
+                        "emoji": true
+                      }
+                    },
+                    {
+                      "type": "section",
+                      "fields": [
+                        { "type": "mrkdwn", "text": "*Commit:* <${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha }} >" },
+                        { "type": "mrkdwn", "text": "*Dialog ID:* ${{ inputs.dialog_id || 'N/A' }}" },
+                        { "type": "mrkdwn", "text": "*Party ID:* ${{ inputs.party_id || 'N/A' }}" }
+                      ]
+                    },
+                    {
+                      "type": "section",
+                      "fields": [
+                        { "type": "mrkdwn", "text": "*Failure Duration:* ${{ needs.e2e-tests.outputs.failure_duration }}" }
+                      ]
+                    },
+                    {
+                      "type": "section",
+                      "text": { "type": "mrkdwn", "text": "E2E tests have failed. Please check the workflow for more details." }
+                    },
+                    {
+                      "type": "actions",
+                      "elements": [
+                        {
+                          "type": "button",
+                          "text": { "type": "plain_text", "text": "View Run" },
+                          "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+
+  notify-success:
+    needs: [e2e-tests, remove-failure-timestamp]
+    if: always() && !cancelled() && needs.e2e-tests.outputs.test_status == 'success' && needs.e2e-tests.outputs.had_previous_failure == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Slack notification
+        uses: slackapi/slack-github-action@b0fa283ad8fea605de13dc3f449259339835fc52 # v2.1.0
+        with:
+          method: chat.postMessage
+          errors: true
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          payload: |
+            {
+              "channel": "${{ secrets.SLACK_CHANNEL_ID }}",
+              "text": "E2E Tests Fixed in ${{ inputs.environment }} environment",
+              "attachments": [
+                {
+                  "color": "#00FF00",
+                  "blocks": [
+                    {
+                      "type": "header",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "E2E Tests Succeeded",
+                        "emoji": true
+                      }
+                    },
+                    {
+                      "type": "section",
+                      "fields": [
+                        { "type": "mrkdwn", "text": "*Commit:* <${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha }} >" },
+                        { "type": "mrkdwn", "text": "*Dialog ID:* ${{ inputs.dialog_id || 'N/A' }}" },
+                        { "type": "mrkdwn", "text": "*Party ID:* ${{ inputs.party_id || 'N/A' }}" }
+                      ]
+                    },
+                    {
+                      "type": "section",
+                      "fields": [
+                        { "type": "mrkdwn", "text": "*Failure Duration:* ${{ needs.e2e-tests.outputs.failure_duration }}" }
+                      ]
+                    },
+                    {
+                      "type": "section",
+                      "text": { "type": "mrkdwn", "text": "E2E tests are now passing. The issue has been resolved." }
+                    },
+                    {
+                      "type": "actions",
+                      "elements": [
+                        {
+                          "type": "button",
+                          "text": { "type": "plain_text", "text": "View Run" },
+                          "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }

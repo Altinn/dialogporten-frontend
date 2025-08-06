@@ -1,4 +1,5 @@
-import type { DialogStatus, SystemLabel } from 'bff-types-generated';
+import type { DialogStatus } from 'bff-types-generated';
+import { SystemLabel } from 'bff-types-generated';
 import { describe, expect, it } from 'vitest';
 import type { InboxViewType } from '../../../api/hooks/useDialogs.tsx';
 import { organizations } from '../../../mocks/data/base/organizations.ts';
@@ -25,12 +26,31 @@ describe('generateSendersAutocompleteBySearchString', () => {
       updatedAt: '2023-07-15T08:45:00.000Z',
       status: 'COMPLETED' as DialogStatus,
       isSeenByEndUser: false,
-      label: 'DEFAULT' as SystemLabel,
+      label: [SystemLabel.Default],
       org: 'skd',
+      hasUnopenedContent: false,
+      fromServiceOwnerTransmissionsCount: 0,
+      fromPartyTransmissionsCount: 0,
+      contentUpdatedAt: '2024-11-27T15:36:52.131Z',
       guiAttachmentCount: 1,
       seenByOthersCount: 0,
       seenByLabel: 'Sett av deg',
       viewType: 'INBOX' as InboxViewType,
+      seenSinceLastContentUpdate: [],
+      seenByLog: {
+        collapsible: true,
+        title: 'Sett av deg',
+        items: [
+          {
+            id: '1',
+            type: 'person',
+            name: 'Test Testesen',
+            isEndUser: true,
+            seenAt: '2023-07-15 08:45',
+            seenAtLabel: '15. juli kl 08.45',
+          },
+        ],
+      },
     },
     {
       id: '019241f7-812c-71c8-8e68-94a0b771fa10',
@@ -49,14 +69,40 @@ describe('generateSendersAutocompleteBySearchString', () => {
       },
       createdAt: '2023-05-17T09:30:00.000Z',
       org: 'ssb',
+      hasUnopenedContent: false,
+      fromServiceOwnerTransmissionsCount: 0,
+      fromPartyTransmissionsCount: 0,
+      contentUpdatedAt: '2024-11-27T15:36:52.131Z',
       guiAttachmentCount: 1,
       seenByOthersCount: 1,
       seenByLabel: 'Sett av deg',
       viewType: 'INBOX' as InboxViewType,
       status: 'REQUIRES_ATTENTION' as DialogStatus,
       isSeenByEndUser: true,
-      label: 'DEFAULT' as SystemLabel,
+      label: [SystemLabel.Default],
       updatedAt: '2023-05-17T09:30:00.000Z',
+      seenSinceLastContentUpdate: [],
+      seenByLog: {
+        collapsible: true,
+        title: 'Sett av deg',
+        items: [
+          {
+            id: '1',
+            type: 'person',
+            name: 'Test Testesen',
+            isEndUser: true,
+            seenAt: '2023-05-17 09:30',
+            seenAtLabel: '17. mai kl 09.30',
+          },
+          {
+            id: '2',
+            type: 'person',
+            name: 'Test Bruker',
+            seenAt: '2023-05-18 10:00',
+            seenAtLabel: '18. mai kl 10.00',
+          },
+        ],
+      },
     },
   ];
 

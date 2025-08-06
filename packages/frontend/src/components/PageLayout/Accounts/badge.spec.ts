@@ -4,7 +4,7 @@ import type { InboxItemInput } from '../../../pages/Inbox/InboxItemInput.ts';
 import { getAccountBadge } from './useAccounts';
 
 describe('getCountBadge', () => {
-  const dialogs: InboxItemInput[] = [
+  const dialogs: Partial<InboxItemInput>[] = [
     {
       party: 'party1',
       org: 'org1',
@@ -25,7 +25,7 @@ describe('getCountBadge', () => {
       updatedAt: '',
       status: DialogStatus.Completed,
       isSeenByEndUser: false,
-      label: SystemLabel.Default,
+      label: [SystemLabel.Default],
       guiAttachmentCount: 0,
       seenByOthersCount: 0,
       seenByLabel: '',
@@ -52,7 +52,7 @@ describe('getCountBadge', () => {
       updatedAt: '',
       status: DialogStatus.Completed,
       isSeenByEndUser: false,
-      label: SystemLabel.Default,
+      label: [SystemLabel.Default],
       guiAttachmentCount: 0,
       seenByOthersCount: 0,
       seenByLabel: '',
@@ -78,7 +78,7 @@ describe('getCountBadge', () => {
       updatedAt: '',
       status: DialogStatus.Completed,
       isSeenByEndUser: false,
-      label: SystemLabel.Default,
+      label: [SystemLabel.Default],
       guiAttachmentCount: 0,
       seenByOthersCount: 0,
       seenByLabel: '',
@@ -95,6 +95,7 @@ describe('getCountBadge', () => {
     name: 'party1',
     partyType: 'Person',
     party: 'party1',
+    partyUuid: 'party:uuid:here',
     subParties: [
       {
         name: 'party1',
@@ -103,22 +104,23 @@ describe('getCountBadge', () => {
         isAccessManager: false,
         isMainAdministrator: false,
         isCurrentEndUser: false,
+        partyUuid: 'urn:altinn:person:identifier-no:1337',
         isDeleted: false,
       },
     ],
   };
 
   it('should return undefined if no party is provided', () => {
-    expect(getAccountBadge(dialogs)).toBeUndefined();
+    expect(getAccountBadge(dialogs as InboxItemInput[], undefined, false, 'person')).toBeUndefined();
   });
 
   it('should return undefined if no dialogs are provided', () => {
-    expect(getAccountBadge([], party)).toBeUndefined();
+    expect(getAccountBadge([], party, false, 'person')).toBeUndefined();
   });
 
   it('should return a badge with the correct count, including sub party', () => {
-    const badge = getAccountBadge(dialogs, party);
-    expect(badge).toEqual({ label: '2', size: 'sm' });
+    const badge = getAccountBadge(dialogs as InboxItemInput[], party, false, 'person');
+    expect(badge).toEqual({ label: '2', size: 'sm', color: 'person' });
   });
 
   it('should return undefined if no matching dialogs are found', () => {
@@ -132,8 +134,9 @@ describe('getCountBadge', () => {
       partyType: '',
       party: 'party3',
       subParties: [],
+      partyUuid: 'party:uuid:here',
     };
-    expect(getAccountBadge(dialogs, nonMatchingParty)).toBeUndefined();
+    expect(getAccountBadge(dialogs as InboxItemInput[], nonMatchingParty, false, 'person')).toBeUndefined();
   });
 
   it('should return a badge with the correct count for multiple parties', () => {
@@ -148,6 +151,7 @@ describe('getCountBadge', () => {
         isCurrentEndUser: false,
         hasOnlyAccessToSubParties: false,
         isDeleted: false,
+        partyUuid: 'party:uuid:here',
       },
       {
         party: 'party2',
@@ -159,9 +163,10 @@ describe('getCountBadge', () => {
         isCurrentEndUser: false,
         hasOnlyAccessToSubParties: false,
         isDeleted: false,
+        partyUuid: 'party:uuid:here',
       },
     ];
-    const badge = getAccountBadge(dialogs, multipleParties);
-    expect(badge).toEqual({ label: '2', size: 'sm' });
+    const badge = getAccountBadge(dialogs as InboxItemInput[], multipleParties, false, 'company');
+    expect(badge).toEqual({ label: '2', size: 'sm', color: 'company' });
   });
 });

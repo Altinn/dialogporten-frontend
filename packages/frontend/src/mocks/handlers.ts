@@ -2,12 +2,11 @@ import { graphql, http, HttpResponse } from 'msw';
 import { naiveSearchFilter } from './filters.ts';
 import {
   SavedSearchesFieldsFragment,
-  UpdateSystemLabelMutationVariables,
   DialogByIdFieldsFragment,
   Profile,
   SearchAutocompleteDialogFieldsFragment, SearchDialogFieldsFragment, PartyFieldsFragment, OrganizationFieldsFragment,
 } from 'bff-types-generated';
-import {convertToDialogByIdTemplate, filterDialogs} from './data/base/helper.ts';
+import { convertToDialogByIdTemplate, filterDialogs } from './data/base/helper.ts';
 import { getMockedData } from './data.ts';
 
 const data = await getMockedData(window.location.href);
@@ -26,17 +25,18 @@ let inMemoryStore: InMemoryStore = {
   parties: data.parties,
   organizations: data.organizations,
 };
- 
+
 const isAuthenticatedMock = http.get('/api/isAuthenticated', () => {
   return HttpResponse.json({ authenticated: true });
 });
 
 export const streamMock = http.get('/api/graphql/stream', async () => {
   const stream = new ReadableStream({
-    start( {
+    start({
       /* Create a readable stream that sends events if needed for testing in the future and remember to close stream controller */
     }) {
-  }});
+    }
+  });
 
   return new Response(stream, {
     headers: {
@@ -67,7 +67,9 @@ const getAllDialogsforCountMock = graphql.query('getAllDialogsForCount', ({ vari
           party: item.party,
           updatedAt: item.updatedAt,
           status: item.status,
-          systemLabel: item.systemLabel,
+          endUserContext: {
+            systemLabels: item.endUserContext?.systemLabels ?? [],
+          },
           seenSinceLastUpdate: item.seenSinceLastUpdate,
         })) ?? null,
       },
@@ -117,13 +119,13 @@ const getDialogByIdMock = graphql.query('getDialogById', (options) => {
         isCurrentEndUser: true,
       },
     ];
-    inMemoryStore.dialogs = dialog 
+    inMemoryStore.dialogs = dialog
       ? inMemoryStore.dialogs?.map((d) => (d.id === id ? dialog : d))
       : inMemoryStore.dialogs;
   }
 
-  const dialogDetails: DialogByIdFieldsFragment | null = dialog 
-    ? convertToDialogByIdTemplate(dialog) as DialogByIdFieldsFragment 
+  const dialogDetails: DialogByIdFieldsFragment | null = dialog
+    ? convertToDialogByIdTemplate(dialog) as DialogByIdFieldsFragment
     : null;
 
   return HttpResponse.json({
@@ -150,7 +152,7 @@ Dette er HTML som er generert fra markdown.
 `);
 });
 
-const getContentMarkdownMock = http.get('https://dialogporten-serviceprovider.net/fce-markdown-transmission', ({request}) => {
+const getContentMarkdownMock = http.get('https://dialogporten-serviceprovider.net/fce-markdown-transmission', ({ request }) => {
   const url = new URL(request.url)
   const productId = url.searchParams.get('id')
   return HttpResponse.text(`# Info i markdown for transmission (id=${productId})`);
@@ -220,23 +222,26 @@ const mutateSavedSearchMock = graphql.mutation('CreateSavedSearch', (req) => {
 });
 
 const mutateUpdateSystemLabelMock = graphql.mutation('updateSystemLabel', (req) => {
-  const { dialogId, label } = req.variables;
-
-  const updatedSystemLabel: UpdateSystemLabelMutationVariables = {
-    dialogId,
-    label,
-  };
-
+  // const { dialogId, labels } = req.variables;
+  const { dialogId, addLabels, removeLabels } = req.variables;
+  /* Note: When other system labels that NOT are mutually exclusive will be introduced by Dialogporten, this handler needs to return existing labels as well, but make sure only one system label is included */
   inMemoryStore.dialogs = inMemoryStore.dialogs?.map((dialog) => {
     if (dialog.id === dialogId) {
-      dialog.systemLabel = label;
+      dialog.endUserContext = {
+        systemLabels: [addLabels].flat().filter((label) => {
+          if (Array.isArray(removeLabels) && removeLabels.length > 0) {
+            return !removeLabels.includes(label);
+          }
+          return true;
+        }) 
+      }
     }
     return dialog;
   });
 
   return HttpResponse.json({
     data: {
-      setSystemLabel: { ...updatedSystemLabel, success: { success: true } },
+      setSystemLabel: { success: true }
     },
   });
 });
@@ -250,6 +255,7 @@ const searchAutocompleteDialogsMock = graphql.query('getSearchAutocompleteDialog
   const autoCompleteItems: SearchAutocompleteDialogFieldsFragment[] = filteredItems?.map(item => ({
     id: item.id,
     seenSinceLastUpdate: item.seenSinceLastUpdate,
+    seenSinceLastContentUpdate: item.seenSinceLastContentUpdate,
     content: {
       __typename: "SearchContent",
       title: {

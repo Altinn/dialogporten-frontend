@@ -3,6 +3,7 @@ import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
 import type { DialogStatus, GetAllDialogsForPartiesQuery, PartyFieldsFragment, SystemLabel } from 'bff-types-generated';
 import { useRef } from 'react';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
+import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
 import { normalizeFilterDefaults } from '../../pages/Inbox/filters.ts';
 import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
@@ -35,6 +36,7 @@ interface UseDialogsOutput {
 export const useDialogs = ({ parties, viewType, filterState, search }: UseDialogsProps): UseDialogsOutput => {
   const { organizations } = useOrganizations();
   const { selectedParties } = useParties();
+  const format = useFormat();
   const partiesToUse = parties ? parties : selectedParties;
   const partyIds = getPartyIds(partiesToUse);
   const previousTokensRef = useRef<string>('');
@@ -89,7 +91,7 @@ export const useDialogs = ({ parties, viewType, filterState, search }: UseDialog
     data?.pages?.[data?.pages.length - 1]?.searchDialogs?.hasNextPage === true ||
     data?.pages?.[data?.pages.length - 1]?.searchDialogs?.items === null ||
     partyIds.length >= 20;
-  const dialogs = mapDialogToToInboxItems(content, parties ?? [], organizations);
+  const dialogs = mapDialogToToInboxItems(content, parties ?? [], organizations, format);
 
   return {
     isLoading,

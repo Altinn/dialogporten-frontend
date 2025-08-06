@@ -1,7 +1,9 @@
 import type {
   Account,
-  AccountMenuItem,
+  AccountMenuItemProps,
   AccountSearchProps,
+  AvatarGroupProps,
+  AvatarType,
   BadgeProps,
   MenuItemGroups,
 } from '@altinn/altinn-components';
@@ -9,7 +11,7 @@ import type { PartyFieldsFragment } from 'bff-types-generated';
 import { type ChangeEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useParties } from '../../../api/hooks/useParties.ts';
+import { type SelectedPartyType, useParties } from '../../../api/hooks/useParties.ts';
 import { getPartyIds } from '../../../api/utils/dialog.ts';
 import type { PageRoutes } from '../../../pages/routes.ts';
 import { getAlertBadgeProps } from '../GlobalMenu';
@@ -28,15 +30,12 @@ interface UseAccountsProps {
 }
 
 interface UseAccountsOutput {
-  accounts: AccountMenuItem[];
+  accounts: AccountMenuItemProps[];
   accountGroups: MenuItemGroups;
   accountSearch: AccountSearchProps | undefined;
   onSelectAccount: (account: string, route: PageRoutes) => void;
   selectedAccount?: Account;
 }
-
-type AccountType = 'company' | 'person';
-
 const getAllPartyIds = (party: PartyFieldsFragment | PartyFieldsFragment[]): string[] => {
   const subPartyIds = Array.isArray(party) ? party.flatMap((p) => getSubPartyIds(p)) : getSubPartyIds(party);
   const partyIds = Array.isArray(party) ? party.map((p) => p.party) : [party.party];
@@ -61,13 +60,15 @@ export const getAccountAlertBadge = (
 
 export const getAccountBadge = (
   items: CountableItem[],
-  party?: PartyFieldsFragment | PartyFieldsFragment[],
-  dialogCountInconclusive?: boolean,
+  party: PartyFieldsFragment | PartyFieldsFragment[] | undefined,
+  dialogCountInconclusive: boolean,
+  selectedProfile?: SelectedPartyType,
 ): BadgeProps | undefined => {
   if (dialogCountInconclusive) {
     return {
       size: 'xs',
       label: '',
+      color: selectedProfile,
     };
   }
 
@@ -82,6 +83,7 @@ export const getAccountBadge = (
     return {
       label: count.toString(),
       size: 'sm',
+      color: selectedProfile,
     };
   }
 };
@@ -99,10 +101,12 @@ export const useAccounts = ({
 }: UseAccountsProps): UseAccountsOutput => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { selectedProfile } = useParties();
   const location = useLocation();
   const { setSelectedPartyIds } = useParties();
   const [searchString, setSearchString] = useState<string>('');
   const accountSearchThreshold = 2;
+
   const showSearch = parties.length > accountSearchThreshold;
 
   const endUser = parties.find((party) => party.partyType === 'Person' && party.isCurrentEndUser);
@@ -131,51 +135,58 @@ export const useAccounts = ({
     }),
   };
 
-  const endUserAccount = {
+  const endUserAccount: AccountMenuItemProps = {
     id: endUser?.party ?? '',
     name: endUser?.name ?? '',
-    type: 'person' as AccountType,
+    type: 'person' as AccountMenuItemProps['type'],
     groupId: 'primary',
-    badge: getAccountBadge(countableItems, endUser, dialogCountInconclusive),
-    alertBadge: getAccountAlertBadge(countableItems, endUser),
+    badge: getAccountBadge(countableItems, endUser, dialogCountInconclusive, selectedProfile),
+    iconBadge: getAccountAlertBadge(countableItems, endUser),
+    icon: { name: endUser?.name ?? '', type: 'person' as AvatarType },
   };
 
   const otherUsersAccounts = nonEndUsers.map((noEnderUserParty) => {
     return {
       id: noEnderUserParty.party,
       name: noEnderUserParty.name,
-      type: 'person' as AccountType,
+      type: 'person' as AccountMenuItemProps['type'],
       groupId: 'other_users',
-      badge: getAccountBadge(countableItems, noEnderUserParty, dialogCountInconclusive),
-      alertBadge: getAccountAlertBadge(countableItems, noEnderUserParty),
+      badge: getAccountBadge(countableItems, noEnderUserParty, dialogCountInconclusive, selectedProfile),
+      iconBadge: getAccountAlertBadge(countableItems, noEnderUserParty),
+      icon: { name: noEnderUserParty.name, type: 'person' as AvatarType },
     };
   });
 
-  const organizationAccounts: AccountMenuItem[] = organizations.map((party) => {
+  const organizationAccounts: AccountMenuItemProps[] = organizations.map((party) => {
     return {
       id: party.party,
       name: party.name,
-      type: 'company' as AccountType,
+      type: 'company' as AccountMenuItemProps['type'],
       groupId: 'secondary',
-      badge: getAccountBadge(countableItems, party, dialogCountInconclusive),
-      alertBadge: getAccountAlertBadge(countableItems, party),
+      badge: getAccountBadge(countableItems, party, dialogCountInconclusive, selectedProfile),
+      iconBadge: getAccountAlertBadge(countableItems, party),
+      icon: { name: party.name, type: 'company' as AvatarType },
     };
   });
 
-  const allOrganizationsAccount: AccountMenuItem = {
+  const allOrganizationsAccount: AccountMenuItemProps = {
     id: 'ALL',
     name: t('parties.labels.all_organizations'),
-    type: 'company' as AccountType,
+    type: 'group',
     groupId: 'secondary',
-    items: organizations.map((party) => ({
-      name: party.name,
-      type: 'company' as AccountType,
-    })),
-    badge: getAccountBadge(countableItems, organizations, dialogCountInconclusive),
-    alertBadge: getAccountAlertBadge(countableItems, organizations),
+    icon: {
+      type: 'company' as AccountMenuItemProps['type'],
+      items: organizations.map((party) => ({
+        id: party.party,
+        name: party.name,
+        type: 'company' as AccountMenuItemProps['type'],
+      })),
+    } as AvatarGroupProps,
+    badge: getAccountBadge(countableItems, organizations, dialogCountInconclusive, selectedProfile),
+    iconBadge: getAccountAlertBadge(countableItems, organizations),
   };
 
-  const accounts: AccountMenuItem[] = [
+  const accounts: AccountMenuItemProps[] = [
     ...(endUser ? [endUserAccount] : []),
     ...otherUsersAccounts,
     ...(organizationAccounts.length > 1 && getPartyIds(organizations).length <= 20
@@ -183,13 +194,18 @@ export const useAccounts = ({
       : organizationAccounts),
   ];
 
-  const selectedAccount = allOrganizationsSelected
+  const selectedAccountMenuItem: AccountMenuItemProps = allOrganizationsSelected
     ? allOrganizationsAccount
     : selectedParties.map((party) => ({
         id: party.party,
         name: party.name,
-        type: party.partyType.toLowerCase() as AccountType,
+        type: party.partyType.toLowerCase() as Account['type'],
       }))[0];
+  const selectedAccount: Account = {
+    id: selectedAccountMenuItem.id,
+    name: selectedAccountMenuItem.name,
+    type: selectedAccountMenuItem.type as 'company' | 'person',
+  };
 
   const accountSearch = showSearch
     ? {

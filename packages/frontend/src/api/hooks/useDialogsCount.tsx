@@ -34,6 +34,7 @@ export const useDialogsCount = (parties?: PartyFieldsFragment[], viewType?: Inbo
           viewType,
           variables: {
             partyURIs: partyIds,
+            limit: 1000, // Increased limit to get more accurate counts for filters - to be discussed with Sean!
           },
         }),
       ),
@@ -53,7 +54,7 @@ export const useDialogsCount = (parties?: PartyFieldsFragment[], viewType?: Inbo
     };
 
     for (const dialog of items) {
-      const viewType = getViewTypes(dialog)[0];
+      const viewType = getViewTypes({ status: dialog.status, systemLabel: dialog.endUserContext?.systemLabels })[0];
       if (viewType && counts[viewType]) {
         counts[viewType].push(dialog);
       }
@@ -63,7 +64,7 @@ export const useDialogsCount = (parties?: PartyFieldsFragment[], viewType?: Inbo
 
   return {
     dialogCountsByViewType,
-    dialogCountInconclusive: data?.searchDialogs?.hasNextPage === true || data?.searchDialogs?.items === null,
+    dialogCountInconclusive: data?.searchDialogs?.hasNextPage ?? false,
     dialogCounts: data?.searchDialogs?.items ?? [],
   };
 };

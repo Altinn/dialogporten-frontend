@@ -9,7 +9,8 @@ export const parties: PartyFieldsFragment[] = [
     isMainAdministrator: false,
     name: 'ENGLISHMAN IN NEW YORK',
     isCurrentEndUser: true,
-    isDeleted: false,
-    hasOnlyAccessToSubParties: false,
+     isDeleted: false,
+    hasOnlyAccessToSubParties: false,   partyUuid: 'urn:altinn:person:identifier-no:1337',
+
   },
 ];

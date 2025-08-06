@@ -6,9 +6,9 @@ import {
   PageBase,
   PageNav,
   Section,
-  Settings,
   SettingsItem,
   type SettingsItemProps,
+  SettingsSection,
   Switch,
   TextField,
 } from '@altinn/altinn-components';
@@ -129,7 +129,7 @@ export const Notifications = () => {
       <Heading size="xl">{t('profile.notifications.heading')}</Heading>
 
       <Section spacing={6}>
-        <Settings>
+        <SettingsSection>
           <List>
             <SettingsItem
               icon={settings ? BellDotIcon : BellIcon}
@@ -170,7 +170,7 @@ export const Notifications = () => {
               </>
             )}
           </List>
-        </Settings>
+        </SettingsSection>
         {settings && <Heading size="lg">{t('profile.notifications.heading_per_actor')}</Heading>}
         <AccountSettings actors={dummy as Array<SettingsItemProps>} />
       </Section>
@@ -198,7 +198,7 @@ export const AccountSettings = ({ actors }: { actors: Array<SettingsItemProps> }
   };
 
   return (
-    <Settings>
+    <SettingsSection>
       <List>
         {actors.map((item, index) => {
           const alerts = alertSettings[item.id!] || { smsAlerts: false, emailAlerts: false };
@@ -237,7 +237,7 @@ export const AccountSettings = ({ actors }: { actors: Array<SettingsItemProps> }
           );
         })}
       </List>
-    </Settings>
+    </SettingsSection>
   );
 };
 

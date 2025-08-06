@@ -7,7 +7,15 @@ fragment SearchDialogFields on SearchDialog {
   status
   createdAt
   updatedAt
+  dueAt
+  contentUpdatedAt
+  hasUnopenedContent
   extendedStatus
+  seenSinceLastContentUpdate {
+    ...SeenLogFields
+  }
+  fromServiceOwnerTransmissionsCount
+  fromPartyTransmissionsCount
   seenSinceLastUpdate {
     ...SeenLogFields
   }
@@ -37,7 +45,9 @@ fragment SearchDialogFields on SearchDialog {
       ...DialogContentFields
     }
   }
-  systemLabel
+  endUserContext {
+    systemLabels
+  }
 }
 
 fragment SearchAutocompleteDialogFields on SearchDialog {
@@ -81,7 +91,9 @@ fragment DialogByIdFields on Dialog {
   createdAt
   updatedAt
   extendedStatus
-  systemLabel
+  endUserContext {
+    systemLabels
+  }
   content {
     title {
       ...DialogContentFields
@@ -231,7 +243,9 @@ fragment CountableDialogFields on SearchDialog {
   party
   updatedAt
   status
-  systemLabel
+  endUserContext {
+    systemLabels
+  }
   seenSinceLastUpdate {
     isCurrentEndUser
   }

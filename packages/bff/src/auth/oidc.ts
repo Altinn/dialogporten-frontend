@@ -80,6 +80,15 @@ interface CustomOICDPluginOptions {
   client_secret: string;
 }
 
+export const generateSessionId = () => {
+  return crypto
+    .randomBytes(24)
+    .toString('base64') // standard base64
+    .replace(/\+/g, '-') // base64url
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
+};
+
 const fetchOpenIDConfig = async (issuerURL: string) => {
   const response = await axios.get(issuerURL);
   return response.data;
@@ -155,6 +164,60 @@ export const handleFrontChannelLogout = async (request: FastifyRequest, reply: F
   } catch (err) {
     request.log.error({ err }, 'Failed to destroy session via idp sid');
     return reply.status(500).send({ error: 'Failed to destroy session' });
+  }
+};
+
+/* * Initializes the session with JWT token and (optional) time to live in seconds */
+export const handleInitSession = async (request: FastifyRequest, reply: FastifyReply) => {
+  try {
+    const { token } = request.body as { token: string };
+
+    if (!token) {
+      return reply.status(400).send({ error: 'Token is required' });
+    }
+
+    const now = new Date();
+    const decoded = JSON.parse(Buffer.from(token.split('.')[1], 'base64url').toString());
+    const pid = decoded.pid;
+    const exp = decoded.exp;
+    const expiresIn = new Date(exp * 1000).toISOString();
+    const expiresInSeconds = exp - Math.floor(now.getTime() / 1000);
+
+    const session = {
+      cookie: {
+        expires: null,
+        originalMaxAge: null,
+        sameSite: null,
+        secure: false,
+        path: '/',
+        httpOnly: true,
+        domain: null,
+      },
+      token: {
+        access_token: token,
+        access_token_expires_at: expiresIn,
+        tokenUpdatedAt: now.toISOString(),
+      },
+      pid,
+      locale: 'en',
+    };
+
+    const base64PaddingRE = /=/gu;
+    const sessionId = generateSessionId();
+    const signature = crypto
+      .createHmac('sha256', config.secret)
+      .update(sessionId)
+      .digest('base64')
+      .replace(base64PaddingRE, '');
+
+    const cookie = `arbeidsflate=${sessionId}.${signature}`;
+    const key = `sess:${sessionId}`;
+    await redisClient.set(key, JSON.stringify(session), 'EX', expiresInSeconds);
+
+    reply.status(200).send({ cookie, expires: expiresIn });
+  } catch (error) {
+    logger.error('Error initializing session:', error);
+    reply.status(500).send({ error: 'Failed to initialize session' });
   }
 };
 
@@ -302,6 +365,10 @@ const plugin: FastifyPluginAsync<CustomOICDPluginOptions> = async (fastify, opti
 
   fastify.get('/api/logout', { preHandler: fastify.verifyToken(false) }, handleLogout);
   fastify.get('/api/frontchannel-logout', handleFrontChannelLogout);
+
+  if (config.enableInitSessionEndpoint) {
+    fastify.post('/api/init-session', handleInitSession);
+  }
 };
 
 export default fp(plugin, {

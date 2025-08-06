@@ -27,12 +27,15 @@ const envVariables = z.object({
   REDIS_CONNECTION_STRING: z.string().default('redis://:mysecretpassword@127.0.0.1:6379/0'),
   CLIENT_ID: z.string().default(''),
   CLIENT_SECRET: z.string().default(''),
-  PLATFORM_EXCHANGE_TOKEN_ENDPOINT_URL: z.string().default(''),
-  PLATFORM_PROFILE_API_URL: z.string().default(''),
+  PLATFORM_EXCHANGE_TOKEN_ENDPOINT_URL: z
+    .string()
+    .default('https://platform.at22.altinn.cloud/authentication/api/v1/exchange/id-porten?test=true'),
+  PLATFORM_PROFILE_API_URL: z.string().default('https://platform.at22.altinn.cloud/profile/api/v1/'),
   MIGRATION_RUN: z.preprocess(stringToBoolean, z.boolean().default(false)),
   DIALOGPORTEN_URL: z.string().default('https://altinn-dev-api.azure-api.net/dialogporten/graphql'),
   CONTAINER_APP_REPLICA_NAME: z.string().default(''),
   ENABLE_GRAPHIQL: z.preprocess(stringToBoolean, z.boolean().default(true)),
+  ENABLE_INIT_SESSION_ENDPOINT: z.preprocess(stringToBoolean, z.boolean().default(false)),
 });
 
 const env = envVariables.parse(process.env);
@@ -69,6 +72,7 @@ const config = {
   migrationRun: env.MIGRATION_RUN,
   dialogportenURL: env.DIALOGPORTEN_URL,
   enableGraphiql: env.ENABLE_GRAPHIQL,
+  enableInitSessionEndpoint: env.ENABLE_INIT_SESSION_ENDPOINT,
 };
 
 export default config;

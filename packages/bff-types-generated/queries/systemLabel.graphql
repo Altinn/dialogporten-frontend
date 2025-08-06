@@ -1,5 +1,5 @@
-mutation updateSystemLabel($dialogId: UUID!, $label: SystemLabel!) {
-  setSystemLabel(input: { dialogId: $dialogId, label: $label }) {
+mutation updateSystemLabel($dialogId: UUID!, $addLabels: [SystemLabel!]!, $removeLabels: [SystemLabel!]!) {
+  setSystemLabel(input: { dialogId: $dialogId, addLabels: $addLabels, removeLabels: $removeLabels }) {
     success
   }
 }

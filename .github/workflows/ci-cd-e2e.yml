@@ -1,0 +1,28 @@
+﻿name: E2E Tests Staging
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'  # Run every 30 minutes
+  workflow_dispatch:
+    inputs:
+      dialog_id:
+        description: 'Dialog ID for testing'
+        required: false
+        type: string
+      party_id:
+        description: 'Party ID for testing'
+        required: false
+        type: string
+
+jobs:
+  run-e2e-tests:
+    name: Run E2E Tests
+    uses: ./.github/workflows/workflow-e2e-tests.yml
+    with:
+      environment: staging
+      dialog_id: ${{ inputs.dialog_id }}
+      party_id: ${{ inputs.party_id }}
+    secrets:
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_E2E_TESTS }}
+      GITHUB_VARIABLE_STORAGE_PAT: ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}

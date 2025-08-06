@@ -1,15 +1,22 @@
-import { DialogStatus, SystemLabel } from 'bff-types-generated';
+import { DialogStatus, type EndUserContext, SystemLabel } from 'bff-types-generated';
 import type { InboxViewType } from '../hooks/useDialogs.tsx';
 
 type viewTypeDerivable = {
-  systemLabel: SystemLabel;
+  systemLabel: EndUserContext['systemLabels'] | undefined;
   status: DialogStatus;
 };
 
-export const isBinDialog = (dialog: viewTypeDerivable): boolean => dialog.systemLabel === SystemLabel.Bin;
-export const isArchivedDialog = (dialog: viewTypeDerivable): boolean => dialog.systemLabel === SystemLabel.Archive;
-export const isDraftDialog = (dialog: viewTypeDerivable): boolean => dialog.status === DialogStatus.Draft;
-export const isSentDialog = (dialog: viewTypeDerivable): boolean => dialog.status === DialogStatus.Sent;
+export const isBinDialog = (dialog: viewTypeDerivable): boolean =>
+  dialog.systemLabel?.includes(SystemLabel.Bin) ?? false;
+
+export const isArchivedDialog = (dialog: viewTypeDerivable): boolean =>
+  dialog.systemLabel?.includes(SystemLabel.Archive) ?? false;
+
+export const isDraftDialog = (dialog: viewTypeDerivable): boolean =>
+  dialog.status?.includes(DialogStatus.Draft) ?? false;
+
+export const isSentDialog = (dialog: viewTypeDerivable): boolean =>
+  dialog.status?.includes(DialogStatus.Awaiting) ?? false;
 
 export const getViewTypes = (dialog: viewTypeDerivable, includeInbox = true): InboxViewType[] => {
   const viewTypes: InboxViewType[] = [];

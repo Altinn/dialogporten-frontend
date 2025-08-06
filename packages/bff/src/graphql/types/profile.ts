@@ -52,14 +52,14 @@ export const User = objectType({
   },
 });
 
-export const Group = objectType({
-  name: 'Group',
+export const GroupObject = objectType({
+  name: 'GroupObject',
   definition(t) {
     t.int('id', { resolve: (group) => group.id });
     t.string('name', { resolve: (group) => group.name });
-    t.boolean('isfavorite', { resolve: (group) => group.isfavorite });
+    t.boolean('isFavorite', { resolve: (group) => group.isFavorite });
     t.string('profilePid', { resolve: (group) => group.profile?.pid });
-    t.list.field('parties', { type: 'PartyObject', resolve: (group) => group.parties });
+    t.list.string('parties', { resolve: (group) => group.parties });
   },
 });
 
@@ -67,7 +67,7 @@ export const PartyObject = objectType({
   name: 'PartyObject',
   definition(t) {
     t.string('id', { resolve: (party) => party.id });
-    t.list.field('groups', { type: 'Group', resolve: (party) => party.groups });
+    t.list.field('groups', { type: 'GroupObject', resolve: (party) => party.groups });
   },
 });
 
@@ -152,7 +152,7 @@ export const Profile = objectType({
         return profile.user;
       },
     });
-    t.list.field('groups', { type: 'Group', resolve: (profile) => profile.groups || [] });
+    t.list.field('groups', { type: 'GroupObject', resolve: (profile) => profile.groups || [] });
 
     t.string('updatedAt', {
       description: 'Last updated',

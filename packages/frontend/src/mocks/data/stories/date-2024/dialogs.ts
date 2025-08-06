@@ -2,19 +2,23 @@ import { ActorType, DialogStatus, type SearchDialogFieldsFragment, SystemLabel }
 import { dialogs as baseDialogs } from '../../base/dialogs'
 
 export const MOCKED_SYS_DATE = new Date('2024-12-31T11:11:00Z');
+export const MOCKED_SYS_DATE_STRING = '2024-12-31T11:11:00.000Z';
 
 const dialogsWithMockedSystemDate: SearchDialogFieldsFragment[] = [
     {
         id: '019241f7-6f45-72fd-abcd-today83j1ks2',
-        systemLabel: SystemLabel.Default,
+        endUserContext: {
+            systemLabels: [SystemLabel.Default],
+        },
         party: 'urn:altinn:person:identifier-no:1',
         org: 'ok',
         progress: null,
-        guiAttachmentCount: 1,
+        hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0,  contentUpdatedAt: MOCKED_SYS_DATE_STRING, guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-05-23T23:00:00.000Z',
-        updatedAt: MOCKED_SYS_DATE,
+        updatedAt: MOCKED_SYS_DATE_STRING,
         extendedStatus: null,
+        seenSinceLastContentUpdate: [],
         seenSinceLastUpdate: [
             {
                 id: 'c4f4d846-2fe7-4172-badc-abc48f9af8a5',
@@ -66,14 +70,17 @@ const dialogsWithMockedSystemDate: SearchDialogFieldsFragment[] = [
     },
     {
         id: '019241f7-6f45-72fd-a574-jksit83j1ks2',
-        systemLabel: SystemLabel.Default,
+        endUserContext: {
+            systemLabels: [SystemLabel.Default],
+        },
         party: 'urn:altinn:person:identifier-no:1',
         org: 'ok',
+        seenSinceLastContentUpdate: [],
         progress: null,
-        guiAttachmentCount: 1,
+        hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0,  contentUpdatedAt: MOCKED_SYS_DATE_STRING, guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-05-23T23:00:00.000Z',
-        updatedAt: '2024-10-25T11:34:00.000Z',
+        updatedAt: MOCKED_SYS_DATE_STRING,
         extendedStatus: null,
         seenSinceLastUpdate: [
             {
@@ -130,14 +137,17 @@ const dialogsWithMockedSystemDate: SearchDialogFieldsFragment[] = [
     },
     {
         id: '019241f7-8218-7756-be82-123qwe456rty',
-        systemLabel: SystemLabel.Default,
+        endUserContext: {
+            systemLabels: [SystemLabel.Default],
+        },
+        seenSinceLastContentUpdate: [],
         party: 'urn:altinn:person:identifier-no:1',
         org: 'nav',
         progress: null,
-        guiAttachmentCount: 0,
+        hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0,  contentUpdatedAt: MOCKED_SYS_DATE_STRING, guiAttachmentCount: 0,
         status: DialogStatus.RequiresAttention,
         createdAt: '2023-12-04T11:45:00.000Z',
-        updatedAt: '2024-05-04T11:45:00.000Z',
+        updatedAt: MOCKED_SYS_DATE_STRING,
         extendedStatus: null,
         seenSinceLastUpdate: [],
         latestActivity: {

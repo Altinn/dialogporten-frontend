@@ -42,22 +42,22 @@ const plugin: FastifyPluginAsync<Options> = async (fastify: FastifyInstance, opt
       If you do not want to rely on a CDN, you can host these files locally or
       include them directly in your favored resource bundler.
     -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
 
     <!--
       These two files can be found in the npm module, however you may wish to
       copy them directly into your environment, or perhaps include them in your
       favored resource bundler.
      -->
-    <script src="https://unpkg.com/graphiql/graphiql.min.js" type="application/javascript"></script>
-    <link rel="stylesheet" href="https://unpkg.com/graphiql/graphiql.min.css" />
+    <script src="https://unpkg.com/graphiql@4.0.0/graphiql.min.js" type="application/javascript"></script>
+    <link rel="stylesheet" href="https://unpkg.com/graphiql@4.0.0/graphiql.min.css" />
 
     <!--
       These are imports for the GraphIQL Explorer plugin.
      -->
-    <script src="https://unpkg.com/@graphiql/plugin-explorer/dist/index.umd.js" crossorigin></script>
-    <link rel="stylesheet" href="https://unpkg.com/@graphiql/plugin-explorer/dist/style.css" />
+    <script src="https://unpkg.com/@graphiql/plugin-explorer@4.0.0/dist/index.umd.js" crossorigin></script>
+    <link rel="stylesheet" href="https://unpkg.com/@graphiql/plugin-explorer@4.0.0/dist/style.css" />
   </head>
   <body>
     <div id="graphiql">Loading...</div>

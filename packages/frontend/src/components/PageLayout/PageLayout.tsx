@@ -14,11 +14,13 @@ import { useDialogs } from '../../api/hooks/useDialogs.tsx';
 import { useDialogsCount } from '../../api/hooks/useDialogsCount.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { updateLanguage } from '../../api/queries.ts';
+import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { i18n } from '../../i18n/config.ts';
 import { getSearchStringFromQueryParams } from '../../pages/Inbox/queryParams.ts';
 import { useSavedSearches } from '../../pages/SavedSearches/useSavedSearches.tsx';
 import { PageRoutes } from '../../pages/routes.ts';
 import { useProfile } from '../../profile';
+import { useGlobalState } from '../../useGlobalState.ts';
 import { BetaBanner } from '../BetaBanner/BetaBanner';
 import { useAuth } from '../Login/AuthContext.tsx';
 import { useAccounts } from './Accounts/useAccounts.tsx';
@@ -116,16 +118,21 @@ export const PageLayout: React.FC = () => {
     } catch (error) {
       console.error('Failed to delete saved search:', error);
     } finally {
-      i18n.changeLanguage(language);
+      void i18n.changeLanguage(language);
     }
   };
 
   const windowSize = useWindowSize();
 
+  const [isErrorState] = useGlobalState<boolean>(QUERY_KEYS.ERROR_STATE, false);
+
   const headerProps: HeaderProps = {
     currentAccount: selectedAccount,
     logo: {
-      as: (props: MenuItemProps) => <Link to="/" {...props} />,
+      as: (props: MenuItemProps) => {
+        // @ts-ignore
+        return <Link to="/" {...props} />;
+      },
     },
     search: {
       expanded: false,
@@ -142,20 +149,22 @@ export const PageLayout: React.FC = () => {
     menu: {
       menuLabel: t('word.menu'),
       items: global,
-      accountGroups,
-      accounts,
       onSelectAccount: (account: string) => onSelectAccount(account, PageRoutes.inbox),
       changeLabel: t('layout.menu.change_account'),
       backLabel: t('word.back'),
-      ...(accountSearch && {
-        accountSearch,
-      }),
       currentEndUserLabel: t('parties.current_end_user', { name: currentEndUser?.name ?? 'n/a' }),
-      menuItemsVirtual: {
-        isVirtualized: true,
-        scrollRefStyles: {
-          maxHeight: windowSize.isTabletOrSmaller ? 'calc(100vh - 14rem)' : 'calc(80vh - 10rem)',
-          paddingBottom: '0.5rem',
+      accountMenu: {
+        items: accounts,
+        groups: accountGroups,
+        ...(accountSearch && {
+          search: accountSearch,
+        }),
+        menuItemsVirtual: {
+          isVirtualized: true,
+          scrollRefStyles: {
+            maxHeight: windowSize.isTabletOrSmaller ? 'calc(100vh - 14rem)' : 'calc(80vh - 10rem)',
+            paddingBottom: '0.5rem',
+          },
         },
       },
       logoutButton: {
@@ -179,11 +188,12 @@ export const PageLayout: React.FC = () => {
   const color = isProfile ? 'neutral' : selectedProfile;
 
   const layoutProps: LayoutProps = {
-    theme: 'subtle',
+    theme: isErrorState ? 'default' : 'subtle',
     color,
     header: headerProps,
     footer,
     sidebar: {
+      hidden: isErrorState,
       menu: {
         items: sidebar,
       },

@@ -133,7 +133,7 @@ export const useAutocomplete = ({ selectedParties, searchValue }: searchDialogsP
     gcTime: 0,
   });
 
-  const suggestedSenders = createSendersForAutocomplete(searchValue!, dialogs, organizations);
+  const suggestedSenders = createSendersForAutocomplete(searchValue ?? '', dialogs, organizations);
 
   const autocomplete: AutocompleteProps = useMemo(() => {
     const results = hits?.searchDialogs?.items ?? [];
@@ -187,7 +187,6 @@ export const createSendersForAutocomplete = (
     };
   });
 
-  const registeredOrgs: string[] = [];
   const registeredSearchValues: string[] = [];
 
   const items = searchTerms.map((searchTerm) => {
@@ -212,20 +211,21 @@ export const createSendersForAutocomplete = (
         return null;
       }
 
-      registeredOrgs.push(matchedOrg.org);
       registeredSearchValues.push(searchQuery);
 
       const senderName = serviceOwner?.name || matchedOrg?.org;
-      const linkTitleMessageId = searchQuery
-        ? 'search.autocomplete.searchForSender.withQuery'
-        : 'search.autocomplete.searchForSender.withoutQuery';
+      const linkTitleMessageId =
+        searchQuery.trim().length > 0
+          ? 'search.autocomplete.searchForSender.withQuery'
+          : 'search.autocomplete.searchForSender.withoutQuery';
+
       const linkTitle = t(linkTitleMessageId, {
         sender: senderName,
         query: searchQuery,
       });
 
       return {
-        id: searchValue,
+        id: linkTitle,
         groupId: SENDERS_GROUP_ID,
         title: linkTitle,
         params: [
@@ -236,6 +236,7 @@ export const createSendersForAutocomplete = (
         as: (props: AutocompleteItemProps) => {
           return (
             <Link
+              key={linkTitle}
               {...(props as LinkProps)}
               to={`/${pruneSearchQueryParams(location.search, { org: matchedOrg.org, search: searchQuery })}`}
               aria-label={linkTitle}

@@ -28,6 +28,7 @@ param ocPApimSubscriptionKey string
   'true'
 ])
 param graphiQLEnabled string = 'true'
+param enableInitSessionEndpoint string = 'true'
 
 @minLength(3)
 @secure()
@@ -162,6 +163,10 @@ var containerAppEnvVars = concat([
   {
     name: 'ENABLE_GRAPHIQL'
     value: graphiQLEnabled
+  }
+  {
+    name: 'ENABLE_INIT_SESSION_ENDPOINT'
+    value: enableInitSessionEndpoint
   }
   {
     name: 'PLATFORM_EXCHANGE_TOKEN_ENDPOINT_URL'

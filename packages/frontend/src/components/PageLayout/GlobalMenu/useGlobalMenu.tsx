@@ -7,9 +7,11 @@ import {
   CogIcon,
   DocPencilIcon,
   FileCheckmarkIcon,
+  HandshakeIcon,
   HeartIcon,
   InboxFillIcon,
   MenuGridIcon,
+  PadlockUnlockedIcon,
   PersonChatIcon,
   TrashIcon,
 } from '@navikt/aksel-icons';
@@ -43,7 +45,7 @@ export const getAlertBadgeProps = (count: number): BadgeProps | undefined => {
       label: count.toString(),
       size: 'xs',
       theme: 'base',
-      color: 'alert',
+      color: 'danger',
     };
   }
 };
@@ -65,7 +67,10 @@ const getBadgeProps = (count: number, countInconclusive?: boolean): BadgeProps |
 
 const createMenuItemComponent =
   ({ to, isExternal = false }: { to: string; isExternal?: boolean }): React.FC<MenuItemProps> =>
-  (props) => <Link {...props} to={to} {...(isExternal ? { target: '__blank', rel: 'noopener noreferrer' } : {})} />;
+  (props) => {
+    // @ts-ignore
+    return <Link {...props} to={to} {...(isExternal ? { target: '__blank', rel: 'noopener noreferrer' } : {})} />;
+  };
 
 export const useGlobalMenu = ({
   itemsPerViewCount,
@@ -191,7 +196,7 @@ export const useGlobalMenu = ({
           id: '2',
           groupId: '2',
           icon: { svgElement: HeartIcon, theme: 'default' },
-          title: t('sidebar.profile.actors'),
+          title: t('sidebar.profile.parties'),
           selected: pathname === PageRoutes.partiesOverview,
           as: createMenuItemComponent({
             to: PageRoutes.partiesOverview + pruneSearchQueryParams(currentSearchQuery),
@@ -199,6 +204,26 @@ export const useGlobalMenu = ({
         },
         {
           id: '3',
+          groupId: '3',
+          icon: { svgElement: HandshakeIcon, theme: 'default' },
+          title: t('sidebar.profile.authorize'),
+          selected: pathname === PageRoutes.authorize,
+          as: createMenuItemComponent({
+            to: PageRoutes.authorize + pruneSearchQueryParams(currentSearchQuery),
+          }),
+        },
+        {
+          id: '4',
+          groupId: '3',
+          icon: { svgElement: PadlockUnlockedIcon, theme: 'default' },
+          title: t('sidebar.profile.access'),
+          selected: pathname === PageRoutes.access,
+          as: createMenuItemComponent({
+            to: PageRoutes.access + pruneSearchQueryParams(currentSearchQuery),
+          }),
+        },
+        {
+          id: '5',
           groupId: '2',
           icon: { svgElement: BellIcon, theme: 'default' },
           title: t('sidebar.profile.notifications'),
@@ -208,8 +233,8 @@ export const useGlobalMenu = ({
           }),
         },
         {
-          id: '4',
-          groupId: '3',
+          id: '6',
+          groupId: '4',
           icon: { svgElement: CogIcon, theme: 'default' },
           title: t('sidebar.profile.settings'),
           selected: pathname === PageRoutes.settings,
@@ -218,8 +243,8 @@ export const useGlobalMenu = ({
           }),
         },
         {
-          id: '5',
-          groupId: '4',
+          id: '7',
+          groupId: '5',
           icon: { svgElement: ClockDashedIcon, theme: 'default' },
           title: t('sidebar.profile.activities'),
           selected: pathname === PageRoutes.activities,

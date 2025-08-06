@@ -23,8 +23,7 @@ resource keyvault 'Microsoft.KeyVault/vaults@2023-07-01' = {
   name: keyvaultName
   location: location
   properties: {
-    // TODO: Remove
-    enablePurgeProtection: null // Null is the same as false and false is invalid for some reason
+    enablePurgeProtection: true
     enabledForTemplateDeployment: false
     sku: {
       family: 'A'

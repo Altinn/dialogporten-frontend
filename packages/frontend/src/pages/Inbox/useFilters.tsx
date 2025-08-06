@@ -1,11 +1,11 @@
 import type { ToolbarFilterProps, ToolbarProps } from '@altinn/altinn-components';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { useDialogsCount } from '../../api/hooks/useDialogsCount.tsx';
 import { getOrganization } from '../../api/utils/organizations.ts';
-import type { InboxItemInput } from './InboxItemInput.ts';
-import { FilterCategory, getFilters } from './filters.ts';
+import { FilterCategory, getFilters, readFiltersFromURLQuery } from './filters.ts';
 import { useOrganizations } from './useOrganizations.ts';
 
 interface UseFiltersOutput {
@@ -14,18 +14,46 @@ interface UseFiltersOutput {
 }
 
 interface UseFiltersProps {
-  dialogs: InboxItemInput[];
   viewType: InboxViewType;
 }
 
-export const useFilters = ({ dialogs, viewType }: UseFiltersProps): UseFiltersOutput => {
+export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
   const { t } = useTranslation();
   const { dialogCounts: allDialogs } = useDialogsCount();
   const { organizations } = useOrganizations();
 
+  const [params] = useSearchParams();
+  const orgsFromSearchState = params.getAll('org');
+
+  const currentFilters = useMemo(() => {
+    const filters = readFiltersFromURLQuery(params.toString());
+    const normalizedFilters: Record<string, string[]> = {};
+
+    for (const [key, value] of Object.entries(filters)) {
+      if (Array.isArray(value)) {
+        normalizedFilters[key] = value.map(String);
+      } else if (typeof value === 'string') {
+        normalizedFilters[key] = [value];
+      }
+    }
+
+    if (normalizedFilters.updated && normalizedFilters.updated.length > 0) {
+      normalizedFilters.updated = [normalizedFilters.updated[0]];
+    }
+
+    return normalizedFilters;
+  }, [params]);
+
   const filters = useMemo(
-    () => getFilters(dialogs, allDialogs, organizations, viewType),
-    [dialogs, allDialogs, organizations, viewType],
+    () =>
+      getFilters({
+        allDialogs,
+        allOrganizations: organizations,
+        viewType,
+        orgsFromSearchState,
+        currentFilters,
+      }),
+    [allDialogs, organizations, viewType, orgsFromSearchState, currentFilters],
   );
 
   const getFilterLabel = (name: string, value: (string | number)[] | undefined) => {

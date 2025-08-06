@@ -1,8 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import type { ProfileQuery, User } from 'bff-types-generated';
+import type { GroupObject, ProfileQuery, User } from 'bff-types-generated';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParties } from '../api/hooks/useParties.ts';
 import {
   addFavoriteParty as addFavoritePartyRaw,
   addFavoritePartyToGroup as addFavoritePartyToGroupRaw,
@@ -17,17 +16,11 @@ export const useProfile = () => {
     queryFn: () => profile(),
     refetchOnWindowFocus: false,
   });
-  const { parties } = useParties();
   const { i18n } = useTranslation();
-  const groups = data?.profile?.groups || [];
+  const groups = (data?.profile?.groups as GroupObject[]) || ([] as GroupObject[]);
   const language = data?.profile?.language || i18n.language || 'nb';
+  const favoritesGroup = groups.find((group) => group!.isFavorite) as GroupObject;
 
-  const favoritesGroup = groups.find((group) => group!.isfavorite)?.parties || [];
-  const favoriteParties = parties.filter((party) => {
-    if (favoritesGroup?.find((favoriteParty) => favoriteParty?.id!.includes(party.party))) return true;
-    if (party.isCurrentEndUser) return true;
-    return false;
-  });
   const queryClient = useQueryClient();
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: Full control of what triggers this code is needed
@@ -37,8 +30,8 @@ export const useProfile = () => {
     }
   }, [language]);
 
-  const deleteFavoriteParty = (partyId: string, groupId: string) =>
-    deleteFavoritePartyRaw(partyId, groupId).then(() => {
+  const deleteFavoriteParty = (partyId: string) =>
+    deleteFavoritePartyRaw(partyId).then(() => {
       void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PROFILE] });
     });
   const addFavoriteParty = (partyId: string) =>
@@ -56,7 +49,7 @@ export const useProfile = () => {
     language,
     user: data?.profile?.user as User,
     groups,
-    favoriteParties,
+    favoritesGroup,
     deleteFavoriteParty,
     addFavoriteParty,
     addFavoritePartyToGroup,

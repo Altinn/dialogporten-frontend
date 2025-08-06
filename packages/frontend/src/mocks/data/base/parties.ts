@@ -10,8 +10,8 @@ export const parties: PartyFieldsFragment[] = [
     name: 'TEST TESTESEN',
     isCurrentEndUser: true,
     isDeleted: false,
+    partyUuid: 'urn:altinn:person:identifier-no:1337',
     hasOnlyAccessToSubParties: false,
-
   },
   {
     party: 'urn:altinn:organization:identifier-no:1',
@@ -22,8 +22,8 @@ export const parties: PartyFieldsFragment[] = [
     name: 'Firma AS',
     isCurrentEndUser: true,
     isDeleted: false,
+    partyUuid: 'urn:altinn:person:identifier-no:1337',
     hasOnlyAccessToSubParties: false,
-
   },
   {
     party: 'urn:altinn:organization:identifier-no:2',
@@ -36,6 +36,7 @@ export const parties: PartyFieldsFragment[] = [
         isMainAdministrator: true,
         name: 'TESTBEDRIFT AS AVD SUB',
         isCurrentEndUser: false,
+        partyUuid: 'urn:altinn:person:identifier-no:1337',
         isDeleted: false,
       },
       {
@@ -45,6 +46,7 @@ export const parties: PartyFieldsFragment[] = [
         isMainAdministrator: true,
         name: 'TESTBEDRIFT AS AVD OSLO',
         isCurrentEndUser: false,
+        partyUuid: 'urn:altinn:person:identifier-no:1337',
         isDeleted: false,
       },
       {
@@ -54,6 +56,7 @@ export const parties: PartyFieldsFragment[] = [
         isMainAdministrator: true,
         name: 'TESTBEDRIFT AS',
         isCurrentEndUser: false,
+        partyUuid: 'urn:altinn:person:identifier-no:1337',
         isDeleted: false,
       },
     ],
@@ -62,6 +65,7 @@ export const parties: PartyFieldsFragment[] = [
     name: 'TESTBEDRIFT AS',
     isCurrentEndUser: false,
     isDeleted: false,
+      partyUuid: 'urn:altinn:person:identifier-no:1337',
     hasOnlyAccessToSubParties: false,
   },
 ];
