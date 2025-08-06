@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.50.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.50.1...v1.50.2) (2025-08-06)
+
+
+### Bug Fixes
+
+* couple of missing aria attributes in search bar by upgrading to latest version of altinn-components ([#2390](https://github.com/Altinn/dialogporten-frontend/issues/2390)) ([ede71fb](https://github.com/Altinn/dialogporten-frontend/commit/ede71fb99bf57b007cadb023ff9018021ae59d30))
+
 ## [1.50.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.50.0...v1.50.1) (2025-08-05)
 
 
