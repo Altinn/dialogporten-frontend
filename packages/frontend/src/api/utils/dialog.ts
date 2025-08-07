@@ -140,8 +140,7 @@ const viewTypeQueryMap: Record<InboxViewType, Record<string, string[] | string |
     label: SystemLabel.Default,
   },
   sent: {
-    status: [DialogStatus.Awaiting],
-    label: SystemLabel.Default,
+    label: [SystemLabel.Sent],
   },
   archive: {
     label: SystemLabel.Archive,
