@@ -71,6 +71,8 @@ fragment DialogByIdFields on Dialog {
   party
   org
   progress
+  fromServiceOwnerTransmissionsCount
+  fromPartyTransmissionsCount
   attachments {
     ...AttachmentFields
   }
