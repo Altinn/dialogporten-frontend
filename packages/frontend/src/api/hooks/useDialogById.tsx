@@ -223,7 +223,13 @@ export function mapDialogToToInboxItem(
         type: 'person',
       })),
     },
-    activityHistory: getActivityHistory(item.activities, item.transmissions, format, serviceOwner),
+    activityHistory: getActivityHistory({
+      activities: item.activities,
+      transmissions: item.transmissions,
+      format,
+      serviceOwner,
+      selectedProfile,
+    }),
     transmissions: getTransmissions({
       transmissions: item.transmissions,
       format,
