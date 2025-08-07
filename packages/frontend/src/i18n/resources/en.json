@@ -49,6 +49,7 @@
   "filter.date.this_week": "This week",
   "filter.date.today": "Today",
   "filter.query.archive": "in archive",
+  "filter.query.sent": "Sent",
   "filter.query.bin": "in bin",
   "filter.query.completed": "Completed",
   "filter.query.draft": "Draft",

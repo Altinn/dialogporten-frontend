@@ -2,13 +2,13 @@ import type { FilterState } from '@altinn/altinn-components';
 import { describe, expect, it } from 'vitest';
 import { isSavedSearchDisabled } from './savedSearchEnabled.ts';
 
-describe('', () => {
+describe('save bookmark url', () => {
   it('should be disabled when there are no keys in filter state and no enteredSearchValue', () => {
     const disabled = isSavedSearchDisabled({}, '');
     expect(disabled).toEqual(true);
   });
 
-  it('should be enabled when there are no keys in filter state and an enteredSearchValue', () => {
+  it('should be enabled when there are no keys in filter state but there is an enteredSearchValue', () => {
     const disabled = isSavedSearchDisabled({}, 'hello');
     expect(disabled).toEqual(false);
   });
