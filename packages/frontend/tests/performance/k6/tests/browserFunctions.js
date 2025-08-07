@@ -1,5 +1,3 @@
-
-
 /**
  * Async function to select a side menu element on a page.
  * @param {object} page - The page object to interact with.

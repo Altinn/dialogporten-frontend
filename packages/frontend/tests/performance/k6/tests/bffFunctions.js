@@ -1,5 +1,4 @@
 import http from 'k6/http';
-import { randomItem } from '../helpers/testimports.js';
 import { 
     partiesQuery, 
     organizationsQuery,
@@ -7,20 +6,11 @@ import {
     profileQuery,
     getAllDialogsForCountQuery,
     getAllDialogsForPartyQuery,
-    isAuthenticatedLabel
 } from '../helpers/queries.js';
 import { describe, expect } from '../helpers/testimports.js';
 import { afUrl } from '../helpers/config.js';
 
 const baseUrl = afUrl + 'api';
-
-export function bffTest(data) {
-    var testData = randomItem(data);
-    const parties = openAf(testData.pid, testData.cookie);
-    selectMenuElements(testData.cookie, parties);
-    isAuthenticated(testData.cookie, isAuthenticatedLabel);
-    getNextpage(testData.cookie, parties);
-}
 
 /**
  * This function does the same bff-calls that af does freom the browser
@@ -28,7 +18,7 @@ export function bffTest(data) {
  * @returns {Array} - An array containing user party information.
  */
 export function openAf(pid, cookie) {
-    var parties = getParties(cookie);
+    var parties = getParties(cookie, pid);
     getOrganizations(cookie);
     getSavedSearches(cookie);
     //getProfile(cookie);
@@ -103,13 +93,17 @@ export function getNextpage(cookie, parties) {
  * @param {Object} cookie - The cookie object containing name and value.
  * @return {Array} - An array of party URIs.
  */
-function getParties(cookie) {
+function getParties(cookie, pid) {
     var resp = graphql(cookie, partiesQuery);
     if (resp.status !== 200) {
         console.log('GraphQL request failed: ' + resp.status);
         return
     }
     const data = resp.json();
+    if (!data.data || !data.data.parties) {
+        console.log(`No parties found in response data for ${pid}`);
+        return [];
+    }
     var parties = [];
     for (var party of data.data.parties) {
         parties.push(party.party);

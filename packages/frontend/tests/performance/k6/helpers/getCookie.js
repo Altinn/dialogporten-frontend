@@ -1,3 +1,7 @@
+/**
+ * This module provides functionality to generate a session cookie for the Altinn arbeidsflate (AF) using a personal token.
+ * It includes functions to get a personal token based on a PID and to initialize a session with that token.
+ */
 import http from 'k6/http';
 import { afUrl } from './config.js';
 import { getPersonalToken } from './token.js';
@@ -32,7 +36,11 @@ function getToken(pid) {
     return token
   }
 
-
+/**
+ * Function to initialize a session with the given token.
+ * @param {F} token 
+ * @returns sessionId
+ */
 function getSessionId(token) {
     const url = new URL(`${afUrl}/api/init-session`);
     const body = JSON.stringify({
@@ -54,6 +62,11 @@ function getSessionId(token) {
     return sessionId // Replace with actual logic to get session ID
 }
 
+/**
+ * Function to get a cookie object for the given PID.
+ * @param {string} pid - The personal identification number (PID) of the user.
+ * @return {Object} - The cookie object containing name, value, domain, path, httpOnly, secure, sameSite, and url.
+ * **/
 export function getCookie(pid) {
     var token = getToken(pid);
     const cookie = {

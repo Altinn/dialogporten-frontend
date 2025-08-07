@@ -1,4 +1,7 @@
-
+/**
+ * GraphQL queries performed by AF
+ * Queries used by the bff-part of the performance test.
+ */
 export const partiesQuery = { 
     query: `
         query parties {
@@ -66,8 +69,10 @@ export const getAllDialogsForPartyQuery = {
     limit: 10
 }
 
+// This label is used to identify the authentication status in the queries
 export const isAuthenticatedLabel = 'isAuthenticated';
 
+// This array contains all the query labels used in the performance tests
 export const queryLabels = [
     partiesQuery.operationName,
     organizationsQuery.operationName,

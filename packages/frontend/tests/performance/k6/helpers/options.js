@@ -2,7 +2,7 @@
  * Options for the k6 test script.
 */
 import { queryLabels } from "./queries.js";  
-export function getOptions() {
+export function getOptions( browserTest = 'browserTest', bffTest = 'bffTest' ) {
     // Set default values for environment variables
     const browser_vus = __ENV.BROWSER_VUS || 1;
     const bff_vus = __ENV.BFF_VUS || 1;
@@ -23,7 +23,7 @@ export function getOptions() {
     if (browser_vus > 0) {
       options.scenarios.browser = {
         executor: 'constant-vus',
-        exec: 'browserTest',
+        exec: browserTest,
         vus: browser_vus,
         duration: duration,
         options: {
@@ -37,7 +37,7 @@ export function getOptions() {
     // Set BFF scenario if bff_vus is greater than 0
     if (bff_vus > 0) {
       options.scenarios.bff = {
-        exec: 'bffTest',
+        exec: bffTest,
       };
   
       // Set executor and stages based on breakpoint
@@ -49,6 +49,7 @@ export function getOptions() {
             target: bff_vus,
           },
         ]
+        // Set thresholds for each query label when breakpoint is true
         for (var label of queryLabels) {
           options.thresholds[[`http_req_duration{name:${label}}`]] = [{ threshold: "max<5000", abortOnFail: abort_on_fail }];
           options.thresholds[[`http_req_failed{name:${label}}`]] = [{ threshold: 'rate<=0.0', abortOnFail: abort_on_fail }];

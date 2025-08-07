@@ -17,7 +17,8 @@ import { afUrl } from '../helpers/config.js';
 import { readCsv } from '../testData/readCsv.js';
 import { getOptions } from '../helpers/options.js';
 import { selectSideMenuElement, selectNextPage } from './browserFunctions.js';
-export { bffTest } from './bffFunctions.js'; 
+import { openAf, selectMenuElements, isAuthenticated, getNextpage } from '../tests/bffFunctions.js';
+import { isAuthenticatedLabel } from '../helpers/queries.js';
 
 const env = __ENV.ENVIRONMENT || 'yt';
 
@@ -62,8 +63,7 @@ export async function setup() {
  * @param {object} data - Test data for the scenario.
  */
 export async function browserTest(data) {
-  var testData = randomItem(data); //data[__ITER % data.length]; //randomItem(data);
-  console.log(`Running browser test for PID: ${testData.pid}, iteration: ${__ITER}, ix: ${__ITER % data.length}`);
+  var testData = randomItem(data);
   const context = await browser.newContext();
   const page = await context.newPage();
 
@@ -93,5 +93,18 @@ export async function browserTest(data) {
   } finally {
     await page.close();
   }
+}
+
+/**
+  * This function does the bff-calls used when selecting menu elements
+  * @param {Object} testData - The test data containing cookie and pid.
+  * @returns {Array} - An array containing user party information.
+  */  
+export function bffTest(data) {
+  var testData = randomItem(data);
+  const parties = openAf(testData.pid, testData.cookie);
+  selectMenuElements(testData.cookie, parties);
+  isAuthenticated(testData.cookie, isAuthenticatedLabel);
+  getNextpage(testData.cookie, parties);
 }
 
