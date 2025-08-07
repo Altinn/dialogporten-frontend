@@ -74,6 +74,7 @@ export interface DialogByIdDetails {
   transmissions: TimelineSegmentWithTransmissions[];
   /* a map of all content references for all content reference for transmission, used to dynamically embed content in the frontend from an external URL. */
   contentReferenceForTransmissions: Record<string, EmbeddedContent>;
+
   /* dialog status */
   status: DialogStatus;
   /* all actions (including end-user) that have seen the dialog since last update */
@@ -82,6 +83,10 @@ export interface DialogByIdDetails {
   dueAt?: string;
   /* view type of dialog, used for grouping in inbox */
   viewType: InboxViewType;
+  /* Number of outgoing transmissions */
+  sentCount?: number;
+  /* Number of incoming transmissions */
+  receivedCount?: number;
 }
 
 interface UseDialogByIdOutput {
@@ -170,6 +175,8 @@ export function mapDialogToToInboxItem(
     title: getPreferredPropertyByLocale(titleObj)?.value ?? '',
     status: item.status,
     summary: getPreferredPropertyByLocale(summaryObj)?.value ?? '',
+    sentCount: item.fromPartyTransmissionsCount ?? 0,
+    receivedCount: item.fromServiceOwnerTransmissionsCount ?? 0,
     sender: {
       name: getPreferredPropertyByLocale(senderName)?.value || serviceOwner?.name || '',
       type: 'company',
