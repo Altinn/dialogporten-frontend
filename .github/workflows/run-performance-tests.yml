@@ -31,10 +31,10 @@ on:
       testSuitePath:
         description: 'Path to test suite to run'
         required: true
-        default: 'packages/frontend/tests/performance/k6/browser.js'
+        default: 'packages/frontend/tests/performance/k6/tests/testAfBrowserAndBff.js'
         type: choice
         options:
-          - 'packages/frontend/tests/performance/k6/browser.js'
+          - 'packages/frontend/tests/performance/k6/tests/testAfBrowserAndBff.js'
 
 permissions:
   id-token: write

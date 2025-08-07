@@ -1,16 +1,26 @@
 import http from 'k6/http';
+import { randomItem } from '../commonFunctions/testimports.js';
 import { 
     partiesQuery, 
     organizationsQuery,
     savedSearchesQuery,
     profileQuery,
     getAllDialogsForCountQuery,
-    getAllDialogsForPartyQuery
-} from './queries.js';
-import { describe, expect } from './testimports.js';
-import { afUrl } from './config.js';
+    getAllDialogsForPartyQuery,
+    isAuthenticatedLabel
+} from '../commonFunctions/queries.js';
+import { describe, expect } from '../commonFunctions/testimports.js';
+import { afUrl } from '../commonFunctions/config.js';
 
 const baseUrl = afUrl + 'api';
+
+export function bffTest(data) {
+    var testData = randomItem(data);
+    const parties = openAf(testData.pid, testData.cookie);
+    selectMenuElements(testData.cookie, parties);
+    isAuthenticated(testData.cookie, isAuthenticatedLabel);
+    getNextpage(testData.cookie, parties);
+}
 
 /**
  * This function does the same bff-calls that af does freom the browser
