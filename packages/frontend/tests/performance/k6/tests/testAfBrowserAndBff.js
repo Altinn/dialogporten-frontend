@@ -11,13 +11,13 @@ import { browser } from 'k6/browser';
 import { check } from 'k6';
 import { Trend } from 'k6/metrics';
 import { SharedArray } from 'k6/data';
-import { randomItem } from '../commonFunctions/testimports.js';
-import { getCookie } from '../commonFunctions/getCookie.js';
-import { afUrl } from '../commonFunctions/config.js';
+import { randomItem } from '../helpers/testimports.js';
+import { getCookie } from '../helpers/getCookie.js';
+import { afUrl } from '../helpers/config.js';
 import { readCsv } from '../testData/readCsv.js';
-import { getOptions } from '../commonFunctions/options.js';
-import { selectSideMenuElement, selectNextPage } from './browser.js';
-export { bffTest } from './bff.js'; 
+import { getOptions } from '../helpers/options.js';
+import { selectSideMenuElement, selectNextPage } from './browserFunctions.js';
+export { bffTest } from './bffFunctions.js'; 
 
 const env = __ENV.ENVIRONMENT || 'yt';
 

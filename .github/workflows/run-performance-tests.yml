@@ -26,8 +26,12 @@ on:
       environment:
         description: "Environment to run the tests in"
         required: true
-        default: "yt"
-        type: string
+        default: 'at'
+        type: choice
+        options:
+          - at
+          - tt
+          - yt
       testSuitePath:
         description: 'Path to test suite to run'
         required: true

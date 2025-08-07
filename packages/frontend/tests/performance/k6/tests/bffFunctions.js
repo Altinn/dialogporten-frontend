@@ -1,5 +1,5 @@
 import http from 'k6/http';
-import { randomItem } from '../commonFunctions/testimports.js';
+import { randomItem } from '../helpers/testimports.js';
 import { 
     partiesQuery, 
     organizationsQuery,
@@ -8,9 +8,9 @@ import {
     getAllDialogsForCountQuery,
     getAllDialogsForPartyQuery,
     isAuthenticatedLabel
-} from '../commonFunctions/queries.js';
-import { describe, expect } from '../commonFunctions/testimports.js';
-import { afUrl } from '../commonFunctions/config.js';
+} from '../helpers/queries.js';
+import { describe, expect } from '../helpers/testimports.js';
+import { afUrl } from '../helpers/config.js';
 
 const baseUrl = afUrl + 'api';
 
