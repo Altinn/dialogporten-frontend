@@ -12,14 +12,13 @@ import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { getOrganization } from '../../api/utils/organizations.ts';
 
 export const getExclusiveLabel = (labels: string[]): SystemLabel => {
-  const EXCLUSIVE_LABELS = [SystemLabel.Default, SystemLabel.Archive, SystemLabel.Bin] as const;
+  const EXCLUSIVE_LABELS = [SystemLabel.Archive, SystemLabel.Bin, SystemLabel.Sent, SystemLabel.Default] as const;
 
   if (!labels || !Array.isArray(labels)) {
     return SystemLabel.Default;
   }
 
-  //@ts-ignore - TO-DO fix label as system label
-  const match = labels.find((label): label is SystemLabel => EXCLUSIVE_LABELS.includes(label as SystemLabel));
+  const match = EXCLUSIVE_LABELS.find((exclusiveLabel) => labels.includes(exclusiveLabel));
   return match ?? SystemLabel.Default;
 };
 
@@ -95,7 +94,7 @@ const getFilteredDialogs = (
     if (excludeFilterCategory !== FilterCategory.STATUS && currentFilters.status?.length) {
       const dialogSystemLabel = getExclusiveLabel(dialog.endUserContext?.systemLabels || []);
       const hasMatchingStatus = currentFilters.status.some((status) => {
-        if ([SystemLabel.Archive, SystemLabel.Bin].includes(status as SystemLabel)) {
+        if ([SystemLabel.Archive, SystemLabel.Bin, SystemLabel.Sent].includes(status as SystemLabel)) {
           return dialogSystemLabel === status;
         }
         return dialog.status === status;
@@ -289,10 +288,10 @@ const createStatusFilter = (
         badge: getFilterBadgeProps(statusCount[DialogStatus.Draft] || 0),
       },
       {
-        label: t('status.awaiting'),
+        label: t('status.sent'),
         groupId: 'status-group-2',
-        value: DialogStatus.Awaiting,
-        badge: getFilterBadgeProps(statusCount[DialogStatus.Awaiting] || 0),
+        value: SystemLabel.Sent,
+        badge: getFilterBadgeProps(labelCounts[SystemLabel.Sent] || 0),
       },
       {
         label: t('status.archive'),
@@ -394,8 +393,7 @@ export const presetFiltersByView: Record<InboxViewType, Partial<GetAllDialogsFor
     label: [SystemLabel.Default],
   },
   sent: {
-    status: [DialogStatus.Awaiting],
-    label: [SystemLabel.Default],
+    label: [SystemLabel.Default, SystemLabel.Sent],
   },
   archive: {
     label: [SystemLabel.Archive],
@@ -428,7 +426,7 @@ export const normalizeFilterDefaults = ({
   viewType,
   searchQuery,
 }: NormalizeFilterDefaults): GetAllDialogsForPartiesQueryVariables => {
-  const SYSTEM_LABEL_STATUSES = [SystemLabel.Bin, SystemLabel.Archive] as string[];
+  const SYSTEM_LABEL_STATUSES = [SystemLabel.Bin, SystemLabel.Archive, SystemLabel.Sent] as string[];
   const { updatedAfter, ...baseFilters } = filters;
   const { status, org, systemLabel } = baseFilters;
   const normalized: GetAllDialogsForPartiesQueryVariables = { ...baseFilters };

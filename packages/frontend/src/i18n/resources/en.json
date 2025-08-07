@@ -195,7 +195,7 @@
   "status.in_progress": "In progress",
   "status.not_applicable": "Not applicable",
   "status.requires_attention": "Requires attention",
-  "status.awaiting": "Sent",
+  "status.sent": "Sent",
   "transmission.type.acceptance": "Acceptance",
   "transmission.type.alert": "Alert",
   "transmission.type.correction": "Correction",

@@ -195,7 +195,7 @@
   "status.in_progress": "Under arbeid",
   "status.not_applicable": "Ubestemmelig",
   "status.requires_attention": "Krever handling",
-  "status.awaiting": "Sendt",
+  "status.sent": "Sendt",
   "transmission.type.acceptance": "Godkjent",
   "transmission.type.alert": "Varsel",
   "transmission.type.correction": "Rettelse",
