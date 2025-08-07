@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.51.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.50.2...v1.51.0) (2025-08-07)
+
+
+### Features
+
+* Dialog is considered as sent based on systemLabel-sent ([#2406](https://github.com/Altinn/dialogporten-frontend/issues/2406)) ([94646e3](https://github.com/Altinn/dialogporten-frontend/commit/94646e388a0bcb7cd9345aee3e7680e856a57642))
+
+
+### Bug Fixes
+
+* Added missing transmission counts on Dialog Details ([2ab9847](https://github.com/Altinn/dialogporten-frontend/commit/2ab9847cf25daba2ee1bef6647c6e13069118508))
+* incorrect badge color for trasnmissions in activity log ([#2402](https://github.com/Altinn/dialogporten-frontend/issues/2402)) ([ea1c072](https://github.com/Altinn/dialogporten-frontend/commit/ea1c072b9ff01c610e25724ac564d92a1492f7c8))
+* Transmission sent/received count now showing correct numbers ([611d0f2](https://github.com/Altinn/dialogporten-frontend/commit/611d0f25364535f9c5caf6d5f93956aab0c79f5f))
+
 ## [1.50.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.50.1...v1.50.2) (2025-08-06)
 
 
