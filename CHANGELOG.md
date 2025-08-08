@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.51.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.51.0...v1.51.1) (2025-08-08)
+
+
+### Bug Fixes
+
+* bump a-c to latest to include logical keyboard navigation order in global layout ([#2417](https://github.com/Altinn/dialogporten-frontend/issues/2417)) ([fbfc017](https://github.com/Altinn/dialogporten-frontend/commit/fbfc0171837b69991d1973acad46739a026fca40))
+* consist check for comparing if a saved search can be saved or not ([#2414](https://github.com/Altinn/dialogporten-frontend/issues/2414)) ([b6d006f](https://github.com/Altinn/dialogporten-frontend/commit/b6d006f2ed4dee331ea2df2b4a5b424e1c20e8a9))
+
 ## [1.51.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.50.2...v1.51.0) (2025-08-07)
 
 
