@@ -156,6 +156,7 @@
   "savedSearches.delete_failed": "Klarte ikkje slette søk",
   "savedSearches.delete_search": "Slett",
   "savedSearches.deleted_success": "Søk sletta",
+  "filter.query.sent": "Sendt",
   "savedSearches.lastUpdated": "Sist oppdatert: ",
   "savedSearches.loading_saved_searches": "Hentar lagra søk ...",
   "savedSearches.noSearchesFound": "Legg til ved å søkje og klikke på \"Lagra søk\".",

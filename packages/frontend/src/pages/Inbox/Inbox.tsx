@@ -73,8 +73,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const validSearchString = enteredSearchValue.length > 2 ? enteredSearchValue : undefined;
   const hasValidFilters = Object.values(filterState).some((arr) => typeof arr !== 'undefined' && arr?.length > 0);
   const searchMode = viewType === 'inbox' && (hasValidFilters || !!validSearchString);
-  const enableSavedSearch =
-    (hasValidFilters || !!validSearchString) && !isSavedSearchDisabled(filterState, enteredSearchValue);
+  const savedSearchDisabled = isSavedSearchDisabled(filterState, enteredSearchValue);
 
   const {
     dialogs,
@@ -188,7 +187,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
               removeButtonAltText={t('filter_bar.remove_filter')}
               addFilterButtonLabel={hasValidFilters ? t('filter_bar.add') : t('filter_bar.add_filter')}
             >
-              <SaveSearchButton viewType={viewType} disabled={!enableSavedSearch} filterState={filterState} />
+              <SaveSearchButton viewType={viewType} disabled={savedSearchDisabled} filterState={filterState} />
             </Toolbar>
           </>
         ) : null}

@@ -60,6 +60,7 @@
   "filter.query.older_than_one_year": "Eldre enn ett år",
   "filter.query.requires_attention": "Krever handling",
   "filter.query.awaiting": "Sendt",
+  "filter.query.sent": "Sendt",
   "filter.query.signing": "Til signering",
   "filter.query.this_month": "Denne måneden",
   "filter.query.this_week": "Denne uken",

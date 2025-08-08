@@ -84,4 +84,53 @@ test.describe('Saved search', () => {
     await expect(page.getByRole('link', { name: 'Innkalling til sesjon' })).toBeVisible();
     await expectIsCompanyPage(page);
   });
+
+  test('save search button is disabled when matching search exists also for predefined filters', async ({
+    page,
+    isMobile,
+  }) => {
+    await page.goto(defaultAppURL);
+
+    /* Create saved search with Oslo kommune and status send from inbox */
+    const toolbarArea = page.getByTestId('inbox-toolbar');
+
+    await toolbarArea.getByRole('button', { name: 'add' }).click();
+    await toolbarArea.getByText('Velg avsender').locator('visible=true').click();
+    await toolbarArea.getByLabel('Oslo kommune').locator('visible=true').check();
+
+    if (isMobile) {
+      await page.getByRole('button', { name: 'Vis alle resultater' }).click();
+    } else {
+      await page.keyboard.press('Escape');
+    }
+
+    await toolbarArea.getByRole('button', { name: 'add' }).click();
+    await toolbarArea.getByText('Velg status').locator('visible=true').click();
+    await toolbarArea.getByLabel('Sendt').locator('visible=true').check();
+
+    if (isMobile) {
+      await page.getByRole('button', { name: 'Vis alle resultater' }).click();
+    } else {
+      await page.keyboard.press('Escape');
+    }
+
+    await page.getByRole('button', { name: 'Lagre søk' }).click();
+    await expect(page.getByText('Søk lagret')).toBeVisible();
+
+    /* Navigate to sent folder and add Oslo kommune as filter...
+    It should not be possible to save search since a matching search already exists */
+    await getSidebarMenuItem(page, PageRoutes.sent).click();
+    await toolbarArea.getByRole('button', { name: 'add' }).click();
+    await toolbarArea.getByText('Velg avsender').locator('visible=true').click();
+    await toolbarArea.getByLabel('Oslo kommune').locator('visible=true').check();
+
+    if (isMobile) {
+      await page.getByRole('button', { name: 'Vis alle resultater' }).click();
+    } else {
+      await page.keyboard.press('Escape');
+    }
+
+    // Søk allerede lagret
+    await expect(page.getByText('Lagret søk')).toBeVisible();
+  });
 });
