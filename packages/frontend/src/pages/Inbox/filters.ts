@@ -270,6 +270,12 @@ const createStatusFilter = (
         badge: getFilterBadgeProps(statusCount[DialogStatus.RequiresAttention] || 0),
       },
       {
+        label: t('status.awaiting'),
+        groupId: 'status-group-1',
+        value: DialogStatus.Awaiting,
+        badge: getFilterBadgeProps(statusCount[DialogStatus.Awaiting] || 0),
+      },
+      {
         label: t('status.in_progress'),
         groupId: 'status-group-1',
         value: DialogStatus.InProgress,
@@ -383,6 +389,7 @@ export const presetFiltersByView: Record<InboxViewType, Partial<GetAllDialogsFor
     status: [
       DialogStatus.NotApplicable,
       DialogStatus.InProgress,
+      DialogStatus.Awaiting,
       DialogStatus.RequiresAttention,
       DialogStatus.Completed,
     ],
