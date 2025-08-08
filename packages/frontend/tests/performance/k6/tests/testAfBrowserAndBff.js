@@ -16,8 +16,8 @@ import { getCookie } from '../helpers/getCookie.js';
 import { afUrl } from '../helpers/config.js';
 import { readCsv } from '../testData/readCsv.js';
 import { getOptions } from '../helpers/options.js';
-import { selectSideMenuElement, selectNextPage } from './browserFunctions.js';
-import { openAf, selectMenuElements, isAuthenticated, getNextpage } from '../tests/bffFunctions.js';
+import { selectSideMenuElement, selectNextPage, selectAllEnterprises } from './browserFunctions.js';
+import { openAf, selectMenuElements, isAuthenticated, getNextpage, getDialogsForAllEnterprises } from '../tests/bffFunctions.js';
 import { isAuthenticatedLabel } from '../helpers/queries.js';
 
 const env = __ENV.ENVIRONMENT || 'yt';
@@ -38,6 +38,7 @@ const loadArchive = new Trend('load_archive', true);
 const loadBin = new Trend('load_bin', true);
 const backToInbox = new Trend('load_inbox_from_menu', true);
 const loadNextPage = new Trend('load_next_page', true);
+const loadAllEnterprises = new Trend('load_all_enterprises', true);
 
 
 /**
@@ -77,7 +78,6 @@ export async function browserTest(data) {
     check(currentUrl, {
       currentUrl: (h) => h == afUrl,
     });
-     // Wait for 60 seconds to simulate user interaction
     
     var endTime = new Date();
     loadInbox.add(endTime - startTime);
@@ -90,6 +90,7 @@ export async function browserTest(data) {
     await selectSideMenuElement(page, 'a[href="/bin"]', loadBin);
     await selectSideMenuElement(page, 'aside a[href="/"]', backToInbox);
     await selectNextPage(page, loadNextPage);
+    await selectAllEnterprises(page, loadAllEnterprises);
   } finally {
     await page.close();
   }
@@ -102,9 +103,10 @@ export async function browserTest(data) {
   */  
 export function bffTest(data) {
   var testData = randomItem(data);
-  const parties = openAf(testData.pid, testData.cookie);
+  const [parties, allParties] = openAf(testData.pid, testData.cookie);
   selectMenuElements(testData.cookie, parties);
   isAuthenticated(testData.cookie, isAuthenticatedLabel);
   getNextpage(testData.cookie, parties);
+  getDialogsForAllEnterprises(testData.cookie, allParties);
 }
 

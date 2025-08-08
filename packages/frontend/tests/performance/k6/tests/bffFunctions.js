@@ -18,17 +18,24 @@ const baseUrl = afUrl + 'api';
  * @returns {Array} - An array containing user party information.
  */
 export function openAf(pid, cookie) {
+    
     var parties = getParties(cookie, pid);
+    const userParty = parties.filter((el) => el.includes(pid));
     getOrganizations(cookie);
     getSavedSearches(cookie);
     //getProfile(cookie);
-    getAllDialogsForCount(cookie, parties);
-    getAllDialogsForParty(cookie, parties);
-    const userParty = parties.filter((el) => el.includes(pid));
-    getAllDialogsForParty(cookie, [userParty[0]], 100, true);
-    getAllDialogsForCount(cookie, [userParty[0]]);
-    getAllDialogsForParty(cookie, [userParty[0]], 100);
-    return userParty;
+    if (parties.length <= 20) {
+        getAllDialogsForCount(cookie, parties);
+        getAllDialogsForParty(cookie, parties);
+        getAllDialogsForParty(cookie, [userParty[0]], 100, true);
+        getAllDialogsForCount(cookie, [userParty[0]]);
+        getAllDialogsForParty(cookie, [userParty[0]], 100);
+    } else {
+        getAllDialogsForCount(cookie, [userParty[0]]);
+        getAllDialogsForParty(cookie, [userParty[0]], 100, true);
+        getAllDialogsForParty(cookie, [userParty[0]], 100);
+    }
+    return [userParty, parties];
 }
 
 /**
@@ -43,6 +50,20 @@ export function selectMenuElements(cookie, parties) {
     getMenuElements(cookie, parties[0], "BIN");
     getAllDialogsForParty(cookie, [parties[0]], 100, true);
 }
+
+export function getDialogsForAllEnterprises(cookie, parties) {
+
+    const enterprises = parties.filter((el) => el.includes('organization'));
+    if (enterprises.length > 0 && enterprises.length <= 20) {
+        console.log('Getting dialogs for all enterprises: ' + enterprises.length);
+        getAllDialogsForParty(cookie, enterprises, 100, true);
+    }
+    else if (enterprises.length > 20) {
+        console.log('Not Getting dialogs for all enterprises: ' + enterprises.length);
+    } else {
+        console.log('No enterprises found for this user');
+    }
+}  
 
 /**
  * This function calls the isAuthenticated endpoint. Called twice pr minute from browser

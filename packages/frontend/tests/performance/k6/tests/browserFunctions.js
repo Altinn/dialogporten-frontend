@@ -42,6 +42,37 @@ export async function selectNextPage(page, trend) {
   }
 }
 
+export async function selectAllEnterprises(page, trend) {
+  // _button_1q3ym_1 _button_o1gnh_1
+  // _button_1q3ym_1 _button_o1gnh_1
+  //#root > div > div > div > main > div > section:nth-child(1) > div > div:nth-child(1) > button
+  var menuElement = await page.waitForSelector('button[class="_button_1q3ym_1 _button_o1gnh_1"]', { timeout: 100 }).catch(() => false);
+  await Promise.all([
+    menuElement.click(),
+  ]);
+  await page.waitForTimeout(1000); 
+  const alle = page.locator('//li[text()="Alle virksomheter"]')
+  
+  const liElements = page.locator('li');
+  console.log(`Found ${await alle.count()} list items`);
+  for (let i = 0; i < await liElements.count(); i++) {
+    const textContent = await liElements.nth(i).textContent();
+    if (textContent.includes('Alle virksomheter')) {
+      console.log(`List item ${i}: ${textContent}`);
+      var startTime = new Date();
+      await Promise.all([
+        liElements.nth(i).click(),
+      ]);
+      await waitForPageLoaded(page, 2);
+      var endTime = new Date();
+      trend.add(endTime - startTime);
+      //await page.waitForTimeout(10000); // Wait for 1 second to ensure the page is loaded
+      await page.screenshot({ path: `browser-${__ITER}.png` });
+      break;
+    }
+  }
+}
+
 /**
  * Async function to wait for the page to load.
  * @param {object} page - The page object to interact with.
