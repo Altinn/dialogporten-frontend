@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.51.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.51.1...v1.51.2) (2025-08-08)
+
+
+### Bug Fixes
+
+* maintain sidebar selection when viewing dialogs ([#2419](https://github.com/Altinn/dialogporten-frontend/issues/2419)) ([b81bf46](https://github.com/Altinn/dialogporten-frontend/commit/b81bf46c67f6e8fe2fab6289f718f44d80226e5e))
+
 ## [1.51.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.51.0...v1.51.1) (2025-08-08)
 
 
