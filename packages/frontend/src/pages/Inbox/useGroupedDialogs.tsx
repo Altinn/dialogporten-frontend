@@ -160,7 +160,7 @@ const useGroupedDialogs = ({
       recipient: item.recipient,
       attachmentsCount: item.guiAttachmentCount,
       seenByLog: item.seenByLog,
-      unread: !item.seenSinceLastContentUpdate.find((d) => d.isCurrentEndUser),
+      unread: item.seenSinceLastContentUpdate.length === 0,
       status: getDialogStatus(item.status, t),
       controls: <ContextMenu {...contextMenu} />,
       updatedAt: item.updatedAt,
