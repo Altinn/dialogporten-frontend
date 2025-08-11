@@ -30,7 +30,7 @@ export const endUsers = new SharedArray('endUsers', function () {
 export const options = getOptions();
 
 // Define the trends for each page load
-const loadInbox = new Trend('load_inbox', true);
+const openAF = new Trend('open_af', true);
 const loadDrafts = new Trend('load_drafts', true);
 const loadSent = new Trend('load_sent', true);
 const loadSavedSearches = new Trend('load_saved_searches', true);
@@ -72,6 +72,7 @@ export async function browserTest(data) {
     await context.addCookies([testData.cookie]);
     var startTime = new Date();
     await page.goto(afUrl, { waitUntil: 'networkidle' });
+    console.log(`Running browser test for PID: ${testData.pid}`);
 
     // Check if we are on the right page
     const currentUrl = page.url();
@@ -80,7 +81,7 @@ export async function browserTest(data) {
     });
     
     var endTime = new Date();
-    loadInbox.add(endTime - startTime);
+    openAF.add(endTime - startTime);
 
     // press every menu item, return to inbox
     await selectSideMenuElement(page, 'a[href="/drafts"]', loadDrafts);

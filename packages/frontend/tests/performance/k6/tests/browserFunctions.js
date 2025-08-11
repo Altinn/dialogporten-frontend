@@ -50,15 +50,10 @@ export async function selectAllEnterprises(page, trend) {
   await Promise.all([
     menuElement.click(),
   ]);
-  await page.waitForTimeout(1000); 
-  const alle = page.locator('//li[text()="Alle virksomheter"]')
-  
   const liElements = page.locator('li');
-  console.log(`Found ${await alle.count()} list items`);
   for (let i = 0; i < await liElements.count(); i++) {
     const textContent = await liElements.nth(i).textContent();
     if (textContent.includes('Alle virksomheter')) {
-      console.log(`List item ${i}: ${textContent}`);
       var startTime = new Date();
       await Promise.all([
         liElements.nth(i).click(),
@@ -66,7 +61,6 @@ export async function selectAllEnterprises(page, trend) {
       await waitForPageLoaded(page, 2);
       var endTime = new Date();
       trend.add(endTime - startTime);
-      //await page.waitForTimeout(10000); // Wait for 1 second to ensure the page is loaded
       await page.screenshot({ path: `browser-${__ITER}.png` });
       break;
     }

@@ -51,17 +51,16 @@ export function selectMenuElements(cookie, parties) {
     getAllDialogsForParty(cookie, [parties[0]], 100, true);
 }
 
+/**
+ * This function retrieves all dialogs for all enterprises the user is a part of,
+ * if there are between 2 and 20 enterprises.
+ * @param {Object} cookie - The cookie object containing name and value.
+ * @param {Array} parties - An array of party URIs.
+ */
 export function getDialogsForAllEnterprises(cookie, parties) {
-
     const enterprises = parties.filter((el) => el.includes('organization'));
-    if (enterprises.length > 0 && enterprises.length <= 20) {
-        console.log('Getting dialogs for all enterprises: ' + enterprises.length);
+    if (enterprises.length > 1 && enterprises.length <= 20) {
         getAllDialogsForParty(cookie, enterprises, 100, true);
-    }
-    else if (enterprises.length > 20) {
-        console.log('Not Getting dialogs for all enterprises: ' + enterprises.length);
-    } else {
-        console.log('No enterprises found for this user');
     }
 }  
 
@@ -226,10 +225,13 @@ function getAllDialogsForParty(cookie, parties, count, extraParams = false, cont
     }
     payload.variables.limit = count;
     if (extraParams) {
-        payload.variables.status = ["IN_PROGRESS","REQUIRES_ATTENTION","COMPLETED"];
+        payload.variables.status = ["NOT_APPLICABLE", "IN_PROGRESS", "REQUIRES_ATTENTION", "COMPLETED"]
         payload.variables.label = ["DEFAULT"];
     }
-    var queryLabel = payload.operationName;
+    var queryLabel = payload.operationNameSingleParty;
+    if (parties.length > 1) {
+        queryLabel = payload.operationNameMultipleParties;
+    }
     if (continuationToken) {
         payload.variables.continuationToken = continuationToken;
         queryLabel = queryLabel + " nextPage";
@@ -261,7 +263,8 @@ function getMenuElements(cookie, party, menuElement) {
         payload.variables.status = [menuElement];
         payload.variables.label = ["DEFAULT"];
     }
-    var queryLabel = payload.operationName + " " + menuElement;
+    // Always single party for menu elements
+    var queryLabel = payload.operationNameSingleParty + " " + menuElement;
     var resp = graphql(cookie, payload, queryLabel);
     if (resp.status !== 200) {
         console.log('GraphQL request failed: ' + resp.status);

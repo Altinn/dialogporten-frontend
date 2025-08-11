@@ -61,7 +61,8 @@ export const getAllDialogsForCountQuery = {
 }
 
 export const getAllDialogsForPartyQuery = {
-    operationName: 'getAllDialogsForParties',
+    operationNameSingleParty: 'getAllDialogsForParty',
+    operationNameMultipleParties: 'getAllDialogsForParties',
     //query: `query getAllDialogsForParties($partyURIs: [String!], $search: String, $org: [String!], $status: [DialogStatus!], $continuationToken: String, $limit: Int, $label: [SystemLabel!], $createdAfter: DateTime, $createdBefore: DateTime, $updatedAfter: DateTime, $updatedBefore: DateTime) {\n  searchDialogs(\n    input: {party: $partyURIs, search: $search, org: $org, status: $status, continuationToken: $continuationToken, orderBy: {createdAt: null, updatedAt: DESC, dueAt: null}, systemLabel: $label, createdAfter: $createdAfter, createdBefore: $createdBefore, updatedAfter: $updatedAfter, updatedBefore: $updatedBefore, limit: $limit, excludeApiOnly: true}\n  ) {\n    items {\n      ...SearchDialogFields\n    }\n    hasNextPage\n    continuationToken\n  }\n}\n\nfragment SearchDialogFields on SearchDialog {\n  id\n  party\n  org\n  progress\n  guiAttachmentCount\n  status\n  createdAt\n  updatedAt\n  extendedStatus\n  seenSinceLastUpdate {\n    ...SeenLogFields\n  }\n  latestActivity {\n    transmissionId\n    description {\n      value\n      languageCode\n    }\n    performedBy {\n      actorType\n      actorId\n      actorName\n    }\n  }\n  content {\n    title {\n      ...DialogContentFields\n    }\n    summary {\n      ...DialogContentFields\n    }\n    senderName {\n      ...DialogContentFields\n    }\n    extendedStatus {\n      ...DialogContentFields\n    }\n  }\n  systemLabel\n}\n\nfragment SeenLogFields on SeenLog {\n  id\n  seenAt\n  seenBy {\n    actorType\n    actorId\n    actorName\n  }\n  isCurrentEndUser\n}\n\nfragment DialogContentFields on ContentValue {\n  mediaType\n  value {\n    value\n    languageCode\n  }\n}`,
     query: `query getAllDialogsForParties($partyURIs: [String!], $search: String, $org: [String!], $status: [DialogStatus!], $continuationToken: String, $limit: Int, $label: [SystemLabel!], $createdAfter: DateTime, $createdBefore: DateTime, $updatedAfter: DateTime, $updatedBefore: DateTime) {\n  searchDialogs(\n    input: {party: $partyURIs, search: $search, org: $org, status: $status, continuationToken: $continuationToken, orderBy: {createdAt: null, updatedAt: DESC, dueAt: null}, systemLabel: $label, createdAfter: $createdAfter, createdBefore: $createdBefore, updatedAfter: $updatedAfter, updatedBefore: $updatedBefore, limit: $limit, excludeApiOnly: true}\n  ) {\n    items {\n      ...SearchDialogFields\n    }\n    hasNextPage\n    continuationToken\n  }\n}\n\nfragment SearchDialogFields on SearchDialog {\n  id\n  party\n  org\n  progress\n  guiAttachmentCount\n  status\n  createdAt\n  updatedAt\n  dueAt\n  contentUpdatedAt\n  hasUnopenedContent\n  extendedStatus\n  seenSinceLastContentUpdate {\n    ...SeenLogFields\n  }\n  fromServiceOwnerTransmissionsCount\n  fromPartyTransmissionsCount\n  seenSinceLastUpdate {\n    ...SeenLogFields\n  }\n  latestActivity {\n    transmissionId\n    description {\n      value\n      languageCode\n    }\n    performedBy {\n      actorType\n      actorId\n      actorName\n    }\n  }\n  content {\n    title {\n      ...DialogContentFields\n    }\n    summary {\n      ...DialogContentFields\n    }\n    senderName {\n      ...DialogContentFields\n    }\n    extendedStatus {\n      ...DialogContentFields\n    }\n  }\n  endUserContext {\n    systemLabels\n  }\n}\n\nfragment SeenLogFields on SeenLog {\n  id\n  seenAt\n  seenBy {\n    actorType\n    actorId\n    actorName\n  }\n  isCurrentEndUser\n}\n\nfragment DialogContentFields on ContentValue {\n  mediaType\n  value {\n    value\n    languageCode\n  }\n}`,
     
@@ -79,11 +80,12 @@ export const queryLabels = [
     savedSearchesQuery.operationName,
     profileQuery.operationName,
     getAllDialogsForCountQuery.operationName,
-    getAllDialogsForPartyQuery.operationName,
-    getAllDialogsForPartyQuery.operationName + ' BIN',
-    getAllDialogsForPartyQuery.operationName + ' SENT',
-    getAllDialogsForPartyQuery.operationName + ' DRAFT',
-    getAllDialogsForPartyQuery.operationName + ' ARCHIVE',
-    getAllDialogsForPartyQuery.operationName + ' nextPage',
+    getAllDialogsForPartyQuery.operationNameSingleParty,
+    getAllDialogsForPartyQuery.operationNameMultipleParties,
+    getAllDialogsForPartyQuery.operationNameSingleParty + ' BIN',
+    getAllDialogsForPartyQuery.operationNameSingleParty + ' SENT',
+    getAllDialogsForPartyQuery.operationNameSingleParty + ' DRAFT',
+    getAllDialogsForPartyQuery.operationNameSingleParty + ' ARCHIVE',
+    getAllDialogsForPartyQuery.operationNameSingleParty + ' nextPage',
     isAuthenticatedLabel
 ];
