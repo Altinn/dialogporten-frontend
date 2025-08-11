@@ -1,11 +1,15 @@
 /*
- * This is a test script for performance testing the Altinn Frontend using k6 and browser automation.
- * Usage:
- * k6 run browser.js -e BROWSER_VUS=1 -e BFF_VUS=10 -e DURATION=1m -e ENVIRONMENT=yt
+ * This is a test script for performance testing arebeidsflate using k6 and browser automation.
+ * Usage (run from CLI):
+ * k6 run testAfBrowserAndBff.js -e BROWSER_VUS=1 -e BFF_VUS=10 -e DURATION=1m -e ENVIRONMENT=yt
  *  BROWSER_VUS: Number of virtual users for browser tests.
  *  BFF_VUS: Number of virtual users for backend-for-frontend (BFF) tests.
  *  DURATION: Duration of the test run.
  *  ENVIRONMENT: Environment to test against (e.g., yt, at, tt).
+ * 
+ * In addition, the ENVIRONMENT variables for token generation must be set:
+ *   - TOKEN_GENERATOR_USERNAME
+ *   - TOKEN_GENERATOR_PASSWORD
  * */
 import { browser } from 'k6/browser';
 import { check } from 'k6';
