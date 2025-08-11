@@ -24,7 +24,7 @@ export function openAf(pid, cookie) {
     getOrganizations(cookie);
     getSavedSearches(cookie);
     //getProfile(cookie);
-    if (parties.length <= 20) {
+    if (parties.length <= 20 && parties.length > 1) {
         getAllDialogsForCount(cookie, parties);
         getAllDialogsForParty(cookie, parties);
         getAllDialogsForParty(cookie, [userParty[0]], 100, true);
@@ -126,8 +126,10 @@ function getParties(cookie, pid) {
     }
     var parties = [];
     for (var party of data.data.parties) {
+        if (party.isDeleted) continue;
         parties.push(party.party);
         for (var subParty of party.subParties) {
+            if (subParty.isDeleted) continue;
             parties.push(subParty.party);
         }
     }
