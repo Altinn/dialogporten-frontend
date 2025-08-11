@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.52.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.51.2...v1.52.0) (2025-08-11)
+
+
+### Features
+
+* Add awaiting status to dialog filters ([#2418](https://github.com/Altinn/dialogporten-frontend/issues/2418)) ([22e0989](https://github.com/Altinn/dialogporten-frontend/commit/22e0989fd206e8437535faabe7922c2594bde5a4))
+* add i18n query param for QA translation validation ([#2421](https://github.com/Altinn/dialogporten-frontend/issues/2421)) ([c885bfe](https://github.com/Altinn/dialogporten-frontend/commit/c885bfe921dd4556eec034dfd7a84ec1d8dfa1b0))
+
 ## [1.51.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.51.1...v1.51.2) (2025-08-08)
 
 
