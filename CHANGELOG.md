@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.52.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.52.0...v1.52.1) (2025-08-11)
+
+
+### Bug Fixes
+
+* bump up AC-lib for virtualized list fix ([#2428](https://github.com/Altinn/dialogporten-frontend/issues/2428)) ([b988995](https://github.com/Altinn/dialogporten-frontend/commit/b9889954315eb1da584f6ff6910adb38eff3cdaf))
+* Read by mark is now greyed if dialog is read by anyone ([#2426](https://github.com/Altinn/dialogporten-frontend/issues/2426)) ([2ceb5ba](https://github.com/Altinn/dialogporten-frontend/commit/2ceb5ba3d67e12722ddaed97c4d1a27f89f78452))
+
 ## [1.52.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.51.2...v1.52.0) (2025-08-11)
 
 
