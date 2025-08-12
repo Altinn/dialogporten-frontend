@@ -11,25 +11,29 @@
  *   - TOKEN_GENERATOR_USERNAME
  *   - TOKEN_GENERATOR_PASSWORD
  * */
-import { browser } from 'k6/browser';
 import { check } from 'k6';
-import { Trend } from 'k6/metrics';
+import { browser } from 'k6/browser';
 import { SharedArray } from 'k6/data';
-import { randomItem } from '../helpers/testimports.js';
-import { getCookie } from '../helpers/getCookie.js';
+import { Trend } from 'k6/metrics';
 import { afUrl } from '../helpers/config.js';
-import { readCsv } from '../testData/readCsv.js';
+import { getCookie } from '../helpers/getCookie.js';
 import { getOptions } from '../helpers/options.js';
-import { selectSideMenuElement, selectNextPage, selectAllEnterprises } from './browserFunctions.js';
-import { openAf, selectMenuElements, isAuthenticated, getNextpage, getDialogsForAllEnterprises } from '../tests/bffFunctions.js';
 import { isAuthenticatedLabel } from '../helpers/queries.js';
+import { randomItem } from '../helpers/testimports.js';
+import { readCsv } from '../testData/readCsv.js';
+import { 
+  openAf, 
+  selectMenuElements, 
+  isAuthenticated, 
+  getNextpage, 
+  getDialogsForAllEnterprises 
+} from '../tests/bffFunctions.js';
+import { selectSideMenuElement, selectNextPage, selectAllEnterprises } from './browserFunctions.js';
 
 const env = __ENV.ENVIRONMENT || 'yt';
 
 const filenameEndusers = import.meta.resolve(`../testData/usersWithDialogs-${env}.csv`);
-export const endUsers = new SharedArray('endUsers', function () {
-  return readCsv(filenameEndusers);
-});
+export const endUsers = new SharedArray('endUsers', () => readCsv(filenameEndusers));
 
 export const options = getOptions();
 
@@ -51,9 +55,10 @@ const loadAllEnterprises = new Trend('load_all_enterprises', true);
  * @returns {Array} - An array of objects containing the PID and cookie for each end user.
  **/
 export async function setup() {
-  var data = [];
-  for (var endUser of endUsers) {
-    var cookie = getCookie(endUser.pid);
+  const data = [];
+  var cookie;
+  for (const endUser of endUsers) {
+    cookie = getCookie(endUser.pid);
     data.push({
       pid: endUser.pid,
       cookie: cookie
@@ -68,22 +73,24 @@ export async function setup() {
  * @param {object} data - Test data for the scenario.
  */
 export async function browserTest(data) {
-  var testData = randomItem(data);
+  const testData = randomItem(data);
   const context = await browser.newContext();
   const page = await context.newPage();
+  var startTime;
+  var endTime;
 
   try {
     await context.addCookies([testData.cookie]);
-    var startTime = new Date();
+    startTime = new Date();
     await page.goto(afUrl, { waitUntil: 'networkidle' });
 
     // Check if we are on the right page
     const currentUrl = page.url();
     check(currentUrl, {
-      currentUrl: (h) => h == afUrl,
+      currentUrl: (h) => h === afUrl,
     });
     
-    var endTime = new Date();
+    endTime = new Date();
     openAF.add(endTime - startTime);
 
     // press every menu item, return to inbox
@@ -101,12 +108,12 @@ export async function browserTest(data) {
 }
 
 /**
-  * This function does the bff-calls used when selecting menu elements
-  * @param {Object} testData - The test data containing cookie and pid.
-  * @returns {Array} - An array containing user party information.
-  */  
+ * This function does the bff-calls used when selecting menu elements
+ * @param {Object} testData - The test data containing cookie and pid.
+ * @returns {Array} - An array containing user party information.
+ */  
 export function bffTest(data) {
-  var testData = randomItem(data);
+  const testData = randomItem(data);
   const [parties, allParties] = openAf(testData.pid, testData.cookie);
   selectMenuElements(testData.cookie, parties);
   isAuthenticated(testData.cookie, isAuthenticatedLabel);

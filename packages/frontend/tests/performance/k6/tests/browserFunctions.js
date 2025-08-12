@@ -5,16 +5,14 @@
  * @param {object} trend - Trend metric to track the action duration.
  */
 export async function selectSideMenuElement(page, locator, trend) {
-  var menuElement = await page.waitForSelector(locator, { timeout: 2000 }).catch(() => false);
-  var startTime = new Date();
-  await Promise.all([
-    menuElement.click(),
-  ]);
+  let menuElement = await page.waitForSelector(locator, { timeout: 2000 }).catch(() => false);
+  let startTime = new Date();
+  await Promise.all([menuElement.click()]);
 
   // Wait for the page to load after clicking the menu element
   await waitForPageLoaded(page);
   // Track the time taken for the action
-  var endTime = new Date();
+  let endTime = new Date();
   trend.add(endTime - startTime);
 }
 
@@ -25,18 +23,20 @@ export async function selectSideMenuElement(page, locator, trend) {
  * @return {Promise<void>} - A promise that resolves when the next page is selected.
  */
 export async function selectNextPage(page, trend) {
-  var next_page = await page.waitForSelector('button[class="ds-button"]', { state: 'attached', timeout: 500 }).catch(() => false);
-  var iterations = 0;
+  let next_page = await page
+    .waitForSelector('button[class="ds-button"]', { state: 'attached', timeout: 500 })
+    .catch(() => false);
+  let iterations = 0;
   while (next_page && iterations < 10) {
-    var startTime = new Date();
-    await Promise.all([
-      next_page.click(),
-    ]);
+    let startTime = new Date();
+    await Promise.all([next_page.click()]);
    
     // Wait for the page to load after clicking the next page button
     await waitForPageLoaded(page, 2);
-    next_page = await page.waitForSelector('button[class="ds-button"]', { state: 'attached', timeout: 500 }).catch(() => false);
-    var endTime = new Date();
+    next_page = await page
+      .waitForSelector('button[class="ds-button"]', { state: 'attached', timeout: 500 })
+      .catch(() => false);
+    let endTime = new Date();
     trend.add(endTime - startTime);
     iterations++;
   }
@@ -44,22 +44,19 @@ export async function selectNextPage(page, trend) {
 
 export async function selectAllEnterprises(page, trend) {
   // TODO: Is it the only way to get to the "Alle virksomheter" page?
-  var menuElement = await page.waitForSelector('button[class="_button_1q3ym_1 _button_o1gnh_1"]', { timeout: 100 }).catch(() => false);
-  await Promise.all([
-    menuElement.click(),
-  ]);
+  let menuElement = await page
+    .waitForSelector('button[class="_button_1q3ym_1 _button_o1gnh_1"]', { timeout: 100 })
+    .catch(() => false);
+  await Promise.all([menuElement.click()]);
   const liElements = page.locator('li');
   for (let i = 0; i < await liElements.count(); i++) {
     const textContent = await liElements.nth(i).textContent();
     if (textContent.includes('Alle virksomheter')) {
-      var startTime = new Date();
-      await Promise.all([
-        liElements.nth(i).click(),
-      ]);
+      let startTime = new Date();
+      await Promise.all([liElements.nth(i).click()]);
       await waitForPageLoaded(page, 2);
-      var endTime = new Date();
+      let endTime = new Date();
       trend.add(endTime - startTime);
-      await page.screenshot({ path: `browser-${__ITER}.png` });
       break;
     }
   }
@@ -72,12 +69,12 @@ export async function selectAllEnterprises(page, trend) {
  * @return {Promise<void>} - A promise that resolves when the page is loaded.
  */
 async function waitForPageLoaded(page, empties = 1) {
-  var busyItems = await page.$$('li [aria-busy="true"]');
-  var noEmptys = 0;
+  let busyItems = await page.$$('li [aria-busy="true"]');
+  let noEmptys = 0;
   while ( busyItems.length > 0 || noEmptys < empties) {
     await page.waitForTimeout(10); // Wait for 10 ms before checking again
     busyItems = await page.$$('li [aria-busy="true"]');
-    if (busyItems.length == 0) {
+    if (busyItems.length === 0) {
       noEmptys++;
     }
   }

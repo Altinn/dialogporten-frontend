@@ -1,4 +1,5 @@
 import http from 'k6/http';
+import { afUrl } from '../helpers/config.js';
 import { 
     partiesQuery, 
     organizationsQuery,
@@ -8,8 +9,6 @@ import {
     getAllDialogsForPartyQuery,
 } from '../helpers/queries.js';
 import { describe, expect } from '../helpers/testimports.js';
-import { afUrl } from '../helpers/config.js';
-
 const baseUrl = afUrl + 'api';
 
 /**
@@ -18,17 +17,16 @@ const baseUrl = afUrl + 'api';
  * @returns {Array} - An array containing user party information.
  */
 export function openAf(pid, cookie) {
-    
-    var parties = getParties(cookie, pid);
+    let parties = getParties(cookie, pid);
     const userParty = parties.filter((el) => el.includes(pid));
     getOrganizations(cookie);
     getSavedSearches(cookie);
     //getProfile(cookie);
     if (parties.length <= 20 && parties.length > 1) {
-        getAllDialogsForCount(cookie, parties);
-        getAllDialogsForParties(cookie, parties);
-        getAllDialogsForParties(cookie, [userParty[0]], 100, true);
-        getAllDialogsForCount(cookie, [userParty[0]]);
+    getAllDialogsForCount(cookie, parties);
+    getAllDialogsForParties(cookie, parties);
+    getAllDialogsForParties(cookie, [userParty[0]], 100, true);
+    getAllDialogsForCount(cookie, [userParty[0]]);
         getAllDialogsForParties(cookie, [userParty[0]], 100);
     } else {
         getAllDialogsForCount(cookie, [userParty[0]]);
@@ -86,7 +84,7 @@ export function isAuthenticated(cookie, label) {
     }
     const resp = http.get(url, params);
     if (resp.status !== 200) {
-        console.log('isAuthenticated request failed: ' + resp.status);
+        console.info('isAuthenticated request failed: ' + resp.status);
     }
     return resp
 }
@@ -99,10 +97,10 @@ export function isAuthenticated(cookie, label) {
  * @throws {Error} - If the request fails. 
  */
 export function getNextpage(cookie, parties) {
-    var dialogs = getAllDialogsForParties(cookie, [parties[0]], 100, true, null);
-    var iterations = 0;
-    while (dialogs.data && dialogs.data.searchDialogs.hasNextPage && iterations < 10) {
-        var continuationToken = dialogs.data.searchDialogs.continuationToken;
+    let dialogs = getAllDialogsForParties(cookie, [parties[0]], 100, true, null);
+    let iterations = 0;
+    while (dialogs.data?.searchDialogs.hasNextPage && iterations < 10) {
+        let continuationToken = dialogs.data.searchDialogs.continuationToken;
         dialogs = getAllDialogsForParties(cookie, [parties[0]], 100, true, continuationToken);
         iterations++;
     }
@@ -114,21 +112,21 @@ export function getNextpage(cookie, parties) {
  * @return {Array} - An array of party URIs.
  */
 function getParties(cookie, pid) {
-    var resp = graphql(cookie, partiesQuery);
+    let resp = graphql(cookie, partiesQuery);
     if (resp.status !== 200) {
-        console.log('GraphQL request failed: ' + resp.status);
+        console.info('GraphQL request failed: ' + resp.status);
         return
     }
     const data = resp.json();
     if (!data.data || !data.data.parties) {
-        console.log(`No parties found in response data for ${pid}`);
+        console.info(`No parties found in response data for ${pid}`);
         return [];
     }
-    var parties = [];
-    for (var party of data.data.parties) {
+    let parties = [];
+    for (let party of data.data.parties) {
         if (party.isDeleted) continue;
         parties.push(party.party);
-        for (var subParty of party.subParties) {
+        for (let subParty of party.subParties) {
             if (subParty.isDeleted) continue;
             parties.push(subParty.party);
         }
@@ -142,14 +140,14 @@ function getParties(cookie, pid) {
  * @return {Array} - An array of organization IDs.
  */
 function getOrganizations(cookie) {
-    var resp = graphql(cookie, organizationsQuery);
+    let resp = graphql(cookie, organizationsQuery);
     if (resp.status !== 200) {
-        console.log('GraphQL request failed: ' + resp.status);
+        console.info('GraphQL request failed: ' + resp.status);
         return
     }
     const data = resp.json();
-    var orgs = [];
-    for (var org of data.data.organizations) {
+    let orgs = [];
+    for (let org of data.data.organizations) {
         orgs.push(org.id);
     }
     return orgs;
@@ -161,14 +159,14 @@ function getOrganizations(cookie) {
  * @return {Array} - An array of saved search IDs.
  */
 function getSavedSearches(cookie) {
-    var resp = graphql(cookie, savedSearchesQuery);
+    let resp = graphql(cookie, savedSearchesQuery);
     if (resp.status !== 200) {
-        console.log('GraphQL request failed: ' + resp.status);
+        console.info('GraphQL request failed: ' + resp.status);
         return
     }
     const data = resp.json();
-    var searches = [];
-    for (var search of data.data.savedSearches) {
+    let searches = [];
+    for (let search of data.data.savedSearches) {
         searches.push(search.id);
     }
     return searches;
@@ -180,13 +178,13 @@ function getSavedSearches(cookie) {
  * @return {Array} - An array containing user ID and UUID.
  */
 function getProfile(cookie) {
-    var resp = graphql(cookie, profileQuery);
+    let resp = graphql(cookie, profileQuery);
     if (resp.status !== 200) {
-        console.log('GraphQL request failed: ' + resp.status);
+        console.info('GraphQL request failed: ' + resp.status);
         return
     }
     const data = resp.json();
-    var profile = [];   
+    let profile = [];   
     profile.push(data.data.profile.user.userId);
     profile.push(data.data.profile.user.userUuid);
     return profile;
@@ -199,17 +197,17 @@ function getProfile(cookie) {
  * @return {Object} - The response object from the request.
  */
 function getAllDialogsForCount(cookie, parties) {
-    var payload = JSON.parse(JSON.stringify(getAllDialogsForCountQuery));
-    for (var party of parties) {
+    let payload = JSON.parse(JSON.stringify(getAllDialogsForCountQuery));
+    for (let party of parties) {
         payload.variables.partyURIs.push(party);
     }
-    var queryLabel = payload.operationName + " all parties";
+    let queryLabel = payload.operationName + " all parties";
     if (parties.length === 1) {
         queryLabel = payload.operationName + " single party";
     }
-    var resp = graphql(cookie, payload, queryLabel);
+    let resp = graphql(cookie, payload, queryLabel);
     if (resp.status !== 200) {
-        console.log('GraphQL request failed: ' + resp.status);
+        console.info('GraphQL request failed: ' + resp.status);
         return
     }
     return resp.json();
@@ -225,12 +223,12 @@ function getAllDialogsForCount(cookie, parties) {
  * @return {Object} - The response object from the request.
  */
 function getAllDialogsForParties(cookie, parties, count, extraParams = false, continuationToken = null) {
-    var payload = JSON.parse(JSON.stringify(getAllDialogsForPartyQuery));
-    for (var party of parties) {
+    let payload = JSON.parse(JSON.stringify(getAllDialogsForPartyQuery));
+    for (let party of parties) {
         payload.variables.partyURIs.push(party);
     }
     payload.variables.limit = count;
-    var queryLabel = payload.operationNameSingleParty;
+    let queryLabel = payload.operationNameSingleParty;
     if (parties.length > 1) {
         queryLabel = payload.operationNameMultipleParties;
     }
@@ -246,9 +244,9 @@ function getAllDialogsForParties(cookie, parties, count, extraParams = false, co
         queryLabel = queryLabel + " with extraParams";
     }
 
-    var resp = graphql(cookie, payload, queryLabel);
+    let resp = graphql(cookie, payload, queryLabel);
     if (resp.status !== 200) {  
-        console.log('GraphQL request failed: ' + resp.status);
+        console.info('GraphQL request failed: ' + resp.status);
         return
     }
     return resp.json();
@@ -262,7 +260,7 @@ function getAllDialogsForParties(cookie, parties, count, extraParams = false, co
  * @return {Object} - The response object from the request.
  */
 function getMenuElements(cookie, party, menuElement) {
-    var payload = JSON.parse(JSON.stringify(getAllDialogsForPartyQuery));
+    let payload = JSON.parse(JSON.stringify(getAllDialogsForPartyQuery));
     payload.variables.partyURIs.push(party);
     payload.variables.limit = 100;
     if (menuElement === "ARCHIVE" || menuElement === "BIN") {
@@ -273,10 +271,10 @@ function getMenuElements(cookie, party, menuElement) {
         payload.variables.label = ["DEFAULT"];
     }
     // Always single party for menu elements
-    var queryLabel = payload.operationNameSingleParty + " " + menuElement;
-    var resp = graphql(cookie, payload, queryLabel);
+    let queryLabel = payload.operationNameSingleParty + " " + menuElement;
+    let resp = graphql(cookie, payload, queryLabel);
     if (resp.status !== 200) {
-        console.log('GraphQL request failed: ' + resp.status);
+        console.info('GraphQL request failed: ' + resp.status);
         return
     }
     return resp.json();
@@ -292,7 +290,7 @@ function getMenuElements(cookie, party, menuElement) {
 function graphql(cookie, query, label = null) {
     const url = baseUrl + '/graphql';
     const payload = JSON.stringify(query);
-    var queryLabel = query.operationName;
+    let queryLabel = query.operationName;
     if (label) {
         queryLabel = label;
     }
