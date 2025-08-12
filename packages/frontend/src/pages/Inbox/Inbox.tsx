@@ -8,6 +8,7 @@ import {
   Section,
   type SeenByLogItemProps,
   Toolbar,
+  Typography,
 } from '@altinn/altinn-components';
 import type { FilterState } from '@altinn/altinn-components/dist/types/lib/components/Toolbar/Toolbar';
 import { useEffect, useState } from 'react';
@@ -29,6 +30,7 @@ import { FilterCategory, readFiltersFromURLQuery } from './filters.ts';
 import styles from './inbox.module.css';
 import { useFilters } from './useFilters.tsx';
 import useGroupedDialogs from './useGroupedDialogs.tsx';
+import { useMockError } from './useMockError.tsx';
 
 interface InboxProps {
   viewType: InboxViewType;
@@ -51,8 +53,8 @@ export const Inbox = ({ viewType }: InboxProps) => {
     isLoading: isLoadingParties,
   } = useParties();
 
+  useMockError();
   const location = useLocation();
-
   const [filterState, setFilterState] = useState<FilterState>(readFiltersFromURLQuery(location.search));
   const [currentSeenByLogModal, setCurrentSeenByLogModal] = useState<CurrentSeenByLog | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -152,12 +154,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
     }
   }, [isLoading]);
 
-  const isMock = searchParams.get('mock') === 'true';
-  const simulateError = searchParams.get('simulateError') === 'true';
-  if (isMock && simulateError) {
-    throw new Error('Simulated error for testing purposes');
-  }
-
   return (
     <PageBase margin="page">
       <section data-testid="inbox-toolbar">
@@ -193,12 +189,13 @@ export const Inbox = ({ viewType }: InboxProps) => {
         ) : null}
       </section>
       {(viewType === 'archive' || viewType === 'bin') && (
-        <Section>
+        <Typography size="sm">
           <p>{t(`inbox.${viewType}.info_message`)}</p>
-        </Section>
+        </Typography>
       )}
+
       <Section>
-        {dialogsSuccess && !dialogs.length && (
+        {dialogsSuccess && !dialogs.length && !isLoading && (
           <EmptyState
             title={searchMode ? t('inbox.no_results.title') : t(`inbox.heading.title.${viewType}`, { count: 0 })}
             description={searchMode ? t('inbox.no_results.description') : t(`inbox.heading.description.${viewType}`)}
