@@ -22,8 +22,8 @@ import { isAuthenticatedLabel } from '../helpers/queries.js';
 import { randomItem } from '../helpers/testimports.js';
 import { readCsv } from '../testData/readCsv.js';
 import {
-  getNextpage,
   getDialogsForAllEnterprises,
+  getNextpage,
   isAuthenticated,
   openAf,
   selectMenuElements

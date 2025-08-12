@@ -2,9 +2,9 @@
  * This module provides functions to fetch tokens from the Altinn Test Tools Token Generator API.
  * It supports both enterprise and personal tokens, caching them to avoid unnecessary requests.
  */
-import http from "k6/http";
+import encoding from 'k6/encoding';
+import http from 'k6/http';
 import { URL } from 'https://jslib.k6.io/url/1.0.0/index.js';
-import encoding from "k6/encoding";
 
 const tokenUsername = __ENV.TOKEN_GENERATOR_USERNAME;
 const tokenPassword = __ENV.TOKEN_GENERATOR_PASSWORD;

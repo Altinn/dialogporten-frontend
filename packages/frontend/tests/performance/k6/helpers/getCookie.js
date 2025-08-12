@@ -28,7 +28,7 @@ const tokenGeneratorEnv = (() => {
  **/
 function getToken(pid) {
   const tokenParams = {
-    scopes: "digdir:dialogporten.noconsent openid altinn:portal/enduser",
+    scopes: 'digdir:dialogporten.noconsent openid altinn:portal/enduser',
     pid: pid,
     env: tokenGeneratorEnv
   }
@@ -70,14 +70,14 @@ function getSessionId(token) {
 export function getCookie(pid) {
   var token = getToken(pid);
   const cookie = {
-    name: "arbeidsflate",
+    name: 'arbeidsflate',
     value: getSessionId(token),
     domain: afUrl.replace(/https?:\/\//, '').replace(/http?:\/\//, '').replace(/\/$/, ''), // Remove protocol and trailing slash
-    path: "/",
+    path: '/',
     httpOnly: true,
     secure: false,
-    sameSite: "",
-    url: ""
+    sameSite: '',
+    url: ''
   }
   return cookie;
 }
