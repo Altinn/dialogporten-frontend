@@ -143,7 +143,7 @@ function getOrganizations(cookie) {
   const resp = graphql(cookie, organizationsQuery);
   if (resp.status !== 200) {
     console.info('GraphQL request failed: ' + resp.status);
-    return
+    return;
   }
   const data = resp.json();
   const orgs = [];
@@ -208,7 +208,7 @@ function getAllDialogsForCount(cookie, parties) {
   const resp = graphql(cookie, payload, queryLabel);
   if (resp.status !== 200) {
     console.info('GraphQL request failed: ' + resp.status);
-    return
+    return;
   }
   return resp.json();
 }
@@ -239,7 +239,7 @@ function getAllDialogsForParties(cookie, parties, count, extraParams = false, co
   }
 
   if (extraParams) {
-    payload.variables.status = ['NOT_APPLICABLE', 'IN_PROGRESS', 'REQUIRES_ATTENTION', 'COMPLETED']
+    payload.variables.status = ['NOT_APPLICABLE', 'IN_PROGRESS', 'REQUIRES_ATTENTION', 'COMPLETED'];
     payload.variables.label = ['DEFAULT'];
     queryLabel = queryLabel + ' with extraParams';
   }
@@ -247,7 +247,7 @@ function getAllDialogsForParties(cookie, parties, count, extraParams = false, co
   const resp = graphql(cookie, payload, queryLabel);
   if (resp.status !== 200) {
     console.info('GraphQL request failed: ' + resp.status);
-    return
+    return;
   }
   return resp.json();
 }
@@ -265,8 +265,7 @@ function getMenuElements(cookie, party, menuElement) {
   payload.variables.limit = 100;
   if (menuElement === 'ARCHIVE' || menuElement === 'BIN') {
     payload.variables.label = [menuElement];
-  }
-  else {
+  } else {
     payload.variables.status = [menuElement];
     payload.variables.label = ['DEFAULT'];
   }
@@ -275,7 +274,7 @@ function getMenuElements(cookie, party, menuElement) {
   const resp = graphql(cookie, payload, queryLabel);
   if (resp.status !== 200) {
     console.info('GraphQL request failed: ' + resp.status);
-    return
+    return;
   }
   return resp.json();
 }
@@ -297,7 +296,7 @@ function graphql(cookie, query, label = null) {
   const params = {
     headers: {
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
+      Accept: 'application/json',
     },
     tags: { name: queryLabel },
   };

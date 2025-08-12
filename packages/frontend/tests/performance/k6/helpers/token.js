@@ -9,7 +9,7 @@ import { URL } from 'https://jslib.k6.io/url/1.0.0/index.js';
 const tokenUsername = __ENV.TOKEN_GENERATOR_USERNAME;
 const tokenPassword = __ENV.TOKEN_GENERATOR_PASSWORD;
 
-const tokenTtl = parseInt(__ENV.TTL) || 3600;
+const tokenTtl = Number.parseInt(__ENV.TTL) || 3600;
 const tokenMargin = 10;
 
 const credentials = `${tokenUsername}:${tokenPassword}`;
@@ -21,19 +21,19 @@ const tokenRequestOptions = {
   tags: { name: 'Token generator' },
 };
 
-let cachedTokens = {};
-let cachedTokensIssuedAt = {};
+const cachedTokens = {};
+const cachedTokensIssuedAt = {};
 
 /**
  * Function to generate a cache key based on the token type and options.
- * @param {*} tokenType 
- * @param {*} tokenOptions 
+ * @param {*} tokenType
+ * @param {*} tokenOptions
  * @returns 
  */
 function getCacheKey(tokenType, tokenOptions) {
-  var cacheKey = `${tokenType}`;
+  let cacheKey = `${tokenType}`;
   for (const key in tokenOptions) {
-    if (tokenOptions.hasOwnProperty(key)) {
+    if (tokenOptions.hasOwn(key)) {
       cacheKey += `|${tokenOptions[key]}`;
     }
   }
@@ -45,7 +45,7 @@ function getCacheKey(tokenType, tokenOptions) {
  * @param {string} url - The URL of the token generator API.
  * @param {Object} tokenOptions - The options for the token, including user and app details.
  * Example:
- * {    
+ * {
  *   scope: 'altinn:serviceowner altinn:enduser',
  *   env: 'yt01',
  *   pid: '12345678901',
@@ -58,7 +58,7 @@ function fetchToken(url, tokenOptions, type) {
   const currentTime = Math.floor(Date.now() / 1000);
   const cacheKey = getCacheKey(type, tokenOptions);
 
-  if (!cachedTokens[cacheKey] || (currentTime - cachedTokensIssuedAt[cacheKey] >= tokenTtl - tokenMargin)) {
+  if (!cachedTokens[cacheKey] || currentTime - cachedTokensIssuedAt[cacheKey] >= tokenTtl - tokenMargin) {
     // if (__VU == 0) {
     //   console.info(`Fetching ${type} token from token generator during setup stage`);
     // }
@@ -66,10 +66,9 @@ function fetchToken(url, tokenOptions, type) {
     //   console.info(`Fetching ${type} token from token generator during VU stage for VU #${__VU}`);
     // }
 
-    let response = http.get(url, tokenRequestOptions);
+    const response = http.get(url, tokenRequestOptions);
 
-    if (response.status != 200) {
-      console.log(url);
+    if (response.status !== 200) {
       throw new Error(`Failed getting ${type} token: ${response.status_text}`);
     }
     cachedTokens[cacheKey] = response.body;
@@ -86,7 +85,7 @@ function fetchToken(url, tokenOptions, type) {
  * @returns {Object} - The updated token options with environment and TTL.
  **/
 function addEnvAndTtlToTokenOptions(tokenOptions, env) {
-  let options = { ...tokenOptions };
+  const options = { ...tokenOptions };
   if (!('env' in options)) {
     options.env = env;
   }
@@ -113,9 +112,9 @@ function addEnvAndTtlToTokenOptions(tokenOptions, env) {
  */
 export function getEnterpriseToken(tokenOptions, env = 'yt01') {
   const url = new URL(`https://altinn-testtools-token-generator.azurewebsites.net/api/GetEnterpriseToken`);
-  let extendedOptions = addEnvAndTtlToTokenOptions(tokenOptions, env);
+  const extendedOptions = addEnvAndTtlToTokenOptions(tokenOptions, env);
   for (const key in extendedOptions) {
-    if (extendedOptions.hasOwnProperty(key)) {
+    if (extendedOptions.hasOwn(key)) {
       url.searchParams.append(key, extendedOptions[key]);
     }
   }
@@ -139,9 +138,9 @@ export function getEnterpriseToken(tokenOptions, env = 'yt01') {
  */
 export function getPersonalToken(tokenOptions, env = 'yt01') {
   const url = new URL(`https://altinn-testtools-token-generator.azurewebsites.net/api/GetPersonalToken`);
-  let extendedOptions = addEnvAndTtlToTokenOptions(tokenOptions, env);
+  const extendedOptions = addEnvAndTtlToTokenOptions(tokenOptions, env);
   for (const key in extendedOptions) {
-    if (extendedOptions.hasOwnProperty(key)) {
+    if (extendedOptions.hasOwn(key)) {
       url.searchParams.append(key, extendedOptions[key]);
     }
   }

@@ -6,7 +6,7 @@
  *  BFF_VUS: Number of virtual users for backend-for-frontend (BFF) tests.
  *  DURATION: Duration of the test run.
  *  ENVIRONMENT: Environment to test against (e.g., yt, at, tt).
- * 
+ *
  * In addition, the ENVIRONMENT variables for token generation must be set:
  *   - TOKEN_GENERATOR_USERNAME
  *   - TOKEN_GENERATOR_PASSWORD
@@ -26,9 +26,9 @@ import {
   getNextpage,
   isAuthenticated,
   openAf,
-  selectMenuElements
+  selectMenuElements,
 } from '../tests/bffFunctions.js';
-import { selectSideMenuElement, selectNextPage, selectAllEnterprises } from './browserFunctions.js';
+import { selectAllEnterprises, selectNextPage, selectSideMenuElement } from './browserFunctions.js';
 
 const env = __ENV.ENVIRONMENT || 'yt';
 
@@ -60,7 +60,7 @@ export async function setup() {
     cookie = getCookie(endUser.pid);
     data.push({
       pid: endUser.pid,
-      cookie: cookie
+      cookie: cookie,
     });
   }
   return data;

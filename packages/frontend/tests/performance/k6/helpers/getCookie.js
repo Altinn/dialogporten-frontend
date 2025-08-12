@@ -30,15 +30,15 @@ function getToken(pid) {
   const tokenParams = {
     scopes: 'digdir:dialogporten.noconsent openid altinn:portal/enduser',
     pid: pid,
-    env: tokenGeneratorEnv
+    env: tokenGeneratorEnv,
   }
   const token = getPersonalToken(tokenParams);
-  return token
+  return token;
 }
 
 /**
  * Function to initialize a session with the given token.
- * @param {F} token 
+ * @param {F} token - The personal token to initialize the session.
  * @returns sessionId
  */
 function getSessionId(token) {
@@ -55,11 +55,11 @@ function getSessionId(token) {
   }
   const resp = http.post(url.toString(), body, params);
   if (resp.status !== 200) {
-    console.log(resp.status_text);
+    console.error(resp.status_text);
     return null; // Handle error appropriately
   }
-  const sessionId = resp.json().cookie.split('=')[1]; // Assuming the session ID is the first part of the response body 
-  return sessionId // Replace with actual logic to get session ID
+  const sessionId = resp.json().cookie.split('=')[1]; // Assuming the session ID is the first part of the response body
+  return sessionId;
 }
 
 /**
@@ -68,16 +68,19 @@ function getSessionId(token) {
  * @return {Object} - The cookie object containing name, value, domain, path, httpOnly, secure, sameSite, and url.
  * **/
 export function getCookie(pid) {
-  var token = getToken(pid);
+  const token = getToken(pid);
   const cookie = {
     name: 'arbeidsflate',
     value: getSessionId(token),
-    domain: afUrl.replace(/https?:\/\//, '').replace(/http?:\/\//, '').replace(/\/$/, ''), // Remove protocol and trailing slash
+    domain: afUrl
+      .replace(/https?:\/\//, '')
+      .replace(/http?:\/\//, '')
+      .replace(/\/$/, ''), // Remove protocol and trailing slash
     path: '/',
     httpOnly: true,
     secure: false,
     sameSite: '',
-    url: ''
+    url: '',
   }
   return cookie;
 }
