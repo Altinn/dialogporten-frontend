@@ -91,7 +91,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
   {
     id: '019241f7-67dc-7562-a56f-1634796039e5',
     endUserContext: {
-      systemLabels: [SystemLabel.Default],
+      systemLabels: [SystemLabel.Default, SystemLabel.Sent],
     },
     party: 'urn:altinn:person:identifier-no:1',
     org: 'ok',

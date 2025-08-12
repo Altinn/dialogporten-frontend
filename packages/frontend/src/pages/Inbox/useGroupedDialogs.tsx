@@ -160,7 +160,7 @@ const useGroupedDialogs = ({
       recipient: item.recipient,
       attachmentsCount: item.guiAttachmentCount,
       seenByLog: item.seenByLog,
-      unread: !item.seenSinceLastContentUpdate.find((d) => d.isCurrentEndUser),
+      unread: item.seenSinceLastContentUpdate.length === 0,
       status: getDialogStatus(item.status, t),
       controls: <ContextMenu {...contextMenu} />,
       updatedAt: item.updatedAt,
@@ -187,7 +187,7 @@ const useGroupedDialogs = ({
       };
     }
 
-    if (!displaySearchResults && !isInbox) {
+    if (!displaySearchResults && !isInbox && !isLoading) {
       const groupedDialogs = items.map((item) => formatDialogItem(item, item.viewType));
       if (isFetchingNextPage) {
         groupedDialogs.push(...renderLoadingItems(1));

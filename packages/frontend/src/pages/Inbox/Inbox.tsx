@@ -30,6 +30,7 @@ import { FilterCategory, readFiltersFromURLQuery } from './filters.ts';
 import styles from './inbox.module.css';
 import { useFilters } from './useFilters.tsx';
 import useGroupedDialogs from './useGroupedDialogs.tsx';
+import { useMockError } from './useMockError.tsx';
 
 interface InboxProps {
   viewType: InboxViewType;
@@ -52,8 +53,8 @@ export const Inbox = ({ viewType }: InboxProps) => {
     isLoading: isLoadingParties,
   } = useParties();
 
+  useMockError();
   const location = useLocation();
-
   const [filterState, setFilterState] = useState<FilterState>(readFiltersFromURLQuery(location.search));
   const [currentSeenByLogModal, setCurrentSeenByLogModal] = useState<CurrentSeenByLog | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -74,8 +75,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const validSearchString = enteredSearchValue.length > 2 ? enteredSearchValue : undefined;
   const hasValidFilters = Object.values(filterState).some((arr) => typeof arr !== 'undefined' && arr?.length > 0);
   const searchMode = viewType === 'inbox' && (hasValidFilters || !!validSearchString);
-  const enableSavedSearch =
-    (hasValidFilters || !!validSearchString) && !isSavedSearchDisabled(filterState, enteredSearchValue);
+  const savedSearchDisabled = isSavedSearchDisabled(filterState, enteredSearchValue);
 
   const {
     dialogs,
@@ -154,12 +154,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
     }
   }, [isLoading]);
 
-  const isMock = searchParams.get('mock') === 'true';
-  const simulateError = searchParams.get('simulateError') === 'true';
-  if (isMock && simulateError) {
-    throw new Error('Simulated error for testing purposes');
-  }
-
   return (
     <PageBase margin="page">
       <section data-testid="inbox-toolbar">
@@ -189,7 +183,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
               removeButtonAltText={t('filter_bar.remove_filter')}
               addFilterButtonLabel={hasValidFilters ? t('filter_bar.add') : t('filter_bar.add_filter')}
             >
-              <SaveSearchButton viewType={viewType} disabled={!enableSavedSearch} filterState={filterState} />
+              <SaveSearchButton viewType={viewType} disabled={savedSearchDisabled} filterState={filterState} />
             </Toolbar>
           </>
         ) : null}
@@ -201,7 +195,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
       )}
 
       <Section>
-        {dialogsSuccess && !dialogs.length && (
+        {dialogsSuccess && !dialogs.length && !isLoading && (
           <EmptyState
             title={searchMode ? t('inbox.no_results.title') : t(`inbox.heading.title.${viewType}`, { count: 0 })}
             description={searchMode ? t('inbox.no_results.description') : t(`inbox.heading.description.${viewType}`)}

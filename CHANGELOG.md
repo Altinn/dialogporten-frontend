@@ -1,5 +1,50 @@
 # Changelog
 
+## [1.52.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.52.0...v1.52.1) (2025-08-11)
+
+
+### Bug Fixes
+
+* bump up AC-lib for virtualized list fix ([#2428](https://github.com/Altinn/dialogporten-frontend/issues/2428)) ([b988995](https://github.com/Altinn/dialogporten-frontend/commit/b9889954315eb1da584f6ff6910adb38eff3cdaf))
+* Read by mark is now greyed if dialog is read by anyone ([#2426](https://github.com/Altinn/dialogporten-frontend/issues/2426)) ([2ceb5ba](https://github.com/Altinn/dialogporten-frontend/commit/2ceb5ba3d67e12722ddaed97c4d1a27f89f78452))
+
+## [1.52.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.51.2...v1.52.0) (2025-08-11)
+
+
+### Features
+
+* Add awaiting status to dialog filters ([#2418](https://github.com/Altinn/dialogporten-frontend/issues/2418)) ([22e0989](https://github.com/Altinn/dialogporten-frontend/commit/22e0989fd206e8437535faabe7922c2594bde5a4))
+* add i18n query param for QA translation validation ([#2421](https://github.com/Altinn/dialogporten-frontend/issues/2421)) ([c885bfe](https://github.com/Altinn/dialogporten-frontend/commit/c885bfe921dd4556eec034dfd7a84ec1d8dfa1b0))
+
+## [1.51.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.51.1...v1.51.2) (2025-08-08)
+
+
+### Bug Fixes
+
+* maintain sidebar selection when viewing dialogs ([#2419](https://github.com/Altinn/dialogporten-frontend/issues/2419)) ([b81bf46](https://github.com/Altinn/dialogporten-frontend/commit/b81bf46c67f6e8fe2fab6289f718f44d80226e5e))
+
+## [1.51.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.51.0...v1.51.1) (2025-08-08)
+
+
+### Bug Fixes
+
+* bump a-c to latest to include logical keyboard navigation order in global layout ([#2417](https://github.com/Altinn/dialogporten-frontend/issues/2417)) ([fbfc017](https://github.com/Altinn/dialogporten-frontend/commit/fbfc0171837b69991d1973acad46739a026fca40))
+* consist check for comparing if a saved search can be saved or not ([#2414](https://github.com/Altinn/dialogporten-frontend/issues/2414)) ([b6d006f](https://github.com/Altinn/dialogporten-frontend/commit/b6d006f2ed4dee331ea2df2b4a5b424e1c20e8a9))
+
+## [1.51.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.50.2...v1.51.0) (2025-08-07)
+
+
+### Features
+
+* Dialog is considered as sent based on systemLabel-sent ([#2406](https://github.com/Altinn/dialogporten-frontend/issues/2406)) ([94646e3](https://github.com/Altinn/dialogporten-frontend/commit/94646e388a0bcb7cd9345aee3e7680e856a57642))
+
+
+### Bug Fixes
+
+* Added missing transmission counts on Dialog Details ([2ab9847](https://github.com/Altinn/dialogporten-frontend/commit/2ab9847cf25daba2ee1bef6647c6e13069118508))
+* incorrect badge color for trasnmissions in activity log ([#2402](https://github.com/Altinn/dialogporten-frontend/issues/2402)) ([ea1c072](https://github.com/Altinn/dialogporten-frontend/commit/ea1c072b9ff01c610e25724ac564d92a1492f7c8))
+* Transmission sent/received count now showing correct numbers ([611d0f2](https://github.com/Altinn/dialogporten-frontend/commit/611d0f25364535f9c5caf6d5f93956aab0c79f5f))
+
 ## [1.50.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.50.1...v1.50.2) (2025-08-06)
 
 
