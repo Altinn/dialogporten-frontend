@@ -28,7 +28,7 @@ const cachedTokensIssuedAt = {};
  * Function to generate a cache key based on the token type and options.
  * @param {*} tokenType
  * @param {*} tokenOptions
- * @returns 
+ * @returns cacheKey
  */
 function getCacheKey(tokenType, tokenOptions) {
   let cacheKey = `${tokenType}`;
@@ -123,7 +123,7 @@ export function getEnterpriseToken(tokenOptions, env = 'yt01') {
 
 /**
  * Fetches a personal token from the token generator API.
- * 
+ *
  * @param {Object} tokenOptions - The options for the token, including user and app details.
  * Example:
  * {

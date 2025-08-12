@@ -17,7 +17,7 @@ export function getOptions(browserTest = 'browserTest', bffTest = 'bffTest') {
       checks: ['rate==1.0'],
     },
     summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(75)', 'p(95)', 'count'],
-  }
+  };
 
   // Set browser scenario if browser_vus is greater than 0
   if (browser_vus > 0) {
@@ -48,13 +48,15 @@ export function getOptions(browserTest = 'browserTest', bffTest = 'bffTest') {
           duration: duration,
           target: bff_vus,
         },
-      ]
+      ];
       // Set thresholds for each query label when breakpoint is true
       for (const label of queryLabels) {
         options.thresholds[[`http_req_duration{name:${label}}`]] = [
-          { threshold: 'max<5000', abortOnFail: abort_on_fail }];
+          { threshold: 'max<5000', abortOnFail: abort_on_fail },
+        ];
         options.thresholds[[`http_req_failed{name:${label}}`]] = [
-          { threshold: 'rate<=0.0', abortOnFail: abort_on_fail }];
+          { threshold: 'rate<=0.0', abortOnFail: abort_on_fail },
+        ];
       }
     }
     // If breakpoint is false, use constant-vus executor

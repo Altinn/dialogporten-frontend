@@ -42,23 +42,23 @@ export const partiesQuery = {
 export const organizationsQuery = {
   operationName: 'organizations',
   query: `query organizations {\n  organizations {\n    ...OrganizationFields\n  }\n}\n\nfragment OrganizationFields on Organization {\n  id\n  name {\n    en\n    nb\n    nn\n  }\n  logo\n  orgnr\n  homepage\n  environments\n}`,
-}
+};
 
 export const savedSearchesQuery = {
   operationName: 'savedSearches',
   query: `query savedSearches {\n  savedSearches {\n    ...SavedSearchesFields\n  }\n}\n\nfragment SavedSearchesFields on SavedSearches {\n  id\n  name\n  createdAt\n  updatedAt\n  data {\n    urn\n    searchString\n    fromView\n    filters {\n      id\n      value\n    }\n  }\n}`,
-}
+};
 
 export const profileQuery = {
   operationName: 'profile',
   query: `query profile {\n  profile {\n    updatedAt\n    language\n    user {\n      userId\n      userUuid\n      userName\n      email\n      isReserved\n      party {\n        partyId\n        partyUuid\n        partyTypeName\n        orgNumber\n        ssn\n        unitType\n        name\n        isDeleted\n        onlyHierarchyElementWithNoAccess\n        person {\n          ssn\n          name\n          firstName\n          middleName\n          lastName\n          telephoneNumber\n          mobileNumber\n          mailingAddress\n          mailingPostalCode\n          mailingPostalCity\n          addressMunicipalNumber\n          addressMunicipalName\n          addressStreetName\n          addressHouseNumber\n          addressHouseLetter\n          addressPostalCode\n          addressCity\n          dateOfDeath\n        }\n      }\n    }\n  }\n}`,
-}
+};
 
 export const getAllDialogsForCountQuery = {
   operationName: 'getAllDialogsForCount',
   query: `query getAllDialogsForCount($partyURIs: [String!], $search: String, $org: [String!], $status: [DialogStatus!], $label: [SystemLabel!], $createdAfter: DateTime, $createdBefore: DateTime, $updatedAfter: DateTime, $updatedBefore: DateTime) {\n  searchDialogs(\n    input: {party: $partyURIs, search: $search, org: $org, status: $status, orderBy: {createdAt: null, updatedAt: DESC, dueAt: null}, systemLabel: $label, createdAfter: $createdAfter, createdBefore: $createdBefore, updatedAfter: $updatedAfter, updatedBefore: $updatedBefore, excludeApiOnly: true}\n  ) {\n    items {\n      ...CountableDialogFields\n    }\n    hasNextPage\n  }\n}\n\nfragment CountableDialogFields on SearchDialog {\n  id\n  org\n  party\n  updatedAt\n  status\n  systemLabel\n  seenSinceLastUpdate {\n    isCurrentEndUser\n  }\n}`,
   variables: { partyURIs: [] },
-}
+};
 
 export const getAllDialogsForPartyQuery = {
   operationNameSingleParty: 'getAllDialogsForParty',
@@ -68,7 +68,7 @@ export const getAllDialogsForPartyQuery = {
 
   variables: { partyURIs: [] },
   limit: 10,
-}
+};
 
 // This label is used to identify the authentication status in the queries
 export const isAuthenticatedLabel = 'isAuthenticated';

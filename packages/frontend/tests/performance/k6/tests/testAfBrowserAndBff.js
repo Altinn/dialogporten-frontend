@@ -119,4 +119,3 @@ export function bffTest(data) {
   getNextpage(testData.cookie, parties);
   getDialogsForAllEnterprises(testData.cookie, allParties);
 }
-
