@@ -31,7 +31,7 @@ function getToken(pid) {
     scopes: 'digdir:dialogporten.noconsent openid altinn:portal/enduser',
     pid: pid,
     env: tokenGeneratorEnv,
-  }
+  };
   const token = getPersonalToken(tokenParams);
   return token;
 }
@@ -52,7 +52,7 @@ function getSessionId(token) {
       'Content-Type': 'application/json',
       'User-Agent': 'systembruker-k6',
     },
-  }
+  };
   const resp = http.post(url.toString(), body, params);
   if (resp.status !== 200) {
     console.error(resp.status_text);
@@ -81,6 +81,6 @@ export function getCookie(pid) {
     secure: false,
     sameSite: '',
     url: '',
-  }
+  };
   return cookie;
 }
