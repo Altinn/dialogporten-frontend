@@ -21,12 +21,12 @@ import { getOptions } from '../helpers/options.js';
 import { isAuthenticatedLabel } from '../helpers/queries.js';
 import { randomItem } from '../helpers/testimports.js';
 import { readCsv } from '../testData/readCsv.js';
-import { 
-  openAf, 
-  selectMenuElements, 
-  isAuthenticated, 
-  getNextpage, 
-  getDialogsForAllEnterprises 
+import {
+  getNextpage,
+  getDialogsForAllEnterprises,
+  isAuthenticated,
+  openAf,
+  selectMenuElements
 } from '../tests/bffFunctions.js';
 import { selectSideMenuElement, selectNextPage, selectAllEnterprises } from './browserFunctions.js';
 
@@ -48,7 +48,6 @@ const backToInbox = new Trend('load_inbox_from_menu', true);
 const loadNextPage = new Trend('load_next_page', true);
 const loadAllEnterprises = new Trend('load_all_enterprises', true);
 
-
 /**
  * The setup function initializes the test data by generating cookies for each end user.
  * It retrieves the token for each end user and creates a cookie object.
@@ -56,7 +55,7 @@ const loadAllEnterprises = new Trend('load_all_enterprises', true);
  **/
 export async function setup() {
   const data = [];
-  var cookie;
+  let cookie;
   for (const endUser of endUsers) {
     cookie = getCookie(endUser.pid);
     data.push({
@@ -76,8 +75,8 @@ export async function browserTest(data) {
   const testData = randomItem(data);
   const context = await browser.newContext();
   const page = await context.newPage();
-  var startTime;
-  var endTime;
+  let startTime;
+  let endTime;
 
   try {
     await context.addCookies([testData.cookie]);
@@ -89,7 +88,7 @@ export async function browserTest(data) {
     check(currentUrl, {
       currentUrl: (h) => h === afUrl,
     });
-    
+
     endTime = new Date();
     openAF.add(endTime - startTime);
 
@@ -111,7 +110,7 @@ export async function browserTest(data) {
  * This function does the bff-calls used when selecting menu elements
  * @param {Object} testData - The test data containing cookie and pid.
  * @returns {Array} - An array containing user party information.
- */  
+ */
 export function bffTest(data) {
   const testData = randomItem(data);
   const [parties, allParties] = openAf(testData.pid, testData.cookie);
