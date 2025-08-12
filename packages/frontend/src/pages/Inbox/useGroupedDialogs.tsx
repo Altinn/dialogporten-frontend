@@ -187,7 +187,7 @@ const useGroupedDialogs = ({
       };
     }
 
-    if (!displaySearchResults && !isInbox) {
+    if (!displaySearchResults && !isInbox && !isLoading) {
       const groupedDialogs = items.map((item) => formatDialogItem(item, item.viewType));
       if (isFetchingNextPage) {
         groupedDialogs.push(...renderLoadingItems(1));

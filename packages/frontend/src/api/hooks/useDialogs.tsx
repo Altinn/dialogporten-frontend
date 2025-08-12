@@ -53,38 +53,40 @@ export const useDialogs = ({ parties, viewType, filterState, search }: UseDialog
     searchQuery: search,
   });
 
-  const { data, isSuccess, isLoading, isError, fetchNextPage, isFetchingNextPage } =
-    useInfiniteQuery<GetAllDialogsForPartiesQuery>({
-      queryKey: [QUERY_KEYS.DIALOGS, partyIds, viewTypeKey, queryVariables, search],
-      staleTime: 1000 * 60 * 10,
-      retry: 3,
-      queryFn: (args) => {
-        const continuationToken = args.pageParam as string | undefined;
-        const searchString = (search ?? '').length >= 3 ? search : undefined;
-        return graphQLSDK.getAllDialogsForParties({
-          ...queryVariables,
-          continuationToken,
-          limit: 100,
-          search: searchString,
-        });
-      },
-      enabled: partyIds.length > 0 && partyIds.length <= 20,
-      gcTime: 0,
-      getNextPageParam(lastPage: GetAllDialogsForPartiesQuery): unknown | undefined | null {
-        const hasNextPage = lastPage?.searchDialogs?.hasNextPage;
-        const continuationToken = lastPage?.searchDialogs?.continuationToken;
-        if (hasNextPage && typeof continuationToken === 'string') {
-          previousTokensRef.current = continuationToken;
-          return continuationToken;
-        }
-      },
-      getPreviousPageParam(): unknown | undefined | null {
-        return previousTokensRef;
-      },
-      initialData: undefined,
-      initialPageParam: undefined,
-      placeholderData: keepPreviousData,
-    });
+  const query = useInfiniteQuery<GetAllDialogsForPartiesQuery>({
+    queryKey: [QUERY_KEYS.DIALOGS, partyIds, viewTypeKey, queryVariables, search],
+    staleTime: 1000 * 60 * 10,
+    retry: 3,
+    queryFn: (args) => {
+      const continuationToken = args.pageParam as string | undefined;
+      const searchString = (search ?? '').length >= 3 ? search : undefined;
+      return graphQLSDK.getAllDialogsForParties({
+        ...queryVariables,
+        continuationToken,
+        limit: 100,
+        search: searchString,
+      });
+    },
+    enabled: partyIds.length > 0 && partyIds.length <= 20,
+    gcTime: 0,
+    getNextPageParam(lastPage: GetAllDialogsForPartiesQuery): unknown | undefined | null {
+      const hasNextPage = lastPage?.searchDialogs?.hasNextPage;
+      const continuationToken = lastPage?.searchDialogs?.continuationToken;
+      if (hasNextPage && typeof continuationToken === 'string') {
+        previousTokensRef.current = continuationToken;
+        return continuationToken;
+      }
+    },
+    getPreviousPageParam(): unknown | undefined | null {
+      return previousTokensRef;
+    },
+    initialData: undefined,
+    initialPageParam: undefined,
+    placeholderData: keepPreviousData,
+  });
+
+  const { data, isSuccess, isLoading, isFetching, isError, fetchNextPage, isFetchingNextPage, isPlaceholderData } =
+    query;
 
   const content = data?.pages.flatMap((page) => page.searchDialogs?.items ?? []) || [];
   const dialogCountInconclusive =
@@ -92,9 +94,11 @@ export const useDialogs = ({ parties, viewType, filterState, search }: UseDialog
     data?.pages?.[data?.pages.length - 1]?.searchDialogs?.items === null ||
     partyIds.length >= 20;
   const dialogs = mapDialogToToInboxItems(content, parties ?? [], organizations, format);
+  /*  isFetching && isPlaceholderData is used to determine if we are fetching the initial data for the query key */
+  const isActuallyLoading = isLoading || (isFetching && isPlaceholderData);
 
   return {
-    isLoading,
+    isLoading: isActuallyLoading,
     isSuccess,
     isError,
     fetchNextPage,
