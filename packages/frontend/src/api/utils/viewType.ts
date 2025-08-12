@@ -16,7 +16,7 @@ export const isDraftDialog = (dialog: viewTypeDerivable): boolean =>
   dialog.status?.includes(DialogStatus.Draft) ?? false;
 
 export const isSentDialog = (dialog: viewTypeDerivable): boolean =>
-  dialog.status?.includes(DialogStatus.Awaiting) ?? false;
+  dialog.systemLabel?.includes(SystemLabel.Sent) ?? false;
 
 export const getViewTypes = (dialog: viewTypeDerivable, includeInbox = true): InboxViewType[] => {
   const viewTypes: InboxViewType[] = [];

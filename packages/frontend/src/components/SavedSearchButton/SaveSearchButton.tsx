@@ -1,14 +1,13 @@
 import type { FilterState } from '@altinn/altinn-components';
 import { BookmarkFillIcon, BookmarkIcon } from '@navikt/aksel-icons';
-import type { SavedSearchData } from 'bff-types-generated';
 import type { ButtonHTMLAttributes, RefAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
-import { convertFilterStateToFilters, useSavedSearches } from '../../pages/SavedSearches/useSavedSearches.tsx';
+import { buildCurrentStateURL, findMatchingSavedSearch } from '../../pages/SavedSearches';
+import { useSavedSearches } from '../../pages/SavedSearches/useSavedSearches.tsx';
 import { useSearchString } from '../PageLayout/Search';
 import { ProfileButton } from '../ProfileButton';
-import { getAlreadySavedSearch } from './alreadySaved.ts';
 
 type SaveSearchButtonProps = {
   disabled?: boolean;
@@ -32,19 +31,14 @@ export const SaveSearchButton = ({ disabled, className, filterState, viewType }:
     return null;
   }
 
-  const searchToCheckIfExistsAlready: SavedSearchData = {
-    filters: convertFilterStateToFilters(filterState),
-    urn: selectedPartyIds as string[],
-    searchString: enteredSearchValue,
-  };
+  const currentStateURL = buildCurrentStateURL(filterState, enteredSearchValue, viewType);
+  const matchingSavedSearch = findMatchingSavedSearch(currentStateURL, savedSearches);
 
-  const alreadySavedSearch = getAlreadySavedSearch(searchToCheckIfExistsAlready, savedSearches, viewType);
-
-  if (alreadySavedSearch) {
+  if (matchingSavedSearch) {
     return (
       <ProfileButton
         className={className}
-        onClick={() => deleteSearch(alreadySavedSearch.id)}
+        onClick={() => deleteSearch(matchingSavedSearch.id)}
         variant="tertiary"
         isLoading={isCTALoading}
       >

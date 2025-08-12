@@ -261,6 +261,8 @@ export const DialogDetails = ({
         status={getDialogStatus(dialog.status, t)}
         badge={headerBadge}
         title={dialog.title}
+        sentCount={dialog.sentCount}
+        receivedCount={dialog.receivedCount}
         activityLog={{
           onClick: () => {
             activityModalProps.setIsOpen(true);

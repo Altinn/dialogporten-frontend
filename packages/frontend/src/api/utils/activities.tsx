@@ -4,6 +4,7 @@ import { t } from 'i18next';
 import { getPreferredPropertyByLocale } from '../../i18n/property.ts';
 import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
 import { getActorProps } from '../hooks/useDialogById.tsx';
+import type { SelectedPartyType } from '../hooks/useParties.ts';
 import type { OrganizationOutput } from './organizations.ts';
 import { getTransmissions } from './transmissions.ts';
 
@@ -101,20 +102,28 @@ export type ActivityLogEntry =
     };
 
 /**
- * Generates a history of activities and transmissions for a dialog, sorted by createdAt (ascending).
+ * Generates a combined and sorted history of activities and transmissions for a dialog.
  *
- * @param {DialogActivityFragment[]} activities - The list of dialog activities.
- * @param {TransmissionFieldsFragment[]} transmissions - The list of transmissions.
- * @param {FormatFunction} format - The function to format dates.
- * @param {OrganizationOutput} [serviceOwner] - The service owner organization details.
- * @return
- **/
-export const getActivityHistory = (
-  activities: DialogActivityFragment[],
-  transmissions: TransmissionFieldsFragment[],
-  format: FormatFunction,
-  serviceOwner?: OrganizationOutput,
-): ActivityLogEntry[] => {
+ * @param activities - The list of dialog activities.
+ * @param transmissions - The list of transmissions.
+ * @param format - The function to format dates.
+ * @param serviceOwner - Optional service owner organization details.
+ * @param selectedProfile - Optional selected party profile.
+ * @returns An array of activity and transmission log entries, sorted by date (descending).
+ */
+export const getActivityHistory = ({
+  activities,
+  transmissions,
+  format,
+  serviceOwner,
+  selectedProfile,
+}: {
+  activities: DialogActivityFragment[];
+  transmissions: TransmissionFieldsFragment[];
+  format: FormatFunction;
+  serviceOwner?: OrganizationOutput;
+  selectedProfile?: SelectedPartyType;
+}): ActivityLogEntry[] => {
   const dialogHistoryActivities: ActivityLogEntry[] = getDialogHistoryForActivities(
     activities,
     format,
@@ -132,6 +141,7 @@ export const getActivityHistory = (
     format,
     activities,
     serviceOwner,
+    selectedProfile,
   }).map((transmission) => ({
     id: transmission.id ?? '',
     type: 'transmission',

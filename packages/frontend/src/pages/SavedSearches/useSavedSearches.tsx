@@ -26,7 +26,7 @@ import { useFormatDistance } from '../../i18n/useDateFnsLocale.tsx';
 import { DateFilterOption } from '../Inbox/filters.ts';
 import { useOrganizations } from '../Inbox/useOrganizations.ts';
 import { PageRoutes } from '../routes.ts';
-import { buildBookmarkURL } from './bookmarkURL.ts';
+import { buildSavedSearchURL } from './bookmarkURL.ts';
 import { autoFormatRelativeTime, getMostRecentSearchDate } from './searchUtils.ts';
 
 interface UseSavedSearchesOutput {
@@ -252,7 +252,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
     }
 
     const items: EditableBookmarkProps[] = currentPartySavedSearches.map((savedSearch) => {
-      const bookmarkLink = buildBookmarkURL(savedSearch);
+      const bookmarkLink = buildSavedSearchURL(savedSearch);
       const params: QueryItemProps[] = (savedSearch.data?.filters ?? []).map((filter) => {
         if (filter?.id === 'org') {
           const org = getOrganization(organizations, filter.value ?? '', 'nb')?.name || filter.value;

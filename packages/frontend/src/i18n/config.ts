@@ -6,11 +6,14 @@ import en from './resources/en.json';
 import nb from './resources/nb.json';
 import nn from './resources/nn.json';
 
+const isI18nDisabled = window.location.search.includes('i18n=false');
+const emptyTranslation = { translation: {} };
+
 const i18nInitConfig = {
   resources: {
-    nb: { translation: nb },
-    en: { translation: en },
-    nn: { translation: nn },
+    nb: isI18nDisabled ? emptyTranslation : { translation: nb },
+    en: isI18nDisabled ? emptyTranslation : { translation: en },
+    nn: isI18nDisabled ? emptyTranslation : { translation: nn },
   },
   lng: 'nb',
   fallbackLng: 'nb',

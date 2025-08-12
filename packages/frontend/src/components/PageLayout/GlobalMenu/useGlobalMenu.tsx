@@ -65,6 +65,27 @@ const getBadgeProps = (count: number, countInconclusive?: boolean): BadgeProps |
   }
 };
 
+export const isRouteSelected = (currentRoute: string, targetRoute: PageRoutes, fromView?: string) => {
+  if (currentRoute === targetRoute) {
+    return true;
+  }
+
+  if (fromView && targetRoute === fromView) {
+    return true;
+  }
+
+  /* default to inbox if no fromView and currentRoute is not a top level route, e.g. viewing a dialog entered the url */
+  if (
+    !fromView &&
+    !Object.values(PageRoutes).includes(currentRoute as PageRoutes) &&
+    targetRoute === PageRoutes.inbox
+  ) {
+    return true;
+  }
+
+  return false;
+};
+
 const createMenuItemComponent =
   ({ to, isExternal = false }: { to: string; isExternal?: boolean }): React.FC<MenuItemProps> =>
   (props) => {
@@ -78,7 +99,8 @@ export const useGlobalMenu = ({
   dialogCountsInconclusive,
 }: UseSidebarProps): UseGlobalMenuProps => {
   const { t } = useTranslation();
-  const { pathname, search: currentSearchQuery } = useLocation();
+  const { pathname, search: currentSearchQuery, state } = useLocation();
+  const fromView = (state as { fromView?: string })?.fromView;
   const { selectedProfile } = useParties();
   const { isTabletOrSmaller } = useWindowSize();
   const linksMenuItems: MenuItemProps[] = [
@@ -114,7 +136,7 @@ export const useGlobalMenu = ({
       title: t('sidebar.inbox'),
       iconBadge: getAlertBadgeProps(needsAttentionPerView.inbox),
       badge: getBadgeProps(itemsPerViewCount.inbox, dialogCountsInconclusive),
-      selected: pathname === PageRoutes.inbox,
+      selected: isRouteSelected(pathname, PageRoutes.inbox, fromView),
       expanded: true,
       as: createMenuItemComponent({
         to: PageRoutes.inbox + pruneSearchQueryParams(currentSearchQuery),
@@ -126,7 +148,7 @@ export const useGlobalMenu = ({
           icon: { svgElement: DocPencilIcon, theme: 'default' },
           title: t('sidebar.drafts'),
           badge: getBadgeProps(itemsPerViewCount.drafts, dialogCountsInconclusive),
-          selected: pathname === PageRoutes.drafts,
+          selected: isRouteSelected(pathname, PageRoutes.drafts, fromView),
           as: createMenuItemComponent({
             to: PageRoutes.drafts + pruneSearchQueryParams(currentSearchQuery),
           }),
@@ -137,7 +159,7 @@ export const useGlobalMenu = ({
           icon: { svgElement: FileCheckmarkIcon, theme: 'default' },
           title: t('sidebar.sent'),
           badge: getBadgeProps(itemsPerViewCount.sent, dialogCountsInconclusive),
-          selected: pathname === PageRoutes.sent,
+          selected: isRouteSelected(pathname, PageRoutes.sent, fromView),
           as: createMenuItemComponent({
             to: PageRoutes.sent + pruneSearchQueryParams(currentSearchQuery),
           }),
@@ -148,7 +170,7 @@ export const useGlobalMenu = ({
           icon: { svgElement: BookmarkIcon, theme: 'default' },
           title: t('sidebar.saved_searches'),
           badge: getBadgeProps(itemsPerViewCount['saved-searches']),
-          selected: pathname === PageRoutes.savedSearches,
+          selected: isRouteSelected(pathname, PageRoutes.savedSearches, fromView),
           as: createMenuItemComponent({
             to: PageRoutes.savedSearches + pruneSearchQueryParams(currentSearchQuery),
           }),
@@ -159,7 +181,7 @@ export const useGlobalMenu = ({
           icon: { svgElement: ArchiveIcon, theme: 'default' },
           title: t('sidebar.archived'),
           badge: getBadgeProps(itemsPerViewCount.archive, dialogCountsInconclusive),
-          selected: pathname === PageRoutes.archive,
+          selected: isRouteSelected(pathname, PageRoutes.archive, fromView),
           as: createMenuItemComponent({
             to: PageRoutes.archive + pruneSearchQueryParams(currentSearchQuery),
           }),
@@ -170,7 +192,7 @@ export const useGlobalMenu = ({
           icon: { svgElement: TrashIcon, theme: 'default' },
           title: t('sidebar.deleted'),
           badge: getBadgeProps(itemsPerViewCount.bin, dialogCountsInconclusive),
-          selected: pathname === PageRoutes.bin,
+          selected: isRouteSelected(pathname, PageRoutes.bin, fromView),
           as: createMenuItemComponent({
             to: PageRoutes.bin + pruneSearchQueryParams(currentSearchQuery),
           }),
@@ -186,7 +208,7 @@ export const useGlobalMenu = ({
       size: 'lg',
       icon: { svgElement: InboxFillIcon, theme: 'base' },
       title: t('sidebar.profile'),
-      selected: pathname === PageRoutes.profile,
+      selected: isRouteSelected(pathname, PageRoutes.profile, fromView),
       expanded: true,
       as: createMenuItemComponent({
         to: PageRoutes.profile + pruneSearchQueryParams(currentSearchQuery),
@@ -197,7 +219,7 @@ export const useGlobalMenu = ({
           groupId: '2',
           icon: { svgElement: HeartIcon, theme: 'default' },
           title: t('sidebar.profile.parties'),
-          selected: pathname === PageRoutes.partiesOverview,
+          selected: isRouteSelected(pathname, PageRoutes.partiesOverview, fromView),
           as: createMenuItemComponent({
             to: PageRoutes.partiesOverview + pruneSearchQueryParams(currentSearchQuery),
           }),
@@ -207,7 +229,7 @@ export const useGlobalMenu = ({
           groupId: '3',
           icon: { svgElement: HandshakeIcon, theme: 'default' },
           title: t('sidebar.profile.authorize'),
-          selected: pathname === PageRoutes.authorize,
+          selected: isRouteSelected(pathname, PageRoutes.authorize, fromView),
           as: createMenuItemComponent({
             to: PageRoutes.authorize + pruneSearchQueryParams(currentSearchQuery),
           }),
@@ -217,7 +239,7 @@ export const useGlobalMenu = ({
           groupId: '3',
           icon: { svgElement: PadlockUnlockedIcon, theme: 'default' },
           title: t('sidebar.profile.access'),
-          selected: pathname === PageRoutes.access,
+          selected: isRouteSelected(pathname, PageRoutes.access, fromView),
           as: createMenuItemComponent({
             to: PageRoutes.access + pruneSearchQueryParams(currentSearchQuery),
           }),
@@ -227,7 +249,7 @@ export const useGlobalMenu = ({
           groupId: '2',
           icon: { svgElement: BellIcon, theme: 'default' },
           title: t('sidebar.profile.notifications'),
-          selected: pathname === PageRoutes.notifications,
+          selected: isRouteSelected(pathname, PageRoutes.notifications, fromView),
           as: createMenuItemComponent({
             to: PageRoutes.notifications + pruneSearchQueryParams(currentSearchQuery),
           }),
@@ -237,7 +259,7 @@ export const useGlobalMenu = ({
           groupId: '4',
           icon: { svgElement: CogIcon, theme: 'default' },
           title: t('sidebar.profile.settings'),
-          selected: pathname === PageRoutes.settings,
+          selected: isRouteSelected(pathname, PageRoutes.settings, fromView),
           as: createMenuItemComponent({
             to: PageRoutes.settings + pruneSearchQueryParams(currentSearchQuery),
           }),
@@ -247,7 +269,7 @@ export const useGlobalMenu = ({
           groupId: '5',
           icon: { svgElement: ClockDashedIcon, theme: 'default' },
           title: t('sidebar.profile.activities'),
-          selected: pathname === PageRoutes.activities,
+          selected: isRouteSelected(pathname, PageRoutes.activities, fromView),
           as: createMenuItemComponent({
             to: PageRoutes.activities + pruneSearchQueryParams(currentSearchQuery),
           }),

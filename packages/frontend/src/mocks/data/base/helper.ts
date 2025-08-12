@@ -353,6 +353,8 @@ export const convertToDialogByIdTemplate = (input: SearchDialogFieldsFragment): 
     ],
     activities: getMockedActivities(input.latestActivity, input.id),
     transmissions: getMockedTransmissions(input.id),
+    fromServiceOwnerTransmissionsCount: 3,
+  fromPartyTransmissionsCount:4,
     guiActions: [
       {
         id: input.id,
