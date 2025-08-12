@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.52.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.52.1...v1.52.2) (2025-08-12)
+
+
+### Bug Fixes
+
+* Disclaimers spacing and size ([75606c5](https://github.com/Altinn/dialogporten-frontend/commit/75606c5e76d06dec9904cfa837df92a6b12aae2c))
+* prevent unnecessary initial fetch of saved searches ([#2431](https://github.com/Altinn/dialogporten-frontend/issues/2431)) ([22100da](https://github.com/Altinn/dialogporten-frontend/commit/22100dabc74174049d96c774721560bd1977b1ec))
+* when previous data is being used for dialogs and a fetch is being done, it should show a loading indicator ([#2451](https://github.com/Altinn/dialogporten-frontend/issues/2451)) ([32ac64d](https://github.com/Altinn/dialogporten-frontend/commit/32ac64d5a43ab0cb8fead7f2799a0da25daf12f4))
+
 ## [1.52.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.52.0...v1.52.1) (2025-08-11)
 
 
