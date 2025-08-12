@@ -76,7 +76,6 @@ export async function browserTest(data) {
     await context.addCookies([testData.cookie]);
     var startTime = new Date();
     await page.goto(afUrl, { waitUntil: 'networkidle' });
-    console.log(`Running browser test for PID: ${testData.pid}`);
 
     // Check if we are on the right page
     const currentUrl = page.url();

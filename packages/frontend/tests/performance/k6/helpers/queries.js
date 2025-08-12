@@ -79,13 +79,16 @@ export const queryLabels = [
     organizationsQuery.operationName,
     savedSearchesQuery.operationName,
     profileQuery.operationName,
-    getAllDialogsForCountQuery.operationName,
+    getAllDialogsForCountQuery.operationName + ' single party',
+    getAllDialogsForCountQuery.operationName + ' all parties',
     getAllDialogsForPartyQuery.operationNameSingleParty,
+    getAllDialogsForPartyQuery.operationNameSingleParty + ' with extraParams',
     getAllDialogsForPartyQuery.operationNameMultipleParties,
+    getAllDialogsForPartyQuery.operationNameMultipleParties + ' with extraParams',
     getAllDialogsForPartyQuery.operationNameSingleParty + ' BIN',
     getAllDialogsForPartyQuery.operationNameSingleParty + ' SENT',
     getAllDialogsForPartyQuery.operationNameSingleParty + ' DRAFT',
     getAllDialogsForPartyQuery.operationNameSingleParty + ' ARCHIVE',
-    getAllDialogsForPartyQuery.operationNameSingleParty + ' nextPage',
+    getAllDialogsForPartyQuery.operationNameSingleParty + ' nextPage with extraParams',
     isAuthenticatedLabel
 ];

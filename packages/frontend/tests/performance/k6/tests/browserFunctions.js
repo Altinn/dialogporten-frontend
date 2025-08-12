@@ -43,9 +43,7 @@ export async function selectNextPage(page, trend) {
 }
 
 export async function selectAllEnterprises(page, trend) {
-  // _button_1q3ym_1 _button_o1gnh_1
-  // _button_1q3ym_1 _button_o1gnh_1
-  //#root > div > div > div > main > div > section:nth-child(1) > div > div:nth-child(1) > button
+  // TODO: Is it the only way to get to the "Alle virksomheter" page?
   var menuElement = await page.waitForSelector('button[class="_button_1q3ym_1 _button_o1gnh_1"]', { timeout: 100 }).catch(() => false);
   await Promise.all([
     menuElement.click(),

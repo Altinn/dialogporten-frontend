@@ -26,14 +26,14 @@ export function openAf(pid, cookie) {
     //getProfile(cookie);
     if (parties.length <= 20 && parties.length > 1) {
         getAllDialogsForCount(cookie, parties);
-        getAllDialogsForParty(cookie, parties);
-        getAllDialogsForParty(cookie, [userParty[0]], 100, true);
+        getAllDialogsForParties(cookie, parties);
+        getAllDialogsForParties(cookie, [userParty[0]], 100, true);
         getAllDialogsForCount(cookie, [userParty[0]]);
-        getAllDialogsForParty(cookie, [userParty[0]], 100);
+        getAllDialogsForParties(cookie, [userParty[0]], 100);
     } else {
         getAllDialogsForCount(cookie, [userParty[0]]);
-        getAllDialogsForParty(cookie, [userParty[0]], 100, true);
-        getAllDialogsForParty(cookie, [userParty[0]], 100);
+        getAllDialogsForParties(cookie, [userParty[0]], 100, true);
+        getAllDialogsForParties(cookie, [userParty[0]], 100);
     }
     return [userParty, parties];
 }
@@ -48,7 +48,7 @@ export function selectMenuElements(cookie, parties) {
     getMenuElements(cookie, parties[0], "SENT");
     getMenuElements(cookie, parties[0], "ARCHIVE");
     getMenuElements(cookie, parties[0], "BIN");
-    getAllDialogsForParty(cookie, [parties[0]], 100, true);
+    getAllDialogsForParties(cookie, [parties[0]], 100, true);
 }
 
 /**
@@ -60,7 +60,7 @@ export function selectMenuElements(cookie, parties) {
 export function getDialogsForAllEnterprises(cookie, parties) {
     const enterprises = parties.filter((el) => el.includes('organization'));
     if (enterprises.length > 1 && enterprises.length <= 20) {
-        getAllDialogsForParty(cookie, enterprises, 100, true);
+        getAllDialogsForParties(cookie, enterprises, 100, true);
     }
 }  
 
@@ -99,11 +99,11 @@ export function isAuthenticated(cookie, label) {
  * @throws {Error} - If the request fails. 
  */
 export function getNextpage(cookie, parties) {
-    var dialogs = getAllDialogsForParty(cookie, [parties[0]], 100, true, null);
+    var dialogs = getAllDialogsForParties(cookie, [parties[0]], 100, true, null);
     var iterations = 0;
     while (dialogs.data && dialogs.data.searchDialogs.hasNextPage && iterations < 10) {
         var continuationToken = dialogs.data.searchDialogs.continuationToken;
-        dialogs = getAllDialogsForParty(cookie, [parties[0]], 100, true, continuationToken);
+        dialogs = getAllDialogsForParties(cookie, [parties[0]], 100, true, continuationToken);
         iterations++;
     }
 }
@@ -203,7 +203,11 @@ function getAllDialogsForCount(cookie, parties) {
     for (var party of parties) {
         payload.variables.partyURIs.push(party);
     }
-    var resp = graphql(cookie, payload);
+    var queryLabel = payload.operationName + " all parties";
+    if (parties.length === 1) {
+        queryLabel = payload.operationName + " single party";
+    }
+    var resp = graphql(cookie, payload, queryLabel);
     if (resp.status !== 200) {
         console.log('GraphQL request failed: ' + resp.status);
         return
@@ -220,23 +224,26 @@ function getAllDialogsForCount(cookie, parties) {
  * @param {string} continuationToken - The continuation token for pagination.
  * @return {Object} - The response object from the request.
  */
-function getAllDialogsForParty(cookie, parties, count, extraParams = false, continuationToken = null) {
+function getAllDialogsForParties(cookie, parties, count, extraParams = false, continuationToken = null) {
     var payload = JSON.parse(JSON.stringify(getAllDialogsForPartyQuery));
     for (var party of parties) {
         payload.variables.partyURIs.push(party);
     }
     payload.variables.limit = count;
-    if (extraParams) {
-        payload.variables.status = ["NOT_APPLICABLE", "IN_PROGRESS", "REQUIRES_ATTENTION", "COMPLETED"]
-        payload.variables.label = ["DEFAULT"];
-    }
     var queryLabel = payload.operationNameSingleParty;
     if (parties.length > 1) {
         queryLabel = payload.operationNameMultipleParties;
     }
+    
     if (continuationToken) {
         payload.variables.continuationToken = continuationToken;
         queryLabel = queryLabel + " nextPage";
+    }
+
+    if (extraParams) {
+        payload.variables.status = ["NOT_APPLICABLE", "IN_PROGRESS", "REQUIRES_ATTENTION", "COMPLETED"]
+        payload.variables.label = ["DEFAULT"];
+        queryLabel = queryLabel + " with extraParams";
     }
 
     var resp = graphql(cookie, payload, queryLabel);
