@@ -1,6 +1,6 @@
-/*
+/**
  * Options for the k6 test script.
-*/
+ */
 import { queryLabels } from './queries.js';
 export function getOptions(browserTest = 'browserTest', bffTest = 'bffTest') {
   // Set default values for environment variables

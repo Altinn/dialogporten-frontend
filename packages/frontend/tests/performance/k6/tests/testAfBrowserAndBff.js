@@ -1,4 +1,4 @@
-/*
+/**
  * This is a test script for performance testing arebeidsflate using k6 and browser automation.
  * Usage (run from CLI):
  * k6 run testAfBrowserAndBff.js -e BROWSER_VUS=1 -e BFF_VUS=10 -e DURATION=1m -e ENVIRONMENT=yt
@@ -10,7 +10,7 @@
  * In addition, the ENVIRONMENT variables for token generation must be set:
  *   - TOKEN_GENERATOR_USERNAME
  *   - TOKEN_GENERATOR_PASSWORD
- * */
+ */
 import { check } from 'k6';
 import { browser } from 'k6/browser';
 import { SharedArray } from 'k6/data';

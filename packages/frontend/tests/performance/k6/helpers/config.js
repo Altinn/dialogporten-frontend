@@ -1,4 +1,4 @@
-/*
+/**
  * Get the base URL for arbeidsflate (AF) based on the environment.
  * @returns {string} - The base URL for AF.
  */
