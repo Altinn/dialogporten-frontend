@@ -147,6 +147,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
     queryFn: fetchSavedSearches,
     retry: 3,
     staleTime: 1000 * 60 * 20,
+    enabled: !!selectedPartyIds && selectedPartyIds?.length > 0,
   });
 
   const endUsersSavedSearches = (data?.savedSearches ?? []) as SavedSearchesFieldsFragment[];
