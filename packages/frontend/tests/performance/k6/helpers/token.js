@@ -33,7 +33,7 @@ const cachedTokensIssuedAt = {};
 function getCacheKey(tokenType, tokenOptions) {
   let cacheKey = `${tokenType}`;
   for (const key in tokenOptions) {
-    if (tokenOptions.hasOwn(key)) {
+    if (key in tokenOptions) {
       cacheKey += `|${tokenOptions[key]}`;
     }
   }
@@ -114,7 +114,7 @@ export function getEnterpriseToken(tokenOptions, env = 'yt01') {
   const url = new URL(`https://altinn-testtools-token-generator.azurewebsites.net/api/GetEnterpriseToken`);
   const extendedOptions = addEnvAndTtlToTokenOptions(tokenOptions, env);
   for (const key in extendedOptions) {
-    if (extendedOptions.hasOwn(key)) {
+    if (key in extendedOptions) {
       url.searchParams.append(key, extendedOptions[key]);
     }
   }
@@ -140,7 +140,7 @@ export function getPersonalToken(tokenOptions, env = 'yt01') {
   const url = new URL(`https://altinn-testtools-token-generator.azurewebsites.net/api/GetPersonalToken`);
   const extendedOptions = addEnvAndTtlToTokenOptions(tokenOptions, env);
   for (const key in extendedOptions) {
-    if (extendedOptions.hasOwn(key)) {
+    if (key in extendedOptions) {
       url.searchParams.append(key, extendedOptions[key]);
     }
   }
