@@ -289,7 +289,7 @@ export const handleAuthRequest = async (request: FastifyRequest, reply: FastifyR
       await redisClient.set(`idp-sid:${idpSid}`, appSessionId, 'EX', 3600 * 8);
     }
 
-    reply.redirect('/?loggedIn=true');
+    reply.redirect('/');
   } catch (e: unknown) {
     if (axios.isAxiosError(e)) {
       console.error('handleAuthRequest error e.data', e.response?.data);

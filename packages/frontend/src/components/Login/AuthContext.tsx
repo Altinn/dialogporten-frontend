@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import type React from 'react';
 import { createContext, useContext, useEffect } from 'react';
-import { getIsAuthenticated, getStoredURL, isRedirectURL, removeStoredURL, saveURL } from '../../auth';
+import { getIsAuthenticated } from '../../auth';
 
 interface AuthContextProps {
   isAuthenticated: boolean;
@@ -20,19 +20,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   useEffect(() => {
-    const currentHref = window.location.href;
     if (!isAuthenticated && isFetchedAfterMount) {
-      if (currentHref) saveURL(currentHref);
       (window as Window).location = `/api/login`;
-    } else if (isAuthenticated) {
-      // already has a valid session or just logged in
-      if (isRedirectURL(currentHref)) {
-        const storedURL = getStoredURL();
-        if (storedURL) {
-          removeStoredURL();
-          (window as Window).location = storedURL;
-        }
-      }
     }
   }, [isAuthenticated, isFetchedAfterMount]);
 
