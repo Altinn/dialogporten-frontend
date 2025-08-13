@@ -6,6 +6,7 @@ import fp from 'fastify-plugin';
 import jwt from 'jsonwebtoken';
 import config from '../config.js';
 import redisClient from '../redisClient.js';
+import type { FastifySessionObject } from '@fastify/session';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -225,7 +226,11 @@ export const handleAuthRequest = async (request: FastifyRequest, reply: FastifyR
   try {
     const now = new Date();
 
-    const { code: authorizationCode } = request.query as { code: string; state: string; iss: string };
+    const { code: authorizationCode, state: receivedState } = request.query as {
+      code: string;
+      state: string;
+      iss?: string;
+    };
 
     const codeVerifier = request.session.get('codeVerifier') ?? '';
     const storedNonceTruth = request.session.get('nonce') ?? '';
@@ -289,7 +294,11 @@ export const handleAuthRequest = async (request: FastifyRequest, reply: FastifyR
       await redisClient.set(`idp-sid:${idpSid}`, appSessionId, 'EX', 3600 * 8);
     }
 
-    reply.redirect('/?loggedIn=true');
+    const key = `returnTo:${receivedState}`;
+    const rawReturnTo = request.session.get(key) as string | undefined;
+    const safeReturnTo = sanitizeReturnTo(rawReturnTo) ?? '/';
+
+    reply.redirect(safeReturnTo);
   } catch (e: unknown) {
     if (axios.isAxiosError(e)) {
       console.error('handleAuthRequest error e.data', e.response?.data);
@@ -299,6 +308,18 @@ export const handleAuthRequest = async (request: FastifyRequest, reply: FastifyR
     reply.status(500);
   }
 };
+
+function sanitizeReturnTo(url: string | undefined | null): string | null {
+  if (!url) return null;
+  try {
+    const u = new URL(url, process.env.HOSTNAME ?? 'http://localhost:3000');
+    if (u.origin !== (process.env.HOSTNAME ?? 'http://localhost:3000')) return null;
+    u.hash = '';
+    return u.pathname + (u.search ? u.search : '');
+  } catch {
+    return null;
+  }
+}
 
 const redirectToAuthorizationURI = async (request: FastifyRequest, reply: FastifyReply) => {
   const { hostname } = config;
@@ -326,6 +347,11 @@ const redirectToAuthorizationURI = async (request: FastifyRequest, reply: Fastif
     code_challenge: codeChallenge,
     code_challenge_method: 'S256',
   };
+
+  const returnToRaw =
+    (request.query as { returnTo?: string }).returnTo ?? (request.headers.referer as string | undefined) ?? '/';
+  const returnTo = sanitizeReturnTo(returnToRaw) ?? '/';
+  request.session.set(`returnTo:${state}`, returnTo);
 
   const authUrl = buildAuthorizationUrl(providerConfig, parameters);
 

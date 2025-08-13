@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import type React from 'react';
-import { createContext, useContext, useEffect } from 'react';
-import { getIsAuthenticated, getStoredURL, isRedirectURL, removeStoredURL, saveURL } from '../../auth';
+import { createContext, useContext, useEffect, useRef } from 'react';
+import { getIsAuthenticated } from '../../auth';
 
 interface AuthContextProps {
   isAuthenticated: boolean;
@@ -14,25 +14,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     queryKey: ['isAuthenticated'],
     queryFn: async () => getIsAuthenticated(),
     refetchInterval: 30 * 1000,
-    refetchIntervalInBackground: true,
+    refetchIntervalInBackground: false,
     refetchOnWindowFocus: 'always',
     retry: 3,
   });
 
+  const didNavigate = useRef(false);
+
   useEffect(() => {
-    const currentHref = window.location.href;
-    if (!isAuthenticated && isFetchedAfterMount) {
-      if (currentHref) saveURL(currentHref);
-      (window as Window).location = `/api/login`;
-    } else if (isAuthenticated) {
-      // already has a valid session or just logged in
-      if (isRedirectURL(currentHref)) {
-        const storedURL = getStoredURL();
-        if (storedURL) {
-          removeStoredURL();
-          (window as Window).location = storedURL;
-        }
-      }
+    if (!isFetchedAfterMount || didNavigate.current) return;
+
+    if (isAuthenticated === false) {
+      didNavigate.current = true;
+      const deliberateLogout = window.location.pathname.includes('/loggedout');
+      alert('referrer' + document.referrer);
+      const returnTo = deliberateLogout ? '/' : encodeURIComponent(window.location.href);
+      window.location.assign(`/api/login?returnTo=${returnTo}`);
     }
   }, [isAuthenticated, isFetchedAfterMount]);
 
@@ -42,9 +39,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 export const useAuth = (): AuthContextProps => {
   const context = useContext(AuthContext);
   if (!context) {
-    if (import.meta.env.MODE === 'test') {
-      return { isAuthenticated: true };
-    }
+    if (import.meta.env.MODE === 'test') return { isAuthenticated: true };
     throw new Error('useAuth can only be used within AuthProvider');
   }
   return context;

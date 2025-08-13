@@ -34,7 +34,7 @@ export const useDialogsCount = (parties?: PartyFieldsFragment[], viewType?: Inbo
           viewType,
           variables: {
             partyURIs: partyIds,
-            limit: 1000, // TODO: Adjust limit based on performance and requirements
+            limit: 1000,
           },
         }),
       ),

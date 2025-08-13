@@ -8,17 +8,11 @@ const plugin: FastifyPluginAsync = async (fastify) => {
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
         if (request.tokenIsValid) {
-          return reply.status(200).send({
-            isAuthenticated: true,
-          });
+          return reply.status(200).send();
         }
-        return reply.status(401).send({
-          isAuthenticated: false,
-        });
+        return reply.status(401).send();
       } catch (_) {
-        return reply.status(401).send({
-          isAuthenticated: false,
-        });
+        return reply.status(401).send();
       }
     },
   );
