@@ -1,7 +1,6 @@
 import type { FilterState } from '@altinn/altinn-components';
 
-const LOGIN_REDIRECT_STORAGE_KEY = 'arbeidsflate::auth::login_Redirect';
-const LOGIN_REDIRECT_QUERY_KEY = 'loggedIn';
+const LOGIN_REDIRECT_STORAGE_KEY = 'arbeidsflate:referrer';
 
 export const createFiltersURLQuery = (activeFilters: FilterState, allFilterKeys: string[], baseURL: string): URL => {
   const url = new URL(baseURL);
@@ -22,34 +21,24 @@ export const createFiltersURLQuery = (activeFilters: FilterState, allFilterKeys:
   return url;
 };
 
-export const sanitizeURL = (url: string) => {
-  const urlObj = new URL(url);
-  urlObj.searchParams.delete(LOGIN_REDIRECT_QUERY_KEY);
-  return urlObj.toString();
-};
-
-export const saveURL = (url: string) => {
-  if (!isLogoutURL(url)) {
-    localStorage.setItem(LOGIN_REDIRECT_STORAGE_KEY, sanitizeURL(url));
+export const saveURL = () => {
+  const currentURL = getCurrentURL();
+  if (!location.pathname.includes('loggedout')) {
+    sessionStorage.setItem(LOGIN_REDIRECT_STORAGE_KEY, currentURL);
   }
 };
 
-export const isRedirectURL = (url: string): boolean => {
-  return url.includes(LOGIN_REDIRECT_QUERY_KEY);
-};
-
-export const isLogoutURL = (url: string): boolean => {
-  return url.includes('loggedout');
-};
-
 export const removeStoredURL = () => {
-  localStorage.removeItem(LOGIN_REDIRECT_STORAGE_KEY);
+  sessionStorage.removeItem(LOGIN_REDIRECT_STORAGE_KEY);
 };
+
+export const getCurrentURL = () => window.location.pathname + window.location.search;
 
 export const getStoredURL = (): string | null => {
-  const url = localStorage.getItem(LOGIN_REDIRECT_STORAGE_KEY);
+  const url = sessionStorage.getItem(LOGIN_REDIRECT_STORAGE_KEY);
+  /* This will happen after the user is redirected to /, so URL sanitizing is unnecessary */
   if (url) {
-    return sanitizeURL(url);
+    return url;
   }
   return null;
 };

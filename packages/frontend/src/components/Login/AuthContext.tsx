@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import type React from 'react';
 import { createContext, useContext, useEffect } from 'react';
-import { getIsAuthenticated, getStoredURL, isRedirectURL, removeStoredURL, saveURL } from '../../auth';
+import { getCurrentURL, getIsAuthenticated, getStoredURL, removeStoredURL, saveURL } from '../../auth';
 
 interface AuthContextProps {
   isAuthenticated: boolean;
@@ -20,18 +20,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   useEffect(() => {
-    const currentHref = window.location.href;
     if (!isAuthenticated && isFetchedAfterMount) {
-      if (currentHref) saveURL(currentHref);
-      (window as Window).location = `/api/login`;
-    } else if (isAuthenticated) {
-      // already has a valid session or just logged in
-      if (isRedirectURL(currentHref)) {
-        const storedURL = getStoredURL();
-        if (storedURL) {
-          removeStoredURL();
-          (window as Window).location = storedURL;
-        }
+      // besides it's also an indicator of a deliberate logout
+      saveURL();
+      window.location.assign('/api/login');
+    }
+
+    const prevURL = getStoredURL();
+    if (isFetchedAfterMount && isAuthenticated && prevURL) {
+      removeStoredURL();
+      if (prevURL !== getCurrentURL()) {
+        window.location.assign(prevURL);
       }
     }
   }, [isAuthenticated, isFetchedAfterMount]);
