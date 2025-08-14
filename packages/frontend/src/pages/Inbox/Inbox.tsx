@@ -99,7 +99,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     allOrganizationsSelected,
     countableItems: dialogCountsByViewType[viewType].map((dialog) => ({
       party: dialog.party,
-      isSeenByEndUser: dialog.seenSinceLastUpdate?.some((s) => s.isCurrentEndUser),
+      isSeenByEndUser: dialog.seenSinceLastContentUpdate?.some((s) => s.isCurrentEndUser),
     })),
     dialogCountInconclusive: dialogForAllPartiesCountInconclusive,
   });

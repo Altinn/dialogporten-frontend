@@ -68,7 +68,7 @@ export function mapDialogToToInboxItems(
 
     const actualReceiverParty = dialogReceiverParty ?? dialogReceiverSubParty ?? endUserParty;
     const serviceOwner = getOrganization(organizations || [], item.org, 'nb');
-    const { isSeenByEndUser, seenByOthersCount, seenByLabel } = getSeenByLabel(item.seenSinceLastUpdate, t);
+    const { isSeenByEndUser, seenByOthersCount, seenByLabel } = getSeenByLabel(item.seenSinceLastContentUpdate, t);
 
     return {
       id: item.id,
@@ -101,7 +101,7 @@ export function mapDialogToToInboxItems(
       seenByLog: {
         collapsible: true,
         endUserLabel: t('word.you'),
-        items: item.seenSinceLastUpdate.map((seenBy) => {
+        items: item.seenSinceLastContentUpdate.map((seenBy) => {
           const actorName = toTitleCase(seenBy.seenBy?.actorName ?? '');
           return {
             id: seenBy.id,

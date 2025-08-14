@@ -16,21 +16,6 @@ fragment SearchDialogFields on SearchDialog {
   }
   fromServiceOwnerTransmissionsCount
   fromPartyTransmissionsCount
-  seenSinceLastUpdate {
-    ...SeenLogFields
-  }
-  latestActivity {
-    transmissionId
-    description {
-      value
-      languageCode
-    }
-    performedBy {
-      actorType
-      actorId
-      actorName
-    }
-  }
   content {
     title {
       ...DialogContentFields
@@ -52,7 +37,7 @@ fragment SearchDialogFields on SearchDialog {
 
 fragment SearchAutocompleteDialogFields on SearchDialog {
   id
-  seenSinceLastUpdate {
+  seenSinceLastContentUpdate {
     ...SeenLogFields
   }
   content {
@@ -82,7 +67,7 @@ fragment DialogByIdFields on Dialog {
   guiActions {
     ...GuiActionFields
   }
-  seenSinceLastUpdate {
+  seenSinceLastContentUpdate {
     ...SeenLogFields
   }
   transmissions {
@@ -248,7 +233,7 @@ fragment CountableDialogFields on SearchDialog {
   endUserContext {
     systemLabels
   }
-  seenSinceLastUpdate {
+  seenSinceLastContentUpdate {
     isCurrentEndUser
   }
 }
