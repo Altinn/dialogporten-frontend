@@ -293,7 +293,7 @@ configure_jit_access() {
     # Get public IP
     log_info "Detecting your public IP address..."
     local my_ip
-    my_ip=$(curl -s https://ifconfig.me)
+    my_ip=$(curl -s -4 https://ifconfig.me)
     if [ -z "$my_ip" ]; then
         log_error "Failed to get public IP address from ifconfig.me"
         exit 1
@@ -307,7 +307,7 @@ configure_jit_access() {
     
     # Double check IP with a second service
     local my_ip_2
-    my_ip_2=$(curl -s https://api.ipify.org)
+    my_ip_2=$(curl -s -4 https://api.ipify.org)
     if [ -z "$my_ip_2" ]; then
         log_error "Failed to get public IP address from ipify.org"
         exit 1
