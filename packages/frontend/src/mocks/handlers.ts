@@ -154,12 +154,14 @@ Dette er HTML som er generert fra markdown.
 
 const getContentMarkdownMock = http.get('https://dialogporten-serviceprovider.net/fce-markdown-transmission', ({ request }) => {
   const url = new URL(request.url)
-  const productId = url.searchParams.get('id')
-  return HttpResponse.text(`# Info i markdown for transmission (id=${productId})`);
+  const id = url.searchParams.get('id')
+  return HttpResponse.text(`# Info i markdown for transmission (id=${id})`);
 });
 
-const getMainContentHtmlMock = http.get('https://dialogporten-serviceprovider.net/fce-html', () => {
-  return HttpResponse.text(`<html><body><h1>Tittel i arvet HTML</h1><p>Brødtekst!</p></body></html>`);
+const getMainContentHtmlMock = http.get('https://dialogporten-serviceprovider.net/fce-html', ({request}) => {
+  const url = new URL(request.url)
+  const id = url.searchParams.get('id')
+  return HttpResponse.text(`<html><body><h1>Tittel i arvet HTML</h1><p>Brødtekst! ${id}</p></body></html>`);
 });
 
 const getAllPartiesMock = graphql.query('parties', () => {
