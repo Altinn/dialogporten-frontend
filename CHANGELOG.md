@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.52.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.52.2...v1.52.3) (2025-08-14)
+
+
+### Bug Fixes
+
+* change kl to kl. as clock prefix for bm and nn ([#2479](https://github.com/Altinn/dialogporten-frontend/issues/2479)) ([fe6eae0](https://github.com/Altinn/dialogporten-frontend/commit/fe6eae0d19795b5984e7c3163b61d56ff6a18d60))
+* simplify by always directing user to main entry on successful login ([#2471](https://github.com/Altinn/dialogporten-frontend/issues/2471)) ([dc77090](https://github.com/Altinn/dialogporten-frontend/commit/dc77090b95669c312a5ddf6e8054c1c848c3d89a))
+
 ## [1.52.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.52.1...v1.52.2) (2025-08-12)
 
 
