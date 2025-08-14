@@ -18,21 +18,21 @@ test.describe('Flattened parties and subparties', () => {
     await page.getByRole('button', { name: 'Test Testesen' }).first().click();
     const FirmaAS = await getToolbarAccountInfo(page, 'Firma AS');
     expect(FirmaAS.found).toEqual(true);
-    expect(FirmaAS.count).toEqual(1);
+    expect(FirmaAS.badgeCount).toEqual(1);
 
     const TestBedriftAS = await getToolbarAccountInfo(page, 'Testbedrift AS');
     expect(TestBedriftAS.found).toEqual(true);
-    expect(TestBedriftAS.count).toEqual(2);
+    expect(TestBedriftAS.badgeCount).toEqual(2);
 
     const TestBedriftASAvdOslo = await getToolbarAccountInfo(page, 'Testbedrift AS Avd Oslo');
     expect(TestBedriftASAvdOslo.found).toEqual(true);
-    expect(TestBedriftASAvdOslo.count).toEqual(1);
+    expect(TestBedriftASAvdOslo.badgeCount).toEqual(1);
 
     await page
       .getByTestId('inbox-toolbar')
       .getByRole('group')
       .locator('a')
-      .filter({ hasText: 'TTestbedrift AS2' })
+      .filter({ hasText: 'T2Testbedrift AS2' })
       .click();
 
     await expect(page.getByRole('link', { name: 'Message for Test Testesen' })).not.toBeVisible();
@@ -59,7 +59,7 @@ test.describe('Flattened parties and subparties', () => {
       .getByTestId('inbox-toolbar')
       .getByRole('group')
       .locator('a')
-      .filter({ hasText: 'TTestbedrift AS2' })
+      .filter({ hasText: 'T2Testbedrift AS2' })
       .click();
 
     await searchbarInput.fill('party');
@@ -70,7 +70,6 @@ test.describe('Flattened parties and subparties', () => {
   test('Filters shows merged parties if sub party has same name as main party', async ({ page }) => {
     await page.getByRole('button', { name: 'Test Testesen' }).first().click();
 
-    //only for virtualized (>20 actors)
     // const menu = await page.getByRole('menu');
     // await menu.hover();
     // await page.mouse.wheel(0, 300);
@@ -80,7 +79,7 @@ test.describe('Flattened parties and subparties', () => {
       .getByTestId('inbox-toolbar')
       .getByRole('group')
       .locator('a')
-      .filter({ hasText: 'FTT5Alle virksomheter7' })
+      .filter({ hasText: 'Alle virksomheter7' })
       .click();
 
     await page.getByTestId('inbox-toolbar').getByRole('button', { name: 'add' }).click();

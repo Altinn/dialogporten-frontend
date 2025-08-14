@@ -25,22 +25,26 @@ test.describe('LoginPartyContext', () => {
     await page.getByRole('button', { name: 'Test Testesen' }).click();
     const firmaAs = await getToolbarAccountInfo(page, 'Firma AS');
     expect(firmaAs.found).toEqual(true);
-    expect(firmaAs.count).toEqual(1);
+    expect(firmaAs.badgeCount).toEqual(1);
 
     const toolbar = page.getByTestId('inbox-toolbar');
     await expect(toolbar.getByText('Alle virksomheter').locator('visible=true')).toBeVisible();
 
     const TestBedriftAS = await getToolbarAccountInfo(page, 'Testbedrift AS');
     expect(TestBedriftAS.found).toEqual(true);
-    expect(TestBedriftAS.count).toEqual(1);
+    expect(TestBedriftAS.badgeCount).toEqual(1);
 
     const TestBedriftASAvdSub = await getToolbarAccountInfo(page, 'Testbedrift AS Avd Sub');
     expect(TestBedriftASAvdSub.found).toEqual(true);
-    expect(TestBedriftASAvdSub.count).toEqual(2);
+    expect(TestBedriftASAvdSub.badgeCount).toEqual(2);
 
     const TestBedriftASAvdOslo = await getToolbarAccountInfo(page, 'Testbedrift AS Avd Oslo');
     expect(TestBedriftASAvdOslo.found).toEqual(true);
-    expect(TestBedriftASAvdOslo.count).toEqual(1);
+    expect(TestBedriftASAvdOslo.badgeCount).toEqual(1);
+
+    const AlleVirksomheter = await getToolbarAccountInfo(page, 'Alle virksomheter');
+    expect(AlleVirksomheter.found).toEqual(true);
+    expect(AlleVirksomheter.badgeCount).toEqual(5);
 
     await toolbar.locator('li').locator('visible=true').filter({ hasText: 'Firma AS' }).click();
     await expect(page.getByRole('button', { name: 'Firma AS' })).toBeVisible();
@@ -50,12 +54,7 @@ test.describe('LoginPartyContext', () => {
     expect(new URL(page.url()).searchParams.has('allParties')).toBe(false);
 
     await page.getByRole('button', { name: 'Firma AS' }).first().click();
-    await page
-      .getByTestId('inbox-toolbar')
-      .getByRole('group')
-      .locator('a')
-      .filter({ hasText: 'TTestbedrift AS Avd Sub2' })
-      .click();
+    await TestBedriftASAvdSub.item.click();
 
     await expect(page.getByRole('button', { name: 'Testbedrift AS Avd Sub' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'This is a message 1 for Firma AS' })).not.toBeVisible();
@@ -67,12 +66,7 @@ test.describe('LoginPartyContext', () => {
     ).toBeVisible();
 
     await page.getByRole('button', { name: 'Testbedrift AS Avd Sub' }).click();
-    await page
-      .getByTestId('inbox-toolbar')
-      .getByRole('group')
-      .locator('a')
-      .filter({ hasText: 'FTT4Alle virksomheter5' })
-      .click();
+    await AlleVirksomheter.item.click();
 
     await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).not.toBeVisible();
     await expect(page.getByRole('link', { name: 'This is a message 1 for Firma AS' })).toBeVisible();
@@ -101,7 +95,7 @@ test.describe('LoginPartyContext', () => {
     await expectIsPersonPage(page);
 
     await page.getByRole('button', { name: 'Test Testesen' }).click();
-    await page.getByTestId('inbox-toolbar').getByRole('group').locator('a').filter({ hasText: 'FFirma AS1' }).click();
+    await page.locator('a').filter({ hasText: 'Firma' }).click();
 
     await expect(page.getByRole('button', { name: 'Firma AS' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'This is a message 1 for Firma AS' })).toBeVisible();

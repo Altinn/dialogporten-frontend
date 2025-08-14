@@ -70,7 +70,7 @@ const getAllDialogsforCountMock = graphql.query('getAllDialogsForCount', ({ vari
           endUserContext: {
             systemLabels: item.endUserContext?.systemLabels ?? [],
           },
-          seenSinceLastUpdate: item.seenSinceLastUpdate,
+          seenSinceLastContentUpdate: item.seenSinceLastContentUpdate,
         })) ?? null,
       },
     },
@@ -103,11 +103,11 @@ const getDialogByIdMock = graphql.query('getDialogById', (options) => {
   const {
     variables: { id },
   } = options;
-  const dialog = inMemoryStore.dialogs?.find((dialog) => dialog.id === id) ?? null;
+  const dialog = inMemoryStore.dialogs?.find(d => d.id === id);
+  if (dialog && !dialog.seenSinceLastContentUpdate.some(d => d.isCurrentEndUser)) {
+    const party = inMemoryStore.parties?.find(p => p.isCurrentEndUser);
 
-  if (dialog && !dialog.seenSinceLastUpdate.find(d => d.isCurrentEndUser)) {
-    const party = inMemoryStore.parties?.find((party) => party.isCurrentEndUser) ?? null;
-    dialog.seenSinceLastUpdate = [
+    dialog.seenSinceLastContentUpdate = [
       {
         id: 'c4f4d846-2fe7-4172-badc-abc48f9af8a5',
         seenAt: new Date().toISOString(),
@@ -119,9 +119,6 @@ const getDialogByIdMock = graphql.query('getDialogById', (options) => {
         isCurrentEndUser: true,
       },
     ];
-    inMemoryStore.dialogs = dialog
-      ? inMemoryStore.dialogs?.map((d) => (d.id === id ? dialog : d))
-      : inMemoryStore.dialogs;
   }
 
   const dialogDetails: DialogByIdFieldsFragment | null = dialog
@@ -256,7 +253,6 @@ const searchAutocompleteDialogsMock = graphql.query('getSearchAutocompleteDialog
   const filteredItems = itemsForParty?.filter((item) => naiveSearchFilter(item, search));
   const autoCompleteItems: SearchAutocompleteDialogFieldsFragment[] = filteredItems?.map(item => ({
     id: item.id,
-    seenSinceLastUpdate: item.seenSinceLastUpdate,
     seenSinceLastContentUpdate: item.seenSinceLastContentUpdate,
     content: {
       __typename: "SearchContent",

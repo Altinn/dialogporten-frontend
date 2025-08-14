@@ -1,4 +1,4 @@
-import { ActorType, DialogStatus, type SearchDialogFieldsFragment, SystemLabel } from 'bff-types-generated';
+import { DialogStatus, type SearchDialogFieldsFragment, SystemLabel } from 'bff-types-generated';
 export const dialogs: SearchDialogFieldsFragment[] = [
     {
         seenSinceLastContentUpdate: [],
@@ -14,31 +14,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         createdAt: '2024-05-23T23:00:00.000Z',
         updatedAt: '2024-06-23T23:00:00.000Z',
         extendedStatus: null,
-        seenSinceLastUpdate: [
-            {
-                id: 'c4f4d846-2fe7-4172-badc-abc48f9af8a5',
-                seenAt: '2024-09-30T11:36:01.572Z',
-                seenBy: {
-                    actorType: null,
-                    actorId: 'urn:altinn:person:identifier-ephemeral:2b34ab491b',
-                    actorName: 'USER TODAY',
-                },
-                isCurrentEndUser: true,
-            },
-        ],
-        latestActivity: {
-            description: [
-                {
-                    value: 'Meldingen ble sendt.',
-                    languageCode: 'nb',
-                },
-            ],
-            performedBy: {
-                actorType: ActorType.PartyRepresentative,
-                actorId: null,
-                actorName: 'Rakel Engelsvik',
-            },
-        },
         content: {
             title: {
                 mediaType: 'text/plain',
@@ -77,31 +52,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         createdAt: '2024-05-23T23:00:00.000Z',
         updatedAt: '2024-06-23T23:00:00.000Z',
         extendedStatus: null,
-        seenSinceLastUpdate: [
-            {
-                id: 'c4f4d846-2fe7-4172-badc-abc48f9af8a5',
-                seenAt: '2024-09-30T11:36:01.572Z',
-                seenBy: {
-                    actorType: null,
-                    actorId: 'urn:altinn:person:identifier-ephemeral:2b34ab491b',
-                    actorName: 'USER TODAY',
-                },
-                isCurrentEndUser: true,
-            },
-        ],
-        latestActivity: {
-            description: [
-                {
-                    value: 'Meldingen ble sendt.',
-                    languageCode: 'nb',
-                },
-            ],
-            performedBy: {
-                actorType: ActorType.PartyRepresentative,
-                actorId: null,
-                actorName: 'Rakel Engelsvik',
-            },
-        },
         content: {
             title: {
                 mediaType: 'text/plain',
@@ -140,31 +90,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         createdAt: '2024-05-23T23:00:00.000Z',
         updatedAt: '2024-06-23T23:00:00.000Z',
         extendedStatus: null,
-        seenSinceLastUpdate: [
-            {
-                id: 'c4f4d846-2fe7-4172-badc-abc48f9af8a5',
-                seenAt: '2024-09-30T11:36:01.572Z',
-                seenBy: {
-                    actorType: null,
-                    actorId: 'urn:altinn:person:identifier-ephemeral:2b34ab491b',
-                    actorName: 'USER TODAY',
-                },
-                isCurrentEndUser: true,
-            },
-        ],
-        latestActivity: {
-            description: [
-                {
-                    value: 'Meldingen ble sendt.',
-                    languageCode: 'nb',
-                },
-            ],
-            performedBy: {
-                actorType: ActorType.PartyRepresentative,
-                actorId: null,
-                actorName: 'Rakel Engelsvik',
-            },
-        },
         content: {
             title: {
                 mediaType: 'text/plain',

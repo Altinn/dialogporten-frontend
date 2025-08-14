@@ -1,4 +1,4 @@
-import { type Page, expect } from '@playwright/test';
+import { type Locator, type Page, expect } from '@playwright/test';
 
 export const getSidebar = (page: Page) => page.locator('aside');
 export const getSidebarMenuItem = (page: Page, route: string) => getSidebar(page).locator(`a[href*="${route}?"]`);
@@ -45,7 +45,10 @@ export async function expectIsCompanyPage(page: Page) {
 export async function expectIsPersonPage(page: Page) {
   await expect(page.locator('#root > .app > div')).toHaveAttribute('data-color', 'person');
 }
-export async function getToolbarAccountInfo(page: Page, name: string): Promise<{ found: boolean; count?: number }> {
+export async function getToolbarAccountInfo(
+  page: Page,
+  name: string,
+): Promise<{ found: boolean; alertCount?: number; badgeCount?: number; item?: Locator }> {
   const toolbar = page.getByTestId('inbox-toolbar');
   const items = toolbar.locator('li');
 
@@ -58,8 +61,10 @@ export async function getToolbarAccountInfo(page: Page, name: string): Promise<{
 
   const badgeLocator = matchingItem.first().locator('[data-variant="subtle"] span');
 
-  const badgeText = await badgeLocator.first().textContent();
-  const count = badgeText ? Number(badgeText.trim()) : undefined;
+  const alertText = await badgeLocator.first().textContent();
+  const badgeText = await badgeLocator.last().textContent();
+  const alertCount = alertText ? Number(alertText.trim()) : undefined;
+  const badgeCount = badgeText ? Number(badgeText.trim()) : undefined;
 
-  return { found: true, count };
+  return { found: true, alertCount, badgeCount, item: matchingItem };
 }
