@@ -14,8 +14,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     createdAt: '2023-12-23T23:00:00.000Z',
     updatedAt: '2024-01-15T11:34:00.000Z',
     extendedStatus: null,
-    seenSinceLastContentUpdate: [],
-    seenSinceLastUpdate: [
+    seenSinceLastContentUpdate: [
       {
         id: 'c4f4d846-2fe7-4172-badc-abc48f9af8a5',
         seenAt: '2024-09-30T11:36:01.572Z',
@@ -47,19 +46,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         isCurrentEndUser: false,
       },
     ],
-    latestActivity: {
-      description: [
-        {
-          value: 'Meldingen ble sendt.',
-          languageCode: 'nb',
-        },
-      ],
-      performedBy: {
-        actorType: ActorType.PartyRepresentative,
-        actorId: null,
-        actorName: 'Rakel Engelsvik',
-      },
-    },
     content: {
       title: {
         mediaType: 'text/plain',
@@ -102,7 +88,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     updatedAt: '2024-02-20T06:33:00.000Z',
     extendedStatus: null,
     seenSinceLastContentUpdate: [],
-    seenSinceLastUpdate: [],
     latestActivity: null,
     content: {
       title: {
@@ -140,8 +125,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     createdAt: '2023-12-12T09:15:00.000Z',
     updatedAt: '2024-03-12T09:15:00.000Z',
     extendedStatus: null,
-    seenSinceLastContentUpdate: [],
-    seenSinceLastUpdate: [
+    seenSinceLastContentUpdate: [
       {
         id: '03d5e075-9a8b-48b7-bb0a-99733ee3e572',
         seenAt: '2024-09-30T11:36:29.692Z',
@@ -153,7 +137,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         isCurrentEndUser: true,
       },
     ],
-    latestActivity: null,
     content: {
       title: {
         mediaType: 'text/plain',
@@ -191,20 +174,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     updatedAt: '2024-04-04T11:45:00.000Z',
     extendedStatus: null,
     seenSinceLastContentUpdate: [],
-    seenSinceLastUpdate: [],
-    latestActivity: {
-      description: [
-        {
-          value: 'Du leverte søknad on arbeidsavklaringspenger.',
-          languageCode: 'nb',
-        },
-      ],
-      performedBy: {
-        actorType: ActorType.PartyRepresentative,
-        actorId: null,
-        actorName: 'Erik Huseklepp',
-      },
-    },
     content: {
       title: {
         mediaType: 'text/plain',
@@ -241,8 +210,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     createdAt: '2023-05-17T09:30:00.000Z',
     updatedAt: '2024-05-17T09:30:00.000Z',
     extendedStatus: null,
-    seenSinceLastContentUpdate: [],
-    seenSinceLastUpdate: [
+    seenSinceLastContentUpdate: [
       {
         id: '268edfdb-1843-4a18-a8c7-5d45fe7f7fc8',
         seenAt: '2024-09-30T11:37:05.020Z',
@@ -254,7 +222,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         isCurrentEndUser: true,
       },
     ],
-    latestActivity: null,
     content: {
       title: {
         mediaType: 'text/plain',
@@ -293,8 +260,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     updatedAt: '2024-06-18T10:55:00.000Z',
     dueAt: '2028-05-04T11:45:00.000Z',
     extendedStatus: null,
-    seenSinceLastContentUpdate: [],
-    seenSinceLastUpdate: [
+    seenSinceLastContentUpdate: [
       {
         id: 'a06fa273-7aa7-41dc-911c-b0fb60640a6b',
         seenAt: '2024-10-01T07:17:14.541Z',
@@ -306,7 +272,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         isCurrentEndUser: true,
       },
     ],
-    latestActivity: null,
     content: {
       title: {
         mediaType: 'text/plain',
@@ -344,7 +309,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     updatedAt: '2024-07-15T08:45:00.000Z',
     extendedStatus: null,
     seenSinceLastContentUpdate: [],
-    seenSinceLastUpdate: [],
     latestActivity: {
       description: [
         {
@@ -394,8 +358,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     createdAt: '2022-04-13T09:25:00.000Z',
     updatedAt: '2023-08-13T09:25:00.000Z',
     extendedStatus: null,
-    seenSinceLastContentUpdate: [],
-    seenSinceLastUpdate: [
+    seenSinceLastContentUpdate: [
       {
         id: '90801e39-23a4-4086-9e9a-f56811f75ff3',
         seenAt: '2024-09-30T08:34:31.801Z',
@@ -407,7 +370,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         isCurrentEndUser: true,
       },
     ],
-    latestActivity: null,
     content: {
       title: {
         mediaType: 'text/plain',

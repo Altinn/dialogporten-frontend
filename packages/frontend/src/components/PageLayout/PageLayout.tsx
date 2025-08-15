@@ -61,16 +61,12 @@ export const PageLayout: React.FC = () => {
   const { currentPartySavedSearches } = useSavedSearches(selectedPartyIds);
 
   const needsAttentionPerView = {
-    inbox: dialogCountsByViewType.inbox.filter((item) => !item.seenSinceLastUpdate?.some((s) => s.isCurrentEndUser))
-      .length,
-    drafts: dialogCountsByViewType.drafts.filter((item) => !item.seenSinceLastUpdate?.some((s) => s.isCurrentEndUser))
-      .length,
-    sent: dialogCountsByViewType.sent.filter((item) => !item.seenSinceLastUpdate?.some((s) => s.isCurrentEndUser))
-      .length,
+    inbox: dialogCountsByViewType.inbox.filter((item) => item.seenSinceLastContentUpdate?.length === 0).length,
+    drafts: dialogCountsByViewType.drafts.filter((item) => item.seenSinceLastContentUpdate?.length === 0).length,
+    sent: dialogCountsByViewType.sent.filter((item) => item.seenSinceLastContentUpdate?.length === 0).length,
     'saved-searches': 0,
-    archive: dialogCountsByViewType.archive.filter((item) => !item.seenSinceLastUpdate?.some((s) => s.isCurrentEndUser))
-      .length,
-    bin: dialogCountsByViewType.bin.filter((item) => !item.seenSinceLastUpdate?.some((s) => s.isCurrentEndUser)).length,
+    archive: dialogCountsByViewType.archive.filter((item) => item.seenSinceLastContentUpdate?.length === 0).length,
+    bin: dialogCountsByViewType.bin.filter((item) => item.seenSinceLastContentUpdate?.length === 0).length,
   };
 
   const itemsPerViewCount = {

@@ -121,7 +121,7 @@ export const getMockedUnauthorizedFCEContent = () => {
   };
 }
 
-export const getMockedActivities = (latestActivity: SearchDialogFieldsFragment['latestActivity'], id: string): DialogByIdFieldsFragment['activities'] => {
+export const getMockedActivities = ( id: string): DialogByIdFieldsFragment['activities'] => {
   if (id === '019241f7-8218-7756-be82-123qwe456rtA') {
     return [
       {
@@ -190,11 +190,11 @@ export const getMockedActivities = (latestActivity: SearchDialogFieldsFragment['
     {
       id: Math.random() + '-activity',
       performedBy: {
-        actorType: latestActivity?.performedBy.actorType as ActorType,
-        actorId: latestActivity?.performedBy.actorId,
-        actorName: latestActivity?.performedBy.actorName,
+        actorType: ActorType.ServiceOwner,
+        actorId: 'digdir',
+        actorName: 'Digitaliseringdirektoratet',
       },
-      description: latestActivity?.description || [],
+      description: [],
       type: ActivityType.Information,
       createdAt: new Date().toISOString(),
     },
@@ -287,7 +287,7 @@ export const getMockedTransmissions = (dialogId: string) => {
           "summary": {
             "value": [{
               value: 'Oppsummering 3',
-              languageCode: 'nb',
+              languageCode: 'n  b',
             }],
             "mediaType": "text/plain"
           },
@@ -384,10 +384,10 @@ export const convertToDialogByIdTemplate = (input: SearchDialogFieldsFragment): 
         ],
       },
     ],
-    activities: getMockedActivities(input.latestActivity, input.id),
+    activities: getMockedActivities(input.id),
     transmissions: getMockedTransmissions(input.id),
     fromServiceOwnerTransmissionsCount: 3,
-  fromPartyTransmissionsCount:4,
+    fromPartyTransmissionsCount:4,
     guiActions: [
       {
         id: input.id,
@@ -407,10 +407,7 @@ export const convertToDialogByIdTemplate = (input: SearchDialogFieldsFragment): 
         prompt: [],
       },
     ],
-    // @ts-ignore-next-line
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    // biome-ignore lint/suspicious/noExplicitAny: NA
-    seenSinceLastUpdate: input.seenSinceLastUpdate,
+    seenSinceLastContentUpdate: input.seenSinceLastContentUpdate,
     status: input.status,
     createdAt: input.createdAt,
     updatedAt: input.updatedAt,
