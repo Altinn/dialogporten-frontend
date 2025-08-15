@@ -30,6 +30,7 @@
     "bff-types-generated": "workspace:*",
     "classnames": "^2.5.1",
     "date-fns": "^3.6.0",
+    "driver.js": "^1.3.6",
     "embeddable-markdown-html": "workspace:*",
     "graphql": "^16.11.0",
     "graphql-request": "^6.1.0",

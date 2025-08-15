@@ -25,6 +25,7 @@ import { useWindowSize } from '../../components/PageLayout/useWindowSize.tsx';
 import { SaveSearchButton } from '../../components/SavedSearchButton/SaveSearchButton.tsx';
 import { isSavedSearchDisabled } from '../../components/SavedSearchButton/savedSearchEnabled.ts';
 import { SeenByModal } from '../../components/SeenByModal/SeenByModal.tsx';
+import { useInboxOnboarding } from '../../useOnboarding/useInboxOnboarding.ts';
 import { PageRoutes } from '../routes.ts';
 import { FilterCategory, readFiltersFromURLQuery } from './filters.ts';
 import styles from './inbox.module.css';
@@ -54,6 +55,8 @@ export const Inbox = ({ viewType }: InboxProps) => {
   } = useParties();
 
   useMockError();
+  useInboxOnboarding();
+
   const location = useLocation();
   const [filterState, setFilterState] = useState<FilterState>(readFiltersFromURLQuery(location.search));
   const [currentSeenByLogModal, setCurrentSeenByLogModal] = useState<CurrentSeenByLog | null>(null);
@@ -156,7 +159,8 @@ export const Inbox = ({ viewType }: InboxProps) => {
 
   return (
     <PageBase margin="page">
-      <section data-testid="inbox-toolbar">
+      {/* TODO - Delete ID, onboarding IDs to be implemented on desired elements */}
+      <section data-testid="inbox-toolbar" id="inbox-toolbar">
         {selectedAccount ? (
           <>
             <Toolbar
@@ -201,12 +205,16 @@ export const Inbox = ({ viewType }: InboxProps) => {
             description={searchMode ? t('inbox.no_results.description') : t(`inbox.heading.description.${viewType}`)}
           />
         )}
-        <DialogList
-          items={groupedDialogs}
-          groups={groups}
-          sortGroupBy={([aKey], [bKey]) => (groups[bKey]?.orderIndex ?? 0) - (groups[aKey]?.orderIndex ?? 0)}
-          isLoading={isLoading}
-        />
+        {/* TODO - Delete div, onboarding IDs to be implemented on desired elements */}
+        <div id="dialog-list">
+          <DialogList
+            items={groupedDialogs}
+            groups={groups}
+            sortGroupBy={([aKey], [bKey]) => (groups[bKey]?.orderIndex ?? 0) - (groups[aKey]?.orderIndex ?? 0)}
+            isLoading={isLoading}
+          />
+        </div>
+
         {hasNextPage && (
           <DsButton aria-label={t('dialog.aria.fetch_more')} onClick={fetchNextPage} variant="tertiary">
             {t('dialog.fetch_more')}

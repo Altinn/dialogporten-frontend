@@ -225,5 +225,10 @@
   "word.you": "deg",
   "word.and": "og",
   "word.or": "eller",
-  "word.error": "Error"
+  "word.error": "Error",
+  "onboarding.toolbar.title": "Innboks verktøylinje",
+  "onboarding.toolbar.description": "Dette er hovudverktøylinja der du kan filtrere dialogar, søkje og administrere kontoinnstillingane dine.",
+  "onboarding.dialogs.title": "Liste over dialogar",
+  "onboarding.dialogs.description": "Dette er lista over dialogar, meldingar i din Altinn-innboks",
+  "onboarding.done": "Ferdig"
 }

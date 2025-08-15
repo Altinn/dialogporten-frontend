@@ -225,5 +225,10 @@
   "word.you": "you",
   "word.and": "and",
   "word.or": "or",
-  "word.error": "Error"
+  "word.error": "Error",
+  "onboarding.toolbar.title": "Inbox Toolbar",
+  "onboarding.toolbar.description": "This is the main toolbar where you can filter dialogs, search, and manage your account settings.",
+  "onboarding.dialogs.title": "List of dialogs",
+  "onboarding.dialogs.description": "This is the list of dialogs, messages in your Altinn inbox",
+  "onboarding.done": "Done"
 }
