@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.53.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.52.3...v1.53.0) (2025-08-15)
+
+
+### Features
+
+* Update AC-lib with new awaiting labels ([#2491](https://github.com/Altinn/dialogporten-frontend/issues/2491)) ([f87ff49](https://github.com/Altinn/dialogporten-frontend/commit/f87ff49aab06bea8f7c9514a624fa411d66af105))
+
 ## [1.52.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.52.2...v1.52.3) (2025-08-14)
 
 
