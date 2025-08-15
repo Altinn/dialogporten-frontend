@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
+import 'driver.js/dist/driver.css';
 import './i18n/config.ts';
 
 import { RootProvider } from '@altinn/altinn-components';
