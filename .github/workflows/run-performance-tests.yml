@@ -1,0 +1,97 @@
+name: Run k6 performance tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      browserVus:
+        description: 'Number of Browser VUS'
+        required: true
+        default: 1
+        type: number
+      bffVus:
+        description: 'Number of BFF VUS'
+        required: true
+        default: 1
+        type: number
+      duration:
+        description: 'Duration of test, ie 30s, 1m, 10m'
+        required: true
+        default: 1m
+        type: string
+      parallelism:
+        description: 'Number of parallel test runs'
+        required: true
+        default: 1
+        type: number 
+      environment:
+        description: "Environment to run the tests in"
+        required: true
+        default: 'at'
+        type: choice
+        options:
+          - at
+          - tt
+          - yt
+      testSuitePath:
+        description: 'Path to test suite to run'
+        required: true
+        default: 'packages/frontend/tests/performance/k6/tests/testAfBrowserAndBff.js'
+        type: choice
+        options:
+          - 'packages/frontend/tests/performance/k6/tests/testAfBrowserAndBff.js'
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  k6-performance-tests:
+    runs-on: ubuntu-latest
+    environment: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: OIDC Login to Azure Public Cloud
+        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 #v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+
+      - name: Populate kubeconfig with k6 context
+        id: populate_kubeconfig_with_k6_context
+        shell: bash
+        run: |
+          if ! az aks install-cli; then
+            echo "Failed to install kubectl CLI"
+            exit 1
+          fi
+
+          if ! az aks get-credentials --resource-group k6tests-rg --name k6tests-cluster; then
+            echo "Failed to populate kubeconfig"
+            exit 1
+          fi
+
+          if ! kubelogin convert-kubeconfig -l azurecli; then
+            echo "Failed to convert kubeconfig"
+            exit 1
+          fi
+      - name: Setup k6
+        uses: grafana/setup-k6-action@ffe7d7290dfa715e48c2ccc924d068444c94bde2 # v1.0.0
+      - name: Run K6 tests (${{ inputs.testSuitePath }})
+        run: |
+            echo "Running k6 test suite ${{ inputs.testSuitePath }} with ${{ inputs.browserVus }}/${{ inputs.bffVus }} BrowserVUs/BffVus for ${{ inputs.duration }} on ${{ inputs.parallelism }} parallelism at ${{ inputs.environment }} environment"
+            k6configName=$(basename "${{ inputs.testSuitePath }}" .js)
+            k6configName="k6-${k6configName}"
+            ./packages/frontend/tests/performance/k6/run-test-in-k8s.sh \
+              -f "${{ inputs.testSuitePath }}" \
+              -c "$k6configName" \
+              -n "$k6configName" \
+              -v "${{ inputs.browserVus }}" \
+              -w "${{ inputs.bffVus }}" \
+              -d "${{ inputs.duration }}" \
+              -p "${{ inputs.parallelism }}" \
+              -e "${{ inputs.environment }}"
+
+      

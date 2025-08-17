@@ -15,9 +15,9 @@ test.describe('Inbox smoke tests', () => {
   });
 
   test('should fetch dialogs and open correctly', async ({ page, baseURL }) => {
-    await expect(page.getByRole('link', { name: 'Testdriver for Arbeidsflate' })).toBeVisible();
-    await page.getByRole('link', { name: 'Testdriver for Arbeidsflate' }).click();
+    await expect(page.getByRole('link', { name: 'Testdriver for Arbeidsflate' }).first()).toBeVisible();
+    await page.getByRole('link', { name: 'Testdriver for Arbeidsflate' }).first().click();
     await expect(page.getByRole('button', { name: 'Gå til skjemautfylling' })).toBeVisible();
-    await expect(page).toHaveURL(`${baseURL}/inbox/0197abb7-bf17-70f9-84d3-c7bee2d96612/`);
+    await expect(page).toHaveURL(`${baseURL}/inbox/0198acd7-23aa-7140-9884-57228990faa1/`);
   });
 });

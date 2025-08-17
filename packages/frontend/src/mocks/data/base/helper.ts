@@ -71,15 +71,7 @@ export const getMockedMainContent = (dialogId: string) => {
   const idWithLegacyHTML = '019241f7-6f45-72fd-a574-f19d358aaf4e';
 
   if (idWithLegacyHTML === dialogId) {
-    return {
-      mediaType: 'application/vnd.dialogporten.frontchannelembed-url;type=text/html',
-      value: [
-        {
-          value: 'https://dialogporten-serviceprovider.net/fce-html',
-          languageCode: 'nb',
-        },
-      ],
-    };
+    return getMockedHTMLFCEContent();
   }
 
   return {
@@ -99,6 +91,18 @@ export const getMockedFCEContent = (transmissionId: string) => {
     value: [
       {
         value: `https://dialogporten-serviceprovider.net/fce-markdown-transmission?id=t${transmissionId}`,
+        languageCode: 'nb',
+      },
+    ],
+  };
+};
+
+export const getMockedHTMLFCEContent = (transmissionId?: string) => {
+  return {
+    mediaType: 'application/vnd.dialogporten.frontchannelembed-url;type=text/html',
+    value: [
+      {
+        value: `https://dialogporten-serviceprovider.net/fce-html?id=t${transmissionId}`,
         languageCode: 'nb',
       },
     ],
@@ -283,6 +287,35 @@ export const getMockedTransmissions = (dialogId: string) => {
           "summary": {
             "value": [{
               value: 'Oppsummering 3',
+              languageCode: 'nb',
+            }],
+            "mediaType": "text/plain"
+          },
+        },
+        "attachments": []
+      },
+      {
+        "id": "transmission-999",
+        "createdAt": "2024-07-31T11:12:54.233Z",
+        isAuthorized: true,
+        "type": TransmissionType.Information,
+        "sender": {
+          "actorType": ActorType.PartyRepresentative,
+          "actorId": null,
+          "actorName": 'Per Nordmann'
+        },
+        "content": {
+          "title": {
+            "value": [{
+              value: 'Inneholder HTML',
+              languageCode: 'nb',
+            }],
+            "mediaType": "text/plain"
+          },
+          "contentReference": getMockedHTMLFCEContent('HTML'),
+          "summary": {
+            "value": [{
+              value: 'Oppsummering HTML',
               languageCode: 'nb',
             }],
             "mediaType": "text/plain"
