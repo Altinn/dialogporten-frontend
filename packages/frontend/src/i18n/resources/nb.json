@@ -21,7 +21,7 @@
   "dialog.aria.fetch_more": "Hent og vis flere dialoger",
   "dialog.context_menu.label": "Kontekstmeny for dialog med tittel {title}",
   "dialog.due_at": "Frist: {date}",
-  "dialog.error_message.general": "Kna ikke vise dialogen du prøver å åpne.",
+  "dialog.error_message.general": "Kan ikke vise dialogen du prøver å åpne.",
   "dialog.fetch_more": "Vis flere ...",
   "dialog.imageAltURL": "Selskapets logo for {companyName}",
   "dialog.activity_log.title": "Aktivitetslogg",
