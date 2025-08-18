@@ -91,7 +91,7 @@
   "inbox.heading.description.sent": "Her finner du skjema du har sendt.",
   "inbox.heading.no_results": "Ingen meldinger",
   "inbox.heading.no_results.archive": "Du har ingen arkiverte meldinger",
-  "inbox.heading.no_results.bin": "Du har ingen slettede meldinger",
+  "inbox.heading.no_results.bin": "Du har ingen meldinger i papirkurven",
   "inbox.heading.no_results.drafts": "Du har ingen utkast",
   "inbox.heading.no_results.inbox": "Du har ingen meldinger i innboksen",
   "inbox.heading.no_results.sent": "Du har ingen sendte meldinger",
