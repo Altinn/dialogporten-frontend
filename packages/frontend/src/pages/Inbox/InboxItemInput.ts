@@ -12,7 +12,6 @@ export interface InboxItemInput {
   createdAt: string;
   updatedAt: string;
   status: DialogStatus;
-  isSeenByEndUser: boolean;
   hasUnopenedContent: boolean;
   contentUpdatedAt: string;
   label: SystemLabel[];

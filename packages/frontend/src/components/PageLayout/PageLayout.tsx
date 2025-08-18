@@ -11,13 +11,11 @@ import { type ChangeEvent, useEffect, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, Outlet, useLocation, useSearchParams } from 'react-router-dom';
 import { useDialogs } from '../../api/hooks/useDialogs.tsx';
-import { useDialogsCount } from '../../api/hooks/useDialogsCount.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { updateLanguage } from '../../api/queries.ts';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { i18n } from '../../i18n/config.ts';
 import { getSearchStringFromQueryParams } from '../../pages/Inbox/queryParams.ts';
-import { useSavedSearches } from '../../pages/SavedSearches/useSavedSearches.tsx';
 import { PageRoutes } from '../../pages/routes.ts';
 import { useProfile } from '../../profile';
 import { useGlobalState } from '../../useGlobalState.ts';
@@ -42,10 +40,7 @@ export const PageLayout: React.FC = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { searchValue, setSearchValue, onClear } = useSearchString();
-  const { selectedProfile, selectedParties, parties, selectedPartyIds, allOrganizationsSelected, currentEndUser } =
-    useParties();
-  const { dialogCountsByViewType, dialogCountInconclusive: partyDialogsCountInconclusive } =
-    useDialogsCount(selectedParties);
+  const { selectedProfile, selectedParties, parties, allOrganizationsSelected, currentEndUser } = useParties();
   const { dialogsByView: allDialogsByView, dialogCountInconclusive: allDialogCountInconclusive } = useDialogs({
     parties,
   });
@@ -58,36 +53,9 @@ export const PageLayout: React.FC = () => {
     countableItems: allDialogsByView.inbox,
     dialogCountInconclusive: allDialogCountInconclusive,
   });
-  const { currentPartySavedSearches } = useSavedSearches(selectedPartyIds);
-
-  const needsAttentionPerView = {
-    inbox: dialogCountsByViewType.inbox.filter((item) => !item.seenSinceLastUpdate?.some((s) => s.isCurrentEndUser))
-      .length,
-    drafts: dialogCountsByViewType.drafts.filter((item) => !item.seenSinceLastUpdate?.some((s) => s.isCurrentEndUser))
-      .length,
-    sent: dialogCountsByViewType.sent.filter((item) => !item.seenSinceLastUpdate?.some((s) => s.isCurrentEndUser))
-      .length,
-    'saved-searches': 0,
-    archive: dialogCountsByViewType.archive.filter((item) => !item.seenSinceLastUpdate?.some((s) => s.isCurrentEndUser))
-      .length,
-    bin: dialogCountsByViewType.bin.filter((item) => !item.seenSinceLastUpdate?.some((s) => s.isCurrentEndUser)).length,
-  };
-
-  const itemsPerViewCount = {
-    inbox: dialogCountsByViewType.inbox.length,
-    drafts: dialogCountsByViewType.drafts.length,
-    sent: dialogCountsByViewType.sent.length,
-    'saved-searches': currentPartySavedSearches?.length ?? 0,
-    archive: dialogCountsByViewType.archive.length,
-    bin: dialogCountsByViewType.bin.length,
-  };
 
   const footer: FooterProps = useFooter();
-  const { global, sidebar } = useGlobalMenu({
-    itemsPerViewCount,
-    needsAttentionPerView,
-    dialogCountsInconclusive: partyDialogsCountInconclusive,
-  });
+  const { global, sidebar } = useGlobalMenu();
 
   useProfile();
 

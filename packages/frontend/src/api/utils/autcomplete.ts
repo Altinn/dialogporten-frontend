@@ -14,7 +14,7 @@ export function mapAutocompleteDialogsDtoToInboxItem(
     const titleObj = item.content.title.value;
     const summaryObj = item.content.summary?.value;
     const isSeenByEndUser =
-      item.seenSinceLastUpdate.find((seenLogEntry) => seenLogEntry.isCurrentEndUser) !== undefined;
+      item.seenSinceLastContentUpdate.find((seenLogEntry) => seenLogEntry.isCurrentEndUser) !== undefined;
     return {
       id: item.id,
       title: getPreferredPropertyByLocale(titleObj)?.value ?? '',
