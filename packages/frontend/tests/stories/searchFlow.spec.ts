@@ -14,7 +14,7 @@ test.describe('Search flow', () => {
     await searchbarInput.click();
     await searchbarInput.fill('mel');
     await expect(page.getByRole('heading', { name: 'Anbefalte treff' })).toBeVisible();
-    const searchButton = page.getByRole('link', { name: 'Søk i innboks etter mel' });
+    const searchButton = page.getByRole('link', { name: 'Søk i innboksen etter mel' });
     await expect(searchButton).toBeVisible();
   });
 

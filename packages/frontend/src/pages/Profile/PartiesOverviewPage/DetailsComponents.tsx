@@ -176,7 +176,7 @@ export const NotificationSettings = ({ smsAlerts = false, emailAlerts = false, e
           ? { label: 'E-post' }
           : { variant: 'text', label: 'Sett opp varsling' };
 
-  const title = smsAlerts || emailAlerts ? 'Varslinger er på' : 'Ingen varslinger';
+  const title = smsAlerts || emailAlerts ? 'Varsler er på' : 'Ingen varsler';
 
   const value = smsAlerts && emailAlerts ? [email, phone].join(', ') : smsAlerts ? phone : emailAlerts && email;
 
