@@ -85,7 +85,7 @@
   "inbox.heading.attachments": "{count, plural, =0 {Ingen vedlegg} one {# vedlegg} other {# vedlegg}}",
   "inbox.heading.choose_all": "Velg alle",
   "inbox.heading.description.archive": "Her finner du innhold du har selv har lagt i arkivet.",
-  "inbox.heading.description.bin": "Her finner du innhold du har slettet.",
+  "inbox.heading.description.bin": "Her finner du innhold du har i papirkurven.",
   "inbox.heading.description.drafts": "Her finner du skjema du jobber med.",
   "inbox.heading.description.inbox": "Her finner du dialoger og meldinger du har mottatt fra det offentlige.",
   "inbox.heading.description.sent": "Her finner du skjema du har sendt.",
