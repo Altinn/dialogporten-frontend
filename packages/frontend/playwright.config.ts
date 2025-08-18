@@ -13,6 +13,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
+  timeout: 15000,
   reporter: 'html',
   use: {
     locale: 'nb-NO',

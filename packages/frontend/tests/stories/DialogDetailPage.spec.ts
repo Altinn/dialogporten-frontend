@@ -10,10 +10,7 @@ test.describe('DialogDetailsPage', () => {
     isMobile,
   }: { page: Page; isMobile: boolean }) => {
     const archiveLink = getSidebarMenuItem(page, PageRoutes.archive);
-    const archiveLinkCount = archiveLink.locator('span:text("1")');
-
     const binLink = getSidebarMenuItem(page, PageRoutes.bin);
-    const binLinkCount = binLink.locator('span:text("1")');
 
     await page.goto(defaultAppURL);
     await expect(page.locator('h2').filter({ hasText: /^Skatten din for 2022$/ })).toBeVisible();
@@ -30,11 +27,9 @@ test.describe('DialogDetailsPage', () => {
 
     if (isMobile) {
       await page.getByRole('button', { name: 'Meny' }).click();
-      await expect(page.getByRole('link', { name: 'Arkiv' }).locator('span:text("1")')).toBeVisible();
       await page.getByRole('link', { name: 'Arkiv' }).click();
       await page.getByRole('button', { name: 'Meny' }).click();
     } else {
-      await expect(archiveLinkCount).toBeVisible();
       await archiveLink.click();
     }
 
@@ -47,15 +42,10 @@ test.describe('DialogDetailsPage', () => {
 
     if (isMobile) {
       await page.getByRole('button', { name: 'Meny' }).click();
-      await expect(page.getByRole('link', { name: 'Arkiv' }).locator('span:text("1")')).not.toBeVisible();
-      await expect(page.getByRole('link', { name: 'Papirkurv' }).locator('span:text("1")')).toBeVisible();
       await page.getByRole('link', { name: 'Papirkurv' }).click();
       await page.getByRole('button', { name: 'Meny' }).click();
     } else {
-      await expect(archiveLinkCount).not.toBeVisible();
-      await expect(binLinkCount).toBeVisible();
       await binLink.click();
-      await expect(getSidebarMenuItemBadge(page, PageRoutes.bin)).toContainText('1');
     }
 
     await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).toBeVisible();

@@ -36,7 +36,6 @@ export const useDialogActions = () => {
         if (res.setSystemLabel?.success) {
           await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.DIALOGS] });
           await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.DIALOG_BY_ID] });
-          await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.COUNT_DIALOGS] });
           showSnackbar(successKey, 'accent');
         } else {
           showSnackbar(failureKey, 'danger');

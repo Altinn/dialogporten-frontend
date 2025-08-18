@@ -1,5 +1,5 @@
 import type { AttachmentLinkProps, AvatarProps, SeenByLogProps } from '@altinn/altinn-components';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import {
   type Actor,
   ActorType,
@@ -168,7 +168,7 @@ export function mapDialogToToInboxItem(
   const actualRecipientParty = dialogRecipientParty ?? endUserParty;
   const serviceOwner = getOrganization(organizations || [], item.org, 'nb');
   const senderName = item.content.senderName?.value;
-  const { seenByLabel } = getSeenByLabel(item.seenSinceLastUpdate, t);
+  const { seenByLabel } = getSeenByLabel(item.seenSinceLastContentUpdate, t);
 
   return {
     id: item.id,
@@ -221,7 +221,7 @@ export function mapDialogToToInboxItem(
       collapsible: true,
       title: seenByLabel,
       endUserLabel: t('word.you'),
-      items: item.seenSinceLastUpdate.map((seen) => ({
+      items: item.seenSinceLastContentUpdate.map((seen) => ({
         id: seen.id,
         isEndUser: seen.isCurrentEndUser,
         name: (seen?.isCurrentEndUser ? (endUserParty?.name ?? '') : toTitleCase(seen.seenBy?.actorName ?? '')) || '',
@@ -253,7 +253,6 @@ export function mapDialogToToInboxItem(
 }
 
 export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseDialogByIdOutput => {
-  const queryClient = useQueryClient();
   const format = useFormat();
   const { organizations, isLoading: isOrganizationsLoading } = useOrganizations();
   const { selectedProfile } = useParties();
@@ -266,9 +265,6 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
     retry: 3,
     queryFn: () =>
       getDialogsById(id!).then((data) => {
-        if (data?.dialogById.dialog) {
-          void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.COUNT_DIALOGS] });
-        }
         return data;
       }),
     enabled: typeof id !== 'undefined' && partyURIs.length > 0,

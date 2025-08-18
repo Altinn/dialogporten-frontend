@@ -17,22 +17,10 @@ import {
 } from '@navikt/aksel-icons';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
-import type { InboxViewType } from '../../../api/hooks/useDialogs.tsx';
 import { useParties } from '../../../api/hooks/useParties.ts';
 import { pruneSearchQueryParams } from '../../../pages/Inbox/queryParams.ts';
 import { PageRoutes } from '../../../pages/routes.ts';
 import { useWindowSize } from '../useWindowSize.tsx';
-export type SideBarView = InboxViewType | 'saved-searches' | 'archive' | 'bin';
-
-export type ViewCountRecord = {
-  [key in SideBarView]: number;
-};
-
-interface UseSidebarProps {
-  itemsPerViewCount: ViewCountRecord;
-  needsAttentionPerView: ViewCountRecord;
-  dialogCountsInconclusive: boolean;
-}
 
 interface UseGlobalMenuProps {
   sidebar: MenuItemProps[];
@@ -46,21 +34,6 @@ export const getAlertBadgeProps = (count: number): BadgeProps | undefined => {
       size: 'xs',
       theme: 'base',
       color: 'danger',
-    };
-  }
-};
-
-const getBadgeProps = (count: number, countInconclusive?: boolean): BadgeProps | undefined => {
-  if (countInconclusive) {
-    return {
-      label: '',
-      size: 'xs',
-    };
-  }
-  if (count > 0) {
-    return {
-      label: count.toString(),
-      size: 'sm',
     };
   }
 };
@@ -93,11 +66,7 @@ const createMenuItemComponent =
     return <Link {...props} to={to} {...(isExternal ? { target: '__blank', rel: 'noopener noreferrer' } : {})} />;
   };
 
-export const useGlobalMenu = ({
-  itemsPerViewCount,
-  needsAttentionPerView,
-  dialogCountsInconclusive,
-}: UseSidebarProps): UseGlobalMenuProps => {
+export const useGlobalMenu = (): UseGlobalMenuProps => {
   const { t } = useTranslation();
   const { pathname, search: currentSearchQuery, state } = useLocation();
   const fromView = (state as { fromView?: string })?.fromView;
@@ -134,8 +103,6 @@ export const useGlobalMenu = ({
       size: 'lg',
       icon: { svgElement: InboxFillIcon, theme: 'base' },
       title: t('sidebar.inbox'),
-      iconBadge: getAlertBadgeProps(needsAttentionPerView.inbox),
-      badge: getBadgeProps(itemsPerViewCount.inbox, dialogCountsInconclusive),
       selected: isRouteSelected(pathname, PageRoutes.inbox, fromView),
       expanded: true,
       as: createMenuItemComponent({
@@ -147,7 +114,6 @@ export const useGlobalMenu = ({
           groupId: '2',
           icon: { svgElement: DocPencilIcon, theme: 'default' },
           title: t('sidebar.drafts'),
-          badge: getBadgeProps(itemsPerViewCount.drafts, dialogCountsInconclusive),
           selected: isRouteSelected(pathname, PageRoutes.drafts, fromView),
           as: createMenuItemComponent({
             to: PageRoutes.drafts + pruneSearchQueryParams(currentSearchQuery),
@@ -158,7 +124,6 @@ export const useGlobalMenu = ({
           groupId: '2',
           icon: { svgElement: FileCheckmarkIcon, theme: 'default' },
           title: t('sidebar.sent'),
-          badge: getBadgeProps(itemsPerViewCount.sent, dialogCountsInconclusive),
           selected: isRouteSelected(pathname, PageRoutes.sent, fromView),
           as: createMenuItemComponent({
             to: PageRoutes.sent + pruneSearchQueryParams(currentSearchQuery),
@@ -169,7 +134,6 @@ export const useGlobalMenu = ({
           groupId: '3',
           icon: { svgElement: BookmarkIcon, theme: 'default' },
           title: t('sidebar.saved_searches'),
-          badge: getBadgeProps(itemsPerViewCount['saved-searches']),
           selected: isRouteSelected(pathname, PageRoutes.savedSearches, fromView),
           as: createMenuItemComponent({
             to: PageRoutes.savedSearches + pruneSearchQueryParams(currentSearchQuery),
@@ -180,7 +144,6 @@ export const useGlobalMenu = ({
           groupId: '4',
           icon: { svgElement: ArchiveIcon, theme: 'default' },
           title: t('sidebar.archived'),
-          badge: getBadgeProps(itemsPerViewCount.archive, dialogCountsInconclusive),
           selected: isRouteSelected(pathname, PageRoutes.archive, fromView),
           as: createMenuItemComponent({
             to: PageRoutes.archive + pruneSearchQueryParams(currentSearchQuery),
@@ -191,7 +154,6 @@ export const useGlobalMenu = ({
           groupId: '4',
           icon: { svgElement: TrashIcon, theme: 'default' },
           title: t('sidebar.deleted'),
-          badge: getBadgeProps(itemsPerViewCount.bin, dialogCountsInconclusive),
           selected: isRouteSelected(pathname, PageRoutes.bin, fromView),
           as: createMenuItemComponent({
             to: PageRoutes.bin + pruneSearchQueryParams(currentSearchQuery),

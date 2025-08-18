@@ -1,5 +1,5 @@
 
-import { ActorType, DialogStatus, type SearchDialogFieldsFragment, SystemLabel } from 'bff-types-generated';
+import { DialogStatus, type SearchDialogFieldsFragment, SystemLabel } from 'bff-types-generated';
 
 export const dialogs: SearchDialogFieldsFragment[] = [
   {
@@ -13,24 +13,6 @@ progress: 10,
     createdAt: '2024-12-06T12:13:47.153Z',
     updatedAt: '2024-12-06T12:13:47.153Z',
     extendedStatus: null,
-    seenSinceLastUpdate: [],
-    latestActivity: {
-      description: [
-        {
-          value: 'Form created and pre-filled',
-          languageCode: 'en',
-        },
-        {
-          value: 'Skjema opprettet og forhåndsutfylt',
-          languageCode: 'nb',
-        },
-      ],
-      performedBy: {
-        actorType: ActorType.ServiceOwner,
-        actorId: null,
-        actorName: null,
-      },
-    },
     content: {
       title: {
         mediaType: 'text/plain',
@@ -76,24 +58,6 @@ progress: 10,
     createdAt: '2024-12-06T12:13:16.560Z',
     updatedAt: '2024-12-06T12:13:16.560Z',
     extendedStatus: null,
-    seenSinceLastUpdate: [],
-    latestActivity: {
-      description: [
-        {
-          value: 'Form created and pre-filled',
-          languageCode: 'en',
-        },
-        {
-          value: 'Skjema opprettet og forhåndsutfylt',
-          languageCode: 'nb',
-        },
-      ],
-      performedBy: {
-        actorType: ActorType.ServiceOwner,
-        actorId: null,
-        actorName: null,
-      },
-    },
     content: {
       title: {
         mediaType: 'text/plain',
@@ -139,24 +103,6 @@ progress: 10,
     createdAt: '2024-12-06T12:12:50.334Z',
     updatedAt: '2024-12-06T12:12:50.334Z',
     extendedStatus: null,
-    seenSinceLastUpdate: [],
-    latestActivity: {
-      description: [
-        {
-          value: 'Form created and pre-filled',
-          languageCode: 'en',
-        },
-        {
-          value: 'Skjema opprettet og forhåndsutfylt',
-          languageCode: 'nb',
-        },
-      ],
-      performedBy: {
-        actorType: ActorType.ServiceOwner,
-        actorId: null,
-        actorName: null,
-      },
-    },
     content: {
       title: {
         mediaType: 'text/plain',
@@ -202,24 +148,6 @@ progress: 10,
     createdAt: '2024-12-06T12:12:13.052Z',
     updatedAt: '2024-12-06T12:12:13.052Z',
     extendedStatus: null,
-    seenSinceLastUpdate: [],
-    latestActivity: {
-      description: [
-        {
-          value: 'Form created and pre-filled',
-          languageCode: 'en',
-        },
-        {
-          value: 'Skjema opprettet og forhåndsutfylt',
-          languageCode: 'nb',
-        },
-      ],
-      performedBy: {
-        actorType: ActorType.ServiceOwner,
-        actorId: null,
-        actorName: null,
-      },
-    },
     content: {
       title: {
         mediaType: 'text/plain',
@@ -265,24 +193,7 @@ progress: 10,
     createdAt: '2024-12-06T12:11:46.929Z',
     updatedAt: '2024-12-06T12:11:46.929Z',
     extendedStatus: null,
-    seenSinceLastUpdate: [],
-    latestActivity: {
-      description: [
-        {
-          value: 'Form created and pre-filled',
-          languageCode: 'en',
-        },
-        {
-          value: 'Skjema opprettet og forhåndsutfylt',
-          languageCode: 'nb',
-        },
-      ],
-      performedBy: {
-        actorType: ActorType.ServiceOwner,
-        actorId: null,
-        actorName: null,
-      },
-    },
+
     content: {
       title: {
         mediaType: 'text/plain',
@@ -328,24 +239,6 @@ progress: 10,
     createdAt: '2024-12-06T12:11:18.314Z',
     updatedAt: '2024-12-06T12:11:18.314Z',
     extendedStatus: null,
-    seenSinceLastUpdate: [],
-    latestActivity: {
-      description: [
-        {
-          value: 'Form created and pre-filled',
-          languageCode: 'en',
-        },
-        {
-          value: 'Skjema opprettet og forhåndsutfylt',
-          languageCode: 'nb',
-        },
-      ],
-      performedBy: {
-        actorType: ActorType.ServiceOwner,
-        actorId: null,
-        actorName: null,
-      },
-    },
     content: {
       title: {
         mediaType: 'text/plain',
@@ -391,24 +284,6 @@ progress: 10,
     createdAt: '2024-12-06T12:10:50.693Z',
     updatedAt: '2024-12-06T12:10:50.693Z',
     extendedStatus: null,
-    seenSinceLastUpdate: [],
-    latestActivity: {
-      description: [
-        {
-          value: 'Form created and pre-filled',
-          languageCode: 'en',
-        },
-        {
-          value: 'Skjema opprettet og forhåndsutfylt',
-          languageCode: 'nb',
-        },
-      ],
-      performedBy: {
-        actorType: ActorType.ServiceOwner,
-        actorId: null,
-        actorName: null,
-      },
-    },
     content: {
       title: {
         mediaType: 'text/plain',
@@ -454,24 +329,6 @@ progress: 10,
     createdAt: '2024-12-06T12:10:09.823Z',
     updatedAt: '2024-12-06T12:10:09.823Z',
     extendedStatus: null,
-    seenSinceLastUpdate: [],
-    latestActivity: {
-      description: [
-        {
-          value: 'Form created and pre-filled',
-          languageCode: 'en',
-        },
-        {
-          value: 'Skjema opprettet og forhåndsutfylt',
-          languageCode: 'nb',
-        },
-      ],
-      performedBy: {
-        actorType: ActorType.ServiceOwner,
-        actorId: null,
-        actorName: null,
-      },
-    },
     content: {
       title: {
         mediaType: 'text/plain',
@@ -517,24 +374,6 @@ progress: 10,
     createdAt: '2024-12-06T12:09:34.433Z',
     updatedAt: '2024-12-06T12:09:34.433Z',
     extendedStatus: null,
-    seenSinceLastUpdate: [],
-    latestActivity: {
-      description: [
-        {
-          value: 'Form created and pre-filled',
-          languageCode: 'en',
-        },
-        {
-          value: 'Skjema opprettet og forhåndsutfylt',
-          languageCode: 'nb',
-        },
-      ],
-      performedBy: {
-        actorType: ActorType.ServiceOwner,
-        actorId: null,
-        actorName: null,
-      },
-    },
     content: {
       title: {
         mediaType: 'text/plain',
@@ -580,35 +419,6 @@ progress: 10,
     createdAt: '2024-12-06T09:51:21.416Z',
     updatedAt: '2024-12-06T09:51:21.416Z',
     extendedStatus: null,
-    seenSinceLastUpdate: [
-      {
-        id: '0193b090-a7cd-74ad-8d89-b46e4cc8ec22',
-        seenAt: '2024-12-10T12:34:50.445Z',
-        seenBy: {
-          actorType: ActorType.PartyRepresentative,
-          actorId: 'urn:altinn:person:identifier-ephemeral:839200eb6a',
-          actorName: 'ASK UGLESETT',
-        },
-        isCurrentEndUser: true,
-      },
-    ],
-    latestActivity: {
-      description: [
-        {
-          value: 'Form created and pre-filled',
-          languageCode: 'en',
-        },
-        {
-          value: 'Skjema opprettet og forhåndsutfylt',
-          languageCode: 'nb',
-        },
-      ],
-      performedBy: {
-        actorType: ActorType.ServiceOwner,
-        actorId: null,
-        actorName: null,
-      },
-    },
     content: {
       title: {
         mediaType: 'text/plain',

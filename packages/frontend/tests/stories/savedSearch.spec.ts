@@ -23,11 +23,9 @@ test.describe('Saved search', () => {
 
     if (isMobile) {
       await page.getByRole('button', { name: 'Meny' }).click();
-      await expect(getSidebarMenuItemBadge(page, PageRoutes.savedSearches)).toContainText('1');
       await page.getByRole('link', { name: 'Lagrede søk' }).click();
       await page.getByRole('button', { name: 'Meny' }).click();
     } else {
-      await expect(getSidebarMenuItemBadge(page, PageRoutes.savedSearches)).toContainText('1');
       await getSidebarMenuItem(page, PageRoutes.savedSearches).click();
     }
 
@@ -41,7 +39,7 @@ test.describe('Saved search', () => {
     await expect(page.getByRole('main')).toContainText('Du har ingen lagrede søk');
   });
 
-  test('Saved search based on searchbar value', async ({ page }) => {
+  test('Saved search based on searchbar value', async ({ page, isMobile }) => {
     await page.goto(defaultAppURL);
 
     await performSearch(page, 'skatten', 'enter');
@@ -49,7 +47,15 @@ test.describe('Saved search', () => {
     await page.getByRole('button', { name: 'Lagre søk' }).click();
     await expect(page.getByRole('button', { name: 'Lagret søk' })).toBeVisible();
 
-    await expect(getSidebarMenuItemBadge(page, PageRoutes.savedSearches)).toContainText('1');
+    if (isMobile) {
+      await page.getByRole('button', { name: 'Meny' }).click();
+      await page.getByRole('link', { name: 'Lagrede søk' }).click();
+      await page.getByRole('button', { name: 'Meny' }).click();
+    } else {
+      await getSidebarMenuItem(page, PageRoutes.savedSearches).click();
+    }
+
+    await expect(page.getByRole('main')).toContainText('1 lagret søk');
 
     await performSearch(page, 'skatten din');
 
