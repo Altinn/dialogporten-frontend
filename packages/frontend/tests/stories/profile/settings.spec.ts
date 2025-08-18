@@ -13,8 +13,8 @@ test.describe('Profile Settings Page', () => {
   test('Navigations redirects', async ({ page }: { page: Page }) => {
     await page.goto(appURLProfileSettings);
 
-    await expect(page.getByRole('link', { name: 'Varslingsinngstillinger' })).toBeVisible();
-    await page.getByRole('link', { name: 'Varslingsinngstillinger' }).click();
+    await expect(page.getByRole('link', { name: 'Varselinnstillinger' })).toBeVisible();
+    await page.getByRole('link', { name: 'Varselinnstillinger' }).click();
     expect(new URL(page.url()).pathname).toBe(new URL(appURLProfileNotifications).pathname);
   });
 });

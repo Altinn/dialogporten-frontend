@@ -19,7 +19,7 @@ test.describe('Saved search', () => {
     }
 
     await page.getByRole('button', { name: 'Lagre søk' }).click();
-    await expect(page.getByText('Søk lagret')).toBeVisible();
+    await expect(page.getByText('Søket ditt er lagret')).toBeVisible();
 
     if (isMobile) {
       await page.getByRole('button', { name: 'Meny' }).click();
@@ -35,7 +35,7 @@ test.describe('Saved search', () => {
     await parentLi.getByRole('button').click();
 
     await page.getByText('Slett').click();
-    await expect(page.getByText('Søk slettet')).toBeVisible();
+    await expect(page.getByText('Søket ditt ble slettet')).toBeVisible();
     await expect(page.getByRole('main')).toContainText('Du har ingen lagrede søk');
   });
 
@@ -121,7 +121,7 @@ test.describe('Saved search', () => {
     }
 
     await page.getByRole('button', { name: 'Lagre søk' }).click();
-    await expect(page.getByText('Søk lagret')).toBeVisible();
+    await expect(page.getByText('Søket ditt er lagret')).toBeVisible();
 
     /* Navigate to sent folder and add Oslo kommune as filter...
     It should not be possible to save search since a matching search already exists */

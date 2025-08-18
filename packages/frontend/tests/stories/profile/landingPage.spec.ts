@@ -9,14 +9,14 @@ test.describe('Profile Landing Page', () => {
     await expect(page.getByRole('navigation').filter({ hasText: 'ForsideMin profil' })).toBeVisible();
 
     await expect(page.getByRole('heading', { name: 'John Doe' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Varslinger er på' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Varsler er på' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Flere innstillinger' })).toBeVisible();
   });
 
   test('Navigation redirects correctly', async ({ page }: { page: Page }) => {
     await page.goto(appURLProfileLanding);
 
-    await page.getByRole('link', { name: 'Varslinger er på' }).click();
+    await page.getByRole('link', { name: 'Varsler er på' }).click();
     expect(new URL(page.url()).pathname).toBe(new URL(appURLProfileNotifications).pathname);
 
     await page.goBack();

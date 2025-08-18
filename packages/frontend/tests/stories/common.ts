@@ -12,7 +12,7 @@ export async function performSearch(page, query: string, action?: 'clear' | 'cli
   await searchbarInput.click();
   await expect(searchbarInput).toBeVisible();
   await page.locator("[name='Søk']").fill(query);
-  const searchLink = page.getByRole('link', { name: 'Søk i innboks etter ' + query });
+  const searchLink = page.getByRole('link', { name: 'Søk i innboksen etter ' + query });
 
   if (endGameAction === 'clear') {
     await page.getByTestId('search-button-clear').click();

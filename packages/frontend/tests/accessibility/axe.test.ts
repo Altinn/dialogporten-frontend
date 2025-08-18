@@ -77,7 +77,7 @@ test.describe('Axe test', () => {
     await page.mouse.click(200, 0, { button: 'left' });
 
     await page.getByRole('button', { name: 'Lagre søk' }).click();
-    await expect(page.getByText('Søk lagret')).toBeVisible();
+    await expect(page.getByText('Søket ditt er lagret')).toBeVisible();
     await getSidebarMenuItem(page, PageRoutes.savedSearches).click();
     await expect(page.getByRole('main')).toContainText('1 lagret søk');
 
