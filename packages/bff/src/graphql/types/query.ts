@@ -1,6 +1,6 @@
-import { list, objectType } from 'nexus';
+import { list, objectType, stringArg } from 'nexus';
 import { SavedSearchRepository } from '../../db.ts';
-import { exchangeToken, getFavoritesFromCore, getOrCreateProfile, getUserFromCore } from '../functions/profile.ts';
+import { exchangeToken, getNotificationsSettings, getOrCreateProfile, getUserFromCore } from '../functions/profile.ts';
 import { getOrganizationsFromRedis } from './organization.ts';
 
 export const Query = objectType({
@@ -44,6 +44,19 @@ export const Query = objectType({
             where: { profile: { pid } },
             order: { updatedAt: 'DESC' },
           });
+        }
+        return [];
+      },
+    });
+
+    t.field('notificationsettingsByUuid', {
+      type: list('ProfessionalNotificationAddressResponse'),
+      args: {
+        uuid: stringArg(),
+      },
+      resolve: async (_source, { uuid }, ctx) => {
+        if (SavedSearchRepository) {
+          return await getNotificationsSettings(uuid, ctx);
         }
         return [];
       },

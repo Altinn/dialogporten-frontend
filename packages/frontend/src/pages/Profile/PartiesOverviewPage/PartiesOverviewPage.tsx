@@ -63,7 +63,6 @@ export const PartiesOverviewPage = () => {
   };
 
   const toggleExpanded = (id: string) => {
-    console.info('Toggling expanded state for:', id);
     setExpandedItems((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]));
   };
 

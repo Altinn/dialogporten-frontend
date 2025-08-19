@@ -83,6 +83,18 @@ export const partyFieldFragmentToAccountListItem = ({
   if (!parties || parties.length === 0) {
     return [];
   }
+
+  const onToggleFavourite = async (isFavorite: boolean, partyUuid: string) => {
+    if (!partyUuid) {
+      return;
+    }
+    if (isFavorite) {
+      await deleteFavoriteParty(partyUuid);
+    } else {
+      addFavoriteParty(partyUuid);
+    }
+  };
+
   const flattenedParties: PartyFields[] = [];
   for (const party of parties) {
     flattenedParties.push(party);
@@ -149,7 +161,6 @@ export const partyFieldFragmentToAccountListItem = ({
           uniqueId: user?.party?.person?.ssn || '',
         }
       : {};
-
     const accountListItem = {
       accountIds: undefined,
       badge: party.isCurrentEndUser
@@ -184,6 +195,9 @@ export const partyFieldFragmentToAccountListItem = ({
         <UserDetails
           key={party.partyUuid}
           id={party.partyUuid}
+          alertEmailAddress={contactInfo.email || ''}
+          alertPhoneNumber={contactInfo.phone || ''}
+          address={contactInfo.address || ''}
           {...contactInfo}
           type={party.partyType as AccountListItemType}
           name={party.name}
@@ -200,10 +214,11 @@ export const partyFieldFragmentToAccountListItem = ({
           name={party.name}
           isCurrentEndUser={party.isCurrentEndUser}
           isDeleted={party.isDeleted || false}
-          smsAlerts={false} // party.smsAlerts
-          emailAlerts={false} // party.emailAlerts
-          email={contactInfo.email || ''}
-          phone={contactInfo.phone || ''}
+          contactEmailAddress={contactInfo.email || ''}
+          contactPhoneNumber={contactInfo.phone || ''}
+          favourite={favourite}
+          onToggleFavourite={() => onToggleFavourite(accountListItem.favourite, party.partyUuid)}
+          icon={icon}
           address={contactInfo.address || ''}
           badge={accountListItem.badge}
           items={parties.map((p) => ({
@@ -226,13 +241,7 @@ export const partyFieldFragmentToAccountListItem = ({
 
     return {
       ...accountListItem,
-      onToggleFavourite: async () => {
-        if (favourite) {
-          await deleteFavoriteParty(party.partyUuid);
-        } else {
-          addFavoriteParty(party.partyUuid);
-        }
-      },
+      onToggleFavourite: () => onToggleFavourite(favourite, party.partyUuid),
       children,
       contextMenu: {
         id: group?.name + party.partyUuid + '-menu',
@@ -280,7 +289,6 @@ export const partyFieldFragmentToAccountListItem = ({
                   title: 'Legg til i ny gruppe',
                   onClick: () => {
                     dialogRef?.current?.showModal();
-                    console.info('ChosenParty: ', party);
                     setChosenParty(party);
                   },
                 },

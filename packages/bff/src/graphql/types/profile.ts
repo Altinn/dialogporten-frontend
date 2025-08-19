@@ -127,15 +127,6 @@ export const Person = objectType({
   },
 });
 
-export const ProfileSettingPreference = objectType({
-  name: 'ProfileSettingPreference',
-  definition(t) {
-    t.string('language', { resolve: (pref) => pref.language });
-    t.int('preSelectedPartyId', { resolve: (pref) => pref.preSelectedPartyId });
-    t.boolean('doNotPromptForParty', { resolve: (pref) => pref.doNotPromptForParty });
-  },
-});
-
 export const Profile = objectType({
   name: 'Profile',
   definition(t) {
@@ -159,6 +150,163 @@ export const Profile = objectType({
       resolve: (profile) => {
         return profile.updatedAt;
       },
+    });
+  },
+});
+
+// NotificationAddressModel
+export const NotificationAddressModel = objectType({
+  name: 'NotificationAddressModel',
+  description: 'Represents a notification address',
+  definition(t) {
+    t.nullable.string('countryCode', {
+      description: 'Country code for phone number',
+      resolve: (obj) => obj.countryCode,
+    });
+    t.nullable.string('email', {
+      description: 'Email address',
+      resolve: (obj) => obj.email,
+    });
+    t.nullable.string('phone', {
+      description: 'Phone number',
+      resolve: (obj) => obj.phone,
+    });
+  },
+});
+
+// NotificationAddressResponse
+export const NotificationAddressResponse = objectType({
+  name: 'NotificationAddressResponse',
+  description: 'Represents a notification address',
+  definition(t) {
+    t.nullable.string('countryCode', {
+      description: 'Country code for phone number',
+      resolve: (obj) => obj.countryCode,
+    });
+    t.nullable.string('email', {
+      description: 'Email address',
+      resolve: (obj) => obj.email,
+    });
+    t.nullable.string('phone', {
+      description: 'Phone number',
+      resolve: (obj) => obj.phone,
+    });
+    t.int('notificationAddressId', {
+      description: 'Altinn.Profile.Models.NotificationAddressResponse.NotificationAddressId',
+      resolve: (obj) => obj.notificationAddressId,
+    });
+  },
+});
+
+// OrganizationResponse
+export const OrganizationResponse = objectType({
+  name: 'OrganizationResponse',
+  description: 'Represents an organization with notification addresses',
+  definition(t) {
+    t.nullable.string('organizationNumber', {
+      description: "The organization's organization number",
+      resolve: (obj) => obj.organizationNumber,
+    });
+    t.nullable.list.field('notificationAddresses', {
+      type: 'NotificationAddressResponse',
+      description: 'Represents a list of mandatory notification address',
+      resolve: (obj) => obj.notificationAddresses,
+    });
+  },
+});
+
+// ProblemDetails
+export const ProblemDetails = objectType({
+  name: 'ProblemDetails',
+  definition(t) {
+    t.nullable.string('type', { resolve: (obj) => obj.type });
+    t.nullable.string('title', { resolve: (obj) => obj.title });
+    t.nullable.int('status', { resolve: (obj) => obj.status });
+    t.nullable.string('detail', { resolve: (obj) => obj.detail });
+    t.nullable.string('instance', { resolve: (obj) => obj.instance });
+  },
+});
+
+// ProfessionalNotificationAddressRequest
+export const ProfessionalNotificationAddressRequest = objectType({
+  name: 'ProfessionalNotificationAddressRequest',
+  description:
+    'Request model for the professional notification address for an organization, also called personal notification address.',
+  definition(t) {
+    t.nullable.string('emailAddress', {
+      description: 'The email address. May be null if no email address is set.',
+      resolve: (obj) => obj.emailAddress,
+    });
+    t.nullable.string('phoneNumber', {
+      description: 'The phone number. May be null if no phone number is set.',
+      resolve: (obj) => obj.phoneNumber,
+    });
+    t.nullable.list.string('resourceIncludeList', {
+      description:
+        'A list of resources that the user has registered to receive notifications for. The format is in URN. This is used to determine which resources the user can receive notifications for.',
+      resolve: (obj) => obj.resourceIncludeList,
+    });
+  },
+});
+
+// ProfessionalNotificationAddressResponse
+export const ProfessionalNotificationAddressResponse = objectType({
+  name: 'ProfessionalNotificationAddressResponse',
+  description:
+    'Response model for the professional notification address for an organization, also called personal notification address.',
+  definition(t) {
+    t.nullable.string('emailAddress', {
+      description: 'The email address. May be null if no email address is set.',
+      resolve: (obj) => obj.emailAddress,
+    });
+    t.nullable.string('phoneNumber', {
+      description: 'The phone number. May be null if no phone number is set.',
+      resolve: (obj) => obj.phoneNumber,
+    });
+    t.nullable.list.string('resourceIncludeList', {
+      description:
+        'A list of resources that the user has registered to receive notifications for. The format is in URN. This is used to determine which resources the user can receive notifications for.',
+      resolve: (obj) => obj.resourceIncludeList,
+    });
+    t.int('userId', {
+      description: 'The user id of logged-in user for whom the specific contact information belongs to.',
+      resolve: (obj) => obj.userId,
+    });
+    t.string('partyUuid', {
+      description: 'ID of the party',
+      resolve: (obj) => obj.partyUuid,
+    });
+  },
+});
+
+// ProfileSettingPreference (already defined in your file but adding nullable languageType)
+export const ProfileSettingPreference = objectType({
+  name: 'ProfileSettingPreference',
+  definition(t) {
+    t.nullable.string('languageType', { resolve: (obj) => obj.languageType }); // added based on spec, marked 'writeOnly' in spec but ignoring here
+    t.nullable.string('language', { resolve: (obj) => obj.language });
+    t.int('preSelectedPartyId', { resolve: (obj) => obj.preSelectedPartyId });
+    t.boolean('doNotPromptForParty', { resolve: (obj) => obj.doNotPromptForParty });
+  },
+});
+
+// UserProfile
+export const UserProfile = objectType({
+  name: 'UserProfile',
+  definition(t) {
+    t.int('userId', { resolve: (obj) => obj.userId });
+    t.nullable.string('userUuid', { resolve: (obj) => obj.userUuid });
+    t.nullable.string('userName', { resolve: (obj) => obj.userName });
+    t.nullable.string('externalIdentity', { resolve: (obj) => obj.externalIdentity });
+    t.boolean('isReserved', { resolve: (obj) => obj.isReserved });
+    t.nullable.string('phoneNumber', { resolve: (obj) => obj.phoneNumber });
+    t.nullable.string('email', { resolve: (obj) => obj.email });
+    t.int('partyId', { resolve: (obj) => obj.partyId });
+    t.field('party', { type: 'Party', resolve: (obj) => obj.party });
+    t.int('userType', { resolve: (obj) => obj.userType });
+    t.field('profileSettingPreference', {
+      type: 'ProfileSettingPreference',
+      resolve: (obj) => obj.profileSettingPreference,
     });
   },
 });

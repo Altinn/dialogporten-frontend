@@ -6,6 +6,7 @@ import {
   type DeleteSavedSearchMutation,
   type GetAllDialogsForPartiesQuery,
   type GetSearchAutocompleteDialogsQuery,
+  type NotificationsettingsByUuidQuery,
   type OrganizationsQuery,
   type SavedSearchInput,
   type SavedSearchesQuery,
@@ -33,6 +34,8 @@ export const deleteFavoriteParty = (partyId: string): Promise<DeleteFavoritePart
   graphQLSDK.DeleteFavoriteParty({ partyId });
 export const createSavedSearch = (name: string, data: SavedSearchInput): Promise<CreateSavedSearchMutation> =>
   graphQLSDK.CreateSavedSearch({ name, data });
+export const getNotificationsettingsByUuid = (uuid: string): Promise<NotificationsettingsByUuidQuery> =>
+  graphQLSDK.notificationsettingsByUuid({ uuid });
 export const updateSystemLabel = (
   dialogId: string,
   addLabels: SystemLabel | SystemLabel[],
