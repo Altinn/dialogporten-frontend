@@ -4,6 +4,7 @@ import {
   type Actor,
   ActorType,
   type AttachmentFieldsFragment,
+  AttachmentUrlConsumer,
   type DialogByIdFieldsFragment,
   type DialogStatus,
   type GetDialogByIdQuery,
@@ -11,13 +12,12 @@ import {
   type PartyFieldsFragment,
   SystemLabel,
 } from 'bff-types-generated';
-import { AttachmentUrlConsumer } from 'bff-types-generated';
 import { t } from 'i18next';
 import type { DialogActionProps } from '../../components';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { type ValueType, getPreferredPropertyByLocale } from '../../i18n/property.ts';
-import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
+import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
 import { toTitleCase } from '../../profile';
 import { graphQLSDK } from '../queries.ts';
@@ -132,18 +132,45 @@ const getMainContentReference = (
   };
 };
 
-export const getActorProps = (actor: Actor, serviceOwner?: OrganizationOutput) => {
-  const isCompany =
-    actor.actorType === ActorType.ServiceOwner || (actor.actorId ?? '').includes('urn:altinn:organization:');
+/**
+ * Maps an `Actor` (sender of a transmission or activity) to normalized
+ * display props used by the Avatar component.
+ *
+ * Rules:
+ * - `actor.actorType === ServiceOwner`: Always treated as a company.
+ *   Will use `serviceOwner.name` and `serviceOwner.logo` if available.
+ * - `actor.actorId` containing `"urn:altinn:organization:"`: Treated as a company.
+ * - Otherwise: Treated as a person.
+ *
+ * Name resolution:
+ * - Prefer `actor.actorName` if present.
+ * - If missing and the actor is a `ServiceOwner`, fall back to `serviceOwner?.name`.
+ * - Otherwise empty string.
+ *
+ * Logo resolution:
+ * - Only provided for `ServiceOwner` actors (from `serviceOwner?.logo`).
+ *
+ * Notes:
+ * - `actorName` may be `null` in edge cases if Dialogporten lookup fails,
+ *   but is generally expected to be set for transmissions.
+ *
+ * @param actor        The actor object describing who performed or sent the action.
+ * @param serviceOwner Optional service owner metadata used for name/logo fallback.
+ * @returns Normalized avatar props (`name`, `type`, `imageUrl`, `imageUrlAlt`).
+ */
+export const getActorProps = (actor: Actor, serviceOwner?: OrganizationOutput): AvatarProps => {
+  const isServiceOwner = actor.actorType === ActorType.ServiceOwner;
+  const isCompany = isServiceOwner || (actor.actorId ?? '').includes('urn:altinn:organization:');
   const type: AvatarProps['type'] = isCompany ? 'company' : 'person';
-  const hasSenderName = (actor.actorName?.length ?? 0) > 0;
-  const senderName = hasSenderName ? toTitleCase(actor.actorName) : (serviceOwner?.name ?? '');
-  const senderLogo = isCompany ? serviceOwner?.logo : undefined;
+  const senderName = actor.actorName ? toTitleCase(actor.actorName) : isServiceOwner ? serviceOwner?.name || '' : '';
+  const senderLogo = isServiceOwner ? serviceOwner?.logo : undefined;
+  const senderLogoAlt = senderLogo ? t('dialog.imageAltURL', { companyName: senderName }) : undefined;
+
   return {
     name: senderName,
     type,
     imageUrl: senderLogo,
-    imageUrlAlt: t('dialog.imageAltURL', { companyName: senderName }),
+    imageUrlAlt: senderLogoAlt,
   };
 };
 
@@ -169,6 +196,13 @@ export function mapDialogToToInboxItem(
   const serviceOwner = getOrganization(organizations || [], item.org, 'nb');
   const senderName = item.content.senderName?.value;
   const { seenByLabel } = getSeenByLabel(item.seenSinceLastContentUpdate, t);
+  const transmissions = getTransmissions({
+    transmissions: item.transmissions,
+    format,
+    activities: item.activities,
+    serviceOwner,
+    selectedProfile,
+  });
 
   return {
     id: item.id,
@@ -237,13 +271,7 @@ export function mapDialogToToInboxItem(
       serviceOwner,
       selectedProfile,
     }),
-    transmissions: getTransmissions({
-      transmissions: item.transmissions,
-      format,
-      activities: item.activities,
-      serviceOwner,
-      selectedProfile,
-    }),
+    transmissions,
     createdAt: item.createdAt,
     updatedAt: item.updatedAt,
     label: item.endUserContext?.systemLabels,

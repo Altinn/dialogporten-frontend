@@ -76,7 +76,7 @@ export const getDialogHistoryForActivities = (
     const description = getPreferredPropertyByLocale(activity.description)?.value;
     const relatedTransmission = transmissions.find((transmission) => transmission.id === activity.transmissionId);
     const transmissionTitle = getPreferredPropertyByLocale(relatedTransmission?.content.title.value)?.value;
-    const actorProps = getActorProps(activity.performedBy, serviceOwner);
+    const actorProps: AvatarProps = getActorProps(activity.performedBy, serviceOwner);
     return {
       id: activity.id,
       summary: getActivityText(activity, actorProps, description, transmissionTitle),
