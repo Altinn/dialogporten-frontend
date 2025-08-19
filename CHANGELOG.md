@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.53.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.53.0...v1.53.1) (2025-08-19)
+
+
+### Bug Fixes
+
+* improve getActorProps handling of ServiceOwner vs PartyRepresentative ([#2499](https://github.com/Altinn/dialogporten-frontend/issues/2499)) ([b7c70f9](https://github.com/Altinn/dialogporten-frontend/commit/b7c70f9223c28714ab99abf05c08ec376094c580))
+* remove count and alert for sidebar ([#2484](https://github.com/Altinn/dialogporten-frontend/issues/2484)) ([fb27169](https://github.com/Altinn/dialogporten-frontend/commit/fb27169dff68d36c3d1c236a18f05c13bdf881bf))
+* revisions to plain langauge ([#2471](https://github.com/Altinn/dialogporten-frontend/issues/2471)) ([#2497](https://github.com/Altinn/dialogporten-frontend/issues/2497)) ([2d7506e](https://github.com/Altinn/dialogporten-frontend/commit/2d7506ed9365c2b183794353b471a370eab2242c))
+* Sort by contentUpdatedAt in all inbox views ([#2495](https://github.com/Altinn/dialogporten-frontend/issues/2495)) ([03d080a](https://github.com/Altinn/dialogporten-frontend/commit/03d080a38356fc740d814c4bf768b51907469900))
+
 ## [1.53.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.52.3...v1.53.0) (2025-08-15)
 
 
