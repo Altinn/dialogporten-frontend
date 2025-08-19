@@ -224,7 +224,9 @@ const createSenderOrgFilter = (
         label: getOrganization(allOrganizations, org, 'nb')?.name || org,
         value: org,
         badge: getFilterBadgeProps(orgCount[org] || 0),
+        count: orgCount[org] || 0,
       }))
+      .filter((option) => option.count > 0)
       .sort((a, b) => a.label?.localeCompare(b.label)),
   };
 };
