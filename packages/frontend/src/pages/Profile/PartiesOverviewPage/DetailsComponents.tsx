@@ -26,19 +26,25 @@ import {
   MinusCircleIcon,
   MobileIcon,
   PaperplaneIcon,
-  PencilIcon,
 } from '@navikt/aksel-icons';
-import { Fragment, type ReactNode } from 'react';
+import type { ProfessionalNotificationAddressResponse } from 'bff-types-generated';
+import { Fragment, type ReactNode, useEffect, useState } from 'react';
 import { useProfile } from '../../../profile';
 
-export const AccountToolbar = ({ id, type }: AccountDetailsProps) => {
+export const AccountToolbar = ({ id, type, isCurrentEndUser, favourite, onToggleFavourite }: AccountDetailsProps) => {
   return (
     <Flex spacing={2} size="xs">
+      {!isCurrentEndUser && (
+        <Button
+          variant={favourite ? 'tinted' : 'outline'}
+          icon={favourite ? HeartFillIcon : HeartIcon}
+          onClick={() => onToggleFavourite?.(id)}
+        >
+          {favourite ? 'Fjern favoritt' : 'Legg til favoritt'}
+        </Button>
+      )}
       <Button icon={InboxIcon} variant="outline">
         Gå til Innboks
-      </Button>
-      <Button variant={'outline'} icon={PencilIcon} onClick={() => console.info('Edit group id: ', id)}>
-        Rediger
       </Button>
       {type !== 'group' && (
         <Button icon={HandshakeIcon} variant="outline">
@@ -50,10 +56,10 @@ export const AccountToolbar = ({ id, type }: AccountDetailsProps) => {
 };
 
 interface AccountDetailsProps extends AccountListItemProps {
-  smsAlerts?: boolean;
-  emailAlerts?: boolean;
-  email?: string;
-  phone?: string;
+  alertEmailAddress?: string;
+  alertPhoneNumber?: string;
+  contactEmailAddress?: string;
+  contactPhoneNumber?: string;
   address?: string;
   items?: AccountListItemProps[];
 }
@@ -132,8 +138,8 @@ export const GroupDetails = ({ items, id = 'group', accountIds }: AccountDetails
   );
 };
 
-export const UserDetails = ({ ...props }: AccountDetailsProps) => {
-  const { phone, email, address, id } = props;
+export const UserDetails = (props: AccountDetailsProps) => {
+  const { alertPhoneNumber, alertEmailAddress, address, id } = props;
   return (
     <Section color="person" padding={6} spacing={2}>
       <AccountToolbar {...props} id={id} isCurrentEndUser={true} />
@@ -142,14 +148,14 @@ export const UserDetails = ({ ...props }: AccountDetailsProps) => {
         <SettingsItem
           icon={MobileIcon}
           title="Varslinger på SMS"
-          value={phone}
+          value={alertPhoneNumber?.length ? alertPhoneNumber : 'Mobilnummer ikke registrert'}
           badge={{ label: 'Endre mobil', variant: 'text' }}
           linkIcon
         />
         <SettingsItem
           icon={PaperplaneIcon}
           title="Varslinger på e-post"
-          value={email}
+          value={alertEmailAddress?.length ? alertEmailAddress : 'Epostadresse ikke registrert'}
           badge={{ label: 'Endre e-post', variant: 'text' }}
           linkIcon
         />
@@ -166,19 +172,26 @@ export const UserDetails = ({ ...props }: AccountDetailsProps) => {
   );
 };
 
-export const NotificationSettings = ({ smsAlerts = false, emailAlerts = false, email, phone }: AccountDetailsProps) => {
+interface NotificationSettingsProps {
+  alertEmailAddress?: string;
+  alertPhoneNumber?: string;
+}
+
+export const NotificationSettings = ({ alertPhoneNumber, alertEmailAddress }: NotificationSettingsProps) => {
   const badge =
-    smsAlerts && emailAlerts
+    alertPhoneNumber && alertEmailAddress
       ? { label: 'SMS og E-post' }
-      : smsAlerts
+      : alertPhoneNumber
         ? { label: 'SMS' }
-        : emailAlerts
+        : alertEmailAddress
           ? { label: 'E-post' }
           : { variant: 'text', label: 'Sett opp varsling' };
 
-  const title = smsAlerts || emailAlerts ? 'Varsler er på' : 'Ingen varsler';
-
-  const value = smsAlerts && emailAlerts ? [email, phone].join(', ') : smsAlerts ? phone : emailAlerts && email;
+  const title = alertPhoneNumber || alertEmailAddress ? 'Varslinger er på' : 'Ingen varslinger';
+  const value =
+    alertPhoneNumber && alertEmailAddress
+      ? `${alertEmailAddress}, ${alertPhoneNumber}`
+      : alertPhoneNumber || alertEmailAddress;
 
   return (
     <List size="sm">
@@ -186,15 +199,50 @@ export const NotificationSettings = ({ smsAlerts = false, emailAlerts = false, e
     </List>
   );
 };
+
 export const CompanyDetails = ({ ...props }: AccountDetailsProps) => {
   const { id, uniqueId, parentId, items } = props;
   const parentAccount = items?.find((item) => item.id === parentId);
+
+  const { getNotificationsettingsByUuid } = useProfile();
+
+  const [notificationSettings, setNotificationSettings] = useState<
+    ProfessionalNotificationAddressResponse[] | undefined
+  >(undefined);
+
+  useEffect(() => {
+    let isMounted = true;
+    getNotificationsettingsByUuid(id)
+      .then((s) => {
+        const settings = (s?.notificationsettingsByUuid as ProfessionalNotificationAddressResponse[]) ?? undefined;
+        if (isMounted) setNotificationSettings(settings);
+      })
+      .catch((e) => {
+        console.error('Failed to fetch notification settings:', e);
+        setNotificationSettings([] as ProfessionalNotificationAddressResponse[] | undefined);
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, [id, getNotificationsettingsByUuid]);
+
+  if (!notificationSettings) {
+    return null;
+  }
 
   return (
     <Section color="company" padding={6} spacing={2}>
       <AccountToolbar {...props} id={id} />
       <Divider />
-      <NotificationSettings {...props} id={id} />
+      {(notificationSettings as ProfessionalNotificationAddressResponse[] | null)?.map(
+        (notificationSetting: ProfessionalNotificationAddressResponse, index: number) => (
+          <NotificationSettings
+            key={id + index}
+            alertEmailAddress={notificationSetting.emailAddress || ''}
+            alertPhoneNumber={notificationSetting.phoneNumber || ''}
+          />
+        ),
+      )}
       <List size="sm">
         <Divider as="li" />
         <SettingsItem
@@ -242,9 +290,6 @@ export const AccountListItemControls = ({
     if (badge && !loading && typeof badge === 'object' && 'label' in badge) {
       return <Badge {...(badge as BadgeProps)} />;
     }
-    // if (isValidElement(badge)) {
-    //   return badge;
-    // }
     return null;
   };
 

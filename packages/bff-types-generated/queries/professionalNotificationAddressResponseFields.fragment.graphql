@@ -1,0 +1,7 @@
+fragment professionalNotificationAddressResponseFields on ProfessionalNotificationAddressResponse {
+  emailAddress
+  phoneNumber
+  resourceIncludeList
+  userId
+  partyUuid
+}

@@ -6,6 +6,7 @@ import {
   addFavoriteParty as addFavoritePartyRaw,
   addFavoritePartyToGroup as addFavoritePartyToGroupRaw,
   deleteFavoriteParty as deleteFavoritePartyRaw,
+  getNotificationsettingsByUuid,
   profile,
 } from '../api/queries.ts';
 import { QUERY_KEYS } from '../constants/queryKeys.ts';
@@ -50,6 +51,7 @@ export const useProfile = () => {
     user: data?.profile?.user as User,
     groups,
     favoritesGroup,
+    getNotificationsettingsByUuid,
     deleteFavoriteParty,
     addFavoriteParty,
     addFavoritePartyToGroup,
