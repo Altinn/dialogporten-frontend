@@ -44,7 +44,7 @@ test.describe('Search flow', () => {
       await page.getByTestId('searchbar-input').press('ArrowDown');
       await page.keyboard.press('Enter');
 
-      await expect(page.getByRole('heading', { name: 'Sixth test message' })).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'Sixth test message', level: 2 })).toBeVisible();
       await expect(page.getByRole('heading', { name: 'Info i markdown' })).toBeVisible();
     }
   });
@@ -53,7 +53,7 @@ test.describe('Search flow', () => {
     await page.goto(appUrlWithPlaywrightId('search-flow'));
     await selectDialogBySearch(page, 'Sixth', 'click');
 
-    await expect(page.getByRole('heading', { name: 'Sixth test message' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Sixth test message', level: 2 })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Info i markdown' })).toBeVisible();
   });
 

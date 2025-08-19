@@ -7,8 +7,8 @@ test.describe('Sent and Awaiting status', () => {
   });
 
   test('Shows dialogs with awaiting status', async ({ page }) => {
-    await expect(page.getByRole('heading', { name: 'Mock Dialog Awaiting' })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Melding om bortkjøring av snø i 2024' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Mock Dialog Awaiting', level: 2 })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Melding om bortkjøring av snø i 2024', level: 2 })).toBeVisible();
   });
 
   test('Can filter by awaiting status using status filter', async ({ page }) => {
@@ -17,7 +17,7 @@ test.describe('Sent and Awaiting status', () => {
     await page.getByTestId('inbox-toolbar').getByRole('group').getByText('Avventer').click();
     await page.keyboard.press('Escape');
     expect(new URL(page.url()).searchParams.get('status')).toEqual('AWAITING');
-    await expect(page.getByRole('heading', { name: 'Mock Dialog Awaiting' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Mock Dialog Awaiting', level: 2 })).toBeVisible();
   });
 
   test('Can filter to show only awaiting status dialogs', async ({ page }) => {
@@ -28,6 +28,6 @@ test.describe('Sent and Awaiting status', () => {
 
     expect(new URL(page.url()).searchParams.get('status')).toEqual('AWAITING');
 
-    await expect(page.getByRole('heading', { name: 'Mock Dialog Awaiting' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Mock Dialog Awaiting', level: 2 })).toBeVisible();
   });
 });
