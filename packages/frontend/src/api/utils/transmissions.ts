@@ -4,7 +4,12 @@ import type {
   TransmissionProps,
   TransmissionTypeValue,
 } from '@altinn/altinn-components';
-import { ActivityType, type DialogActivityFragment, type TransmissionFieldsFragment } from 'bff-types-generated';
+import {
+  ActivityType,
+  type DialogActivityFragment,
+  type TransmissionFieldsFragment,
+  TransmissionType,
+} from 'bff-types-generated';
 import { t } from 'i18next';
 import { getPreferredPropertyByLocale } from '../../i18n/property.ts';
 import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
@@ -69,6 +74,36 @@ export const groupTransmissions = (transmissions: TransmissionFieldsFragment[]):
   return groups;
 };
 
+/**
+ * Determines if a transmission is unread based on its type and related activities.
+ *
+ * A transmission is considered **read** if:
+ * - It is of type `Correction` or `Submission` (end-user sent transmissions are never unread), or
+ * - There exists an activity with a matching `transmissionId` and `type` equal to `TransmissionOpened`.
+ *
+ * Otherwise, it is considered **unread**.
+ *
+ * @param {string} id - The unique identifier of the transmission.
+ * @param {TransmissionType} type - The type of transmission (e.g., Correction, Submission, etc.).
+ * @param {DialogActivityFragment[]} [activities] - A list of dialog activities for the same dialog as the transmissions.
+ * @returns {boolean} `true` if the transmission is unread, otherwise `false`.
+ */
+const isTransmissionUnread = (id: string, type: TransmissionType, activities?: DialogActivityFragment[]): boolean => {
+  if (activities && activities.length > 0) {
+    for (let i = 0; i < activities.length; i++) {
+      const activity = activities[i];
+      const endUserTransmission = type === TransmissionType.Correction || type === TransmissionType.Submission;
+      if (
+        endUserTransmission ||
+        (activity.transmissionId === id && activity.type === ActivityType.TransmissionOpened)
+      ) {
+        return false;
+      }
+    }
+  }
+  return true;
+};
+
 const getClockFormatString = () => {
   const clockPrefix = t('word.clock_prefix');
   return `do MMMM yyyy ${clockPrefix ? `'${clockPrefix}' ` : ''}HH.mm`;
@@ -83,16 +118,7 @@ const createTransmissionItem = (
 ): TransmissionProps => {
   const formatString = getClockFormatString();
   const sender = getActorProps(transmission.sender, serviceOwner);
-  let unread = true;
-  if (activities && activities.length > 0) {
-    for (let i = 0; i < activities.length; i++) {
-      const activity = activities[i];
-      if (activity.transmissionId === transmission.id && activity.type === ActivityType.TransmissionOpened) {
-        unread = false;
-        break;
-      }
-    }
-  }
+  const unread = isTransmissionUnread(transmission.id, transmission.type, activities);
 
   return {
     id: transmission.id,
@@ -106,7 +132,7 @@ const createTransmissionItem = (
       label: t(`transmission.type.${transmission.type?.toLowerCase()}`),
     },
     ...(unread && {
-      unread: true,
+      unread,
       badge: { color: selectedProfile === 'person' ? 'person' : 'company' },
     }),
     sender,
