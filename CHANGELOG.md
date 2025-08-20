@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.54.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.53.1...v1.54.0) (2025-08-20)
+
+
+### Features
+
+* Fetching notificationSettings from Core API ([11c1b5f](https://github.com/Altinn/dialogporten-frontend/commit/11c1b5f188398aed3be91f8b6e3e5a524c48aef9))
+
+
+### Bug Fixes
+
+* Bump AC to v.0.37.0, remove double scrollbar ([#2508](https://github.com/Altinn/dialogporten-frontend/issues/2508)) ([5fe2408](https://github.com/Altinn/dialogporten-frontend/commit/5fe2408e650af718eb9bc5be8b7a7ae99691c578))
+* ensure end-user transmissions are never marked as unread ([#2509](https://github.com/Altinn/dialogporten-frontend/issues/2509)) ([2985473](https://github.com/Altinn/dialogporten-frontend/commit/2985473ccabeec0a208e3ec8bf3deeb5b305bc1a))
+* Hide sender filters with zero hits ([#2507](https://github.com/Altinn/dialogporten-frontend/issues/2507)) ([7614798](https://github.com/Altinn/dialogporten-frontend/commit/7614798722a09d90471258045249ef98d285073e))
+
 ## [1.53.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.53.0...v1.53.1) (2025-08-19)
 
 
