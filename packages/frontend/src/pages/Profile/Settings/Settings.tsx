@@ -2,7 +2,6 @@ import {
   Divider,
   Heading,
   List,
-  LocaleSwitcher,
   PageBase,
   PageNav,
   SettingsItem,
@@ -21,8 +20,6 @@ import {
 import { t } from 'i18next';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { updateLanguage } from '../../../api/queries';
-import { i18n } from '../../../i18n/config';
 import { useProfile } from '../../../profile';
 import { buildAddressString } from '../../../profile/buildAddressString';
 import { PageRoutes } from '../../routes';
@@ -31,16 +28,6 @@ export const Settings = () => {
   const { user } = useProfile();
 
   const [expandedElement, setExpandedElement] = useState<boolean>(false);
-
-  const handleUpdateLanguage = async (language: string) => {
-    try {
-      await updateLanguage(language);
-    } catch (error) {
-      console.error('Failed to delete saved search:', error);
-    } finally {
-      void i18n.changeLanguage(language);
-    }
-  };
 
   return (
     <PageBase>
@@ -107,23 +94,17 @@ export const Settings = () => {
             linkIcon
           />
           <Divider as="li" />
-          <SettingsItem icon={SunIcon} title="Modus: Lys" linkIcon />
+          <SettingsItem as="button" icon={SunIcon} title="Modus: Lys" linkIcon />
           <Divider />
           <SettingsItem
+            as="button"
             icon={GlobeIcon}
             title="Språk/language: Bokmål"
             linkIcon
             onClick={() => setExpandedElement(!expandedElement)}
             expanded={expandedElement}
           >
-            <LocaleSwitcher
-              onChange={(e) => handleUpdateLanguage((e.target as HTMLSelectElement).value)}
-              options={[
-                { label: 'Norsk Bokmål', value: 'nb', checked: i18n.language === 'nb' },
-                { label: 'Norsk Nynorsk', value: 'nn', checked: i18n.language === 'nn' },
-                { label: 'English', value: 'en', checked: i18n.language === 'en' },
-              ]}
-            />
+            <p>Some content here</p>
           </SettingsItem>
         </List>
       </SettingsSection>

@@ -124,6 +124,7 @@
   "parties.search.no_results": "No hits",
   "profile.landing.more_settings": "More settings",
   "profile.landing.ssn": "Security number:",
+  "profile.landing.email": "e-mail",
   "profile.settings.contact_settings": "Contact settings",
   "profile.settings.more_contact_settings": "More settings",
   "profile.settings.change_in_register_centre": "Change in the contact and reservation register",
@@ -225,5 +226,9 @@
   "word.you": "you",
   "word.and": "and",
   "word.or": "or",
-  "word.error": "Error"
+  "word.error": "Error",
+  "word.locale.nb": "Bokmål",
+  "word.locale.nn": "Nynorsk",
+  "word.locale.en": "English",
+  "skip_link.jumpto": "Skip to main content"
 }

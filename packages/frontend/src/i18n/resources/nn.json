@@ -123,6 +123,7 @@
   "parties.search.no_results": "Ingen treff",
   "profile.landing.more_settings": "Fleire innstillingar",
   "profile.landing.ssn": "Fødselsnr:",
+  "profile.landing.email": "e-post",
   "profile.settings.contact_settings": "Kontaktinformasjon",
   "profile.settings.more_contact_settings": "Fleire innstillingar",
   "profile.settings.change_in_register_centre": "Endre i kontakt- og reservasjonsregisteret",
@@ -225,5 +226,9 @@
   "word.you": "deg",
   "word.and": "og",
   "word.or": "eller",
-  "word.error": "Error"
+  "word.error": "Error",
+  "word.locale.nb": "Bokmål",
+  "word.locale.nn": "Nynorsk",
+  "word.locale.en": "English",
+  "skip_link.jumpto": "Hopp til hovudinnhaldet"
 }
