@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.54.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.54.1...v1.54.2) (2025-08-21)
+
+
+### Bug Fixes
+
+* Change e2e test actor, fix tests ([#2520](https://github.com/Altinn/dialogporten-frontend/issues/2520)) ([fceb360](https://github.com/Altinn/dialogporten-frontend/commit/fceb36091feecf8154b3cce6297c639af0b2f4ad))
+
 ## [1.54.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.54.0...v1.54.1) (2025-08-21)
 
 
