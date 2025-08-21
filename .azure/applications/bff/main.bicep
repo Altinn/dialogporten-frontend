@@ -29,6 +29,7 @@ param ocPApimSubscriptionKey string
 ])
 param graphiQLEnabled string = 'true'
 param enableInitSessionEndpoint string = 'true'
+param disableProfile string = 'false'
 
 @minLength(3)
 @secure()
@@ -103,84 +104,91 @@ var secrets = [
   idPortenSessionSecretSecret
 ]
 
-var containerAppEnvVars = concat([
-  {
-    name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
-    value: appInsightConnectionString
-  }
-  {
-    name: 'APPLICATIONINSIGHTS_ENABLED'
-    value: 'true'
-  }
-  {
-    name: 'DB_CONNECTION_STRING'
-    secretRef: dbConnectionStringSecret.name
-  }
-  {
-    name: 'REDIS_CONNECTION_STRING'
-    secretRef: redisConnectionStringSecret.name
-  }
-  {
-    name: 'PORT'
-    value: '${port}'
-  }
-  {
-    name: 'HOSTNAME'
-    value: hostName
-  }
-  {
-    name: 'CLIENT_ID'
-    secretRef: idPortenClientIdSecret.name
-  }
-  {
-    name: 'CLIENT_SECRET'
-    secretRef: idPortenClientSecretSecret.name
-  }
-  {
-    name: 'OIDC_URL'
-    value: oicdUrl
-  }
-  {
-    name: 'SESSION_SECRET'
-    secretRef: idPortenSessionSecretSecret.name
-  }
-  {
-    name: 'TYPEORM_SYNCHRONIZE_ENABLED'
-    value: ''
-  }
-  {
-    name: 'DIALOGPORTEN_URL'
-    value: dialogportenURL
-  }
-  {
-    name: 'LOGGER_FORMAT'
-    value: 'json'
-  }
-  {
-    name: 'NODE_ENV'
-    value: 'production'
-  }
-  {
-    name: 'ENABLE_GRAPHIQL'
-    value: graphiQLEnabled
-  }
-  {
-    name: 'ENABLE_INIT_SESSION_ENDPOINT'
-    value: enableInitSessionEndpoint
-  }
-  {
-    name: 'PLATFORM_EXCHANGE_TOKEN_ENDPOINT_URL'
-    value: platformExchangeTokenEndpointUrl
-  }
-  {
-    name: 'PLATFORM_PROFILE_API_URL'
-    value: platformProfileApiUrl
-  }
-  {
-    name: 'OCP_APIM_SUBSCRIPTION_KEY'
-    value: ocPApimSubscriptionKey
-  }
-], additionalEnvironmentVariables)
+var containerAppEnvVars = concat(
+  [
+    {
+      name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+      value: appInsightConnectionString
+    }
+    {
+      name: 'APPLICATIONINSIGHTS_ENABLED'
+      value: 'true'
+    }
+    {
+      name: 'DB_CONNECTION_STRING'
+      secretRef: dbConnectionStringSecret.name
+    }
+    {
+      name: 'REDIS_CONNECTION_STRING'
+      secretRef: redisConnectionStringSecret.name
+    }
+    {
+      name: 'PORT'
+      value: '${port}'
+    }
+    {
+      name: 'HOSTNAME'
+      value: hostName
+    }
+    {
+      name: 'CLIENT_ID'
+      secretRef: idPortenClientIdSecret.name
+    }
+    {
+      name: 'CLIENT_SECRET'
+      secretRef: idPortenClientSecretSecret.name
+    }
+    {
+      name: 'OIDC_URL'
+      value: oicdUrl
+    }
+    {
+      name: 'SESSION_SECRET'
+      secretRef: idPortenSessionSecretSecret.name
+    }
+    {
+      name: 'TYPEORM_SYNCHRONIZE_ENABLED'
+      value: ''
+    }
+    {
+      name: 'DIALOGPORTEN_URL'
+      value: dialogportenURL
+    }
+    {
+      name: 'LOGGER_FORMAT'
+      value: 'json'
+    }
+    {
+      name: 'NODE_ENV'
+      value: 'production'
+    }
+    {
+      name: 'ENABLE_GRAPHIQL'
+      value: graphiQLEnabled
+    }
+    {
+      name: 'ENABLE_INIT_SESSION_ENDPOINT'
+      value: enableInitSessionEndpoint
+    }
+    {
+      name: 'DISABLE_PROFILE'
+      value: disableProfile
+    }
+    {
+      name: 'PLATFORM_EXCHANGE_TOKEN_ENDPOINT_URL'
+      value: platformExchangeTokenEndpointUrl
+    }
+    {
+      name: 'PLATFORM_PROFILE_API_URL'
+      value: platformProfileApiUrl
+    }
+    {
+      name: 'OCP_APIM_SUBSCRIPTION_KEY'
+      value: ocPApimSubscriptionKey
+    }
+  ],
+  additionalEnvironmentVariables
+)
 
 module containerApp '../../modules/containerApp/main.bicep' = {
   name: containerAppName

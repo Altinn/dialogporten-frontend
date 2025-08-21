@@ -1,6 +1,7 @@
 import { list, objectType, stringArg } from 'nexus';
+import config from '../../config.ts';
 import { SavedSearchRepository } from '../../db.ts';
-import { exchangeToken, getNotificationsSettings, getOrCreateProfile, getUserFromCore } from '../functions/profile.ts';
+import { getNotificationsSettings, getOrCreateProfile, getUserFromCore } from '../functions/profile.ts';
 import { getOrganizationsFromRedis } from './organization.ts';
 
 export const Query = objectType({
@@ -9,11 +10,11 @@ export const Query = objectType({
     t.field('profile', {
       type: 'Profile',
       resolve: async (_source, _args, ctx) => {
-        const token = await exchangeToken(ctx);
+        const { disableProfile } = config;
         const pid = ctx.session.get('pid');
         const locale = ctx.session.get('locale');
-        const profile = await getOrCreateProfile(pid, locale, token);
-        const user = await getUserFromCore(token);
+        const profile = await getOrCreateProfile(pid, locale, ctx);
+        const user = disableProfile ? [] : await getUserFromCore(ctx);
         const { language, groups, updatedAt } = profile;
         return {
           language,
@@ -55,7 +56,8 @@ export const Query = objectType({
         uuid: stringArg(),
       },
       resolve: async (_source, { uuid }, ctx) => {
-        if (SavedSearchRepository) {
+        const { disableProfile } = config;
+        if (!disableProfile && uuid) {
           return await getNotificationsSettings(uuid, ctx);
         }
         return [];

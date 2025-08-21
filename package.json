@@ -7,7 +7,7 @@
     "hooks:disable": "git config --unset core.hooksPath",
     "hooks:status": "if [ \"$(git config core.hooksPath)\" == \".hooks\" ]; then echo 'Git hooks is enabled'; else echo 'git hooks is disabled'; fi",
     "biome:fix-staged": "pnpm husky check --staged --fix",
-    "biome:fix": "pnpm biome format --write"
+    "biome:fix": "pnpm biome check --no-errors-on-unmatched --write"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",

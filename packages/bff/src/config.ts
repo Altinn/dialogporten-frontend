@@ -36,6 +36,7 @@ const envVariables = z.object({
   CONTAINER_APP_REPLICA_NAME: z.string().default(''),
   ENABLE_GRAPHIQL: z.preprocess(stringToBoolean, z.boolean().default(true)),
   ENABLE_INIT_SESSION_ENDPOINT: z.preprocess(stringToBoolean, z.boolean().default(false)),
+  DISABLE_PROFILE: z.preprocess(stringToBoolean, z.boolean().default(false)),
 });
 
 const env = envVariables.parse(process.env);
@@ -73,6 +74,7 @@ const config = {
   dialogportenURL: env.DIALOGPORTEN_URL,
   enableGraphiql: env.ENABLE_GRAPHIQL,
   enableInitSessionEndpoint: env.ENABLE_INIT_SESSION_ENDPOINT,
+  disableProfile: env.DISABLE_PROFILE,
 };
 
 export default config;
