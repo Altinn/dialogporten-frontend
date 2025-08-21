@@ -138,6 +138,7 @@ services:
       APPLICATIONINSIGHTS_CONNECTION_STRING: ${APPLICATIONINSIGHTS_CONNECTION_STRING}
       APPLICATIONINSIGHTS_ENABLED: ${APPLICATIONINSIGHTS_ENABLED}
       ENABLE_INIT_SESSION_ENDPOINT: true
+      DISABLE_PROFILE: false
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.bff.rule=Host(`app.localhost`) && PathPrefix(`/api`)"

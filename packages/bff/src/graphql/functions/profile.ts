@@ -20,17 +20,18 @@ export const exchangeToken = async (context: Context): Promise<string> => {
   return newToken;
 };
 
-export const getOrCreateProfile = async (pid: string, sessionLocale: string, token: string): Promise<ProfileTable> => {
+export const getOrCreateProfile = async (
+  pid: string,
+  sessionLocale: string,
+  context: Context,
+): Promise<ProfileTable> => {
+  const { disableProfile } = config;
   if (!pid) {
     console.error('No pid provided');
     throw new Error('PID is required to get or create a profile');
   }
-  if (!token) {
-    console.error('No token provided');
-    throw new Error('token is required to get or create a profile');
-  }
   const profile = await ProfileRepository!.createQueryBuilder('profile').where('profile.pid = :pid', { pid }).getOne();
-  const groups = await getFavoritesFromCore(token);
+  const groups = disableProfile ? [] : await getFavoritesFromCore(await exchangeToken(context));
 
   if (!profile) {
     const newProfile = new ProfileTable();
@@ -155,7 +156,8 @@ interface Context {
   };
 }
 
-export const getUserFromCore = async (token: string) => {
+export const getUserFromCore = async (context: Context) => {
+  const token = await exchangeToken(context);
   const { platformProfileAPI_url } = config;
   const { data: coreProfileData } = await axios
     .get(`${platformProfileAPI_url}users/current`, {

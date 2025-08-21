@@ -1,23 +1,27 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
+import { ErrorResetHandler, withErrorBoundary } from './components/ErrorBoundary/ErrorBoundary.tsx';
 import { ProtectedPageLayout } from './components/PageLayout/PageLayout.tsx';
+import { FeatureFlagKeys } from './featureFlags/FeatureFlags.ts';
+import { useFeatureFlag } from './featureFlags/useFeatureFlag.ts';
 import { DialogDetailsPage } from './pages/DialogDetailsPage';
 import { ErrorPage } from './pages/Error/Error.tsx';
 import { Inbox } from './pages/Inbox';
 import { LoggedOut } from './pages/LogoutPage';
+import { FrontChannelLogout } from './pages/LogoutPage/FrontChannelLogout.tsx';
 import { Access } from './pages/Profile/Access/Access.tsx';
 import { Activities } from './pages/Profile/Activities/Activities.tsx';
 import { Authorize } from './pages/Profile/Authorize/Authorize.tsx';
 import { Notifications } from './pages/Profile/Notifications/Notifications.tsx';
+import { PartiesOverviewPage } from './pages/Profile/PartiesOverviewPage/PartiesOverviewPage.tsx';
 import { Profile } from './pages/Profile/Profile.tsx';
 import { Settings } from './pages/Profile/Settings/Settings.tsx';
 import { SavedSearchesPage } from './pages/SavedSearches';
 import { PageRoutes } from './pages/routes.ts';
 import './app.css';
-import { ErrorResetHandler, withErrorBoundary } from './components/ErrorBoundary/ErrorBoundary.tsx';
-import { FrontChannelLogout } from './pages/LogoutPage/FrontChannelLogout.tsx';
-import { PartiesOverviewPage } from './pages/Profile/PartiesOverviewPage/PartiesOverviewPage.tsx';
 
 function App() {
+  const EnableProfilePages = useFeatureFlag(FeatureFlagKeys.EnableProfilePages);
+
   return (
     <div className="app">
       <Routes>
@@ -26,10 +30,12 @@ function App() {
             path={PageRoutes.inbox}
             element={withErrorBoundary(<Inbox key="inbox" viewType={'inbox'} />, 'Inbox')}
           />
-          <Route
-            path={PageRoutes.partiesOverview}
-            element={withErrorBoundary(<PartiesOverviewPage key="partys" />, 'Parties Overview')}
-          />
+          {!!EnableProfilePages && (
+            <Route
+              path={PageRoutes.partiesOverview}
+              element={withErrorBoundary(<PartiesOverviewPage key="partys" />, 'Parties Overview')}
+            />
+          )}
           <Route
             path={PageRoutes.drafts}
             element={withErrorBoundary(<Inbox key="draft" viewType={'drafts'} />, 'Drafts')}
