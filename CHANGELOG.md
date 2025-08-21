@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.54.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.54.0...v1.54.1) (2025-08-21)
+
+
+### Bug Fixes
+
+* improvements to accessbility: contextmenu and language picker now have keyboard navigation + introduce skip link ([#2514](https://github.com/Altinn/dialogporten-frontend/issues/2514)) ([69efab9](https://github.com/Altinn/dialogporten-frontend/commit/69efab9fb5ef1eb259780027898a0bb312f5e8e4))
+* sorting of activity history ([#2512](https://github.com/Altinn/dialogporten-frontend/issues/2512)) ([a36d98b](https://github.com/Altinn/dialogporten-frontend/commit/a36d98bebca056f2e46a51514ed7983896580d05))
+
 ## [1.54.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.53.1...v1.54.0) (2025-08-20)
 
 
