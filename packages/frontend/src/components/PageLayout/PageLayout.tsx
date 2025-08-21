@@ -28,6 +28,7 @@ import { useFooter } from './Footer';
 import { useGlobalMenu } from './GlobalMenu';
 import { useAutocomplete, useSearchString } from './Search';
 import { useWindowSize } from './useWindowSize.tsx';
+import { createHomeLink } from '../../auth';
 
 export const ProtectedPageLayout = () => {
   const { isAuthenticated } = useAuth();
@@ -101,7 +102,7 @@ export const PageLayout: React.FC = () => {
     logo: {
       as: (props: MenuItemProps) => {
         // @ts-ignore
-        return <Link to="/" {...props} />;
+        return <Link to={createHomeLink()} {...props} />;
       },
     },
     search: {
