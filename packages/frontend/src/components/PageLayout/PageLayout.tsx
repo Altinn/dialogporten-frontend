@@ -1,9 +1,11 @@
 import {
+  type Color,
   type FooterProps,
   type HeaderProps,
   Layout,
   type LayoutProps,
   type MenuItemProps,
+  type Size,
 } from '@altinn/altinn-components';
 import { Snackbar } from '@altinn/altinn-components';
 import { useQueryClient } from '@tanstack/react-query';
@@ -145,11 +147,11 @@ export const PageLayout: React.FC = () => {
     locale: {
       title: 'Språk/language',
       options: [
-        { label: 'Norsk Bokmål', value: 'nb', checked: i18n.language === 'nb' },
-        { label: 'Norsk Nynorsk', value: 'nn', checked: i18n.language === 'nn' },
-        { label: 'English', value: 'en', checked: i18n.language === 'en' },
+        { label: t('word.locale.nb'), value: 'nb', checked: i18n.language === 'nb' },
+        { label: t('word.locale.nn'), value: 'nn', checked: i18n.language === 'nn' },
+        { label: t('word.locale.en'), value: 'en', checked: i18n.language === 'en' },
       ],
-      onChange: (e) => handleUpdateLanguage((e.target as HTMLSelectElement).value),
+      onSelect: (lang) => handleUpdateLanguage(lang),
     },
   };
 
@@ -157,6 +159,12 @@ export const PageLayout: React.FC = () => {
 
   const layoutProps: LayoutProps = {
     theme: isErrorState ? 'default' : 'subtle',
+    skipLink: {
+      href: '#main-content',
+      color: 'inherit' as Color,
+      size: 'xs' as Size,
+      children: t('skip_link.jumpto'),
+    },
     color,
     header: headerProps,
     footer,
