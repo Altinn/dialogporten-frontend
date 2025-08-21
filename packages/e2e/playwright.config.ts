@@ -2,8 +2,8 @@ import { defineConfig, devices } from '@playwright/test';
 
 // Test credentials
 export const testCredentials = {
-  pid: '14886498226',
-  expectedName: 'Hjelpelinje Ordinær',
+  pid: '15915299854',
+  expectedName: 'Konditor Ustabil',
 };
 
 /**
