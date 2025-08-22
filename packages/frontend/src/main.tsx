@@ -4,11 +4,13 @@ import { BrowserRouter } from 'react-router-dom';
 import './i18n/config.ts';
 
 import { RootProvider } from '@altinn/altinn-components';
+import { TourProvider } from '@reactour/tour';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App.tsx';
 import { AuthProvider } from './components/Login/AuthContext.tsx';
 import { LoggerContextProvider } from './contexts/LoggerContext.tsx';
 import { FeatureFlagProvider, featureFlags } from './featureFlags';
+import { tourStyles } from './onboardingTour';
 
 declare const __APP_VERSION__: string;
 console.info('App Version:', __APP_VERSION__);
@@ -37,7 +39,14 @@ if (element) {
               <FeatureFlagProvider flags={featureFlags}>
                 <AuthProvider>
                   <RootProvider>
-                    <App />
+                    <TourProvider
+                      steps={[]}
+                      styles={tourStyles}
+                      defaultOpen={false}
+                      onClickMask={({ setIsOpen }) => setIsOpen(false)}
+                    >
+                      <App />
+                    </TourProvider>
                   </RootProvider>
                 </AuthProvider>
               </FeatureFlagProvider>

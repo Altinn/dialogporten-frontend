@@ -15,6 +15,7 @@ import { Link, Outlet, useLocation, useSearchParams } from 'react-router-dom';
 import { useDialogs } from '../../api/hooks/useDialogs.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { updateLanguage } from '../../api/queries.ts';
+import { createHomeLink } from '../../auth';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { i18n } from '../../i18n/config.ts';
 import { getSearchStringFromQueryParams } from '../../pages/Inbox/queryParams.ts';
@@ -28,7 +29,6 @@ import { useFooter } from './Footer';
 import { useGlobalMenu } from './GlobalMenu';
 import { useAutocomplete, useSearchString } from './Search';
 import { useWindowSize } from './useWindowSize.tsx';
-import { createHomeLink } from '../../auth';
 
 export const ProtectedPageLayout = () => {
   const { isAuthenticated } = useAuth();
