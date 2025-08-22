@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.55.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.55.0...v1.55.1) (2025-08-22)
+
+
+### Bug Fixes
+
+* sort order for activity log + url in homepage redirect ([#2532](https://github.com/Altinn/dialogporten-frontend/issues/2532)) ([56aeb3f](https://github.com/Altinn/dialogporten-frontend/commit/56aeb3ff043cf358b5d446437af26263ebae9ec0))
+
 ## [1.55.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.54.2...v1.55.0) (2025-08-22)
 
 
