@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.55.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.54.2...v1.55.0) (2025-08-22)
+
+
+### Features
+
+* change logo url in header ([#2525](https://github.com/Altinn/dialogporten-frontend/issues/2525)) ([10a3dab](https://github.com/Altinn/dialogporten-frontend/commit/10a3dab19ffe5713e72338207d81b01d8c835562))
+
 ## [1.54.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.54.1...v1.54.2) (2025-08-21)
 
 
