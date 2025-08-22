@@ -25,6 +25,7 @@ import { useWindowSize } from '../../components/PageLayout/useWindowSize.tsx';
 import { SaveSearchButton } from '../../components/SavedSearchButton/SaveSearchButton.tsx';
 import { isSavedSearchDisabled } from '../../components/SavedSearchButton/savedSearchEnabled.ts';
 import { SeenByModal } from '../../components/SeenByModal/SeenByModal.tsx';
+import { useDynamicTour } from '../../onboardingTour';
 import { PageRoutes } from '../routes.ts';
 import { FilterCategory, readFiltersFromURLQuery } from './filters.ts';
 import styles from './inbox.module.css';
@@ -44,6 +45,7 @@ export interface CurrentSeenByLog {
 
 export const Inbox = ({ viewType }: InboxProps) => {
   const { t } = useTranslation();
+
   const {
     selectedParties,
     allOrganizationsSelected,
@@ -107,6 +109,15 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const { filters, getFilterLabel } = useFilters({ viewType });
 
   const isLoading = isLoadingParties || isLoadingDialogs;
+
+  useDynamicTour({
+    isLoadingParties,
+    isLoadingDialogs,
+    dialogsSuccess,
+    dialog: dialogs[0] || null,
+    viewType,
+  });
+
   const { groupedDialogs, groups } = useGroupedDialogs({
     onSeenByLogModalChange: setCurrentSeenByLogModal,
     items: dialogs,
