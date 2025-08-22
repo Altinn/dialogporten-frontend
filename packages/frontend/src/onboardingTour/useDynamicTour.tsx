@@ -1,5 +1,6 @@
 import { useTour } from '@reactour/tour';
 import { useEffect, useState } from 'react';
+import { OnboardingPopover } from './OnboardingPopover';
 import { loadTourProgress, shouldResumeTour } from './persistence';
 
 interface UseDynamicTourProps {
@@ -13,12 +14,49 @@ interface UseDynamicTourProps {
 //for static elements
 export const tourSteps = [
   {
-    selector: '[data-testid="inbox-toolbar"]',
-    content: 'This is the inbox toolbar where you can filter and search through your dialogs.',
+    selector: '[data-testid="searchbar-input"]',
+    content: (
+      <OnboardingPopover
+        title="Search Functionality"
+        infoText="Use this searchbar to find specific dialogs by typing keywords."
+      />
+    ),
   },
   {
-    selector: '[data-testid="searchbar-input"]',
-    content: 'Use this searchbar to find specific dialogs by typing keywords.',
+    selector: '[data-testid="inbox-toolbar"]',
+    content: (
+      <OnboardingPopover
+        title="Inbox Toolbar"
+        infoText="This is the inbox toolbar where you can filter and search through your dialogs."
+      />
+    ),
+  },
+  {
+    selector: 'aside nav',
+    content: (
+      <OnboardingPopover
+        title="Navigation Sidebar"
+        infoText="This is your main navigation sidebar. Use it to navigate between different sections of the application."
+      />
+    ),
+  },
+  {
+    selector: 'aside nav a[href="/"]',
+    content: (
+      <OnboardingPopover
+        title="Inbox"
+        infoText="The Inbox contains all your active dialogs that require your attention."
+      />
+    ),
+  },
+  {
+    selector: 'a[href="/sent"]',
+    content: (
+      <OnboardingPopover
+        title="Sent Items"
+        infoText="The Sent section shows dialogs you have already responded to or completed."
+      />
+    ),
   },
 ];
 
@@ -45,12 +83,22 @@ export const useDynamicTour = ({
         const escapedId = CSS.escape(dialog.id);
         dynamicSteps.push({
           selector: `#${escapedId}`,
-          content: 'This is your first dialog. Click on it to view details and interact with the dialog content.',
+          content: (
+            <OnboardingPopover
+              title="Your First Dialog"
+              infoText="This is your first dialog. Click on it to view details and interact with the dialog content."
+            />
+          ),
         });
 
         dynamicSteps.push({
           selector: `#${escapedId} button[aria-label*="Kontekstmeny"]`,
-          content: 'Click on this context menu button to see additional actions you can perform on this dialog.',
+          content: (
+            <OnboardingPopover
+              title="Context Menu"
+              infoText="Click on this context menu button to see additional actions you can perform on this dialog."
+            />
+          ),
         });
       }
 
