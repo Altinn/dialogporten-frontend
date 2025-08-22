@@ -43,14 +43,23 @@ export const getStoredURL = (): string | null => {
   return null;
 };
 
-/* Used for redirect on logout and logo in header */
+/* Used for redirect from logo in header */
 export const createHomeLink = () => {
-  // There is no landing page for Altinn locally or in test, so returning to homepage in app makes sense here
-  if (import.meta.env.DEV || location.hostname.includes('at.altinn.cloud')) {
+  // There is no landing page for Altinn locally, so returning to homepage in app makes sense here
+  if (import.meta.env.DEV) {
     return '/';
   }
-  if (location.host.includes('tt.altinn.no')) {
-    return 'https://info.tt02.altinn.no/';
+
+  if (location.hostname.includes('at.altinn.cloud')) {
+    return 'https://at22.altinn.cloud';
   }
-  return 'https://info.altinn.no/';
+
+  if (location.host.includes('yt.altinn.cloud')) {
+    return 'https://tt02.altinn.no/';
+  }
+
+  if (location.host.includes('tt.altinn.no')) {
+    return 'https://tt02.altinn.no/';
+  }
+  return 'https://altinn.no/';
 };
