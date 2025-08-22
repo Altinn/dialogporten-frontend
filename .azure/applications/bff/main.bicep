@@ -31,6 +31,9 @@ param graphiQLEnabled string = 'true'
 param enableInitSessionEndpoint string = 'true'
 param disableProfile string = 'false'
 
+@description('URL to direct user after successful logout')
+param logoutRedirectUri string = 'https://altinn.no'
+
 @minLength(3)
 @secure()
 param containerAppEnvironmentName string
@@ -185,6 +188,10 @@ var containerAppEnvVars = concat(
     {
       name: 'OCP_APIM_SUBSCRIPTION_KEY'
       value: ocPApimSubscriptionKey
+    },
+    {
+        name: 'LOGOUT_REDIRECT_URI'
+        value: logoutRedirectUri
     }
   ],
   additionalEnvironmentVariables

@@ -120,12 +120,11 @@ const issuerURL = `https://${oidc_url}/.well-known/openid-configuration`;
 const providerConfig = await fetchOpenIDConfig(issuerURL);
 
 export const handleLogout = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { oidc_url, hostname } = config;
+  const { oidc_url, logoutRedirectUri } = config;
   const token: SessionStorageToken | undefined = request.session.get('token');
 
   if (token?.id_token) {
-    const postLogoutRedirectUri = `${hostname}/loggedout`;
-    const logoutRedirectUrl = `https://login.${oidc_url}/logout?post_logout_redirect_uri=${postLogoutRedirectUri}&id_token_hint=${token.id_token}`;
+    const logoutRedirectUrl = `https://login.${oidc_url}/logout?post_logout_redirect_uri=${logoutRedirectUri}&id_token_hint=${token.id_token}`;
     await request.session.destroy();
     reply.redirect(logoutRedirectUrl);
   } else {

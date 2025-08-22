@@ -23,9 +23,7 @@ export const createFiltersURLQuery = (activeFilters: FilterState, allFilterKeys:
 
 export const saveURL = () => {
   const currentURL = getCurrentURL();
-  if (!location.pathname.includes('loggedout')) {
-    sessionStorage.setItem(LOGIN_REDIRECT_STORAGE_KEY, currentURL);
-  }
+  sessionStorage.setItem(LOGIN_REDIRECT_STORAGE_KEY, currentURL);
 };
 
 export const removeStoredURL = () => {

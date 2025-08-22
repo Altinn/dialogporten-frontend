@@ -112,7 +112,6 @@
   "inbox.unable_to_load_parties.link": "log out",
   "inbox.unable_to_load_parties.title": "Technical Error",
   "layout.menu.change_account": "Change account",
-  "logout.title": "You have been logged out ...",
   "menuBar.all_services": "All services",
   "menuBar.chat": "Get help on chat",
   "parties.current_end_user": "Logged in as {name}",
