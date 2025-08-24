@@ -3,16 +3,24 @@ import {
   Badge,
   type BadgeProps,
   Button,
+  ButtonGroup,
   ContextMenu,
   type ContextMenuProps,
   Divider,
+  Fieldset,
   Flex,
   Heading,
   IconButton,
   List,
   ListItemControls,
+  ModalBase,
+  ModalBody,
+  ModalHeader,
   Section,
   SettingsItem,
+  type SettingsItemProps,
+  Switch,
+  TextField,
 } from '@altinn/altinn-components';
 import type { AccountListItemControlsProps } from '@altinn/altinn-components/dist/types/lib/components/Account/AccountListItemControls';
 import {
@@ -27,9 +35,13 @@ import {
   MobileIcon,
   PaperplaneIcon,
 } from '@navikt/aksel-icons';
-import type { ProfessionalNotificationAddressResponse } from 'bff-types-generated';
-import { Fragment, type ReactNode, useEffect, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import type { NotificationSettingsResponse } from 'bff-types-generated';
+import { type ChangeEvent, Fragment, type ReactNode, useState } from 'react';
+import { updateNotificationsetting } from '../../../api/queries';
+import { QUERY_KEYS } from '../../../constants/queryKeys';
 import { useProfile } from '../../../profile';
+import { useNotificationSettings } from '../../../profile/useNotificationSettings';
 
 export const AccountToolbar = ({ id, type, isCurrentEndUser, favourite, onToggleFavourite }: AccountDetailsProps) => {
   return (
@@ -56,6 +68,7 @@ export const AccountToolbar = ({ id, type, isCurrentEndUser, favourite, onToggle
 };
 
 interface AccountDetailsProps extends AccountListItemProps {
+  userId?: string;
   alertEmailAddress?: string;
   alertPhoneNumber?: string;
   contactEmailAddress?: string;
@@ -173,11 +186,12 @@ export const UserDetails = (props: AccountDetailsProps) => {
 };
 
 interface NotificationSettingsProps {
-  alertEmailAddress?: string;
-  alertPhoneNumber?: string;
+  notificationSetting: NotificationSettingsResponse;
 }
 
-export const NotificationSettings = ({ alertPhoneNumber, alertEmailAddress }: NotificationSettingsProps) => {
+export const NotificationSettings = ({ notificationSetting }: NotificationSettingsProps) => {
+  const [showModal, setShowModal] = useState(false);
+  const { emailAddress: alertEmailAddress, phoneNumber: alertPhoneNumber } = notificationSetting;
   const badge =
     alertPhoneNumber && alertEmailAddress
       ? { label: 'SMS og E-post' }
@@ -195,54 +209,181 @@ export const NotificationSettings = ({ alertPhoneNumber, alertEmailAddress }: No
 
   return (
     <List size="sm">
-      <SettingsItem icon={BellIcon} title={title} value={value} badge={badge as BadgeProps} linkIcon />
+      <SettingsItem
+        icon={BellIcon}
+        title={title}
+        value={value}
+        badge={badge as BadgeProps}
+        linkIcon
+        onClick={() => setShowModal((prev) => !prev)}
+        as="button"
+      />
+      <AccountNotificationsModal
+        title="Varslingsinnstillinger"
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        notificationSetting={notificationSetting}
+      />
     </List>
   );
 };
 
-export const CompanyDetails = ({ ...props }: AccountDetailsProps) => {
-  const { id, uniqueId, parentId, items } = props;
-  const parentAccount = items?.find((item) => item.id === parentId);
+interface AccountModalProps {
+  title?: SettingsItemProps['title'];
+  icon?: SettingsItemProps['icon'];
+  description?: SettingsItemProps['description'];
+  open?: boolean;
+  onClose: () => void;
+  children?: ReactNode;
+}
 
-  const { getNotificationsettingsByUuid } = useProfile();
+const AccountModal = ({
+  icon,
+  title = 'Navn på aktør',
+  description,
+  open = false,
+  onClose,
+  children,
+}: AccountModalProps) => {
+  return (
+    <ModalBase open={open} onClose={onClose}>
+      <ModalHeader onClose={onClose}>
+        <List>
+          <SettingsItem icon={icon} title={title} description={description} interactive={false} />
+        </List>
+      </ModalHeader>
+      <ModalBody>{children}</ModalBody>
+    </ModalBase>
+  );
+};
 
-  const [notificationSettings, setNotificationSettings] = useState<
-    ProfessionalNotificationAddressResponse[] | undefined
-  >(undefined);
+export interface AccountNotificationSettingsProps {
+  notificationSetting: NotificationSettingsResponse;
+  onClose: () => void;
+}
 
-  useEffect(() => {
-    let isMounted = true;
-    getNotificationsettingsByUuid(id)
-      .then((s) => {
-        const settings = (s?.notificationsettingsByUuid as ProfessionalNotificationAddressResponse[]) ?? undefined;
-        if (isMounted) setNotificationSettings(settings);
-      })
-      .catch((e) => {
-        console.error('Failed to fetch notification settings:', e);
-        setNotificationSettings([] as ProfessionalNotificationAddressResponse[] | undefined);
-      });
-    return () => {
-      isMounted = false;
-    };
-  }, [id, getNotificationsettingsByUuid]);
+export const AccountNotificationSettings = ({ notificationSetting, onClose }: AccountNotificationSettingsProps) => {
+  const queryClient = useQueryClient();
 
-  if (!notificationSettings) {
+  const alertPhoneNumber = notificationSetting.phoneNumber || '';
+  const alertEmailAddress = notificationSetting.emailAddress || '';
+  const [enablePhoneNotifications, setEnablePhoneNotifications] = useState(alertPhoneNumber.length > 0);
+  const [enableEmailNotifications, setEnableEmailNotifications] = useState(alertEmailAddress.length > 0);
+  const [alertEmailAddressState, setAlertEmailAddressState] = useState(alertEmailAddress);
+  const [alertPhoneNumberState, setAlertPhoneNumberState] = useState(alertPhoneNumber);
+
+  if (!notificationSetting) {
     return null;
   }
 
+  const partyUuid = notificationSetting.partyUuid || '';
+
+  const handleUpdateNotificationSettings = async () => {
+    const updatedSettings = {
+      userId: notificationSetting.userId,
+      partyUuid: partyUuid,
+      emailAddress: enableEmailNotifications ? alertEmailAddressState : null,
+      phoneNumber: enablePhoneNotifications ? alertPhoneNumberState : null,
+    };
+
+    try {
+      await updateNotificationsetting(updatedSettings);
+      void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.NOTIFICATIONSETTINGS] });
+      onClose();
+    } catch (err) {
+      console.error('Failed to update notification settings:', err);
+    }
+  };
+
+  return (
+    <>
+      <Fieldset size="sm">
+        <Switch
+          label={'Varsle på SMS'}
+          name="smsAlerts"
+          value="SMS"
+          checked={enablePhoneNotifications}
+          onChange={() => setEnablePhoneNotifications((prev) => !prev)}
+        />
+        {enablePhoneNotifications && (
+          <TextField
+            name="phone"
+            placeholder="Mobiltelefon"
+            value={alertPhoneNumberState}
+            onChange={(e) => setAlertPhoneNumberState(e.target.value)}
+          />
+        )}
+        <Switch
+          label={alertEmailAddress || 'Varsle på E-post'}
+          name="emailAlerts"
+          value="E-post"
+          checked={enableEmailNotifications}
+          onChange={() => setEnableEmailNotifications((prev) => !prev)}
+        />
+        {enableEmailNotifications && (
+          <TextField
+            name="email"
+            placeholder="E-postadresse"
+            value={alertEmailAddressState}
+            onChange={(e) => setAlertEmailAddressState(e.target.value)}
+          />
+        )}
+      </Fieldset>
+      <ButtonGroup>
+        <Button onClick={handleUpdateNotificationSettings}>Lagre og avslutt</Button>
+        <Button variant="outline" onClick={onClose}>
+          Avbryt
+        </Button>
+      </ButtonGroup>
+    </>
+  );
+};
+
+interface AccountNotificationsModalProps extends AccountModalProps, AccountNotificationSettingsProps {
+  notificationSetting: NotificationSettingsResponse;
+  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
+}
+
+const AccountNotificationsModal = ({
+  icon,
+  title,
+  description,
+  open,
+  onClose,
+  notificationSetting,
+}: AccountNotificationsModalProps) => {
+  return (
+    <AccountModal icon={icon} title={title} description={description} open={open} onClose={onClose}>
+      <AccountNotificationSettings notificationSetting={notificationSetting} onClose={onClose} />
+    </AccountModal>
+  );
+};
+
+export const CompanyDetails = ({ ...props }: AccountDetailsProps) => {
+  const { id: partyUuid, uniqueId, parentId, items } = props;
+  const parentAccount = items?.find((item) => item.id === parentId);
+
+  const { notificationSettings } = useNotificationSettings(partyUuid);
+
   return (
     <Section color="company" padding={6} spacing={2}>
-      <AccountToolbar {...props} id={id} />
+      <AccountToolbar {...props} id={partyUuid} />
       <Divider />
-      {(notificationSettings as ProfessionalNotificationAddressResponse[] | null)?.map(
-        (notificationSetting: ProfessionalNotificationAddressResponse, index: number) => (
-          <NotificationSettings
-            key={id + index}
-            alertEmailAddress={notificationSetting.emailAddress || ''}
-            alertPhoneNumber={notificationSetting.phoneNumber || ''}
-          />
-        ),
+      {notificationSettings?.length > 0 ? (
+        notificationSettings?.map((notificationSetting, index) => (
+          <NotificationSettings key={partyUuid + index} notificationSetting={notificationSetting} />
+        ))
+      ) : (
+        <NotificationSettings
+          key={partyUuid}
+          notificationSetting={{
+            partyUuid: partyUuid,
+            emailAddress: '',
+            phoneNumber: '',
+          }}
+        />
       )}
+
       <List size="sm">
         <Divider as="li" />
         <SettingsItem

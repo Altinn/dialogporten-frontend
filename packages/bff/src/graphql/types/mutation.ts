@@ -5,9 +5,10 @@ import {
   deleteFavoriteParty,
   getOrCreateProfile,
   updateLanguage,
+  updateNotificationsSetting,
 } from '../functions/profile.ts';
 import { createSavedSearch, deleteSavedSearch, updateSavedSearch } from '../functions/savedsearch.ts';
-import { Response, SavedSearchInput, SavedSearches } from './index.ts';
+import { NotificationSettingsInput, Response, SavedSearchInput, SavedSearches } from './index.ts';
 
 export const Mutation = extendType({
   type: 'Mutation',
@@ -122,6 +123,27 @@ export const AddFavoritePartyToGroup = extendType({
           return { success: true, message: 'FavoriteParty added successfully' };
         } catch (error) {
           console.error('Failed to add favorite party:', error);
+          return error;
+        }
+      },
+    });
+  },
+});
+
+export const UpdateNotificationSetting = extendType({
+  type: 'Mutation',
+  definition(t) {
+    t.field('updateNotificationSetting', {
+      type: Response,
+      args: {
+        data: NotificationSettingsInput,
+      },
+      resolve: async (_, { data }, ctx) => {
+        try {
+          await updateNotificationsSetting(data, ctx);
+          return { success: true, message: 'NotificationSetting updated successfully' };
+        } catch (error) {
+          console.error('Failed to update NotificationSetting:', error);
           return error;
         }
       },

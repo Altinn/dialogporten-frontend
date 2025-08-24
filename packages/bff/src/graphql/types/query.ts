@@ -51,7 +51,7 @@ export const Query = objectType({
     });
 
     t.field('notificationsettingsByUuid', {
-      type: list('ProfessionalNotificationAddressResponse'),
+      type: list('NotificationSettingsResponse'),
       args: {
         uuid: stringArg(),
       },

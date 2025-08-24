@@ -17,11 +17,11 @@ export const useProfile = () => {
     queryFn: () => profile(),
     refetchOnWindowFocus: false,
   });
+
   const { i18n } = useTranslation();
   const groups = (data?.profile?.groups as GroupObject[]) || ([] as GroupObject[]);
   const language = data?.profile?.language || i18n.language || 'nb';
   const favoritesGroup = groups.find((group) => group!.isFavorite) as GroupObject;
-
   const queryClient = useQueryClient();
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: Full control of what triggers this code is needed
@@ -35,10 +35,12 @@ export const useProfile = () => {
     deleteFavoritePartyRaw(partyId).then(() => {
       void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PROFILE] });
     });
+
   const addFavoriteParty = (partyId: string) =>
     addFavoritePartyRaw(partyId).then(() => {
       void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PROFILE] });
     });
+
   const addFavoritePartyToGroup = async (partyId: string, groupName: string) => {
     await addFavoritePartyToGroupRaw(partyId, groupName);
     void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PROFILE] });

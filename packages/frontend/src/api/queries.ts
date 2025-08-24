@@ -6,12 +6,14 @@ import {
   type DeleteSavedSearchMutation,
   type GetAllDialogsForPartiesQuery,
   type GetSearchAutocompleteDialogsQuery,
+  type NotificationSettingsInput,
   type NotificationsettingsByUuidQuery,
   type OrganizationsQuery,
   type SavedSearchInput,
   type SavedSearchesQuery,
   type SystemLabel,
   type UpdateLanguageMutation,
+  type UpdateNotificationSettingMutation,
   type UpdateSavedSearchMutation,
   type UpdateSystemLabelMutation,
   getSdk,
@@ -36,6 +38,9 @@ export const createSavedSearch = (name: string, data: SavedSearchInput): Promise
   graphQLSDK.CreateSavedSearch({ name, data });
 export const getNotificationsettingsByUuid = (uuid: string): Promise<NotificationsettingsByUuidQuery> =>
   graphQLSDK.notificationsettingsByUuid({ uuid });
+export const updateNotificationsetting = (
+  data: NotificationSettingsInput,
+): Promise<UpdateNotificationSettingMutation> => graphQLSDK.UpdateNotificationSetting({ data });
 export const updateSystemLabel = (
   dialogId: string,
   addLabels: SystemLabel | SystemLabel[],
