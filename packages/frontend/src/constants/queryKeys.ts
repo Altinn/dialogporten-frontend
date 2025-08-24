@@ -11,6 +11,7 @@ export const QUERY_KEYS = {
   MAIN_CONTENT_REFERENCE: 'mainContentReference',
   SAVED_SEARCHES: 'savedSearches',
   PROFILE: 'profile',
+  NOTIFICATIONSETTINGS: 'notificationsettings',
   ORGANIZATIONS: 'organizations',
   SEARCH_VALUE: 'searchValue',
   ENTERED_SEARCH_VALUE: 'enteredSearchValue',

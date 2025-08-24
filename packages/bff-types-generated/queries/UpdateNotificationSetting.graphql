@@ -1,0 +1,6 @@
+mutation UpdateNotificationSetting($data: NotificationSettingsInput!) {
+  updateNotificationSetting(data: $data) {
+    success
+    message
+  }
+}

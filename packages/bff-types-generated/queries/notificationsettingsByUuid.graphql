@@ -1,5 +1,5 @@
 query notificationsettingsByUuid($uuid: String!) {
   notificationsettingsByUuid(uuid: $uuid) {
-    ...professionalNotificationAddressResponseFields
+    ...notificationSettingsResponseFields
   }
 }

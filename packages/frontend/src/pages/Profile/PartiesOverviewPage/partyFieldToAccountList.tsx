@@ -209,7 +209,6 @@ export const partyFieldFragmentToAccountListItem = ({
           key={party.partyUuid}
           id={party.partyUuid}
           uniqueId={urnToOrgNr(party.party)}
-          // parentId={group?.id}
           type={party.partyType as AccountListItemType}
           name={party.name}
           isCurrentEndUser={party.isCurrentEndUser}

@@ -1,4 +1,4 @@
-import { objectType } from 'nexus';
+import { inputObjectType, objectType } from 'nexus';
 
 export const User = objectType({
   name: 'User',
@@ -154,7 +154,6 @@ export const Profile = objectType({
   },
 });
 
-// NotificationAddressModel
 export const NotificationAddressModel = objectType({
   name: 'NotificationAddressModel',
   description: 'Represents a notification address',
@@ -174,7 +173,6 @@ export const NotificationAddressModel = objectType({
   },
 });
 
-// NotificationAddressResponse
 export const NotificationAddressResponse = objectType({
   name: 'NotificationAddressResponse',
   description: 'Represents a notification address',
@@ -198,7 +196,6 @@ export const NotificationAddressResponse = objectType({
   },
 });
 
-// OrganizationResponse
 export const OrganizationResponse = objectType({
   name: 'OrganizationResponse',
   description: 'Represents an organization with notification addresses',
@@ -215,7 +212,6 @@ export const OrganizationResponse = objectType({
   },
 });
 
-// ProblemDetails
 export const ProblemDetails = objectType({
   name: 'ProblemDetails',
   definition(t) {
@@ -227,31 +223,8 @@ export const ProblemDetails = objectType({
   },
 });
 
-// ProfessionalNotificationAddressRequest
-export const ProfessionalNotificationAddressRequest = objectType({
-  name: 'ProfessionalNotificationAddressRequest',
-  description:
-    'Request model for the professional notification address for an organization, also called personal notification address.',
-  definition(t) {
-    t.nullable.string('emailAddress', {
-      description: 'The email address. May be null if no email address is set.',
-      resolve: (obj) => obj.emailAddress,
-    });
-    t.nullable.string('phoneNumber', {
-      description: 'The phone number. May be null if no phone number is set.',
-      resolve: (obj) => obj.phoneNumber,
-    });
-    t.nullable.list.string('resourceIncludeList', {
-      description:
-        'A list of resources that the user has registered to receive notifications for. The format is in URN. This is used to determine which resources the user can receive notifications for.',
-      resolve: (obj) => obj.resourceIncludeList,
-    });
-  },
-});
-
-// ProfessionalNotificationAddressResponse
-export const ProfessionalNotificationAddressResponse = objectType({
-  name: 'ProfessionalNotificationAddressResponse',
+export const NotificationSettingsResponse = objectType({
+  name: 'NotificationSettingsResponse',
   description:
     'Response model for the professional notification address for an organization, also called personal notification address.',
   definition(t) {
@@ -279,7 +252,25 @@ export const ProfessionalNotificationAddressResponse = objectType({
   },
 });
 
-// ProfileSettingPreference (already defined in your file but adding nullable languageType)
+export const NotificationSettingsInput = inputObjectType({
+  name: 'NotificationSettingsInput',
+  definition(t) {
+    t.int('userId');
+    t.string('partyUuid');
+    t.string('emailAddress');
+    t.string('phoneNumber');
+    t.list.string('resourceIncludeList');
+  },
+});
+
+export interface NotificationSettingsInputData {
+  userId: number;
+  partyUuid: string;
+  emailAddress?: string;
+  phoneNumber?: string;
+  resourceIncludeList?: string[];
+}
+
 export const ProfileSettingPreference = objectType({
   name: 'ProfileSettingPreference',
   definition(t) {
@@ -290,7 +281,6 @@ export const ProfileSettingPreference = objectType({
   },
 });
 
-// UserProfile
 export const UserProfile = objectType({
   name: 'UserProfile',
   definition(t) {
