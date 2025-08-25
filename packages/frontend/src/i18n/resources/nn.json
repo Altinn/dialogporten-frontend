@@ -19,6 +19,8 @@
   "additional_info.title": "Meir informasjon",
   "altinn.beta.about": "Om nye Altinn",
   "altinn.beta.inbox": "Innboks Beta",
+  "altinn.beta.exit": "Forlat Beta",
+  "altinn.beta.try": "Prøv Beta",
   "dialog.activity_log.title": "Aktivitetslogg",
   "dialog.aria.fetch_more": "Hent og vis fleire dialogar",
   "dialog.context_menu.label": "Kontekstmeny for dialog med tittel {title}",

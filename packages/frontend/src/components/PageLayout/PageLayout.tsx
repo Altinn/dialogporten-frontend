@@ -22,6 +22,7 @@ import { getSearchStringFromQueryParams } from '../../pages/Inbox/queryParams.ts
 import { PageRoutes } from '../../pages/routes.ts';
 import { useProfile } from '../../profile';
 import { useGlobalState } from '../../useGlobalState.ts';
+import { BetaModal } from '../BetaModal';
 import { useAuth } from '../Login/AuthContext.tsx';
 import { useAccounts } from './Accounts/useAccounts.tsx';
 import { useFooter } from './Footer';
@@ -168,15 +169,13 @@ export const PageLayout: React.FC = () => {
     color,
     header: headerProps,
     footer,
-    sidebar: {
-      hidden: isErrorState,
-      menu: sidebar,
-    },
+    sidebar,
   };
 
   return (
     <>
       <Layout {...layoutProps}>
+        <BetaModal />
         <Outlet />
         <Snackbar />
       </Layout>

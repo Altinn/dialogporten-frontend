@@ -41,6 +41,13 @@ export const getStoredURL = (): string | null => {
   return null;
 };
 
+export const createMessageBoxLink = () => {
+  if (import.meta.env.DEV) {
+    return '/';
+  }
+  return createHomeLink() + '/ui/Messagebox/';
+};
+
 /* Used for redirect from logo in header */
 export const createHomeLink = () => {
   // There is no landing page for Altinn locally, so returning to homepage in app makes sense here
