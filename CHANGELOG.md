@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.57.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.56.0...v1.57.0) (2025-08-25)
+
+
+### Features
+
+* add about page ([#2550](https://github.com/Altinn/dialogporten-frontend/issues/2550)) ([5be9889](https://github.com/Altinn/dialogporten-frontend/commit/5be98895ec4562c8f9c4f3f49ac47b78c6bed8ff))
+
+
+### Bug Fixes
+
+* **release-please:** update new version of release please ([#2548](https://github.com/Altinn/dialogporten-frontend/issues/2548)) ([266c83d](https://github.com/Altinn/dialogporten-frontend/commit/266c83d217689745e3f9b90d75e1f9970ffcfb9a))
+
 ## [1.56.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.55.1...v1.56.0) (2025-08-25)
 
 
