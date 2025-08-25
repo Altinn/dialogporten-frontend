@@ -15,7 +15,7 @@ export const AboutPage = () => {
           },
           {
             label: t('altinn.beta.about'),
-            href: PageRoutes.error,
+            href: PageRoutes.about,
           },
         ]}
       />
