@@ -6,6 +6,7 @@ export enum PageRoutes {
   savedSearches = '/saved-searches',
   archive = '/archive',
   bin = '/bin',
+  about = '/about',
   profile = '/profile',
   partiesOverview = '/profile/parties',
   authorize = '/profile/authorize',

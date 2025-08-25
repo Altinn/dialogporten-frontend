@@ -23,7 +23,7 @@ export const ErrorPage = () => {
               href: PageRoutes.inbox,
             },
             {
-              label: t('word.error'),
+              label: t('word.unknown_error'),
               href: PageRoutes.error,
             },
           ]}

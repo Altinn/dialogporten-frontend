@@ -16,6 +16,7 @@ import { Settings } from './pages/Profile/Settings/Settings.tsx';
 import { SavedSearchesPage } from './pages/SavedSearches';
 import { PageRoutes } from './pages/routes.ts';
 import './app.css';
+import { AboutPage } from './pages/About/About.tsx';
 
 function App() {
   const EnableProfilePages = useFeatureFlag(FeatureFlagKeys.EnableProfilePages);
@@ -52,6 +53,7 @@ function App() {
           <Route path={PageRoutes.notifications} element={withErrorBoundary(<Notifications />, 'Notifications')} />
           <Route path={PageRoutes.settings} element={withErrorBoundary(<Settings />, 'Settings')} />
           <Route path={PageRoutes.activities} element={withErrorBoundary(<Activities />, 'Activities')} />
+          <Route path={PageRoutes.about} element={withErrorBoundary(<AboutPage />, 'About')} />
           <Route path={PageRoutes.error} element={<ErrorPage />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Route>
