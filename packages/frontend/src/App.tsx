@@ -1,12 +1,10 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { ErrorResetHandler, withErrorBoundary } from './components/ErrorBoundary/ErrorBoundary.tsx';
 import { ProtectedPageLayout } from './components/PageLayout/PageLayout.tsx';
-import { FeatureFlagKeys } from './featureFlags/FeatureFlags.ts';
-import { useFeatureFlag } from './featureFlags/useFeatureFlag.ts';
+import { FeatureFlagKeys, useFeatureFlag } from './featureFlags';
 import { DialogDetailsPage } from './pages/DialogDetailsPage';
 import { ErrorPage } from './pages/Error/Error.tsx';
 import { Inbox } from './pages/Inbox';
-import { LoggedOut } from './pages/LogoutPage';
 import { FrontChannelLogout } from './pages/LogoutPage/FrontChannelLogout.tsx';
 import { Access } from './pages/Profile/Access/Access.tsx';
 import { Activities } from './pages/Profile/Activities/Activities.tsx';
@@ -57,7 +55,6 @@ function App() {
           <Route path={PageRoutes.error} element={<ErrorPage />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Route>
-        <Route path="/loggedout" element={<LoggedOut />} />
         <Route path="/logout" element={<FrontChannelLogout />} />
       </Routes>
       <ErrorResetHandler />

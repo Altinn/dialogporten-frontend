@@ -37,6 +37,7 @@ const envVariables = z.object({
   ENABLE_GRAPHIQL: z.preprocess(stringToBoolean, z.boolean().default(true)),
   ENABLE_INIT_SESSION_ENDPOINT: z.preprocess(stringToBoolean, z.boolean().default(false)),
   DISABLE_PROFILE: z.preprocess(stringToBoolean, z.boolean().default(false)),
+  LOGOUT_REDIRECT_URI: z.string().default('https://tt02.altinn.no/'),
 });
 
 const env = envVariables.parse(process.env);
@@ -75,6 +76,7 @@ const config = {
   enableGraphiql: env.ENABLE_GRAPHIQL,
   enableInitSessionEndpoint: env.ENABLE_INIT_SESSION_ENDPOINT,
   disableProfile: env.DISABLE_PROFILE,
+  logoutRedirectUri: env.LOGOUT_REDIRECT_URI,
 };
 
 export default config;
