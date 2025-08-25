@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.56.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.55.1...v1.56.0) (2025-08-25)
+
+
+### Features
+
+* Notification settings can now be changed + other improvements ([fe98914](https://github.com/Altinn/dialogporten-frontend/commit/fe98914820db4622281d86e4128aa0c084b73798))
+* remove beta banner ([#2540](https://github.com/Altinn/dialogporten-frontend/issues/2540)) ([c0ac8bd](https://github.com/Altinn/dialogporten-frontend/commit/c0ac8bdccb6f2b5cb6b6b3e1a2a723d4078d98fc))
+
+
+### Bug Fixes
+
+* Redirect end user to Altinn landing page after logout ([#2534](https://github.com/Altinn/dialogporten-frontend/issues/2534)) ([8ddf2b2](https://github.com/Altinn/dialogporten-frontend/commit/8ddf2b2d553f19aeafe67cd8f05e62e98ce7d346))
+
 ## [1.55.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.55.0...v1.55.1) (2025-08-22)
 
 
