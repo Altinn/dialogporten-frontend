@@ -113,8 +113,6 @@
   "inbox.unable_to_load_parties.link": "logg ut",
   "inbox.unable_to_load_parties.title": "Teknisk feil",
   "layout.menu.change_account": "Bytt konto",
-  "menuBar.all_services": "Alle tjenester",
-  "menuBar.chat": "Få hjelp på chat",
   "parties.current_end_user": "Logget inn som {name}",
   "parties.groups.other_accounts": "Andre kontoer",
   "parties.groups.yourself": "Deg selv",

@@ -11,9 +11,7 @@ import {
   HeartIcon,
   InboxFillIcon,
   InformationSquareIcon,
-  MenuGridIcon,
   PadlockUnlockedIcon,
-  PersonChatIcon,
   TrashIcon,
 } from '@navikt/aksel-icons';
 import { useTranslation } from 'react-i18next';
@@ -80,23 +78,11 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
     {
       id: 'all-services',
       groupId: 'global',
-      icon: MenuGridIcon,
-      title: t('menuBar.all_services'),
-      size: 'lg',
+      icon: InformationSquareIcon,
+      title: t('altinn.beta.about'),
+      size: 'md',
       as: createMenuItemComponent({
-        to: 'https://info.altinn.no/skjemaoversikt',
-        isExternal: true,
-      }),
-    },
-    {
-      id: 'chat',
-      groupId: 'global',
-      icon: PersonChatIcon,
-      title: t('menuBar.chat'),
-      size: 'lg',
-      as: createMenuItemComponent({
-        to: 'https://info.altinn.no/hjelp/',
-        isExternal: true,
+        to: PageRoutes.about + pruneSearchQueryParams(currentSearchQuery),
       }),
     },
   ];
@@ -119,7 +105,7 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
         {
           id: '2',
           groupId: '2',
-          icon: { svgElement: DocPencilIcon, theme: 'default' },
+          icon: DocPencilIcon,
           title: t('sidebar.drafts'),
           selected: isRouteSelected(pathname, PageRoutes.drafts, fromView),
           as: createMenuItemComponent({
@@ -129,7 +115,7 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
         {
           id: '3',
           groupId: '2',
-          icon: { svgElement: FileCheckmarkIcon, theme: 'default' },
+          icon: FileCheckmarkIcon,
           title: t('sidebar.sent'),
           selected: isRouteSelected(pathname, PageRoutes.sent, fromView),
           as: createMenuItemComponent({
@@ -139,7 +125,7 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
         {
           id: '4',
           groupId: '3',
-          icon: { svgElement: BookmarkIcon, theme: 'default' },
+          icon: BookmarkIcon,
           title: t('sidebar.saved_searches'),
           selected: isRouteSelected(pathname, PageRoutes.savedSearches, fromView),
           as: createMenuItemComponent({
@@ -149,7 +135,7 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
         {
           id: '5',
           groupId: '4',
-          icon: { svgElement: ArchiveIcon, theme: 'default' },
+          icon: ArchiveIcon,
           title: t('sidebar.archived'),
           selected: isRouteSelected(pathname, PageRoutes.archive, fromView),
           as: createMenuItemComponent({
@@ -159,7 +145,7 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
         {
           id: '6',
           groupId: '4',
-          icon: { svgElement: TrashIcon, theme: 'default' },
+          icon: TrashIcon,
           title: t('sidebar.deleted'),
           selected: isRouteSelected(pathname, PageRoutes.bin, fromView),
           as: createMenuItemComponent({
@@ -172,6 +158,10 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
           size: 'sm',
           icon: InformationSquareIcon,
           title: t('altinn.beta.about'),
+          selected: isRouteSelected(pathname, PageRoutes.about, fromView),
+          as: createMenuItemComponent({
+            to: PageRoutes.about + pruneSearchQueryParams(currentSearchQuery),
+          }),
         },
       ],
     },
