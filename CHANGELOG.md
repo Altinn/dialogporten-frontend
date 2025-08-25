@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.57.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.57.0...v1.57.1) (2025-08-25)
+
+
+### Bug Fixes
+
+* prepare global menu for beta release + couple of fixes to about routing ([#2552](https://github.com/Altinn/dialogporten-frontend/issues/2552)) ([f750821](https://github.com/Altinn/dialogporten-frontend/commit/f75082182cc61b1927a89cec18db0e2d60d29bcb))
+
 ## [1.57.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.56.0...v1.57.0) (2025-08-25)
 
 
