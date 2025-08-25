@@ -170,9 +170,7 @@ export const PageLayout: React.FC = () => {
     footer,
     sidebar: {
       hidden: isErrorState,
-      menu: {
-        items: sidebar,
-      },
+      menu: sidebar,
     },
   };
 

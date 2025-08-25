@@ -1,4 +1,4 @@
-import type { BadgeProps, MenuItemProps } from '@altinn/altinn-components';
+import type { BadgeProps, MenuItemGroups, MenuItemProps } from '@altinn/altinn-components';
 import {
   ArchiveIcon,
   BellIcon,
@@ -10,6 +10,7 @@ import {
   HandshakeIcon,
   HeartIcon,
   InboxFillIcon,
+  InformationSquareIcon,
   MenuGridIcon,
   PadlockUnlockedIcon,
   PersonChatIcon,
@@ -23,7 +24,10 @@ import { PageRoutes } from '../../../pages/routes.ts';
 import { useWindowSize } from '../useWindowSize.tsx';
 
 interface UseGlobalMenuProps {
-  sidebar: MenuItemProps[];
+  sidebar: {
+    items: MenuItemProps[];
+    groups: MenuItemGroups;
+  };
   global: MenuItemProps[];
 }
 
@@ -108,6 +112,9 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
       as: createMenuItemComponent({
         to: PageRoutes.inbox + pruneSearchQueryParams(currentSearchQuery),
       }),
+      badge: {
+        label: t('word.beta'),
+      },
       items: [
         {
           id: '2',
@@ -158,6 +165,13 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
           as: createMenuItemComponent({
             to: PageRoutes.bin + pruneSearchQueryParams(currentSearchQuery),
           }),
+        },
+        {
+          groupId: 'shortcuts',
+          id: 'information',
+          size: 'sm',
+          icon: InformationSquareIcon,
+          title: t('altinn.beta.about'),
         },
       ],
     },
@@ -240,18 +254,29 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
     },
   ];
 
-  const sidebar = pathname.includes(PageRoutes.profile) ? profileSidebar : sidebarInbox;
+  const sidebarItems = pathname.includes(PageRoutes.profile) ? profileSidebar : sidebarInbox;
+  const sidebarGroups = {
+    shortcuts: {
+      title: t('word.shortcuts'),
+    },
+  };
 
   const global: MenuItemProps[] = [
     {
-      ...sidebar[0],
+      ...sidebarItems[0],
       color: selectedProfile,
       /* do not show sub items on viewports bigger than tablet since they are already shown in the sidebar */
-      items: isTabletOrSmaller ? sidebar[0].items : [],
+      items: isTabletOrSmaller ? sidebarItems[0].items : [],
       expanded: isTabletOrSmaller,
     },
     ...linksMenuItems,
   ];
 
-  return { sidebar, global };
+  return {
+    sidebar: {
+      items: sidebarItems,
+      groups: sidebarGroups,
+    },
+    global,
+  };
 };

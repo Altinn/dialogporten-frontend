@@ -31,13 +31,13 @@ test.describe('Date filter, system date set 2024', () => {
       .click();
 
     await expect(page.getByTestId('inbox-toolbar').getByRole('group').getByText('I dag')).toBeVisible();
-    await expect(page.locator('li').filter({ hasText: 'I dag' }).locator('span > span').nth(2)).toHaveText('3');
+    await expect(page.locator('li').filter({ hasText: 'I dag' }).locator('span > span').nth(3)).toHaveText('3');
 
     await expect(page.getByTestId('inbox-toolbar').getByRole('group').getByText('Denne måneden')).toBeVisible();
-    await expect(page.locator('li').filter({ hasText: 'Denne måneden' }).locator('span > span').nth(2)).toHaveText('3');
+    await expect(page.locator('li').filter({ hasText: 'Denne måneden' }).locator('span > span').nth(3)).toHaveText('3');
 
     await expect(page.getByTestId('inbox-toolbar').getByRole('group').getByText('Siste tolv måneder')).toBeVisible();
-    await expect(page.locator('li').filter({ hasText: 'Siste tolv måneder' }).locator('span > span').nth(2)).toHaveText(
+    await expect(page.locator('li').filter({ hasText: 'Siste tolv måneder' }).locator('span > span').nth(3)).toHaveText(
       '9',
     );
 
