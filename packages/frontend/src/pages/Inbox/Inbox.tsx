@@ -206,6 +206,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
           groups={groups}
           sortGroupBy={([aKey], [bKey]) => (groups[bKey]?.orderIndex ?? 0) - (groups[aKey]?.orderIndex ?? 0)}
           isLoading={isLoading}
+          highlightWords={searchMode ? [enteredSearchValue] : undefined}
         />
         {hasNextPage && (
           <DsButton aria-label={t('dialog.aria.fetch_more')} onClick={fetchNextPage} variant="tertiary">

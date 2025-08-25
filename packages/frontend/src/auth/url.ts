@@ -53,11 +53,11 @@ export const createHomeLink = () => {
   }
 
   if (location.host.includes('yt.altinn.cloud')) {
-    return 'https://tt02.altinn.no/';
+    return 'https://tt02.altinn.no';
   }
 
   if (location.host.includes('tt.altinn.no')) {
-    return 'https://tt02.altinn.no/';
+    return 'https://tt02.altinn.no';
   }
-  return 'https://altinn.no/';
+  return 'https://altinn.no';
 };

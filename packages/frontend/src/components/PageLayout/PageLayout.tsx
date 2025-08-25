@@ -22,7 +22,6 @@ import { getSearchStringFromQueryParams } from '../../pages/Inbox/queryParams.ts
 import { PageRoutes } from '../../pages/routes.ts';
 import { useProfile } from '../../profile';
 import { useGlobalState } from '../../useGlobalState.ts';
-import { BetaBanner } from '../BetaBanner/BetaBanner';
 import { useAuth } from '../Login/AuthContext.tsx';
 import { useAccounts } from './Accounts/useAccounts.tsx';
 import { useFooter } from './Footer';
@@ -179,7 +178,6 @@ export const PageLayout: React.FC = () => {
 
   return (
     <>
-      <BetaBanner />
       <Layout {...layoutProps}>
         <Outlet />
         <Snackbar />
