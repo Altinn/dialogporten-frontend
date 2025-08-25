@@ -188,7 +188,7 @@ var containerAppEnvVars = concat(
     {
       name: 'OCP_APIM_SUBSCRIPTION_KEY'
       value: ocPApimSubscriptionKey
-    },
+    }
     {
         name: 'LOGOUT_REDIRECT_URI'
         value: logoutRedirectUri
