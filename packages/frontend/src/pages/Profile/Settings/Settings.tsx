@@ -20,9 +20,9 @@ import {
 import { t } from 'i18next';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useProfile } from '../../../profile';
-import { buildAddressString } from '../../../profile/buildAddressString';
+import { useProfile } from '..';
 import { PageRoutes } from '../../routes';
+import { buildAddressString } from '../buildAddressString';
 
 export const Settings = () => {
   const { user } = useProfile();

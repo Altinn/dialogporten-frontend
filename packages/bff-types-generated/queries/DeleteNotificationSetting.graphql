@@ -1,0 +1,6 @@
+mutation DeleteNotificationSetting($partyUuid: String!) {
+  deleteNotificationSetting(partyUuid: $partyUuid) {
+    success
+    message
+  }
+}

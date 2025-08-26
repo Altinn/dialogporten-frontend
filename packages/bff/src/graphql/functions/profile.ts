@@ -247,8 +247,7 @@ export const getNotificationsSettings = async (uuid: string, context: Context) =
     console.error('No core profile data found');
     return [];
   }
-  console.info('Core profile data fetched successfully:', coreProfileData);
-  return [coreProfileData];
+  return coreProfileData;
 };
 
 export const updateNotificationsSetting = async (data: NotificationSettingsInputData, context: Context) => {
@@ -288,9 +287,58 @@ export const updateNotificationsSetting = async (data: NotificationSettingsInput
     );
     coreProfileData = response.data;
   } catch (error) {
-    throw new Error('Failed to updating core profile notificationsSettings');
+    if (typeof error === 'object' && error !== null) {
+      const err = error as { status?: number; message?: string };
+      throw new Error(`Failed to update notificationsSettings: ${err.status ?? ''} ${err.message ?? ''}`);
+    }
+    throw new Error('Failed to update notificationsSettings');
   }
-  console.info('Core profile notificationsSettings updating successfully:', coreProfileData);
+  return coreProfileData;
+};
+
+export const deleteNotificationsSetting = async (partyUuid: string, context: Context) => {
+  const { platformExchangeTokenEndpointURL, platformProfileAPI_url } = config;
+  const token = context.session.get('token');
+  if (!token) {
+    console.error('No token found in session');
+    return [];
+  }
+  if (partyUuid) {
+    console.error('No uuid found in data');
+    return [];
+  }
+  const { data: newToken } = await axios.get(platformExchangeTokenEndpointURL, {
+    headers: {
+      Authorization: `Bearer ${token.access_token}`,
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+  });
+  if (!newToken) {
+    console.error('No new token received');
+    return [];
+  }
+  let coreProfileData = [] as unknown[];
+  try {
+    const response = await axios.delete(
+      `${platformProfileAPI_url}users/current/notificationsettings/parties/${partyUuid}`,
+      {
+        headers: {
+          Authorization: `Bearer ${newToken}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+      },
+    );
+    coreProfileData = response.data;
+  } catch (error) {
+    if (typeof error === 'object' && error !== null) {
+      const err = error as { status?: number; message?: string };
+      throw new Error(`Failed to delete notificationsSettings: ${err.status ?? ''} ${err.message ?? ''}`);
+    }
+    throw new Error('Failed to delete notificationsSettings');
+  }
+
   return coreProfileData;
 };
 
