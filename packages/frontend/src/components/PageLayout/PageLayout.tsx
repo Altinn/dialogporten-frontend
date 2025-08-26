@@ -58,7 +58,7 @@ export const PageLayout: React.FC = () => {
   });
 
   const footer: FooterProps = useFooter();
-  const { global, sidebar } = useGlobalMenu();
+  const { mobileMenu, desktopMenu, sidebarMenu } = useGlobalMenu();
 
   useProfile();
 
@@ -117,9 +117,10 @@ export const PageLayout: React.FC = () => {
         items: autocomplete.items,
       },
     },
-    menu: {
+    mobileMenu,
+    globalMenu: {
       menuLabel: t('word.menu'),
-      items: global,
+      menu: desktopMenu,
       onSelectAccount: (account: string) => onSelectAccount(account, PageRoutes.inbox),
       changeLabel: t('layout.menu.change_account'),
       backLabel: t('word.back'),
@@ -169,7 +170,7 @@ export const PageLayout: React.FC = () => {
     color,
     header: headerProps,
     footer,
-    sidebar,
+    sidebar: { menu: sidebarMenu },
   };
 
   return (
