@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.59.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.58.0...v1.59.0) (2025-08-26)
+
+
+### Features
+
+* Add interactive user onboarding ([#2527](https://github.com/Altinn/dialogporten-frontend/issues/2527)) ([4b7bebb](https://github.com/Altinn/dialogporten-frontend/commit/4b7bebbaf75fe77bf08af68d678fbb7713addf8d))
+
+
+### Bug Fixes
+
+* menu items for global menu ([#2557](https://github.com/Altinn/dialogporten-frontend/issues/2557)) ([fee7e28](https://github.com/Altinn/dialogporten-frontend/commit/fee7e287fe7f747c11c847f2c2965be2f63bd903))
+
 ## [1.58.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.57.1...v1.58.0) (2025-08-26)
 
 
