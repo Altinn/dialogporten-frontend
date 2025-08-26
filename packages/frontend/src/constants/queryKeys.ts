@@ -19,4 +19,5 @@ export const QUERY_KEYS = {
   SET_DELETE_LABEL_LOADING: 'setDeleteLabelLoading',
   SET_UNDO_LABEL_LOADING: 'setUndoLabelLoading',
   ERROR_STATE: 'errorState',
+  SHOW_TOUR: 'showTour',
 };

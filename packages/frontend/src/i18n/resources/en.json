@@ -19,6 +19,8 @@
   "additional_info.title": "More information",
   "altinn.beta.about": "About New Altinn",
   "altinn.beta.inbox": "Inbox Beta",
+  "altinn.beta.exit": "Leave Beta",
+  "altinn.beta.try": "Try Beta",
   "dialog.activity_log.title": "Activity log",
   "dialog.aria.fetch_more": "Fetch and show more dialogs",
   "dialog.context_menu.label": "Context menu for dialog with title {title}",

@@ -1,4 +1,4 @@
-import type { BadgeProps, MenuItemGroups, MenuItemProps } from '@altinn/altinn-components';
+import type { BadgeProps, LayoutProps, MenuItemProps, MenuItemSize } from '@altinn/altinn-components';
 import {
   ArchiveIcon,
   BellIcon,
@@ -11,21 +11,20 @@ import {
   HeartIcon,
   InboxFillIcon,
   InformationSquareIcon,
+  LeaveIcon,
   PadlockUnlockedIcon,
   TrashIcon,
 } from '@navikt/aksel-icons';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import { useParties } from '../../../api/hooks/useParties.ts';
+import { createMessageBoxLink } from '../../../auth';
 import { pruneSearchQueryParams } from '../../../pages/Inbox/queryParams.ts';
 import { PageRoutes } from '../../../pages/routes.ts';
 import { useWindowSize } from '../useWindowSize.tsx';
 
 interface UseGlobalMenuProps {
-  sidebar: {
-    items: MenuItemProps[];
-    groups: MenuItemGroups;
-  };
+  sidebar: LayoutProps['sidebar'];
   global: MenuItemProps[];
 }
 
@@ -74,19 +73,30 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
   const fromView = (state as { fromView?: string })?.fromView;
   const { selectedProfile } = useParties();
   const { isTabletOrSmaller } = useWindowSize();
-  const linksMenuItems: MenuItemProps[] = [
+
+  const inboxShortcuts: MenuItemProps[] = [
     {
-      id: 'all-services',
-      groupId: 'global',
+      id: 'beta-about',
+      groupId: 'shortcuts',
       icon: InformationSquareIcon,
       title: t('altinn.beta.about'),
-      size: 'md',
       as: createMenuItemComponent({
         to: PageRoutes.about + pruneSearchQueryParams(currentSearchQuery),
       }),
+      selected: isRouteSelected(pathname, PageRoutes.about, fromView),
+    },
+    {
+      id: 'beta-exit',
+      groupId: 'shortcuts',
+      icon: LeaveIcon,
+      title: t('altinn.beta.exit'),
+      as: createMenuItemComponent({
+        to: createMessageBoxLink(),
+      }),
     },
   ];
-  const sidebarInbox: MenuItemProps[] = [
+
+  const inboxMenu: MenuItemProps[] = [
     {
       id: '1',
       groupId: 'global',
@@ -152,22 +162,11 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
             to: PageRoutes.bin + pruneSearchQueryParams(currentSearchQuery),
           }),
         },
-        {
-          groupId: 'shortcuts',
-          id: 'information',
-          size: 'sm',
-          icon: InformationSquareIcon,
-          title: t('altinn.beta.about'),
-          selected: isRouteSelected(pathname, PageRoutes.about, fromView),
-          as: createMenuItemComponent({
-            to: PageRoutes.about + pruneSearchQueryParams(currentSearchQuery),
-          }),
-        },
       ],
     },
   ];
 
-  const profileSidebar: MenuItemProps[] = [
+  const profileMenu: MenuItemProps[] = [
     {
       id: '1',
       groupId: 'global',
@@ -243,30 +242,46 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
       ],
     },
   ];
+  const sidebarItems = pathname.includes(PageRoutes.profile) ? profileMenu : [...inboxMenu, ...inboxShortcuts];
 
-  const sidebarItems = pathname.includes(PageRoutes.profile) ? profileSidebar : sidebarInbox;
   const sidebarGroups = {
     shortcuts: {
+      divider: false,
       title: t('word.shortcuts'),
+      defaultItemSize: 'sm' as MenuItemSize,
+    },
+    global: {
+      divider: false,
     },
   };
 
-  const global: MenuItemProps[] = [
-    {
-      ...sidebarItems[0],
-      color: selectedProfile,
-      /* do not show sub items on viewports bigger than tablet since they are already shown in the sidebar */
-      items: isTabletOrSmaller ? sidebarItems[0].items : [],
-      expanded: isTabletOrSmaller,
-    },
-    ...linksMenuItems,
-  ];
-
-  return {
-    sidebar: {
+  const sidebarMenu: LayoutProps['sidebar'] = {
+    menu: {
       items: sidebarItems,
       groups: sidebarGroups,
     },
-    global,
+  };
+
+  const globalMobileMenu: MenuItemProps[] = [
+    {
+      ...sidebarItems[0],
+      color: selectedProfile,
+      items: sidebarItems[0].items,
+    },
+    ...inboxShortcuts,
+  ];
+
+  const globalDesktopMenu: MenuItemProps[] = [
+    {
+      ...sidebarItems[0],
+      color: selectedProfile,
+      items: [],
+    },
+    ...inboxShortcuts,
+  ];
+
+  return {
+    sidebar: sidebarMenu,
+    global: isTabletOrSmaller ? globalMobileMenu : globalDesktopMenu,
   };
 };
