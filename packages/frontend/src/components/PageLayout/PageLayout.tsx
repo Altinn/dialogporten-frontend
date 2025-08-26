@@ -175,9 +175,9 @@ export const PageLayout: React.FC = () => {
   return (
     <>
       <Layout {...layoutProps}>
-        <BetaModal />
         <Outlet />
         <Snackbar />
+        <BetaModal />
       </Layout>
     </>
   );
