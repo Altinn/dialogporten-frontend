@@ -1,4 +1,4 @@
-import type { BadgeProps, LayoutProps, MenuItemProps, MenuItemSize } from '@altinn/altinn-components';
+import type { BadgeProps, MenuItemProps, MenuItemSize, MenuItemTheme, MenuProps } from '@altinn/altinn-components';
 import {
   ArchiveIcon,
   BellIcon,
@@ -17,15 +17,14 @@ import {
 } from '@navikt/aksel-icons';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
-import { useParties } from '../../../api/hooks/useParties.ts';
 import { createMessageBoxLink } from '../../../auth';
 import { pruneSearchQueryParams } from '../../../pages/Inbox/queryParams.ts';
 import { PageRoutes } from '../../../pages/routes.ts';
-import { useWindowSize } from '../useWindowSize.tsx';
 
 interface UseGlobalMenuProps {
-  sidebar: LayoutProps['sidebar'];
-  global: MenuItemProps[];
+  sidebarMenu: MenuProps;
+  mobileMenu: MenuProps;
+  desktopMenu: MenuProps;
 }
 
 export const getAlertBadgeProps = (count: number): BadgeProps | undefined => {
@@ -71,8 +70,6 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
   const { t } = useTranslation();
   const { pathname, search: currentSearchQuery, state } = useLocation();
   const fromView = (state as { fromView?: string })?.fromView;
-  const { selectedProfile } = useParties();
-  const { isTabletOrSmaller } = useWindowSize();
 
   const inboxShortcuts: MenuItemProps[] = [
     {
@@ -96,12 +93,12 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
     },
   ];
 
-  const inboxMenu: MenuItemProps[] = [
+  const inboxItems: MenuItemProps[] = [
     {
       id: '1',
       groupId: 'global',
       size: 'lg',
-      icon: { svgElement: InboxFillIcon, theme: 'base' },
+      icon: InboxFillIcon,
       title: t('sidebar.inbox'),
       selected: isRouteSelected(pathname, PageRoutes.inbox, fromView),
       expanded: true,
@@ -166,7 +163,7 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
     },
   ];
 
-  const profileMenu: MenuItemProps[] = [
+  const profileItems: MenuItemProps[] = [
     {
       id: '1',
       groupId: 'global',
@@ -242,12 +239,13 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
       ],
     },
   ];
-  const sidebarItems = pathname.includes(PageRoutes.profile) ? profileMenu : [...inboxMenu, ...inboxShortcuts];
+  const menuItems = pathname.includes(PageRoutes.profile) ? profileItems : [...inboxItems, ...inboxShortcuts];
 
-  const sidebarGroups = {
+  const menuGroups = {
     shortcuts: {
       divider: false,
       title: t('word.shortcuts'),
+      defaultIconTheme: 'transparent' as MenuItemTheme,
       defaultItemSize: 'sm' as MenuItemSize,
     },
     global: {
@@ -255,33 +253,41 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
     },
   };
 
-  const sidebarMenu: LayoutProps['sidebar'] = {
-    menu: {
-      items: sidebarItems,
-      groups: sidebarGroups,
+  const menu: MenuProps = {
+    items: menuItems,
+    groups: menuGroups,
+  };
+
+  const sidebarMenu: MenuProps = {
+    ...menu,
+    defaultIconTheme: 'default',
+    items: menu.items.map((item, index) => ({
+      ...item,
+      iconTheme: index === 0 ? 'base' : item.iconTheme,
+    })),
+  };
+
+  const mobileMenu: MenuProps = {
+    ...menu,
+    defaultIconTheme: 'tinted',
+  };
+
+  const desktopMenu: MenuProps = {
+    ...mobileMenu,
+    items: [{ ...mobileMenu.items[0], expanded: false, items: [] }, ...mobileMenu.items.slice(1)],
+    groups: {
+      ...mobileMenu.groups,
+      shortcuts: {
+        ...mobileMenu.groups?.shortcuts,
+        divider: true,
+        title: undefined,
+      },
     },
   };
 
-  const globalMobileMenu: MenuItemProps[] = [
-    {
-      ...sidebarItems[0],
-      color: selectedProfile,
-      items: sidebarItems[0].items,
-    },
-    ...inboxShortcuts,
-  ];
-
-  const globalDesktopMenu: MenuItemProps[] = [
-    {
-      ...sidebarItems[0],
-      color: selectedProfile,
-      items: [],
-    },
-    ...inboxShortcuts,
-  ];
-
   return {
-    sidebar: sidebarMenu,
-    global: isTabletOrSmaller ? globalMobileMenu : globalDesktopMenu,
+    sidebarMenu,
+    mobileMenu,
+    desktopMenu,
   };
 };
