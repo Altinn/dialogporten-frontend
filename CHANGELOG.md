@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.58.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.57.1...v1.58.0) (2025-08-26)
+
+
+### Features
+
+* introduce beta modal ([#2554](https://github.com/Altinn/dialogporten-frontend/issues/2554)) ([67fd187](https://github.com/Altinn/dialogporten-frontend/commit/67fd1877ad2bbae2f21b704600394ba4585f57eb))
+
+
+### Bug Fixes
+
+* floating button was incorrectly placed ([#2556](https://github.com/Altinn/dialogporten-frontend/issues/2556)) ([ed80947](https://github.com/Altinn/dialogporten-frontend/commit/ed809474f6f7576ac096d8a35ff3e2d24c5a37e9))
+
 ## [1.57.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.57.0...v1.57.1) (2025-08-25)
 
 
