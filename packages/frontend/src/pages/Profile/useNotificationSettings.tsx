@@ -1,12 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import type { NotificationSettingsResponse, NotificationsettingsByUuidQuery } from 'bff-types-generated';
-import { getNotificationsettingsByUuid, updateNotificationsetting } from '../api/queries.ts';
-import { QUERY_KEYS } from '../constants/queryKeys.ts';
+import { getNotificationsettingsByUuid, updateNotificationsetting } from '../../api/queries.ts';
+import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 
 export const useNotificationSettings = (partyUuid?: string) => {
   if (!partyUuid) {
     return {
-      notificationSettings: [],
+      notificationSettings: null,
       isLoading: false,
       updateNotificationsetting,
     };
@@ -19,7 +19,7 @@ export const useNotificationSettings = (partyUuid?: string) => {
   });
 
   return {
-    notificationSettings: (data?.notificationsettingsByUuid as NotificationSettingsResponse[]) || null,
+    notificationSettings: (data?.notificationsettingsByUuid as NotificationSettingsResponse) || null,
     isLoading,
     updateNotificationsetting,
   };

@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import { createMessageBoxLink } from '../../../auth';
 import { pruneSearchQueryParams } from '../../../pages/Inbox/queryParams.ts';
+import { useProfile } from '../../../pages/Profile/useProfile.tsx';
 import { PageRoutes } from '../../../pages/routes.ts';
 
 interface UseGlobalMenuProps {
@@ -70,6 +71,7 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
   const { t } = useTranslation();
   const { pathname, search: currentSearchQuery, state } = useLocation();
   const fromView = (state as { fromView?: string })?.fromView;
+  const { user, isLoading } = useProfile();
 
   const inboxShortcuts: MenuItemProps[] = [
     {
@@ -168,7 +170,9 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
       id: '1',
       groupId: 'global',
       size: 'lg',
-      icon: { svgElement: InboxFillIcon, theme: 'base' },
+      icon: {
+        name: isLoading ? '' : user?.party?.name || '',
+      },
       title: t('sidebar.profile'),
       selected: isRouteSelected(pathname, PageRoutes.profile, fromView),
       expanded: true,

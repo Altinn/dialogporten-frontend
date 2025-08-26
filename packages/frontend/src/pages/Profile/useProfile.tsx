@@ -8,8 +8,8 @@ import {
   deleteFavoriteParty as deleteFavoritePartyRaw,
   getNotificationsettingsByUuid,
   profile,
-} from '../api/queries.ts';
-import { QUERY_KEYS } from '../constants/queryKeys.ts';
+} from '../../api/queries.ts';
+import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 
 export const useProfile = () => {
   const { data, isLoading } = useQuery<ProfileQuery>({

@@ -3,6 +3,7 @@ import {
   addFavoriteParty,
   addFavoritePartyToGroup,
   deleteFavoriteParty,
+  deleteNotificationsSetting,
   getOrCreateProfile,
   updateLanguage,
   updateNotificationsSetting,
@@ -144,6 +145,27 @@ export const UpdateNotificationSetting = extendType({
           return { success: true, message: 'NotificationSetting updated successfully' };
         } catch (error) {
           console.error('Failed to update NotificationSetting:', error);
+          return error;
+        }
+      },
+    });
+  },
+});
+
+export const DeleteNotificationSetting = extendType({
+  type: 'Mutation',
+  definition(t) {
+    t.field('deleteNotificationSetting', {
+      type: Response,
+      args: {
+        partyUuid: stringArg(),
+      },
+      resolve: async (_, { partyUuid }, ctx) => {
+        try {
+          await deleteNotificationsSetting(partyUuid, ctx);
+          return { success: true, message: 'NotificationSetting deleted successfully' };
+        } catch (error) {
+          console.error('Failed to delete NotificationSetting:', error);
           return error;
         }
       },

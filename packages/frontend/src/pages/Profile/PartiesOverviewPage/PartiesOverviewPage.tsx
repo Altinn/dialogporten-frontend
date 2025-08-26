@@ -12,9 +12,9 @@ import type { PartyFieldsFragment } from 'bff-types-generated';
 import React from 'react';
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useProfile } from '..';
 import { useParties } from '../../../api/hooks/useParties';
 import { FeatureFlagKeys, useFeatureFlag } from '../../../featureFlags';
-import { useProfile } from '../../../profile';
 import { AddToGroupDialog } from './AddToGroupDialog';
 import styles from './partiesOverviewPage.module.css';
 import { getBreadcrumbs, partyFieldFragmentToAccountListItem } from './partyFieldToAccountList';
@@ -35,11 +35,11 @@ export const PartiesOverviewPage = () => {
   const { groups, user, addFavoriteParty, deleteFavoriteParty, favoritesGroup } = useProfile();
   const navigate = useNavigate();
   const addGroupDialogRef = useRef<HTMLDialogElement | null>(null);
-  const endUserName = `${user?.party?.person?.firstName || ''} ${user?.party?.person?.lastName}`;
+  const endUserName = user?.party?.name || '';
   const { parties: normalParties, isLoading: isLoadingParties, deletedParties } = useParties();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
-  const getPartiesToShow = () => {
+  const getFilteredParties = () => {
     let partiesToShow = [] as PartyFieldsFragment[];
     if (noFiltersSelected) {
       partiesToShow = normalParties;
@@ -70,7 +70,7 @@ export const PartiesOverviewPage = () => {
     return expandedItems.includes(id);
   };
 
-  const parties = getPartiesToShow();
+  const parties = getFilteredParties();
   if (isLoadingParties) {
     return (
       <div className={styles.noResults}>
