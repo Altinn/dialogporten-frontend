@@ -232,5 +232,19 @@
   "word.to": "til",
   "word.unknown_error": "Ukjent feil",
   "word.unread": "Ulest",
-  "word.you": "deg"
+  "word.you": "deg",
+  "word.error": "Error",
+  "onboarding.tour.search.title": "Søk",
+  "onboarding.tour.search.description": "Vi bygger en forbedret søkefunksjon som skal gjøre det lettere å finne det du trenger.",
+  "onboarding.tour.filter.title": "Filter",
+  "onboarding.tour.filter.description": "Med den nye filterfunksjonen kan du selv velge hva som vises – og få bedre oversikt.",
+  "onboarding.tour.inbox.title": "Innboks",
+  "onboarding.tour.inbox.description": "Vi har begynt å bygge ut innboksen med flere muligheter for å organisere meldingene dine.",
+  "onboarding.tour.messages.title": "Meldinger",
+  "onboarding.tour.messages.description": "Fremover vil meldinger inneholde flere nyttige detaljer, slik at de blir enklere å følge opp.",
+  "onboarding.tour.menu_options.title": "Menyvalg",
+  "onboarding.tour.menu_options.description": "Du finner handlinger i små menyer der du trenger dem",
+  "onboarding.previous": "Tilbake",
+  "onboarding.next": "Neste",
+  "onboarding.finish": "Ferdig"
 }

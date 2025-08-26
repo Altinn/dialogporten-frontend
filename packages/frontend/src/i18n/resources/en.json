@@ -232,5 +232,19 @@
   "word.to": "to",
   "word.unknown_error": "Uknown Error",
   "word.unread": "Unread",
-  "word.you": "you"
+  "word.you": "you",
+  "word.error": "Error",
+  "onboarding.tour.search.title": "Search",
+  "onboarding.tour.search.description": "We are building an improved search function to make it easier to find what you need.",
+  "onboarding.tour.filter.title": "Filter",
+  "onboarding.tour.filter.description": "With the new filter function, you can choose what is displayed – and get a better overview.",
+  "onboarding.tour.inbox.title": "Inbox",
+  "onboarding.tour.inbox.description": "We have started to expand the inbox with more opportunities to organize your messages.",
+  "onboarding.tour.messages.title": "Messages",
+  "onboarding.tour.messages.description": "In the future, messages will contain more useful details to make them easier to follow up on.",
+  "onboarding.tour.menu_options.title": "Menu options",
+  "onboarding.tour.menu_options.description": "You can find actions in small menus where you need them",
+  "onboarding.previous": "Previous",
+  "onboarding.next": "Next",
+  "onboarding.finish": "Finish"
 }

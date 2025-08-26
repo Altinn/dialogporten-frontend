@@ -18,7 +18,7 @@ export const BetaModal = () => {
   const isMock = searchParams.get('mock') === 'true';
   const isFirstTime = localStorage.getItem(betaKey) === null;
   const [isOpen, setIsOpen] = useState<boolean>(isFirstTime);
-  const [_, setShowTour] = useGlobalState<boolean>(QUERY_KEYS.SHOW_TOUR, isFirstTime);
+  const [_, setShowTour] = useGlobalState<boolean>(QUERY_KEYS.SHOW_TOUR, false);
 
   const onTryBeta = () => {
     localStorage.setItem(betaKey, 'true');
