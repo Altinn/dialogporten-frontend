@@ -71,7 +71,7 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
   const { t } = useTranslation();
   const { pathname, search: currentSearchQuery, state } = useLocation();
   const fromView = (state as { fromView?: string })?.fromView;
-  const { user, isLoading } = useProfile();
+  const { user } = useProfile();
 
   const inboxShortcuts: MenuItemProps[] = [
     {
@@ -171,7 +171,7 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
       groupId: 'global',
       size: 'lg',
       icon: {
-        name: isLoading ? '' : user?.party?.name || '',
+        name: user?.party?.name || '',
       },
       title: t('sidebar.profile'),
       selected: isRouteSelected(pathname, PageRoutes.profile, fromView),

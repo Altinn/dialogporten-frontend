@@ -203,11 +203,11 @@ export const getNotificationsSettings = async (uuid: string, context: Context) =
   const token = context.session.get('token');
   if (!token) {
     console.error('No token found in session');
-    return [];
+    return;
   }
   if (!uuid) {
     console.error('No uuid found in session');
-    return [];
+    return;
   }
   const { data: newToken } = await axios.get(platformExchangeTokenEndpointURL, {
     headers: {
@@ -218,7 +218,7 @@ export const getNotificationsSettings = async (uuid: string, context: Context) =
   });
   if (!newToken) {
     console.error('No new token received');
-    return [];
+    return;
   }
   let coreProfileData = [] as unknown[];
   try {
@@ -236,7 +236,7 @@ export const getNotificationsSettings = async (uuid: string, context: Context) =
       // If the error is a 404, return an empty array
       // This will hopefully be changed in Core API to not return 404 when no notifications settings are found
       if (err.status === 404) {
-        return [];
+        return;
       }
     } else {
       console.error('Error fetching core notificationsSettings data:', error);
@@ -245,7 +245,7 @@ export const getNotificationsSettings = async (uuid: string, context: Context) =
   }
   if (!coreProfileData) {
     console.error('No core profile data found');
-    return [];
+    return;
   }
   return coreProfileData;
 };
@@ -255,7 +255,7 @@ export const updateNotificationsSetting = async (data: NotificationSettingsInput
   const token = context.session.get('token');
   if (!token) {
     console.error('No token found in session');
-    return [];
+    return;
   }
   if (!data.partyUuid) {
     console.error('No uuid found in data');
@@ -270,9 +270,9 @@ export const updateNotificationsSetting = async (data: NotificationSettingsInput
   });
   if (!newToken) {
     console.error('No new token received');
-    return [];
+    return;
   }
-  let coreProfileData = [] as unknown[];
+  let coreProfileData = null;
   try {
     const response = await axios.put(
       `${platformProfileAPI_url}users/current/notificationsettings/parties/${data.partyUuid}`,
@@ -301,11 +301,11 @@ export const deleteNotificationsSetting = async (partyUuid: string, context: Con
   const token = context.session.get('token');
   if (!token) {
     console.error('No token found in session');
-    return [];
+    return;
   }
   if (partyUuid) {
     console.error('No uuid found in data');
-    return [];
+    return;
   }
   const { data: newToken } = await axios.get(platformExchangeTokenEndpointURL, {
     headers: {
@@ -316,7 +316,7 @@ export const deleteNotificationsSetting = async (partyUuid: string, context: Con
   });
   if (!newToken) {
     console.error('No new token received');
-    return [];
+    return;
   }
   let coreProfileData = [] as unknown[];
   try {
