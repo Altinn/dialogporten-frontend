@@ -18,7 +18,7 @@ import { createHomeLink } from '../../auth';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { i18n } from '../../i18n/config.ts';
 import { getSearchStringFromQueryParams } from '../../pages/Inbox/queryParams.ts';
-import { useProfile } from '../../pages/Profile/index.ts';
+import { useProfile } from '../../pages/Profile';
 import { PageRoutes } from '../../pages/routes.ts';
 import { useGlobalState } from '../../useGlobalState.ts';
 import { BetaModal } from '../BetaModal';

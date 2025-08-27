@@ -10,9 +10,7 @@ import { useGlobalState } from '../../useGlobalState.ts';
 
 const betaKey = 'arbeidsflate:beta-modal-displayed';
 
-/* TODO: i18n pages when texts are ready */
 export const BetaModal = () => {
-  // Set default to true if this is first time for this user
   const { t } = useTranslation();
   const navigate = useNavigate();
   const searchParams = new URLSearchParams(window.location.search);
@@ -28,34 +26,35 @@ export const BetaModal = () => {
     navigate(PageRoutes.inbox);
   };
 
-  if (isMock) {
-    return null;
-  }
+  if (isMock) return null;
 
   if (isOpen) {
     return (
       <Modal open closedBy="none" variant="default" onClose={onTryBeta}>
         <Typography>
-          <h1>Prøv den nye innboksen</h1>
-          <p>
-            Vi pusser opp innboksen og du får sniktitte på en tidlig versjon! Den er fortsatt under utvikling, så noen
-            meldinger kan mangle. Vi håper likevel du vil prøve.
-          </p>
+          <h1>{t('betaModal.title')}</h1>
+          <p>{t('betaModal.description')}</p>
         </Typography>
         <ButtonGroup>
-          <Button onClick={onTryBeta}>{t('altinn.beta.try')}</Button>
+          <Button onClick={onTryBeta}>{t('betaModal.tryButton')}</Button>
           <Button as="a" href={createMessageBoxLink()} variant="outline">
-            {t('altinn.beta.exit')}
+            {t('betaModal.exitButton')}
           </Button>
         </ButtonGroup>
         <Typography size="sm">
           <Link target="_blank" to={PageRoutes.about} onClick={() => localStorage.setItem(betaKey, 'true')}>
-            Hvorfor oppdaterer vi innboksen?
+            {t('betaModal.learnMore')}
           </Link>
         </Typography>
       </Modal>
     );
   }
 
-  return <FloatingActionButton onClick={() => setIsOpen(true)} icon={InformationSquareIcon} iconAltText="Om Beta" />;
+  return (
+    <FloatingActionButton
+      onClick={() => setIsOpen(true)}
+      icon={InformationSquareIcon}
+      iconAltText={t('betaModal.fabAltText')}
+    />
+  );
 };

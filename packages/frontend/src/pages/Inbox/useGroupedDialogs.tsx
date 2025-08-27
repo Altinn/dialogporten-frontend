@@ -11,6 +11,7 @@ import {
 } from '@altinn/altinn-components';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import { Link, type LinkProps } from 'react-router-dom';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
@@ -195,7 +196,12 @@ const useGroupedDialogs = ({
       return {
         groupedDialogs,
         groups: {
-          [viewType]: { title: t(`inbox.heading.title.${viewType}`, { count: items.length }) },
+          [viewType]: {
+            title: t(`inbox.heading.title.${viewType}`, { count: items.length }),
+            description: (
+              <Trans i18nKey={`inbox.heading.description.${viewType}`} components={{ strong: <strong /> }} />
+            ),
+          },
         },
       };
     }
