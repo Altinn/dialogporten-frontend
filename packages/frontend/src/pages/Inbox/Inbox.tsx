@@ -110,6 +110,17 @@ export const Inbox = ({ viewType }: InboxProps) => {
 
   const isLoading = isLoadingParties || isLoadingDialogs;
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: This hook does not specify all of its dependencies
+  useEffect(() => {
+    const scrollToId = location?.state?.scrollToId;
+    const listElToScroll = document.getElementById(scrollToId);
+    if (!isLoading) {
+      if (listElToScroll) {
+        listElToScroll.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }, [isLoading]);
+
   useDynamicTour({
     isLoadingParties,
     isLoadingDialogs,
@@ -153,17 +164,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
       </PageBase>
     );
   }
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: This hook does not specify all of its dependencies
-  useEffect(() => {
-    const scrollToId = location?.state?.scrollToId;
-    const listElToScroll = document.getElementById(scrollToId);
-    if (!isLoading) {
-      if (listElToScroll) {
-        listElToScroll.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    }
-  }, [isLoading]);
 
   return (
     <PageBase margin="page">
