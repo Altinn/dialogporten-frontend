@@ -50,7 +50,7 @@ export const BetaModal = () => {
         </ButtonGroup>
         <Typography size="sm">
           <Link target="_blank" to={PageRoutes.about} onClick={() => localStorage.setItem(betaKey, 'true')}>
-            Hvorfor oppdaterer vi Altinn?
+            Hvorfor oppdaterer vi innboksen?
           </Link>
         </Typography>
       </Modal>
