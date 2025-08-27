@@ -9,7 +9,7 @@ import { FrontChannelLogout } from './pages/LogoutPage/FrontChannelLogout.tsx';
 import { Access } from './pages/Profile/Access/Access.tsx';
 import { Activities } from './pages/Profile/Activities/Activities.tsx';
 import { Authorize } from './pages/Profile/Authorize/Authorize.tsx';
-import { Notifications } from './pages/Profile/Notifications/Notifications.tsx';
+import { NotificationsPage } from './pages/Profile/NotificationsPage/NotificationsPage.tsx';
 import { PartiesOverviewPage } from './pages/Profile/PartiesOverviewPage/PartiesOverviewPage.tsx';
 import { Profile } from './pages/Profile/Profile.tsx';
 import { Settings } from './pages/Profile/Settings/Settings.tsx';
@@ -36,10 +36,14 @@ function App() {
                 path={PageRoutes.partiesOverview}
                 element={withErrorBoundary(<PartiesOverviewPage key="partys" />, 'Parties Overview')}
               />
-              <Route path={PageRoutes.notifications} element={withErrorBoundary(<Notifications />, 'Notifications')} />
+              <Route
+                path={PageRoutes.notifications}
+                element={withErrorBoundary(<NotificationsPage />, 'Notifications')}
+              />
               <Route path={PageRoutes.settings} element={withErrorBoundary(<Settings />, 'Settings')} />
               <Route path={PageRoutes.access} element={withErrorBoundary(<Access />, 'Access')} />
               <Route path={PageRoutes.activities} element={withErrorBoundary(<Activities />, 'Activities')} />
+              <Route path={PageRoutes.authorize} element={withErrorBoundary(<Authorize />, 'Authorize')} />
             </>
           )}
           <Route
@@ -54,7 +58,7 @@ function App() {
           <Route path={PageRoutes.bin} element={withErrorBoundary(<Inbox key="bin" viewType={'bin'} />, 'Bin')} />
           <Route path={PageRoutes.inboxItem} element={withErrorBoundary(<DialogDetailsPage />, 'Inbox Item')} />
           <Route path={PageRoutes.savedSearches} element={withErrorBoundary(<SavedSearchesPage />, 'Saved Searches')} />
-          <Route path={PageRoutes.authorize} element={withErrorBoundary(<Authorize />, 'Authorize')} />
+
           <Route path={PageRoutes.about} element={withErrorBoundary(<AboutPage />, 'About')} />
           <Route path={PageRoutes.error} element={<ErrorPage />} />
           <Route path="*" element={<Navigate to="/" />} />

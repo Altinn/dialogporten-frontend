@@ -1,19 +1,20 @@
-import {
-  type AccountListItemProps,
-  type AccountListItemType,
-  Avatar,
-  type AvatarProps,
-  type AvatarSize,
-  type AvatarType,
-  type BadgeProps,
+import type {
+  AccountListItemProps,
+  AccountListItemType,
+  AvatarSize,
+  AvatarType,
+  BadgeProps,
 } from '@altinn/altinn-components';
-import { ArrowDownRightIcon, HeartFillIcon, HeartIcon, InboxIcon, PlusCircleIcon } from '@navikt/aksel-icons';
+import { HeartFillIcon, HeartIcon, InboxIcon, PlusCircleIcon } from '@navikt/aksel-icons';
 import type { GroupObject, PartyFieldsFragment, User } from 'bff-types-generated';
 import { t } from 'i18next';
 import type { ReactNode } from 'react';
-import { toTitleCase } from '../../../profile';
+import { toTitleCase } from '..';
 import { PageRoutes } from '../../routes';
-import { CompanyDetails, GroupDetails, UserDetails } from './DetailsComponents';
+import { CompanyDetails } from './CompanyDetails';
+import { GroupDetails } from './Groups';
+import { UserDetails } from './UserDetails';
+import { flattenParties, getPartyIcon } from './partyFieldToNotificationsList';
 
 export const urnToOrgNr = (urn: string) => {
   if (!urn) return '';
@@ -48,9 +49,6 @@ function filterGroupsByPartyId(groups: GroupObject[], targetPartyId: string): Gr
   return groups.filter((group) => group.parties?.some((party) => party === targetPartyId) ?? false);
 }
 
-interface PartyFields extends PartyFieldsFragment {
-  isSubParty?: boolean;
-}
 export interface PartyFieldFragmentToAccountListItemProps {
   parties: PartyFieldsFragment[];
   dialogRef: React.RefObject<HTMLDialogElement | null>;
@@ -95,18 +93,7 @@ export const partyFieldFragmentToAccountListItem = ({
     }
   };
 
-  const flattenedParties: PartyFields[] = [];
-  for (const party of parties) {
-    flattenedParties.push(party);
-    if (party.subParties) {
-      for (const subParty of party.subParties) {
-        flattenedParties.push({
-          ...subParty,
-          isSubParty: true,
-        } as PartyFields);
-      }
-    }
-  }
+  const flattenedParties = flattenParties(parties);
 
   const retVal = flattenedParties.map((party) => {
     const favourite = !!favoritesGroup?.parties?.find((p) => p?.includes(party.partyUuid));
@@ -122,35 +109,11 @@ export const partyFieldFragmentToAccountListItem = ({
     } else {
       groupId = 'secondary';
     }
-
-    let icon: AvatarProps | ReactNode = {
-      type: isOrganization ? ('company' as AvatarType) : ('person' as AvatarType),
-      name: party.name,
-      size: 'md' as AvatarSize,
-    };
-
-    if (party.isSubParty) {
-      icon = (
-        <span style={{ position: 'relative' }}>
-          <Avatar name={party.name} type={isOrganization ? ('company' as AvatarType) : ('person' as AvatarType)} />
-          <div
-            data-theme="default"
-            style={{
-              display: 'flex',
-              position: 'absolute',
-              fontSize: '.5em',
-              bottom: 0,
-              right: 0,
-              padding: '.125em',
-              marginBottom: '-.25em',
-              marginRight: '-.5em',
-            }}
-          >
-            <ArrowDownRightIcon style={{ fontSize: '1em' }} aria-label="Subunit" />
-          </div>
-        </span>
-      );
-    }
+    const icon = getPartyIcon({
+      partyName: party.name,
+      partyType: isOrganization ? ('company' as AvatarType) : ('person' as AvatarType),
+      isSubparty: !!party.parentId,
+    });
 
     const contactInfo = party.isCurrentEndUser
       ? {
@@ -186,7 +149,7 @@ export const partyFieldFragmentToAccountListItem = ({
       onClick: () => toggleExpanded(party.partyUuid),
       as: 'button',
       icon,
-      description: `${isOrganization ? 'Org.nr. ' : 'Fødselsnummer: '} ${urnToOrgNr(party.party)}${party.isSubParty ? `, del av ${party.name}` : ''}`,
+      description: `${isOrganization ? 'Org.nr. ' : 'Fødselsnummer: '} ${urnToOrgNr(party.party)}${party.parentId ? `, del av ${party.name}` : ''}`,
     };
     let children: ReactNode = null;
 

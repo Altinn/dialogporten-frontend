@@ -19,7 +19,7 @@ import { type ValueType, getPreferredPropertyByLocale } from '../../i18n/propert
 import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
-import { toTitleCase } from '../../profile';
+import { toTitleCase } from '../../pages/Profile/index.ts';
 import { graphQLSDK } from '../queries.ts';
 import { type ActivityLogEntry, getActivityHistory } from '../utils/activities.tsx';
 import { getSeenByLabel } from '../utils/dialog.ts';

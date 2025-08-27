@@ -1,7 +1,0 @@
-fragment notificationSettingsResponseFields on NotificationSettingsResponse {
-  emailAddress
-  phoneNumber
-  resourceIncludeList
-  userId
-  partyUuid
-}

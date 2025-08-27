@@ -10,7 +10,7 @@ import { type TFunction, t } from 'i18next';
 import { getPreferredPropertyByLocale } from '../../i18n/property.ts';
 import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
 import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
-import { toTitleCase } from '../../profile';
+import { toTitleCase } from '../../pages/Profile/index.ts';
 import type { InboxViewType } from '../hooks/useDialogs.tsx';
 import { getOrganization } from './organizations.ts';
 import { getViewTypes } from './viewType.ts';

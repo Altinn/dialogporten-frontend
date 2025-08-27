@@ -51,16 +51,17 @@ export const Query = objectType({
     });
 
     t.field('notificationsettingsByUuid', {
-      type: list('NotificationSettingsResponse'),
+      type: 'NotificationSettingsResponse',
       args: {
         uuid: stringArg(),
       },
       resolve: async (_source, { uuid }, ctx) => {
         const { disableProfile } = config;
         if (!disableProfile && uuid) {
-          return await getNotificationsSettings(uuid, ctx);
+          const result = await getNotificationsSettings(uuid, ctx);
+          return result || null;
         }
-        return [];
+        return null;
       },
     });
   },
