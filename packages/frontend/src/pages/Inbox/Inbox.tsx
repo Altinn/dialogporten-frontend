@@ -140,6 +140,17 @@ export const Inbox = ({ viewType }: InboxProps) => {
 
   const windowSize = useWindowSize();
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: This hook does not specify all of its dependencies
+  useEffect(() => {
+    const scrollToId = location?.state?.scrollToId;
+    const listElToScroll = document.getElementById(scrollToId);
+    if (!isLoading) {
+      if (listElToScroll) {
+        listElToScroll.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }, [isLoading]);
+
   if (unableToLoadParties) {
     return (
       <PageBase>

@@ -23,6 +23,21 @@ const plugin: FastifyPluginAsync = async (fastify) => {
     });
 
     return response.data;
+    return {
+      errors: [
+        {
+          message: "Cannot read properties of undefined (reading 'access_token')",
+          locations: [
+            {
+              line: 2,
+              column: 3,
+            },
+          ],
+          path: ['parties'],
+        },
+      ],
+      data: null,
+    };
   };
 
   const remoteExecutorSubschema = {

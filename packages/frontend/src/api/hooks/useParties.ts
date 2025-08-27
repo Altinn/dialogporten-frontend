@@ -1,6 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import { useEffect, useMemo } from 'react';
+
+type PartiesResult = {
+  parties: PartyFieldsFragment[];
+};
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import {
@@ -27,11 +31,7 @@ interface UsePartiesOutput {
   allOrganizationsSelected: boolean;
   selectedProfile: SelectedPartyType;
   partiesEmptyList: boolean;
-}
-
-interface PartiesResult {
-  parties: PartyFieldsFragment[];
-  deletedParties: PartyFieldsFragment[];
+  error?: unknown;
 }
 
 const stripQueryParamsForParty = (searchParamString: string) => {
@@ -39,16 +39,6 @@ const stripQueryParamsForParty = (searchParamString: string) => {
   params.delete('party');
   params.delete('allParties');
   return params.toString();
-};
-
-const fetchParties = async (): Promise<PartiesResult> => {
-  const response = await graphQLSDK.parties();
-  const normalizedParties = normalizeFlattenParties(response.parties);
-
-  return {
-    parties: normalizedParties.filter((party) => !party.isDeleted),
-    deletedParties: normalizedParties.filter((party) => party.isDeleted),
-  };
 };
 
 const createPartyParams = (searchParamString: string, key: string, value: string): URLSearchParams => {
@@ -76,14 +66,21 @@ export const useParties = (): UsePartiesOutput => {
     }
   };
 
-  const { data, isLoading, isSuccess, isError } = useQuery<PartiesResult>({
+  const { data, isLoading, isSuccess, isError, error } = useQuery<PartiesResult>({
     queryKey: [QUERY_KEYS.PARTIES],
-    queryFn: fetchParties,
+    queryFn: async () => {
+      const res = await graphQLSDK.parties();
+      return { parties: res.parties };
+    },
     staleTime: Number.POSITIVE_INFINITY,
     gcTime: Number.POSITIVE_INFINITY,
     retry: 2,
     retryDelay: 500,
   });
+
+  const normalizedParties = normalizeFlattenParties(data?.parties ?? []);
+  const parties = normalizedParties.filter((party) => !party.isDeleted);
+  const deletedParties = normalizedParties.filter((party) => party.isDeleted);
 
   const handleSetSelectedParties = (parties: PartyFieldsFragment[] | null) => {
     if (parties?.length) {
@@ -109,24 +106,24 @@ export const useParties = (): UsePartiesOutput => {
       const params = createPartyParams(searchParamsString, 'party', encodeURIComponent(partyIds[0]));
       handleChangSearchParams(params);
     }
-    handleSetSelectedParties(data?.parties.filter((party) => partyIds.includes(party.party)) ?? []);
+    handleSetSelectedParties(parties.filter((party) => partyIds.includes(party.party)) ?? []);
   };
 
   const selectAllOrganizations = () => {
     const allOrgParties =
-      data?.parties?.filter((party) => party.party.includes('organization')).map((party) => party.party) ?? [];
+      parties?.filter((party) => party.party.includes('organization')).map((party) => party.party) ?? [];
     setSelectedPartyIds(allOrgParties, true);
   };
 
   const getPartyFromURL = () => {
     const partyFromQuery = getSelectedPartyFromQueryParams(searchParams);
     if (partyFromQuery) {
-      return data?.parties?.find((party) => party.party === partyFromQuery);
+      return parties?.find((party) => party.party === partyFromQuery);
     }
   };
 
   const getEndUserParty = () => {
-    return data?.parties?.find((party) => party.isCurrentEndUser);
+    return parties?.find((party) => party.isCurrentEndUser);
   };
 
   const handlePartySelection = () => {
@@ -160,13 +157,13 @@ export const useParties = (): UsePartiesOutput => {
   // biome-ignore lint/correctness/useExhaustiveDependencies: Full control of what triggers this code is needed
   useEffect(() => {
     if (isSuccess) {
-      if (data?.parties?.length > 0) {
+      if (parties?.length > 0) {
         handlePartySelection();
       } else {
         setPartiesEmptyList(true);
       }
     }
-  }, [isSuccess, data?.parties, location.search]);
+  }, [isSuccess, location.search]);
 
   const isCompanyProfile =
     isCompanyFromParams || allOrganizationsSelected || selectedParties?.[0]?.partyType === 'Organization';
@@ -177,13 +174,14 @@ export const useParties = (): UsePartiesOutput => {
     isLoading,
     isSuccess,
     isError,
+    error,
     selectedParties,
     selectedPartyIds: selectedParties.map((party) => party.party) ?? [],
     setSelectedParties: handleSetSelectedParties,
     setSelectedPartyIds,
-    parties: data?.parties ?? [],
-    currentEndUser: data?.parties.find((party) => party.isCurrentEndUser),
-    deletedParties: data?.deletedParties ?? [],
+    parties: parties ?? [],
+    currentEndUser: parties.find((party) => party.isCurrentEndUser),
+    deletedParties: deletedParties ?? [],
     allOrganizationsSelected,
     selectedProfile,
     partiesEmptyList,
