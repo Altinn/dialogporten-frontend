@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.60.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.59.0...v1.60.0) (2025-08-27)
+
+
+### Features
+
+* **infra:** add maintenance page to application gateway ([#2561](https://github.com/Altinn/dialogporten-frontend/issues/2561)) ([7c4b63b](https://github.com/Altinn/dialogporten-frontend/commit/7c4b63bf804d46b03a844b22e5e290f0960f5627))
+
+
+### Bug Fixes
+
+* **e2e:** close intro modal before clicking dialog ([#2563](https://github.com/Altinn/dialogporten-frontend/issues/2563)) ([5f8f13f](https://github.com/Altinn/dialogporten-frontend/commit/5f8f13fbb1c9db483ba0f3a354356df5effab487))
+
 ## [1.59.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.58.0...v1.59.0) (2025-08-26)
 
 
