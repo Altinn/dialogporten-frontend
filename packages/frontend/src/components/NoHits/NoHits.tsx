@@ -1,11 +1,11 @@
 import { Heading, Section, Typography } from '@altinn/altinn-components';
 
 interface EmptyStateProps {
-  title: string;
+  queryString?: string;
   description?: string;
 }
 
-export const EmptyState = ({ title, description }: EmptyStateProps) => {
+export const NoHits = ({ title, description }: EmptyStateProps) => {
   return (
     <Section spacing={3} margin="section">
       <Heading size="lg">{title}</Heading>

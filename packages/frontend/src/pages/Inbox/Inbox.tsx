@@ -17,7 +17,7 @@ import { useLocation, useSearchParams } from 'react-router-dom';
 import { type InboxViewType, useDialogs } from '../../api/hooks/useDialogs.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { createFiltersURLQuery } from '../../auth';
-import { EmptyState } from '../../components/EmptyState/EmptyState.tsx';
+import { NoHits } from '../../components/NoHits/NoHits.tsx';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
 import { useSearchString } from '../../components/PageLayout/Search/';
 import { useWindowSize } from '../../components/PageLayout/useWindowSize.tsx';
@@ -205,7 +205,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
 
       <Section>
         {dialogsSuccess && !dialogs.length && !isLoading && (
-          <EmptyState
+          <NoHits
             title={searchMode ? t('inbox.no_results.title') : t(`inbox.heading.title.${viewType}`, { count: 0 })}
             description={searchMode ? t('inbox.no_results.description') : t(`inbox.heading.description.${viewType}`)}
           />
