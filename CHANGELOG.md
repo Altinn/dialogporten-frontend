@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.61.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.61.1...v1.61.2) (2025-08-27)
+
+
+### Bug Fixes
+
+* **text:** update About page with new text ([#2577](https://github.com/Altinn/dialogporten-frontend/issues/2577)) ([0a01eb1](https://github.com/Altinn/dialogporten-frontend/commit/0a01eb1b694ca164e35199d338f150be859b7265))
+
 ## [1.61.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.61.0...v1.61.1) (2025-08-27)
 
 
