@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.61.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.60.0...v1.61.0) (2025-08-27)
+
+
+### Features
+
+* Hiding profile pages in prod env ([68a92b7](https://github.com/Altinn/dialogporten-frontend/commit/68a92b78b882e6f050f2e66b920bfea364cede1f))
+* remove counting and unread badge for accounts ([#2572](https://github.com/Altinn/dialogporten-frontend/issues/2572)) ([6a2faab](https://github.com/Altinn/dialogporten-frontend/commit/6a2faaba8891f3c4b051aa218cac75d9a5eb5a90))
+
+
+### Bug Fixes
+
+* Improve logic for welcome modal and onboarding ([#2571](https://github.com/Altinn/dialogporten-frontend/issues/2571)) ([839744d](https://github.com/Altinn/dialogporten-frontend/commit/839744d07bedf1caac092ebb781d1449f894caeb))
+
 ## [1.60.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.59.0...v1.60.0) (2025-08-27)
 
 
