@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.61.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.61.0...v1.61.1) (2025-08-27)
+
+
+### Bug Fixes
+
+* add whitelisted IPs to infra dispatch ([#2575](https://github.com/Altinn/dialogporten-frontend/issues/2575)) ([f37df12](https://github.com/Altinn/dialogporten-frontend/commit/f37df12d244ac8ad7440dd63c1142021de4ccf34))
+
 ## [1.61.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.60.0...v1.61.0) (2025-08-27)
 
 
