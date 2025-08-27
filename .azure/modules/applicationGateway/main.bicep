@@ -16,6 +16,9 @@ param appInsightWorkspaceName string
 @description('The tags to apply to the resources')
 param tags object
 
+@description('Enable maintenance mode to redirect all traffic to maintenance page')
+param enableMaintenancePage bool = false
+
 @export()
 type Configuration = {
   sku: {
@@ -161,11 +164,56 @@ var frontendGatewayBackend = {
   probe: frontendProbe
 }
 
+var maintenancePool = {
+  name: '${gatewayName}-maintenancePool'
+  properties: {
+    backendAddresses: [
+      {
+        fqdn: 'dialogportentemp.z1.web${environment().suffixes.storage}'
+      }
+    ]
+  }
+}
+
+var maintenanceProbe = {
+  name: '${gatewayName}-maintenancePool-probe'
+  properties: {
+    host: 'dialogportentemp.z1.web${environment().suffixes.storage}'
+    protocol: 'Https'
+    path: '/'
+    interval: 30
+    timeout: 30
+    unhealthyThreshold: 3
+    pickHostNameFromBackendSettings: false
+  }
+}
+
+var maintenanceHttpSettings = {
+  name: '${gatewayName}-maintenancePool-backendHttpSettings'
+  properties: {
+    port: 443
+    protocol: 'Https'
+    cookieBasedAffinity: 'Disabled'
+    pickHostNameFromBackendAddress: false
+    hostName: 'dialogportentemp.z1.web${environment().suffixes.storage}'
+    requestTimeout: 600
+    probe: {
+      id: resourceId('Microsoft.Network/applicationGateways/probes', gatewayName, maintenanceProbe.name)
+    }
+  }
+}
+
+var maintenanceGatewayBackend = {
+  pool: maintenancePool
+  httpSettings: maintenanceHttpSettings
+  probe: maintenanceProbe
+}
+
 resource applicationGateway 'Microsoft.Network/applicationGateways@2024-01-01' = {
   name: gatewayName
   location: location
   properties: {
-    autoscaleConfiguration: configuration.autoscaleConfiguration
+    autoscaleConfiguration: configuration.?autoscaleConfiguration
     enableHttp2: true
     sku: configuration.sku
     gatewayIPConfigurations: [
@@ -318,14 +366,17 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2024-01-01' =
     backendAddressPools: [
       bffGatewayBackend.pool
       frontendGatewayBackend.pool
+      maintenanceGatewayBackend.pool
     ]
     backendHttpSettingsCollection: [
       bffGatewayBackend.httpSettings
       frontendGatewayBackend.httpSettings
+      maintenanceGatewayBackend.httpSettings
     ]
     probes: [
       bffGatewayBackend.probe
       frontendGatewayBackend.probe
+      maintenanceGatewayBackend.probe
     ]
     urlPathMaps: [
       {
@@ -335,17 +386,17 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2024-01-01' =
             id: resourceId(
               'Microsoft.Network/applicationGateways/backendAddressPools',
               gatewayName,
-              frontendGatewayBackend.pool.name
+              enableMaintenancePage ? maintenanceGatewayBackend.pool.name : frontendGatewayBackend.pool.name
             )
           }
           defaultBackendHttpSettings: {
             id: resourceId(
               'Microsoft.Network/applicationGateways/backendHttpSettingsCollection',
               gatewayName,
-              frontendGatewayBackend.httpSettings.name
+              enableMaintenancePage ? maintenanceGatewayBackend.httpSettings.name : frontendGatewayBackend.httpSettings.name
             )
           }
-          pathRules: [
+          pathRules: enableMaintenancePage ? [] : [
             {
               name: bffGatewayBackend.pool.name
               properties: {

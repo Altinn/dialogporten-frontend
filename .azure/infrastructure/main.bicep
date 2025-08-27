@@ -47,6 +47,9 @@ param applicationGatewayConfiguration ApplicationGatewayConfiguration
 @description('Optional list of IP addresses/ranges to whitelist for incoming traffic')
 param applicationGatewayWhitelistedIps array = []
 
+@description('Enable maintenance mode to redirect all traffic to maintenance page')
+param enableMaintenancePage bool = false
+
 // PostgreSQL configuration parameters
 import { Sku as PostgreSQLSku } from '../modules/postgreSql/create.bicep'
 import { StorageConfiguration as PostgreSQLStorageConfiguration } from '../modules/postgreSql/create.bicep'
@@ -202,6 +205,7 @@ module applicationGateway '../modules/applicationGateway/main.bicep' = {
     subnetId: vnet.outputs.applicationGatewaySubnetId
     configuration: applicationGatewayConfiguration
     appInsightWorkspaceName: appInsights.outputs.appInsightsWorkspaceName
+    enableMaintenancePage: enableMaintenancePage
     tags: tags
   }
 }
