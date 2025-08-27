@@ -2,7 +2,7 @@ import { Button, ButtonGroup, FloatingActionButton, Modal, Typography } from '@a
 import { InformationSquareIcon } from '@navikt/aksel-icons';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { createMessageBoxLink } from '../../auth';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { PageRoutes } from '../../pages/routes.ts';
@@ -14,6 +14,7 @@ const betaKey = 'arbeidsflate:beta-modal-displayed';
 export const BetaModal = () => {
   // Set default to true if this is first time for this user
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const searchParams = new URLSearchParams(window.location.search);
   const isMock = searchParams.get('mock') === 'true';
   const isFirstTime = localStorage.getItem(betaKey) === null;
@@ -24,6 +25,7 @@ export const BetaModal = () => {
     localStorage.setItem(betaKey, 'true');
     setIsOpen(false);
     setShowTour(true);
+    navigate(PageRoutes.inbox);
   };
 
   if (isMock) {
@@ -47,7 +49,7 @@ export const BetaModal = () => {
           </Button>
         </ButtonGroup>
         <Typography size="sm">
-          <Link target="_blank" to={PageRoutes.about}>
+          <Link target="_blank" to={PageRoutes.about} onClick={() => localStorage.setItem(betaKey, 'true')}>
             Hvorfor oppdaterer vi Altinn?
           </Link>
         </Typography>
