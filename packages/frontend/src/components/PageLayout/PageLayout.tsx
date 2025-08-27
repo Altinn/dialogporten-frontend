@@ -12,7 +12,6 @@ import { useQueryClient } from '@tanstack/react-query';
 import { type ChangeEvent, useEffect, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, Outlet, useLocation, useSearchParams } from 'react-router-dom';
-import { useDialogs } from '../../api/hooks/useDialogs.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { updateLanguage } from '../../api/queries.ts';
 import { createHomeLink } from '../../auth';
@@ -44,17 +43,12 @@ export const PageLayout: React.FC = () => {
   const queryClient = useQueryClient();
   const { searchValue, setSearchValue, onClear } = useSearchString();
   const { selectedProfile, selectedParties, parties, allOrganizationsSelected, currentEndUser } = useParties();
-  const { dialogsByView: allDialogsByView, dialogCountInconclusive: allDialogCountInconclusive } = useDialogs({
-    parties,
-  });
   const { autocomplete } = useAutocomplete({ selectedParties: selectedParties, searchValue });
 
   const { accounts, selectedAccount, accountSearch, accountGroups, onSelectAccount } = useAccounts({
     parties,
     selectedParties,
     allOrganizationsSelected,
-    countableItems: allDialogsByView.inbox,
-    dialogCountInconclusive: allDialogCountInconclusive,
   });
 
   const footer: FooterProps = useFooter();

@@ -3,7 +3,7 @@
 exports[`MainContentReference Component > should render html content 1`] = `
 <DocumentFragment>
   <div
-    class="_typography_cr720_1 mainContentReference"
+    class="_typography_1e4ji_1 mainContentReference"
     data-size="md"
   >
     <h1
@@ -18,7 +18,7 @@ exports[`MainContentReference Component > should render html content 1`] = `
 exports[`MainContentReference Component > should render markdown content 1`] = `
 <DocumentFragment>
   <div
-    class="_typography_cr720_1 mainContentReference"
+    class="_typography_1e4ji_1 mainContentReference"
     data-size="md"
   >
     <h1

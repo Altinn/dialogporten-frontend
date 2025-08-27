@@ -25,26 +25,21 @@ test.describe('LoginPartyContext', () => {
     await page.getByRole('button', { name: 'Test Testesen' }).click();
     const firmaAs = await getToolbarAccountInfo(page, 'Firma AS');
     expect(firmaAs.found).toEqual(true);
-    expect(firmaAs.badgeCount).toEqual(1);
 
     const toolbar = page.getByTestId('inbox-toolbar');
     await expect(toolbar.getByText('Alle virksomheter').locator('visible=true')).toBeVisible();
 
     const TestBedriftAS = await getToolbarAccountInfo(page, 'Testbedrift AS');
     expect(TestBedriftAS.found).toEqual(true);
-    expect(TestBedriftAS.badgeCount).toEqual(1);
 
     const TestBedriftASAvdSub = await getToolbarAccountInfo(page, 'Testbedrift AS Avd Sub');
     expect(TestBedriftASAvdSub.found).toEqual(true);
-    expect(TestBedriftASAvdSub.badgeCount).toEqual(2);
 
     const TestBedriftASAvdOslo = await getToolbarAccountInfo(page, 'Testbedrift AS Avd Oslo');
     expect(TestBedriftASAvdOslo.found).toEqual(true);
-    expect(TestBedriftASAvdOslo.badgeCount).toEqual(1);
 
     const AlleVirksomheter = await getToolbarAccountInfo(page, 'Alle virksomheter');
     expect(AlleVirksomheter.found).toEqual(true);
-    expect(AlleVirksomheter.badgeCount).toEqual(5);
 
     await toolbar.locator('li').locator('visible=true').filter({ hasText: 'Firma AS' }).click();
     await expect(page.getByRole('button', { name: 'Firma AS' })).toBeVisible();
