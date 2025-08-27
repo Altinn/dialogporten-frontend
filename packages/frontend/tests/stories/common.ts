@@ -59,12 +59,5 @@ export async function getToolbarAccountInfo(
     return { found: false };
   }
 
-  const badgeLocator = matchingItem.first().locator('[data-variant="subtle"] span');
-
-  const alertText = await badgeLocator.first().textContent();
-  const badgeText = await badgeLocator.last().textContent();
-  const alertCount = alertText ? Number(alertText.trim()) : undefined;
-  const badgeCount = badgeText ? Number(badgeText.trim()) : undefined;
-
-  return { found: true, alertCount, badgeCount, item: matchingItem };
+  return { found: true, item: matchingItem };
 }

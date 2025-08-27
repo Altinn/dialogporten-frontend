@@ -15,7 +15,6 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { type InboxViewType, useDialogs } from '../../api/hooks/useDialogs.tsx';
-import { useDialogsCount } from '../../api/hooks/useDialogsCount.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { createFiltersURLQuery } from '../../auth';
 import { EmptyState } from '../../components/EmptyState/EmptyState.tsx';
@@ -25,6 +24,7 @@ import { useWindowSize } from '../../components/PageLayout/useWindowSize.tsx';
 import { SaveSearchButton } from '../../components/SavedSearchButton/SaveSearchButton.tsx';
 import { isSavedSearchDisabled } from '../../components/SavedSearchButton/savedSearchEnabled.ts';
 import { SeenByModal } from '../../components/SeenByModal/SeenByModal.tsx';
+import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useDynamicTour } from '../../onboardingTour';
 import { PageRoutes } from '../routes.ts';
 import { FilterCategory, readFiltersFromURLQuery } from './filters.ts';
@@ -69,9 +69,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
     setFilterState(filters);
   };
 
-  /* Used to populate account menu */
-  const { dialogCountsByViewType, dialogCountInconclusive: dialogForAllPartiesCountInconclusive } =
-    useDialogsCount(parties);
   const { enteredSearchValue } = useSearchString();
 
   const validSearchString = enteredSearchValue.length > 2 ? enteredSearchValue : undefined;
@@ -86,7 +83,13 @@ export const Inbox = ({ viewType }: InboxProps) => {
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
-  } = useDialogs({ parties: selectedParties, viewType, filterState, search: validSearchString });
+  } = useDialogs({
+    parties: selectedParties,
+    viewType,
+    filterState,
+    search: validSearchString,
+    queryKey: QUERY_KEYS.DIALOGS,
+  });
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
@@ -99,11 +102,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
     parties,
     selectedParties,
     allOrganizationsSelected,
-    countableItems: dialogCountsByViewType[viewType].map((dialog) => ({
-      party: dialog.party,
-      isSeenByEndUser: dialog.seenSinceLastContentUpdate?.some((s) => s.isCurrentEndUser),
-    })),
-    dialogCountInconclusive: dialogForAllPartiesCountInconclusive,
   });
 
   const { filters, getFilterLabel } = useFilters({ viewType });
