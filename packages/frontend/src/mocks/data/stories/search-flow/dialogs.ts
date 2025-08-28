@@ -14,7 +14,6 @@ const customDialogs: SearchDialogFieldsFragment[] = [
         hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0,  contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-05-23T23:00:00.000Z',
-        updatedAt: '2024-06-23T23:00:00.000Z',
         extendedStatus: null,
         content: {
             title: {
@@ -52,7 +51,6 @@ const customDialogs: SearchDialogFieldsFragment[] = [
         hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0,  contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-01-23T23:00:00.000Z',
-        updatedAt: '2024-02-23T23:00:00.000Z',
         extendedStatus: null,
         content: {
             title: {
@@ -90,7 +88,6 @@ const customDialogs: SearchDialogFieldsFragment[] = [
         hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0,  contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-02-23T23:00:00.000Z',
-        updatedAt: '2024-03-23T23:00:00.000Z',
         extendedStatus: null,
         content: {
             title: {
@@ -128,7 +125,6 @@ const customDialogs: SearchDialogFieldsFragment[] = [
         hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0,  contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-03-23T23:00:00.000Z',
-        updatedAt: '2024-04-23T23:00:00.000Z',
         extendedStatus: null,
         content: {
             title: {
@@ -166,7 +162,6 @@ const customDialogs: SearchDialogFieldsFragment[] = [
         hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0,  contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-05-23T23:00:00.000Z',
-        updatedAt: '2024-06-23T23:00:00.000Z',
         extendedStatus: null,
         content: {
             title: {
@@ -204,7 +199,6 @@ const customDialogs: SearchDialogFieldsFragment[] = [
         hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0,  contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-05-23T23:00:00.000Z',
-        updatedAt: '2024-06-23T23:00:00.000Z',
         extendedStatus: null,
         content: {
             title: {

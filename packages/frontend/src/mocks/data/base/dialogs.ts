@@ -12,7 +12,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0, contentUpdatedAt: "2024-01-15T11:34:00.000Z", guiAttachmentCount: 1,
     status: DialogStatus.RequiresAttention,
     createdAt: '2023-12-23T23:00:00.000Z',
-    updatedAt: '2024-01-15T11:34:00.000Z',
     extendedStatus: null,
     seenSinceLastContentUpdate: [
       {
@@ -85,7 +84,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0, contentUpdatedAt: "2024-02-20T06:33:00.000Z", guiAttachmentCount: 1,
     status: DialogStatus.Awaiting,
     createdAt: '2023-12-15T06:33:00.000Z',
-    updatedAt: '2024-02-20T06:33:00.000Z',
     extendedStatus: null,
     seenSinceLastContentUpdate: [],
     content: {
@@ -122,7 +120,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0, contentUpdatedAt: "2024-03-12T09:15:00.000Z", guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2023-12-12T09:15:00.000Z',
-    updatedAt: '2024-03-12T09:15:00.000Z',
     extendedStatus: null,
     seenSinceLastContentUpdate: [
       {
@@ -170,7 +167,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0, contentUpdatedAt: "2024-04-04T11:45:00.000Z", guiAttachmentCount: 0,
     status: DialogStatus.RequiresAttention,
     createdAt: '2023-12-04T11:45:00.000Z',
-    updatedAt: '2024-04-04T11:45:00.000Z',
     extendedStatus: null,
     seenSinceLastContentUpdate: [],
     content: {
@@ -207,7 +203,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0, contentUpdatedAt: "2024-05-17T09:30:00.000Z", guiAttachmentCount: 0,
     status: DialogStatus.RequiresAttention,
     createdAt: '2023-05-17T09:30:00.000Z',
-    updatedAt: '2024-05-17T09:30:00.000Z',
     extendedStatus: null,
     seenSinceLastContentUpdate: [
       {
@@ -256,7 +251,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0, contentUpdatedAt: "2024-06-18T10:55:00.000Z", guiAttachmentCount: 8,
     status: DialogStatus.NotApplicable,
     createdAt: '2023-04-18T10:55:00.000Z',
-    updatedAt: '2024-06-18T10:55:00.000Z',
     dueAt: '2028-05-04T11:45:00.000Z',
     extendedStatus: null,
     seenSinceLastContentUpdate: [
@@ -305,7 +299,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0, contentUpdatedAt: "2024-07-15T08:45:00.000Z", guiAttachmentCount: 1,
     status: DialogStatus.Completed,
     createdAt: '2023-03-11T07:00:00.000Z',
-    updatedAt: '2024-07-15T08:45:00.000Z',
     extendedStatus: null,
     seenSinceLastContentUpdate: [],
     content: {
@@ -342,7 +335,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0, contentUpdatedAt: "2023-08-13T09:25:00.000Z", guiAttachmentCount: 9,
     status: DialogStatus.NotApplicable,
     createdAt: '2022-04-13T09:25:00.000Z',
-    updatedAt: '2023-08-13T09:25:00.000Z',
     extendedStatus: null,
     seenSinceLastContentUpdate: [
       {
@@ -390,7 +382,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0, contentUpdatedAt: "2022-02-20T08:35:00.000Z", guiAttachmentCount: 1,
     status: DialogStatus.Completed,
     createdAt: '2022-01-05T07:00:00.000Z',
-    updatedAt: '2022-02-20T08:35:00.000Z',
     extendedStatus: null,
     seenSinceLastContentUpdate: [],
     content: {
@@ -427,7 +418,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0, contentUpdatedAt: "2001-04-05T22:00:00.000Z", guiAttachmentCount: 0,
     status: DialogStatus.Draft,
     createdAt: '2001-04-05T22:00:00.000Z',
-    updatedAt: '2001-04-05T22:00:00.000Z',
     extendedStatus: null,
     seenSinceLastContentUpdate: [],
     content: {

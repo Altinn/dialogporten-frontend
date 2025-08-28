@@ -6,7 +6,6 @@ fragment SearchDialogFields on SearchDialog {
   guiAttachmentCount
   status
   createdAt
-  updatedAt
   dueAt
   contentUpdatedAt
   hasUnopenedContent
@@ -76,7 +75,7 @@ fragment DialogByIdFields on Dialog {
   status
   dueAt
   createdAt
-  updatedAt
+  contentUpdatedAt
   extendedStatus
   endUserContext {
     systemLabels
@@ -228,7 +227,7 @@ fragment CountableDialogFields on SearchDialog {
   id
   org
   party
-  updatedAt
+  contentUpdatedAt
   status
   endUserContext {
     systemLabels
