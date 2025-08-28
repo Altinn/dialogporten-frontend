@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.61.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.61.2...v1.61.3) (2025-08-28)
+
+
+### Bug Fixes
+
+* update texts for no results and empty folders ([#2580](https://github.com/Altinn/dialogporten-frontend/issues/2580)) ([9d078aa](https://github.com/Altinn/dialogporten-frontend/commit/9d078aa2f2ff042668eb59036b3038be5356d01e))
+
 ## [1.61.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.61.1...v1.61.2) (2025-08-27)
 
 
