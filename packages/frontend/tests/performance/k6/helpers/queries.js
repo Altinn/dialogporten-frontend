@@ -52,64 +52,8 @@ export const savedSearchesQuery = {
 };
 
 export const profileQuery = {
-  //
-  //query: `query profile {\n  profile {\n    updatedAt\n    language\n    groups {\n      id\n      name\n      isFavorite\n      parties\n    }\n    user {\n      userId\n      userUuid\n      userName\n      email\n      isReserved\n      phoneNumber\n      externalIdentity\n      partyId\n      party {\n        partyId\n        partyUuid\n        partyTypeName\n        orgNumber\n        ssn\n        unitType\n        name\n        isDeleted\n        onlyHierarchyElementWithNoAccess\n        person {\n          ssn\n          name\n          firstName\n          middleName\n          lastName\n          telephoneNumber\n          mobileNumber\n          mailingAddress\n          mailingPostalCode\n          mailingPostalCity\n          addressMunicipalNumber\n          addressMunicipalName\n          addressStreetName\n          addressHouseNumber\n          addressHouseLetter\n          addressPostalCode\n          addressCity\n          dateOfDeath\n        }\n      }\n    }\n  }\n}`
-
   operationName: 'profile',
-  query: `
-    query profile {
-        profile {
-            updatedAt
-            language
-            groups {
-                id
-                name
-                isFavorite
-                parties
-            }
-            user {
-                userId
-                userUuid
-                userName
-                email
-                isReserved
-                phoneNumber
-                externalIdentity
-                partyId
-                party {
-                    partyId
-                    partyUuid
-                    partyTypeName
-                    orgNumber
-                    ssn
-                    unitType
-                    name
-                    isDeleted
-                    onlyHierarchyElementWithNoAccess
-                    person {
-                        ssn
-                        name
-                        firstName
-                        middleName
-                        lastName
-                        telephoneNumber
-                        mobileNumber
-                        mailingAddress
-                        mailingPostalCode
-                        mailingPostalCity
-                        addressMunicipalNumber
-                        addressMunicipalName
-                        addressStreetName
-                        addressHouseNumber
-                        addressHouseLetter
-                        addressPostalCode
-                        addressCity
-                        dateOfDeath
-                    }
-                }
-            }
-        }
-    }`
+  query: `query profile {\n  profile {\n    updatedAt\n    language\n    groups {\n      id\n      name\n      isFavorite\n      parties\n    }\n    user {\n      userId\n      userUuid\n      userName\n      email\n      isReserved\n      phoneNumber\n      externalIdentity\n      partyId\n      party {\n        partyId\n        partyUuid\n        partyTypeName\n        orgNumber\n        ssn\n        unitType\n        name\n        isDeleted\n        onlyHierarchyElementWithNoAccess\n        person {\n          ssn\n          name\n          firstName\n          middleName\n          lastName\n          telephoneNumber\n          mobileNumber\n          mailingAddress\n          mailingPostalCode\n          mailingPostalCity\n          addressMunicipalNumber\n          addressMunicipalName\n          addressStreetName\n          addressHouseNumber\n          addressHouseLetter\n          addressPostalCode\n          addressCity\n          dateOfDeath\n        }\n      }\n    }\n  }\n}`,
 };
 
 export const getAllDialogsForCountQuery = {
