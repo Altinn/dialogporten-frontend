@@ -16,15 +16,18 @@ import { GroupDetails } from './Groups';
 import { UserDetails } from './UserDetails';
 import { flattenParties, getPartyIcon } from './partyFieldToNotificationsList';
 
-export const urnToOrgNr = (urn: string) => {
+export const urnToOrgNr = (urn: string, unformatted = false) => {
   if (!urn) return '';
   const identifier = 'identifier-no:';
   const startIndex = urn.indexOf(identifier) + identifier.length;
-  const orgOrPersonNumber = urn.substring(startIndex);
-  if (urn.includes('person')) {
-    return orgOrPersonNumber.slice(0, 6) + ' ' + orgOrPersonNumber.slice(6);
+  const orgOrPersonNumberUnformatted = urn.substring(startIndex);
+  if (unformatted) {
+    return orgOrPersonNumberUnformatted;
   }
-  return orgOrPersonNumber?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  if (urn.includes('person')) {
+    return orgOrPersonNumberUnformatted.slice(0, 6) + ' ' + orgOrPersonNumberUnformatted.slice(6);
+  }
+  return orgOrPersonNumberUnformatted?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 };
 
 export const getBreadcrumbs = (name: string) => {

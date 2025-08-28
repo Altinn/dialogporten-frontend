@@ -92,6 +92,7 @@ export interface AccountNotificationSettingsProps {
   notificationSettingProp?: NotificationSettingsResponse | null;
   onClose: () => void;
   onSave: (updatedParty?: NotificationAccountsType) => void;
+  partyUuidProp?: string;
 }
 
 export const AccountNotificationSettings = ({
@@ -99,6 +100,7 @@ export const AccountNotificationSettings = ({
   onClose,
   onSave,
   notificationSettingProp,
+  partyUuidProp,
 }: AccountNotificationSettingsProps) => {
   const queryClient = useQueryClient();
   const notificationSetting = party?.notificationSettings || notificationSettingProp;
@@ -109,24 +111,32 @@ export const AccountNotificationSettings = ({
   const [alertEmailAddressState, setAlertEmailAddressState] = useState<string>(alertEmailAddress);
   const [alertPhoneNumberState, setAlertPhoneNumberState] = useState<string>(alertPhoneNumber);
 
-  if (!notificationSetting) {
-    return null;
+  const partyUuid = notificationSetting?.partyUuid || partyUuidProp || '';
+
+  if (!partyUuid) {
+    onClose();
+    return;
   }
 
-  const partyUuid = notificationSetting.partyUuid || '';
-
   const handleUpdateNotificationSettings = async () => {
-    const updatedSettings = {
-      ...notificationSetting,
-      userId: notificationSetting.userId,
-      partyUuid: partyUuid,
-      emailAddress: enableEmailNotifications ? alertEmailAddressState : '',
-      phoneNumber: enablePhoneNotifications ? alertPhoneNumberState : '',
-    };
+    const updatedSettings = notificationSetting?.partyUuid
+      ? {
+          ...notificationSetting,
+          userId: notificationSetting.userId,
+          partyUuid: partyUuid,
+          emailAddress: enableEmailNotifications ? alertEmailAddressState : '',
+          phoneNumber: enablePhoneNotifications ? alertPhoneNumberState : '',
+        }
+      : {
+          partyUuid: partyUuid,
+          emailAddress: enableEmailNotifications ? alertEmailAddressState : '',
+          phoneNumber: enablePhoneNotifications ? alertPhoneNumberState : '',
+        };
 
     try {
       if (enableEmailNotifications || enablePhoneNotifications) {
         await updateNotificationsetting(updatedSettings);
+        void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.NOTIFICATIONSETTINGS] });
         onSave?.({
           ...party,
           notificationSettings: {
@@ -136,6 +146,7 @@ export const AccountNotificationSettings = ({
           },
         } as NotificationAccountsType);
       } else {
+        deleteNotificationsetting(partyUuid);
         void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.NOTIFICATIONSETTINGS] });
         onSave?.({
           ...party,
@@ -146,7 +157,6 @@ export const AccountNotificationSettings = ({
           },
         } as NotificationAccountsType);
       }
-      await deleteNotificationsetting(partyUuid);
     } catch (err) {
       console.error('Failed to update notification settings:', err);
     }

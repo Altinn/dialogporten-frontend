@@ -1,8 +1,14 @@
 import { list, objectType, stringArg } from 'nexus';
 import config from '../../config.ts';
 import { SavedSearchRepository } from '../../db.ts';
-import { getNotificationsSettings, getOrCreateProfile, getUserFromCore } from '../functions/profile.ts';
+import {
+  getNotificationAddressByOrgNumber,
+  getNotificationsSettings,
+  getOrCreateProfile,
+  getUserFromCore,
+} from '../functions/profile.ts';
 import { getOrganizationsFromRedis } from './organization.ts';
+import { OrganizationResponse } from './profile.ts';
 
 export const Query = objectType({
   name: 'Query',
@@ -57,6 +63,21 @@ export const Query = objectType({
         const { disableProfile } = config;
         if (!disableProfile && uuid) {
           const result = await getNotificationsSettings(uuid, ctx);
+          return result || null;
+        }
+        return null;
+      },
+    });
+
+    t.field('getNotificationAddressByOrgNumber', {
+      type: OrganizationResponse,
+      args: {
+        orgnr: stringArg(),
+      },
+      resolve: async (_source, { orgnr }, ctx) => {
+        const { disableProfile } = config;
+        if (!disableProfile && orgnr) {
+          const result = await getNotificationAddressByOrgNumber(orgnr, ctx);
           return result || null;
         }
         return null;

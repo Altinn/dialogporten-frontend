@@ -1,0 +1,11 @@
+query getNotificationAddressByOrgNumber($orgnr: String!) {
+  getNotificationAddressByOrgNumber(orgnr: $orgnr) {
+    organizationNumber
+    notificationAddresses {
+      countryCode
+      email
+      phone
+      notificationAddressId
+    }
+  }
+}

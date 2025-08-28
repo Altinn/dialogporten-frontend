@@ -8,9 +8,8 @@ import {
   SettingsItem,
   SettingsList,
   SettingsSection,
-  Switch,
 } from '@altinn/altinn-components';
-import { BellDotIcon, BellIcon, MobileIcon, PaperplaneIcon } from '@navikt/aksel-icons';
+import { MobileIcon, PaperplaneIcon } from '@navikt/aksel-icons';
 
 import type { NotificationSettingsResponse, PartyFieldsFragment } from 'bff-types-generated';
 import { useEffect, useState } from 'react';
@@ -40,32 +39,8 @@ export const NotificationsPage = () => {
       <Section spacing={6}>
         <SettingsSection>
           <List>
-            <SettingsItem
-              icon={userHasNotificationsActivated ? BellDotIcon : BellIcon}
-              title={
-                userHasNotificationsActivated
-                  ? t('profile.notifications.are_on')
-                  : t('profile.notifications.no_notifications')
-              }
-              controls={
-                <Switch
-                  name="alerts"
-                  checked={userHasNotificationsActivated}
-                  reverse
-                  size="sm"
-                  label={
-                    <span data-size="xs">
-                      {userHasNotificationsActivated
-                        ? t('profile.notifications.turn_off')
-                        : t('profile.notifications.turn_on')}
-                    </span>
-                  }
-                />
-              }
-            />
             {userHasNotificationsActivated && (
               <>
-                <Divider as="li" />
                 <SettingsItem
                   icon={{ svgElement: MobileIcon, theme: 'default' }}
                   title={t('profile.settings.sms_notifications')}
@@ -121,6 +96,7 @@ export const AccountSettings = () => {
         const temp = await Promise.all(
           flattenParties(parties)
             .filter((party) => !party.isCurrentEndUser)
+            .filter((party) => party.partyType === 'Organization')
             .map(async (party) => {
               const data = await getNotificationsettingsByUuid(party.partyUuid);
               const notificationSettings = (data?.notificationsettingsByUuid as NotificationSettingsResponse) || null;
