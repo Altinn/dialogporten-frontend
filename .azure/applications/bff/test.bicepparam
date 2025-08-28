@@ -31,4 +31,8 @@ param additionalEnvironmentVariables = [
     name: 'COOKIE_HTTP_ONLY'
     value: 'false'
   }
+  {
+    name: 'APPLICATIONINSIGHTS_ENABLED'
+    value: 'false'
+  }
 ]
