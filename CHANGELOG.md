@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.61.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.61.4...v1.61.5) (2025-08-28)
+
+
+### Bug Fixes
+
+* Creating SavedSearch now works again ([#2586](https://github.com/Altinn/dialogporten-frontend/issues/2586)) ([cdacf47](https://github.com/Altinn/dialogporten-frontend/commit/cdacf47e665157c96481b11357c640e7c709ca46))
+* Creating SavedSearch now works again ([#2589](https://github.com/Altinn/dialogporten-frontend/issues/2589)) ([d2003a6](https://github.com/Altinn/dialogporten-frontend/commit/d2003a622f023b74d83dd5620cc021a124cf41ab))
+
 ## [1.61.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.61.3...v1.61.4) (2025-08-28)
 
 
