@@ -52,7 +52,7 @@ export async function selectAllEnterprises(page, trend) {
     .catch(() => false);
   await Promise.all([menuElement.click()]);
   const alle = await page.getByText('Alle virksomheter', { timeout: 100, exact: true });
-  for (let i = 0; i < (await alle.count({timeout: 100})); i++) {
+  for (let i = 0; i < (await alle.count({ timeout: 100 })); i++) {
     if (await alle.nth(i).isVisible()) {
       const startTime = new Date();
       await Promise.all([alle.nth(i).click()]);
