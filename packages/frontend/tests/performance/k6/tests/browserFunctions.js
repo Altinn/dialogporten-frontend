@@ -5,10 +5,14 @@
  * @param {object} trend - Trend metric to track the action duration.
  */
 export async function selectSideMenuElement(page, locator, trend) {
-  const menuElement = await page.waitForSelector(locator, { timeout: 2000 }).catch(() => false);
   const startTime = new Date();
-  await Promise.all([menuElement.click()]);
-
+  const elems = await page.getByText(locator, { exact: true });
+  for (let i = 0; i < await elems.count(); i++) {
+    if (await elems.nth(i).isVisible()) {
+      await elems.nth(i).click();
+      break
+    }
+  }
   // Wait for the page to load after clicking the menu element
   await waitForPageLoaded(page);
   // Track the time taken for the action
@@ -43,17 +47,15 @@ export async function selectNextPage(page, trend) {
 }
 
 export async function selectAllEnterprises(page, trend) {
-  // TODO: Is it the only way to get to the "Alle virksomheter" page?
   const menuElement = await page
     .waitForSelector('button[class="_button_1q3ym_1 _button_o1gnh_1"]', { timeout: 100 })
     .catch(() => false);
   await Promise.all([menuElement.click()]);
-  const liElements = page.locator('li');
-  for (let i = 0; i < (await liElements.count()); i++) {
-    const textContent = await liElements.nth(i).textContent();
-    if (textContent.includes('Alle virksomheter')) {
+  const alle = await page.getByText("Alle virksomheter", { timeout: 100, exact: true });
+  for (let i = 0; i < await alle.count({timeout: 100}); i++) {
+    if (await alle.nth(i).isVisible()) {
       const startTime = new Date();
-      await Promise.all([liElements.nth(i).click()]);
+      await Promise.all([alle.nth(i).click()]);
       await waitForPageLoaded(page, 2);
       const endTime = new Date();
       trend.add(endTime - startTime);

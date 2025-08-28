@@ -81,24 +81,24 @@ export async function browserTest(data) {
   try {
     await context.addCookies([testData.cookie]);
     startTime = new Date();
-    await page.goto(afUrl, { waitUntil: 'networkidle' });
+    await page.goto(afUrl+"?mock=true", { waitUntil: 'networkidle' });
 
     // Check if we are on the right page
     const currentUrl = page.url();
     check(currentUrl, {
-      currentUrl: (h) => h === afUrl,
+      currentUrl: (h) => h.includes(afUrl),
     });
 
     endTime = new Date();
     openAF.add(endTime - startTime);
 
     // press every menu item, return to inbox
-    await selectSideMenuElement(page, 'a[href="/drafts"]', loadDrafts);
-    await selectSideMenuElement(page, 'a[href="/sent"]', loadSent);
-    await selectSideMenuElement(page, 'a[href="/saved-searches"]', loadSavedSearches);
-    await selectSideMenuElement(page, 'a[href="/archive"]', loadArchive);
-    await selectSideMenuElement(page, 'a[href="/bin"]', loadBin);
-    await selectSideMenuElement(page, 'aside a[href="/"]', backToInbox);
+    await selectSideMenuElement(page, 'Utkast', loadDrafts);
+    await selectSideMenuElement(page, 'Sendt', loadSent);
+    await selectSideMenuElement(page, 'Lagrede søk', loadSavedSearches);
+    await selectSideMenuElement(page, 'Arkiv', loadArchive);
+    await selectSideMenuElement(page, 'Papirkurv', loadBin);
+    await selectSideMenuElement(page, 'Innboks', backToInbox);
     await selectNextPage(page, loadNextPage);
     await selectAllEnterprises(page, loadAllEnterprises);
   } finally {
