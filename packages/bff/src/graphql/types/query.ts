@@ -11,9 +11,7 @@ export const Query = objectType({
       type: 'Profile',
       resolve: async (_source, _args, ctx) => {
         const { disableProfile } = config;
-        const pid = ctx.session.get('pid');
-        const locale = ctx.session.get('locale');
-        const profile = await getOrCreateProfile(pid, locale, ctx);
+        const profile = await getOrCreateProfile(ctx);
         const user = disableProfile ? [] : await getUserFromCore(ctx);
         const { language, groups, updatedAt } = profile;
         return {
