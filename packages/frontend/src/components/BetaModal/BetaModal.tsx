@@ -7,6 +7,7 @@ import { createMessageBoxLink } from '../../auth';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { PageRoutes } from '../../pages/routes.ts';
 import { useGlobalState } from '../../useGlobalState.ts';
+import styles from './betaModal.module.css';
 
 const betaKey = 'arbeidsflate:beta-modal-displayed';
 
@@ -35,7 +36,7 @@ export const BetaModal = () => {
           <h1>{t('betaModal.title')}</h1>
           <p>{t('betaModal.description')}</p>
         </Typography>
-        <ButtonGroup>
+        <ButtonGroup className={styles.buttons}>
           <Button onClick={onTryBeta}>{t('betaModal.tryButton')}</Button>
           <Button as="a" href={createMessageBoxLink()} variant="outline">
             {t('betaModal.exitButton')}
