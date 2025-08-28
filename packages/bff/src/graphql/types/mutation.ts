@@ -67,7 +67,7 @@ export const CreateSavedSearch = extendType({
       },
       resolve: async (_, { name, data }, ctx) => {
         try {
-          const profile = await getOrCreateProfile(ctx.session.get('pid'), ctx.session.get('locale'), ctx);
+          const profile = await getOrCreateProfile(ctx);
           if (!profile) {
             throw new Error('Profile not found or could not be created');
           }

@@ -5,15 +5,21 @@ import { Group, Party, ProfileTable } from '../../entities.ts';
 import type { NotificationSettingsInputData } from '../types/profile.ts';
 const { platformProfileAPI_url, platformExchangeTokenEndpointURL } = config;
 
+interface Context {
+  session: {
+    get: (key: string) => { access_token: string } | string | undefined;
+  };
+}
+
 export const exchangeToken = async (context: Context): Promise<string> => {
-  const token = context.session.get('token');
+  const token = typeof context.session.get('token') === 'string' ? context.session.get('token') : null;
   if (!token) {
     console.error('No token found in session');
     return '';
   }
   const { data: newToken } = await axios.get(platformExchangeTokenEndpointURL, {
     headers: {
-      Authorization: `Bearer ${token.access_token}`,
+      Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
       Accept: 'application/json',
     },
@@ -21,18 +27,19 @@ export const exchangeToken = async (context: Context): Promise<string> => {
   return newToken;
 };
 
-export const getOrCreateProfile = async (
-  pid: string,
-  sessionLocale: string,
-  context: Context,
-): Promise<ProfileTable> => {
+export const getOrCreateProfile = async (context: Context): Promise<ProfileTable> => {
   const { disableProfile } = config;
+  const pid = typeof context.session.get('pid') === 'string' ? (context.session.get('pid') as string) : '';
+  const sessionLocale =
+    typeof context.session.get('locale') === 'string' ? (context.session.get('locale') as string) : '';
+
   if (!pid) {
     console.error('No pid provided');
     throw new Error('PID is required to get or create a profile');
   }
   const profile = await ProfileRepository!.createQueryBuilder('profile').where('profile.pid = :pid', { pid }).getOne();
-  const groups = disableProfile ? [] : await getFavoritesFromCore(await exchangeToken(context));
+  const exchangedToken = await exchangeToken(context);
+  const groups = disableProfile ? [] : await getFavoritesFromCore(exchangedToken);
 
   if (!profile) {
     const newProfile = new ProfileTable();
@@ -151,12 +158,6 @@ export const deleteFavoriteParty = async (context: Context, partyUuid: string) =
   }
 };
 
-interface Context {
-  session: {
-    get: (key: string) => { access_token: string } | undefined;
-  };
-}
-
 export const getUserFromCore = async (context: Context) => {
   const token = await exchangeToken(context);
   const { platformProfileAPI_url } = config;
@@ -200,22 +201,13 @@ export const getFavoritesFromCore = async (token: string) => {
 
 export const getNotificationsSettings = async (uuid: string, context: Context) => {
   const { platformExchangeTokenEndpointURL, platformProfileAPI_url } = config;
-  const token = context.session.get('token');
-  if (!token) {
-    console.error('No token found in session');
-    return;
-  }
+
   if (!uuid) {
     console.error('No uuid found in session');
     return;
   }
-  const { data: newToken } = await axios.get(platformExchangeTokenEndpointURL, {
-    headers: {
-      Authorization: `Bearer ${token.access_token}`,
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
-  });
+  const newToken = await exchangeToken(context);
+
   if (!newToken) {
     console.error('No new token received');
     return;
@@ -261,13 +253,8 @@ export const updateNotificationsSetting = async (data: NotificationSettingsInput
     console.error('No uuid found in data');
     return [];
   }
-  const { data: newToken } = await axios.get(platformExchangeTokenEndpointURL, {
-    headers: {
-      Authorization: `Bearer ${token.access_token}`,
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
-  });
+  const newToken = await exchangeToken(context);
+
   if (!newToken) {
     console.error('No new token received');
     return;
@@ -307,13 +294,8 @@ export const deleteNotificationsSetting = async (partyUuid: string, context: Con
     console.error('No uuid found in data');
     return;
   }
-  const { data: newToken } = await axios.get(platformExchangeTokenEndpointURL, {
-    headers: {
-      Authorization: `Bearer ${token.access_token}`,
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
-  });
+  const newToken = await exchangeToken(context);
+
   if (!newToken) {
     console.error('No new token received');
     return;
@@ -349,13 +331,11 @@ export const getOrganisationsFromCore = async (pid: string, context: Context) =>
     console.error('No token found in session');
     return [];
   }
-  const { data: newToken } = await axios.get(platformExchangeTokenEndpointURL, {
-    headers: {
-      Authorization: `Bearer ${token.access_token}`,
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
-  });
+  const newToken = await exchangeToken(context);
+  if (!newToken) {
+    console.error('No new token received');
+    return;
+  }
   const organizationNumber = '310412406'; // Replace with actual party UUID if needed
   const { data: coreProfileData } = await axios
     .get(`${platformProfileAPI_url}organizations/${organizationNumber}/notificationaddresses/mandatory`, {
