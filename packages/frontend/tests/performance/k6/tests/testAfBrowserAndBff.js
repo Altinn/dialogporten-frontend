@@ -81,7 +81,7 @@ export async function browserTest(data) {
   try {
     await context.addCookies([testData.cookie]);
     startTime = new Date();
-    await page.goto(afUrl+"?mock=true", { waitUntil: 'networkidle' });
+    await page.goto(afUrl + '?mock=true', { waitUntil: 'networkidle' });
 
     // Check if we are on the right page
     const currentUrl = page.url();

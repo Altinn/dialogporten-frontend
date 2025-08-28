@@ -7,10 +7,10 @@
 export async function selectSideMenuElement(page, locator, trend) {
   const startTime = new Date();
   const elems = await page.getByText(locator, { exact: true });
-  for (let i = 0; i < await elems.count(); i++) {
+  for (let i = 0; i < (await elems.count()); i++) {
     if (await elems.nth(i).isVisible()) {
       await elems.nth(i).click();
-      break
+      break;
     }
   }
   // Wait for the page to load after clicking the menu element
@@ -51,8 +51,8 @@ export async function selectAllEnterprises(page, trend) {
     .waitForSelector('button[class="_button_1q3ym_1 _button_o1gnh_1"]', { timeout: 100 })
     .catch(() => false);
   await Promise.all([menuElement.click()]);
-  const alle = await page.getByText("Alle virksomheter", { timeout: 100, exact: true });
-  for (let i = 0; i < await alle.count({timeout: 100}); i++) {
+  const alle = await page.getByText('Alle virksomheter', { timeout: 100, exact: true });
+  for (let i = 0; i < (await alle.count({timeout: 100})); i++) {
     if (await alle.nth(i).isVisible()) {
       const startTime = new Date();
       await Promise.all([alle.nth(i).click()]);
