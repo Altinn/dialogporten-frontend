@@ -164,7 +164,7 @@ export const PageLayout: React.FC = () => {
     color,
     header: headerProps,
     footer,
-    sidebar: { menu: sidebarMenu },
+    sidebar: { menu: sidebarMenu, hidden: isErrorState },
   };
 
   return (
