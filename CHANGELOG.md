@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.61.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.61.3...v1.61.4) (2025-08-28)
+
+
+### Bug Fixes
+
+* use only contentUpdatedAfter instead of updatedAt for filter and display label ([#2582](https://github.com/Altinn/dialogporten-frontend/issues/2582)) ([35e3903](https://github.com/Altinn/dialogporten-frontend/commit/35e39031ec813de8fc5b8e1410962d6ed1e57fd5))
+
 ## [1.61.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.61.2...v1.61.3) (2025-08-28)
 
 
