@@ -8,7 +8,6 @@ import {
   Section,
   type SeenByLogItemProps,
   Toolbar,
-  Typography,
 } from '@altinn/altinn-components';
 import type { FilterState } from '@altinn/altinn-components/dist/types/lib/components/Toolbar/Toolbar';
 import { useEffect, useState } from 'react';
@@ -197,18 +196,9 @@ export const Inbox = ({ viewType }: InboxProps) => {
           </>
         ) : null}
       </section>
-      {(viewType === 'archive' || viewType === 'bin') && (
-        <Typography size="sm">
-          <p>{t(`inbox.${viewType}.info_message`)}</p>
-        </Typography>
-      )}
-
       <Section>
         {dialogsSuccess && !dialogs.length && !isLoading && (
-          <EmptyState
-            title={searchMode ? t('inbox.no_results.title') : t(`inbox.heading.title.${viewType}`, { count: 0 })}
-            description={searchMode ? t('inbox.no_results.description') : t(`inbox.heading.description.${viewType}`)}
-          />
+          <EmptyState query={enteredSearchValue} viewType={viewType} />
         )}
         <DialogList
           items={groupedDialogs}

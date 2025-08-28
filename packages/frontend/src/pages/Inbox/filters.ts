@@ -362,7 +362,12 @@ export const getFilters = ({
   const statusFilter = createStatusFilter(allDialogs, currentFilters);
   const updatedAtFilter = createUpdatedAtFilter(allDialogs, currentFilters);
 
-  return viewType === 'inbox' ? [senderOrgFilter, statusFilter, updatedAtFilter] : [senderOrgFilter, updatedAtFilter];
+  const filters = [senderOrgFilter, updatedAtFilter];
+  if (viewType === 'inbox') {
+    filters.push(statusFilter);
+  }
+
+  return filters.filter((filter) => filter.options?.length > 0);
 };
 
 export const readFiltersFromURLQuery = (query: string): FilterState => {
