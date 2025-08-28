@@ -273,7 +273,7 @@ export function mapDialogToToInboxItem(
     }),
     transmissions,
     createdAt: item.createdAt,
-    updatedAt: item.updatedAt,
+    updatedAt: item.contentUpdatedAt,
     label: item.endUserContext?.systemLabels,
     viewType: getViewTypes({ status: item.status, systemLabel: item.endUserContext?.systemLabels }, true)?.[0],
     dueAt: item.dueAt,

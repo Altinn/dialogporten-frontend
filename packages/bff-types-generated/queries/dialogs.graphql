@@ -22,8 +22,8 @@ query getAllDialogsForParties(
       systemLabel: $label
       createdAfter: $createdAfter
       createdBefore: $createdBefore
-      updatedAfter: $updatedAfter
-      updatedBefore: $updatedBefore
+      contentUpdatedAfter: $updatedAfter
+      contentUpdatedBefore: $updatedBefore
       limit: $limit
       excludeApiOnly: true
     }
