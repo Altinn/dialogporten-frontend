@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.62.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.61.5...v1.62.0) (2025-08-28)
+
+
+### Features
+
+* Add e2e for saved searches ([#2591](https://github.com/Altinn/dialogporten-frontend/issues/2591)) ([400d965](https://github.com/Altinn/dialogporten-frontend/commit/400d965bb53f9fa0aafcc03539b9a21ec6e943ba))
+
+
+### Bug Fixes
+
+* error page translations ([#2593](https://github.com/Altinn/dialogporten-frontend/issues/2593)) ([e586c96](https://github.com/Altinn/dialogporten-frontend/commit/e586c96a2b258e464092cceaaf37290efc4e0875))
+
 ## [1.61.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.61.4...v1.61.5) (2025-08-28)
 
 
