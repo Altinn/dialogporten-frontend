@@ -44,6 +44,8 @@ export const updateNotificationsetting = (
 ): Promise<UpdateNotificationSettingMutation> => graphQLSDK.UpdateNotificationSetting({ data });
 export const deleteNotificationsetting = (partyUuid: string): Promise<DeleteNotificationSettingMutation> =>
   graphQLSDK.DeleteNotificationSetting({ partyUuid });
+export const getNotificationAddressByOrgNumber = (orgnr: string): Promise<NotificationsettingsByUuidQuery> =>
+  graphQLSDK.getNotificationAddressByOrgNumber({ orgnr });
 export const updateSystemLabel = (
   dialogId: string,
   addLabels: SystemLabel | SystemLabel[],
