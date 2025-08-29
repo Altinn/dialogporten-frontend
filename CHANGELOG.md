@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.63.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.63.2...v1.63.3) (2025-08-29)
+
+
+### Bug Fixes
+
+* **infra:** increase resources for bff ([#2610](https://github.com/Altinn/dialogporten-frontend/issues/2610)) ([30bfdda](https://github.com/Altinn/dialogporten-frontend/commit/30bfdda58fbe6f70c9cb647e134af72e827fcc72))
+
 ## [1.63.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.63.1...v1.63.2) (2025-08-29)
 
 
