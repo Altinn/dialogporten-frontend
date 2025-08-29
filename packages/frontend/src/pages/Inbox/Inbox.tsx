@@ -198,7 +198,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
       </section>
       <Section>
         {dialogsSuccess && !dialogs.length && !isLoading && (
-          <EmptyState query={enteredSearchValue} viewType={viewType} />
+          <EmptyState query={enteredSearchValue} viewType={viewType} searchMode={searchMode} />
         )}
         <DialogList
           items={groupedDialogs}

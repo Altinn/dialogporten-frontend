@@ -1,0 +1,5 @@
+@media (max-width: 420px) {
+  .buttons[data-direction="row"] {
+    flex-direction: column;
+  }
+}
