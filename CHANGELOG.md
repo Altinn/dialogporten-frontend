@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.63.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.63.1...v1.63.2) (2025-08-29)
+
+
+### Bug Fixes
+
+* beta modal texts ([#2603](https://github.com/Altinn/dialogporten-frontend/issues/2603)) ([864d7d0](https://github.com/Altinn/dialogporten-frontend/commit/864d7d0245cf7cee64ad258f82fcd19c691a81d6))
+* changes to contact section for about inbox page ([#2608](https://github.com/Altinn/dialogporten-frontend/issues/2608)) ([1015810](https://github.com/Altinn/dialogporten-frontend/commit/10158104130185df49e7386dbf6e7183eaa4f595))
+* use aktør intead of konto and avgivere consistently ([#2606](https://github.com/Altinn/dialogporten-frontend/issues/2606)) ([1a24794](https://github.com/Altinn/dialogporten-frontend/commit/1a24794fcfbef86373dcacac3e40f490f32c37ae))
+
 ## [1.63.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.63.0...v1.63.1) (2025-08-29)
 
 
