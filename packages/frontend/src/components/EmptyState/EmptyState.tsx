@@ -81,7 +81,6 @@ export const EmptyState = ({ query, viewType, searchMode }: EmptyStateProps) => 
           <p>
             {t('emptyState.sent.descriptionBeforeStrong')}
             <strong>{t('emptyState.sent.descriptionBold')}</strong>
-            {t('emptyState.sent.descriptionAfterStrong')}
           </p>
           <Link to={PageRoutes.about}>{t('emptyState.link.where_are_my_dialogs')}</Link>
         </Typography>
