@@ -7,8 +7,8 @@ export function getOptions(browserTest = 'browserTest', bffTest = 'bffTest') {
   const browser_vus = __ENV.BROWSER_VUS || 1;
   const bff_vus = __ENV.BFF_VUS || 1;
   const duration = __ENV.DURATION || '1m';
-  const breakpoint = __ENV.BREAKPOINT || false;
-  const abort_on_fail = __ENV.ABORT_ON_FAIL || false;
+  const breakpoint = (__ENV.BREAKPOINT ?? 'false') === 'true';
+  const abort_on_fail = (__ENV.abort_on_fail ?? 'false') === 'true';
 
   // Options placeholder
   const options = {

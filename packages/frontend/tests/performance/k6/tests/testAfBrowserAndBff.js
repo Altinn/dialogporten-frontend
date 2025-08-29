@@ -31,6 +31,7 @@ import {
 import { selectAllEnterprises, selectNextPage, selectSideMenuElement } from './browserFunctions.js';
 
 const env = __ENV.ENVIRONMENT || 'yt';
+const randomizeUser = (__ENV.RANDOMIZE ?? 'false') === 'true';
 
 const filenameEndusers = import.meta.resolve(`../testData/usersWithDialogs-${env}.csv`);
 export const endUsers = new SharedArray('endUsers', () => readCsv(filenameEndusers));
@@ -72,7 +73,13 @@ export async function setup() {
  * @param {object} data - Test data for the scenario.
  */
 export async function browserTest(data) {
-  const testData = randomItem(data);
+  var testData;
+  if (randomizeUser) {
+    testData = randomItem(data);
+  } else {
+    testData = data[__ITER % data.length];
+  }
+  console.log(`Using pid ${testData.pid}`);
   const context = await browser.newContext();
   const page = await context.newPage();
   let startTime;
@@ -112,7 +119,13 @@ export async function browserTest(data) {
  * @returns {Array} - An array containing user party information.
  */
 export function bffTest(data) {
-  const testData = randomItem(data);
+  var testData;
+  if (randomizeUser) {
+    testData = randomItem(data);
+  } else {
+    testData = data[__ITER % data.length];
+  };
+  console.log(`BFF Using pid ${testData.pid}`);
   const [parties, allParties] = openAf(testData.pid, testData.cookie);
   selectMenuElements(testData.cookie, parties);
   isAuthenticated(testData.cookie, isAuthenticatedLabel);
