@@ -1,10 +1,11 @@
 {
+  "about.altinn.link": "https://info.altinn.no/nyheter/om-nye-altinn/",
   "about.inbox.intro.link": "den nye plattformen til Altinn.",
   "about.inbox.intro1": "Du ser nå på en tidlig versjon av den nye innboksen i Altinn. På sikt vil den erstatte dagens innboks og vi jobber med å overføre gamle meldinger.",
   "about.inbox.intro2": "Den nye innboksen er en del av ",
   "about.inbox.section.availability.link": "innboksen du kjenner fra før.",
   "about.inbox.section.availability.p1": "Siden Altinn brukes av mange offentlige virksomheter og alt må fungere sammen, rulles endringene ut gradvis. Du kan derfor oppleve at gamle meldinger mangler eller ser annerledes ut i den nye innboksen.",
-  "about.inbox.section.availability.p2": "Alt innhold er ikke overført ennå, og inntil alle tjenesteeiere har tatt i bruk den nye innboksen må du også forholde deg til ",
+  "about.inbox.section.availability.p2": "Alt innhold er ikke overført ennå, og inntil alle virksomheter har tatt i bruk den nye innboksen må du også forholde deg til ",
   "about.inbox.section.availability.title": "Finner jeg alt i den nye innboksen?",
   "about.inbox.section.dialogs.li1": "Er saken ferdig eller krever den handling? Dialoger kan markeres med status som hjelper deg å forstå hva som er viktigst.",
   "about.inbox.section.dialogs.li2": "Hva har skjedd? Hva er nytt, når ble dialogen oppdatert? Hvem har sett dialogen? Mer informasjon gjør det enklere å skille de ulike dialogene fra hverandre",

@@ -25,7 +25,7 @@ export const AboutPage = () => {
         <Typography maxWidth="65ch">
           <p>{t('about.inbox.intro1')}</p>
           <p>
-            {t('about.inbox.intro2')} <a href="/">{t('about.inbox.intro.link')}</a>
+            {t('about.inbox.intro2')} <a href={t('about.altinn.link')}>{t('about.inbox.intro.link')}</a>
           </p>
 
           <h2>{t('about.inbox.section.dialogs.title')}</h2>
