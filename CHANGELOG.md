@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.63.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.63.3...v1.63.4) (2025-08-29)
+
+
+### Bug Fixes
+
+* add links to about the new Altinn ([#2614](https://github.com/Altinn/dialogporten-frontend/issues/2614)) ([576c970](https://github.com/Altinn/dialogporten-frontend/commit/576c970e1daa869fc6b382825b80e14a0bb981ea))
+* change translations for awaiting and not_applicable ([#2615](https://github.com/Altinn/dialogporten-frontend/issues/2615)) ([cebbadc](https://github.com/Altinn/dialogporten-frontend/commit/cebbadc31defcfcc5cb7af49ba05a8f05444a6aa))
+* update texts for folder and use take me back in stead of leave beta as link text ([#2612](https://github.com/Altinn/dialogporten-frontend/issues/2612)) ([ce3e20b](https://github.com/Altinn/dialogporten-frontend/commit/ce3e20bca2b40132e93c797ce95c384454201808))
+
 ## [1.63.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.63.2...v1.63.3) (2025-08-29)
 
 
