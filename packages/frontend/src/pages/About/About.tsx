@@ -52,7 +52,8 @@ export const AboutPage = () => {
 
           <h2>{t('about.inbox.section.feedback.title')}</h2>
           <p>
-            {t('about.inbox.section.feedback.p1')} <a href="mailto:brukerservice@altinn.no">brukerservice@altinn.no</a>
+            {t('about.inbox.section.feedback.p1')}{' '}
+            <a href="mailto:support@altinn.no">{t('about.inbox.section.feedback.email')}</a>
           </p>
         </Typography>
       </Article>
