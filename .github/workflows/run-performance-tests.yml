@@ -113,6 +113,8 @@ jobs:
               -d "${{ inputs.duration }}" \
               -p "${{ inputs.parallelism }}" \
               -e "${{ inputs.environment }}" \
-              -r "${{ inputs.randomizeUser }}"
+              -r "${{ inputs.randomizeUser }}" \
+              -b "${{ inputs.breakpoint }}" \
+              -a "${{ inputs.abortOnFail }}"
 
       
