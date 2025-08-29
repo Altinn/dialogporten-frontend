@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.63.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.63.4...v1.63.5) (2025-08-29)
+
+
+### Bug Fixes
+
+* adjustments to texts in folders ([#2617](https://github.com/Altinn/dialogporten-frontend/issues/2617)) ([6b9878e](https://github.com/Altinn/dialogporten-frontend/commit/6b9878eb12f757771106aa56f72577011e314f67))
+
 ## [1.63.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.63.3...v1.63.4) (2025-08-29)
 
 
