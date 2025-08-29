@@ -7,21 +7,24 @@ import { PageRoutes } from '../../pages/routes.ts';
 interface EmptyStateProps {
   query?: string;
   viewType: InboxViewType;
+  searchMode: boolean;
 }
 
-export const EmptyState = ({ query, viewType }: EmptyStateProps) => {
+export const EmptyState = ({ query, viewType, searchMode }: EmptyStateProps) => {
   const { t } = useTranslation();
 
-  if (query) {
+  if (searchMode) {
     return (
       <Section spacing={3} margin="section">
         <Heading size="lg">{t('emptyState.noHits.title')}</Heading>
         <Typography size="sm">
-          <p>
-            {t('emptyState.noHits.descriptionBeforeQuery')}
-            <strong>{query}</strong>
-            {t('emptyState.noHits.descriptionAfterQuery')}
-          </p>
+          {query && (
+            <p>
+              {t('emptyState.noHits.descriptionBeforeQuery')}
+              <strong>{query}</strong>
+              {t('emptyState.noHits.descriptionAfterQuery')}
+            </p>
+          )}
           <p>
             <strong>{t('emptyState.noHits.improvement')}</strong> {t('emptyState.noHits.suggestionsIntro')}
           </p>

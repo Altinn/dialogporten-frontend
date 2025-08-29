@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.63.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.63.0...v1.63.1) (2025-08-29)
+
+
+### Bug Fixes
+
+* **graphql:** avoid unnecessary tracing of fields without resolvers ([#2604](https://github.com/Altinn/dialogporten-frontend/issues/2604)) ([ea02f45](https://github.com/Altinn/dialogporten-frontend/commit/ea02f450693d12cc70f6f245677c5a26fbee4d84))
+
+## [1.63.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.62.0...v1.63.0) (2025-08-28)
+
+
+### Features
+
+* Implement Organization endpoint from core + bugfixes and enhancements ([a991165](https://github.com/Altinn/dialogporten-frontend/commit/a9911655cd0e3ffa0d17f1b8a88e1ba902deb519))
+
+
+### Bug Fixes
+
+* change html title ([#2598](https://github.com/Altinn/dialogporten-frontend/issues/2598)) ([1b584ff](https://github.com/Altinn/dialogporten-frontend/commit/1b584ff569a672f0ac01eaf47efeab025d82bf53))
+
 ## [1.62.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.61.5...v1.62.0) (2025-08-28)
 
 
