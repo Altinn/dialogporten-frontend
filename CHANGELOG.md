@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.63.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.63.0...v1.63.1) (2025-08-29)
+
+
+### Bug Fixes
+
+* **graphql:** avoid unnecessary tracing of fields without resolvers ([#2604](https://github.com/Altinn/dialogporten-frontend/issues/2604)) ([ea02f45](https://github.com/Altinn/dialogporten-frontend/commit/ea02f450693d12cc70f6f245677c5a26fbee4d84))
+
 ## [1.63.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.62.0...v1.63.0) (2025-08-28)
 
 
