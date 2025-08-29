@@ -60,7 +60,10 @@ const initializeApplicationInsights = () => {
     const instrumentations = [
       new HttpInstrumentation(httpInstrumentationConfig),
       new FastifyInstrumentation(),
-      new GraphQLInstrumentation(),
+      new GraphQLInstrumentation({
+        ignoreTrivialResolveSpans: true,
+        mergeItems: true,
+      }),
       new IORedisInstrumentation(),
     ];
 
