@@ -12,6 +12,8 @@ param tags object
 param secrets { name: string, keyVaultUrl: string, identity: 'System' }[] = []
 @description('The workload profile name to use, defaults to "Consumption"')
 param workloadProfileName string = 'Consumption'
+@description('CPU and memory resources for the container app')
+param resources object?
 
 var healthProbes = empty(probes)
   ? [
@@ -60,6 +62,7 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
           image: image
           env: environmentVariables
           probes: healthProbes
+          resources: resources
         }
       ]
       scale: {
