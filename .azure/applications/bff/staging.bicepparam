@@ -8,6 +8,10 @@ param dialogportenURL = 'https://altinn-tt02-api.azure-api.net/dialogporten/grap
 param oicdUrl = 'test.idporten.no'
 param minReplicas = 2
 param maxReplicas = 3
+param resources = {
+    cpu: 1
+    memory: '2Gi'
+}
 param workloadProfileName = 'Consumption'
 param logoutRedirectUri = 'https://tt02.altinn.no'
 

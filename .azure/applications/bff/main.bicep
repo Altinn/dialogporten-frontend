@@ -15,6 +15,8 @@ param dialogportenURL string
 param oicdUrl string
 param minReplicas int
 param maxReplicas int
+@description('CPU and memory resources for the container app')
+param resources object?
 
 param platformExchangeTokenEndpointUrl string
 param platformProfileApiUrl string
@@ -209,6 +211,7 @@ module containerApp '../../modules/containerApp/main.bicep' = {
     port: port
     minReplicas: minReplicas
     maxReplicas: maxReplicas
+    resources: resources
     tags: tags
     workloadProfileName: workloadProfileName
   }
