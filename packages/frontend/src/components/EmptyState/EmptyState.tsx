@@ -54,9 +54,7 @@ export const EmptyState = ({ query, viewType, searchMode }: EmptyStateProps) => 
       <Section spacing={3} margin="section">
         <Heading size="lg">{t('emptyState.inbox.title')}</Heading>
         <Typography size="sm">
-          <p>
-            <strong>{t('emptyState.inbox.moving')}</strong> {t('emptyState.inbox.description')}
-          </p>
+          <p>{t('emptyState.inbox.description', { br: <br /> })}</p>
           <Link to={PageRoutes.about}>{t('emptyState.link.where_are_my_dialogs')}</Link>
         </Typography>
       </Section>
@@ -68,11 +66,7 @@ export const EmptyState = ({ query, viewType, searchMode }: EmptyStateProps) => 
       <Section spacing={3} margin="section">
         <Heading size="lg">{t('emptyState.drafts.title')}</Heading>
         <Typography size="sm">
-          <p>
-            {t('emptyState.drafts.descriptionBeforeStrong')}
-            <strong>{t('emptyState.drafts.descriptionBold')}</strong>
-            {t('emptyState.drafts.descriptionAfterStrong')}
-          </p>
+          <p>{t('emptyState.drafts.descriptionAfterStrong')}</p>
           <Link to={PageRoutes.about}>{t('emptyState.link.where_are_my_dialogs')}</Link>
         </Typography>
       </Section>
@@ -100,9 +94,7 @@ export const EmptyState = ({ query, viewType, searchMode }: EmptyStateProps) => 
       <Section spacing={3} margin="section">
         <Heading size="lg">{t('emptyState.bin.title')}</Heading>
         <Typography size="sm">
-          <p>
-            <strong>{t('emptyState.bin.descriptionBold')}</strong> {t('emptyState.bin.descriptionAfterBold')}
-          </p>
+          <p>{t('emptyState.bin.descriptionAfterBold')}</p>
           <Link to={PageRoutes.about}>{t('emptyState.link.where_are_my_dialogs')}</Link>
         </Typography>
       </Section>
@@ -114,9 +106,7 @@ export const EmptyState = ({ query, viewType, searchMode }: EmptyStateProps) => 
       <Section spacing={3} margin="section">
         <Heading size="lg">{t('emptyState.archive.title')}</Heading>
         <Typography size="sm">
-          <p>
-            <strong>{t('emptyState.archive.descriptionBold')}</strong> {t('emptyState.archive.descriptionAfterBold')}
-          </p>
+          <p>{t('emptyState.archive.descriptionAfterBold')}</p>
           <Link to={PageRoutes.about}>{t('emptyState.link.where_are_my_dialogs')}</Link>
         </Typography>
       </Section>
