@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.63.6](https://github.com/Altinn/dialogporten-frontend/compare/v1.63.5...v1.63.6) (2025-09-01)
+
+
+### Bug Fixes
+
+* beta modal navigation to onboarding missing ctx ([#2621](https://github.com/Altinn/dialogporten-frontend/issues/2621)) ([1a65565](https://github.com/Altinn/dialogporten-frontend/commit/1a655659cac64ef2a212f16e0e4b393f7eedb400))
+* do not fetch isAuthenticated in background ([#2623](https://github.com/Altinn/dialogporten-frontend/issues/2623)) ([63019be](https://github.com/Altinn/dialogporten-frontend/commit/63019be2e9c2f5d6516dd968dc2a3677daaca9c2))
+
 ## [1.63.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.63.4...v1.63.5) (2025-08-29)
 
 
