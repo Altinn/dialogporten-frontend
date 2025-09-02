@@ -1,5 +1,5 @@
 import { ReactPlugin } from '@microsoft/applicationinsights-react-js';
-import type { ITelemetryPlugin } from '@microsoft/applicationinsights-web';
+import type { ITelemetryItem, ITelemetryPlugin } from '@microsoft/applicationinsights-web';
 import { ApplicationInsights } from '@microsoft/applicationinsights-web';
 import { config } from './config';
 
@@ -30,6 +30,44 @@ if (config.applicationInsightsInstrumentationKey && import.meta.env.PROD) {
     });
     applicationInsights.loadAppInsights();
     console.info('Application Insights initialized successfully');
+
+    applicationInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
+      // Only filter exceptions
+      if (envelope.baseType === 'ExceptionData') {
+        const data = envelope.baseData;
+        const message = data?.message || '';
+        const exceptions = data?.exceptions || [];
+
+        const extensionUrlPattern = /^(chrome|moz|safari|edge|ms-browser)-extension:\/\//i;
+        // Catch all browser extensions
+        if (extensionUrlPattern.test(message)) {
+          return false;
+        }
+
+        // Check all exception details for extension URLs
+        for (const exception of exceptions) {
+          if (exception.stack && extensionUrlPattern.test(exception.stack)) {
+            return false;
+          }
+
+          // Check parsed stack frames
+          if (exception.parsedStack && Array.isArray(exception.parsedStack)) {
+            for (const frame of exception.parsedStack) {
+              if (frame.fileName && extensionUrlPattern.test(frame.fileName)) {
+                return false;
+              }
+            }
+          }
+        }
+
+        // Filter cross-origin errors
+        if (message === 'Script error.' || message === 'Script error') {
+          return false;
+        }
+      }
+
+      return true;
+    });
   } catch (error) {
     console.error('Failed to initialize Application Insights:', error);
     applicationInsights = null;
