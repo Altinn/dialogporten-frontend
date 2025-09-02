@@ -65,8 +65,6 @@
     "web-streams-polyfill": "^3.3.3"
   },
   "msw": {
-    "workerDirectory": [
-      "public"
-    ]
+    "workerDirectory": ["public"]
   }
 }
