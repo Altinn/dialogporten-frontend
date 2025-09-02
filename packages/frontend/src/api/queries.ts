@@ -102,9 +102,6 @@ const responseMiddleware: ResponseMiddleware = (response) => {
       success: success,
       responseCode: responseCode,
     });
-
-    // Log successful tracking in debug mode
-    console.debug(`GraphQL dependency tracked: ${operationName} (${duration}ms, ${success ? 'success' : 'failed'})`);
   } catch (err) {
     console.error('GraphQL response middleware error:', err);
   }
