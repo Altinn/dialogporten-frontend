@@ -17,6 +17,9 @@ if (config.applicationInsightsInstrumentationKey && import.meta.env.PROD) {
         enableCorsCorrelation: true,
         enableUnhandledPromiseRejectionTracking: true,
         enableAjaxErrorStatusText: true,
+        // Avoid tracking every ajax/fetch request
+        disableAjaxTracking: true,
+        disableFetchTracking: true,
         enableRequestHeaderTracking: true,
         enableResponseHeaderTracking: true,
         enableAjaxPerfTracking: true,
@@ -82,4 +85,5 @@ export const Analytics = {
   trackPageView: applicationInsights?.trackPageView.bind(applicationInsights) || noop,
   trackEvent: applicationInsights?.trackEvent.bind(applicationInsights) || noop,
   trackException: applicationInsights?.trackException.bind(applicationInsights) || noop,
+  trackDependency: applicationInsights?.trackDependencyData.bind(applicationInsights) || noop,
 };

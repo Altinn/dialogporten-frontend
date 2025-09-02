@@ -19,9 +19,111 @@ import {
   type UpdateSystemLabelMutation,
   getSdk,
 } from 'bff-types-generated';
-import { GraphQLClient } from 'graphql-request';
+import { GraphQLClient, type RequestMiddleware, type ResponseMiddleware } from 'graphql-request';
+import { Analytics } from '../analytics';
 
-export const graphQLSDK = getSdk(new GraphQLClient('/api/graphql', { credentials: 'include' }));
+const requestMiddleware: RequestMiddleware = (request) => {
+  try {
+    // Extract operation name from the request
+    const operationName = request.operationName || 'UnknownOperation';
+    const startTime = Date.now();
+
+    // Store tracking data in request headers
+    if (!request.headers) {
+      request.headers = {};
+    }
+
+    // Add tracking headers
+    (request.headers as Record<string, string>)['x-graphql-operation'] = operationName;
+    (request.headers as Record<string, string>)['x-graphql-start-time'] = startTime.toString();
+    (request.headers as Record<string, string>)['x-graphql-variables'] = request.variables
+      ? JSON.stringify(request.variables)
+      : '';
+
+    // Log request initiation in debug mode
+    console.debug(`GraphQL request initiated: ${operationName}`);
+  } catch (err) {
+    console.error('GraphQL request middleware error:', err);
+  }
+
+  return request;
+};
+
+const responseMiddleware: ResponseMiddleware = (response) => {
+  try {
+    // Handle both successful responses and errors
+    if (response instanceof Error) {
+      // This is an error case - track as a failed network request
+      console.warn('GraphQL network error detected:', response.message);
+      Analytics.trackDependency({
+        id: `graphql-error-${Date.now()}`,
+        target: '/api/graphql',
+        name: 'NetworkError',
+        data: response.message,
+        duration: 0,
+        success: false,
+        responseCode: 500,
+      });
+      return;
+    }
+
+    // Extract tracking data from response headers
+    const operationName = response.headers?.get?.('x-graphql-operation') || 'UnknownOperation';
+    const startTimeStr = response.headers?.get?.('x-graphql-start-time');
+    const variablesStr = response.headers?.get?.('x-graphql-variables');
+
+    if (!startTimeStr) {
+      console.warn('GraphQL response missing tracking headers - tracking may be incomplete');
+      return;
+    }
+
+    const startTime = Number.parseInt(startTimeStr, 10);
+    const duration = Date.now() - startTime;
+    const success = !response.errors || response.errors.length === 0;
+    const variables = variablesStr ? variablesStr : undefined;
+
+    // Use the actual HTTP status from the response, or determine based on errors
+    let responseCode = response.status || 200;
+    if (!success && response.errors) {
+      // Check if it's a network error or GraphQL error based on error messages
+      const hasNetworkError = response.errors.some(
+        (error) =>
+          error.message?.toLowerCase().includes('network') ||
+          error.message?.toLowerCase().includes('fetch') ||
+          error.message?.toLowerCase().includes('failed to fetch'),
+      );
+      responseCode = hasNetworkError ? 500 : 400;
+
+      // Log GraphQL errors for debugging
+      console.debug(`GraphQL operation ${operationName} completed with errors:`, response.errors);
+    }
+
+    // Track the GraphQL operation as a dependency
+    Analytics.trackDependency({
+      id: `graphql-${operationName}-${startTime}`,
+      target: '/api/graphql',
+      name: operationName,
+      data: variables,
+      duration: duration,
+      success: success,
+      responseCode: responseCode,
+    });
+
+    // Log successful tracking in debug mode
+    console.debug(`GraphQL dependency tracked: ${operationName} (${duration}ms, ${success ? 'success' : 'failed'})`);
+  } catch (err) {
+    console.error('GraphQL response middleware error:', err);
+  }
+};
+
+export const graphQLSDK = getSdk(
+  new GraphQLClient('/api/graphql', {
+    credentials: 'include',
+    requestMiddleware: requestMiddleware,
+    responseMiddleware: responseMiddleware,
+  }),
+);
+
 export const profile = graphQLSDK.profile;
 export const fetchSavedSearches = (): Promise<SavedSearchesQuery> => graphQLSDK.savedSearches();
 export const fetchOrganizations = (): Promise<OrganizationsQuery> => graphQLSDK.organizations();
