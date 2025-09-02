@@ -36,9 +36,6 @@ const requestMiddleware: RequestMiddleware = (request) => {
     // Add tracking headers
     (request.headers as Record<string, string>)['x-graphql-operation'] = operationName;
     (request.headers as Record<string, string>)['x-graphql-start-time'] = startTime.toString();
-    (request.headers as Record<string, string>)['x-graphql-variables'] = request.variables
-      ? JSON.stringify(request.variables)
-      : '';
 
     // Log request initiation in debug mode
     console.debug(`GraphQL request initiated: ${operationName}`);
@@ -70,7 +67,6 @@ const responseMiddleware: ResponseMiddleware = (response) => {
     // Extract tracking data from response headers
     const operationName = response.headers?.get?.('x-graphql-operation') || 'UnknownOperation';
     const startTimeStr = response.headers?.get?.('x-graphql-start-time');
-    const variablesStr = response.headers?.get?.('x-graphql-variables');
 
     if (!startTimeStr) {
       console.warn('GraphQL response missing tracking headers - tracking may be incomplete');
@@ -80,7 +76,6 @@ const responseMiddleware: ResponseMiddleware = (response) => {
     const startTime = Number.parseInt(startTimeStr, 10);
     const duration = Date.now() - startTime;
     const success = !response.errors || response.errors.length === 0;
-    const variables = variablesStr ? variablesStr : undefined;
 
     // Use the actual HTTP status from the response, or determine based on errors
     let responseCode = response.status || 200;
@@ -103,7 +98,6 @@ const responseMiddleware: ResponseMiddleware = (response) => {
       id: `graphql-${operationName}-${startTime}`,
       target: '/api/graphql',
       name: operationName,
-      data: variables,
       duration: duration,
       success: success,
       responseCode: responseCode,

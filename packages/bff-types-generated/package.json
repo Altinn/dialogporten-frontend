@@ -17,13 +17,13 @@
     "@tsconfig/node22": "^22.0.2",
     "bff": "workspace:*",
     "graphql": "^16.11.0",
-    "graphql-request": "^6.1.0",
+    "graphql-request": "7.2.0",
     "graphql-tag": "^2.12.6",
     "nodemon": "^3.1.10"
   },
   "devDependencies": {
     "@graphql-codegen/typescript": "^4.1.6",
-    "@graphql-codegen/typescript-graphql-request": "^6.2.0",
+    "@graphql-codegen/typescript-graphql-request": "^6.2.1",
     "@graphql-codegen/typescript-resolvers": "^4.5.1",
     "@parcel/watcher": "^2.5.1",
     "ts-node": "^10.9.2",
