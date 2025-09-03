@@ -83,10 +83,52 @@ if (applicationInsightsEnabled) {
 
 const noop = () => {};
 
+// Helper function to track fetch requests as dependencies
+export const trackFetchDependency = async (
+  name: string,
+  fetchPromise: Promise<Response>,
+  startTime: number = Date.now(),
+): Promise<Response> => {
+  if (!applicationInsightsEnabled) {
+    return fetchPromise;
+  }
+
+  let success = true;
+  let responseStatus = 200;
+  let response: Response | undefined;
+  let targetUrl = 'unknown';
+
+  try {
+    response = await fetchPromise;
+    responseStatus = response.status;
+    success = response.ok;
+    targetUrl = response.url ? new URL(response.url).origin : 'unknown';
+    return response;
+  } catch (error) {
+    success = false;
+    const err = error as Error;
+    responseStatus =
+      err.message?.toLowerCase().includes('network') || err.message?.toLowerCase().includes('fetch') ? 500 : 400;
+    throw error;
+  } finally {
+    const duration = Date.now() - startTime;
+
+    Analytics.trackDependency({
+      id: `${name}-${startTime}`,
+      target: targetUrl,
+      name: name,
+      duration: duration,
+      success: success,
+      responseCode: responseStatus,
+    });
+  }
+};
+
 export const Analytics = {
   isEnabled: applicationInsightsEnabled,
   trackPageView: applicationInsights?.trackPageView.bind(applicationInsights) || noop,
   trackEvent: applicationInsights?.trackEvent.bind(applicationInsights) || noop,
   trackException: applicationInsights?.trackException.bind(applicationInsights) || noop,
   trackDependency: applicationInsights?.trackDependencyData.bind(applicationInsights) || noop,
+  trackFetchDependency: trackFetchDependency,
 };
