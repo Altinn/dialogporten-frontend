@@ -40,9 +40,6 @@ const requestMiddleware: RequestMiddleware = (request) => {
     // Add tracking headers
     (request.headers as Record<string, string>)['x-graphql-operation'] = operationName;
     (request.headers as Record<string, string>)['x-graphql-start-time'] = startTime.toString();
-
-    // Log request initiation in debug mode
-    console.debug(`GraphQL request initiated: ${operationName}`);
   } catch (err) {
     console.error('GraphQL request middleware error:', err);
   }
