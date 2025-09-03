@@ -5,7 +5,9 @@ import { config } from './config';
 
 let applicationInsights: ApplicationInsights | null = null;
 
-if (config.applicationInsightsInstrumentationKey && import.meta.env.PROD) {
+const applicationInsightsEnabled = config.applicationInsightsInstrumentationKey && import.meta.env.PROD;
+
+if (applicationInsightsEnabled) {
   const reactPlugin = new ReactPlugin();
   try {
     applicationInsights = new ApplicationInsights({
@@ -82,6 +84,7 @@ if (config.applicationInsightsInstrumentationKey && import.meta.env.PROD) {
 const noop = () => {};
 
 export const Analytics = {
+  isEnabled: applicationInsightsEnabled,
   trackPageView: applicationInsights?.trackPageView.bind(applicationInsights) || noop,
   trackEvent: applicationInsights?.trackEvent.bind(applicationInsights) || noop,
   trackException: applicationInsights?.trackException.bind(applicationInsights) || noop,

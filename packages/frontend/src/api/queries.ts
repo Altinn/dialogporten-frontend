@@ -24,6 +24,10 @@ import { Analytics } from '../analytics';
 
 const requestMiddleware: RequestMiddleware = (request) => {
   try {
+    if (!Analytics.isEnabled) {
+      return request;
+    }
+
     // Extract operation name from the request
     const operationName = request.operationName || 'UnknownOperation';
     const startTime = Date.now();
@@ -48,6 +52,10 @@ const requestMiddleware: RequestMiddleware = (request) => {
 
 const responseMiddleware: ResponseMiddleware = (response) => {
   try {
+    if (!Analytics.isEnabled) {
+      return;
+    }
+
     // Handle both successful responses and errors
     if (response instanceof Error) {
       // This is an error case - track as a failed network request
