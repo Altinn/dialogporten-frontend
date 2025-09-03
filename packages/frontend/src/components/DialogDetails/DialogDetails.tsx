@@ -26,6 +26,7 @@ import type { DialogByIdDetails } from '../../api/hooks/useDialogById.tsx';
 import type { TimelineSegmentWithTransmissions } from '../../api/utils/transmissions.ts';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { getDialogStatus } from '../../pages/Inbox/status.ts';
+import { Analytics } from '../../analytics';
 import { ActivityLogModal } from '../ActivityLog/activityLogModal.tsx';
 import { AdditionalInfoContent } from '../AdditonalInfoContent';
 import { MainContentReference } from '../MainContentReference';
@@ -93,12 +94,15 @@ const handleDialogActionClick = async (
     window.open(url, '_blank');
   } else {
     try {
-      const response = await fetch(url, {
-        method: httpMethod,
-        headers: {
-          Authorization: `Bearer ${dialogToken}`,
-        },
-      });
+      const response = await Analytics.trackFetchDependency(
+        `DialogAction_${httpMethod}`,
+        fetch(url, {
+          method: httpMethod,
+          headers: {
+            Authorization: `Bearer ${dialogToken}`,
+          },
+        }),
+      );
 
       if (!response.ok) {
         console.error(`Error: ${response.statusText}`);
