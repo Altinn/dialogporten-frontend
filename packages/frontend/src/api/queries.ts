@@ -33,13 +33,10 @@ const requestMiddleware: RequestMiddleware = (request) => {
     const startTime = Date.now();
 
     // Store tracking data in request headers
-    if (!request.headers) {
-      request.headers = {};
-    }
-
-    // Add tracking headers
-    (request.headers as Record<string, string>)['x-graphql-operation'] = operationName;
-    (request.headers as Record<string, string>)['x-graphql-start-time'] = startTime.toString();
+    const headers = new Headers(request.headers);
+    headers.set('x-graphql-operation', operationName);
+    headers.set('x-graphql-start-time', startTime.toString());
+    request.headers = headers;
   } catch (err) {
     console.error('GraphQL request middleware error:', err);
   }
