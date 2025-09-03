@@ -21,7 +21,8 @@ import {
 } from 'bff-types-generated';
 import { GraphQLClient } from 'graphql-request';
 
-export const graphQLSDK = getSdk(new GraphQLClient('/api/graphql', { credentials: 'include' }));
+const endpoint = `${location.protocol}//${location.host}/api/graphql`;
+export const graphQLSDK = getSdk(new GraphQLClient(endpoint, { credentials: 'include' }));
 export const profile = graphQLSDK.profile;
 export const fetchSavedSearches = (): Promise<SavedSearchesQuery> => graphQLSDK.savedSearches();
 export const fetchOrganizations = (): Promise<OrganizationsQuery> => graphQLSDK.organizations();
