@@ -107,8 +107,9 @@ const responseMiddleware: ResponseMiddleware = (response) => {
   }
 };
 
+const endpoint = `${location.protocol}//${location.host}/api/graphql`;
 export const graphQLSDK = getSdk(
-  new GraphQLClient('/api/graphql', {
+  new GraphQLClient(endpoint, {
     credentials: 'include',
     requestMiddleware: requestMiddleware,
     responseMiddleware: responseMiddleware,
