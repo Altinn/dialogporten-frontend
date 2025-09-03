@@ -1,4 +1,4 @@
-import type { BadgeProps, MenuItemProps, MenuItemSize, MenuItemTheme, MenuProps } from '@altinn/altinn-components';
+import type { BadgeProps, MenuItemProps, MenuItemSize, MenuProps, Theme } from '@altinn/altinn-components';
 import {
   ArchiveIcon,
   BellIcon,
@@ -19,7 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import { createMessageBoxLink } from '../../../auth';
 import { pruneSearchQueryParams } from '../../../pages/Inbox/queryParams.ts';
-import { useProfile } from '../../../pages/Profile/useProfile.tsx';
+import { useProfile } from '../../../pages/Profile';
 import { PageRoutes } from '../../../pages/routes.ts';
 
 interface UseGlobalMenuProps {
@@ -249,7 +249,7 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
     shortcuts: {
       divider: false,
       title: t('word.shortcuts'),
-      defaultIconTheme: 'transparent' as MenuItemTheme,
+      defaultIconTheme: 'transparent' as Theme,
       defaultItemSize: 'sm' as MenuItemSize,
     },
     global: {
@@ -264,6 +264,7 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
 
   const sidebarMenu: MenuProps = {
     ...menu,
+    variant: 'subtle',
     defaultIconTheme: 'default',
     items: menu.items.map((item, index) => ({
       ...item,
