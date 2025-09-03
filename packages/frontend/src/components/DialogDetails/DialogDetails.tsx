@@ -22,11 +22,11 @@ import type { ActivityLogSegmentProps } from '@altinn/altinn-components/dist/typ
 import { DialogStatus } from 'bff-types-generated';
 import { type ReactElement, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Analytics } from '../../analytics';
 import type { DialogByIdDetails } from '../../api/hooks/useDialogById.tsx';
 import type { TimelineSegmentWithTransmissions } from '../../api/utils/transmissions.ts';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { getDialogStatus } from '../../pages/Inbox/status.ts';
-import { Analytics } from '../../analytics';
 import { ActivityLogModal } from '../ActivityLog/activityLogModal.tsx';
 import { AdditionalInfoContent } from '../AdditonalInfoContent';
 import { MainContentReference } from '../MainContentReference';
