@@ -32,7 +32,7 @@ const envVariables = z.object({
     .default('https://platform.at22.altinn.cloud/authentication/api/v1/exchange/id-porten?test=true'),
   PLATFORM_PROFILE_API_URL: z.string().default('https://platform.at22.altinn.cloud/profile/api/v1/'),
   MIGRATION_RUN: z.preprocess(stringToBoolean, z.boolean().default(false)),
-  DIALOGPORTEN_URL: z.string().default('https://altinn-tt02-api.azure-api.net/dialogporten/graphql'),
+  DIALOGPORTEN_URL: z.string().default('https://altinn-dev-api.azure-api.net/dialogporten/graphql'),
   CONTAINER_APP_REPLICA_NAME: z.string().default(''),
   ENABLE_GRAPHIQL: z.preprocess(stringToBoolean, z.boolean().default(true)),
   ENABLE_INIT_SESSION_ENDPOINT: z.preprocess(stringToBoolean, z.boolean().default(false)),
