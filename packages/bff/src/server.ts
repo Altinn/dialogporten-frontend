@@ -38,6 +38,7 @@ const startServer = async (): Promise<void> => {
   };
 
   server.register(cors, corsOptions);
+  server.register(fastifyHeaders);
   server.register(formBody);
   server.register(cookie);
 
@@ -73,7 +74,6 @@ const startServer = async (): Promise<void> => {
     client_id,
     client_secret,
   });
-  server.register(fastifyHeaders);
   server.register(userApi);
   server.register(graphqlApi);
   server.register(graphqlStream);
