@@ -49,11 +49,9 @@ const responseMiddleware: ResponseMiddleware = (response) => {
     if (!Analytics.isEnabled) {
       return;
     }
-
     // Handle both successful responses and errors
     if (response instanceof Error) {
       // This is an error case - track as a failed network request
-      console.warn('GraphQL network error detected:', response.message);
       Analytics.trackDependency({
         id: `graphql-error-${Date.now()}`,
         target: '/api/graphql',
