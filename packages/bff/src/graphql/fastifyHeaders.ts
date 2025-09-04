@@ -53,10 +53,19 @@ const plugin: FastifyPluginAsync = async (fastify) => {
     // Add the custom headers that helmet doesn't cover
     fastify.addHook('onRequest', (request, reply, done) => {
       // Custom headers not covered by helmet
-      reply.headers({
+      const additionalSecurityHeaders = {
         'X-Permitted-Cross-Domain-Policies': 'none',
         'Permissions-Policy': 'none',
         'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      };
+      // Instrumentation headers
+      const instrumentationHeaders = {
+        'X-GraphQL-Operation': request.headers['x-graphql-operation'],
+        'X-GraphQL-Start-Time': request.headers['x-graphql-start-time'],
+      };
+      reply.headers({
+        ...additionalSecurityHeaders,
+        ...instrumentationHeaders,
       });
 
       // Set secure cookie if HTTPS
