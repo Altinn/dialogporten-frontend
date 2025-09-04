@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.64.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.64.0...v1.64.1) (2025-09-04)
+
+
+### Bug Fixes
+
+* **bff:** ensure security headers are always exposed ([#2651](https://github.com/Altinn/dialogporten-frontend/issues/2651)) ([348b440](https://github.com/Altinn/dialogporten-frontend/commit/348b440d5eb7d1a955f3a0c0cc4975deb24136f0))
+* ensure gql requests are instrumented properly ([#2653](https://github.com/Altinn/dialogporten-frontend/issues/2653)) ([05f9182](https://github.com/Altinn/dialogporten-frontend/commit/05f9182ca0bed08dafa513e006abbdf7342ce1a5))
+* improvements to searchbar ([#2648](https://github.com/Altinn/dialogporten-frontend/issues/2648)) ([272c2c3](https://github.com/Altinn/dialogporten-frontend/commit/272c2c3f9701f3eebe3702f17327e1babc7ea235))
+
 ## [1.64.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.63.6...v1.64.0) (2025-09-03)
 
 
