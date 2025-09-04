@@ -40,7 +40,6 @@ const getSkeletonItems = (size: number) => {
     return {
       id: `loading-${index + 1}`,
       title: randomTitle,
-      icon: 'inbox',
       description: randomDescription,
       loading: true,
       groupId: 'searching',
@@ -55,23 +54,24 @@ const createAutocomplete = (
   searchValue?: string,
 ): AutocompleteProps => {
   const resultsSize = 5;
-  const isSearchable = (searchValue?.length ?? 0) > 2;
+  const isSearchAllowed = (searchValue?.length ?? 0) > 2;
 
   const getScopeItem = (label: React.ReactNode, badgeLabel?: string) => ({
     id: 'inboxScope',
     type: 'scope',
+    groupId: 'all-scopes-1',
     ariaLabel: t('search.autocomplete.searchInInbox', { query: searchValue }),
     as: (props: AutocompleteItemProps) => (
       <Link
         {...(props as LinkProps)}
-        to={`/${pruneSearchQueryParams(location.search, { search: isSearchable ? (searchValue as string) : undefined })}`}
+        to={`/${pruneSearchQueryParams(location.search, { search: isSearchAllowed ? (searchValue as string) : undefined })}`}
       />
     ),
     badge: badgeLabel ? { label: badgeLabel } : undefined,
     label,
   });
 
-  const mapSearchResults = () =>
+  const mapSearchResults = (query: string) =>
     searchResults.slice(0, resultsSize).map((item) => ({
       id: item.id,
       groupId: 'searchResults',
@@ -81,15 +81,16 @@ const createAutocomplete = (
       description: item.summary,
       tabIndex: -1,
       type: 'dialog',
+      ...(query ? { highlightWords: [query] } : {}),
     }));
 
-  if (!isSearchable) {
+  if (!isSearchAllowed) {
     return {
       items: [getScopeItem(`${t('word.everything')} ${t('search.autocomplete.inInbox')}`)],
     } as AutocompleteProps;
   }
 
-  const searchResult = mapSearchResults();
+  const searchResult = mapSearchResults(searchValue ?? '');
   const suggestions = isLoading ? getSkeletonItems(resultsSize) : searchResult;
 
   return {
@@ -142,8 +143,14 @@ export const useAutocomplete = ({ selectedParties, searchValue }: searchDialogsP
   }, [hits, isLoading, searchValue]);
 
   const mergedAutocomplete = {
-    groups: { ...autocomplete.groups, ...suggestedSenders.groups },
-    items: [...autocomplete.items, ...suggestedSenders.items],
+    groups: {
+      ...suggestedSenders.groups,
+      ...autocomplete.groups,
+      searching: { title: t('search.autocomplete.loadingText', { query: searchValue }) },
+    },
+    items: [...suggestedSenders.items, ...autocomplete.items].sort((a, b) =>
+      (a.groupId ?? '').toString().localeCompare((b.groupId ?? '').toString()),
+    ),
   };
 
   return {
@@ -159,7 +166,6 @@ export const createSendersForAutocomplete = (
   dialogs: InboxItemInput[],
   organizations?: OrganizationFieldsFragment[],
 ): AutocompleteProps => {
-  const SENDERS_GROUP_ID = 'senders';
   const TYPE_SUGGEST = 'suggest';
 
   if (!searchValue) {
@@ -226,7 +232,7 @@ export const createSendersForAutocomplete = (
 
       return {
         id: linkTitle,
-        groupId: SENDERS_GROUP_ID,
+        groupId: 'all-scopes-2',
         title: linkTitle,
         params: [
           { type: 'filter', label: senderName },
@@ -270,8 +276,6 @@ export const createSendersForAutocomplete = (
 
   return {
     items: mappedSenderWithKeywords as AutocompleteItemProps[],
-    groups: {
-      [SENDERS_GROUP_ID]: { title: t('search.suggestions') },
-    },
+    groups: {},
   };
 };

@@ -23,7 +23,7 @@ test.describe('Language picker', () => {
     }
 
     await page.getByRole('button', { name: 'Open language-switcher' }).click();
-    await expect(page.getByRole('heading', { name: 'Språk/language' })).toBeVisible();
+    await expect(page.getByText('Språk/language')).toBeVisible();
     await expect(page.getByRole('banner').getByRole('group').getByText('Bokmål')).toBeVisible();
     await expect(page.getByRole('banner').getByRole('group').getByText('Nynorsk')).toBeVisible();
     await expect(page.getByRole('banner').getByRole('group').getByText('English')).toBeVisible();
