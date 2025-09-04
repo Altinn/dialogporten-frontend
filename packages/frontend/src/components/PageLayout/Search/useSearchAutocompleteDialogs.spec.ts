@@ -118,15 +118,11 @@ describe('generateSendersAutocompleteBySearchString', () => {
 
     expect(resultSKD.items).toHaveLength(1);
     expect(resultSKD.items[0].title).toBe('Søk etter avsender Skatteetaten');
-    expect(resultSKD.groups).toEqual({
-      senders: { title: 'Søkeforslag' },
-    });
+    expect(resultSKD.groups).toEqual({});
 
     expect(resultSSB.items).toHaveLength(1);
     expect(resultSSB.items[0].title).toBe('Søk etter avsender Statistisk sentralbyrå');
-    expect(resultSSB.groups).toEqual({
-      senders: { title: 'Søkeforslag' },
-    });
+    expect(resultSSB.groups).toEqual({});
   });
 
   it('should return matched sender and unmatched search string', () => {
@@ -138,9 +134,7 @@ describe('generateSendersAutocompleteBySearchString', () => {
     expect(resultSKD.items[0].title).toBe('Søk etter avsender Skatteetaten med fritekst test1');
     expect(resultSKD.items).toHaveLength(1);
 
-    expect(resultSKD.groups).toEqual({
-      senders: { title: 'Søkeforslag' },
-    });
+    expect(resultSKD.groups).toEqual({});
   });
 
   it('should return all matched senders and unmatched search string if provided', () => {
@@ -160,17 +154,13 @@ describe('generateSendersAutocompleteBySearchString', () => {
     expect(result.items[1].title).toBe('Søk etter avsender Statistisk sentralbyrå med fritekst skat test1');
     expect(result.items).toHaveLength(2);
 
-    expect(result.groups).toEqual({
-      senders: { title: 'Søkeforslag' },
-    });
+    expect(result.groups).toEqual({});
   });
 
   it('should return no hits when search value does not match any sender name', () => {
     const result = createSendersForAutocomplete('Nonexistent Sender', mockDialogs as InboxItemInput[]);
 
     expect(result.items).toEqual([]);
-    expect(result.groups).toEqual({
-      senders: { title: 'Søkeforslag' },
-    });
+    expect(result.groups).toEqual({});
   });
 });

@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.64.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.63.6...v1.64.0) (2025-09-03)
+
+
+### Features
+
+* **frontend:** add tracking for dialog actions ([#2646](https://github.com/Altinn/dialogporten-frontend/issues/2646)) ([eb9ad76](https://github.com/Altinn/dialogporten-frontend/commit/eb9ad765e16c6025d177aeba15cc61453847e2c9))
+
+
+### Bug Fixes
+
+* **app-insights:** avoid tracing every http request ([#2636](https://github.com/Altinn/dialogporten-frontend/issues/2636)) ([84c677b](https://github.com/Altinn/dialogporten-frontend/commit/84c677b28ea3eacc45aecf2139af3648eb02bdfa))
+* **frontend:** use correct way of setting headers when tracking ([#2647](https://github.com/Altinn/dialogporten-frontend/issues/2647)) ([fb94d13](https://github.com/Altinn/dialogporten-frontend/commit/fb94d13d43981aaef191c633213f7710068fc1c6))
+
 ## [1.63.6](https://github.com/Altinn/dialogporten-frontend/compare/v1.63.5...v1.63.6) (2025-09-01)
 
 
