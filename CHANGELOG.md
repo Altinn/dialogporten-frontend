@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.64.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.64.2...v1.64.3) (2025-09-05)
+
+
+### Bug Fixes
+
+* Update maintenance page support email ([#2660](https://github.com/Altinn/dialogporten-frontend/issues/2660)) ([d1ce046](https://github.com/Altinn/dialogporten-frontend/commit/d1ce04614b404e3ce9b3ed058375b54b4ba6d029))
+
 ## [1.64.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.64.1...v1.64.2) (2025-09-05)
 
 
