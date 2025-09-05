@@ -7,7 +7,7 @@ import { FastifyInstrumentation } from '@opentelemetry/instrumentation-fastify';
 import { GraphQLInstrumentation } from '@opentelemetry/instrumentation-graphql';
 import { HttpInstrumentation, type HttpInstrumentationConfig } from '@opentelemetry/instrumentation-http';
 import { IORedisInstrumentation } from '@opentelemetry/instrumentation-ioredis';
-import { Resource } from '@opentelemetry/resources';
+import { resourceFromAttributes } from '@opentelemetry/resources';
 // SEMRESATTRS_SERVICE_INSTANCE_ID is deprecaed, but the replacement ATTR_SERVICE_INSTANCE_ID is not available in the semantic-conventions package
 import { ATTR_SERVICE_NAME, SEMRESATTRS_SERVICE_INSTANCE_ID } from '@opentelemetry/semantic-conventions';
 import config from './config.ts';
@@ -23,7 +23,7 @@ const initializeApplicationInsights = () => {
   }
 
   try {
-    const customResource = new Resource({
+    const customResource = resourceFromAttributes({
       [ATTR_SERVICE_NAME]: config.info.name,
       [SEMRESATTRS_SERVICE_INSTANCE_ID]: config.info.instanceId,
     });
