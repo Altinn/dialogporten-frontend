@@ -1,8 +1,14 @@
 import { list, objectType, stringArg } from 'nexus';
 import config from '../../config.ts';
 import { SavedSearchRepository } from '../../db.ts';
-import { getNotificationsSettings, getOrCreateProfile, getUserFromCore } from '../functions/profile.ts';
+import {
+  getNotificationAddressByOrgNumber,
+  getNotificationsSettings,
+  getOrCreateProfile,
+  getUserFromCore,
+} from '../functions/profile.ts';
 import { getOrganizationsFromRedis } from './organization.ts';
+import { OrganizationResponse } from './profile.ts';
 
 export const Query = objectType({
   name: 'Query',
@@ -11,9 +17,7 @@ export const Query = objectType({
       type: 'Profile',
       resolve: async (_source, _args, ctx) => {
         const { disableProfile } = config;
-        const pid = ctx.session.get('pid');
-        const locale = ctx.session.get('locale');
-        const profile = await getOrCreateProfile(pid, locale, ctx);
+        const profile = await getOrCreateProfile(ctx);
         const user = disableProfile ? [] : await getUserFromCore(ctx);
         const { language, groups, updatedAt } = profile;
         return {
@@ -51,16 +55,32 @@ export const Query = objectType({
     });
 
     t.field('notificationsettingsByUuid', {
-      type: list('NotificationSettingsResponse'),
+      type: 'NotificationSettingsResponse',
       args: {
         uuid: stringArg(),
       },
       resolve: async (_source, { uuid }, ctx) => {
         const { disableProfile } = config;
         if (!disableProfile && uuid) {
-          return await getNotificationsSettings(uuid, ctx);
+          const result = await getNotificationsSettings(uuid, ctx);
+          return result || null;
         }
-        return [];
+        return null;
+      },
+    });
+
+    t.field('getNotificationAddressByOrgNumber', {
+      type: OrganizationResponse,
+      args: {
+        orgnr: stringArg(),
+      },
+      resolve: async (_source, { orgnr }, ctx) => {
+        const { disableProfile } = config;
+        if (!disableProfile && orgnr) {
+          const result = await getNotificationAddressByOrgNumber(orgnr, ctx);
+          return result || null;
+        }
+        return null;
       },
     });
   },

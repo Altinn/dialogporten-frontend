@@ -60,7 +60,7 @@ test.describe('Search flow', () => {
   test('Navigating from message should go to inbox', async ({ page }) => {
     await page.goto(`${baseURL}/inbox/${firstMsgId}/${baseQueryParams}&playwrightId=search-flow`);
 
-    await page.getByRole('link', { name: 'Tilbake' }).click();
+    await page.getByRole('link', { name: 'Tilbake', exact: true }).click();
     await expect(page).toHaveURL(`${defaultAppURL}&playwrightId=search-flow`);
   });
 });

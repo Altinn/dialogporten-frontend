@@ -15,6 +15,7 @@ param platformExchangeTokenEndpointUrl = 'https://platform.at22.altinn.cloud/aut
 param platformProfileApiUrl = 'https://platform.at22.altinn.cloud/profile/api/v1/'
 
 param ocPApimSubscriptionKey = readEnvironmentVariable('OCP_APIM_SUBSCRIPTION_KEY')
+param disableProfile = 'true'
 
 // secrets
 param environmentKeyVaultName = readEnvironmentVariable('ENVIRONMENT_KEY_VAULT_NAME')
@@ -28,6 +29,10 @@ param additionalEnvironmentVariables = [
   }
   {
     name: 'COOKIE_HTTP_ONLY'
+    value: 'false'
+  }
+  {
+    name: 'APPLICATIONINSIGHTS_ENABLED'
     value: 'false'
   }
 ]

@@ -1,5 +1,193 @@
 # Changelog
 
+## [1.64.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.63.6...v1.64.0) (2025-09-03)
+
+
+### Features
+
+* **frontend:** add tracking for dialog actions ([#2646](https://github.com/Altinn/dialogporten-frontend/issues/2646)) ([eb9ad76](https://github.com/Altinn/dialogporten-frontend/commit/eb9ad765e16c6025d177aeba15cc61453847e2c9))
+
+
+### Bug Fixes
+
+* **app-insights:** avoid tracing every http request ([#2636](https://github.com/Altinn/dialogporten-frontend/issues/2636)) ([84c677b](https://github.com/Altinn/dialogporten-frontend/commit/84c677b28ea3eacc45aecf2139af3648eb02bdfa))
+* **frontend:** use correct way of setting headers when tracking ([#2647](https://github.com/Altinn/dialogporten-frontend/issues/2647)) ([fb94d13](https://github.com/Altinn/dialogporten-frontend/commit/fb94d13d43981aaef191c633213f7710068fc1c6))
+
+## [1.63.6](https://github.com/Altinn/dialogporten-frontend/compare/v1.63.5...v1.63.6) (2025-09-01)
+
+
+### Bug Fixes
+
+* beta modal navigation to onboarding missing ctx ([#2621](https://github.com/Altinn/dialogporten-frontend/issues/2621)) ([1a65565](https://github.com/Altinn/dialogporten-frontend/commit/1a655659cac64ef2a212f16e0e4b393f7eedb400))
+* do not fetch isAuthenticated in background ([#2623](https://github.com/Altinn/dialogporten-frontend/issues/2623)) ([63019be](https://github.com/Altinn/dialogporten-frontend/commit/63019be2e9c2f5d6516dd968dc2a3677daaca9c2))
+
+## [1.63.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.63.4...v1.63.5) (2025-08-29)
+
+
+### Bug Fixes
+
+* adjustments to texts in folders ([#2617](https://github.com/Altinn/dialogporten-frontend/issues/2617)) ([6b9878e](https://github.com/Altinn/dialogporten-frontend/commit/6b9878eb12f757771106aa56f72577011e314f67))
+
+## [1.63.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.63.3...v1.63.4) (2025-08-29)
+
+
+### Bug Fixes
+
+* add links to about the new Altinn ([#2614](https://github.com/Altinn/dialogporten-frontend/issues/2614)) ([576c970](https://github.com/Altinn/dialogporten-frontend/commit/576c970e1daa869fc6b382825b80e14a0bb981ea))
+* change translations for awaiting and not_applicable ([#2615](https://github.com/Altinn/dialogporten-frontend/issues/2615)) ([cebbadc](https://github.com/Altinn/dialogporten-frontend/commit/cebbadc31defcfcc5cb7af49ba05a8f05444a6aa))
+* update texts for folder and use take me back in stead of leave beta as link text ([#2612](https://github.com/Altinn/dialogporten-frontend/issues/2612)) ([ce3e20b](https://github.com/Altinn/dialogporten-frontend/commit/ce3e20bca2b40132e93c797ce95c384454201808))
+
+## [1.63.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.63.2...v1.63.3) (2025-08-29)
+
+
+### Bug Fixes
+
+* **infra:** increase resources for bff ([#2610](https://github.com/Altinn/dialogporten-frontend/issues/2610)) ([30bfdda](https://github.com/Altinn/dialogporten-frontend/commit/30bfdda58fbe6f70c9cb647e134af72e827fcc72))
+
+## [1.63.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.63.1...v1.63.2) (2025-08-29)
+
+
+### Bug Fixes
+
+* beta modal texts ([#2603](https://github.com/Altinn/dialogporten-frontend/issues/2603)) ([864d7d0](https://github.com/Altinn/dialogporten-frontend/commit/864d7d0245cf7cee64ad258f82fcd19c691a81d6))
+* changes to contact section for about inbox page ([#2608](https://github.com/Altinn/dialogporten-frontend/issues/2608)) ([1015810](https://github.com/Altinn/dialogporten-frontend/commit/10158104130185df49e7386dbf6e7183eaa4f595))
+* use aktør intead of konto and avgivere consistently ([#2606](https://github.com/Altinn/dialogporten-frontend/issues/2606)) ([1a24794](https://github.com/Altinn/dialogporten-frontend/commit/1a24794fcfbef86373dcacac3e40f490f32c37ae))
+
+## [1.63.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.63.0...v1.63.1) (2025-08-29)
+
+
+### Bug Fixes
+
+* **graphql:** avoid unnecessary tracing of fields without resolvers ([#2604](https://github.com/Altinn/dialogporten-frontend/issues/2604)) ([ea02f45](https://github.com/Altinn/dialogporten-frontend/commit/ea02f450693d12cc70f6f245677c5a26fbee4d84))
+
+## [1.63.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.62.0...v1.63.0) (2025-08-28)
+
+
+### Features
+
+* Implement Organization endpoint from core + bugfixes and enhancements ([a991165](https://github.com/Altinn/dialogporten-frontend/commit/a9911655cd0e3ffa0d17f1b8a88e1ba902deb519))
+
+
+### Bug Fixes
+
+* change html title ([#2598](https://github.com/Altinn/dialogporten-frontend/issues/2598)) ([1b584ff](https://github.com/Altinn/dialogporten-frontend/commit/1b584ff569a672f0ac01eaf47efeab025d82bf53))
+
+## [1.62.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.61.5...v1.62.0) (2025-08-28)
+
+
+### Features
+
+* Add e2e for saved searches ([#2591](https://github.com/Altinn/dialogporten-frontend/issues/2591)) ([400d965](https://github.com/Altinn/dialogporten-frontend/commit/400d965bb53f9fa0aafcc03539b9a21ec6e943ba))
+
+
+### Bug Fixes
+
+* error page translations ([#2593](https://github.com/Altinn/dialogporten-frontend/issues/2593)) ([e586c96](https://github.com/Altinn/dialogporten-frontend/commit/e586c96a2b258e464092cceaaf37290efc4e0875))
+
+## [1.61.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.61.4...v1.61.5) (2025-08-28)
+
+
+### Bug Fixes
+
+* Creating SavedSearch now works again ([#2586](https://github.com/Altinn/dialogporten-frontend/issues/2586)) ([cdacf47](https://github.com/Altinn/dialogporten-frontend/commit/cdacf47e665157c96481b11357c640e7c709ca46))
+* Creating SavedSearch now works again ([#2589](https://github.com/Altinn/dialogporten-frontend/issues/2589)) ([d2003a6](https://github.com/Altinn/dialogporten-frontend/commit/d2003a622f023b74d83dd5620cc021a124cf41ab))
+
+## [1.61.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.61.3...v1.61.4) (2025-08-28)
+
+
+### Bug Fixes
+
+* use only contentUpdatedAfter instead of updatedAt for filter and display label ([#2582](https://github.com/Altinn/dialogporten-frontend/issues/2582)) ([35e3903](https://github.com/Altinn/dialogporten-frontend/commit/35e39031ec813de8fc5b8e1410962d6ed1e57fd5))
+
+## [1.61.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.61.2...v1.61.3) (2025-08-28)
+
+
+### Bug Fixes
+
+* update texts for no results and empty folders ([#2580](https://github.com/Altinn/dialogporten-frontend/issues/2580)) ([9d078aa](https://github.com/Altinn/dialogporten-frontend/commit/9d078aa2f2ff042668eb59036b3038be5356d01e))
+
+## [1.61.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.61.1...v1.61.2) (2025-08-27)
+
+
+### Bug Fixes
+
+* **text:** update About page with new text ([#2577](https://github.com/Altinn/dialogporten-frontend/issues/2577)) ([0a01eb1](https://github.com/Altinn/dialogporten-frontend/commit/0a01eb1b694ca164e35199d338f150be859b7265))
+
+## [1.61.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.61.0...v1.61.1) (2025-08-27)
+
+
+### Bug Fixes
+
+* add whitelisted IPs to infra dispatch ([#2575](https://github.com/Altinn/dialogporten-frontend/issues/2575)) ([f37df12](https://github.com/Altinn/dialogporten-frontend/commit/f37df12d244ac8ad7440dd63c1142021de4ccf34))
+
+## [1.61.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.60.0...v1.61.0) (2025-08-27)
+
+
+### Features
+
+* Hiding profile pages in prod env ([68a92b7](https://github.com/Altinn/dialogporten-frontend/commit/68a92b78b882e6f050f2e66b920bfea364cede1f))
+* remove counting and unread badge for accounts ([#2572](https://github.com/Altinn/dialogporten-frontend/issues/2572)) ([6a2faab](https://github.com/Altinn/dialogporten-frontend/commit/6a2faaba8891f3c4b051aa218cac75d9a5eb5a90))
+
+
+### Bug Fixes
+
+* Improve logic for welcome modal and onboarding ([#2571](https://github.com/Altinn/dialogporten-frontend/issues/2571)) ([839744d](https://github.com/Altinn/dialogporten-frontend/commit/839744d07bedf1caac092ebb781d1449f894caeb))
+
+## [1.60.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.59.0...v1.60.0) (2025-08-27)
+
+
+### Features
+
+* **infra:** add maintenance page to application gateway ([#2561](https://github.com/Altinn/dialogporten-frontend/issues/2561)) ([7c4b63b](https://github.com/Altinn/dialogporten-frontend/commit/7c4b63bf804d46b03a844b22e5e290f0960f5627))
+
+
+### Bug Fixes
+
+* **e2e:** close intro modal before clicking dialog ([#2563](https://github.com/Altinn/dialogporten-frontend/issues/2563)) ([5f8f13f](https://github.com/Altinn/dialogporten-frontend/commit/5f8f13fbb1c9db483ba0f3a354356df5effab487))
+
+## [1.59.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.58.0...v1.59.0) (2025-08-26)
+
+
+### Features
+
+* Add interactive user onboarding ([#2527](https://github.com/Altinn/dialogporten-frontend/issues/2527)) ([4b7bebb](https://github.com/Altinn/dialogporten-frontend/commit/4b7bebbaf75fe77bf08af68d678fbb7713addf8d))
+
+
+### Bug Fixes
+
+* menu items for global menu ([#2557](https://github.com/Altinn/dialogporten-frontend/issues/2557)) ([fee7e28](https://github.com/Altinn/dialogporten-frontend/commit/fee7e287fe7f747c11c847f2c2965be2f63bd903))
+
+## [1.58.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.57.1...v1.58.0) (2025-08-26)
+
+
+### Features
+
+* introduce beta modal ([#2554](https://github.com/Altinn/dialogporten-frontend/issues/2554)) ([67fd187](https://github.com/Altinn/dialogporten-frontend/commit/67fd1877ad2bbae2f21b704600394ba4585f57eb))
+
+
+### Bug Fixes
+
+* floating button was incorrectly placed ([#2556](https://github.com/Altinn/dialogporten-frontend/issues/2556)) ([ed80947](https://github.com/Altinn/dialogporten-frontend/commit/ed809474f6f7576ac096d8a35ff3e2d24c5a37e9))
+
+## [1.57.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.57.0...v1.57.1) (2025-08-25)
+
+
+### Bug Fixes
+
+* prepare global menu for beta release + couple of fixes to about routing ([#2552](https://github.com/Altinn/dialogporten-frontend/issues/2552)) ([f750821](https://github.com/Altinn/dialogporten-frontend/commit/f75082182cc61b1927a89cec18db0e2d60d29bcb))
+
+## [1.57.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.56.0...v1.57.0) (2025-08-25)
+
+
+### Features
+
+* add about page ([#2550](https://github.com/Altinn/dialogporten-frontend/issues/2550)) ([5be9889](https://github.com/Altinn/dialogporten-frontend/commit/5be98895ec4562c8f9c4f3f49ac47b78c6bed8ff))
+
+
+### Bug Fixes
+
+* **release-please:** update new version of release please ([#2548](https://github.com/Altinn/dialogporten-frontend/issues/2548)) ([266c83d](https://github.com/Altinn/dialogporten-frontend/commit/266c83d217689745e3f9b90d75e1f9970ffcfb9a))
+
 ## [1.56.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.55.1...v1.56.0) (2025-08-25)
 
 

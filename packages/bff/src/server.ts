@@ -33,11 +33,13 @@ const startServer = async (): Promise<void> => {
     origin: ['https://app.localhost', 'http://localhost:3000'],
     credentials: true,
     methods: 'GET, POST, PATCH, DELETE, PUT',
-    allowedHeaders: 'Content-Type, Authorization',
+    allowedHeaders: 'Content-Type, Authorization, X-GraphQL-Operation, X-GraphQL-Start-Time',
+    exposedHeaders: 'X-GraphQL-Operation, X-GraphQL-Start-Time',
     preflightContinue: true,
   };
 
   server.register(cors, corsOptions);
+  server.register(fastifyHeaders);
   server.register(formBody);
   server.register(cookie);
 
@@ -73,7 +75,6 @@ const startServer = async (): Promise<void> => {
     client_id,
     client_secret,
   });
-  server.register(fastifyHeaders);
   server.register(userApi);
   server.register(graphqlApi);
   server.register(graphqlStream);

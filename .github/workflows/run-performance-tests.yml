@@ -3,6 +3,11 @@ name: Run k6 performance tests
 on:
   workflow_dispatch:
     inputs:
+      tag:
+        description: 'Give a proper tag to the test'
+        required: true
+        default: 'Performance test'
+        type: string
       browserVus:
         description: 'Number of Browser VUS'
         required: true
@@ -43,7 +48,7 @@ on:
 permissions:
   id-token: write
   contents: read
-
+run-name: ${{ inputs.tag }} ${{ inputs.browserVus }}/${{ inputs.bffVus }}/${{ inputs.duration }}/${{ inputs.parallelism }}
 jobs:
   k6-performance-tests:
     runs-on: ubuntu-latest

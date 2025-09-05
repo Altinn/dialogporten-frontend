@@ -1,4 +1,4 @@
-import type { BadgeProps, MenuItemProps } from '@altinn/altinn-components';
+import type { BadgeProps, MenuItemProps, MenuItemSize, MenuItemTheme, MenuProps } from '@altinn/altinn-components';
 import {
   ArchiveIcon,
   BellIcon,
@@ -10,21 +10,22 @@ import {
   HandshakeIcon,
   HeartIcon,
   InboxFillIcon,
-  MenuGridIcon,
+  InformationSquareIcon,
+  LeaveIcon,
   PadlockUnlockedIcon,
-  PersonChatIcon,
   TrashIcon,
 } from '@navikt/aksel-icons';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
-import { useParties } from '../../../api/hooks/useParties.ts';
+import { createMessageBoxLink } from '../../../auth';
 import { pruneSearchQueryParams } from '../../../pages/Inbox/queryParams.ts';
+import { useProfile } from '../../../pages/Profile/useProfile.tsx';
 import { PageRoutes } from '../../../pages/routes.ts';
-import { useWindowSize } from '../useWindowSize.tsx';
 
 interface UseGlobalMenuProps {
-  sidebar: MenuItemProps[];
-  global: MenuItemProps[];
+  sidebarMenu: MenuProps;
+  mobileMenu: MenuProps;
+  desktopMenu: MenuProps;
 }
 
 export const getAlertBadgeProps = (count: number): BadgeProps | undefined => {
@@ -70,49 +71,50 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
   const { t } = useTranslation();
   const { pathname, search: currentSearchQuery, state } = useLocation();
   const fromView = (state as { fromView?: string })?.fromView;
-  const { selectedProfile } = useParties();
-  const { isTabletOrSmaller } = useWindowSize();
-  const linksMenuItems: MenuItemProps[] = [
+  const { user } = useProfile();
+
+  const inboxShortcuts: MenuItemProps[] = [
     {
-      id: 'all-services',
-      groupId: 'global',
-      icon: MenuGridIcon,
-      title: t('menuBar.all_services'),
-      size: 'lg',
+      id: 'beta-about',
+      groupId: 'shortcuts',
+      icon: InformationSquareIcon,
+      title: t('altinn.beta.about'),
       as: createMenuItemComponent({
-        to: 'https://info.altinn.no/skjemaoversikt',
-        isExternal: true,
+        to: PageRoutes.about + pruneSearchQueryParams(currentSearchQuery),
       }),
+      selected: isRouteSelected(pathname, PageRoutes.about, fromView),
     },
     {
-      id: 'chat',
-      groupId: 'global',
-      icon: PersonChatIcon,
-      title: t('menuBar.chat'),
-      size: 'lg',
+      id: 'beta-exit',
+      groupId: 'shortcuts',
+      icon: LeaveIcon,
+      title: t('altinn.beta.exit'),
       as: createMenuItemComponent({
-        to: 'https://info.altinn.no/hjelp/',
-        isExternal: true,
+        to: createMessageBoxLink(),
       }),
     },
   ];
-  const sidebarInbox: MenuItemProps[] = [
+
+  const inboxItems: MenuItemProps[] = [
     {
       id: '1',
       groupId: 'global',
       size: 'lg',
-      icon: { svgElement: InboxFillIcon, theme: 'base' },
+      icon: InboxFillIcon,
       title: t('sidebar.inbox'),
       selected: isRouteSelected(pathname, PageRoutes.inbox, fromView),
       expanded: true,
       as: createMenuItemComponent({
         to: PageRoutes.inbox + pruneSearchQueryParams(currentSearchQuery),
       }),
+      badge: {
+        label: t('word.beta'),
+      },
       items: [
         {
           id: '2',
           groupId: '2',
-          icon: { svgElement: DocPencilIcon, theme: 'default' },
+          icon: DocPencilIcon,
           title: t('sidebar.drafts'),
           selected: isRouteSelected(pathname, PageRoutes.drafts, fromView),
           as: createMenuItemComponent({
@@ -122,7 +124,7 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
         {
           id: '3',
           groupId: '2',
-          icon: { svgElement: FileCheckmarkIcon, theme: 'default' },
+          icon: FileCheckmarkIcon,
           title: t('sidebar.sent'),
           selected: isRouteSelected(pathname, PageRoutes.sent, fromView),
           as: createMenuItemComponent({
@@ -132,7 +134,7 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
         {
           id: '4',
           groupId: '3',
-          icon: { svgElement: BookmarkIcon, theme: 'default' },
+          icon: BookmarkIcon,
           title: t('sidebar.saved_searches'),
           selected: isRouteSelected(pathname, PageRoutes.savedSearches, fromView),
           as: createMenuItemComponent({
@@ -142,7 +144,7 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
         {
           id: '5',
           groupId: '4',
-          icon: { svgElement: ArchiveIcon, theme: 'default' },
+          icon: ArchiveIcon,
           title: t('sidebar.archived'),
           selected: isRouteSelected(pathname, PageRoutes.archive, fromView),
           as: createMenuItemComponent({
@@ -152,7 +154,7 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
         {
           id: '6',
           groupId: '4',
-          icon: { svgElement: TrashIcon, theme: 'default' },
+          icon: TrashIcon,
           title: t('sidebar.deleted'),
           selected: isRouteSelected(pathname, PageRoutes.bin, fromView),
           as: createMenuItemComponent({
@@ -163,12 +165,14 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
     },
   ];
 
-  const profileSidebar: MenuItemProps[] = [
+  const profileItems: MenuItemProps[] = [
     {
       id: '1',
       groupId: 'global',
       size: 'lg',
-      icon: { svgElement: InboxFillIcon, theme: 'base' },
+      icon: {
+        name: user?.party?.name || '',
+      },
       title: t('sidebar.profile'),
       selected: isRouteSelected(pathname, PageRoutes.profile, fromView),
       expanded: true,
@@ -239,19 +243,55 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
       ],
     },
   ];
+  const menuItems = pathname.includes(PageRoutes.profile) ? profileItems : [...inboxItems, ...inboxShortcuts];
 
-  const sidebar = pathname.includes(PageRoutes.profile) ? profileSidebar : sidebarInbox;
-
-  const global: MenuItemProps[] = [
-    {
-      ...sidebar[0],
-      color: selectedProfile,
-      /* do not show sub items on viewports bigger than tablet since they are already shown in the sidebar */
-      items: isTabletOrSmaller ? sidebar[0].items : [],
-      expanded: isTabletOrSmaller,
+  const menuGroups = {
+    shortcuts: {
+      divider: false,
+      title: t('word.shortcuts'),
+      defaultIconTheme: 'transparent' as MenuItemTheme,
+      defaultItemSize: 'sm' as MenuItemSize,
     },
-    ...linksMenuItems,
-  ];
+    global: {
+      divider: false,
+    },
+  };
 
-  return { sidebar, global };
+  const menu: MenuProps = {
+    items: menuItems,
+    groups: menuGroups,
+  };
+
+  const sidebarMenu: MenuProps = {
+    ...menu,
+    defaultIconTheme: 'default',
+    items: menu.items.map((item, index) => ({
+      ...item,
+      iconTheme: index === 0 ? 'base' : item.iconTheme,
+    })),
+  };
+
+  const mobileMenu: MenuProps = {
+    ...menu,
+    defaultIconTheme: 'tinted',
+  };
+
+  const desktopMenu: MenuProps = {
+    ...mobileMenu,
+    items: [{ ...mobileMenu.items[0], expanded: false, items: [] }, ...mobileMenu.items.slice(1)],
+    groups: {
+      ...mobileMenu.groups,
+      shortcuts: {
+        ...mobileMenu.groups?.shortcuts,
+        divider: true,
+        title: undefined,
+      },
+    },
+  };
+
+  return {
+    sidebarMenu,
+    mobileMenu,
+    desktopMenu,
+  };
 };

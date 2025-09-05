@@ -239,7 +239,7 @@ function getAllDialogsForParties(cookie, parties, count, extraParams = false, co
   }
 
   if (extraParams) {
-    payload.variables.status = ['NOT_APPLICABLE', 'IN_PROGRESS', 'REQUIRES_ATTENTION', 'COMPLETED'];
+    payload.variables.status = ['NOT_APPLICABLE', 'IN_PROGRESS', 'AWAITING', 'REQUIRES_ATTENTION', 'COMPLETED'];
     payload.variables.label = ['DEFAULT'];
     queryLabel = queryLabel + ' with extraParams';
   }

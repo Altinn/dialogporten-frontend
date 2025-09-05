@@ -12,16 +12,16 @@ import { useQueryClient } from '@tanstack/react-query';
 import { type ChangeEvent, useEffect, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, Outlet, useLocation, useSearchParams } from 'react-router-dom';
-import { useDialogs } from '../../api/hooks/useDialogs.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { updateLanguage } from '../../api/queries.ts';
 import { createHomeLink } from '../../auth';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { i18n } from '../../i18n/config.ts';
 import { getSearchStringFromQueryParams } from '../../pages/Inbox/queryParams.ts';
+import { useProfile } from '../../pages/Profile';
 import { PageRoutes } from '../../pages/routes.ts';
-import { useProfile } from '../../profile';
 import { useGlobalState } from '../../useGlobalState.ts';
+import { BetaModal } from '../BetaModal';
 import { useAuth } from '../Login/AuthContext.tsx';
 import { useAccounts } from './Accounts/useAccounts.tsx';
 import { useFooter } from './Footer';
@@ -43,21 +43,16 @@ export const PageLayout: React.FC = () => {
   const queryClient = useQueryClient();
   const { searchValue, setSearchValue, onClear } = useSearchString();
   const { selectedProfile, selectedParties, parties, allOrganizationsSelected, currentEndUser } = useParties();
-  const { dialogsByView: allDialogsByView, dialogCountInconclusive: allDialogCountInconclusive } = useDialogs({
-    parties,
-  });
   const { autocomplete } = useAutocomplete({ selectedParties: selectedParties, searchValue });
 
   const { accounts, selectedAccount, accountSearch, accountGroups, onSelectAccount } = useAccounts({
     parties,
     selectedParties,
     allOrganizationsSelected,
-    countableItems: allDialogsByView.inbox,
-    dialogCountInconclusive: allDialogCountInconclusive,
   });
 
   const footer: FooterProps = useFooter();
-  const { global, sidebar } = useGlobalMenu();
+  const { mobileMenu, desktopMenu, sidebarMenu } = useGlobalMenu();
 
   useProfile();
 
@@ -116,11 +111,11 @@ export const PageLayout: React.FC = () => {
         items: autocomplete.items,
       },
     },
-    menu: {
+    mobileMenu,
+    globalMenu: {
       menuLabel: t('word.menu'),
-      items: global,
+      menu: desktopMenu,
       onSelectAccount: (account: string) => onSelectAccount(account, PageRoutes.inbox),
-      changeLabel: t('layout.menu.change_account'),
       backLabel: t('word.back'),
       currentEndUserLabel: t('parties.current_end_user', { name: currentEndUser?.name ?? 'n/a' }),
       accountMenu: {
@@ -168,12 +163,7 @@ export const PageLayout: React.FC = () => {
     color,
     header: headerProps,
     footer,
-    sidebar: {
-      hidden: isErrorState,
-      menu: {
-        items: sidebar,
-      },
-    },
+    sidebar: { menu: sidebarMenu, hidden: isErrorState },
   };
 
   return (
@@ -181,6 +171,7 @@ export const PageLayout: React.FC = () => {
       <Layout {...layoutProps}>
         <Outlet />
         <Snackbar />
+        <BetaModal />
       </Layout>
     </>
   );

@@ -10,6 +10,7 @@ export const QUERY_KEYS = {
   COUNT_DIALOGS: 'countDialogs',
   MAIN_CONTENT_REFERENCE: 'mainContentReference',
   SAVED_SEARCHES: 'savedSearches',
+  AUTOCOMPLETE: 'autocomplete',
   PROFILE: 'profile',
   NOTIFICATIONSETTINGS: 'notificationsettings',
   ORGANIZATIONS: 'organizations',
@@ -19,4 +20,5 @@ export const QUERY_KEYS = {
   SET_DELETE_LABEL_LOADING: 'setDeleteLabelLoading',
   SET_UNDO_LABEL_LOADING: 'setUndoLabelLoading',
   ERROR_STATE: 'errorState',
+  SHOW_TOUR: 'showTour',
 };

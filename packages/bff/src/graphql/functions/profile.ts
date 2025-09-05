@@ -5,34 +5,56 @@ import { Group, Party, ProfileTable } from '../../entities.ts';
 import type { NotificationSettingsInputData } from '../types/profile.ts';
 const { platformProfileAPI_url, platformExchangeTokenEndpointURL } = config;
 
+type TokenType = {
+  access_token: string;
+  access_token_expires_at?: number;
+  id_token?: string;
+  refresh_token?: string;
+  refresh_token_expires_at?: number;
+  scope: string;
+  tokenUpdatedAt?: number;
+};
+interface Context {
+  session: {
+    get: (key: string) => TokenType | string | undefined;
+  };
+}
+
 export const exchangeToken = async (context: Context): Promise<string> => {
-  const token = context.session.get('token');
+  const token = typeof context.session.get('token') === 'object' ? (context.session.get('token') as TokenType) : null;
+
   if (!token) {
-    console.error('No token found in session');
+    console.error('exchangeToken No token found in session');
     return '';
   }
-  const { data: newToken } = await axios.get(platformExchangeTokenEndpointURL, {
-    headers: {
-      Authorization: `Bearer ${token.access_token}`,
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
-  });
-  return newToken;
+  try {
+    const { data: newToken } = await axios.get(platformExchangeTokenEndpointURL, {
+      headers: {
+        Authorization: `Bearer ${token?.access_token}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    });
+    return newToken;
+  } catch (error) {
+    console.error('exchangeToken: Error fetching new token:', error);
+  }
+  return '';
 };
 
-export const getOrCreateProfile = async (
-  pid: string,
-  sessionLocale: string,
-  context: Context,
-): Promise<ProfileTable> => {
+export const getOrCreateProfile = async (context: Context): Promise<ProfileTable> => {
   const { disableProfile } = config;
+  const pid = typeof context.session.get('pid') === 'string' ? (context.session.get('pid') as string) : '';
+  const sessionLocale =
+    typeof context.session.get('locale') === 'string' ? (context.session.get('locale') as string) : '';
+
   if (!pid) {
     console.error('No pid provided');
     throw new Error('PID is required to get or create a profile');
   }
   const profile = await ProfileRepository!.createQueryBuilder('profile').where('profile.pid = :pid', { pid }).getOne();
-  const groups = disableProfile ? [] : await getFavoritesFromCore(await exchangeToken(context));
+  const exchangedToken = await exchangeToken(context);
+  const groups = disableProfile ? [] : await getFavoritesFromCore(exchangedToken);
 
   if (!profile) {
     const newProfile = new ProfileTable();
@@ -82,6 +104,8 @@ export const addFavoriteParty = async (context: Context, partyUuid: string) => {
   }
 };
 
+// Below code to be rewritten when Altinn Core API is updated
+// to support adding parties to groups
 export const addFavoritePartyToGroup = async (pid: string, partyId: string, categoryName: string) => {
   const currentProfile = await ProfileRepository!.findOne({
     where: { pid },
@@ -136,148 +160,73 @@ export const deleteFavoriteParty = async (context: Context, partyUuid: string) =
   }
   const newToken = await exchangeToken(context);
 
-  try {
-    const response = await axios.delete(`${platformProfileAPI_url}users/current/party-groups/favorites/${partyUuid}`, {
+  const response = await axios
+    .delete(`${platformProfileAPI_url}users/current/party-groups/favorites/${partyUuid}`, {
       headers: {
         Authorization: `Bearer ${newToken}`,
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-    });
-    return [response.data as Group];
-  } catch (error) {
-    console.error('Error deleting favorite:', error);
-    throw new Error('Failed to delete favorite');
-  }
-};
-
-interface Context {
-  session: {
-    get: (key: string) => { access_token: string } | undefined;
-  };
-}
-
-export const getUserFromCore = async (context: Context) => {
-  const token = await exchangeToken(context);
-  const { platformProfileAPI_url } = config;
-  const { data: coreProfileData } = await axios
-    .get(`${platformProfileAPI_url}users/current`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
     })
     .catch((error) => {
-      console.error('Error fetching core profile data:', error);
-      throw new Error('Failed to fetch core profile data');
+      console.error('Error deleting favorite party:', error?.status, error?.message);
+      return;
     });
-  if (!coreProfileData) {
-    console.error('No core profile data found');
-    return [];
-  }
-  return coreProfileData;
+  return response;
 };
 
-export const getFavoritesFromCore = async (token: string) => {
+export const getUserFromCore = async (context: Context) => {
   try {
-    const { data: coreFavoritesData } = await axios.get(
-      `${platformProfileAPI_url}users/current/party-groups/favorites`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-      },
-    );
-    return [coreFavoritesData as Group];
-  } catch {
-    console.info('getFavoritesFromCore: Error fetching core profile favorite data, returning empty array');
-    return [];
-  }
-};
-
-export const getNotificationsSettings = async (uuid: string, context: Context) => {
-  const { platformExchangeTokenEndpointURL, platformProfileAPI_url } = config;
-  const token = context.session.get('token');
-  if (!token) {
-    console.error('No token found in session');
-    return [];
-  }
-  if (!uuid) {
-    console.error('No uuid found in session');
-    return [];
-  }
-  const { data: newToken } = await axios.get(platformExchangeTokenEndpointURL, {
-    headers: {
-      Authorization: `Bearer ${token.access_token}`,
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
-  });
-  if (!newToken) {
-    console.error('No new token received');
-    return [];
-  }
-  let coreProfileData = [] as unknown[];
-  try {
-    const response = await axios.get(`${platformProfileAPI_url}users/current/notificationsettings/parties/${uuid}`, {
+    const token = await exchangeToken(context);
+    const { data } = await axios.get(`${platformProfileAPI_url}users/current`, {
       headers: {
-        Authorization: `Bearer ${newToken}`,
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
     });
-    coreProfileData = response.data;
-  } catch (error) {
-    if (typeof error === 'object' && error !== null) {
-      const err = error as { status?: number; message?: string };
-      // If the error is a 404, return an empty array
-      // This will hopefully be changed in Core API to not return 404 when no notifications settings are found
-      if (err.status === 404) {
-        return [];
-      }
-    } else {
-      console.error('Error fetching core notificationsSettings data:', error);
+    if (!data) {
+      console.error('No core profile data found');
+      return;
     }
-    throw new Error('Failed to fetch core profile data');
+    return data;
+  } catch (error) {
+    console.error('Error fetching user from core:', error);
   }
-  if (!coreProfileData) {
-    console.error('No core profile data found');
-    return [];
-  }
-  console.info('Core profile data fetched successfully:', coreProfileData);
-  return [coreProfileData];
+  return;
 };
 
-export const updateNotificationsSetting = async (data: NotificationSettingsInputData, context: Context) => {
-  const { platformExchangeTokenEndpointURL, platformProfileAPI_url } = config;
-  const token = context.session.get('token');
-  if (!token) {
-    console.error('No token found in session');
+export const getFavoritesFromCore = async (token: string) => {
+  try {
+    const { data } = await axios.get(`${platformProfileAPI_url}users/current/party-groups/favorites`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    });
+    return [data as Group];
+  } catch {
+    console.error('getFavoritesFromCore: Error fetching core profile favorite data, returning empty array');
     return [];
   }
-  if (!data.partyUuid) {
-    console.error('No uuid found in data');
-    return [];
+};
+
+export const getNotificationsSettings = async (partyUuid: string, context: Context) => {
+  if (!partyUuid) {
+    console.error('No uuid found in session');
+    return;
   }
-  const { data: newToken } = await axios.get(platformExchangeTokenEndpointURL, {
-    headers: {
-      Authorization: `Bearer ${token.access_token}`,
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
-  });
+  const newToken = await exchangeToken(context);
   if (!newToken) {
     console.error('No new token received');
-    return [];
+    return;
   }
-  let coreProfileData = [] as unknown[];
+
+  let data = [] as unknown[];
   try {
-    const response = await axios.put(
-      `${platformProfileAPI_url}users/current/notificationsettings/parties/${data.partyUuid}`,
-      data,
+    const response = await axios.get(
+      `${platformProfileAPI_url}users/current/notificationsettings/parties/${partyUuid}`,
       {
         headers: {
           Authorization: `Bearer ${newToken}`,
@@ -286,31 +235,115 @@ export const updateNotificationsSetting = async (data: NotificationSettingsInput
         },
       },
     );
-    coreProfileData = response.data;
+    data = response.data;
+    if (!data) {
+      console.error('No core profile data found');
+      return;
+    }
+    return data;
   } catch (error) {
-    throw new Error('Failed to updating core profile notificationsSettings');
+    if (typeof error === 'object' && error !== null) {
+      const err = error as { status?: number; message?: string };
+      // If the error is a 404, return an empty array
+      // This will hopefully be changed in Core API to not return 404 when no notifications settings are found
+      if (err.status === 404) {
+        return;
+      }
+    } else {
+      console.error('Error fetching core notificationsSettings for user:', partyUuid, error);
+    }
   }
-  console.info('Core profile notificationsSettings updating successfully:', coreProfileData);
-  return coreProfileData;
+  return;
 };
 
-export const getOrganisationsFromCore = async (pid: string, context: Context) => {
-  const { platformExchangeTokenEndpointURL, platformProfileAPI_url } = config;
+export const updateNotificationsSetting = async (
+  notificationSettinInput: NotificationSettingsInputData,
+  context: Context,
+) => {
+  const { partyUuid } = notificationSettinInput;
+  try {
+    if (!partyUuid) {
+      console.error('No uuid found in data');
+      return [];
+    }
+    const newToken = await exchangeToken(context);
+
+    if (!newToken) {
+      console.error('No new token received');
+      return;
+    }
+    const response = await axios.put(
+      `${platformProfileAPI_url}users/current/notificationsettings/parties/${partyUuid}`,
+      notificationSettinInput,
+      {
+        headers: {
+          Authorization: `Bearer ${newToken}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    if (typeof error === 'object' && error !== null) {
+      const err = error as { status?: number; message?: string };
+      console.error(
+        `Failed to update notificationsSettings for partyUuid ${partyUuid}: ${err.status ?? ''} ${err.message ?? ''}`,
+      );
+    }
+    return;
+  }
+};
+
+export const deleteNotificationsSetting = async (partyUuid: string, context: Context) => {
+  try {
+    if (!partyUuid) {
+      console.error('No uuid found in data');
+      return;
+    }
+    const newToken = await exchangeToken(context);
+
+    if (!newToken) {
+      console.error('No new token received');
+      return;
+    }
+    const response = await axios.delete(
+      `${platformProfileAPI_url}users/current/notificationsettings/parties/${partyUuid}`,
+      {
+        headers: {
+          Authorization: `Bearer ${newToken}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    if (typeof error === 'object' && error !== null) {
+      const err = error as { status?: number; message?: string };
+      console.error(`Failed to delete notificationsSettings: ${err.status ?? ''} ${err.message ?? ''}`);
+    }
+    return;
+  }
+};
+
+export const getNotificationAddressByOrgNumber = async (orgnr: string, context: Context) => {
   const token = context.session.get('token');
   if (!token) {
     console.error('No token found in session');
-    return [];
+    return;
   }
-  const { data: newToken } = await axios.get(platformExchangeTokenEndpointURL, {
-    headers: {
-      Authorization: `Bearer ${token.access_token}`,
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
-  });
-  const organizationNumber = '310412406'; // Replace with actual party UUID if needed
-  const { data: coreProfileData } = await axios
-    .get(`${platformProfileAPI_url}organizations/${organizationNumber}/notificationaddresses/mandatory`, {
+  if (!orgnr) {
+    console.error('No orgnr provided');
+    return;
+  }
+  const newToken = await exchangeToken(context);
+  if (!newToken) {
+    console.error('No new token received');
+    return;
+  }
+  const { data, status, statusText } = await axios
+    .get(`${platformProfileAPI_url}organizations/${orgnr}/notificationaddresses/mandatory`, {
       headers: {
         Authorization: `Bearer ${newToken}`,
         'Content-Type': 'application/json',
@@ -318,14 +351,14 @@ export const getOrganisationsFromCore = async (pid: string, context: Context) =>
       },
     })
     .catch((error) => {
-      console.error('Error fetching core Organisations data:', error);
-      throw new Error('Failed to fetch core Organisations data');
+      // This fetch call can return 403 if user does not have access to the organization
+      // or 404 if no notification addresses are found
+      return { data: null, status: error?.status, statusText: error?.message };
     });
-  if (!coreProfileData) {
-    console.error('No core Organisationsv data found');
-    return [];
+  if (!data) {
+    return { data: null, status, statusText };
   }
-  return coreProfileData;
+  return data;
 };
 
 export const updateLanguage = async (pid: string, language: string) => {

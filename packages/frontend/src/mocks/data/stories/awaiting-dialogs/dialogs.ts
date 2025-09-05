@@ -13,7 +13,6 @@ const dialogsWithStatusAwaiting: SearchDialogFieldsFragment[] = [
         hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0, contentUpdatedAt: '2024-05-23T23:00:00.000Z', guiAttachmentCount: 1,
         status: DialogStatus.Awaiting,
         createdAt: '2024-05-23T23:00:00.000Z',
-        updatedAt: '2024-05-23T23:00:00.000Z',
         extendedStatus: null,
         seenSinceLastContentUpdate: [],
         content: {
@@ -52,7 +51,6 @@ const dialogsWithStatusAwaiting: SearchDialogFieldsFragment[] = [
         hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0, contentUpdatedAt: '2024-05-23T23:00:00.000Z', guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-05-23T23:00:00.000Z',
-        updatedAt: '2024-05-23T23:00:00.000Z',
         extendedStatus: null,
         content: {
             title: {

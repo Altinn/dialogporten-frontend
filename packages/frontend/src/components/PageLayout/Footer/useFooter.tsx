@@ -23,7 +23,7 @@ const footerLinks = [
 export const useFooter = (): FooterProps => {
   const { t } = useTranslation();
   return {
-    address: 'Postboks 6783 St. Olavs plass, 0130 Oslo',
+    address: 'Postboks 1382 Vika, 0114 Oslo.',
     address2: 'Org.nr. 991 825 827',
     menu: {
       items: footerLinks.map((link) => ({

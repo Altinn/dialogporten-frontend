@@ -2,7 +2,6 @@ import type { FilterState } from '@altinn/altinn-components/dist/types/lib/compo
 import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
 import type { DialogStatus, GetAllDialogsForPartiesQuery, PartyFieldsFragment, SystemLabel } from 'bff-types-generated';
 import { useRef } from 'react';
-import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
 import { normalizeFilterDefaults } from '../../pages/Inbox/filters.ts';
@@ -15,6 +14,7 @@ export type InboxViewType = 'inbox' | 'drafts' | 'sent' | 'archive' | 'bin';
 export type DialogsByView = { [key in InboxViewType]: InboxItemInput[] };
 
 interface UseDialogsProps {
+  queryKey: string;
   parties?: PartyFieldsFragment[];
   viewType?: InboxViewType;
   filterState?: FilterState;
@@ -33,7 +33,7 @@ interface UseDialogsOutput {
   isFetchingNextPage: boolean;
 }
 
-export const useDialogs = ({ parties, viewType, filterState, search }: UseDialogsProps): UseDialogsOutput => {
+export const useDialogs = ({ parties, viewType, filterState, search, queryKey }: UseDialogsProps): UseDialogsOutput => {
   const { organizations } = useOrganizations();
   const { selectedParties } = useParties();
   const format = useFormat();
@@ -54,7 +54,7 @@ export const useDialogs = ({ parties, viewType, filterState, search }: UseDialog
   });
 
   const query = useInfiniteQuery<GetAllDialogsForPartiesQuery>({
-    queryKey: [QUERY_KEYS.DIALOGS, partyIds, viewTypeKey, queryVariables, search],
+    queryKey: [queryKey, partyIds, viewTypeKey, queryVariables, search],
     staleTime: 1000 * 60 * 10,
     retry: 3,
     queryFn: (args) => {

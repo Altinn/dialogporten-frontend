@@ -19,10 +19,11 @@
   "dependencies": {
     "@azure/monitor-opentelemetry": "1.7.0",
     "@digdir/dialogporten-node-logger": "workspace:*",
-    "@digdir/dialogporten-schema": "1.75.0-339ffad",
+    "@digdir/dialogporten-schema": "1.79.7-5f58832",
     "@fastify/cookie": "^11.0.2",
     "@fastify/cors": "^10.1.0",
     "@fastify/formbody": "^8.0.2",
+    "@fastify/helmet": "13.0.1",
     "@fastify/session": "^11.1.0",
     "@graphql-tools/executor-http": "^1.3.3",
     "@graphql-tools/schema": "^10.0.23",

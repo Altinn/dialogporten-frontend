@@ -9,6 +9,7 @@ import App from './App.tsx';
 import { AuthProvider } from './components/Login/AuthContext.tsx';
 import { LoggerContextProvider } from './contexts/LoggerContext.tsx';
 import { FeatureFlagProvider, featureFlags } from './featureFlags';
+import { OnboardingTourProvider } from './onboardingTour';
 
 declare const __APP_VERSION__: string;
 console.info('App Version:', __APP_VERSION__);
@@ -37,7 +38,9 @@ if (element) {
               <FeatureFlagProvider flags={featureFlags}>
                 <AuthProvider>
                   <RootProvider>
-                    <App />
+                    <OnboardingTourProvider>
+                      <App />
+                    </OnboardingTourProvider>
                   </RootProvider>
                 </AuthProvider>
               </FeatureFlagProvider>

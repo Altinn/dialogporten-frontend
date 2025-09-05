@@ -2,26 +2,12 @@ import { DashboardHeader, Divider, List, PageBase, PageNav, SettingsItem } from 
 import { BellIcon, CogIcon } from '@navikt/aksel-icons';
 import { t } from 'i18next';
 import { Link } from 'react-router-dom';
-import { useProfile } from '../../profile';
 import { PageRoutes } from '../routes';
-
-const dummy = {
-  user: {
-    party: {
-      person: {
-        name: 'John Doe',
-        ssn: '12345678901',
-        mobileNumber: '12345678',
-      },
-    },
-    email: 'dummy@example.com',
-  },
-};
+import { toTitleCase } from './name';
+import { useProfile } from './useProfile';
 
 export const Profile = () => {
-  //to update when backend is ready
-  const { user = dummy.user } = useProfile();
-  const isLoading = !user;
+  const { user, isLoading } = useProfile();
 
   return (
     <PageBase>
@@ -41,7 +27,7 @@ export const Profile = () => {
       <DashboardHeader
         loading={isLoading}
         type="person"
-        name={user?.party?.person?.name || ''}
+        name={toTitleCase(user?.party?.name) || ''}
         description={`${t('profile.landing.ssn')} ${user?.party?.person?.ssn}`}
       >
         <List size="sm">

@@ -6,7 +6,10 @@ test.describe('Activity history - transmissions and activities', () => {
     await page.goto(appUrlWithPlaywrightId('activity-history'));
     // Go to details for dialog with activity history
     await page.getByRole('link', { name: 'This has a sender name defined' }).click();
+    await expect(page.getByRole('link', { name: 'Tilbake', exact: true })).toBeVisible();
+
     // Open modal dialog with activity history
+
     await page.getByRole('button', { name: 'Aktivitetslogg' }).first().click();
 
     const dialog = page.getByRole('dialog');

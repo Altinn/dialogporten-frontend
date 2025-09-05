@@ -22,6 +22,7 @@ import type { ActivityLogSegmentProps } from '@altinn/altinn-components/dist/typ
 import { DialogStatus } from 'bff-types-generated';
 import { type ReactElement, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Analytics } from '../../analytics';
 import type { DialogByIdDetails } from '../../api/hooks/useDialogById.tsx';
 import type { TimelineSegmentWithTransmissions } from '../../api/utils/transmissions.ts';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
@@ -93,12 +94,15 @@ const handleDialogActionClick = async (
     window.open(url, '_blank');
   } else {
     try {
-      const response = await fetch(url, {
-        method: httpMethod,
-        headers: {
-          Authorization: `Bearer ${dialogToken}`,
-        },
-      });
+      const response = await Analytics.trackFetchDependency(
+        `DialogAction_${httpMethod}`,
+        fetch(url, {
+          method: httpMethod,
+          headers: {
+            Authorization: `Bearer ${dialogToken}`,
+          },
+        }),
+      );
 
       if (!response.ok) {
         console.error(`Error: ${response.statusText}`);

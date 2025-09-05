@@ -3,6 +3,7 @@ import {
   addFavoriteParty,
   addFavoritePartyToGroup,
   deleteFavoriteParty,
+  deleteNotificationsSetting,
   getOrCreateProfile,
   updateLanguage,
   updateNotificationsSetting,
@@ -66,11 +67,7 @@ export const CreateSavedSearch = extendType({
       },
       resolve: async (_, { name, data }, ctx) => {
         try {
-          const profile = await getOrCreateProfile(
-            ctx.session.get('pid'),
-            ctx.session.get('locale'),
-            ctx.session.get('token'),
-          );
+          const profile = await getOrCreateProfile(ctx);
           if (!profile) {
             throw new Error('Profile not found or could not be created');
           }
@@ -144,6 +141,27 @@ export const UpdateNotificationSetting = extendType({
           return { success: true, message: 'NotificationSetting updated successfully' };
         } catch (error) {
           console.error('Failed to update NotificationSetting:', error);
+          return error;
+        }
+      },
+    });
+  },
+});
+
+export const DeleteNotificationSetting = extendType({
+  type: 'Mutation',
+  definition(t) {
+    t.field('deleteNotificationSetting', {
+      type: Response,
+      args: {
+        partyUuid: stringArg(),
+      },
+      resolve: async (_, { partyUuid }, ctx) => {
+        try {
+          await deleteNotificationsSetting(partyUuid, ctx);
+          return { success: true, message: 'NotificationSetting deleted successfully' };
+        } catch (error) {
+          console.error('Failed to delete NotificationSetting:', error);
           return error;
         }
       },

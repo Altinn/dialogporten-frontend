@@ -108,7 +108,7 @@ const getFilteredDialogs = (
     if (excludeFilterCategory !== FilterCategory.UPDATED && currentFilters.updated?.length) {
       const dateFilter = currentFilters.updated[0] as DateFilterOption;
       if (dateFilter && filterRanges[dateFilter]) {
-        const dialogDate = new Date(dialog.updatedAt);
+        const dialogDate = new Date(dialog.contentUpdatedAt);
         const { start, end } = filterRanges[dateFilter];
 
         if (start && dialogDate < start) return false;
@@ -329,7 +329,7 @@ const createUpdatedAtFilter = (
     label: t('filter_bar.label.updated'),
     optionType: 'radio',
     removable: true,
-    options: createDateOptions(filteredDialogs.map((d) => d.updatedAt)),
+    options: createDateOptions(filteredDialogs.map((d) => d.contentUpdatedAt)),
   };
 };
 
@@ -362,7 +362,12 @@ export const getFilters = ({
   const statusFilter = createStatusFilter(allDialogs, currentFilters);
   const updatedAtFilter = createUpdatedAtFilter(allDialogs, currentFilters);
 
-  return viewType === 'inbox' ? [senderOrgFilter, statusFilter, updatedAtFilter] : [senderOrgFilter, updatedAtFilter];
+  const filters = [senderOrgFilter, updatedAtFilter];
+  if (viewType === 'inbox') {
+    filters.push(statusFilter);
+  }
+
+  return filters.filter((filter) => filter.options?.length > 0);
 };
 
 export const readFiltersFromURLQuery = (query: string): FilterState => {

@@ -8,14 +8,12 @@ import {
   Section,
   type SeenByLogItemProps,
   Toolbar,
-  Typography,
 } from '@altinn/altinn-components';
 import type { FilterState } from '@altinn/altinn-components/dist/types/lib/components/Toolbar/Toolbar';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { type InboxViewType, useDialogs } from '../../api/hooks/useDialogs.tsx';
-import { useDialogsCount } from '../../api/hooks/useDialogsCount.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { createFiltersURLQuery } from '../../auth';
 import { EmptyState } from '../../components/EmptyState/EmptyState.tsx';
@@ -25,6 +23,8 @@ import { useWindowSize } from '../../components/PageLayout/useWindowSize.tsx';
 import { SaveSearchButton } from '../../components/SavedSearchButton/SaveSearchButton.tsx';
 import { isSavedSearchDisabled } from '../../components/SavedSearchButton/savedSearchEnabled.ts';
 import { SeenByModal } from '../../components/SeenByModal/SeenByModal.tsx';
+import { QUERY_KEYS } from '../../constants/queryKeys.ts';
+import { useDynamicTour } from '../../onboardingTour';
 import { PageRoutes } from '../routes.ts';
 import { FilterCategory, readFiltersFromURLQuery } from './filters.ts';
 import styles from './inbox.module.css';
@@ -44,6 +44,7 @@ export interface CurrentSeenByLog {
 
 export const Inbox = ({ viewType }: InboxProps) => {
   const { t } = useTranslation();
+
   const {
     selectedParties,
     allOrganizationsSelected,
@@ -67,9 +68,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
     setFilterState(filters);
   };
 
-  /* Used to populate account menu */
-  const { dialogCountsByViewType, dialogCountInconclusive: dialogForAllPartiesCountInconclusive } =
-    useDialogsCount(parties);
   const { enteredSearchValue } = useSearchString();
 
   const validSearchString = enteredSearchValue.length > 2 ? enteredSearchValue : undefined;
@@ -84,7 +82,13 @@ export const Inbox = ({ viewType }: InboxProps) => {
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
-  } = useDialogs({ parties: selectedParties, viewType, filterState, search: validSearchString });
+  } = useDialogs({
+    parties: selectedParties,
+    viewType,
+    filterState,
+    search: validSearchString,
+    queryKey: QUERY_KEYS.DIALOGS,
+  });
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
@@ -97,16 +101,31 @@ export const Inbox = ({ viewType }: InboxProps) => {
     parties,
     selectedParties,
     allOrganizationsSelected,
-    countableItems: dialogCountsByViewType[viewType].map((dialog) => ({
-      party: dialog.party,
-      isSeenByEndUser: dialog.seenSinceLastContentUpdate?.some((s) => s.isCurrentEndUser),
-    })),
-    dialogCountInconclusive: dialogForAllPartiesCountInconclusive,
   });
 
   const { filters, getFilterLabel } = useFilters({ viewType });
 
   const isLoading = isLoadingParties || isLoadingDialogs;
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: This hook does not specify all of its dependencies
+  useEffect(() => {
+    const scrollToId = location?.state?.scrollToId;
+    const listElToScroll = document.getElementById(scrollToId);
+    if (!isLoading) {
+      if (listElToScroll) {
+        listElToScroll.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }, [isLoading]);
+
+  useDynamicTour({
+    isLoadingParties,
+    isLoadingDialogs,
+    dialogsSuccess,
+    dialog: dialogs[0] || null,
+    viewType,
+  });
+
   const { groupedDialogs, groups } = useGroupedDialogs({
     onSeenByLogModalChange: setCurrentSeenByLogModal,
     items: dialogs,
@@ -143,17 +162,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
     );
   }
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: This hook does not specify all of its dependencies
-  useEffect(() => {
-    const scrollToId = location?.state?.scrollToId;
-    const listElToScroll = document.getElementById(scrollToId);
-    if (!isLoading) {
-      if (listElToScroll) {
-        listElToScroll.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    }
-  }, [isLoading]);
-
   return (
     <PageBase margin="page">
       <section data-testid="inbox-toolbar">
@@ -188,18 +196,9 @@ export const Inbox = ({ viewType }: InboxProps) => {
           </>
         ) : null}
       </section>
-      {(viewType === 'archive' || viewType === 'bin') && (
-        <Typography size="sm">
-          <p>{t(`inbox.${viewType}.info_message`)}</p>
-        </Typography>
-      )}
-
       <Section>
         {dialogsSuccess && !dialogs.length && !isLoading && (
-          <EmptyState
-            title={searchMode ? t('inbox.no_results.title') : t(`inbox.heading.title.${viewType}`, { count: 0 })}
-            description={searchMode ? t('inbox.no_results.description') : t(`inbox.heading.description.${viewType}`)}
-          />
+          <EmptyState query={enteredSearchValue} viewType={viewType} searchMode={searchMode} />
         )}
         <DialogList
           items={groupedDialogs}

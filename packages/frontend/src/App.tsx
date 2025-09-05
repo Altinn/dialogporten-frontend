@@ -9,13 +9,14 @@ import { FrontChannelLogout } from './pages/LogoutPage/FrontChannelLogout.tsx';
 import { Access } from './pages/Profile/Access/Access.tsx';
 import { Activities } from './pages/Profile/Activities/Activities.tsx';
 import { Authorize } from './pages/Profile/Authorize/Authorize.tsx';
-import { Notifications } from './pages/Profile/Notifications/Notifications.tsx';
+import { NotificationsPage } from './pages/Profile/NotificationsPage/NotificationsPage.tsx';
 import { PartiesOverviewPage } from './pages/Profile/PartiesOverviewPage/PartiesOverviewPage.tsx';
 import { Profile } from './pages/Profile/Profile.tsx';
 import { Settings } from './pages/Profile/Settings/Settings.tsx';
 import { SavedSearchesPage } from './pages/SavedSearches';
 import { PageRoutes } from './pages/routes.ts';
 import './app.css';
+import { AboutPage } from './pages/About/About.tsx';
 
 function App() {
   const EnableProfilePages = useFeatureFlag(FeatureFlagKeys.EnableProfilePages);
@@ -29,10 +30,21 @@ function App() {
             element={withErrorBoundary(<Inbox key="inbox" viewType={'inbox'} />, 'Inbox')}
           />
           {!!EnableProfilePages && (
-            <Route
-              path={PageRoutes.partiesOverview}
-              element={withErrorBoundary(<PartiesOverviewPage key="partys" />, 'Parties Overview')}
-            />
+            <>
+              <Route path={PageRoutes.profile} element={withErrorBoundary(<Profile />, 'Profile')} />
+              <Route
+                path={PageRoutes.partiesOverview}
+                element={withErrorBoundary(<PartiesOverviewPage key="partys" />, 'Parties Overview')}
+              />
+              <Route
+                path={PageRoutes.notifications}
+                element={withErrorBoundary(<NotificationsPage />, 'Notifications')}
+              />
+              <Route path={PageRoutes.settings} element={withErrorBoundary(<Settings />, 'Settings')} />
+              <Route path={PageRoutes.access} element={withErrorBoundary(<Access />, 'Access')} />
+              <Route path={PageRoutes.activities} element={withErrorBoundary(<Activities />, 'Activities')} />
+              <Route path={PageRoutes.authorize} element={withErrorBoundary(<Authorize />, 'Authorize')} />
+            </>
           )}
           <Route
             path={PageRoutes.drafts}
@@ -46,12 +58,8 @@ function App() {
           <Route path={PageRoutes.bin} element={withErrorBoundary(<Inbox key="bin" viewType={'bin'} />, 'Bin')} />
           <Route path={PageRoutes.inboxItem} element={withErrorBoundary(<DialogDetailsPage />, 'Inbox Item')} />
           <Route path={PageRoutes.savedSearches} element={withErrorBoundary(<SavedSearchesPage />, 'Saved Searches')} />
-          <Route path={PageRoutes.profile} element={withErrorBoundary(<Profile />, 'Profile')} />
-          <Route path={PageRoutes.authorize} element={withErrorBoundary(<Authorize />, 'Authorize')} />
-          <Route path={PageRoutes.access} element={withErrorBoundary(<Access />, 'Access')} />
-          <Route path={PageRoutes.notifications} element={withErrorBoundary(<Notifications />, 'Notifications')} />
-          <Route path={PageRoutes.settings} element={withErrorBoundary(<Settings />, 'Settings')} />
-          <Route path={PageRoutes.activities} element={withErrorBoundary(<Activities />, 'Activities')} />
+
+          <Route path={PageRoutes.about} element={withErrorBoundary(<AboutPage />, 'About')} />
           <Route path={PageRoutes.error} element={<ErrorPage />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Route>

@@ -18,21 +18,18 @@ test.describe('Flattened parties and subparties', () => {
     await page.getByRole('button', { name: 'Test Testesen' }).first().click();
     const FirmaAS = await getToolbarAccountInfo(page, 'Firma AS');
     expect(FirmaAS.found).toEqual(true);
-    expect(FirmaAS.badgeCount).toEqual(1);
 
     const TestBedriftAS = await getToolbarAccountInfo(page, 'Testbedrift AS');
     expect(TestBedriftAS.found).toEqual(true);
-    expect(TestBedriftAS.badgeCount).toEqual(2);
 
     const TestBedriftASAvdOslo = await getToolbarAccountInfo(page, 'Testbedrift AS Avd Oslo');
     expect(TestBedriftASAvdOslo.found).toEqual(true);
-    expect(TestBedriftASAvdOslo.badgeCount).toEqual(1);
 
     await page
       .getByTestId('inbox-toolbar')
       .getByRole('group')
       .locator('a')
-      .filter({ hasText: 'T2Testbedrift AS2' })
+      .filter({ hasText: /^TTestbedrift AS$/ })
       .click();
 
     await expect(page.getByRole('link', { name: 'Message for Test Testesen' })).not.toBeVisible();
@@ -59,7 +56,7 @@ test.describe('Flattened parties and subparties', () => {
       .getByTestId('inbox-toolbar')
       .getByRole('group')
       .locator('a')
-      .filter({ hasText: 'T2Testbedrift AS2' })
+      .filter({ hasText: /^TTestbedrift AS$/ })
       .click();
 
     await searchbarInput.fill('party');
@@ -79,7 +76,7 @@ test.describe('Flattened parties and subparties', () => {
       .getByTestId('inbox-toolbar')
       .getByRole('group')
       .locator('a')
-      .filter({ hasText: 'Alle virksomheter7' })
+      .filter({ hasText: 'Alle virksomheter' })
       .click();
 
     await page.getByTestId('inbox-toolbar').getByRole('button', { name: 'add' }).click();

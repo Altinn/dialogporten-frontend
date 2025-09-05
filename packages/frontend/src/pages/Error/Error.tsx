@@ -1,7 +1,6 @@
-import { Article, ArticleHeader, Breadcrumbs, Button, PageBase, Typography } from '@altinn/altinn-components';
+import { Article, ArticleHeader, Button, PageBase, Typography } from '@altinn/altinn-components';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { PageRoutes } from '../routes';
 
 export const ErrorPage = () => {
   const location = useLocation();
@@ -13,22 +12,18 @@ export const ErrorPage = () => {
     navigate(-1);
   };
 
+  const getTranslatedComponentName = (name: string) => {
+    const translationKey = `component.${name.toLowerCase().replace(/\s+/g, '_')}`;
+    const translated = t(translationKey);
+    return translated === translationKey ? name : translated;
+  };
+
+  const translatedComponentName = getTranslatedComponentName(componentName);
+
   return (
     <PageBase>
       <Article>
-        <Breadcrumbs
-          items={[
-            {
-              label: t('word.frontpage'),
-              href: PageRoutes.inbox,
-            },
-            {
-              label: t('word.error'),
-              href: PageRoutes.error,
-            },
-          ]}
-        />
-        <ArticleHeader title={`Unexpected error in ${componentName}`}>
+        <ArticleHeader title={t('error.unexpected_error_in', { componentName: translatedComponentName })}>
           <Typography>
             <p>
               {t('error.check_status_on')}{' '}

@@ -20,12 +20,17 @@ import {
 import { t } from 'i18next';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useProfile } from '../../../profile';
-import { buildAddressString } from '../../../profile/buildAddressString';
+import { useProfile } from '..';
+import { useParties } from '../../../api/hooks/useParties';
 import { PageRoutes } from '../../routes';
+import { flattenParties } from '../PartiesOverviewPage/partyFieldToNotificationsList';
+import { buildAddressString } from '../buildAddressString';
 
 export const Settings = () => {
   const { user } = useProfile();
+  const { parties: normalParties } = useParties();
+  const flattenedParties = flattenParties(normalParties);
+  const flattenedPartiesCount = flattenedParties?.filter((party) => party.partyType === 'Organization')?.length || 0;
 
   const [expandedElement, setExpandedElement] = useState<boolean>(false);
 
@@ -83,7 +88,7 @@ export const Settings = () => {
             as={(props) => <Link to={PageRoutes.notifications} {...props} />}
             icon={BellIcon}
             title={t('profile.settings.notification_settings')}
-            badge={{ label: '12 aktører' }}
+            badge={!!flattenedPartiesCount && { label: `${flattenedPartiesCount} aktører` }}
             linkIcon
           />
           <Divider as="li" />
