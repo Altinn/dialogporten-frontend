@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vedlikehold - Altinn</title>
+    <link
+        rel='stylesheet'
+        href='https://altinncdn.no/fonts/inter/v4.1/inter.css'
+        integrity="sha384-OcHzc/By/OPw9uJREawUCjP2inbOGKtKb4A/I2iXxmknUfog2H8Adx71tWVZRscD"
+        crossorigin="anonymous"
+    />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            font-feature-settings: 'cv05' 1; /* Enable lowercase l with tail */
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .header {
+            background-color: #fff;
+            border-bottom: 1px solid #e1e5e9;
+            padding: 10px 0;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .bilingual-content {
+            display: flex;
+            flex-direction: row;
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .language-section {
+            flex: 1;
+            text-align: center;
+        }
+
+        .language-section h1 {
+            margin-bottom: 20px;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .button-container .back-button {
+            flex: 1;
+            max-width: 485px;
+        }
+
+        /* Mobile layout: Norwegian section first, then English section */
+        .mobile-section {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            /* Hide desktop layout completely */
+            .bilingual-content,
+            .maintenance-info-boxes,
+            .button-container {
+                display: none !important;
+            }
+
+            /* Also hide the maintenance-details if it exists */
+            .maintenance-details {
+                display: none !important;
+            }
+
+            /* Show mobile layout */
+            .mobile-section {
+                display: block;
+                max-width: 600px;
+                margin: 0 auto;
+            }
+
+            .mobile-language-group {
+                margin-bottom: 50px;
+                text-align: center;
+            }
+
+            .mobile-language-group h1 {
+                margin-bottom: 20px;
+            }
+
+            .mobile-language-group .maintenance-description {
+                margin-bottom: 30px;
+            }
+
+            .mobile-info-box {
+                background: #fff;
+                border-radius: 12px;
+                padding: 20px;
+                box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+                text-align: center;
+                border: 1px solid #e1e5e9;
+                margin-bottom: 20px;
+            }
+
+            .mobile-info-box h3 {
+                color: #0062ba;
+                margin-bottom: 15px;
+                font-size: 18px;
+            }
+
+            .mobile-info-box p {
+                color: #666;
+                margin-bottom: 10px;
+            }
+
+            .mobile-button {
+                display: inline-block;
+                background: linear-gradient(135deg, #0062ba 0%, #004f96 100%);
+                color: white;
+                text-decoration: none;
+                padding: 10px 20px;
+                border-radius: 20px;
+                font-size: 14px;
+                font-weight: 600;
+                transition: all 0.3s ease;
+                margin-bottom: 20px;
+            }
+
+            .mobile-button:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 98, 186, 0.3);
+            }
+        }
+
+        .maintenance-info-boxes {
+            display: flex;
+            flex-direction: row;
+            gap: 30px;
+            max-width: 1000px;
+            margin: 40px auto 0;
+        }
+
+        .maintenance-info-box {
+            flex: 1;
+            background: #fff;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            border: 1px solid #e1e5e9;
+        }
+
+        .maintenance-info-box h3 {
+            color: #0062ba;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .maintenance-info-box p {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .logo-icon {
+            width: 90px;
+            height: 34px;
+            margin-right: 15px;
+        }
+
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 600;
+            color: #0062ba;
+        }
+
+        .tagline {
+            font-size: 14px;
+            color: #666;
+            margin-left: 75px;
+            margin-top: -5px;
+        }
+
+        /* Main content */
+        .main-content {
+            padding: 60px 0;
+            text-align: center;
+        }
+
+        .maintenance-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 40px;
+            background: linear-gradient(135deg, #0062ba 0%, #004f96 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 48px;
+        }
+
+        .altinn-logo-large {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .altinn-logo-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .maintenance-title {
+            font-size: 36px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .maintenance-description {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
+        }
+
+        .maintenance-details {
+            background: #fff;
+            border-radius: 8px;
+            padding: 30px;
+            margin: 40px auto;
+            max-width: 500px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .maintenance-details h3 {
+            color: #0062ba;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .maintenance-details p {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        /* Button */
+        .back-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #0062ba 0%, #004f96 100%);
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 98, 186, 0.3);
+        }
+
+        .back-button:active {
+            transform: translateY(0);
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #f1f3f4;
+            border-top: 1px solid #e1e5e9;
+            padding: 40px 0;
+            margin-top: 60px;
+        }
+
+        .footer-content {
+            text-align: center;
+            color: #666;
+        }
+
+        .footer-content p {
+            margin-bottom: 10px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #0062ba;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .tagline {
+                margin-left: 0;
+                margin-top: 5px;
+            }
+
+            .maintenance-title {
+                font-size: 28px;
+            }
+
+            .maintenance-description {
+                font-size: 16px;
+            }
+
+            .maintenance-details {
+                margin: 40px 20px;
+                padding: 20px;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .altinn-logo-large {
+                width: 120px;
+                height: 120px;
+            }
+        }
+
+
+
+        /* Accessibility */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+
+
+        /* Logo fallback */
+        .logo-fallback {
+            width: 90px;
+            height: 34px;
+            background: linear-gradient(135deg, #0062ba 0%, #004f96 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+            color: white;
+            font-size: 20px;
+        }
+
+        .logo-fallback-large {
+            width: 110px;
+            height: 110px;
+            background: linear-gradient(135deg, #0062ba 0%, #004f96 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 48px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div>
+                    <a href="https://altinn.no" class="logo">
+                        <div class="logo-icon">
+                            <img src="https://info.altinn.no/Static/img/a-logo-blue.svg" alt="Altinn logo" onerror="this.parentElement.innerHTML='<div class=\'logo-fallback\'>A</div>'">
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="altinn-logo-large" role="img" aria-label="Altinn logo">
+                <img src="https://info.altinn.no/Static/img/a-logo-blue.svg" alt="Altinn logo" onerror="this.parentElement.innerHTML='<div class=\'logo-fallback-large\'>A</div>'">
+            </div>
+            
+            <div class="bilingual-content">
+                <div class="language-section">
+                    <h1 class="maintenance-title">
+                        Arbeid pågår
+                    </h1>
+                    <p class="maintenance-description">
+                        Vi jobber med noen endringer og er tilbake innen kort tid.<br><br>
+                        Mens våre folk jobber under panseret, kan du i mellomtiden ta deg en velfortjent kaffe eller gå til altinn.no for å løse andre oppgaver.
+                    </p>
+                </div>
+
+                <div class="language-section">
+                    <h1 class="maintenance-title">
+                        Under construction
+                    </h1>
+                    <p class="maintenance-description">
+                        We are under maintenance and will be back shortly.<br><br>
+                        While our team is working behind the scenes, feel free to have a coffee break or go to altinn.no to solve other tasks.
+                    </p>
+                </div>
+            </div>
+
+            <div class="maintenance-info-boxes">
+                <div class="maintenance-info-box">
+                    <h3>Informasjon om vedlikeholdet</h3>
+                    <p><strong>Status:</strong> Arbeid pågår</p>
+                    <p><strong>Startet:</strong> <span id="start-time">Loading...</span></p>
+                    <p><strong>Forventet ferdig:</strong> Så snart som mulig</p>
+                    <p><strong>Tjenester påvirket:</strong> Altinn-innboks</p>
+                </div>
+
+                <div class="maintenance-info-box">
+                    <h3>Maintenance Information</h3>
+                    <p><strong>Status:</strong> Under construction</p>
+                    <p><strong>Started:</strong> <span id="start-time-en">Loading...</span></p>
+                    <p><strong>Expected completion:</strong> As soon as possible</p>
+                    <p><strong>Affected services:</strong> Altinn inbox</p>
+                </div>
+            </div>
+
+            <div class="button-container">
+                <a href="https://altinn.no" class="back-button" role="button">
+                    Til vanlig Altinn-innboks
+                </a>
+                <a href="https://altinn.no" class="back-button" role="button">
+                    Go to regular Altinn inbox
+                </a>
+            </div>
+
+            <!-- Mobile-specific layout -->
+            <div class="mobile-section">
+                <!-- Norwegian section -->
+                <div class="mobile-language-group">
+                    <h1 class="maintenance-title">Arbeid pågår</h1>
+                    <p class="maintenance-description">
+                        Vi jobber med noen endringer og er tilbake innen kort tid.<br><br>
+                        Mens våre folk jobber under panseret, kan du i mellomtiden ta deg en velfortjent kaffe eller gå til altinn.no for å løse andre oppgaver.
+                    </p>
+                    
+                    <div class="mobile-info-box">
+                        <h3>Informasjon om vedlikeholdet</h3>
+                        <p><strong>Status:</strong> Arbeid pågår</p>
+                        <p><strong>Startet:</strong> <span id="start-time-mobile-no">Loading...</span></p>
+                        <p><strong>Forventet ferdig:</strong> Så snart som mulig</p>
+                        <p><strong>Tjenester påvirket:</strong> Altinn-innboks</p>
+                    </div>
+                    
+                    <a href="https://altinn.no" class="mobile-button" role="button">
+                        Til vanlig Altinn-innboks
+                    </a>
+                </div>
+
+                <!-- English section -->
+                <div class="mobile-language-group">
+                    <h1 class="maintenance-title">Under construction</h1>
+                    <p class="maintenance-description">
+                        We are under maintenance and will be back shortly.<br><br>
+                        While our team is working behind the scenes, feel free to have a coffee break or go to altinn.no to solve other tasks.
+                    </p>
+                    
+                    <div class="mobile-info-box">
+                        <h3>Maintenance Information</h3>
+                        <p><strong>Status:</strong> Under construction</p>
+                        <p><strong>Started:</strong> <span id="start-time-mobile-en">Loading...</span></p>
+                        <p><strong>Expected completion:</strong> As soon as possible</p>
+                        <p><strong>Affected services:</strong> Altinn inbox</p>
+                    </div>
+                    
+                    <a href="https://altinn.no" class="mobile-button" role="button">
+                        Go to regular Altinn inbox
+                    </a>
+                </div>
+            </div>
+
+            <div style="margin-top: 40px; color: #666; font-size: 14px;">
+                <p>For oppdateringer / For updates, besøk / visit <a href="https://info.altinn.no" style="color: #0062ba;">info.altinn.no</a></p>
+                <p>Ved akutte spørsmål / For urgent questions, kontakt / contact <a href="mailto:tjenesteeier@altinn.no" style="color: #0062ba;">tjenesteeier@altinn.no</a></p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>Digitaliseringsdirektoratet, Postboks 1382 Vika, 0114 Oslo</p>
+                <p>Org.nr. 991 825 827</p>
+                
+                <div class="footer-links">
+                    <a href="https://altinn.no/om-altinn">Om Altinn</a>
+                    <a href="https://altinn.no/driftsmeldinger">Driftsmeldinger</a>
+                    <a href="https://altinn.no/personvern">Personvern</a>
+                    <a href="https://altinn.no/tilgjengelighet">Tilgjengelighet</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Set the start time dynamically
+        document.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+            
+            // Norwegian time format
+            const timeStringNo = now.toLocaleDateString('nb-NO', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            // English time format
+            const timeStringEn = now.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            const startTimeElement = document.getElementById('start-time');
+            const startTimeElementEn = document.getElementById('start-time-en');
+            const startTimeElementMobileNo = document.getElementById('start-time-mobile-no');
+            const startTimeElementMobileEn = document.getElementById('start-time-mobile-en');
+            
+            if (startTimeElement) startTimeElement.textContent = timeStringNo;
+            if (startTimeElementEn) startTimeElementEn.textContent = timeStringEn;
+            if (startTimeElementMobileNo) startTimeElementMobileNo.textContent = timeStringNo;
+            if (startTimeElementMobileEn) startTimeElementMobileEn.textContent = timeStringEn;
+
+            // Auto-refresh every 5 minutes to check if service is back
+            setTimeout(function() {
+                if (confirm('Vil du sjekke om Altinn er tilgjengelig igjen?')) {
+                    window.location.href = 'https://altinn.no';
+                }
+            }, 300000); // 5 minutes
+        });
+
+        // Keyboard navigation support
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && event.target.classList.contains('back-button')) {
+                window.location.href = event.target.href;
+            }
+        });
+
+
+
+        // Check if online/offline
+        window.addEventListener('online', function() {
+            document.body.style.opacity = '1';
+        });
+
+        window.addEventListener('offline', function() {
+            document.body.style.opacity = '0.7';
+        });
+
+        // Preload the logo to ensure it loads quickly
+        const logoPreload = new Image();
+        logoPreload.src = 'https://info.altinn.no/Static/img/a-logo-blue.svg';
+    </script>
+</body>
+</html>
