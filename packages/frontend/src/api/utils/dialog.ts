@@ -90,7 +90,6 @@ export function mapDialogToToInboxItems(
       contentUpdatedAt: item.contentUpdatedAt,
       guiAttachmentCount: item.guiAttachmentCount ?? 0,
       createdAt: item.createdAt,
-      updatedAt: item.contentUpdatedAt,
       status: item.status ?? 'UnknownStatus',
       isSeenByEndUser,
       label: item.endUserContext?.systemLabels,
