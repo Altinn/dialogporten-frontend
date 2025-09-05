@@ -22,7 +22,8 @@ import { getDialogStatus } from './status.ts';
 
 interface GroupedItem {
   id: string | number;
-  label: string;
+  title: string;
+  description: string;
   items: InboxItemInput[];
   orderIndex: number | null;
 }
@@ -38,21 +39,19 @@ interface UseGroupedDialogsOutput {
 
 interface UseGroupedDialogsProps {
   items: InboxItemInput[];
-  filters?: FilterState;
   viewType: InboxViewType;
+  /* There are more dialogs */
+  hasNextPage: boolean;
   isLoading: boolean;
+  filters?: FilterState;
   isFetchingNextPage?: boolean;
   /* true if the search results are displayed */
   displaySearchResults?: boolean;
-  /* collapse all groups into one group, default=false 	(Only if displaySearchResults===true) */
-  collapseGroups?: boolean;
-  /* title for the collapsed group, only applicable if collapseGroups=true */
-  getCollapsedGroupTitle?: (count: number) => string;
   /* used to open modal with seen by log */
   onSeenByLogModalChange: (input: CurrentSeenByLog) => void;
 }
 
-const sortByUpdatedAt = (arr: DialogListItemProps[]) => {
+const sortGroupedDialogs = (arr: DialogListItemProps[]) => {
   return arr.sort((a, b) => new Date(b.updatedAt ?? 0).getTime() - new Date(a.updatedAt ?? 0).getTime());
 };
 
@@ -111,17 +110,19 @@ const useGroupedDialogs = ({
   viewType,
   isLoading,
   isFetchingNextPage,
-  getCollapsedGroupTitle,
-  collapseGroups = false,
   onSeenByLogModalChange,
+  hasNextPage,
 }: UseGroupedDialogsProps): UseGroupedDialogsOutput => {
   const { t } = useTranslation();
   const format = useFormat();
   const systemLabelActions = useDialogActions();
+  const collapseGroups = displaySearchResults || viewType !== 'inbox';
+  const getCollapsedGroupTitle = (viewType: InboxViewType, count: number, hasNextPage: boolean) =>
+    (hasNextPage ? t('word.moreThan') : '') + t(`inbox.heading.title.${viewType}`, { count });
 
   const clockPrefix = t('word.clock_prefix');
   const formatString = `do MMMM yyyy ${clockPrefix ? `'${clockPrefix}' ` : ''}HH.mm`;
-  const allWithinSameYear = items.every((d) => new Date(d.updatedAt).getFullYear() === new Date().getFullYear());
+  const allWithinSameYear = items.every((d) => new Date(d.contentUpdatedAt).getFullYear() === new Date().getFullYear());
   const isInbox = viewType === 'inbox';
 
   const formatDialogItem = (item: InboxItemInput, groupId: string): DialogListItemProps => {
@@ -164,8 +165,8 @@ const useGroupedDialogs = ({
       unread: item.seenSinceLastContentUpdate.length === 0,
       status: getDialogStatus(item.status, t),
       controls: <ContextMenu {...contextMenu} />,
-      updatedAt: item.updatedAt,
-      updatedAtLabel: format(item.updatedAt, formatString),
+      updatedAt: item.contentUpdatedAt,
+      updatedAtLabel: format(item.contentUpdatedAt, formatString),
       dueAtLabel: item.dueAt ? t('dialog.due_at', { date: format(item.dueAt, formatString) }) : undefined,
       dueAt: item.dueAt,
       sentCount: item.fromPartyTransmissionsCount ?? 0,
@@ -187,7 +188,7 @@ const useGroupedDialogs = ({
         },
       };
     }
-
+    /* in all other views than inbox and not loading */
     if (!displaySearchResults && !isInbox && !isLoading) {
       const groupedDialogs = items.map((item) => formatDialogItem(item, item.viewType));
       if (isFetchingNextPage) {
@@ -197,7 +198,7 @@ const useGroupedDialogs = ({
         groupedDialogs,
         groups: {
           [viewType]: {
-            title: t(`inbox.heading.title.${viewType}`, { count: items.length }),
+            title: getCollapsedGroupTitle(viewType, items.length, hasNextPage),
             description: (
               <Trans i18nKey={`inbox.heading.description.${viewType}`} components={{ strong: <strong /> }} />
             ),
@@ -211,21 +212,24 @@ const useGroupedDialogs = ({
     if (collapseGroups) {
       groupedItems.push({
         id: 'collapsed',
-        label: getCollapsedGroupTitle?.(items.length) ?? t('inbox.heading.collapsed_group_default'),
+        title: getCollapsedGroupTitle(viewType, items.length, hasNextPage),
+        description: t('search.results.description'),
         items,
         orderIndex: null,
       });
     } else {
       items.reduce((acc, item, _, list) => {
-        const updatedAt = new Date(item.updatedAt);
+        const updatedAt = new Date(item.contentUpdatedAt);
+        const month = format(updatedAt, 'LLLL');
+        const capitalizedMonth = month.charAt(0).toUpperCase() + month.slice(1);
+
         const groupKey = displaySearchResults
           ? item.viewType
           : allWithinSameYear
-            ? format(updatedAt, 'LLLL')
+            ? capitalizedMonth
             : format(updatedAt, 'yyyy');
 
-        const isDateKey = !displaySearchResults;
-
+        const groupByDate = !displaySearchResults;
         const label = displaySearchResults
           ? t(`inbox.heading.search_results.${groupKey}`, {
               count: list.filter((i) => i.viewType === groupKey).length,
@@ -238,12 +242,12 @@ const useGroupedDialogs = ({
           existingGroup.items.push(item);
         } else {
           const viewTypeIndex = ['bin', 'archive', 'sent', 'drafts', 'inbox'].indexOf(item.viewType);
-          const orderIndex = isDateKey
+          const orderIndex = groupByDate
             ? allWithinSameYear
               ? updatedAt.getMonth()
               : updatedAt.getFullYear()
             : viewTypeIndex;
-          acc.push({ id: groupKey, label, items: [item], orderIndex });
+          acc.push({ id: groupKey, title: label, description: '', items: [item], orderIndex });
         }
 
         return acc;
@@ -251,14 +255,14 @@ const useGroupedDialogs = ({
     }
 
     const groups = Object.fromEntries(
-      groupedItems.map(({ id, label, orderIndex }) => [id, { title: label, orderIndex }]),
+      groupedItems.map(({ id, title, description, orderIndex }) => [id, { title, orderIndex, description }]),
     );
 
     const mappedGroupedDialogs = groupedItems.flatMap(({ id, items }) =>
       items.map((item) => formatDialogItem(item, id.toString())),
     );
 
-    const groupedDialogs = sortByUpdatedAt(mappedGroupedDialogs);
+    const groupedDialogs = sortGroupedDialogs(mappedGroupedDialogs);
 
     if (isFetchingNextPage) {
       groupedDialogs.push(...renderLoadingItems(1));
