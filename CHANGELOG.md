@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.64.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.64.1...v1.64.2) (2025-09-05)
+
+
+### Bug Fixes
+
+* set secure cookie only when session exists ([#2656](https://github.com/Altinn/dialogporten-frontend/issues/2656)) ([613cf34](https://github.com/Altinn/dialogporten-frontend/commit/613cf346d406120aed10c1a5f4a75604d820dd88))
+
 ## [1.64.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.64.0...v1.64.1) (2025-09-04)
 
 
