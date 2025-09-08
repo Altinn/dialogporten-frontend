@@ -23,7 +23,6 @@ describe('generateSendersAutocompleteBySearchString', () => {
         type: 'company',
       },
       createdAt: '2023-03-11T07:00:00.000Z',
-      updatedAt: '2023-07-15T08:45:00.000Z',
       status: 'COMPLETED' as DialogStatus,
       label: [SystemLabel.Default],
       org: 'skd',
@@ -78,7 +77,6 @@ describe('generateSendersAutocompleteBySearchString', () => {
       viewType: 'INBOX' as InboxViewType,
       status: 'REQUIRES_ATTENTION' as DialogStatus,
       label: [SystemLabel.Default],
-      updatedAt: '2023-05-17T09:30:00.000Z',
       seenSinceLastContentUpdate: [],
       seenByLog: {
         collapsible: true,
