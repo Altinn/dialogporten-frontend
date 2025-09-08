@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.65.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.64.3...v1.65.0) (2025-09-08)
+
+
+### Features
+
+* support for github flavored markdown for table support in markdown/html ([#2669](https://github.com/Altinn/dialogporten-frontend/issues/2669)) ([611594f](https://github.com/Altinn/dialogporten-frontend/commit/611594f781eea4b92d044de90fe4bdddedce997e))
+
 ## [1.64.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.64.2...v1.64.3) (2025-09-08)
 
 
