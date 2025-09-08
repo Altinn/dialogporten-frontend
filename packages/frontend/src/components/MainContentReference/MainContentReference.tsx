@@ -1,7 +1,7 @@
 import { Typography } from '@altinn/altinn-components';
 import { useQuery } from '@tanstack/react-query';
 import { Html, Markdown } from 'embeddable-markdown-html';
-import { memo } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { type DialogByIdDetails, EmbeddableMediaType } from '../../api/hooks/useDialogById.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import styles from './mainContentReference.module.css';
@@ -32,7 +32,17 @@ export const MainContentReference = memo(
     dialogToken,
     id,
   }: { content: DialogByIdDetails['mainContentReference']; dialogToken: string; id: string }) => {
+    const [canFetch, setCanFetch] = useState(false);
     const validURL = content?.url ? isValidURL(content.url) : false;
+
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        setCanFetch(true);
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    }, []);
+
     const { data, isSuccess } = useQuery({
       queryKey: [QUERY_KEYS.MAIN_CONTENT_REFERENCE, id],
       staleTime: 1000 * 60 * 10,
@@ -43,7 +53,8 @@ export const MainContentReference = memo(
             Authorization: `Bearer ${dialogToken}`,
           },
         }).then((res) => res.text()),
-      enabled: validURL && content?.mediaType && Object.values(EmbeddableMediaType).includes(content.mediaType),
+      enabled:
+        canFetch && validURL && content?.mediaType && Object.values(EmbeddableMediaType).includes(content.mediaType),
     });
 
     if (!content || !isSuccess) {
