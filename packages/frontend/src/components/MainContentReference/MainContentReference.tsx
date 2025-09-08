@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Html, Markdown } from 'embeddable-markdown-html';
 import { memo, useEffect, useState } from 'react';
 import { type DialogByIdDetails, EmbeddableMediaType } from '../../api/hooks/useDialogById.tsx';
+import type { SubscriptionStatus } from '../../api/hooks/useDialogByIdSubscription.ts';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import styles from './mainContentReference.module.css';
 
@@ -31,17 +32,19 @@ export const MainContentReference = memo(
     content,
     dialogToken,
     id,
-  }: { content: DialogByIdDetails['mainContentReference']; dialogToken: string; id: string }) => {
+    subscriptionStatus,
+  }: {
+    content: DialogByIdDetails['mainContentReference'];
+    dialogToken: string;
+    id: string;
+    subscriptionStatus: SubscriptionStatus;
+  }) => {
     const [canFetch, setCanFetch] = useState(false);
     const validURL = content?.url ? isValidURL(content.url) : false;
 
     useEffect(() => {
-      const timer = setTimeout(() => {
-        setCanFetch(true);
-      }, 1000);
-
-      return () => clearTimeout(timer);
-    }, []);
+      setCanFetch(subscriptionStatus === 'connected' || subscriptionStatus === 'error');
+    }, [subscriptionStatus]);
 
     const { data, isSuccess } = useQuery({
       queryKey: [QUERY_KEYS.MAIN_CONTENT_REFERENCE, id],

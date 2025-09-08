@@ -24,6 +24,7 @@ import { type ReactElement, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Analytics } from '../../analytics';
 import type { DialogByIdDetails } from '../../api/hooks/useDialogById.tsx';
+import type { SubscriptionStatus } from '../../api/hooks/useDialogByIdSubscription.ts';
 import type { TimelineSegmentWithTransmissions } from '../../api/utils/transmissions.ts';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { getDialogStatus } from '../../pages/Inbox/status.ts';
@@ -33,6 +34,7 @@ import { MainContentReference } from '../MainContentReference';
 
 interface DialogDetailsProps {
   dialog: DialogByIdDetails | undefined | null;
+  subscriptionStatus: SubscriptionStatus;
   activityModalProps: {
     isOpen: boolean;
     setIsOpen: (isOpen: boolean) => void;
@@ -119,6 +121,7 @@ export const DialogDetails = ({
   dialog,
   isLoading,
   isAuthLevelTooLow,
+  subscriptionStatus,
   activityModalProps,
 }: DialogDetailsProps): ReactElement => {
   const { t } = useTranslation();
@@ -143,12 +146,13 @@ export const DialogDetails = ({
               id={item.id ?? `${transmission.id}-${index}`}
               content={dialog.contentReferenceForTransmissions[item.id as string]}
               dialogToken={dialog.dialogToken}
+              subscriptionStatus={subscriptionStatus}
             />
           ) : null,
         };
       }),
     }));
-  }, [dialog]);
+  }, [dialog, subscriptionStatus]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: no need with format
   const activityHistoryItems: ActivityLogSegmentProps[] = useMemo(() => {
@@ -176,6 +180,7 @@ export const DialogDetails = ({
                     id={item.id}
                     content={dialog.contentReferenceForTransmissions[item.id as string]}
                     dialogToken={dialog.dialogToken}
+                    subscriptionStatus={subscriptionStatus}
                   />
                 ) : null,
               }))}
@@ -183,7 +188,7 @@ export const DialogDetails = ({
           ) : null,
       };
     });
-  }, [dialog]);
+  }, [dialog, subscriptionStatus]);
 
   if (isLoading) {
     return (
@@ -282,7 +287,12 @@ export const DialogDetails = ({
         seenByLog={dialog.seenByLog}
       >
         <p>{dialog.summary}</p>
-        <MainContentReference content={dialog.mainContentReference} dialogToken={dialog.dialogToken} id={dialog.id} />
+        <MainContentReference
+          content={dialog.mainContentReference}
+          dialogToken={dialog.dialogToken}
+          id={dialog.id}
+          subscriptionStatus={subscriptionStatus}
+        />
         {dialog.attachments.length > 0 && (
           <DialogAttachments
             title={t('inbox.heading.attachments', { count: dialog.attachments.length })}

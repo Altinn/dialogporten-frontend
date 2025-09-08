@@ -42,7 +42,7 @@ export const DialogDetailsPage = () => {
     ],
   };
 
-  useDialogByIdSubscription(dialog?.id, dialog?.dialogToken);
+  const { subscriptionStatus } = useDialogByIdSubscription(dialog?.id, dialog?.dialogToken);
 
   const previousPath = (location?.state?.fromView ?? '/') + location.search;
 
@@ -59,6 +59,7 @@ export const DialogDetailsPage = () => {
         dialog={dialog}
         isLoading={isLoading}
         isAuthLevelTooLow={isAuthLevelTooLow}
+        subscriptionStatus={subscriptionStatus}
         activityModalProps={{
           isOpen: isActivityLogOpen,
           setIsOpen: setIsActivityLogOpen,

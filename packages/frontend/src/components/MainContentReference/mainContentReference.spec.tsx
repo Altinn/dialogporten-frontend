@@ -32,9 +32,17 @@ describe('MainContentReference Component', () => {
     );
 
     const { asFragment } = await waitFor(() =>
-      customRender(<MainContentReference content={mockContent} dialogToken={mockDialogToken} id="test" />, {
-        wrapper,
-      } as RenderOptions),
+      customRender(
+        <MainContentReference
+          content={mockContent}
+          dialogToken={mockDialogToken}
+          id="test"
+          subscriptionStatus="connected"
+        />,
+        {
+          wrapper,
+        } as RenderOptions,
+      ),
     );
     expect(asFragment()).toMatchSnapshot();
   });
@@ -52,9 +60,17 @@ describe('MainContentReference Component', () => {
     );
 
     const { asFragment } = await waitFor(() =>
-      customRender(<MainContentReference content={mockContent} dialogToken={mockDialogToken} id="test" />, {
-        wrapper,
-      } as RenderOptions),
+      customRender(
+        <MainContentReference
+          content={mockContent}
+          dialogToken={mockDialogToken}
+          id="test"
+          subscriptionStatus="connected"
+        />,
+        {
+          wrapper,
+        } as RenderOptions,
+      ),
     );
 
     expect(asFragment()).toMatchSnapshot();
