@@ -139,6 +139,11 @@ const getMainContentMarkdownMock = http.get('https://dialogporten-serviceprovide
 
 Dette er HTML som er generert fra markdown.
 
+| Syntax      | Description |
+| ----------- | ----------- |
+| Header      | Title       |
+| Paragraph   | Text        |
+
 ## Grunnleggende konsepter fra markdown
 
 1. **Overskrifter**: Bruk \`#\` for å lage overskrifter. Antall \`#\` indikerer nivået på overskriften (f.eks. \`##\` for nivå 2).
