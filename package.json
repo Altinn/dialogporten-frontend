@@ -23,8 +23,6 @@
   },
   "packageManager": "pnpm@10.1.0",
   "msw": {
-    "workerDirectory": [
-      "dist"
-    ]
+    "workerDirectory": ["dist"]
   }
 }
