@@ -60,8 +60,8 @@
     "msw": "^2.11.1",
     "tsx": "^4.19.4",
     "typescript": "^5.8.3",
-    "vite": "^5.4.19",
-    "vitest": "^2.1.9",
+    "vite": "^7.1.5",
+    "vitest": "^3.2.4",
     "web-streams-polyfill": "^3.3.3"
   },
   "msw": {
