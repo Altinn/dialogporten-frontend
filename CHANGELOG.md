@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.65.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.65.0...v1.65.1) (2025-09-09)
+
+
+### Bug Fixes
+
+* wait on subscription to be established before loading fce ([#2671](https://github.com/Altinn/dialogporten-frontend/issues/2671)) ([d2a84e1](https://github.com/Altinn/dialogporten-frontend/commit/d2a84e17c88e0d21e06ae6645e75f438ad2acd17))
+
 ## [1.65.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.64.3...v1.65.0) (2025-09-08)
 
 
