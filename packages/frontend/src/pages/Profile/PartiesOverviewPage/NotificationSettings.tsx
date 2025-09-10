@@ -15,18 +15,19 @@ import {
 import { BellIcon } from '@navikt/aksel-icons';
 import { useQueryClient } from '@tanstack/react-query';
 import type { NotificationSettingsResponse } from 'bff-types-generated';
-import { type ChangeEvent, type ReactNode, useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import { deleteNotificationsetting, updateNotificationsetting } from '../../../api/queries';
 import { QUERY_KEYS } from '../../../constants/queryKeys';
-import type { NotificationAccountsType } from '../NotificationsPage/NotificationsPage';
+import type { NotificationAccountsType } from '../NotificationsPage/AccountSettings';
+import { useProfile } from '../useProfile';
 import { getEnabledNotificationsBadge } from './partyFieldToNotificationsList';
 
 interface NotificationSettingsProps {
   notificationSetting: NotificationSettingsResponse;
+  setNotificationParty: (notificationParty: NotificationAccountsType) => void;
 }
 
-export const NotificationSetting = ({ notificationSetting }: NotificationSettingsProps) => {
-  const [showModal, setShowModal] = useState(false);
+export const NotificationSetting = ({ notificationSetting, setNotificationParty }: NotificationSettingsProps) => {
   const { emailAddress: alertEmailAddress, phoneNumber: alertPhoneNumber } = notificationSetting;
   const badge = getEnabledNotificationsBadge(alertEmailAddress ?? '', alertPhoneNumber ?? '');
   const title = alertPhoneNumber || alertEmailAddress ? 'Varslinger er på' : 'Ingen varslinger';
@@ -43,16 +44,8 @@ export const NotificationSetting = ({ notificationSetting }: NotificationSetting
         value={value}
         badge={badge as BadgeProps}
         linkIcon
-        onClick={() => setShowModal((prev) => !prev)}
+        onClick={() => setNotificationParty(notificationSetting as NotificationAccountsType)}
         as="button"
-      />
-      <AccountNotificationsModal
-        title="Varslingsinnstillinger"
-        open={showModal}
-        onClose={() => setShowModal(false)}
-        notificationSetting={notificationSetting}
-        notificationSettingProp={notificationSetting}
-        onSave={() => setShowModal(false)}
       />
     </List>
   );
@@ -88,57 +81,53 @@ export const AccountModal = ({
 };
 
 export interface AccountNotificationSettingsProps {
-  party?: NotificationAccountsType | null;
+  notificationParty?: NotificationAccountsType | null;
   notificationSettingProp?: NotificationSettingsResponse | null;
   onClose: () => void;
   onSave: (updatedParty?: NotificationAccountsType) => void;
-  partyUuidProp?: string;
 }
 
 export const AccountNotificationSettings = ({
-  party,
+  notificationParty,
   onClose,
   onSave,
-  notificationSettingProp,
-  partyUuidProp,
+  // notificationSettingProp,
 }: AccountNotificationSettingsProps) => {
   const queryClient = useQueryClient();
-  const notificationSetting = party?.notificationSettings || notificationSettingProp;
-  const alertPhoneNumber = notificationSetting?.phoneNumber || '';
-  const alertEmailAddress = notificationSetting?.emailAddress || '';
-  const [enablePhoneNotifications, setEnablePhoneNotifications] = useState<boolean>(alertPhoneNumber.length > 0);
-  const [enableEmailNotifications, setEnableEmailNotifications] = useState<boolean>(alertEmailAddress.length > 0);
+  const { user } = useProfile();
+  const notificationSetting = notificationParty?.notificationSettings;
+  const alertPhoneNumber = notificationSetting?.phoneNumber || user.phoneNumber || '';
+  const alertEmailAddress = notificationSetting?.emailAddress || user.email || '';
+  const partyUuid = notificationSetting?.partyUuid || notificationParty?.partyUuid || '';
+  const [enablePhoneNotifications, setEnablePhoneNotifications] = useState<boolean>(
+    !!notificationSetting?.phoneNumber && alertPhoneNumber.length > 0,
+  );
+  const [enableEmailNotifications, setEnableEmailNotifications] = useState<boolean>(
+    !!notificationSetting?.emailAddress && alertEmailAddress.length > 0,
+  );
   const [alertEmailAddressState, setAlertEmailAddressState] = useState<string>(alertEmailAddress);
   const [alertPhoneNumberState, setAlertPhoneNumberState] = useState<string>(alertPhoneNumber);
-
-  const partyUuid = notificationSetting?.partyUuid || partyUuidProp || '';
-
-  if (!partyUuid) {
-    onClose();
-    return;
-  }
 
   const handleUpdateNotificationSettings = async () => {
     const updatedSettings = notificationSetting?.partyUuid
       ? {
           ...notificationSetting,
           userId: notificationSetting.userId,
-          partyUuid: partyUuid,
+          partyUuid,
           emailAddress: enableEmailNotifications ? alertEmailAddressState : '',
           phoneNumber: enablePhoneNotifications ? alertPhoneNumberState : '',
         }
       : {
-          partyUuid: partyUuid,
+          partyUuid,
           emailAddress: enableEmailNotifications ? alertEmailAddressState : '',
           phoneNumber: enablePhoneNotifications ? alertPhoneNumberState : '',
         };
-
     try {
       if (enableEmailNotifications || enablePhoneNotifications) {
         await updateNotificationsetting(updatedSettings);
-        void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.NOTIFICATIONSETTINGS] });
+        void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.NOTIFICATIONSETTINGSFORPARTY] });
         onSave?.({
-          ...party,
+          ...notificationParty,
           notificationSettings: {
             ...notificationSetting,
             emailAddress: enableEmailNotifications ? alertEmailAddressState : '',
@@ -146,10 +135,10 @@ export const AccountNotificationSettings = ({
           },
         } as NotificationAccountsType);
       } else {
-        deleteNotificationsetting(partyUuid);
-        void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.NOTIFICATIONSETTINGS] });
+        await deleteNotificationsetting(partyUuid);
+        void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.NOTIFICATIONSETTINGSFORPARTY] });
         onSave?.({
-          ...party,
+          ...notificationParty,
           notificationSettings: {
             ...notificationSetting,
             emailAddress: '',
@@ -157,6 +146,7 @@ export const AccountNotificationSettings = ({
           },
         } as NotificationAccountsType);
       }
+      onClose();
     } catch (err) {
       console.error('Failed to update notification settings:', err);
     }
@@ -203,25 +193,5 @@ export const AccountNotificationSettings = ({
         </Button>
       </ButtonGroup>
     </>
-  );
-};
-
-interface AccountNotificationsModalProps extends AccountModalProps, AccountNotificationSettingsProps {
-  notificationSetting: NotificationSettingsResponse | null;
-  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
-}
-
-export const AccountNotificationsModal = ({
-  icon,
-  title,
-  description,
-  open,
-  onClose,
-  notificationSetting,
-}: AccountNotificationsModalProps) => {
-  return (
-    <AccountModal icon={icon} title={title} description={description} open={open} onClose={onClose}>
-      <AccountNotificationSettings notificationSettingProp={notificationSetting} onSave={onClose} onClose={onClose} />
-    </AccountModal>
   );
 };

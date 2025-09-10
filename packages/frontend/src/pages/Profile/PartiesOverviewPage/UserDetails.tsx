@@ -1,12 +1,20 @@
-import { Divider, List, Section, SettingsItem } from '@altinn/altinn-components';
+import { type AccountListItemProps, Divider, List, Section, SettingsItem } from '@altinn/altinn-components';
 import { HouseIcon, MobileIcon, PaperplaneIcon } from '@navikt/aksel-icons';
-import { type AccountDetailsProps, AccountToolbar } from './CompanyDetails';
+import { AccountToolbar } from './CompanyDetails';
 
-export const UserDetails = (props: AccountDetailsProps) => {
-  const { alertPhoneNumber, alertEmailAddress, address, id } = props;
+export interface UserDetailsProps extends AccountListItemProps {
+  userId?: string;
+  alertEmailAddress?: string;
+  alertPhoneNumber?: string;
+  contactEmailAddress?: string;
+  contactPhoneNumber?: string;
+  address?: string;
+}
+
+export const UserDetails = ({ alertEmailAddress, address, id, alertPhoneNumber, type, name }: UserDetailsProps) => {
   return (
     <Section color="person" padding={6} spacing={2}>
-      <AccountToolbar {...props} id={id} isCurrentEndUser={true} />
+      <AccountToolbar id={id} isCurrentEndUser={true} type={type} name={name} />
       <Divider />
       <List size="sm">
         <SettingsItem
