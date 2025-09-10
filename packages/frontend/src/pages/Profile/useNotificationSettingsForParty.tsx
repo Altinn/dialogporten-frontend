@@ -3,7 +3,7 @@ import type { NotificationSettingsResponse, NotificationsettingsByUuidQuery } fr
 import { getNotificationsettingsByUuid, updateNotificationsetting } from '../../api/queries.ts';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 
-export const useNotificationSettings = (partyUuid?: string) => {
+export const useNotificationSettingsForParty = (partyUuid?: string) => {
   if (!partyUuid) {
     return {
       notificationSettings: null,
@@ -13,13 +13,13 @@ export const useNotificationSettings = (partyUuid?: string) => {
   }
 
   const { data, isLoading } = useQuery<NotificationsettingsByUuidQuery>({
-    queryKey: [QUERY_KEYS.NOTIFICATIONSETTINGS, partyUuid],
+    queryKey: [QUERY_KEYS.NOTIFICATIONSETTINGSFORPARTY, partyUuid],
     queryFn: () => getNotificationsettingsByUuid(partyUuid),
     refetchOnWindowFocus: false,
   });
 
   return {
-    notificationSettings: (data?.notificationsettingsByUuid as NotificationSettingsResponse) || null,
+    notificationSettingsForParty: (data?.notificationsettingsByUuid as NotificationSettingsResponse) || null,
     isLoading,
     updateNotificationsetting,
   };

@@ -10,12 +10,12 @@ import {
 } from '@altinn/altinn-components';
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import React from 'react';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useProfile } from '..';
 import { useParties } from '../../../api/hooks/useParties';
 import { FeatureFlagKeys, useFeatureFlag } from '../../../featureFlags';
-import { AddToGroupDialog } from './AddToGroupDialog';
 import styles from './partiesOverviewPage.module.css';
 import { getBreadcrumbs, partyFieldFragmentToAccountListItem } from './partyFieldToAccountList';
 
@@ -26,7 +26,6 @@ export const PartiesOverviewPage = () => {
   const [filterState, setFilterState] = React.useState<FilterState>({});
   const DisableFavoriteGroups = useFeatureFlag(FeatureFlagKeys.DisableFavoriteGroups);
 
-  const [chosenParty, setChosenParty] = useState<PartyFieldsFragment | undefined>(undefined);
   const showDeletedParties = filterState['parties-filter']?.includes('Slettede aktører');
   const showGroups = filterState['parties-filter']?.includes('Slettede aktører');
   const showCompanies = filterState['parties-filter']?.includes('Virksomheter');
@@ -34,12 +33,12 @@ export const PartiesOverviewPage = () => {
   const noFiltersSelected = !filterState['parties-filter'] || filterState['parties-filter']?.length === 0;
   const { groups, user, addFavoriteParty, deleteFavoriteParty, favoritesGroup } = useProfile();
   const navigate = useNavigate();
-  const addGroupDialogRef = useRef<HTMLDialogElement | null>(null);
-  const endUserName = user?.party?.name || '';
+  const endUserName = `${user?.party?.person?.firstName || ''} ${user?.party?.person?.lastName}`;
   const { parties: normalParties, isLoading: isLoadingParties, deletedParties } = useParties();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  const { t } = useTranslation();
 
-  const getFilteredParties = () => {
+  const getPartiesToShow = () => {
     let partiesToShow = [] as PartyFieldsFragment[];
     if (noFiltersSelected) {
       partiesToShow = normalParties;
@@ -70,7 +69,7 @@ export const PartiesOverviewPage = () => {
     return expandedItems.includes(id);
   };
 
-  const parties = getFilteredParties();
+  const parties = getPartiesToShow();
   if (isLoadingParties) {
     return (
       <div className={styles.noResults}>
@@ -84,6 +83,9 @@ export const PartiesOverviewPage = () => {
       title: 'Deg selv',
     },
     favourites: {
+      title: 'Favoritter',
+    },
+    persons: {
       title: 'Favoritter',
     },
     ...(!DisableFavoriteGroups ? { groups: { title: 'Grupper' } } : {}),
@@ -126,7 +128,7 @@ export const PartiesOverviewPage = () => {
     <PageBase color="person">
       <PageNav breadcrumbs={getBreadcrumbs(endUserName)} />
       <Section as="header" spacing={6}>
-        <Heading size="xl">Mine aktører og favoritter</Heading>
+        <Heading size="xl">{t('sidebar.profile.parties')}</Heading>
         <Toolbar
           search={{
             name: 'party-search',
@@ -149,12 +151,10 @@ export const PartiesOverviewPage = () => {
       </Section>
 
       <Section spacing={6}>
-        <AddToGroupDialog dialogRef={addGroupDialogRef} chosenParty={chosenParty} />
         <AccountList
           groups={accountListGroups}
           items={partyFieldFragmentToAccountListItem({
             parties,
-            dialogRef: addGroupDialogRef,
             isExpanded,
             toggleExpanded,
             user,
@@ -162,9 +162,7 @@ export const PartiesOverviewPage = () => {
             addFavoriteParty,
             deleteFavoriteParty,
             groups,
-            setChosenParty,
             navigate,
-            disableFavoriteGroups: !!DisableFavoriteGroups,
           })}
         />
       </Section>

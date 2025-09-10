@@ -95,7 +95,7 @@ export const Settings = () => {
           <SettingsItem
             icon={PersonRectangleIcon}
             title={t('profile.settings.contact_profiles')}
-            badge={{ label: '3 profiler' }}
+            badge={{ label: 'x antall profiler' }}
             linkIcon
           />
           <Divider as="li" />
@@ -104,7 +104,7 @@ export const Settings = () => {
           <SettingsItem
             as="button"
             icon={GlobeIcon}
-            title="Språk/language: Bokmål"
+            title="Språk/language:"
             linkIcon
             onClick={() => setExpandedElement(!expandedElement)}
             expanded={expandedElement}

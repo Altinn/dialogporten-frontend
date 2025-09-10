@@ -21,10 +21,8 @@
   "lint-staged": {
     "**/*.*": "biome check --staged --no-errors-on-unmatched --write"
   },
-  "packageManager": "pnpm@10.1.0",
+  "packageManager": "pnpm@10.15.1",
   "msw": {
-    "workerDirectory": [
-      "dist"
-    ]
+    "workerDirectory": ["dist"]
   }
 }
