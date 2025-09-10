@@ -4,7 +4,7 @@
  */
 import http from 'k6/http';
 import { afUrl } from './config.js';
-import { getPersonalToken } from './token.js';
+import { getPersonalToken, getPersonalTokens } from './token.js';
 
 const environment = __ENV.ENVIRONMENT || 'yt';
 
@@ -34,6 +34,16 @@ function getToken(pid) {
   };
   const token = getPersonalToken(tokenParams);
   return token;
+}
+
+function getTokens(count) {
+  const tokenParams = {
+    scopes: 'digdir:dialogporten.noconsent openid altinn:portal/enduser',
+    bulkCount: count,
+    env: tokenGeneratorEnv,
+  };
+  const tokens = getPersonalTokens(tokenParams);
+  return tokens;
 }
 
 /**
@@ -83,4 +93,28 @@ export function getCookie(pid) {
     url: '',
   };
   return cookie;
+}
+
+export function getCookies(count) {
+  const tokens = getTokens(count);
+  const cookies = [];
+  for (const key in tokens) {
+    const cookie = {
+      name: 'arbeidsflate',
+      value: getSessionId(tokens[key]),
+      domain: afUrl
+        .replace(/https?:\/\//, '')
+        .replace(/http?:\/\//, '')
+        .replace(/\/$/, ''), // Remove protocol and trailing slash
+      path: '/',
+      httpOnly: true,
+      secure: false,
+      sameSite: '',
+      url: '',
+    };
+    cookies.push({
+      pid: key,
+      cookie: cookie});
+    }
+  return cookies;
 }

@@ -111,7 +111,7 @@ export function getNextpage(cookie, parties) {
  * @param {Object} cookie - The cookie object containing name and value.
  * @return {Array} - An array of party URIs.
  */
-function getParties(cookie, pid) {
+export function getParties(cookie, pid) {
   const resp = graphql(cookie, partiesQuery);
   if (resp.status !== 200) {
     console.info('GraphQL request failed: ' + resp.status);
@@ -286,7 +286,7 @@ function getMenuElements(cookie, party, menuElement) {
  * @param {string} label - The label for the request.
  * @return {Object} - The response object from the request.
  */
-function graphql(cookie, query, label = null) {
+export function graphql(cookie, query, label = null) {
   const url = baseUrl + '/graphql';
   const payload = JSON.stringify(query);
   let queryLabel = query.operationName;

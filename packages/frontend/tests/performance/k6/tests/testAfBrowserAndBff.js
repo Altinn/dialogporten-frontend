@@ -16,7 +16,7 @@ import { browser } from 'k6/browser';
 import { SharedArray } from 'k6/data';
 import { Trend } from 'k6/metrics';
 import { afUrl } from '../helpers/config.js';
-import { getCookie } from '../helpers/getCookie.js';
+import { getCookie, getCookies } from '../helpers/getCookie.js';
 import { getOptions } from '../helpers/options.js';
 import { isAuthenticatedLabel } from '../helpers/queries.js';
 import { randomItem } from '../helpers/testimports.js';
@@ -28,7 +28,7 @@ import {
   openAf,
   selectMenuElements,
 } from '../tests/bffFunctions.js';
-import { selectAllEnterprises, selectNextPage, selectSideMenuElement } from './browserFunctions.js';
+import { selectAllEnterprises, selectNextPage, selectSideMenuElement, waitForPageLoaded } from './browserFunctions.js';
 
 const env = __ENV.ENVIRONMENT || 'yt';
 const randomizeUser = (__ENV.RANDOMIZE ?? 'false') === 'true';
@@ -55,16 +55,21 @@ const loadAllEnterprises = new Trend('load_all_enterprises', true);
  * @returns {Array} - An array of objects containing the PID and cookie for each end user.
  **/
 export async function setup() {
-  const data = [];
-  let cookie;
-  for (const endUser of endUsers) {
-    cookie = getCookie(endUser.pid);
-    data.push({
-      pid: endUser.pid,
-      cookie: cookie,
-    });
+  if (env == 'yt') {
+    return getCookies(1000);
   }
-  return data;
+  else {
+    const data = [];
+    let cookie;
+    for (const endUser of endUsers) {
+      cookie = getCookie(endUser.pid);
+      data.push({
+        pid: endUser.pid,
+        cookie: cookie,
+      });
+    }
+    return data;
+  }
 }
 
 /**
@@ -95,17 +100,19 @@ export async function browserTest(data) {
     check(currentUrl, {
       currentUrl: (h) => h.includes(afUrl),
     });
-
+    // Wait for the page to load
+    //await waitForPageLoaded(page);
+    //console.log(`Opened arbeidsflate for pid ${testData.pid}`);
     endTime = new Date();
     openAF.add(endTime - startTime);
 
     // press every menu item, return to inbox
-    await selectSideMenuElement(page, 'Utkast', loadDrafts);
-    await selectSideMenuElement(page, 'Sendt', loadSent);
-    await selectSideMenuElement(page, 'Lagrede søk', loadSavedSearches);
-    await selectSideMenuElement(page, 'Arkiv', loadArchive);
-    await selectSideMenuElement(page, 'Papirkurv', loadBin);
-    await selectSideMenuElement(page, 'Innboks', backToInbox);
+    await selectSideMenuElement(page, /Utkast|Drafts/, loadDrafts);
+    await selectSideMenuElement(page, /Sendt|Sent/, loadSent);
+    await selectSideMenuElement(page, /Lagrede søk|Lagra søk|Saved searches/, loadSavedSearches);
+    await selectSideMenuElement(page, /Arkiv|Archive/, loadArchive);
+    await selectSideMenuElement(page, /Papirkurv|Papirkorg|Bin/, loadBin);
+    await selectSideMenuElement(page, /Innboks|Inbox/, backToInbox);
     await selectNextPage(page, loadNextPage);
     await selectAllEnterprises(page, loadAllEnterprises);
   } finally {

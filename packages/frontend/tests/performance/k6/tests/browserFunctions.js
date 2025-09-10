@@ -9,7 +9,11 @@ export async function selectSideMenuElement(page, locator, trend) {
   const elems = await page.getByText(locator, { exact: true });
   for (let i = 0; i < (await elems.count()); i++) {
     if (await elems.nth(i).isVisible()) {
-      await elems.nth(i).click();
+      await elems.nth(i)
+        .click()
+        .catch(() => { 
+          console.log(`click failed for the ${i}. element for ${locator}`); 
+        });
       break;
     }
   }
@@ -51,7 +55,7 @@ export async function selectAllEnterprises(page, trend) {
     .waitForSelector('button[class="_button_1q3ym_1 _button_o1gnh_1"]', { timeout: 100 })
     .catch(() => false);
   await Promise.all([menuElement.click()]);
-  const alle = await page.getByText('Alle virksomheter', { timeout: 100, exact: true });
+  const alle = await page.getByText(/Alle virksomheter|Alle verksemder|All organizations/, { timeout: 100, exact: true });
   for (let i = 0; i < (await alle.count({ timeout: 100 })); i++) {
     if (await alle.nth(i).isVisible()) {
       const startTime = new Date();
@@ -70,7 +74,7 @@ export async function selectAllEnterprises(page, trend) {
  * @param {number} empties - Number of empty checks to perform (default is 1).
  * @return {Promise<void>} - A promise that resolves when the page is loaded.
  */
-async function waitForPageLoaded(page, empties = 1) {
+export async function waitForPageLoaded(page, empties = 1) {
   let busyItems = await page.$$('li [aria-busy="true"]');
   let noEmptys = 0;
   while (busyItems.length > 0 || noEmptys < empties) {
