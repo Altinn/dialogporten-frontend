@@ -17,9 +17,13 @@ import { SavedSearchesPage } from './pages/SavedSearches';
 import { PageRoutes } from './pages/routes.ts';
 import './app.css';
 import { AboutPage } from './pages/About/About.tsx';
+import { usePageTracking } from './hooks/usePageTracking.ts';
 
 function App() {
   const EnableProfilePages = useFeatureFlag(FeatureFlagKeys.EnableProfilePages);
+
+  // Add page tracking
+  usePageTracking();
 
   return (
     <div className="app">
