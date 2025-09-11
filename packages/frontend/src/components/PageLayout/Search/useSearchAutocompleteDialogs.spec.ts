@@ -4,10 +4,43 @@ import { describe, expect, it } from 'vitest';
 import type { InboxViewType } from '../../../api/hooks/useDialogs.tsx';
 import { organizations } from '../../../mocks/data/base/organizations.ts';
 import type { InboxItemInput } from '../../../pages/Inbox/InboxItemInput.ts';
-import { createSendersForAutocomplete } from './useAutocomplete.tsx';
+import { createSendersForAutocomplete } from './senderSuggestions.tsx';
 
 describe('generateSendersAutocompleteBySearchString', () => {
   const mockDialogs: InboxItemInput[] = [
+    {
+      id: '019241f7-5fa0-7336-934d-716a8e5bbb41',
+      party: 'urn:altinn:person:identifier-no:1',
+      title: 'Intro',
+      summary: 'Info om nye Altinn 3.',
+      sender: {
+        name: 'Digitaliseringdirektoratet',
+        type: 'company',
+        imageUrl: 'https://altinncdn.no/orgs/digdir/digdir.png',
+      },
+      recipient: {
+        name: 'Test Testesen',
+        type: 'company',
+      },
+      createdAt: '2023-03-11T07:00:00.000Z',
+      status: 'COMPLETED' as DialogStatus,
+      label: [SystemLabel.Default],
+      org: 'digdir',
+      hasUnopenedContent: false,
+      fromServiceOwnerTransmissionsCount: 0,
+      fromPartyTransmissionsCount: 0,
+      contentUpdatedAt: '2024-11-27T15:36:52.131Z',
+      guiAttachmentCount: 1,
+      seenByOthersCount: 0,
+      seenByLabel: 'Sett av deg',
+      viewType: 'INBOX' as InboxViewType,
+      seenSinceLastContentUpdate: [],
+      seenByLog: {
+        collapsible: true,
+        title: 'Sett av deg',
+        items: [],
+      },
+    },
     {
       id: '019241f7-5fa0-7336-934d-716a8e5bbb49',
       party: 'urn:altinn:person:identifier-no:1',
@@ -133,6 +166,13 @@ describe('generateSendersAutocompleteBySearchString', () => {
     expect(resultSKD.items).toHaveLength(1);
 
     expect(resultSKD.groups).toEqual({});
+  });
+
+  it('should return matched sender and unmatched for digdir', () => {
+    const results = createSendersForAutocomplete('digdir', mockDialogs as InboxItemInput[], organizations);
+    expect(results.items[0].title).toEqual('Søk etter avsender Digitaliseringsdirektoratet');
+    expect(results.items[0].params).toEqual([{ type: 'filter', label: 'Digitaliseringsdirektoratet' }]);
+    expect(results.groups).toEqual({});
   });
 
   it('should return all matched senders and unmatched search string if provided', () => {
