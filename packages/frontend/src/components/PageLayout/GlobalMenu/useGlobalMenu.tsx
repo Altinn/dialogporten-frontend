@@ -76,6 +76,7 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
   const inboxShortcuts: MenuItemProps[] = [
     {
       id: 'beta-about',
+      dataTestId: 'sidebar-about',
       groupId: 'shortcuts',
       icon: InformationSquareIcon,
       title: t('altinn.beta.about'),
@@ -86,6 +87,7 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
     },
     {
       id: 'beta-exit',
+      dataTestId: 'sidebar-exit',
       groupId: 'shortcuts',
       icon: LeaveIcon,
       title: t('altinn.beta.exit'),
@@ -98,6 +100,7 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
   const inboxItems: MenuItemProps[] = [
     {
       id: '1',
+      dataTestId: 'sidebar-inbox',
       groupId: 'global',
       size: 'lg',
       icon: InboxFillIcon,
@@ -113,6 +116,7 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
       items: [
         {
           id: '2',
+          dataTestId: 'sidebar-drafts',
           groupId: '2',
           icon: DocPencilIcon,
           title: t('sidebar.drafts'),
@@ -123,6 +127,7 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
         },
         {
           id: '3',
+          dataTestId: 'sidebar-sent',
           groupId: '2',
           icon: FileCheckmarkIcon,
           title: t('sidebar.sent'),
@@ -133,6 +138,7 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
         },
         {
           id: '4',
+          dataTestId: 'sidebar-saved-searches',
           groupId: '3',
           icon: BookmarkIcon,
           title: t('sidebar.saved_searches'),
@@ -143,6 +149,7 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
         },
         {
           id: '5',
+          dataTestId: 'sidebar-archive',
           groupId: '4',
           icon: ArchiveIcon,
           title: t('sidebar.archived'),
@@ -153,6 +160,7 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
         },
         {
           id: '6',
+          dataTestId: 'sidebar-bin',
           groupId: '4',
           icon: TrashIcon,
           title: t('sidebar.deleted'),
@@ -274,6 +282,10 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
 
   const mobileMenu: MenuProps = {
     ...menu,
+    items: menuItems.map((item, index) => ({
+      ...item,
+      dataTestId: (item.dataTestId ?? '') + '-mobile-menu' + (item.dataTestId ? '' : '-' + index),
+    })),
     defaultIconTheme: 'tinted',
   };
 
