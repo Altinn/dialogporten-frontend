@@ -236,10 +236,7 @@ export const DialogDetails = ({
     label: action.title,
     disabled: !!isLoading || action.disabled,
     priority: action.priority.toLocaleLowerCase() as DialogButtonPriority,
-    url: action.url,
-    httpMethod: action.httpMethod,
     loading: actionIdLoading === action.id,
-    loadingText: t('word.loading'),
     hidden: action.hidden,
     onClick: () => {
       setActionIdLoading(action.id);

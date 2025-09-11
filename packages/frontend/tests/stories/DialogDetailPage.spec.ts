@@ -2,7 +2,7 @@ import type { Page } from '@playwright/test';
 import { defaultAppURL } from '../';
 import { PageRoutes } from '../../src/pages/routes';
 import { expect, test } from '../fixtures';
-import { getSidebarMenuItem, getSidebarMenuItemBadge } from './common';
+import { getSidebarMenuItem } from './common';
 
 test.describe('DialogDetailsPage', () => {
   test('Check message opening, archiving and deleting', async ({
