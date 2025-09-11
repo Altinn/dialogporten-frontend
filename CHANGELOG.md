@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.65.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.65.1...v1.65.2) (2025-09-11)
+
+
+### Bug Fixes
+
+* add test ids to sidebar menu items ([#2691](https://github.com/Altinn/dialogporten-frontend/issues/2691)) ([1d882f1](https://github.com/Altinn/dialogporten-frontend/commit/1d882f11f2d2264bf81ed0a1b32097bcccfef9bc))
+* **autocomplete:** avoid duplicate params when org matches query ([#2689](https://github.com/Altinn/dialogporten-frontend/issues/2689)) ([a4974c4](https://github.com/Altinn/dialogporten-frontend/commit/a4974c445837024942a90f92bc428562692c45d5))
+
 ## [1.65.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.65.0...v1.65.1) (2025-09-09)
 
 
