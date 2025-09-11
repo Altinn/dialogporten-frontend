@@ -22,15 +22,15 @@ if (applicationInsightsEnabled) {
         // Avoid tracking every ajax/fetch request
         disableAjaxTracking: true,
         disableFetchTracking: true,
-        enableRequestHeaderTracking: true,
-        enableResponseHeaderTracking: true,
-        enableAjaxPerfTracking: true,
+        enableRequestHeaderTracking: false,
+        enableResponseHeaderTracking: false,
+        enableAjaxPerfTracking: false,
         enablePerfMgr: true,
         disableCookiesUsage: false,
         // TODO: set to a lower value in production
         samplingPercentage: 100,
         appId: 'arbeidsflate-frontend',
-        enableDebug: false,
+        enableDebug: true,
       },
     });
     applicationInsights.loadAppInsights();
@@ -38,36 +38,52 @@ if (applicationInsightsEnabled) {
 
     applicationInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
       // Only filter exceptions
-      if (envelope.baseType === 'ExceptionData') {
-        const data = envelope.baseData;
-        const message = data?.message || '';
-        const exceptions = data?.exceptions || [];
+      switch (envelope.baseType) {
+        case 'RemoteDependencyData': {
+          const dependencyData = envelope.baseData;
+          const backendTraceId = dependencyData?.properties?.['backend.traceId'];
 
-        const extensionUrlPattern = /^(chrome|moz|safari|edge|ms-browser)-extension:\/\//i;
-        // Catch all browser extensions
-        if (extensionUrlPattern.test(message)) {
-          return false;
+          if (backendTraceId) {
+            // This only affects THIS specific telemetry item
+            envelope.tags = envelope.tags || {};
+            envelope.tags['ai.operation.id'] = backendTraceId;
+            envelope.tags['ai.operation.parentId'] = `|${backendTraceId}.${Date.now()}`;
+          }
+          break;
         }
 
-        // Check all exception details for extension URLs
-        for (const exception of exceptions) {
-          if (exception.stack && extensionUrlPattern.test(exception.stack)) {
+        case 'ExceptionData': {
+          const data = envelope.baseData;
+          const message = data?.message || '';
+          const exceptions = data?.exceptions || [];
+
+          const extensionUrlPattern = /^(chrome|moz|safari|edge|ms-browser)-extension:\/\//i;
+          // Catch all browser extensions
+          if (extensionUrlPattern.test(message)) {
             return false;
           }
 
-          // Check parsed stack frames
-          if (exception.parsedStack && Array.isArray(exception.parsedStack)) {
-            for (const frame of exception.parsedStack) {
-              if (frame.fileName && extensionUrlPattern.test(frame.fileName)) {
-                return false;
+          // Check all exception details for extension URLs
+          for (const exception of exceptions) {
+            if (exception.stack && extensionUrlPattern.test(exception.stack)) {
+              return false;
+            }
+
+            // Check parsed stack frames
+            if (exception.parsedStack && Array.isArray(exception.parsedStack)) {
+              for (const frame of exception.parsedStack) {
+                if (frame.fileName && extensionUrlPattern.test(frame.fileName)) {
+                  return false;
+                }
               }
             }
           }
-        }
 
-        // Filter cross-origin errors
-        if (message === 'Script error.' || message === 'Script error') {
-          return false;
+          // Filter cross-origin errors
+          if (message === 'Script error.' || message === 'Script error') {
+            return false;
+          }
+          break;
         }
       }
 
@@ -83,7 +99,7 @@ if (applicationInsightsEnabled) {
 
 const noop = () => {};
 
-// Helper function to track fetch requests as dependencies
+// Enhanced helper function to track fetch requests with same operation ID
 export const trackFetchDependency = async (
   name: string,
   fetchPromise: Promise<Response>,
@@ -97,12 +113,17 @@ export const trackFetchDependency = async (
   let responseStatus = 200;
   let response: Response | undefined;
   let targetUrl = 'unknown';
+  let backendTraceId = `${name}-${startTime}`;
 
   try {
     response = await fetchPromise;
     responseStatus = response.status;
     success = response.ok;
     targetUrl = response.url ? new URL(response.url).origin : 'unknown';
+
+    // Extract correlation headers from response
+    backendTraceId = response.headers.get('X-Trace-Id') || backendTraceId;
+
     return response;
   } catch (error) {
     success = false;
@@ -112,14 +133,19 @@ export const trackFetchDependency = async (
     throw error;
   } finally {
     const duration = Date.now() - startTime;
-
     Analytics.trackDependency({
-      id: `${name}-${startTime}`,
+      id: backendTraceId,
       target: targetUrl,
       name: name,
       duration: duration,
       success: success,
       responseCode: responseStatus,
+      properties: {
+        'backend.traceId': backendTraceId,
+        'correlation.source': 'backend-response',
+        'request.type': name.includes('GraphQL') ? 'graphql' : 'http',
+      },
+      type: 'HTTP',
     });
   }
 };

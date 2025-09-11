@@ -3,7 +3,7 @@ import { useAzureMonitor } from '@azure/monitor-opentelemetry';
 import { logger } from '@digdir/dialogporten-node-logger';
 import { type ProxyTracerProvider, metrics, trace } from '@opentelemetry/api';
 import { registerInstrumentations } from '@opentelemetry/instrumentation';
-import { FastifyInstrumentation } from '@opentelemetry/instrumentation-fastify';
+import { FastifyOtelInstrumentation } from '@fastify/otel';
 import { GraphQLInstrumentation } from '@opentelemetry/instrumentation-graphql';
 import { HttpInstrumentation, type HttpInstrumentationConfig } from '@opentelemetry/instrumentation-http';
 import { IORedisInstrumentation } from '@opentelemetry/instrumentation-ioredis';
@@ -59,12 +59,12 @@ const initializeApplicationInsights = () => {
     // register additional instrumentations that are not included in the azure monitor exporter
     const instrumentations = [
       new HttpInstrumentation(httpInstrumentationConfig),
-      new FastifyInstrumentation(),
+      new IORedisInstrumentation(),
+      new FastifyOtelInstrumentation(),
       new GraphQLInstrumentation({
         ignoreTrivialResolveSpans: true,
         mergeItems: true,
       }),
-      new IORedisInstrumentation(),
     ];
 
     const tracerProvider = (trace.getTracerProvider() as ProxyTracerProvider).getDelegate();
