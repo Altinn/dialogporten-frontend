@@ -1,5 +1,51 @@
 # Changelog
 
+## [1.65.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.65.1...v1.65.2) (2025-09-11)
+
+
+### Bug Fixes
+
+* add test ids to sidebar menu items ([#2691](https://github.com/Altinn/dialogporten-frontend/issues/2691)) ([1d882f1](https://github.com/Altinn/dialogporten-frontend/commit/1d882f11f2d2264bf81ed0a1b32097bcccfef9bc))
+* **autocomplete:** avoid duplicate params when org matches query ([#2689](https://github.com/Altinn/dialogporten-frontend/issues/2689)) ([a4974c4](https://github.com/Altinn/dialogporten-frontend/commit/a4974c445837024942a90f92bc428562692c45d5))
+
+## [1.65.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.65.0...v1.65.1) (2025-09-09)
+
+
+### Bug Fixes
+
+* wait on subscription to be established before loading fce ([#2671](https://github.com/Altinn/dialogporten-frontend/issues/2671)) ([d2a84e1](https://github.com/Altinn/dialogporten-frontend/commit/d2a84e17c88e0d21e06ae6645e75f438ad2acd17))
+
+## [1.65.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.64.3...v1.65.0) (2025-09-08)
+
+
+### Features
+
+* support for github flavored markdown for table support in markdown/html ([#2669](https://github.com/Altinn/dialogporten-frontend/issues/2669)) ([611594f](https://github.com/Altinn/dialogporten-frontend/commit/611594f781eea4b92d044de90fe4bdddedce997e))
+
+## [1.64.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.64.2...v1.64.3) (2025-09-08)
+
+
+### Bug Fixes
+
+* group search results into a single group with a description ([#2662](https://github.com/Altinn/dialogporten-frontend/issues/2662)) ([ab8d638](https://github.com/Altinn/dialogporten-frontend/commit/ab8d6384381bb21b76f55e253d50336656bfffc9))
+* Update maintenance page support email ([#2660](https://github.com/Altinn/dialogporten-frontend/issues/2660)) ([d1ce046](https://github.com/Altinn/dialogporten-frontend/commit/d1ce04614b404e3ce9b3ed058375b54b4ba6d029))
+
+## [1.64.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.64.1...v1.64.2) (2025-09-05)
+
+
+### Bug Fixes
+
+* set secure cookie only when session exists ([#2656](https://github.com/Altinn/dialogporten-frontend/issues/2656)) ([613cf34](https://github.com/Altinn/dialogporten-frontend/commit/613cf346d406120aed10c1a5f4a75604d820dd88))
+
+## [1.64.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.64.0...v1.64.1) (2025-09-04)
+
+
+### Bug Fixes
+
+* **bff:** ensure security headers are always exposed ([#2651](https://github.com/Altinn/dialogporten-frontend/issues/2651)) ([348b440](https://github.com/Altinn/dialogporten-frontend/commit/348b440d5eb7d1a955f3a0c0cc4975deb24136f0))
+* ensure gql requests are instrumented properly ([#2653](https://github.com/Altinn/dialogporten-frontend/issues/2653)) ([05f9182](https://github.com/Altinn/dialogporten-frontend/commit/05f9182ca0bed08dafa513e006abbdf7342ce1a5))
+* improvements to searchbar ([#2648](https://github.com/Altinn/dialogporten-frontend/issues/2648)) ([272c2c3](https://github.com/Altinn/dialogporten-frontend/commit/272c2c3f9701f3eebe3702f17327e1babc7ea235))
+
 ## [1.64.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.63.6...v1.64.0) (2025-09-03)
 
 

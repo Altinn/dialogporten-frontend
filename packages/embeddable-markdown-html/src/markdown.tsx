@@ -4,6 +4,7 @@ import * as prod from 'react/jsx-runtime';
 import addClasses from 'rehype-class-names';
 import rehypeReact from 'rehype-react';
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
+import remarkGfm from 'remark-gfm';
 import remarkParse, { type Options as RemarkParseOptions } from 'remark-parse';
 import remarkToRehype from 'remark-rehype';
 import { unified } from 'unified';
@@ -40,6 +41,7 @@ export const Markdown: ({
   useEffect(() => {
     unified()
       .use(remarkParse, {} as RemarkParseOptions)
+      .use(remarkGfm)
       .use(remarkToRehype, {} as RemarkRehypeOptions)
       .use(rehypeSanitize, customSchema)
       .use(addClasses, defaultClassMap)

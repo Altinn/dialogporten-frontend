@@ -69,7 +69,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
       });
 
       // Set secure cookie if HTTPS
-      if (request.headers['x-forwarded-proto'] === 'https') {
+      if (request.headers['x-forwarded-proto'] === 'https' && request.session) {
         request.session.cookie.secure = true;
       }
 

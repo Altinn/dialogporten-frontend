@@ -22,7 +22,7 @@
     "i18n:sort": "tsx ./src/i18n/check.ts --sort"
   },
   "dependencies": {
-    "@altinn/altinn-components": "^0.38.10",
+    "@altinn/altinn-components": "^0.38.13",
     "@microsoft/applicationinsights-react-js": "19.3.7",
     "@microsoft/applicationinsights-web": "3.3.9",
     "@navikt/aksel-icons": "^7.22.0",
@@ -60,8 +60,8 @@
     "msw": "^2.11.1",
     "tsx": "^4.19.4",
     "typescript": "^5.8.3",
-    "vite": "^5.4.19",
-    "vitest": "^2.1.9",
+    "vite": "^7.1.5",
+    "vitest": "^3.2.4",
     "web-streams-polyfill": "^3.3.3"
   },
   "msw": {

@@ -10,7 +10,6 @@ export interface InboxItemInput {
   sender: AvatarProps;
   recipient: AvatarProps;
   createdAt: string;
-  updatedAt: string;
   status: DialogStatus;
   hasUnopenedContent: boolean;
   contentUpdatedAt: string;

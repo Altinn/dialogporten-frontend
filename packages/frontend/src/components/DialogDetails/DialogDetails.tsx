@@ -39,6 +39,7 @@ interface DialogDetailsProps {
   };
   isAuthLevelTooLow?: boolean;
   isLoading?: boolean;
+  subscriptionOpened?: boolean;
 }
 
 /**
@@ -120,6 +121,7 @@ export const DialogDetails = ({
   isLoading,
   isAuthLevelTooLow,
   activityModalProps,
+  subscriptionOpened,
 }: DialogDetailsProps): ReactElement => {
   const { t } = useTranslation();
   const [actionIdLoading, setActionIdLoading] = useState<string>('');
@@ -234,10 +236,7 @@ export const DialogDetails = ({
     label: action.title,
     disabled: !!isLoading || action.disabled,
     priority: action.priority.toLocaleLowerCase() as DialogButtonPriority,
-    url: action.url,
-    httpMethod: action.httpMethod,
     loading: actionIdLoading === action.id,
-    loadingText: t('word.loading'),
     hidden: action.hidden,
     onClick: () => {
       setActionIdLoading(action.id);
@@ -282,7 +281,9 @@ export const DialogDetails = ({
         seenByLog={dialog.seenByLog}
       >
         <p>{dialog.summary}</p>
-        <MainContentReference content={dialog.mainContentReference} dialogToken={dialog.dialogToken} id={dialog.id} />
+        {subscriptionOpened && (
+          <MainContentReference content={dialog.mainContentReference} dialogToken={dialog.dialogToken} id={dialog.id} />
+        )}
         {dialog.attachments.length > 0 && (
           <DialogAttachments
             title={t('inbox.heading.attachments', { count: dialog.attachments.length })}
