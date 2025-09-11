@@ -99,7 +99,7 @@ if (applicationInsightsEnabled) {
 
 const noop = () => {};
 
-// Enhanced helper function to track fetch requests with same operation ID
+// Helper function to track fetch requests as dependencies
 export const trackFetchDependency = async (
   name: string,
   fetchPromise: Promise<Response>,
