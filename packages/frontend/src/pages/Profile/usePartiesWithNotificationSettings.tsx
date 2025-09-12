@@ -14,7 +14,7 @@ export const usePartiesWithNotificationSettings = () => {
     if (!parties?.length) return null;
     return parties
       .map((party) => party.partyUuid)
-      .sort()
+      .sort((a, b) => a.localeCompare(b))
       .join(',');
   }, [parties]);
 

@@ -40,16 +40,17 @@ export const CompanyDetails = ({
   name,
   id,
 }: CompanyDetailsProps) => {
-  if (!party) {
-    return null;
-  }
   const [notificationParty, setNotificationParty] = useState<NotificationAccountsType | null>(null);
   const queryClient = useQueryClient();
   const { notificationSettingsForParty, isLoading: isLoadingNotificaitonSettings } =
     useNotificationSettingsForParty(id);
 
+  if (!party) {
+    return null;
+  }
+
   const onSave = () => {
-    void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.NOTIFICATIONSETTINGSFORPARTY] });
+    queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.NOTIFICATIONSETTINGSFORPARTY] });
   };
 
   if (!party) {

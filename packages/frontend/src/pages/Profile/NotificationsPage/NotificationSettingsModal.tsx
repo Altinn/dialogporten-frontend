@@ -31,7 +31,11 @@ export const NotificationSettingsModal = ({
           icon={computedIcon as AvatarProps}
           color={partyType}
           title={notificationParty?.name}
-          description={`${notificationParty?.partyType === 'Organization' ? 'Org.nr. ' : 'Fødselsnummer: '} ${urnToOrgNr(notificationParty.party)}${notificationParty.parentId ? `, del av ${notificationParty.name}` : ''}`}
+          description={
+            (notificationParty?.partyType === 'Organization' ? 'Org.nr. ' : 'Fødselsnummer: ') +
+            urnToOrgNr(notificationParty.party) +
+            (notificationParty.parentId ? ', del av ' + notificationParty.name : '')
+          }
           interactive={false}
         />
       </ModalHeader>

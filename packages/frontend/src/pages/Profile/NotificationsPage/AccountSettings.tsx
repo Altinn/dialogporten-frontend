@@ -19,7 +19,7 @@ export const AccountSettings = () => {
   const queryClient = useQueryClient();
 
   const onSave = () => {
-    void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PROFILE_PARTIES_WITH_NOTIFICATION_SETTINGS] });
+    queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PROFILE_PARTIES_WITH_NOTIFICATION_SETTINGS] });
   };
 
   const groups = partiesWithNotificationSettings.reduce<Record<string, { title: string }>>((acc, item) => {
