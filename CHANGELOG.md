@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.66.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.66.1...v1.66.2) (2025-09-12)
+
+
+### Bug Fixes
+
+* **bff:** add dialogporten to health check ([#2704](https://github.com/Altinn/dialogporten-frontend/issues/2704)) ([f6c11db](https://github.com/Altinn/dialogporten-frontend/commit/f6c11dbe0c8712a8c6eb1889246c0c5323290d73))
+* use sender in filters instead of senders from 100 first dialogs ([#2710](https://github.com/Altinn/dialogporten-frontend/issues/2710)) ([1eb3d79](https://github.com/Altinn/dialogporten-frontend/commit/1eb3d792914c67b06da44d381152448887be014b))
+
 ## [1.66.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.66.0...v1.66.1) (2025-09-12)
 
 
