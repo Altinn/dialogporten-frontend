@@ -27,7 +27,7 @@
     "@graphql-codegen/typescript-resolvers": "^4.5.1",
     "@parcel/watcher": "^2.5.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.3",
+    "typescript": "^5.9.2",
     "vitest": "^3.2.4"
   },
   "type": "module"
