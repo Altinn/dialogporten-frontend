@@ -42,8 +42,7 @@ export const DialogDetailsPage = () => {
     ],
   };
 
-  useDialogByIdSubscription(dialog?.id, dialog?.dialogToken);
-
+  const subscriptionOpened = useDialogByIdSubscription(dialog?.id, dialog?.dialogToken);
   const previousPath = (location?.state?.fromView ?? '/') + location.search;
 
   return (
@@ -58,6 +57,7 @@ export const DialogDetailsPage = () => {
       <DialogDetails
         dialog={dialog}
         isLoading={isLoading}
+        subscriptionOpened={subscriptionOpened}
         isAuthLevelTooLow={isAuthLevelTooLow}
         activityModalProps={{
           isOpen: isActivityLogOpen,

@@ -1,7 +1,7 @@
 import { defaultAppURL } from '../';
 import { PageRoutes } from '../../src/pages/routes';
 import { expect, test } from '../fixtures';
-import { expectIsCompanyPage, getSidebarMenuItem, getSidebarMenuItemBadge, performSearch } from './common';
+import { expectIsCompanyPage, getSidebarMenuItem, performSearch } from './common';
 
 test.describe('Saved search', () => {
   test('Create and delete saved search', async ({ page, isMobile }) => {

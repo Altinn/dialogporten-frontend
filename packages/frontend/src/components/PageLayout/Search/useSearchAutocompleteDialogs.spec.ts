@@ -4,10 +4,43 @@ import { describe, expect, it } from 'vitest';
 import type { InboxViewType } from '../../../api/hooks/useDialogs.tsx';
 import { organizations } from '../../../mocks/data/base/organizations.ts';
 import type { InboxItemInput } from '../../../pages/Inbox/InboxItemInput.ts';
-import { createSendersForAutocomplete } from './useAutocomplete.tsx';
+import { createSendersForAutocomplete } from './senderSuggestions.tsx';
 
 describe('generateSendersAutocompleteBySearchString', () => {
   const mockDialogs: InboxItemInput[] = [
+    {
+      id: '019241f7-5fa0-7336-934d-716a8e5bbb41',
+      party: 'urn:altinn:person:identifier-no:1',
+      title: 'Intro',
+      summary: 'Info om nye Altinn 3.',
+      sender: {
+        name: 'Digitaliseringdirektoratet',
+        type: 'company',
+        imageUrl: 'https://altinncdn.no/orgs/digdir/digdir.png',
+      },
+      recipient: {
+        name: 'Test Testesen',
+        type: 'company',
+      },
+      createdAt: '2023-03-11T07:00:00.000Z',
+      status: 'COMPLETED' as DialogStatus,
+      label: [SystemLabel.Default],
+      org: 'digdir',
+      hasUnopenedContent: false,
+      fromServiceOwnerTransmissionsCount: 0,
+      fromPartyTransmissionsCount: 0,
+      contentUpdatedAt: '2024-11-27T15:36:52.131Z',
+      guiAttachmentCount: 1,
+      seenByOthersCount: 0,
+      seenByLabel: 'Sett av deg',
+      viewType: 'INBOX' as InboxViewType,
+      seenSinceLastContentUpdate: [],
+      seenByLog: {
+        collapsible: true,
+        title: 'Sett av deg',
+        items: [],
+      },
+    },
     {
       id: '019241f7-5fa0-7336-934d-716a8e5bbb49',
       party: 'urn:altinn:person:identifier-no:1',
@@ -23,7 +56,6 @@ describe('generateSendersAutocompleteBySearchString', () => {
         type: 'company',
       },
       createdAt: '2023-03-11T07:00:00.000Z',
-      updatedAt: '2023-07-15T08:45:00.000Z',
       status: 'COMPLETED' as DialogStatus,
       label: [SystemLabel.Default],
       org: 'skd',
@@ -78,7 +110,6 @@ describe('generateSendersAutocompleteBySearchString', () => {
       viewType: 'INBOX' as InboxViewType,
       status: 'REQUIRES_ATTENTION' as DialogStatus,
       label: [SystemLabel.Default],
-      updatedAt: '2023-05-17T09:30:00.000Z',
       seenSinceLastContentUpdate: [],
       seenByLog: {
         collapsible: true,
@@ -118,29 +149,30 @@ describe('generateSendersAutocompleteBySearchString', () => {
 
     expect(resultSKD.items).toHaveLength(1);
     expect(resultSKD.items[0].title).toBe('Søk etter avsender Skatteetaten');
-    expect(resultSKD.groups).toEqual({
-      senders: { title: 'Søkeforslag' },
-    });
+    expect(resultSKD.groups).toEqual({});
 
     expect(resultSSB.items).toHaveLength(1);
     expect(resultSSB.items[0].title).toBe('Søk etter avsender Statistisk sentralbyrå');
-    expect(resultSSB.groups).toEqual({
-      senders: { title: 'Søkeforslag' },
-    });
+    expect(resultSSB.groups).toEqual({});
   });
 
   it('should return matched sender and unmatched search string', () => {
     const resultSKD = createSendersForAutocomplete('skat test1', mockDialogs as InboxItemInput[], organizations);
     //@ts-ignore Property 'params' does not exist on type 'AutocompleteItemProps'.
     const searchUnmatechedValue = resultSKD.items[0].params.find((item) => item.type === 'search');
-    expect(searchUnmatechedValue.type === 'search');
-    expect(searchUnmatechedValue.label === 'test1');
+    expect(searchUnmatechedValue?.type === 'search');
+    expect(searchUnmatechedValue?.label === 'test1');
     expect(resultSKD.items[0].title).toBe('Søk etter avsender Skatteetaten med fritekst test1');
     expect(resultSKD.items).toHaveLength(1);
 
-    expect(resultSKD.groups).toEqual({
-      senders: { title: 'Søkeforslag' },
-    });
+    expect(resultSKD.groups).toEqual({});
+  });
+
+  it('should return matched sender and unmatched for digdir', () => {
+    const results = createSendersForAutocomplete('digdir', mockDialogs as InboxItemInput[], organizations);
+    expect(results.items[0].title).toEqual('Søk etter avsender Digitaliseringsdirektoratet');
+    expect(results.items[0].params).toEqual([{ type: 'filter', label: 'Digitaliseringsdirektoratet' }]);
+    expect(results.groups).toEqual({});
   });
 
   it('should return all matched senders and unmatched search string if provided', () => {
@@ -150,27 +182,23 @@ describe('generateSendersAutocompleteBySearchString', () => {
     //@ts-ignore Property 'params' does not exist on type 'AutocompleteItemProps'.
     const searchUnmatechedValueSSB = result.items[1]?.params?.find((item) => item.type === 'search');
 
-    expect(searchUnmatechedValueSKD.type === 'search');
-    expect(searchUnmatechedValueSKD.label === 'test1');
+    expect(searchUnmatechedValueSKD?.type === 'search');
+    expect(searchUnmatechedValueSKD?.label === 'test1');
 
-    expect(searchUnmatechedValueSSB.type === 'search');
-    expect(searchUnmatechedValueSSB.label === 'test1');
+    expect(searchUnmatechedValueSSB?.type === 'search');
+    expect(searchUnmatechedValueSSB?.label === 'test1');
 
     expect(result.items[0].title).toBe('Søk etter avsender Skatteetaten med fritekst sentralby test1');
     expect(result.items[1].title).toBe('Søk etter avsender Statistisk sentralbyrå med fritekst skat test1');
     expect(result.items).toHaveLength(2);
 
-    expect(result.groups).toEqual({
-      senders: { title: 'Søkeforslag' },
-    });
+    expect(result.groups).toEqual({});
   });
 
   it('should return no hits when search value does not match any sender name', () => {
     const result = createSendersForAutocomplete('Nonexistent Sender', mockDialogs as InboxItemInput[]);
 
     expect(result.items).toEqual([]);
-    expect(result.groups).toEqual({
-      senders: { title: 'Søkeforslag' },
-    });
+    expect(result.groups).toEqual({});
   });
 });
