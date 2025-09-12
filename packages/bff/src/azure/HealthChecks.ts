@@ -82,6 +82,18 @@ const healthCheckList: HealthCheck[] = [
       }
     },
   },
+  {
+    name: 'dialogporten',
+    checkFn: async () => {
+      try {
+        await axios.get(config.dialogporten.healthUrl);
+        return { status: 'ok' };
+      } catch (error) {
+        logger.error(error, 'Dialogporten health check failed');
+        return { status: 'error', detail: 'Dialogporten URL unreachable' };
+      }
+    },
+  },
   // ... add more health checks here ...
 ];
 
