@@ -14,7 +14,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
     const token = context!.session.get('token');
     const response = await axios({
       method: 'POST',
-      url: config.dialogportenURL,
+      url: config.dialogporten.graphqlUrl,
       headers: {
         'content-type': 'application/json',
         Authorization: `Bearer ${token.access_token}`,
