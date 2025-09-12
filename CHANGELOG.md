@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.65.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.65.2...v1.65.3) (2025-09-12)
+
+
+### Bug Fixes
+
+* **deps:** update dependency typeorm to v0.3.26 ([#2288](https://github.com/Altinn/dialogporten-frontend/issues/2288)) ([c6e2abe](https://github.com/Altinn/dialogporten-frontend/commit/c6e2abe68dfdbc277cf36d552bd0daf688f558a0))
+* prevent cursor jump in search input ([#2697](https://github.com/Altinn/dialogporten-frontend/issues/2697)) ([e51aeb9](https://github.com/Altinn/dialogporten-frontend/commit/e51aeb93d375892975b06f199a88a1c6842eea68))
+
 ## [1.65.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.65.1...v1.65.2) (2025-09-11)
 
 
