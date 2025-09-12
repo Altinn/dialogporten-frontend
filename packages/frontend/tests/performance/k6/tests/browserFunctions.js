@@ -6,15 +6,24 @@
  */
 export async function selectSideMenuElement(page, locator, trend) {
   const startTime = new Date();
-  const elems = await page.getByText(locator, { exact: true });
+  const elems = page.getByTestId(locator); 
+
   for (let i = 0; i < (await elems.count()); i++) {
+    const testAttribute = await elems.nth(i).getAttribute('data-testid');
+    const classAttribute = await elems.nth(i).getAttribute('class');
+    const hrefAttribute = await elems.nth(i).getAttribute('href'); 
+    const isVisible = await elems.nth(i).isVisible(); 
+    console.log(`Test attribute ${i}: ${testAttribute}`);
+    console.log(`Class attribute ${i}: ${classAttribute}`);
+    console.log(`Href attribute ${i}: ${hrefAttribute}`);
+    console.log(`Is visible ${i}: ${isVisible}`);
     if (await elems.nth(i).isVisible()) {
       await elems.nth(i)
         .click()
         .catch(() => { 
           console.log(`click failed for the ${i}. element for ${locator}`); 
         });
-      break;
+      //break;
     }
   }
   // Wait for the page to load after clicking the menu element
@@ -51,9 +60,7 @@ export async function selectNextPage(page, trend) {
 }
 
 export async function selectAllEnterprises(page, trend) {
-  const menuElement = await page
-    .waitForSelector('button[class="_button_1q3ym_1 _button_o1gnh_1"]', { timeout: 100 })
-    .catch(() => false);
+  const menuElement = await page.getByTestId('account-menu-button', { exact: true });
   await Promise.all([menuElement.click()]);
   const alle = await page.getByText(/Alle virksomheter|Alle verksemder|All organizations/, { timeout: 100, exact: true });
   for (let i = 0; i < (await alle.count({ timeout: 100 })); i++) {

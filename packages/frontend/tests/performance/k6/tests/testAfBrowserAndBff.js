@@ -84,7 +84,6 @@ export async function browserTest(data) {
   } else {
     testData = data[__ITER % data.length];
   }
-  console.log(`Using pid ${testData.pid}`);
   const context = await browser.newContext();
   const page = await context.newPage();
   let startTime;
@@ -93,7 +92,7 @@ export async function browserTest(data) {
   try {
     await context.addCookies([testData.cookie]);
     startTime = new Date();
-    await page.goto(afUrl + '?mock=true', { waitUntil: 'networkidle' });
+    await page.goto(afUrl + '?mock=true');
 
     // Check if we are on the right page
     const currentUrl = page.url();
@@ -101,18 +100,18 @@ export async function browserTest(data) {
       currentUrl: (h) => h.includes(afUrl),
     });
     // Wait for the page to load
-    //await waitForPageLoaded(page);
+    await waitForPageLoaded(page);
     //console.log(`Opened arbeidsflate for pid ${testData.pid}`);
     endTime = new Date();
     openAF.add(endTime - startTime);
 
     // press every menu item, return to inbox
-    await selectSideMenuElement(page, /Utkast|Drafts/, loadDrafts);
-    await selectSideMenuElement(page, /Sendt|Sent/, loadSent);
-    await selectSideMenuElement(page, /Lagrede søk|Lagra søk|Saved searches/, loadSavedSearches);
-    await selectSideMenuElement(page, /Arkiv|Archive/, loadArchive);
-    await selectSideMenuElement(page, /Papirkurv|Papirkorg|Bin/, loadBin);
-    await selectSideMenuElement(page, /Innboks|Inbox/, backToInbox);
+    await selectSideMenuElement(page, "sidebar-drafts", loadDrafts);
+    await selectSideMenuElement(page, "sidebar-sent", loadSent);
+    await selectSideMenuElement(page, "sidebar-saved-searches", loadSavedSearches);
+    await selectSideMenuElement(page, "sidebar-archive", loadArchive);
+    await selectSideMenuElement(page, "sidebar-bin", loadBin);
+    await selectSideMenuElement(page, "sidebar-inbox", backToInbox);
     await selectNextPage(page, loadNextPage);
     await selectAllEnterprises(page, loadAllEnterprises);
   } finally {
@@ -132,7 +131,6 @@ export function bffTest(data) {
   } else {
     testData = data[__ITER % data.length];
   };
-  console.log(`BFF Using pid ${testData.pid}`);
   const [parties, allParties] = openAf(testData.pid, testData.cookie);
   selectMenuElements(testData.cookie, parties);
   isAuthenticated(testData.cookie, isAuthenticatedLabel);
