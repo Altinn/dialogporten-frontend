@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.66.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.65.3...v1.66.0) (2025-09-12)
+
+
+### Features
+
+* New modal design. Improved logic for notification settings. ([daabc56](https://github.com/Altinn/dialogporten-frontend/commit/daabc566dee85e1484eb28a5af7337ecb92134fd))
+
 ## [1.65.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.65.2...v1.65.3) (2025-09-12)
 
 
