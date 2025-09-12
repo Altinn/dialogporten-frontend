@@ -3,11 +3,8 @@ import { HouseIcon, MobileIcon, PaperplaneIcon } from '@navikt/aksel-icons';
 import { AccountToolbar } from './CompanyDetails';
 
 export interface UserDetailsProps extends AccountListItemProps {
-  userId?: string;
   alertEmailAddress?: string;
   alertPhoneNumber?: string;
-  contactEmailAddress?: string;
-  contactPhoneNumber?: string;
   address?: string;
 }
 

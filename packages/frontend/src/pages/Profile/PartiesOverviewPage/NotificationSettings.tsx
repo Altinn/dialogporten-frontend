@@ -125,7 +125,7 @@ export const AccountNotificationSettings = ({
     try {
       if (enableEmailNotifications || enablePhoneNotifications) {
         await updateNotificationsetting(updatedSettings);
-        void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.NOTIFICATIONSETTINGSFORPARTY] });
+        queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.NOTIFICATIONSETTINGSFORPARTY] });
         onSave?.({
           ...notificationParty,
           notificationSettings: {
@@ -136,7 +136,7 @@ export const AccountNotificationSettings = ({
         } as NotificationAccountsType);
       } else {
         await deleteNotificationsetting(partyUuid);
-        void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.NOTIFICATIONSETTINGSFORPARTY] });
+        queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.NOTIFICATIONSETTINGSFORPARTY] });
         onSave?.({
           ...notificationParty,
           notificationSettings: {
