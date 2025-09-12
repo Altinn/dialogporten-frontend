@@ -75,5 +75,16 @@
       "test-results",
       "mockServiceWorker.js"
     ]
-  }
+  },
+  "overrides": [
+    {
+      "include": ["./package.json"],
+      "linter": {
+        "enabled": false
+      },
+      "formatter": {
+        "enabled": true
+      }
+    }
+  ]
 }
