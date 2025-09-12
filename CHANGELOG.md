@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.66.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.66.0...v1.66.1) (2025-09-12)
+
+
+### Bug Fixes
+
+* tour not showing ([#2702](https://github.com/Altinn/dialogporten-frontend/issues/2702)) ([66d4a7f](https://github.com/Altinn/dialogporten-frontend/commit/66d4a7f0d80ef3aac27d671f99bd389235da7c30))
+
 ## [1.66.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.65.3...v1.66.0) (2025-09-12)
 
 
