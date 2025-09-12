@@ -1,5 +1,5 @@
 import { type AvatarProps, ModalBase, ModalBody, ModalHeader, SettingsItem } from '@altinn/altinn-components';
-import { AccountNotificationSettings } from '../PartiesOverviewPage/NotificationSettings';
+import { CompanyNotificationSettings } from '../PartiesOverviewPage/CompanyNotificationSettings';
 import { urnToOrgNr } from '../PartiesOverviewPage/partyFieldToAccountList';
 import type { NotificationAccountsType } from './AccountSettings';
 
@@ -40,7 +40,7 @@ export const NotificationSettingsModal = ({
         />
       </ModalHeader>
       <ModalBody>
-        <AccountNotificationSettings
+        <CompanyNotificationSettings
           notificationParty={notificationParty}
           onClose={() => setNotificationParty(null)}
           onSave={onSave}
