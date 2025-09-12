@@ -10,7 +10,6 @@ export const QUERY_KEYS = {
   COUNT_DIALOGS: 'countDialogs',
   MAIN_CONTENT_REFERENCE: 'mainContentReference',
   SAVED_SEARCHES: 'savedSearches',
-  AUTOCOMPLETE: 'autocomplete',
   PROFILE: 'profile',
   NOTIFICATIONSETTINGSFORPARTY: 'notificationsettingsforparty',
   PROFILE_PARTIES_WITH_NOTIFICATION_SETTINGS: 'profilePartiesWithNotificationSettings',

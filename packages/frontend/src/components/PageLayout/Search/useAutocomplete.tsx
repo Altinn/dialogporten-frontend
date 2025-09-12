@@ -5,7 +5,7 @@ import { t } from 'i18next';
 import { useMemo } from 'react';
 import { Link, type LinkProps } from 'react-router-dom';
 import { useDebounce } from 'use-debounce';
-import { useDialogs } from '../../../api/hooks/useDialogs.tsx';
+import { useDialogsCount } from '../../../api/hooks/useDialogsCount.tsx';
 import { searchAutocompleteDialogs } from '../../../api/queries.ts';
 import {
   type SearchAutocompleteDialogInput,
@@ -112,7 +112,7 @@ interface UseAutocompleteDialogsOutput {
 export const useAutocomplete = ({ selectedParties, searchValue }: searchDialogsProps): UseAutocompleteDialogsOutput => {
   const partyURIs = getPartyIds(selectedParties);
   const debouncedSearchString = useDebounce(searchValue, 300)[0];
-  const { dialogs } = useDialogs({ parties: selectedParties, queryKey: QUERY_KEYS.AUTOCOMPLETE });
+  const { dialogCounts: allDialogs } = useDialogsCount();
   const { organizations } = useOrganizations();
   const enabled = !!debouncedSearchString && debouncedSearchString.length > 2 && selectedParties.length > 0;
   const {
@@ -128,7 +128,7 @@ export const useAutocomplete = ({ selectedParties, searchValue }: searchDialogsP
     gcTime: 0,
   });
 
-  const suggestedSenders = createSendersForAutocomplete(searchValue ?? '', dialogs, organizations);
+  const suggestedSenders = createSendersForAutocomplete(searchValue ?? '', allDialogs, organizations);
 
   const autocomplete: AutocompleteProps = useMemo(() => {
     const results = hits?.searchDialogs?.items ?? [];
