@@ -67,7 +67,7 @@ const responseMiddleware: ResponseMiddleware = (response) => {
     // Extract tracking data from response headers
     const operationName = response.headers?.get?.('x-graphql-operation') || 'UnknownOperation';
     const startTimeStr = response.headers?.get?.('x-graphql-start-time');
-
+    const backendTraceId = response.headers?.get?.('x-trace-id') || undefined;
     if (!startTimeStr) {
       console.warn('GraphQL response missing tracking headers - tracking may be incomplete');
       return;
@@ -95,12 +95,20 @@ const responseMiddleware: ResponseMiddleware = (response) => {
 
     // Track the GraphQL operation as a dependency
     Analytics.trackDependency({
-      id: `graphql-${operationName}-${startTime}`,
+      id: backendTraceId || `graphql-${operationName}-${startTime}`,
       target: '/api/graphql',
       name: operationName,
       duration: duration,
       success: success,
+      startTime: new Date(startTime),
       responseCode: responseCode,
+      properties: {
+        'backend.traceId': backendTraceId,
+        'correlation.source': 'backend-response',
+        'request.type': 'graphql',
+        'timing.corrected': 'true', // Flag to indicate proper timing
+      },
+      type: 'HTTP',
     });
   } catch (err) {
     console.error('GraphQL response middleware error:', err);

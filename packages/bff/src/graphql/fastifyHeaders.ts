@@ -1,5 +1,6 @@
 import { logger } from '@digdir/dialogporten-node-logger';
 import helmet from '@fastify/helmet';
+import { trace } from '@opentelemetry/api';
 import type { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 
@@ -63,6 +64,13 @@ const plugin: FastifyPluginAsync = async (fastify) => {
         'X-GraphQL-Operation': request.headers['x-graphql-operation'],
         'X-GraphQL-Start-Time': request.headers['x-graphql-start-time'],
       };
+
+      const currentSpan = trace.getActiveSpan();
+      if (currentSpan?.spanContext().traceId) {
+        const traceId = currentSpan.spanContext().traceId;
+        reply.header('X-Trace-Id', traceId);
+      }
+
       reply.headers({
         ...additionalSecurityHeaders,
         ...instrumentationHeaders,
