@@ -72,7 +72,8 @@
       "build",
       ".docusaurus",
       "mocks",
-      "test-results"
+      "test-results",
+      "mockServiceWorker.js"
     ]
   }
 }

@@ -13,8 +13,8 @@ test.describe('Search flow', () => {
     await page.getByTestId('search-button-clear').click();
     await searchbarInput.click();
     await searchbarInput.fill('mel');
-    await expect(page.getByRole('heading', { name: 'Anbefalte treff' })).toBeVisible();
-    const searchButton = page.getByRole('link', { name: 'Søk i innboksen etter mel' });
+    await expect(page.getByText('Anbefalte treff')).toBeVisible();
+    const searchButton = page.getByRole('menuitem', { name: 'Søk i innboksen etter mel' });
     await expect(searchButton).toBeVisible();
   });
 
@@ -29,11 +29,11 @@ test.describe('Search flow', () => {
     await searchbarInput.click();
     await searchbarInput.fill('test');
 
-    await expect(page.getByRole('banner').getByRole('link', { name: 'First test message' })).toBeVisible();
-    await expect(page.getByRole('banner').getByRole('link', { name: 'Second test message' })).toBeVisible();
-    await expect(page.getByRole('banner').getByRole('link', { name: 'Third test message' })).toBeVisible();
-    await expect(page.getByRole('banner').getByRole('link', { name: 'Fourth test message' })).toBeVisible();
-    await expect(page.getByRole('banner').getByRole('link', { name: 'Fifth test message' })).toBeVisible();
+    await expect(page.getByRole('banner').getByRole('menuitem', { name: 'First test message' })).toBeVisible();
+    await expect(page.getByRole('banner').getByRole('menuitem', { name: 'Second test message' })).toBeVisible();
+    await expect(page.getByRole('banner').getByRole('menuitem', { name: 'Third test message' })).toBeVisible();
+    await expect(page.getByRole('banner').getByRole('menuitem', { name: 'Fourth test message' })).toBeVisible();
+    await expect(page.getByRole('banner').getByRole('menuitem', { name: 'Fifth test message' })).toBeVisible();
   });
 
   test('Search link should open dialog details with enter', async ({ page, isMobile }) => {
