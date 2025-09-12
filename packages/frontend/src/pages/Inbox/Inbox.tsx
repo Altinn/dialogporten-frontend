@@ -44,7 +44,6 @@ export interface CurrentSeenByLog {
 
 export const Inbox = ({ viewType }: InboxProps) => {
   const { t } = useTranslation();
-
   const {
     selectedParties,
     allOrganizationsSelected,

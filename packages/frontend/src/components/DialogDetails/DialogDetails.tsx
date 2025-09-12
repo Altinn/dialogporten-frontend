@@ -290,7 +290,7 @@ export const DialogDetails = ({
             items={dialog.attachments}
           />
         )}
-        <DialogActions items={dialogActions} />
+        <DialogActions items={dialogActions} id="gui-actions" />
       </DialogBody>
       {transmissions?.length > 0 && (
         <Timeline>

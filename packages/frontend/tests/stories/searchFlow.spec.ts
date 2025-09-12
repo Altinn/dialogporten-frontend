@@ -1,3 +1,4 @@
+import { waitFor } from '@testing-library/react';
 import { appUrlWithPlaywrightId, baseQueryParams, baseURL, defaultAppURL } from '..';
 import { firstMsgId } from '../../src/mocks/data/stories/search-flow/dialogs';
 import { expect, test } from '../fixtures';
@@ -62,5 +63,28 @@ test.describe('Search flow', () => {
 
     await page.getByRole('link', { name: 'Tilbake', exact: true }).click();
     await expect(page).toHaveURL(`${defaultAppURL}&playwrightId=search-flow`);
+  });
+
+  test('should correctly insert text at cursor using key presses ', async ({ page }) => {
+    await page.goto(appUrlWithPlaywrightId('search-flow'));
+    await page.getByTestId('searchbar-input').click();
+    await page.getByTestId('searchbar-input').fill('message');
+
+    await page.getByTestId('searchbar-input').evaluate((el: HTMLInputElement) => {
+      el.setSelectionRange(0, 0);
+    });
+
+    await page.getByTestId('searchbar-input').press('T');
+    await page.getByTestId('searchbar-input').press('h');
+    await page.getByTestId('searchbar-input').press('i');
+    await page.getByTestId('searchbar-input').press('r');
+    await page.getByTestId('searchbar-input').press('d');
+    await page.getByTestId('searchbar-input').press('Space');
+    await page.getByTestId('searchbar-input').press('t');
+    await page.getByTestId('searchbar-input').press('e');
+    await page.getByTestId('searchbar-input').press('s');
+    await page.getByTestId('searchbar-input').press('t');
+    await page.getByTestId('searchbar-input').press('Space');
+    await expect(page.getByTestId('searchbar-input')).toHaveAttribute('value', 'Third test message');
   });
 });
