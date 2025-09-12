@@ -15,7 +15,7 @@ import { QUERY_KEYS } from '../../../constants/queryKeys';
 import type { NotificationAccountsType } from '../NotificationsPage/AccountSettings';
 import { NotificationSettingsModal } from '../NotificationsPage/NotificationSettingsModal';
 import { useNotificationSettingsForParty } from '../useNotificationSettingsForParty';
-import { NotificationSetting } from './NotificationSettings';
+import { PartyDetailsSetting } from './PartyDetailsSetting';
 
 export interface CompanyDetailsProps extends AccountListItemProps {
   party?: PartyFieldsFragment;
@@ -45,10 +45,6 @@ export const CompanyDetails = ({
   const { notificationSettingsForParty, isLoading: isLoadingNotificaitonSettings } =
     useNotificationSettingsForParty(id);
 
-  if (!party) {
-    return null;
-  }
-
   const onSave = () => {
     queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.NOTIFICATIONSETTINGSFORPARTY] });
   };
@@ -69,12 +65,12 @@ export const CompanyDetails = ({
       />
       <Divider />
       {!isLoadingNotificaitonSettings && notificationSettingsForParty ? (
-        <NotificationSetting
+        <PartyDetailsSetting
           notificationSetting={notificationSettingsForParty}
           setNotificationParty={() => setNotificationParty(party as NotificationAccountsType)}
         />
       ) : (
-        <NotificationSetting
+        <PartyDetailsSetting
           key={id}
           notificationSetting={{
             partyUuid: id,
