@@ -16,8 +16,8 @@ import { Settings } from './pages/Profile/Settings/Settings.tsx';
 import { SavedSearchesPage } from './pages/SavedSearches';
 import { PageRoutes } from './pages/routes.ts';
 import './app.css';
-import { AboutPage } from './pages/About/About.tsx';
 import { usePageTracking } from './hooks/usePageTracking.ts';
+import { AboutPage } from './pages/About/About.tsx';
 
 function App() {
   const EnableProfilePages = useFeatureFlag(FeatureFlagKeys.EnableProfilePages);
