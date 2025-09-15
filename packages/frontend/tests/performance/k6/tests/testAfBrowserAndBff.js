@@ -33,8 +33,11 @@ import { selectAllEnterprises, selectNextPage, selectSideMenuElement, waitForPag
 const env = __ENV.ENVIRONMENT || 'yt';
 const randomizeUser = (__ENV.RANDOMIZE ?? 'false') === 'true';
 
-const filenameEndusers = import.meta.resolve(`../testData/usersWithDialogs-${env}.csv`);
-export const endUsers = new SharedArray('endUsers', () => readCsv(filenameEndusers));
+let endUsers = [];
+if (env !== 'yt') {
+  const filenameEndusers = import.meta.resolve(`../testData/usersWithDialogs-${env}.csv`);
+  endUsers = new SharedArray('endUsers', () => readCsv(filenameEndusers));
+}
 
 export const options = getOptions();
 
