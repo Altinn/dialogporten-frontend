@@ -12,8 +12,8 @@ export async function selectSideMenuElement(page, locator, trend) {
     if (await elems.nth(i).isVisible()) {
       await elems.nth(i)
         .click()
-        .catch(() => { 
-          console.info(`click failed for the ${i}. element for ${locator}`); 
+        .catch(() => {
+          console.info(`click failed for the ${i}. element for ${locator}`);
         });
       break;
     }
@@ -54,7 +54,10 @@ export async function selectNextPage(page, trend) {
 export async function selectAllEnterprises(page, trend) {
   const menuElement = await page.getByTestId('account-menu-button', { exact: true });
   await Promise.all([menuElement.click()]);
-  const alle = await page.getByText(/Alle virksomheter|Alle verksemder|All organizations/, { timeout: 100, exact: true });
+  const alle = await page.getByText(/Alle virksomheter|Alle verksemder|All organizations/, {
+    timeout: 100,
+    exact: true 
+  });
   for (let i = 0; i < (await alle.count({ timeout: 100 })); i++) {
     if (await alle.nth(i).isVisible()) {
       const startTime = new Date();

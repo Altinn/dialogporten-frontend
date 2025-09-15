@@ -126,12 +126,12 @@ export async function browserTest(data) {
  * @returns {Array} - An array containing user party information.
  */
 export function bffTest(data) {
-  var testData;
+  let testData;
   if (randomizeUser) {
     testData = randomItem(data);
   } else {
     testData = data[__ITER % data.length];
-  };
+  }
   const [parties, allParties] = openAf(testData.pid, testData.cookie);
   selectMenuElements(testData.cookie, parties);
   isAuthenticated(testData.cookie, isAuthenticatedLabel);

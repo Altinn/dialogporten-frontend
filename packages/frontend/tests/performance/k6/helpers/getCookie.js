@@ -114,7 +114,8 @@ export function getCookies(count) {
     };
     cookies.push({
       pid: key,
-      cookie: cookie});
-    }
+      cookie: cookie,
+    });
+  }
   return cookies;
 }
