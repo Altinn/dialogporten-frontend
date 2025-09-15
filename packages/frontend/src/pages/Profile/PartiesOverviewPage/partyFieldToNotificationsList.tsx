@@ -8,7 +8,7 @@ import {
   Typography,
 } from '@altinn/altinn-components';
 import { ArrowDownRightIcon } from '@navikt/aksel-icons';
-import type { NotificationAccountsType } from '../NotificationsPage/NotificationsPage';
+import type { NotificationAccountsType } from '../NotificationsPage/AccountSettings';
 import { urnToOrgNr } from './partyFieldToAccountList';
 
 export const getPartyIcon = ({
@@ -90,12 +90,12 @@ export const flattenParties = (parties: NotificationAccountsType[]) => {
 
 export interface PartyFieldFragmentToNotificationsListItemProps {
   flattenedParties: NotificationAccountsType[];
-  setShowModalForAccount: (notification: NotificationAccountsType | null) => void;
+  setNotificationParty: (notification: NotificationAccountsType | null) => void;
 }
 
 export const partyFieldFragmentToNotificationsListItem = ({
   flattenedParties,
-  setShowModalForAccount,
+  setNotificationParty,
 }: PartyFieldFragmentToNotificationsListItemProps) => {
   if (!flattenedParties || flattenedParties.length === 0) {
     return [];
@@ -128,7 +128,7 @@ export const partyFieldFragmentToNotificationsListItem = ({
       title: party.name,
       collapsible: false,
       name: party.name,
-      onClick: () => setShowModalForAccount(party),
+      onClick: () => setNotificationParty(party),
       as: 'button',
       icon,
       description: `${isOrganization ? 'Org.nr. ' : 'Fødselsnummer: '} ${urnToOrgNr(party.party)}${party.parentId ? `, del av ${party.name}` : ''}`,

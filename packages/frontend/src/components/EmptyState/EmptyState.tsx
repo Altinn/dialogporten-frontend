@@ -54,7 +54,7 @@ export const EmptyState = ({ query, viewType, searchMode }: EmptyStateProps) => 
       <Section spacing={3} margin="section">
         <Heading size="lg">{t('emptyState.inbox.title')}</Heading>
         <Typography size="sm">
-          <p>{t('emptyState.inbox.description', { br: <br /> })}</p>
+          <p>{t('emptyState.inbox.description', { br: <br key={'inbox-p-br'} /> })}</p>
           <Link to={PageRoutes.about}>{t('emptyState.link.where_are_my_dialogs')}</Link>
         </Typography>
       </Section>

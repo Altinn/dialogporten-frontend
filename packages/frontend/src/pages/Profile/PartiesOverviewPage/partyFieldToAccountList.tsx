@@ -1,18 +1,11 @@
-import type {
-  AccountListItemProps,
-  AccountListItemType,
-  AvatarSize,
-  AvatarType,
-  BadgeProps,
-} from '@altinn/altinn-components';
-import { HeartFillIcon, HeartIcon, InboxIcon, PlusCircleIcon } from '@navikt/aksel-icons';
+import type { AccountListItemProps, AccountListItemType, AvatarType, BadgeProps } from '@altinn/altinn-components';
+import { InboxIcon } from '@navikt/aksel-icons';
 import type { GroupObject, PartyFieldsFragment, User } from 'bff-types-generated';
 import { t } from 'i18next';
 import type { ReactNode } from 'react';
 import { toTitleCase } from '..';
 import { PageRoutes } from '../../routes';
 import { CompanyDetails } from './CompanyDetails';
-import { GroupDetails } from './Groups';
 import { UserDetails } from './UserDetails';
 import { flattenParties, getPartyIcon } from './partyFieldToNotificationsList';
 
@@ -54,7 +47,6 @@ function filterGroupsByPartyId(groups: GroupObject[], targetPartyId: string): Gr
 
 export interface PartyFieldFragmentToAccountListItemProps {
   parties: PartyFieldsFragment[];
-  dialogRef: React.RefObject<HTMLDialogElement | null>;
   isExpanded: (id: string) => boolean;
   toggleExpanded: (id: string) => void;
   user: User;
@@ -62,24 +54,18 @@ export interface PartyFieldFragmentToAccountListItemProps {
   addFavoriteParty: (partyId: string) => Promise<void>;
   deleteFavoriteParty: (partyId: string) => Promise<void>;
   groups: GroupObject[];
-  setChosenParty: (party: PartyFieldsFragment) => void;
   navigate: (route: PageRoutes) => void;
-  disableFavoriteGroups?: boolean;
 }
 
 export const partyFieldFragmentToAccountListItem = ({
   parties,
-  dialogRef,
   isExpanded,
   toggleExpanded,
-  user,
   favoritesGroup,
   addFavoriteParty,
   deleteFavoriteParty,
   groups,
-  setChosenParty,
   navigate,
-  disableFavoriteGroups = true,
 }: PartyFieldFragmentToAccountListItemProps) => {
   if (!parties || parties.length === 0) {
     return [];
@@ -118,15 +104,6 @@ export const partyFieldFragmentToAccountListItem = ({
       isSubparty: !!party.parentId,
     });
 
-    const contactInfo = party.isCurrentEndUser
-      ? {
-          email: user?.email || '',
-          phone: user?.phoneNumber || '',
-          address: `${user?.party?.person?.mailingAddress || ''}, ${user?.party?.person?.mailingPostalCode || ''} ${user?.party?.person?.mailingPostalCity || ''}`,
-          name: `${user?.party?.person?.firstName || ''} ${user?.party?.person?.lastName || ''}`,
-          uniqueId: user?.party?.person?.ssn || '',
-        }
-      : {};
     const accountListItem = {
       accountIds: undefined,
       badge: party.isCurrentEndUser
@@ -144,7 +121,8 @@ export const partyFieldFragmentToAccountListItem = ({
       isDeleted: party.isDeleted || false,
       parentId: undefined,
       smsAlerts: true,
-      ...contactInfo,
+      name: party.name,
+      parentAccount: flattenedParties?.find((item) => item.partyUuid === party.parentId),
       type: party.partyType as AccountListItemType,
       title: party.name,
       collapsible: true,
@@ -161,10 +139,6 @@ export const partyFieldFragmentToAccountListItem = ({
         <UserDetails
           key={party.partyUuid}
           id={party.partyUuid}
-          alertEmailAddress={contactInfo.email || ''}
-          alertPhoneNumber={contactInfo.phone || ''}
-          address={contactInfo.address || ''}
-          {...contactInfo}
           type={party.partyType as AccountListItemType}
           name={party.name}
         />
@@ -172,34 +146,16 @@ export const partyFieldFragmentToAccountListItem = ({
     } else {
       children = (
         <CompanyDetails
-          key={party.partyUuid}
-          id={party.partyUuid}
           uniqueId={urnToOrgNr(party.party)}
+          id={party.partyUuid}
           type={party.partyType as AccountListItemType}
           name={party.name}
-          isCurrentEndUser={party.isCurrentEndUser}
-          isDeleted={party.isDeleted || false}
-          contactEmailAddress={contactInfo.email || ''}
-          contactPhoneNumber={contactInfo.phone || ''}
           favourite={favourite}
           onToggleFavourite={() => onToggleFavourite(accountListItem.favourite, party.partyUuid)}
           icon={icon}
-          address={contactInfo.address || ''}
           badge={accountListItem.badge}
-          items={parties.map((p) => ({
-            id: p.party,
-            type: p.partyType as AccountListItemType,
-            name: p.name,
-            title: p.name,
-            uniqueId: urnToOrgNr(p.party),
-            isCurrentEndUser: p.isCurrentEndUser,
-            isDeleted: p.isDeleted || false,
-            icon: {
-              type: p.partyType === 'Organization' ? ('company' as AvatarType) : ('person' as AvatarType),
-              name: p.name,
-              size: 'md' as AvatarSize,
-            },
-          }))}
+          party={party}
+          parentAccount={accountListItem.parentAccount}
         />
       );
     }
@@ -213,110 +169,14 @@ export const partyFieldFragmentToAccountListItem = ({
         items: [
           {
             id: party.partyUuid + 'inbox',
-            parentId: group?.name + party.partyUuid + '-menu',
             groupId: 'inbox',
             icon: InboxIcon,
             title: 'Gå til Innboks',
             onClick: () => navigate(PageRoutes.inbox),
           },
-          ...(!group?.isFavorite && !favourite
-            ? [
-                {
-                  id: party.partyUuid + 'favadd',
-                  groupId: 'context',
-                  icon: HeartIcon,
-                  title: 'Legg til favoritter',
-                  onClick: () => addFavoriteParty(party.partyUuid),
-                },
-              ]
-            : []),
-
-          ...(favourite
-            ? [
-                {
-                  id: party.partyUuid + 'favrem',
-                  groupId: 'context',
-                  icon: HeartFillIcon,
-                  title: 'Fjern fra favoritter',
-                  onClick: () => {
-                    deleteFavoriteParty(party.partyUuid);
-                  },
-                },
-              ]
-            : []),
-
-          ...(!disableFavoriteGroups
-            ? [
-                {
-                  id: party.partyUuid + 'new-group',
-                  groupId: 'NewGroup',
-                  icon: PlusCircleIcon,
-                  title: 'Legg til i ny gruppe',
-                  onClick: () => {
-                    dialogRef?.current?.showModal();
-                    setChosenParty(party);
-                  },
-                },
-              ]
-            : []),
         ],
       },
     } as AccountListItemProps;
   });
-
-  // Creating groups
-  for (let i = 0; i < groups.length; i++) {
-    const group = groups[i];
-    if (!group || group.isFavorite || !retVal.length) continue;
-    const groupedParties = parties.filter((p) => group.parties?.some((party) => party === p.partyUuid));
-
-    if (groupedParties.length > 0) {
-      const accountDetails = {
-        accountIds: groupedParties.map((p) => p.party),
-        badge: {
-          label: `${groupedParties.length} aktører`,
-          color: 'alert' as BadgeProps['color'],
-        },
-        favourite: !!group.isFavorite,
-        groupId: 'groups',
-        icon: {
-          items: groupedParties?.map((p) => {
-            return {
-              id: p.party,
-              name: p.name,
-              type: p.partyType,
-            };
-          }),
-        },
-
-        id: group.id?.toString() ?? '',
-        isCurrentEndUser: false,
-        isDeleted: false,
-        name: group.name,
-        parentId: undefined,
-        phone: undefined,
-        smsAlerts: undefined,
-        title: group.name,
-        type: 'group',
-        uniqueId: undefined,
-      } as AccountListItemProps;
-
-      retVal.push({
-        ...accountDetails,
-        children: (
-          <GroupDetails
-            {...accountDetails}
-            items={retVal.filter((accountDetail) => accountDetails.accountIds?.includes(accountDetail.id))}
-            id={group.id?.toString() ?? ''}
-            accountIds={accountDetails.accountIds}
-          />
-        ),
-        collapsible: true,
-        expanded: isExpanded(`group:${group.id}`),
-        onClick: () => toggleExpanded(`group:${group.id}`),
-        as: 'button',
-      } as AccountListItemProps);
-    }
-  }
   return retVal;
 };
