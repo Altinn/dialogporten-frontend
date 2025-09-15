@@ -22,6 +22,7 @@ import type { ActivityLogSegmentProps } from '@altinn/altinn-components/dist/typ
 import { DialogStatus } from 'bff-types-generated';
 import { type ReactElement, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Analytics } from '../../analytics';
 import type { DialogByIdDetails } from '../../api/hooks/useDialogById.tsx';
 import type { TimelineSegmentWithTransmissions } from '../../api/utils/transmissions.ts';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
@@ -38,6 +39,7 @@ interface DialogDetailsProps {
   };
   isAuthLevelTooLow?: boolean;
   isLoading?: boolean;
+  subscriptionOpened?: boolean;
 }
 
 /**
@@ -93,12 +95,15 @@ const handleDialogActionClick = async (
     window.open(url, '_blank');
   } else {
     try {
-      const response = await fetch(url, {
-        method: httpMethod,
-        headers: {
-          Authorization: `Bearer ${dialogToken}`,
-        },
-      });
+      const response = await Analytics.trackFetchDependency(
+        `DialogAction_${httpMethod}`,
+        fetch(url, {
+          method: httpMethod,
+          headers: {
+            Authorization: `Bearer ${dialogToken}`,
+          },
+        }),
+      );
 
       if (!response.ok) {
         console.error(`Error: ${response.statusText}`);
@@ -116,6 +121,7 @@ export const DialogDetails = ({
   isLoading,
   isAuthLevelTooLow,
   activityModalProps,
+  subscriptionOpened,
 }: DialogDetailsProps): ReactElement => {
   const { t } = useTranslation();
   const [actionIdLoading, setActionIdLoading] = useState<string>('');
@@ -230,10 +236,7 @@ export const DialogDetails = ({
     label: action.title,
     disabled: !!isLoading || action.disabled,
     priority: action.priority.toLocaleLowerCase() as DialogButtonPriority,
-    url: action.url,
-    httpMethod: action.httpMethod,
     loading: actionIdLoading === action.id,
-    loadingText: t('word.loading'),
     hidden: action.hidden,
     onClick: () => {
       setActionIdLoading(action.id);
@@ -278,14 +281,16 @@ export const DialogDetails = ({
         seenByLog={dialog.seenByLog}
       >
         <p>{dialog.summary}</p>
-        <MainContentReference content={dialog.mainContentReference} dialogToken={dialog.dialogToken} id={dialog.id} />
+        {subscriptionOpened && (
+          <MainContentReference content={dialog.mainContentReference} dialogToken={dialog.dialogToken} id={dialog.id} />
+        )}
         {dialog.attachments.length > 0 && (
           <DialogAttachments
             title={t('inbox.heading.attachments', { count: dialog.attachments.length })}
             items={dialog.attachments}
           />
         )}
-        <DialogActions items={dialogActions} />
+        <DialogActions items={dialogActions} id="gui-actions" />
       </DialogBody>
       {transmissions?.length > 0 && (
         <Timeline>

@@ -1,7 +1,7 @@
 import {
+  Button,
   DialogList,
   DsAlert,
-  DsButton,
   DsParagraph,
   Heading,
   PageBase,
@@ -44,7 +44,6 @@ export interface CurrentSeenByLog {
 
 export const Inbox = ({ viewType }: InboxProps) => {
   const { t } = useTranslation();
-
   const {
     selectedParties,
     allOrganizationsSelected,
@@ -129,13 +128,12 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const { groupedDialogs, groups } = useGroupedDialogs({
     onSeenByLogModalChange: setCurrentSeenByLogModal,
     items: dialogs,
+    hasNextPage,
     displaySearchResults: searchMode,
     filters: filterState,
     viewType,
     isLoading,
     isFetchingNextPage,
-    getCollapsedGroupTitle: (count) => t(`inbox.heading.title.${viewType}`, { count }),
-    collapseGroups: viewType !== 'inbox',
   });
 
   const windowSize = useWindowSize();
@@ -208,9 +206,15 @@ export const Inbox = ({ viewType }: InboxProps) => {
           highlightWords={searchMode ? [enteredSearchValue] : undefined}
         />
         {hasNextPage && (
-          <DsButton aria-label={t('dialog.aria.fetch_more')} onClick={fetchNextPage} variant="tertiary">
+          <Button
+            aria-label={t('dialog.aria.fetch_more')}
+            onClick={fetchNextPage}
+            variant="outline"
+            size="lg"
+            labelSize="md"
+          >
             {t('dialog.fetch_more')}
-          </DsButton>
+          </Button>
         )}
       </Section>
       <SeenByModal

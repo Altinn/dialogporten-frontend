@@ -104,6 +104,15 @@ describe('Html', () => {
     });
   });
 
+  test('should render table', async () => {
+    const html =
+      '<table><thead><tr><th>Syntax</th><th>Description</th></tr></thead><tbody><tr><td>Header</td><td>Title</td></tr><tr><td>Paragraph</td><td>Text</td></tr></tbody></table>';
+    const { container } = render(<Html onError={() => {}}>{html}</Html>);
+    await waitFor(() => {
+      expect(container.innerHTML).toContain('<table>');
+    });
+  });
+
   /* Unsupported / sanitized tags */
   test('should not render image', async () => {
     const html = '<img src="./example.png" /><em>something else</em>';

@@ -56,7 +56,7 @@ test.describe('Testing filter bar', () => {
 
     await page.getByRole('link', { name: 'Skatten din for 2022' }).click();
 
-    await page.getByRole('link', { name: 'Tilbake' }).click();
+    await page.getByRole('link', { name: 'Tilbake', exact: true }).click();
 
     expect(new URL(page.url()).searchParams.get('org')).toEqual('skd');
   });

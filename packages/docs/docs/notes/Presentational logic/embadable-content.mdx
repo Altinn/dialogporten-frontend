@@ -4,7 +4,7 @@ Embadable content in Arbeidsflate is a feature that allows users to embed extern
 a url to the content and a dialog token.
 
 Content (`text/plain`) adheres to the current version of [CommonMark](https://commonmark.org/) (0.31.2).
-For examples of how to use the markdown syntax, see [CommonMark examples](https://spec.commonmark.org/0.31.2/spec.json).
+For examples of how to use the markdown syntax, see [CommonMark examples](https://spec.commonmark.org/0.31.2/spec.json). With the extension of [GitHub Flavored Markdown](https://github.github.com/gfm/) to support pipe and dash syntax for tables.
 
 ## Process
 
@@ -22,7 +22,9 @@ For security reasons, the content is sanitized and only certain tags are allowed
 
 ### Allowed HTML tags
 
-| HTML Tag                 | Purpose                       | Markdown Equivalent                             |
+### Allowed HTML tags
+
+| HTML Tag                 | Purpose                       | Markdown Equivalent / Example                   |
 | ------------------------ | ----------------------------- | ----------------------------------------------- |
 | `<p>`                    | Paragraphs                    | Plain text separated by a blank line            |
 | `<em>`                   | Italic / emphasis             | `*italic*` or `_italic_`                        |
@@ -35,6 +37,7 @@ For security reasons, the content is sanitized and only certain tags are allowed
 | `<hr>`                   | Horizontal rule/separator     | `---` or `***`                                  |
 | `<h1>`–`<h6>`            | Headings                      | `# H1`, `## H2`, ..., `###### H6`               |
 | `<br>`                   | Line break                    | Line ends with 2+ spaces + Enter                |
+| `<table>` / `<thead>` / `<tbody>` / `<tr>` / `<th>` / `<td>` | Tabular data | **Markdown:**<br /><pre>\| Syntax \| Description \|\n\| ----------- \| ----------- \|\n\| Header \| Title \|\n\| Paragraph \| Text \|</pre><br />**HTML:**<br /><pre>&lt;table&gt;\n  &lt;thead&gt;\n    &lt;tr&gt;\n      &lt;th&gt;Syntax&lt;/th&gt;\n      &lt;th&gt;Description&lt;/th&gt;\n    &lt;/tr&gt;\n  &lt;/thead&gt;\n  &lt;tbody&gt;\n    &lt;tr&gt;\n      &lt;td&gt;Header&lt;/td&gt;\n      &lt;td&gt;Title&lt;/td&gt;\n    &lt;/tr&gt;\n    &lt;tr&gt;\n      &lt;td&gt;Paragraph&lt;/td&gt;\n      &lt;td&gt;Text&lt;/td&gt;\n    &lt;/tr&gt;\n  &lt;/tbody&gt;\n&lt;/table&gt;</pre> |
 
 ### Allowed Attributes
 

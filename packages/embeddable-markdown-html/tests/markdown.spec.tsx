@@ -2,7 +2,7 @@ import { render, waitFor } from '@testing-library/react';
 import { describe, expect, test } from 'vitest';
 import { Markdown } from '../src';
 
-describe('Markdown', () => {
+describe('Markdown: common mark + table support', () => {
   /* Tests for supported tags */
   test('should render paragraph', async () => {
     const markdownString = 'This is a paragraph.';
@@ -148,6 +148,22 @@ describe('Markdown', () => {
     await waitFor(() => {
       expect(container.querySelector('em')).toHaveTextContent('emphasis');
       expect(container.innerHTML).not.toContain('<div>');
+    });
+  });
+
+  test('should render table', async () => {
+    const markdownString = `| Syntax      | Description |
+| ----------- | ----------- |
+| Header      | Title       |
+| Paragraph   | Text        |`;
+    const { container } = render(<Markdown onError={() => {}}>{markdownString}</Markdown>);
+    await waitFor(() => {
+      expect(container.querySelector('table')).toHaveTextContent('Syntax');
+      expect(container.querySelector('table')).toHaveTextContent('Description');
+      expect(container.querySelectorAll('td')[0]).toHaveTextContent('Header');
+      expect(container.querySelectorAll('td')[1]).toHaveTextContent('Title');
+      expect(container.querySelectorAll('td')[2]).toHaveTextContent('Paragraph');
+      expect(container.querySelectorAll('td')[3]).toHaveTextContent('Text');
     });
   });
 });
