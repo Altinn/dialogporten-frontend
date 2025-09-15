@@ -12,7 +12,8 @@ export async function selectSideMenuElement(page, locator, trend) {
     .click()
     .catch(() => {
       console.info(`click failed for the element with locator ${locator}`);
-    })]);
+    })
+  ]);
 
   // Wait for the page to load after clicking the menu element
   await waitForPageLoaded(page, 2);
