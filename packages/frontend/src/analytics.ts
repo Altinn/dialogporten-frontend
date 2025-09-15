@@ -2,37 +2,34 @@ import { ReactPlugin } from '@microsoft/applicationinsights-react-js';
 import type { ITelemetryItem, ITelemetryPlugin } from '@microsoft/applicationinsights-web';
 import { ApplicationInsights } from '@microsoft/applicationinsights-web';
 import { config } from './config';
+import { PageRoutes } from './pages/routes';
 
 let applicationInsights: ApplicationInsights | null = null;
 
 const applicationInsightsEnabled = config.applicationInsightsInstrumentationKey && import.meta.env.PROD;
 
-// Enhanced page name mapping for better funnel analysis
 const getPageNameFromPath = (pathname: string): string => {
-  // Remove query parameters and fragments
   const cleanPath = pathname.split('?')[0].split('#')[0];
 
-  // Map paths to meaningful page names
   const pageMapping: Record<string, string> = {
-    '/': 'Inbox',
-    '/sent': 'Sent Items',
-    '/drafts': 'Drafts',
-    '/archive': 'Archive',
-    '/bin': 'Bin',
-    '/saved-searches': 'Saved Searches',
-    '/about': 'About',
-    '/profile': 'Profile Overview',
-    '/profile/parties': 'Parties Management',
-    '/profile/notifications': 'Notification Settings',
-    '/profile/settings': 'User Settings',
-    '/profile/access': 'Access Management',
-    '/profile/activities': 'Activity Log',
-    '/profile/authorize': 'Authorization',
-    '/error': 'Error Page',
-    '/logout': 'Logout',
+    [PageRoutes.inbox]: 'Inbox',
+    [PageRoutes.sent]: 'Sent Items',
+    [PageRoutes.drafts]: 'Drafts',
+    [PageRoutes.archive]: 'Archive',
+    [PageRoutes.bin]: 'Bin',
+    [PageRoutes.savedSearches]: 'Saved Searches',
+    [PageRoutes.about]: 'About',
+    [PageRoutes.profile]: 'Profile Overview',
+    [PageRoutes.partiesOverview]: 'Parties Management',
+    [PageRoutes.notifications]: 'Notification Settings',
+    [PageRoutes.settings]: 'User Settings',
+    [PageRoutes.access]: 'Access Management',
+    [PageRoutes.activities]: 'Activity Log',
+    [PageRoutes.authorize]: 'Authorization',
+    [PageRoutes.error]: 'Error Page',
+    '/logout': 'Logout', // Not in PageRoutes enum
   };
 
-  // Define regex patterns for dynamic routes
   const dynamicRoutePatterns = [
     {
       pattern: /^\/inbox\/[^/]+\/?$/,
@@ -45,23 +42,19 @@ const getPageNameFromPath = (pathname: string): string => {
     // },
   ];
 
-  // Check exact matches first
   if (pageMapping[cleanPath]) {
     return pageMapping[cleanPath];
   }
 
-  // Check dynamic route patterns
   for (const { pattern, pageName } of dynamicRoutePatterns) {
     if (pattern.test(cleanPath)) {
       return pageName;
     }
   }
 
-  // Return fallback to cleaned path
   return cleanPath.replace(/^\//, '').replace(/\//g, ' > ') || 'Unknown Page';
 };
 
-// Enhanced page view tracking function
 export const trackPageView = (pageInfo: {
   pathname: string;
   search: string;
@@ -75,7 +68,6 @@ export const trackPageView = (pageInfo: {
   const currentPath = pageInfo.pathname;
   const enhancedPageName = getPageNameFromPath(currentPath);
 
-  // Enhanced properties for better analysis
   const enhancedProperties = {
     'page.path': currentPath,
     'page.url': currentUrl,
@@ -95,8 +87,6 @@ export const trackPageView = (pageInfo: {
     uri: currentUrl,
     properties: enhancedProperties,
   });
-
-  console.info(`Page view tracked: ${enhancedPageName} (${currentPath})`);
 };
 
 export const trackUserAction = (action: string, properties?: Record<string, string>) => {
