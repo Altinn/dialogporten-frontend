@@ -6,14 +6,14 @@
  */
 export async function selectSideMenuElement(page, locator, trend) {
   const startTime = new Date();
-  const elems = page.getByTestId(locator); 
+  const elems = page.getByTestId(locator);
 
   for (let i = 0; i < (await elems.count()); i++) {
     if (await elems.nth(i).isVisible()) {
       await elems.nth(i)
         .click()
         .catch(() => { 
-          console.log(`click failed for the ${i}. element for ${locator}`); 
+          console.info(`click failed for the ${i}. element for ${locator}`); 
         });
       break;
     }

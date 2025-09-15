@@ -58,21 +58,19 @@ const loadAllEnterprises = new Trend('load_all_enterprises', true);
  * @returns {Array} - An array of objects containing the PID and cookie for each end user.
  **/
 export async function setup() {
-  if (env == 'yt') {
+  if (env === 'yt') {
     return getCookies(1000);
   }
-  else {
-    const data = [];
-    let cookie;
-    for (const endUser of endUsers) {
-      cookie = getCookie(endUser.pid);
-      data.push({
-        pid: endUser.pid,
-        cookie: cookie,
-      });
-    }
-    return data;
+  const data = [];
+  let cookie;
+  for (const endUser of endUsers) {
+    cookie = getCookie(endUser.pid);
+    data.push({
+      pid: endUser.pid,
+      cookie: cookie,
+    });
   }
+  return data;
 }
 
 /**
@@ -81,7 +79,7 @@ export async function setup() {
  * @param {object} data - Test data for the scenario.
  */
 export async function browserTest(data) {
-  var testData;
+  let testData;
   if (randomizeUser) {
     testData = randomItem(data);
   } else {
@@ -109,12 +107,12 @@ export async function browserTest(data) {
     openAF.add(endTime - startTime);
 
     // press every menu item, return to inbox
-    await selectSideMenuElement(page, "sidebar-drafts", loadDrafts);
-    await selectSideMenuElement(page, "sidebar-sent", loadSent);
-    await selectSideMenuElement(page, "sidebar-saved-searches", loadSavedSearches);
-    await selectSideMenuElement(page, "sidebar-archive", loadArchive);
-    await selectSideMenuElement(page, "sidebar-bin", loadBin);
-    await selectSideMenuElement(page, "sidebar-inbox", backToInbox);
+    await selectSideMenuElement(page, 'sidebar-drafts', loadDrafts);
+    await selectSideMenuElement(page, 'sidebar-sent', loadSent);
+    await selectSideMenuElement(page, 'sidebar-saved-searches', loadSavedSearches);
+    await selectSideMenuElement(page, 'sidebar-archive', loadArchive);
+    await selectSideMenuElement(page, 'sidebar-bin', loadBin);
+    await selectSideMenuElement(page, 'sidebar-inbox', backToInbox);
     await selectNextPage(page, loadNextPage);
     await selectAllEnterprises(page, loadAllEnterprises);
   } finally {
