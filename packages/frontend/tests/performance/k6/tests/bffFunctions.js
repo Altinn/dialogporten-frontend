@@ -21,18 +21,9 @@ export function openAf(pid, cookie) {
   const userParty = parties.filter((el) => el.includes(pid));
   getOrganizations(cookie);
   getSavedSearches(cookie);
-  //getProfile(cookie);
-  if (parties.length <= 20 && parties.length > 1) {
-    getAllDialogsForCount(cookie, parties);
-    getAllDialogsForParties(cookie, parties);
-    getAllDialogsForParties(cookie, [userParty[0]], 100, true);
-    getAllDialogsForCount(cookie, [userParty[0]]);
-    getAllDialogsForParties(cookie, [userParty[0]], 100);
-  } else {
-    getAllDialogsForCount(cookie, [userParty[0]]);
-    getAllDialogsForParties(cookie, [userParty[0]], 100, true);
-    getAllDialogsForParties(cookie, [userParty[0]], 100);
-  }
+  getProfile(cookie);
+  getAllDialogsForParties(cookie, [userParty[0]], 100, true);
+  getAllDialogsForCount(cookie, [userParty[0]]);
   return [userParty, parties];
 }
 
@@ -111,7 +102,7 @@ export function getNextpage(cookie, parties) {
  * @param {Object} cookie - The cookie object containing name and value.
  * @return {Array} - An array of party URIs.
  */
-export function getParties(cookie, pid) {
+function getParties(cookie, pid) {
   const resp = graphql(cookie, partiesQuery);
   if (resp.status !== 200) {
     console.info('GraphQL request failed: ' + resp.status);
@@ -183,11 +174,6 @@ function getProfile(cookie) {
     console.info('GraphQL request failed: ' + resp.status);
     return;
   }
-  const data = resp.json();
-  const profile = [];
-  profile.push(data.data.profile.user.userId);
-  profile.push(data.data.profile.user.userUuid);
-  return profile;
 }
 
 /**
@@ -286,7 +272,7 @@ function getMenuElements(cookie, party, menuElement) {
  * @param {string} label - The label for the request.
  * @return {Object} - The response object from the request.
  */
-export function graphql(cookie, query, label = null) {
+function graphql(cookie, query, label = null) {
   const url = baseUrl + '/graphql';
   const payload = JSON.stringify(query);
   let queryLabel = query.operationName;
