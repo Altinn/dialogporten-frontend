@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.66.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.66.3...v1.66.4) (2025-09-15)
+
+
+### Bug Fixes
+
+* duplicate test ids for sub items in sidemenu ([#2718](https://github.com/Altinn/dialogporten-frontend/issues/2718)) ([b231759](https://github.com/Altinn/dialogporten-frontend/commit/b231759246c5dc42258e5089862cfdd7b6789a15))
+
 ## [1.66.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.66.2...v1.66.3) (2025-09-15)
 
 
