@@ -8,11 +8,10 @@ export async function selectSideMenuElement(page, locator, trend) {
   const startTime = new Date();
   const elem = await page.getByTestId(locator);
 
-  await Promise.all([elem
-    .click()
-    .catch(() => {
+  await Promise.all([
+    elem.click().catch(() => {
       console.info(`click failed for the element with locator ${locator}`);
-    })
+    }),
   ]);
 
   // Wait for the page to load after clicking the menu element
