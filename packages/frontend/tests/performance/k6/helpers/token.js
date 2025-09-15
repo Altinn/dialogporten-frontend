@@ -146,3 +146,19 @@ export function getPersonalToken(tokenOptions, env = 'yt01') {
   }
   return fetchToken(url.toString(), extendedOptions, 'personal');
 }
+
+export function getPersonalTokens(tokenOptions = null, env = 'yt01') {
+  const url = new URL(`https://altinn-testtools-token-generator.azurewebsites.net/api/GetPersonalToken`);
+  const extendedOptions = addEnvAndTtlToTokenOptions(tokenOptions, env);
+  for (const key in extendedOptions) {
+    if (key in extendedOptions) {
+      url.searchParams.append(key, extendedOptions[key]);
+    }
+  }
+  tokenRequestOptions.timeout = 600000;
+  const response = http.get(url.toString(), tokenRequestOptions);
+  if (response.status !== 200) {
+    throw new Error(`Failed getting tokens: ${response.status_text}`);
+  }
+  return response.json();
+}

@@ -21,18 +21,9 @@ export function openAf(pid, cookie) {
   const userParty = parties.filter((el) => el.includes(pid));
   getOrganizations(cookie);
   getSavedSearches(cookie);
-  //getProfile(cookie);
-  if (parties.length <= 20 && parties.length > 1) {
-    getAllDialogsForCount(cookie, parties);
-    getAllDialogsForParties(cookie, parties);
-    getAllDialogsForParties(cookie, [userParty[0]], 100, true);
-    getAllDialogsForCount(cookie, [userParty[0]]);
-    getAllDialogsForParties(cookie, [userParty[0]], 100);
-  } else {
-    getAllDialogsForCount(cookie, [userParty[0]]);
-    getAllDialogsForParties(cookie, [userParty[0]], 100, true);
-    getAllDialogsForParties(cookie, [userParty[0]], 100);
-  }
+  getProfile(cookie);
+  getAllDialogsForParties(cookie, [userParty[0]], 100, true);
+  getAllDialogsForCount(cookie, [userParty[0]]);
   return [userParty, parties];
 }
 
@@ -183,11 +174,6 @@ function getProfile(cookie) {
     console.info('GraphQL request failed: ' + resp.status);
     return;
   }
-  const data = resp.json();
-  const profile = [];
-  profile.push(data.data.profile.user.userId);
-  profile.push(data.data.profile.user.userUuid);
-  return profile;
 }
 
 /**

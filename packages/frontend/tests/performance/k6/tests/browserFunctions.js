@@ -6,15 +6,16 @@
  */
 export async function selectSideMenuElement(page, locator, trend) {
   const startTime = new Date();
-  const elems = await page.getByText(locator, { exact: true });
-  for (let i = 0; i < (await elems.count()); i++) {
-    if (await elems.nth(i).isVisible()) {
-      await elems.nth(i).click();
-      break;
-    }
-  }
+  const elem = await page.getByTestId(locator);
+
+  await Promise.all([
+    elem.click().catch(() => {
+      console.info(`click failed for the element with locator ${locator}`);
+    }),
+  ]);
+
   // Wait for the page to load after clicking the menu element
-  await waitForPageLoaded(page);
+  await waitForPageLoaded(page, 2);
   // Track the time taken for the action
   const endTime = new Date();
   trend.add(endTime - startTime);
@@ -47,11 +48,12 @@ export async function selectNextPage(page, trend) {
 }
 
 export async function selectAllEnterprises(page, trend) {
-  const menuElement = await page
-    .waitForSelector('button[class="_button_1q3ym_1 _button_o1gnh_1"]', { timeout: 100 })
-    .catch(() => false);
+  const menuElement = await page.getByTestId('account-menu-button', { exact: true });
   await Promise.all([menuElement.click()]);
-  const alle = await page.getByText('Alle virksomheter', { timeout: 100, exact: true });
+  const alle = await page.getByText(/Alle virksomheter|Alle verksemder|All organizations/, {
+    timeout: 100,
+    exact: true,
+  });
   for (let i = 0; i < (await alle.count({ timeout: 100 })); i++) {
     if (await alle.nth(i).isVisible()) {
       const startTime = new Date();
@@ -70,7 +72,7 @@ export async function selectAllEnterprises(page, trend) {
  * @param {number} empties - Number of empty checks to perform (default is 1).
  * @return {Promise<void>} - A promise that resolves when the page is loaded.
  */
-async function waitForPageLoaded(page, empties = 1) {
+export async function waitForPageLoaded(page, empties = 1) {
   let busyItems = await page.$$('li [aria-busy="true"]');
   let noEmptys = 0;
   while (busyItems.length > 0 || noEmptys < empties) {
