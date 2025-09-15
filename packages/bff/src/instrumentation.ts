@@ -1,9 +1,9 @@
 import type { IncomingMessage } from 'node:http';
 import { useAzureMonitor } from '@azure/monitor-opentelemetry';
 import { logger } from '@digdir/dialogporten-node-logger';
-import { type ProxyTracerProvider, metrics, trace } from '@opentelemetry/api';
-import { registerInstrumentations } from '@opentelemetry/instrumentation';
 import { FastifyOtelInstrumentation } from '@fastify/otel';
+import { registerInstrumentations } from '@opentelemetry/instrumentation';
+import { type ProxyTracerProvider, metrics, trace } from '@opentelemetry/api';
 import { GraphQLInstrumentation } from '@opentelemetry/instrumentation-graphql';
 import { HttpInstrumentation, type HttpInstrumentationConfig } from '@opentelemetry/instrumentation-http';
 import { IORedisInstrumentation } from '@opentelemetry/instrumentation-ioredis';
