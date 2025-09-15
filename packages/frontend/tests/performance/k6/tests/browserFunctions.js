@@ -10,7 +10,8 @@ export async function selectSideMenuElement(page, locator, trend) {
 
   for (let i = 0; i < (await elems.count()); i++) {
     if (await elems.nth(i).isVisible()) {
-      await elems.nth(i)
+      await elems
+        .nth(i)
         .click()
         .catch(() => {
           console.info(`click failed for the ${i}. element for ${locator}`);
@@ -56,7 +57,7 @@ export async function selectAllEnterprises(page, trend) {
   await Promise.all([menuElement.click()]);
   const alle = await page.getByText(/Alle virksomheter|Alle verksemder|All organizations/, {
     timeout: 100,
-    exact: true 
+    exact: true,
   });
   for (let i = 0; i < (await alle.count({ timeout: 100 })); i++) {
     if (await alle.nth(i).isVisible()) {
