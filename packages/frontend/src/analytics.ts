@@ -30,7 +30,7 @@ if (applicationInsightsEnabled) {
         // TODO: set to a lower value in production
         samplingPercentage: 100,
         appId: 'arbeidsflate-frontend',
-        enableDebug: true,
+        enableDebug: false,
       },
     });
     applicationInsights.loadAppInsights();
