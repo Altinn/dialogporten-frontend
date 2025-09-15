@@ -211,7 +211,6 @@ const createSenderOrgFilter = (
 ): ToolbarFilterProps => {
   const filteredDialogs = getFilteredDialogs(allDialogs, currentFilters, FilterCategory.ORG);
   const orgCount = countOccurrences(filteredDialogs.map((d) => d.org));
-
   const uniqueOrgs = Array.from(new Set([...allDialogs.map((d) => d.org), ...orgsFromSearchState]));
 
   return {
@@ -226,7 +225,12 @@ const createSenderOrgFilter = (
         badge: getFilterBadgeProps(orgCount[org] || 0),
         count: orgCount[org] || 0,
       }))
-      .filter((option) => option.count > 0)
+      .filter((option) => {
+        if (orgsFromSearchState.includes(option.value)) {
+          return true;
+        }
+        return option.count > 0;
+      })
       .sort((a, b) => a.label?.localeCompare(b.label)),
   };
 };

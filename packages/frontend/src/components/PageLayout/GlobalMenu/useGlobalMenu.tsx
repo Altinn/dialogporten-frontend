@@ -284,6 +284,10 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
     ...menu,
     items: menuItems.map((item, index) => ({
       ...item,
+      items: (item.items || []).map((item) => ({
+        ...item,
+        dataTestId: (item.dataTestId ?? '') + '-mobile-menu' + (item.dataTestId ? '' : '-' + index),
+      })),
       dataTestId: (item.dataTestId ?? '') + '-mobile-menu' + (item.dataTestId ? '' : '-' + index),
     })),
     defaultIconTheme: 'tinted',
