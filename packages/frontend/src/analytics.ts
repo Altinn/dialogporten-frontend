@@ -32,13 +32,33 @@ const getPageNameFromPath = (pathname: string): string => {
     '/logout': 'Logout',
   };
 
-  // Handle dynamic routes (like /inbox/:id)
-  if (cleanPath.startsWith('/inbox/') && cleanPath !== '/inbox') {
-    return 'Dialog Details';
+  // Define regex patterns for dynamic routes
+  const dynamicRoutePatterns = [
+    {
+      pattern: /^\/inbox\/[^/]+\/?$/,
+      pageName: 'Dialog Details',
+    },
+    // Add more dynamic route patterns here as needed
+    // {
+    //   pattern: /^\/profile\/[^/]+\/?$/,
+    //   pageName: 'Profile Item'
+    // },
+  ];
+
+  // Check exact matches first
+  if (pageMapping[cleanPath]) {
+    return pageMapping[cleanPath];
   }
 
-  // Return mapped name or fallback to cleaned path
-  return pageMapping[cleanPath] || cleanPath.replace(/^\//, '').replace(/\//g, ' > ') || 'Unknown Page';
+  // Check dynamic route patterns
+  for (const { pattern, pageName } of dynamicRoutePatterns) {
+    if (pattern.test(cleanPath)) {
+      return pageName;
+    }
+  }
+
+  // Return fallback to cleaned path
+  return cleanPath.replace(/^\//, '').replace(/\//g, ' > ') || 'Unknown Page';
 };
 
 // Enhanced page view tracking function
