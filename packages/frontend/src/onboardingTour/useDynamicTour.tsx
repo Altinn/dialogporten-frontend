@@ -59,12 +59,10 @@ export const useDynamicTour = ({
   viewType,
 }: UseDynamicTourProps) => {
   const [globalTour, setGlobalTour] = useGlobalState<boolean>(QUERY_KEYS.SHOW_TOUR, false);
-
   const windowSize = useWindowSize();
   const tour = useTour();
   const { setIsOpen, setCurrentStep } = tour;
   const [hasInitialized, setHasInitialized] = useState(false);
-
   const shouldInitializeTour =
     globalTour && !isLoadingParties && !isLoadingDialogs && dialogsSuccess && viewType === 'inbox' && !hasInitialized;
 
@@ -109,7 +107,7 @@ export const useDynamicTour = ({
   }, [shouldInitializeTour, dialog, tour, setIsOpen, setCurrentStep, windowSize.isTabletOrSmaller]);
 
   useEffect(() => {
-    if (tour.isOpen === false && hasInitialized) {
+    if (!tour.isOpen && hasInitialized) {
       setGlobalTour(false);
       setHasInitialized(false);
     }

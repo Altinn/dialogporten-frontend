@@ -1,14 +1,13 @@
 import type { AutocompleteItemProps, AutocompleteProps, QueryItemType } from '@altinn/altinn-components';
-import type { OrganizationFieldsFragment } from 'bff-types-generated';
+import type { CountableDialogFieldsFragment, OrganizationFieldsFragment } from 'bff-types-generated';
 import { t } from 'i18next';
 import { Link, type LinkProps } from 'react-router-dom';
 import { getOrganization } from '../../../api/utils/organizations.ts';
-import type { InboxItemInput } from '../../../pages/Inbox/InboxItemInput.ts';
 import { pruneSearchQueryParams } from '../../../pages/Inbox/queryParams.ts';
 
 export const createSendersForAutocomplete = (
   searchValue: string,
-  dialogs: InboxItemInput[],
+  dialogs: CountableDialogFieldsFragment[],
   organizations?: OrganizationFieldsFragment[],
 ): AutocompleteProps => {
   const TYPE_SUGGEST = 'suggest';

@@ -1,6 +1,6 @@
 {
   "name": "dialogporten-frontend",
-  "version": "1.65.2",
+  "version": "1.66.3",
   "private": true,
   "scripts": {
     "hooks:enable": "git config core.hooksPath .hooks",
@@ -21,7 +21,7 @@
   "lint-staged": {
     "**/*.*": "biome check --staged --no-errors-on-unmatched --write"
   },
-  "packageManager": "pnpm@10.1.0",
+  "packageManager": "pnpm@10.15.1",
   "msw": {
     "workerDirectory": [
       "dist"

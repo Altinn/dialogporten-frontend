@@ -125,61 +125,69 @@ if (applicationInsightsEnabled) {
     console.info('Application Insights initialized successfully');
 
     applicationInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
-      // Enhance page view telemetry with better names
-      if (envelope.baseType === 'PageviewData') {
-        const pageViewData = envelope.baseData;
-        if (pageViewData?.name && pageViewData.name === document.title) {
-          // If the page name is just the document title, enhance it
-          const betterName = getPageNameFromPath(window.location.pathname);
-          pageViewData.name = betterName;
+      switch (envelope.baseType) {
+        // Enhance page view telemetry with better names
+        case 'PageviewData':
+          {
+            const pageViewData = envelope.baseData;
+            if (pageViewData?.name && pageViewData.name === document.title) {
+              // If the page name is just the document title, enhance it
+              const betterName = getPageNameFromPath(window.location.pathname);
+              pageViewData.name = betterName;
 
-          // Add funnel-friendly properties
-          envelope.data = envelope.data || {};
-          envelope.data.properties = envelope.data.properties || {};
-          envelope.data.properties['funnel.step'] = betterName;
-          envelope.data.properties['funnel.category'] = getFunnelCategory(window.location.pathname);
+              // Add funnel-friendly properties
+              envelope.data = envelope.data || {};
+              envelope.data.properties = envelope.data.properties || {};
+              envelope.data.properties['funnel.step'] = betterName;
+              envelope.data.properties['funnel.category'] = getFunnelCategory(window.location.pathname);
+            }
+          }
+          break;
+        case 'RemoteDependencyData': {
+          const dependencyData = envelope.baseData;
+          const backendTraceId = dependencyData?.properties?.['backend.traceId'];
+
+          if (backendTraceId) {
+            // This only affects THIS specific telemetry item
+            envelope.tags = envelope.tags || {};
+            envelope.tags['ai.operation.id'] = backendTraceId;
+            envelope.tags['ai.operation.parentId'] = `|${backendTraceId}.${Date.now()}`;
+          }
+          break;
         }
-      }
+        // Only filter exceptions
+        case 'ExceptionData': {
+          const data = envelope.baseData;
+          const message = data?.message || '';
+          const exceptions = data?.exceptions || [];
 
-      // Handle dependency correlation (existing code)
-      if (envelope.baseType === 'RemoteDependencyData') {
-        const dependencyData = envelope.baseData;
-        const backendTraceId = dependencyData?.properties?.['backend.traceId'];
-
-        if (backendTraceId) {
-          envelope.tags = envelope.tags || {};
-          envelope.tags['ai.operation.id'] = backendTraceId;
-          envelope.tags['ai.operation.parentId'] = `|${backendTraceId}.${Date.now()}`;
-        }
-      }
-
-      // Exception filtering (existing code)
-      if (envelope.baseType === 'ExceptionData') {
-        const data = envelope.baseData;
-        const message = data?.message || '';
-        const exceptions = data?.exceptions || [];
-
-        const extensionUrlPattern = /^(chrome|moz|safari|edge|ms-browser)-extension:\/\//i;
-        if (extensionUrlPattern.test(message)) {
-          return false;
-        }
-
-        for (const exception of exceptions) {
-          if (exception.stack && extensionUrlPattern.test(exception.stack)) {
+          const extensionUrlPattern = /^(chrome|moz|safari|edge|ms-browser)-extension:\/\//i;
+          // Catch all browser extensions
+          if (extensionUrlPattern.test(message)) {
             return false;
           }
 
-          if (exception.parsedStack && Array.isArray(exception.parsedStack)) {
-            for (const frame of exception.parsedStack) {
-              if (frame.fileName && extensionUrlPattern.test(frame.fileName)) {
-                return false;
+          // Check all exception details for extension URLs
+          for (const exception of exceptions) {
+            if (exception.stack && extensionUrlPattern.test(exception.stack)) {
+              return false;
+            }
+
+            // Check parsed stack frames
+            if (exception.parsedStack && Array.isArray(exception.parsedStack)) {
+              for (const frame of exception.parsedStack) {
+                if (frame.fileName && extensionUrlPattern.test(frame.fileName)) {
+                  return false;
+                }
               }
             }
           }
-        }
 
-        if (message === 'Script error.' || message === 'Script error') {
-          return false;
+          // Filter cross-origin errors
+          if (message === 'Script error.' || message === 'Script error') {
+            return false;
+          }
+          break;
         }
       }
 

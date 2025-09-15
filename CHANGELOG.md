@@ -1,5 +1,42 @@
 # Changelog
 
+## [1.66.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.66.2...v1.66.3) (2025-09-15)
+
+
+### Bug Fixes
+
+* improve instrumentation ([#2658](https://github.com/Altinn/dialogporten-frontend/issues/2658)) ([dbbd384](https://github.com/Altinn/dialogporten-frontend/commit/dbbd3842765699085244864cee1ee5c9ca06e680))
+
+## [1.66.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.66.1...v1.66.2) (2025-09-12)
+
+
+### Bug Fixes
+
+* **bff:** add dialogporten to health check ([#2704](https://github.com/Altinn/dialogporten-frontend/issues/2704)) ([f6c11db](https://github.com/Altinn/dialogporten-frontend/commit/f6c11dbe0c8712a8c6eb1889246c0c5323290d73))
+* use sender in filters instead of senders from 100 first dialogs ([#2710](https://github.com/Altinn/dialogporten-frontend/issues/2710)) ([1eb3d79](https://github.com/Altinn/dialogporten-frontend/commit/1eb3d792914c67b06da44d381152448887be014b))
+
+## [1.66.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.66.0...v1.66.1) (2025-09-12)
+
+
+### Bug Fixes
+
+* tour not showing ([#2702](https://github.com/Altinn/dialogporten-frontend/issues/2702)) ([66d4a7f](https://github.com/Altinn/dialogporten-frontend/commit/66d4a7f0d80ef3aac27d671f99bd389235da7c30))
+
+## [1.66.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.65.3...v1.66.0) (2025-09-12)
+
+
+### Features
+
+* New modal design. Improved logic for notification settings. ([daabc56](https://github.com/Altinn/dialogporten-frontend/commit/daabc566dee85e1484eb28a5af7337ecb92134fd))
+
+## [1.65.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.65.2...v1.65.3) (2025-09-12)
+
+
+### Bug Fixes
+
+* **deps:** update dependency typeorm to v0.3.26 ([#2288](https://github.com/Altinn/dialogporten-frontend/issues/2288)) ([c6e2abe](https://github.com/Altinn/dialogporten-frontend/commit/c6e2abe68dfdbc277cf36d552bd0daf688f558a0))
+* prevent cursor jump in search input ([#2697](https://github.com/Altinn/dialogporten-frontend/issues/2697)) ([e51aeb9](https://github.com/Altinn/dialogporten-frontend/commit/e51aeb93d375892975b06f199a88a1c6842eea68))
+
 ## [1.65.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.65.1...v1.65.2) (2025-09-11)
 
 

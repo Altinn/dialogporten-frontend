@@ -7,14 +7,14 @@ import {
   pruneSearchQueryParams,
 } from '../../../pages/Inbox/queryParams.ts';
 import { PageRoutes } from '../../../pages/routes.ts';
-import { useGlobalState } from '../../../useGlobalState.ts';
+import { useGlobalState, useGlobalStringState } from '../../../useGlobalState.ts';
 
 export const useSearchString = (onSearchCallback?: (value: string) => void) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
   const navigate = useNavigate();
   const searchQueryParams = getSearchStringFromQueryParams(searchParams);
-  const [searchValue, setSearchValue] = useGlobalState(QUERY_KEYS.SEARCH_VALUE, searchQueryParams);
+  const [searchValue, setSearchValue] = useGlobalStringState(QUERY_KEYS.SEARCH_VALUE, searchQueryParams);
   const searchBarParam = new URLSearchParams(searchParams);
   const searchParamValue = searchBarParam.get(VariableGlobalQueryParams.search) ?? '';
   const [enteredSearchValue, setEnteredSearchValue] = useGlobalState(QUERY_KEYS.ENTERED_SEARCH_VALUE, searchParamValue);
