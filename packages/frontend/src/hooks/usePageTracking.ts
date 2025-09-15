@@ -7,15 +7,12 @@ export const usePageTracking = () => {
 
   useEffect(() => {
     // Track page view on route change
-    Analytics.trackPageView(
-      undefined, // Let the analytics determine the name
-      undefined, // Let it use current URL
-      {
-        'route.pathname': location.pathname,
-        'route.search': location.search,
-        'route.hash': location.hash,
-        'route.state': location.state ? JSON.stringify(location.state) : '',
-      },
-    );
+    Analytics.trackPageView({
+      url: window.location.href,
+      pathname: location.pathname,
+      search: location.search,
+      hash: location.hash,
+      state: location.state ? JSON.stringify(location.state) : '',
+    });
   }, [location]);
 };

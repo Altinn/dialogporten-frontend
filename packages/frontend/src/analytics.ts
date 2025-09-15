@@ -42,17 +42,18 @@ const getPageNameFromPath = (pathname: string): string => {
 };
 
 // Enhanced page view tracking function
-export const trackPageView = (
-  pageName?: string,
-  url?: string,
-  properties?: Record<string, string>,
-  measurements?: Record<string, number>,
-) => {
+export const trackPageView = (pageInfo: {
+  pathname: string;
+  search: string;
+  hash: string;
+  state: string;
+  url: string;
+}) => {
   if (!applicationInsights) return;
 
-  const currentUrl = url || window.location.href;
-  const currentPath = new URL(currentUrl).pathname;
-  const enhancedPageName = pageName || getPageNameFromPath(currentPath);
+  const currentUrl = pageInfo.url;
+  const currentPath = pageInfo.pathname;
+  const enhancedPageName = getPageNameFromPath(currentPath);
 
   // Enhanced properties for better analysis
   const enhancedProperties = {
@@ -61,16 +62,18 @@ export const trackPageView = (
     'page.referrer': document.referrer,
     'page.title': document.title,
     'user.agent': navigator.userAgent,
+    'route.pathname': pageInfo.pathname,
+    'route.search': pageInfo.search,
+    'route.hash': pageInfo.hash,
+    'route.state': pageInfo.state ? JSON.stringify(pageInfo.state) : '',
     'viewport.width': window.innerWidth,
     'viewport.height': window.innerHeight,
-    ...properties,
   };
 
   applicationInsights.trackPageView({
     name: enhancedPageName,
     uri: currentUrl,
     properties: enhancedProperties,
-    measurements,
   });
 
   console.info(`Page view tracked: ${enhancedPageName} (${currentPath})`);
@@ -126,23 +129,6 @@ if (applicationInsightsEnabled) {
 
     applicationInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
       switch (envelope.baseType) {
-        // Enhance page view telemetry with better names
-        case 'PageviewData':
-          {
-            const pageViewData = envelope.baseData;
-            if (pageViewData?.name && pageViewData.name === document.title) {
-              // If the page name is just the document title, enhance it
-              const betterName = getPageNameFromPath(window.location.pathname);
-              pageViewData.name = betterName;
-
-              // Add funnel-friendly properties
-              envelope.data = envelope.data || {};
-              envelope.data.properties = envelope.data.properties || {};
-              envelope.data.properties['funnel.step'] = betterName;
-              envelope.data.properties['funnel.category'] = getFunnelCategory(window.location.pathname);
-            }
-          }
-          break;
         case 'RemoteDependencyData': {
           const dependencyData = envelope.baseData;
           const backendTraceId = dependencyData?.properties?.['backend.traceId'];
@@ -193,9 +179,6 @@ if (applicationInsightsEnabled) {
 
       return true;
     });
-
-    // Track initial page view with enhanced name
-    trackPageView();
   } catch (error) {
     console.error('Failed to initialize Application Insights:', error);
     applicationInsights = null;
@@ -203,16 +186,6 @@ if (applicationInsightsEnabled) {
 } else {
   console.warn('ApplicationInsightsInstrumentationKey is undefined. Tracking is disabled.');
 }
-
-// Helper function to categorize pages for funnel analysis
-const getFunnelCategory = (pathname: string): string => {
-  if (pathname === '/') return 'Core';
-  if (pathname.startsWith('/profile')) return 'Profile';
-  if (['/sent', '/drafts', '/archive', '/bin'].includes(pathname)) return 'Mail Management';
-  if (pathname.startsWith('/inbox/')) return 'Dialog Interaction';
-  if (pathname === '/saved-searches') return 'Search';
-  return 'Other';
-};
 
 const noop = () => {};
 
