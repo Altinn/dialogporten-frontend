@@ -34,7 +34,7 @@ const startServer = async (): Promise<void> => {
     credentials: true,
     methods: 'GET, POST, PATCH, DELETE, PUT',
     allowedHeaders: 'Content-Type, Authorization, X-GraphQL-Operation, X-GraphQL-Start-Time',
-    exposedHeaders: 'X-GraphQL-Operation, X-GraphQL-Start-Time',
+    exposedHeaders: 'X-GraphQL-Operation, X-GraphQL-Start-Time, X-Trace-Id',
     preflightContinue: true,
   };
 

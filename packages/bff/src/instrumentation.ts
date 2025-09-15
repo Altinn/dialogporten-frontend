@@ -1,13 +1,13 @@
 import type { IncomingMessage } from 'node:http';
 import { useAzureMonitor } from '@azure/monitor-opentelemetry';
 import { logger } from '@digdir/dialogporten-node-logger';
+import { FastifyOtelInstrumentation } from '@fastify/otel';
 import { type ProxyTracerProvider, metrics, trace } from '@opentelemetry/api';
 import { registerInstrumentations } from '@opentelemetry/instrumentation';
-import { FastifyInstrumentation } from '@opentelemetry/instrumentation-fastify';
 import { GraphQLInstrumentation } from '@opentelemetry/instrumentation-graphql';
 import { HttpInstrumentation, type HttpInstrumentationConfig } from '@opentelemetry/instrumentation-http';
 import { IORedisInstrumentation } from '@opentelemetry/instrumentation-ioredis';
-import { Resource } from '@opentelemetry/resources';
+import { resourceFromAttributes } from '@opentelemetry/resources';
 // SEMRESATTRS_SERVICE_INSTANCE_ID is deprecaed, but the replacement ATTR_SERVICE_INSTANCE_ID is not available in the semantic-conventions package
 import { ATTR_SERVICE_NAME, SEMRESATTRS_SERVICE_INSTANCE_ID } from '@opentelemetry/semantic-conventions';
 import config from './config.ts';
@@ -23,7 +23,7 @@ const initializeApplicationInsights = () => {
   }
 
   try {
-    const customResource = new Resource({
+    const customResource = resourceFromAttributes({
       [ATTR_SERVICE_NAME]: config.info.name,
       [SEMRESATTRS_SERVICE_INSTANCE_ID]: config.info.instanceId,
     });
@@ -59,12 +59,12 @@ const initializeApplicationInsights = () => {
     // register additional instrumentations that are not included in the azure monitor exporter
     const instrumentations = [
       new HttpInstrumentation(httpInstrumentationConfig),
-      new FastifyInstrumentation(),
+      new IORedisInstrumentation(),
+      new FastifyOtelInstrumentation(),
       new GraphQLInstrumentation({
         ignoreTrivialResolveSpans: true,
         mergeItems: true,
       }),
-      new IORedisInstrumentation(),
     ];
 
     const tracerProvider = (trace.getTracerProvider() as ProxyTracerProvider).getDelegate();

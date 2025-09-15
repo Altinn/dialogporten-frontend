@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@altinn/altinn-components": "^0.38.14",
-    "@microsoft/applicationinsights-react-js": "19.3.6",
+    "@microsoft/applicationinsights-react-js": "19.3.7",
     "@microsoft/applicationinsights-web": "3.3.9",
     "@navikt/aksel-icons": "^7.22.0",
     "@reactour/tour": "^3.8.0",
