@@ -6,21 +6,16 @@
  */
 export async function selectSideMenuElement(page, locator, trend) {
   const startTime = new Date();
-  const elems = page.getByTestId(locator);
+  const elem = await page.getByTestId(locator);
 
-  for (let i = 0; i < (await elems.count()); i++) {
-    if (await elems.nth(i).isVisible()) {
-      await elems
-        .nth(i)
-        .click()
-        .catch(() => {
-          console.info(`click failed for the ${i}. element for ${locator}`);
-        });
-      break;
-    }
-  }
+  await Promise.all([elem
+    .click()
+    .catch(() => {
+      console.info(`click failed for the element with locator ${locator}`);
+    })]);
+
   // Wait for the page to load after clicking the menu element
-  await waitForPageLoaded(page);
+  await waitForPageLoaded(page, 2);
   // Track the time taken for the action
   const endTime = new Date();
   trend.add(endTime - startTime);
