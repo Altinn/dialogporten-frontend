@@ -7,6 +7,7 @@ import { useDialogById } from '../../api/hooks/useDialogById.tsx';
 import { useDialogByIdSubscription } from '../../api/hooks/useDialogByIdSubscription.ts';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { DialogDetails } from '../../components';
+import { usePageTitle } from '../../utils/usePageTitle.tsx';
 import { useDialogActions } from './useDialogActions.tsx';
 
 export const DialogDetailsPage = () => {
@@ -24,6 +25,8 @@ export const DialogDetailsPage = () => {
   } = useDialogById(parties, dialogId);
   const isLoading = isLoadingDialog || (!isSuccess && !isError);
   const displayDialogActions = !!(dialogId && dialog && !isLoading);
+
+  usePageTitle({ baseTitle: dialog?.title || '' });
   const systemLabelActions = useDialogActions();
   const contextMenu: ContextMenuProps = {
     id: 'dialog-context-menu',

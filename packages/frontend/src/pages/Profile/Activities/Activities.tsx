@@ -1,6 +1,7 @@
 import { ActivityLog, Heading, PageBase, PageNav, Toolbar, type ToolbarFilterProps } from '@altinn/altinn-components';
-import { t } from 'i18next';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { usePageTitle } from '../../../utils/usePageTitle';
 import { PageRoutes } from '../../routes';
 
 const dummyActivities = [
@@ -109,6 +110,9 @@ export const dummyActivityLogTypeFilter: ToolbarFilterProps = {
 
 export const Activities = () => {
   const [search, setSearch] = useState('');
+  const { t } = useTranslation();
+  usePageTitle({ baseTitle: t('sidebar.profile.activities') });
+
   return (
     <PageBase>
       <PageNav

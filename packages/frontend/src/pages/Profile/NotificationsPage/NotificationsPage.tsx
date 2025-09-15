@@ -10,12 +10,15 @@ import {
 } from '@altinn/altinn-components';
 import { MobileIcon, PaperplaneIcon } from '@navikt/aksel-icons';
 import { useTranslation } from 'react-i18next';
+import { usePageTitle } from '../../../utils/usePageTitle';
 import { getBreadcrumbs } from '../PartiesOverviewPage/partyFieldToAccountList';
 import { useProfile } from '../useProfile';
 import { AccountSettings } from './AccountSettings';
 
 export const NotificationsPage = () => {
   const { t } = useTranslation();
+  usePageTitle({ baseTitle: t('component.notifications') });
+
   const { user } = useProfile();
   const userHasNotificationsActivated =
     (!!user?.email?.length && user?.email?.length > 0) ||
