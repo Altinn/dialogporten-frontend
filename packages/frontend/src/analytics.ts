@@ -27,7 +27,6 @@ const getPageNameFromPath = (pathname: string): string => {
     [PageRoutes.activities]: 'Activity Log',
     [PageRoutes.authorize]: 'Authorization',
     [PageRoutes.error]: 'Error Page',
-    '/logout': 'Logout', // Not in PageRoutes enum
   };
 
   const dynamicRoutePatterns = [
