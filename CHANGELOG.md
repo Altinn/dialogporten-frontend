@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.66.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.66.2...v1.66.3) (2025-09-15)
+
+
+### Bug Fixes
+
+* improve instrumentation ([#2658](https://github.com/Altinn/dialogporten-frontend/issues/2658)) ([dbbd384](https://github.com/Altinn/dialogporten-frontend/commit/dbbd3842765699085244864cee1ee5c9ca06e680))
+
 ## [1.66.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.66.1...v1.66.2) (2025-09-12)
 
 
