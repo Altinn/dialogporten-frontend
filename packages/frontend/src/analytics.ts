@@ -2,10 +2,112 @@ import { ReactPlugin } from '@microsoft/applicationinsights-react-js';
 import type { ITelemetryItem, ITelemetryPlugin } from '@microsoft/applicationinsights-web';
 import { ApplicationInsights } from '@microsoft/applicationinsights-web';
 import { config } from './config';
+import { PageRoutes } from './pages/routes';
 
 let applicationInsights: ApplicationInsights | null = null;
 
 const applicationInsightsEnabled = config.applicationInsightsInstrumentationKey && import.meta.env.PROD;
+
+const getPageNameFromPath = (pathname: string): string => {
+  const cleanPath = pathname.split('?')[0].split('#')[0];
+
+  const pageMapping: Record<string, string> = {
+    [PageRoutes.inbox]: 'Inbox',
+    [PageRoutes.sent]: 'Sent Items',
+    [PageRoutes.drafts]: 'Drafts',
+    [PageRoutes.archive]: 'Archive',
+    [PageRoutes.bin]: 'Bin',
+    [PageRoutes.savedSearches]: 'Saved Searches',
+    [PageRoutes.about]: 'About',
+    [PageRoutes.profile]: 'Profile Overview',
+    [PageRoutes.partiesOverview]: 'Parties Management',
+    [PageRoutes.notifications]: 'Notification Settings',
+    [PageRoutes.settings]: 'User Settings',
+    [PageRoutes.access]: 'Access Management',
+    [PageRoutes.activities]: 'Activity Log',
+    [PageRoutes.authorize]: 'Authorization',
+    [PageRoutes.error]: 'Error Page',
+  };
+
+  const dynamicRoutePatterns = [
+    {
+      pattern: /^\/inbox\/[^/]+\/?$/,
+      pageName: 'Dialog Details',
+    },
+    // Add more dynamic route patterns here as needed
+    // {
+    //   pattern: /^\/profile\/[^/]+\/?$/,
+    //   pageName: 'Profile Item'
+    // },
+  ];
+
+  if (pageMapping[cleanPath]) {
+    return pageMapping[cleanPath];
+  }
+
+  for (const { pattern, pageName } of dynamicRoutePatterns) {
+    if (pattern.test(cleanPath)) {
+      return pageName;
+    }
+  }
+
+  return cleanPath.replace(/^\//, '').replace(/\//g, ' > ') || 'Unknown Page';
+};
+
+export const trackPageView = (pageInfo: {
+  pathname: string;
+  search: string;
+  hash: string;
+  state: string;
+  url: string;
+}) => {
+  if (!applicationInsights) return;
+
+  const currentUrl = pageInfo.url;
+  const currentPath = pageInfo.pathname;
+  const enhancedPageName = getPageNameFromPath(currentPath);
+
+  const enhancedProperties = {
+    'page.path': currentPath,
+    'page.url': currentUrl,
+    'page.referrer': document.referrer,
+    'page.title': document.title,
+    'user.agent': navigator.userAgent,
+    'route.pathname': pageInfo.pathname,
+    'route.search': pageInfo.search,
+    'route.hash': pageInfo.hash,
+    'route.state': pageInfo.state ? JSON.stringify(pageInfo.state) : '',
+    'viewport.width': window.innerWidth,
+    'viewport.height': window.innerHeight,
+  };
+
+  applicationInsights.trackPageView({
+    name: enhancedPageName,
+    uri: currentUrl,
+    properties: enhancedProperties,
+  });
+};
+
+export const trackUserAction = (action: string, properties?: Record<string, string>) => {
+  if (!applicationInsights) return;
+
+  applicationInsights.trackEvent({
+    name: `User.${action}`,
+    properties: {
+      'page.current': getPageNameFromPath(window.location.pathname),
+      timestamp: new Date().toISOString(),
+      ...properties,
+    },
+  });
+};
+
+export const trackDialogAction = (action: string, dialogId?: string, properties?: Record<string, string>) => {
+  trackUserAction(`Dialog.${action}`, {
+    'dialog.id': dialogId || '',
+    'dialog.action': action,
+    ...properties,
+  });
+};
 
 if (applicationInsightsEnabled) {
   const reactPlugin = new ReactPlugin();
@@ -14,12 +116,11 @@ if (applicationInsightsEnabled) {
       config: {
         instrumentationKey: config.applicationInsightsInstrumentationKey,
         extensions: [reactPlugin as unknown as ITelemetryPlugin],
-        enableAutoRouteTracking: true,
+        enableAutoRouteTracking: false, // Disable auto tracking, we'll handle it manually
         autoTrackPageVisitTime: true,
         enableCorsCorrelation: true,
         enableUnhandledPromiseRejectionTracking: true,
         enableAjaxErrorStatusText: true,
-        // Avoid tracking every ajax/fetch request
         disableAjaxTracking: true,
         disableFetchTracking: true,
         enableRequestHeaderTracking: false,
@@ -27,17 +128,15 @@ if (applicationInsightsEnabled) {
         enableAjaxPerfTracking: false,
         enablePerfMgr: true,
         disableCookiesUsage: false,
-        // TODO: set to a lower value in production
         samplingPercentage: 100,
         appId: 'arbeidsflate-frontend',
-        enableDebug: false,
+        enableDebug: true,
       },
     });
     applicationInsights.loadAppInsights();
     console.info('Application Insights initialized successfully');
 
     applicationInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
-      // Only filter exceptions
       switch (envelope.baseType) {
         case 'RemoteDependencyData': {
           const dependencyData = envelope.baseData;
@@ -51,7 +150,7 @@ if (applicationInsightsEnabled) {
           }
           break;
         }
-
+        // Only filter exceptions
         case 'ExceptionData': {
           const data = envelope.baseData;
           const message = data?.message || '';
@@ -99,7 +198,7 @@ if (applicationInsightsEnabled) {
 
 const noop = () => {};
 
-// Helper function to track fetch requests as dependencies
+// Enhanced helper function to track fetch requests with same operation ID
 export const trackFetchDependency = async (
   name: string,
   fetchPromise: Promise<Response>,
@@ -152,7 +251,9 @@ export const trackFetchDependency = async (
 
 export const Analytics = {
   isEnabled: applicationInsightsEnabled,
-  trackPageView: applicationInsights?.trackPageView.bind(applicationInsights) || noop,
+  trackPageView: trackPageView,
+  trackUserAction: trackUserAction,
+  trackDialogAction: trackDialogAction,
   trackEvent: applicationInsights?.trackEvent.bind(applicationInsights) || noop,
   trackException: applicationInsights?.trackException.bind(applicationInsights) || noop,
   trackDependency: applicationInsights?.trackDependencyData.bind(applicationInsights) || noop,
