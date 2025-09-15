@@ -31,7 +31,7 @@ import {
 import { selectAllEnterprises, selectNextPage, selectSideMenuElement, waitForPageLoaded } from './browserFunctions.js';
 
 const env = __ENV.ENVIRONMENT || 'yt';
-const randomizeUser = (__ENV.RANDOMIZE ?? 'false') === 'true';
+const randomize = (__ENV.RANDOMIZE ?? 'false') === 'true';
 
 let endUsers = [];
 if (env !== 'yt') {
@@ -80,7 +80,7 @@ export async function setup() {
  */
 export async function browserTest(data) {
   let testData;
-  if (randomizeUser) {
+  if (randomize) {
     testData = randomItem(data);
   } else {
     testData = data[__ITER % data.length];
@@ -127,7 +127,7 @@ export async function browserTest(data) {
  */
 export function bffTest(data) {
   let testData;
-  if (randomizeUser) {
+  if (randomize) {
     testData = randomItem(data);
   } else {
     testData = data[__ITER % data.length];
