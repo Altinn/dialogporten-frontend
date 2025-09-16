@@ -1,0 +1,93 @@
+{
+    "channel": "${{ env.CHANNEL_ID }}",
+    "text": "Production (v${{ env.PROD_VERSION }}) is behind Staging (v${{ env.STAGING_VERSION }}) by ${{ env.RELEASE_COUNT_DIFF }} releases and ${{ env.DAYS_SINCE_PROD_DEPLOY }} days",
+    "attachments": [
+        {
+            "color": "${{ env.COLOR }}",
+            "fallback": "${{ env.EMOJI }} Production Deployment Lag Alert - Production (v${{ env.PROD_VERSION }}) is behind Staging (v${{ env.STAGING_VERSION }}) by ${{ env.RELEASE_COUNT_DIFF }} releases and ${{ env.DAYS_SINCE_PROD_DEPLOY }} days. View differences: ${{ env.COMPARE_URL }}",
+            "blocks": [
+                {
+                    "type": "header",
+                    "text": {
+                        "type": "plain_text",
+                        "text": "Production Deployment Lag Alert",
+                        "emoji": true
+                    }
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "*Severity:* ${{ env.SEVERITY }} | Production is lagging behind staging"
+                    }
+                },
+                {
+                    "type": "section",
+                    "fields": [
+                        {
+                            "type": "mrkdwn",
+                            "text": "*Staging Version:*\n`v${{ env.STAGING_VERSION }}`"
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": "*Production Version:*\n`v${{ env.PROD_VERSION }}`"
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": "*Releases Behind:*\n${{ env.RELEASE_COUNT_DIFF }} releases"
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": "*Days Since Last Prod Deploy:*\n${{ env.DAYS_SINCE_PROD_DEPLOY }} days"
+                        }
+                    ]
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "*Recent Changes Not in Production:*"
+                    }
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "${{ env.COMMITS_SUMMARY }}"
+                    }
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "*Authors with pending changes:* ${{ env.COMMIT_AUTHORS_MENTIONS }}"
+                    }
+                },
+                {
+                    "type": "divider"
+                },
+                {
+                    "type": "actions",
+                    "elements": [
+                        {
+                            "type": "button",
+                            "text": {
+                                "type": "plain_text",
+                                "text": "View Differences"
+                            },
+                            "url": "${{ env.COMPARE_URL }}"
+                        },
+                        {
+                            "type": "button",
+                            "text": {
+                                "type": "plain_text",
+                                "text": "Deploy to Production"
+                            },
+                            "url": "${{ env.DEPLOY_URL }}"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
