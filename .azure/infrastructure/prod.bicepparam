@@ -17,7 +17,7 @@ param applicationGatewayWhitelistedIps = json(readEnvironmentVariable('APPLICATI
 
 // SKUs
 param redisSku = {
-  name: 'Basic'
+  name: 'Standard'
   family: 'C'
   capacity: 1
 }
