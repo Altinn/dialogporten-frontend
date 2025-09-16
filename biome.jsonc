@@ -73,18 +73,8 @@
       ".docusaurus",
       "mocks",
       "test-results",
-      "mockServiceWorker.js"
+      "mockServiceWorker.js",
+      "./package.json"
     ]
-  },
-  "overrides": [
-    {
-      "include": ["./package.json"],
-      "linter": {
-        "enabled": false
-      },
-      "formatter": {
-        "enabled": true
-      }
-    }
-  ]
+  }
 }

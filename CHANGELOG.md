@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.67.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.66.5...v1.67.0) (2025-09-16)
+
+
+### Features
+
+* Dymanic page title ([#2723](https://github.com/Altinn/dialogporten-frontend/issues/2723)) ([54b0d67](https://github.com/Altinn/dialogporten-frontend/commit/54b0d67efeb0f4c714c8f75058293234eaa24722))
+
+
+### Bug Fixes
+
+* **lang:** change html lang tag on language change ([#2725](https://github.com/Altinn/dialogporten-frontend/issues/2725)) ([bf6a79a](https://github.com/Altinn/dialogporten-frontend/commit/bf6a79a3702361ff479ec262b89598f2e11d1352))
+
+## [1.66.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.66.4...v1.66.5) (2025-09-15)
+
+
+### Bug Fixes
+
+* improve page tracking ([#2696](https://github.com/Altinn/dialogporten-frontend/issues/2696)) ([c0eaca1](https://github.com/Altinn/dialogporten-frontend/commit/c0eaca1ff93d17851df05f31a260990bbbff37ca))
+
 ## [1.66.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.66.3...v1.66.4) (2025-09-15)
 
 

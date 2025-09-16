@@ -25,4 +25,9 @@ const i18nInitConfig = {
 
 i18n.use(ICU).use(initReactI18next).init(i18nInitConfig);
 
+document.documentElement.lang = 'nb';
+i18n.on('languageChanged', (lng) => {
+  document.documentElement.lang = lng;
+});
+
 export { i18n };

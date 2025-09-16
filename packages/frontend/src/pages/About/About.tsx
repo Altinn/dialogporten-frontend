@@ -2,10 +2,13 @@ import { Article, Breadcrumbs, Heading, PageBase, Typography } from '@altinn/alt
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { createMessageBoxLink } from '../../auth';
+import { usePageTitle } from '../../utils/usePageTitle.tsx';
 import { PageRoutes } from '../routes';
 
 export const AboutPage = () => {
   const { t } = useTranslation();
+
+  usePageTitle({ baseTitle: t('altinn.beta.about') });
 
   return (
     <PageBase>
