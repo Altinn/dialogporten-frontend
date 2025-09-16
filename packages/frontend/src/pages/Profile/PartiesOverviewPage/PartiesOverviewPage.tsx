@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import { useProfile } from '..';
 import { useParties } from '../../../api/hooks/useParties';
 import { FeatureFlagKeys, useFeatureFlag } from '../../../featureFlags';
+import { usePageTitle } from '../../../utils/usePageTitle';
 import styles from './partiesOverviewPage.module.css';
 import { getBreadcrumbs, partyFieldFragmentToAccountListItem } from './partyFieldToAccountList';
 
@@ -37,6 +38,7 @@ export const PartiesOverviewPage = () => {
   const { parties: normalParties, isLoading: isLoadingParties, deletedParties } = useParties();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
   const { t } = useTranslation();
+  usePageTitle({ baseTitle: t('component.parties_overview') });
 
   const getPartiesToShow = () => {
     let partiesToShow = [] as PartyFieldsFragment[];

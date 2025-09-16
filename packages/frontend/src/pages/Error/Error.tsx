@@ -1,12 +1,15 @@
 import { Article, ArticleHeader, Button, PageBase, Typography } from '@altinn/altinn-components';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { usePageTitle } from '../../utils/usePageTitle.tsx';
 
 export const ErrorPage = () => {
   const location = useLocation();
   const { componentName } = location.state || { componentName: 'Unknown Component' };
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  usePageTitle({ baseTitle: t('word.error') });
 
   const handleGoBack = () => {
     navigate(-1);

@@ -2,12 +2,15 @@ import { DashboardHeader, Divider, List, PageBase, PageNav, SettingsItem } from 
 import { BellIcon, CogIcon } from '@navikt/aksel-icons';
 import { t } from 'i18next';
 import { Link } from 'react-router-dom';
+import { usePageTitle } from '../../utils/usePageTitle.tsx';
 import { PageRoutes } from '../routes';
 import { toTitleCase } from './name';
 import { useProfile } from './useProfile';
 
 export const Profile = () => {
   const { user, isLoading } = useProfile();
+
+  usePageTitle({ baseTitle: t('sidebar.profile') });
 
   return (
     <PageBase>
