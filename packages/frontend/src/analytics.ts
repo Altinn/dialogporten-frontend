@@ -117,7 +117,7 @@ if (applicationInsightsEnabled) {
         instrumentationKey: config.applicationInsightsInstrumentationKey,
         extensions: [reactPlugin as unknown as ITelemetryPlugin],
         enableAutoRouteTracking: false, // Disable auto tracking, we'll handle it manually
-        autoTrackPageVisitTime: true,
+        autoTrackPageVisitTime: false,
         enableCorsCorrelation: true,
         enableUnhandledPromiseRejectionTracking: true,
         enableAjaxErrorStatusText: true,
@@ -126,7 +126,7 @@ if (applicationInsightsEnabled) {
         enableRequestHeaderTracking: false,
         enableResponseHeaderTracking: false,
         enableAjaxPerfTracking: false,
-        enablePerfMgr: true,
+        enablePerfMgr: false,
         disableCookiesUsage: false,
         samplingPercentage: 100,
         appId: 'arbeidsflate-frontend',
