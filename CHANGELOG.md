@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.68.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.67.0...v1.68.0) (2025-09-16)
+
+
+### Features
+
+* Added validation to phone number and email fields ([aad7219](https://github.com/Altinn/dialogporten-frontend/commit/aad7219d27afc7e2a884c4eeefebfc4cf74165a9))
+
+
+### Bug Fixes
+
+* **frontend:** fix pageview calculations ([#2731](https://github.com/Altinn/dialogporten-frontend/issues/2731)) ([ab2cf2a](https://github.com/Altinn/dialogporten-frontend/commit/ab2cf2a8cf8756e7e19c9f28cb3d73b4c7599343))
+
 ## [1.67.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.66.5...v1.67.0) (2025-09-16)
 
 
