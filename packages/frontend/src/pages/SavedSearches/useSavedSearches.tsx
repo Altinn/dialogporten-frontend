@@ -26,6 +26,8 @@ import { useFormatDistance } from '../../i18n/useDateFnsLocale.tsx';
 import { DateFilterOption } from '../Inbox/filters.ts';
 import { useOrganizations } from '../Inbox/useOrganizations.ts';
 import { PageRoutes } from '../routes.ts';
+import { Analytics } from '../../analytics';
+import { ANALYTICS_EVENTS } from '../../analyticsEvents';
 import { buildSavedSearchURL } from './bookmarkURL.ts';
 import { autoFormatRelativeTime, getMostRecentSearchDate } from './searchUtils.ts';
 
@@ -177,11 +179,29 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
         fromView: PageRoutes[viewType],
       };
       await createSavedSearch('', data);
+
+      Analytics.trackEvent(ANALYTICS_EVENTS.SAVED_SEARCH_CREATE_SUCCESS, {
+        'search.viewType': viewType,
+        'search.hasSearchString': !!enteredSearchValue,
+        'search.searchStringLength': enteredSearchValue?.length || 0,
+        'search.partyCount': selectedParties?.length || 0,
+        'search.filterCount': Object.keys(filters).length,
+      });
+
       openSnackbar({
         message: t('savedSearches.saved_success'),
         color: 'accent',
       });
     } catch (error) {
+      Analytics.trackEvent(ANALYTICS_EVENTS.SAVED_SEARCH_CREATE_FAILED, {
+        'search.viewType': viewType,
+        'search.hasSearchString': !!enteredSearchValue,
+        'search.searchStringLength': enteredSearchValue?.length || 0,
+        'search.partyCount': selectedParties?.length || 0,
+        'search.filterCount': Object.keys(filters).length,
+        'error.message': error instanceof Error ? error.message : 'Unknown error',
+      });
+
       openSnackbar({
         message: t('savedSearches.saved_error'),
         color: 'danger',
@@ -197,12 +217,22 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
     setIsCTALoading(true);
     try {
       await deleteSavedSearch(savedSearchId);
+
+      Analytics.trackEvent(ANALYTICS_EVENTS.SAVED_SEARCH_DELETE_SUCCESS, {
+        'search.id': savedSearchId,
+      });
+
       openSnackbar({
         message: t('savedSearches.deleted_success'),
         color: 'accent',
       });
       await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.SAVED_SEARCHES] });
     } catch (error) {
+      Analytics.trackEvent(ANALYTICS_EVENTS.SAVED_SEARCH_DELETE_FAILED, {
+        'search.id': savedSearchId,
+        'error.message': error instanceof Error ? error.message : 'Unknown error',
+      });
+
       console.error('Failed to delete saved search:', error);
       openSnackbar({
         message: t('savedSearches.delete_failed'),
@@ -216,13 +246,25 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
   const handleSaveTitle = async (id: number) => {
     try {
       await updateSavedSearch(id, savedSearchInputValue ?? '');
+
+      Analytics.trackEvent(ANALYTICS_EVENTS.SAVED_SEARCH_UPDATE_SUCCESS, {
+        'search.id': id,
+        'search.newTitleLength': savedSearchInputValue?.length || 0,
+      });
+
       openSnackbar({
         message: t('savedSearches.update_success'),
         color: 'accent',
       });
       void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.SAVED_SEARCHES] });
       setExpandedId('');
-    } catch {
+    } catch (error) {
+      Analytics.trackEvent(ANALYTICS_EVENTS.SAVED_SEARCH_UPDATE_FAILED, {
+        'search.id': id,
+        'search.newTitleLength': savedSearchInputValue?.length || 0,
+        'error.message': error instanceof Error ? error.message : 'Unknown error',
+      });
+
       openSnackbar({
         message: t('savedSearches.update_failed'),
         color: 'danger',

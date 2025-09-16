@@ -5,6 +5,8 @@ import { SystemLabel } from 'bff-types-generated';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { updateSystemLabel } from '../../api/queries';
+import { Analytics } from '../../analytics';
+import { getDialogMoveEvent } from '../../analyticsEvents';
 import { QUERY_KEYS } from '../../constants/queryKeys';
 import { useGlobalState } from '../../useGlobalState.ts';
 
@@ -34,13 +36,29 @@ export const useDialogActions = () => {
         setLoading(true);
         const res = await updateSystemLabel(dialogId, toLabel);
         if (res.setSystemLabel?.success) {
+          Analytics.trackEvent(getDialogMoveEvent(toLabel, true), {
+            'dialog.id': dialogId,
+            'move.to': toLabel,
+          });
+
           await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.DIALOGS] });
           await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.DIALOG_BY_ID] });
           showSnackbar(successKey, 'accent');
         } else {
+          Analytics.trackEvent(getDialogMoveEvent(toLabel, false), {
+            'dialog.id': dialogId,
+            'move.to': toLabel,
+            'error.type': 'api_response_failure',
+          });
           showSnackbar(failureKey, 'danger');
         }
-      } catch {
+      } catch (error) {
+        Analytics.trackEvent(getDialogMoveEvent(toLabel, false), {
+          'dialog.id': dialogId,
+          'move.to': toLabel,
+          'error.type': 'api_error',
+          'error.message': error instanceof Error ? error.message : 'Unknown error',
+        });
         showSnackbar(failureKey, 'danger');
       } finally {
         setLoading(false);

@@ -3,6 +3,7 @@ import type { ITelemetryItem, ITelemetryPlugin } from '@microsoft/applicationins
 import { ApplicationInsights } from '@microsoft/applicationinsights-web';
 import { config } from './config';
 import { PageRoutes } from './pages/routes';
+import type { AnalyticsEventName } from './analyticsEvents';
 
 let applicationInsights: ApplicationInsights | null = null;
 
@@ -106,6 +107,30 @@ export const trackDialogAction = (action: string, dialogId?: string, properties?
     'dialog.id': dialogId || '',
     'dialog.action': action,
     ...properties,
+  });
+};
+
+/**
+ * Track custom events with Application Insights
+ * @param eventName - The name of the event to track (use ANALYTICS_EVENTS constants)
+ * @param properties - Additional properties to include with the event
+ */
+export const trackEvent = (eventName: AnalyticsEventName, properties?: Record<string, string | number | boolean>) => {
+  if (!applicationInsights) return;
+
+  const enhancedProperties = {
+    'page.current': getPageNameFromPath(window.location.pathname),
+    'page.url': window.location.href,
+    timestamp: new Date().toISOString(),
+    'user.agent': navigator.userAgent,
+    'viewport.width': window.innerWidth,
+    'viewport.height': window.innerHeight,
+    ...properties,
+  };
+
+  applicationInsights.trackEvent({
+    name: eventName,
+    properties: enhancedProperties,
   });
 };
 
@@ -254,7 +279,8 @@ export const Analytics = {
   trackPageView: trackPageView,
   trackUserAction: trackUserAction,
   trackDialogAction: trackDialogAction,
-  trackEvent: applicationInsights?.trackEvent.bind(applicationInsights) || noop,
+  trackEvent: trackEvent,
+  trackEventRaw: applicationInsights?.trackEvent.bind(applicationInsights) || noop,
   trackException: applicationInsights?.trackException.bind(applicationInsights) || noop,
   trackDependency: applicationInsights?.trackDependencyData.bind(applicationInsights) || noop,
   trackFetchDependency: trackFetchDependency,

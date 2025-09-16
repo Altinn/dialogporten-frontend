@@ -23,6 +23,8 @@ import { PageRoutes } from '../../pages/routes.ts';
 import { useGlobalState } from '../../useGlobalState.ts';
 import { BetaModal } from '../BetaModal';
 import { useAuth } from '../Login/AuthContext.tsx';
+import { Analytics } from '../../analytics';
+import { ANALYTICS_EVENTS } from '../../analyticsEvents';
 import { useAccounts } from './Accounts/useAccounts.tsx';
 import { useFooter } from './Footer';
 import { useGlobalMenu } from './GlobalMenu';
@@ -78,10 +80,25 @@ export const PageLayout: React.FC = () => {
   }, [searchValue]);
 
   const handleUpdateLanguage = async (language: string) => {
+    const previousLanguage = i18n.language;
+
     try {
       await updateLanguage(language);
+
+      Analytics.trackEvent(ANALYTICS_EVENTS.USER_LANGUAGE_CHANGE_SUCCESS, {
+        'language.from': previousLanguage,
+        'language.to': language,
+        'language.source': 'header_picker',
+        'user.currentPage': window.location.pathname,
+      });
     } catch (error) {
-      console.error('Failed to delete saved search:', error);
+      Analytics.trackEvent(ANALYTICS_EVENTS.USER_LANGUAGE_CHANGE_FAILED, {
+        'language.from': previousLanguage,
+        'language.to': language,
+        'language.source': 'header_picker',
+        'error.message': error instanceof Error ? error.message : 'Unknown error',
+      });
+      console.error('Failed to update language:', error);
     } finally {
       void i18n.changeLanguage(language);
     }
@@ -135,6 +152,11 @@ export const PageLayout: React.FC = () => {
       logoutButton: {
         label: t('word.log_out'),
         onClick: () => {
+          Analytics.trackEvent(ANALYTICS_EVENTS.USER_LOGOUT, {
+            'logout.source': 'header_button',
+            'user.currentPage': window.location.pathname,
+            'session.duration': Date.now() - (window.performance?.timing?.navigationStart || 0),
+          });
           (window as Window).location = `/api/logout`;
         },
       },
