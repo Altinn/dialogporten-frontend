@@ -62,16 +62,16 @@ jobs:
           
           # Simplified severity determination
           if [ "$days" -gt 7 ] || [ "$releases" -gt 5 ]; then
-            severity="🔴 HIGH"
-            color="#FF0000"
+            severity="Attention needed"
+            color="#FF6B6B"
             emoji="🚨"
           elif [ "$days" -gt 3 ] || [ "$releases" -gt 3 ]; then
-            severity="🟡 MEDIUM"
-            color="#FFA500"
+            severity="Worth noting"
+            color="#FFB347"
             emoji="⚠️"
           else
-            severity="🟢 LOW"
-            color="#36a64f"
+            severity="FYI"
+            color="#87CEEB"
             emoji="ℹ️"
           fi
           
