@@ -52,14 +52,7 @@
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": "${{ env.COMMITS_SUMMARY }}"
-                    }
-                },
-                {
-                    "type": "section",
-                    "text": {
-                        "type": "mrkdwn",
-                        "text": "*Authors with pending changes:* ${{ env.COMMIT_AUTHORS_MENTIONS }}"
+                        "text": "${{ env.COMMITS_SUMMARY }}\n\n*Authors with pending changes:* ${{ env.COMMIT_AUTHORS_MENTIONS }}"
                     }
                 }
             ]
@@ -76,8 +69,7 @@
                                 "type": "plain_text",
                                 "text": "View Differences"
                             },
-                            "url": "${{ env.COMPARE_URL }}",
-                            "style": "primary"
+                            "url": "${{ env.COMPARE_URL }}"
                         },
                         {
                             "type": "button",
@@ -86,7 +78,7 @@
                                 "text": "Deploy to Production"
                             },
                             "url": "${{ env.DEPLOY_URL }}",
-                            "style": "danger"
+                            "style": "primary"
                         }
                     ]
                 }
