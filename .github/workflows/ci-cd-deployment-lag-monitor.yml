@@ -147,7 +147,7 @@ jobs:
           # - More than 5 releases behind (regardless of time)
           if ([ "$days_since_prod_deploy" -gt 2 ] && [ "$release_count_diff" -gt 1 ]) || \
              [ "$days_since_prod_deploy" -gt 7 ] || \
-             [ "$release_count_diff" -gt 5 ]; then
+             [ "$release_count_diff" -gt 2 ]; then
             should_notify="true"
           fi
           
