@@ -6,7 +6,7 @@ permissions:
 
 env:
   # Deployment lag monitoring thresholds (configurable)
-  DEFAULT_DAYS_THRESHOLD: 1        # Days after which to notify (if there are releases)
+  DEFAULT_DAYS_THRESHOLD: 3        # Days after which to notify (if there are releases)
   DEFAULT_RELEASES_THRESHOLD: 3    # Releases behind which always triggers notification
 
 on:
