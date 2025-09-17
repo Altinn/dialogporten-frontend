@@ -15,12 +15,55 @@ on:
   workflow_dispatch:
 
 jobs:
+  get-staging-version:
+    name: Get Staging Version
+    runs-on: ubuntu-latest
+    environment: staging
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
+    steps:
+      - uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
+        with:
+          egress-policy: audit
+
+      - name: Get Staging Version
+        id: get-version
+        run: |
+          version="${{ vars.LATEST_DEPLOYED_APPS_VERSION }}"
+          if [ -z "$version" ]; then
+            version="unknown"
+          fi
+          echo "version=$version" >> $GITHUB_OUTPUT
+          echo "Staging version: $version"
+
+  get-prod-version:
+    name: Get Production Version
+    runs-on: ubuntu-latest
+    environment: prod
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
+    steps:
+      - uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
+        with:
+          egress-policy: audit
+
+      - name: Get Production Version
+        id: get-version
+        run: |
+          version="${{ vars.LATEST_DEPLOYED_APPS_VERSION }}"
+          if [ -z "$version" ]; then
+            version="unknown"
+          fi
+          echo "version=$version" >> $GITHUB_OUTPUT
+          echo "Production version: $version"
+
   compare-deployments:
     name: Compare Production and Staging Deployments
     runs-on: ubuntu-latest
+    needs: [get-staging-version, get-prod-version]
     outputs:
-      staging_version: ${{ steps.get-versions.outputs.staging_version }}
-      prod_version: ${{ steps.get-versions.outputs.prod_version }}
+      staging_version: ${{ needs.get-staging-version.outputs.version }}
+      prod_version: ${{ needs.get-prod-version.outputs.version }}
       days_since_prod_deploy: ${{ steps.calculate-lag.outputs.days_since_prod_deploy }}
       release_count_diff: ${{ steps.calculate-lag.outputs.release_count_diff }}
       should_notify: ${{ steps.calculate-lag.outputs.should_notify }}
@@ -35,30 +78,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get Latest Deployed Versions
-        id: get-versions
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # Get staging version from environment variables
-          staging_version=$(gh api repos/${{ github.repository }}/environments/staging/variables/LATEST_DEPLOYED_APPS_VERSION --jq '.value' 2>/dev/null || echo "unknown")
-          
-          # Get production version from environment variables  
-          prod_version=$(gh api repos/${{ github.repository }}/environments/prod/variables/LATEST_DEPLOYED_APPS_VERSION --jq '.value' 2>/dev/null || echo "unknown")
-          
-          echo "staging_version=$staging_version" >> $GITHUB_OUTPUT
-          echo "prod_version=$prod_version" >> $GITHUB_OUTPUT
-          
-          echo "Staging version: $staging_version"
-          echo "Production version: $prod_version"
-
       - name: Calculate Deployment Lag
         id: calculate-lag
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          staging_version="${{ steps.get-versions.outputs.staging_version }}"
-          prod_version="${{ steps.get-versions.outputs.prod_version }}"
+          staging_version="${{ needs.get-staging-version.outputs.version }}"
+          prod_version="${{ needs.get-prod-version.outputs.version }}"
           
           # Default values
           days_since_prod_deploy=0
