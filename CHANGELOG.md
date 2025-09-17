@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.68.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.68.0...v1.68.1) (2025-09-17)
+
+
+### Bug Fixes
+
+* correct page title translations ([#2733](https://github.com/Altinn/dialogporten-frontend/issues/2733)) ([82f718a](https://github.com/Altinn/dialogporten-frontend/commit/82f718ac1b8ffe88839126d1fe6f0a95a2c9aeb2))
+
 ## [1.68.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.67.0...v1.68.0) (2025-09-16)
 
 
