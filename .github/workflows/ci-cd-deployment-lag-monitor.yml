@@ -10,10 +10,6 @@ env:
   DEFAULT_RELEASES_THRESHOLD: 3    # Releases behind which always triggers notification
 
 on:
-  # remove after testing
-  push:
-    branches:
-      - chore/slack-notification-on-stale-releases
   schedule:
     # Run every day at 9 AM UTC (11 AM CET)
     - cron: '0 9 * * *'
