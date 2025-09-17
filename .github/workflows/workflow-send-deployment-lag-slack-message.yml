@@ -1,4 +1,6 @@
 name: Send Deployment Lag Slack Message
+permissions:
+  contents: read
 
 on:
   workflow_call:
