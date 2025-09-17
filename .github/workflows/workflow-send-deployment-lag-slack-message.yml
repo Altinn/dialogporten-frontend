@@ -1,6 +1,4 @@
 name: Send Deployment Lag Slack Message
-permissions:
-  contents: read
 
 permissions:
   contents: read

@@ -12,6 +12,7 @@ on:
   schedule:
     # Run every day at 9 AM UTC (11 AM CET)
     - cron: '0 9 * * *'
+  workflow_dispatch:
 
 jobs:
   compare-deployments:
