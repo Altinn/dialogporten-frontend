@@ -110,14 +110,23 @@ jobs:
             exit 0
           fi
           
-          # Get production deployment date
-          prod_tag_date=$(gh api repos/${{ github.repository }}/git/refs/tags/v$prod_version --jq '.object.sha' | xargs -I {} gh api repos/${{ github.repository }}/git/tags/{} --jq '.tagger.date // .object.author.date' 2>/dev/null || echo "")
+          # Get production deployment date from releases API (more reliable than git tags)
+          prod_release_date=$(gh api repos/${{ github.repository }}/releases/tags/v$prod_version --jq '.published_at' 2>/dev/null || echo "")
           
-          if [ -n "$prod_tag_date" ]; then
+          if [ -n "$prod_release_date" ] && [ "$prod_release_date" != "null" ]; then
             # Calculate days since production deployment
-            prod_timestamp=$(date -d "$prod_tag_date" +%s 2>/dev/null || date -j -f "%Y-%m-%dT%H:%M:%SZ" "$prod_tag_date" +%s 2>/dev/null || echo "0")
-            current_timestamp=$(date +%s)
-            days_since_prod_deploy=$(( (current_timestamp - prod_timestamp) / 86400 ))
+            prod_timestamp=$(date -d "$prod_release_date" +%s 2>/dev/null || echo "0")
+            if [ "$prod_timestamp" != "0" ]; then
+              current_timestamp=$(date +%s)
+              days_since_prod_deploy=$(( (current_timestamp - prod_timestamp) / 86400 ))
+              echo "Production release date: $prod_release_date"
+              echo "Production timestamp: $prod_timestamp"
+              echo "Current timestamp: $current_timestamp"
+            else
+              echo "Failed to parse production release date: $prod_release_date"
+            fi
+          else
+            echo "Could not find release date for production version v$prod_version"
           fi
           
           # Get all releases between production and staging
@@ -154,6 +163,8 @@ jobs:
           echo "Release count difference: $release_count_diff"
           echo "Should notify: $should_notify"
           echo "Compare URL: $compare_url"
+          echo "Staging version: $staging_version"
+          echo "Production version: $prod_version"
 
   get-commit-details:
     name: Get Commit Details
@@ -223,5 +234,6 @@ jobs:
       commit_authors: ${{ needs.get-commit-details.outputs.commit_authors }}
     secrets:
       SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-      SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_RELEASES }}
+      # SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_RELEASES }}
+      SLACK_CHANNEL_ID: "C09GG3MHB7S"
 
