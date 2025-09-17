@@ -6,7 +6,7 @@ permissions:
 
 env:
   # Deployment lag monitoring thresholds (configurable)
-  DEFAULT_DAYS_THRESHOLD: 3        # Days after which to notify (if there are releases)
+  DEFAULT_DAYS_THRESHOLD: 1        # Days after which to notify (if there are releases)
   DEFAULT_RELEASES_THRESHOLD: 3    # Releases behind which always triggers notification
 
 on:
@@ -17,7 +17,6 @@ on:
   schedule:
     # Run every day at 9 AM UTC (11 AM CET)
     - cron: '0 9 * * *'
-  workflow_dispatch:
 
 jobs:
   get-staging-version:
@@ -246,6 +245,5 @@ jobs:
       commit_authors: ${{ needs.get-commit-details.outputs.commit_authors }}
     secrets:
       SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-      # SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_RELEASES }}
-      # SLACK_CHANNEL_ID: "C09GG3MHB7S"
+      SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_RELEASES }}
 
