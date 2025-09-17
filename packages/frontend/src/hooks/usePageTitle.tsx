@@ -1,4 +1,5 @@
 import type { FilterState } from '@altinn/altinn-components/dist/types/lib/components/Toolbar/Toolbar';
+import type { TFunction } from 'i18next';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -9,11 +10,25 @@ interface PageTitleOptions {
   getFilterLabel?: (key: string, values: (string | number)[]) => string | undefined;
 }
 
+const translateInboxViewType = (baseTitle: string, t: TFunction): string => {
+  const viewTypeMap: Record<string, string> = {
+    inbox: 'sidebar.inbox',
+    drafts: 'sidebar.drafts',
+    sent: 'sidebar.sent',
+    archive: 'sidebar.archived',
+    bin: 'sidebar.deleted',
+  };
+
+  return viewTypeMap[baseTitle] ? t(viewTypeMap[baseTitle]) : baseTitle;
+};
+
 export const usePageTitle = ({ baseTitle, searchValue, filterState, getFilterLabel }: PageTitleOptions) => {
   const { t } = useTranslation();
 
   useEffect(() => {
-    const titleParts: string[] = searchValue ? [] : [baseTitle];
+    const translatedBaseTitle = translateInboxViewType(baseTitle, t);
+
+    const titleParts: string[] = searchValue ? [] : [translatedBaseTitle];
 
     if (searchValue?.trim()) {
       titleParts.push(`${t('word.search')}: "${searchValue}"`);

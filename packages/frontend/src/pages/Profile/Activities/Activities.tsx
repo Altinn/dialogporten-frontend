@@ -1,7 +1,7 @@
 import { ActivityLog, Heading, PageBase, PageNav, Toolbar, type ToolbarFilterProps } from '@altinn/altinn-components';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { usePageTitle } from '../../../utils/usePageTitle';
+import { usePageTitle } from '../../../hooks/usePageTitle';
 import { PageRoutes } from '../../routes';
 
 const dummyActivities = [
