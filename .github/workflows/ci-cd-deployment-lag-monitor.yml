@@ -4,6 +4,15 @@ permissions:
   contents: read
   actions: read
 
+env:
+  # Deployment lag monitoring thresholds (configurable)
+  DAYS_THRESHOLD_LOW: 2        # Days after which to start considering lag (with releases)
+  DAYS_THRESHOLD_HIGH: 7       # Days after which to always notify (regardless of releases)
+  DAYS_THRESHOLD_CRITICAL: 14  # Days after which to mark as critical priority
+  RELEASES_THRESHOLD_LOW: 1    # Minimum releases behind to trigger with days_low
+  RELEASES_THRESHOLD_HIGH: 5   # Releases behind to trigger regardless of days
+  RELEASES_THRESHOLD_CRITICAL: 10  # Releases behind to mark as critical priority
+
 on:
   # remove after testing
   push:
@@ -140,14 +149,14 @@ jobs:
             release_count_diff=$((staging_index - prod_index))
           fi
           
-          # Determine if we should notify based on thresholds
+          # Determine if we should notify based on configurable thresholds
           # Notify if:
-          # - More than 2 days since last production deployment AND more than 1 release behind
-          # - More than 7 days since last production deployment (regardless of release count)
-          # - More than 5 releases behind (regardless of time)
-          if ([ "$days_since_prod_deploy" -gt 2 ] && [ "$release_count_diff" -gt 1 ]) || \
-             [ "$days_since_prod_deploy" -gt 7 ] || \
-             [ "$release_count_diff" -gt 2 ]; then
+          # - More than DAYS_THRESHOLD_LOW days since last prod deploy AND more than RELEASES_THRESHOLD_LOW releases behind
+          # - More than DAYS_THRESHOLD_HIGH days since last prod deploy (regardless of release count)
+          # - More than RELEASES_THRESHOLD_HIGH releases behind (regardless of time)
+          if ([ "$days_since_prod_deploy" -gt "${{ env.DAYS_THRESHOLD_LOW }}" ] && [ "$release_count_diff" -gt "${{ env.RELEASES_THRESHOLD_LOW }}" ]) || \
+             [ "$days_since_prod_deploy" -gt "${{ env.DAYS_THRESHOLD_HIGH }}" ] || \
+             [ "$release_count_diff" -gt "${{ env.RELEASES_THRESHOLD_HIGH }}" ]; then
             should_notify="true"
           fi
           
@@ -165,6 +174,9 @@ jobs:
           echo "Compare URL: $compare_url"
           echo "Staging version: $staging_version"
           echo "Production version: $prod_version"
+          echo "=== Threshold Configuration ==="
+          echo "Days threshold (low/high/critical): ${{ env.DAYS_THRESHOLD_LOW }}/${{ env.DAYS_THRESHOLD_HIGH }}/${{ env.DAYS_THRESHOLD_CRITICAL }}"
+          echo "Releases threshold (low/high/critical): ${{ env.RELEASES_THRESHOLD_LOW }}/${{ env.RELEASES_THRESHOLD_HIGH }}/${{ env.RELEASES_THRESHOLD_CRITICAL }}"
 
   get-commit-details:
     name: Get Commit Details

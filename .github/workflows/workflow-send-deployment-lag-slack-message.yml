@@ -56,16 +56,22 @@ jobs:
 
       - name: Determine severity and styling
         id: determine-severity
+        env:
+          # Import thresholds from main workflow
+          DAYS_THRESHOLD_HIGH: 7
+          DAYS_THRESHOLD_CRITICAL: 14
+          RELEASES_THRESHOLD_HIGH: 5
+          RELEASES_THRESHOLD_CRITICAL: 10
         run: |
           days=${{ inputs.days_since_prod_deploy }}
           releases=${{ inputs.release_count_diff }}
           
-          # Determine severity based on lag
-          if [ "$days" -gt 14 ] || [ "$releases" -gt 10 ]; then
+          # Determine severity based on configurable thresholds
+          if [ "$days" -gt "$DAYS_THRESHOLD_CRITICAL" ] || [ "$releases" -gt "$RELEASES_THRESHOLD_CRITICAL" ]; then
             severity="🔴 HIGH"
             color="#FF0000"
             emoji="🚨"
-          elif [ "$days" -gt 7 ] || [ "$releases" -gt 5 ]; then
+          elif [ "$days" -gt "$DAYS_THRESHOLD_HIGH" ] || [ "$releases" -gt "$RELEASES_THRESHOLD_HIGH" ]; then
             severity="🟡 MEDIUM"
             color="#FFA500"
             emoji="⚠️"
