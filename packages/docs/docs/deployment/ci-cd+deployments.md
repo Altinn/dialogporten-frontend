@@ -129,6 +129,36 @@ This workflow facilitates the deployment of infrastructure to the specified envi
 
 `CHANGELOG.md` and `version.txt` are automatically updated and should not be changed manually.
 
-### 7. Visual Workflow
+### 7. Deployment Lag Monitoring
+
+To ensure timely production deployments and maintain deployment cadence, an automated deployment lag monitoring system tracks when production deployments are falling behind staging deployments.
+
+#### How It Works
+- **Automatic Monitoring**: Runs daily at 9:00 AM UTC (11:00 AM CET)
+- **Manual Trigger**: Can be triggered manually via GitHub Actions
+- **Slack Notifications**: Sends alerts when production is significantly behind staging
+
+#### Notification Triggers
+A Slack notification is sent when any of these conditions are met:
+- More than 2 days since last production deployment AND more than 1 release behind
+- More than 7 days since last production deployment (regardless of release count)  
+- More than 5 releases behind (regardless of time)
+
+#### Severity Levels
+- 🟢 **LOW**: < 7 days AND < 5 releases behind
+- 🟡 **MEDIUM**: 7-14 days OR 5-10 releases behind
+- 🔴 **HIGH**: > 14 days OR > 10 releases behind
+
+#### Notification Details
+Slack notifications include:
+- Current staging and production versions
+- Number of releases production is behind
+- Days since last production deployment
+- Recent commits not yet in production
+- Quick action buttons for viewing differences and deploying
+
+For detailed configuration and customization options, see [Deployment Lag Monitoring Documentation](./deployment-lag-monitoring.md).
+
+### 8. Visual Workflow
 
 ![Deployment process](deploy-process.svg)

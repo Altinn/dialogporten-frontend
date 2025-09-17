@@ -1,0 +1,145 @@
+name: Send Deployment Lag Slack Message
+
+permissions:
+  contents: read
+
+on:
+  workflow_call:
+    inputs:
+      staging_version:
+        required: true
+        type: string
+        description: "Current staging version"
+      prod_version:
+        required: true
+        type: string
+        description: "Current production version"
+      days_since_prod_deploy:
+        required: true
+        type: string
+        description: "Days since last production deployment"
+      release_count_diff:
+        required: true
+        type: string
+        description: "Number of releases production is behind"
+      compare_url:
+        required: true
+        type: string
+        description: "URL to compare the versions"
+      commits_json:
+        required: false
+        type: string
+        description: "JSON array of commits between versions"
+        default: "[]"
+      commit_authors:
+        required: false
+        type: string
+        description: "Comma-separated list of commit authors"
+        default: ""
+    secrets:
+      SLACK_BOT_TOKEN:
+        required: true
+      SLACK_CHANNEL_ID:
+        required: true
+
+jobs:
+  send-slack-message:
+    name: Send Deployment Lag Slack Message
+    runs-on: ubuntu-latest
+    steps:
+      - uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Determine severity and styling
+        id: determine-severity
+        run: |
+          days=${{ inputs.days_since_prod_deploy }}
+          releases=${{ inputs.release_count_diff }}
+          
+          # Simplified severity determination
+          if [ "$days" -gt 7 ] || [ "$releases" -gt 5 ]; then
+            severity="Attention needed"
+            color="#FF6B6B"
+            emoji="🚨"
+          elif [ "$days" -gt 3 ] || [ "$releases" -gt 3 ]; then
+            severity="Worth noting"
+            color="#FFB347"
+            emoji="⚠️"
+          else
+            severity="FYI"
+            color="#87CEEB"
+            emoji="ℹ️"
+          fi
+          
+          echo "severity=$severity" >> $GITHUB_OUTPUT
+          echo "color=$color" >> $GITHUB_OUTPUT
+          echo "emoji=$emoji" >> $GITHUB_OUTPUT
+
+      - name: Format commit summary
+        id: format-commits
+        run: |
+          commits_json='${{ inputs.commits_json }}'
+          
+          if [ "$commits_json" = "[]" ] || [ -z "$commits_json" ]; then
+            echo "commits_summary=No commit details available" >> $GITHUB_OUTPUT
+          else
+            # Format commits for Slack (limit to 10 most recent)
+            commits_summary=$(echo "$commits_json" | jq -r '
+              .[0:10] | map("• `\(.sha)` \(.message) - \(.author)") | join("\n")
+            ')
+            
+            # Add note if there are more commits
+            total_commits=$(echo "$commits_json" | jq length)
+            if [ "$total_commits" -gt 10 ]; then
+              commits_summary="$commits_summary\n\n_... and $((total_commits - 10)) more commits_"
+            fi
+            
+            # Escape for GitHub output
+            commits_summary_escaped=$(echo "$commits_summary" | sed ':a;N;$!ba;s/\n/\\n/g')
+            echo "commits_summary=$commits_summary_escaped" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Format author mentions
+        id: format-authors
+        run: |
+          authors="${{ inputs.commit_authors }}"
+          
+          if [ -z "$authors" ]; then
+            echo "commit_authors_mentions=No authors available" >> $GITHUB_OUTPUT
+          else
+            # Convert comma-separated authors to Slack mentions
+            mentions=$(echo "$authors" | tr ',' '\n' | sed 's/^/@/' | tr '\n' ' ' | sed 's/ $//')
+            echo "commit_authors_mentions=$mentions" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create deploy URL
+        id: create-deploy-url
+        run: |
+          deploy_url="https://github.com/${{ github.repository }}/actions/workflows/ci-cd-prod.yml"
+          echo "deploy_url=$deploy_url" >> $GITHUB_OUTPUT
+
+      - name: Send Slack notification
+        env:
+          CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+          STAGING_VERSION: ${{ inputs.staging_version }}
+          PROD_VERSION: ${{ inputs.prod_version }}
+          DAYS_SINCE_PROD_DEPLOY: ${{ inputs.days_since_prod_deploy }}
+          RELEASE_COUNT_DIFF: ${{ inputs.release_count_diff }}
+          COMPARE_URL: ${{ inputs.compare_url }}
+          DEPLOY_URL: ${{ steps.create-deploy-url.outputs.deploy_url }}
+          SEVERITY: ${{ steps.determine-severity.outputs.severity }}
+          COLOR: ${{ steps.determine-severity.outputs.color }}
+          EMOJI: ${{ steps.determine-severity.outputs.emoji }}
+          COMMITS_SUMMARY: ${{ steps.format-commits.outputs.commits_summary }}
+          COMMIT_AUTHORS_MENTIONS: ${{ steps.format-authors.outputs.commit_authors_mentions }}
+        uses: slackapi/slack-github-action@485a9d42d3a73031f12ec201c457e2162c45d02d # v2.0.0
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          payload-templated: true
+          payload-file-path: "./.github/slack-templates/deployment-lag-notification.json"
+
