@@ -122,38 +122,9 @@ jobs:
           deploy_url="https://github.com/${{ github.repository }}/actions/workflows/ci-cd-prod.yml"
           echo "deploy_url=$deploy_url" >> $GITHUB_OUTPUT
 
-      - name: Debug environment variables
-        run: |
-          echo "=== Debug Environment Variables ==="
-          echo "CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}"
-          echo "STAGING_VERSION: ${{ inputs.staging_version }}"
-          echo "PROD_VERSION: ${{ inputs.prod_version }}"
-          echo "DAYS_SINCE_PROD_DEPLOY: ${{ inputs.days_since_prod_deploy }}"
-          echo "RELEASE_COUNT_DIFF: ${{ inputs.release_count_diff }}"
-          echo "SEVERITY: ${{ steps.determine-severity.outputs.severity }}"
-          echo "COLOR: ${{ steps.determine-severity.outputs.color }}"
-          echo "=== End Debug ==="
-
-      - name: Validate Slack template
-        run: |
-          echo "=== Validating Slack template ==="
-          if [ -f "./.github/slack-templates/deployment-lag-notification.json" ]; then
-            echo "Template file exists"
-            # Validate JSON syntax
-            if jq empty ./.github/slack-templates/deployment-lag-notification.json 2>/dev/null; then
-              echo "Template JSON is valid"
-            else
-              echo "ERROR: Template JSON is invalid"
-              exit 1
-            fi
-          else
-            echo "ERROR: Template file not found"
-            exit 1
-          fi
-
       - name: Send Slack notification
         env:
-          CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+          CHANNEL_ID: "C09GG3MHB7S"
           STAGING_VERSION: ${{ inputs.staging_version }}
           PROD_VERSION: ${{ inputs.prod_version }}
           DAYS_SINCE_PROD_DEPLOY: ${{ inputs.days_since_prod_deploy }}
@@ -167,7 +138,6 @@ jobs:
           COMMIT_AUTHORS_MENTIONS: ${{ steps.format-authors.outputs.commit_authors_mentions }}
         uses: slackapi/slack-github-action@485a9d42d3a73031f12ec201c457e2162c45d02d # v2.0.0
         with:
-          errors: true
           method: chat.postMessage
           token: ${{ secrets.SLACK_BOT_TOKEN }}
           payload-templated: true
