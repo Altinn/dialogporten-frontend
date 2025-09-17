@@ -3,6 +3,10 @@ run-name: Deployment Lag Monitor
 permissions:
   contents: read
 
+permissions:
+  contents: read
+  actions: read
+
 on:
   schedule:
     # Run every day at 9 AM UTC (11 AM CET)
@@ -193,3 +197,4 @@ jobs:
     secrets:
       SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
       SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_RELEASES }}
+

@@ -2,6 +2,9 @@ name: Send Deployment Lag Slack Message
 permissions:
   contents: read
 
+permissions:
+  contents: read
+
 on:
   workflow_call:
     inputs:
@@ -141,3 +144,4 @@ jobs:
           token: ${{ secrets.SLACK_BOT_TOKEN }}
           payload-templated: true
           payload-file-path: "./.github/slack-templates/deployment-lag-notification.json"
+

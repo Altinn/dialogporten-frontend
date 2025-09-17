@@ -157,7 +157,7 @@ Slack notifications include:
 - Recent commits not yet in production
 - Quick action buttons for viewing differences and deploying
 
-For detailed configuration and customization options, see [Deployment Lag Monitoring Documentation](../../../docs/DeploymentLagMonitoring.md).
+For detailed configuration and customization options, see [Deployment Lag Monitoring Documentation](./deployment-lag-monitoring.md).
 
 ### 8. Visual Workflow
 
