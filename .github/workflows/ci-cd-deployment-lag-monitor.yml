@@ -1,4 +1,4 @@
-name: Deployment Lag Monitor
+name: Deployment Lag Monitor (Scheduled)
 run-name: Deployment Lag Monitor
 permissions:
   contents: read
