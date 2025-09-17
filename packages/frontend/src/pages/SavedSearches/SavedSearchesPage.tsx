@@ -2,7 +2,7 @@ import { BookmarksSection, PageBase, Toolbar } from '@altinn/altinn-components';
 import { t } from 'i18next';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
-import { usePageTitle } from '../../utils/usePageTitle.tsx';
+import { usePageTitle } from '../../hooks/usePageTitle.tsx';
 import { PageRoutes } from '../routes.ts';
 import styles from './savedSearchesPage.module.css';
 import { useSavedSearches } from './useSavedSearches.tsx';

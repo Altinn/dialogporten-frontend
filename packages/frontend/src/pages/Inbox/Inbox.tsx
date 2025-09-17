@@ -24,8 +24,8 @@ import { SaveSearchButton } from '../../components/SavedSearchButton/SaveSearchB
 import { isSavedSearchDisabled } from '../../components/SavedSearchButton/savedSearchEnabled.ts';
 import { SeenByModal } from '../../components/SeenByModal/SeenByModal.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
+import { usePageTitle } from '../../hooks/usePageTitle.tsx';
 import { useDynamicTour } from '../../onboardingTour';
-import { usePageTitle } from '../../utils/usePageTitle.tsx';
 import { PageRoutes } from '../routes.ts';
 import { FilterCategory, readFiltersFromURLQuery } from './filters.ts';
 import styles from './inbox.module.css';
@@ -106,7 +106,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const { filters, getFilterLabel } = useFilters({ viewType });
 
   usePageTitle({
-    baseTitle: viewType.charAt(0).toUpperCase() + viewType.slice(1),
+    baseTitle: viewType,
     searchValue: enteredSearchValue,
     filterState,
     getFilterLabel,

@@ -16,7 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import { useProfile } from '..';
 import { useParties } from '../../../api/hooks/useParties';
 import { FeatureFlagKeys, useFeatureFlag } from '../../../featureFlags';
-import { usePageTitle } from '../../../utils/usePageTitle';
+import { usePageTitle } from '../../../hooks/usePageTitle';
 import styles from './partiesOverviewPage.module.css';
 import { getBreadcrumbs, partyFieldFragmentToAccountListItem } from './partyFieldToAccountList';
 
