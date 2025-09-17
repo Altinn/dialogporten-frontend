@@ -2,9 +2,6 @@ name: Deployment Lag Monitor
 run-name: Deployment Lag Monitor
 permissions:
   contents: read
-
-permissions:
-  contents: read
   actions: read
 
 on:
