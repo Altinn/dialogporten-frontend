@@ -22,7 +22,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useProfile } from '..';
 import { useParties } from '../../../api/hooks/useParties';
-import { usePageTitle } from '../../../utils/usePageTitle';
+import { usePageTitle } from '../../../hooks/usePageTitle';
 import { PageRoutes } from '../../routes';
 import { flattenParties } from '../PartiesOverviewPage/partyFieldToNotificationsList';
 import { buildAddressString } from '../buildAddressString';

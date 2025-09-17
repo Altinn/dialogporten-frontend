@@ -10,7 +10,7 @@ import {
 } from '@altinn/altinn-components';
 import { MobileIcon, PaperplaneIcon } from '@navikt/aksel-icons';
 import { useTranslation } from 'react-i18next';
-import { usePageTitle } from '../../../utils/usePageTitle';
+import { usePageTitle } from '../../../hooks/usePageTitle';
 import { getBreadcrumbs } from '../PartiesOverviewPage/partyFieldToAccountList';
 import { useProfile } from '../useProfile';
 import { AccountSettings } from './AccountSettings';
