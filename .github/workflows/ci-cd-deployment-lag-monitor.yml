@@ -1,5 +1,7 @@
 name: Deployment Lag Monitor
 run-name: Deployment Lag Monitor
+permissions:
+  contents: read
 
 on:
   schedule:
