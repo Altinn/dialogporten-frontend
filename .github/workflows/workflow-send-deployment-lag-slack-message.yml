@@ -39,8 +39,8 @@ on:
     secrets:
       SLACK_BOT_TOKEN:
         required: true
-      SLACK_CHANNEL_ID:
-        required: true
+      # SLACK_CHANNEL_ID:
+      #   required: true
 
 jobs:
   send-slack-message:
@@ -124,7 +124,7 @@ jobs:
 
       - name: Send Slack notification
         env:
-          CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+          CHANNEL_ID: "C09GG3MHB7S"
           STAGING_VERSION: ${{ inputs.staging_version }}
           PROD_VERSION: ${{ inputs.prod_version }}
           DAYS_SINCE_PROD_DEPLOY: ${{ inputs.days_since_prod_deploy }}

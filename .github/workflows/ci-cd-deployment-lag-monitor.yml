@@ -235,5 +235,5 @@ jobs:
     secrets:
       SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
       # SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_RELEASES }}
-      SLACK_CHANNEL_ID: "C09GG3MHB7S"
+      # SLACK_CHANNEL_ID: "C09GG3MHB7S"
 
