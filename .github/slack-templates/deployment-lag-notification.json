@@ -61,6 +61,13 @@
             "color": "${{ env.COLOR }}",
             "blocks": [
                 {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": ":point_right: *Consider deploying the latest staging version to production*"
+                    }
+                },
+                {
                     "type": "actions",
                     "elements": [
                         {
