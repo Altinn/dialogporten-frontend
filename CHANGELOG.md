@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.68.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.68.1...v1.68.2) (2025-09-18)
+
+
+### Bug Fixes
+
+* **frontend:** remove pageview calculations ([#2739](https://github.com/Altinn/dialogporten-frontend/issues/2739)) ([1ad7c26](https://github.com/Altinn/dialogporten-frontend/commit/1ad7c2637715ba69553f0f9ea11b303dc84e9299))
+
 ## [1.68.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.68.0...v1.68.1) (2025-09-17)
 
 
