@@ -155,6 +155,7 @@
   "footer.nav.privacy_policy": "Privacy policy",
   "footer.nav.service_messages": "Service messages",
   "inbox.filter.multiple.sender": "{count, plural, =0 {Choose sender} one {# sender} other {# senders}}",
+  "inbox.filter.multiple.status": "{count, plural, =0 {Choose status} one {# status} other {# status}}",
   "inbox.heading.attachments": "{count, plural, =0 {No attachments} one {# attachment} other {# attachments}}",
   "inbox.heading.choose_all": "Select All",
   "inbox.heading.description.archive": "This is not an official records or archive system. If the dialogue is updated, you will find it again in the inbox.",

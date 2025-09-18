@@ -63,6 +63,9 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
     }
 
     if (name === FilterCategory.STATUS) {
+      if (value?.length > 2) {
+        return t('inbox.filter.multiple.status', { count: value?.length });
+      }
       return value.map((v) => t(`status.${v.toString().toLowerCase()}`)).join(', ');
     }
 

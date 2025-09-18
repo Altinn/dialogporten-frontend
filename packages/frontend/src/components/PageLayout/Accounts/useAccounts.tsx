@@ -120,7 +120,7 @@ export const useAccounts = ({
   const accountGroups: MenuItemGroups = {
     ...(endUser && {
       primary: {
-        title: t('parties.groups.yourself'),
+        title: t('parties.groups.self'),
       },
     }),
     ...(organizations.length && {
@@ -192,6 +192,10 @@ export const useAccounts = ({
     id: selectedAccountMenuItem.id,
     name: selectedAccountMenuItem.name,
     type: selectedAccountMenuItem.type as 'company' | 'person',
+    icon: {
+      type: selectedAccountMenuItem.type as AvatarType,
+      name: selectedAccountMenuItem.name,
+    },
   };
 
   const accountSearch = showSearch

@@ -19,7 +19,6 @@ import { createFiltersURLQuery } from '../../auth';
 import { EmptyState } from '../../components/EmptyState/EmptyState.tsx';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
 import { useSearchString } from '../../components/PageLayout/Search/';
-import { useWindowSize } from '../../components/PageLayout/useWindowSize.tsx';
 import { SaveSearchButton } from '../../components/SavedSearchButton/SaveSearchButton.tsx';
 import { isSavedSearchDisabled } from '../../components/SavedSearchButton/savedSearchEnabled.ts';
 import { SeenByModal } from '../../components/SeenByModal/SeenByModal.tsx';
@@ -144,8 +143,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
     isFetchingNextPage,
   });
 
-  const windowSize = useWindowSize();
-
   if (unableToLoadParties) {
     return (
       <PageBase>
@@ -181,13 +178,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
                 groups: accountGroups,
                 currentAccount: selectedAccount,
                 onSelectAccount: (account: string) => onSelectAccount(account, PageRoutes[viewType]),
-                menuItemsVirtual: {
-                  isVirtualized: true,
-                  scrollRefStyles: {
-                    maxHeight: windowSize.isTabletOrSmaller ? 'calc(100vh - 14rem)' : 'calc(80vh - 10rem)',
-                    paddingBottom: '0.5rem',
-                  },
-                },
+                isVirtualized: true,
               }}
               filterState={filterState}
               getFilterLabel={getFilterLabel}
