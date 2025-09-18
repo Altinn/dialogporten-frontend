@@ -41,7 +41,7 @@ var healthProbes = empty(probes)
 var ingress = {
   targetPort: port
   external: true
-  allowInsecure: true
+  allowInsecure: false
 }
 
 resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
