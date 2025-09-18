@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.69.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.68.2...v1.69.0) (2025-09-18)
+
+
+### Features
+
+* Close button for welcome modal ([#2736](https://github.com/Altinn/dialogporten-frontend/issues/2736)) ([6bc9041](https://github.com/Altinn/dialogporten-frontend/commit/6bc90410d32cfeb4a9882f9239058697786bc2be))
+
 ## [1.68.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.68.1...v1.68.2) (2025-09-18)
 
 
