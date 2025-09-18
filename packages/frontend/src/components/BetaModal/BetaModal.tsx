@@ -29,11 +29,22 @@ export const BetaModal = () => {
     navigate(PageRoutes.inbox + pruneSearchQueryParams(search));
   };
 
+  const handleClose = () => {
+    localStorage.setItem(betaKey, 'true');
+    setIsOpen(false);
+  };
+
   if (isMock) return null;
 
   if (isOpen) {
     return (
-      <Modal open closedBy="none" variant="default" onClose={onTryBeta}>
+      <Modal
+        open
+        closedBy={isFirstTime ? 'none' : 'closerequest'}
+        dismissable={!isFirstTime}
+        variant="default"
+        onClose={handleClose}
+      >
         <Typography>
           <h1>{t('betaModal.title')}</h1>
           <p>{t('betaModal.description')}</p>
