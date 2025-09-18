@@ -128,6 +128,8 @@ if (applicationInsightsEnabled) {
         enableAjaxPerfTracking: false,
         enablePerfMgr: false,
         disableCookiesUsage: false,
+        // To avoid issue where AI tries to calculate duration of page view, and throws an error
+        overridePageViewDuration: true,
         samplingPercentage: 100,
         appId: 'arbeidsflate-frontend',
         enableDebug: true,
