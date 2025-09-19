@@ -30,7 +30,7 @@ export const Profile = () => {
       <DashboardHeader
         loading={isLoading}
         type="person"
-        name={toTitleCase(user?.party?.name) || ''}
+        name={toTitleCase(user?.party?.name, 'person') || ''}
         description={`${t('profile.landing.ssn')} ${user?.party?.person?.ssn}`}
       >
         <List size="sm">

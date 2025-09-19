@@ -23,7 +23,7 @@ export const urnToOrgNr = (urn: string, unformatted = false) => {
   return orgOrPersonNumberUnformatted?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 };
 
-export const getBreadcrumbs = (name: string) => {
+export const getBreadcrumbs = (name: string, type: 'person' | 'company' = 'person') => {
   if (!name) return [];
   return [
     {
@@ -31,7 +31,7 @@ export const getBreadcrumbs = (name: string) => {
       href: PageRoutes.inbox,
     },
     {
-      label: toTitleCase(name),
+      label: toTitleCase(name, type),
       href: PageRoutes.profile,
     },
     {
