@@ -3,6 +3,13 @@ export const toTitleCase = (str: string | undefined | null) => {
   return str
     .toLowerCase()
     .split(' ')
-    .map((word) => (word !== 'as' ? word.charAt(0).toUpperCase() + word.slice(1) : word.toUpperCase()))
+    .map((word) => {
+      if (word === 'as') return word.toUpperCase();
+
+      return word
+        .split('-')
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join('-');
+    })
     .join(' ');
 };
