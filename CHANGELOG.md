@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.70.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.69.0...v1.70.0) (2025-09-19)
+
+
+### Features
+
+* Added modal for changing user notifications. ([5dd21de](https://github.com/Altinn/dialogporten-frontend/commit/5dd21de155df694e193402431fc9376b62982269))
+* Notification settings for user's parties ([c35e39d](https://github.com/Altinn/dialogporten-frontend/commit/c35e39d0db04377ef54fab585c1faa6ad9593066))
+
+
+### Bug Fixes
+
+* **frontend:** avoid errors from AI calculating page durations ([#2748](https://github.com/Altinn/dialogporten-frontend/issues/2748)) ([2c5b466](https://github.com/Altinn/dialogporten-frontend/commit/2c5b4661bfa2ca6f311cdec22a6fceafea51862e))
+
 ## [1.69.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.68.2...v1.69.0) (2025-09-18)
 
 
