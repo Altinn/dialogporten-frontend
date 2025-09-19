@@ -3,17 +3,17 @@ import { CompanyNotificationSettings } from '../PartiesOverviewPage/CompanyNotif
 import { urnToOrgNr } from '../PartiesOverviewPage/partyFieldToAccountList';
 import type { NotificationAccountsType } from './AccountSettings';
 
-interface NotificationSettingsModalProps {
+interface CompanyNotificationSettingsModalProps {
   notificationParty: NotificationAccountsType | null;
   setNotificationParty: (notificationParty: NotificationAccountsType | null) => void;
-  onSave: () => void;
+  onSave?: () => void;
 }
 
-export const NotificationSettingsModal = ({
+export const CompanyNotificationSettingsModal = ({
   notificationParty,
   setNotificationParty,
   onSave,
-}: NotificationSettingsModalProps) => {
+}: CompanyNotificationSettingsModalProps) => {
   const partyType = notificationParty?.partyType === 'Organization' ? 'company' : 'person';
   const computedIcon = {
     type: partyType,

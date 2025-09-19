@@ -1,0 +1,58 @@
+.linkButton {
+  max-width: 16rem;
+}
+
+.flexContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.flexContainer p {
+  margin: 0;
+  margin-left: 0.25rem;
+  align-self: center;
+}
+
+.avatarGroupContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 4px;
+  padding-bottom: 0.5rem;
+}
+
+.avatarGroupContainer p {
+  margin: 0;
+  margin-left: 1rem;
+  align-self: center;
+  color: var(--global-text-subtle, #5d6470);
+}
+
+.avatarGroup {
+  font-size: 2em;
+}
+
+.avatarGroupDetailsContainer p {
+  margin: 0;
+  margin-left: 1rem;
+  align-self: center;
+}
+
+.avatarGroupDetailsContainer {
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.avatarGroupDetailsItem {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding-bottom: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--global-text-subtle, #5d6470);
+}
+
+.avatarGroupDetailsItemName {
+  padding-right: 1rem;
+}

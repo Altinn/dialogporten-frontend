@@ -13,7 +13,7 @@ import type { PartyFieldsFragment } from 'bff-types-generated';
 import { useState } from 'react';
 import { QUERY_KEYS } from '../../../constants/queryKeys';
 import type { NotificationAccountsType } from '../NotificationsPage/AccountSettings';
-import { NotificationSettingsModal } from '../NotificationsPage/NotificationSettingsModal';
+import { CompanyNotificationSettingsModal } from '../NotificationsPage/CompanyNotificationSettingsModal';
 import { useNotificationSettingsForParty } from '../useNotificationSettingsForParty';
 import { PartyDetailsSetting } from './PartyDetailsSetting';
 
@@ -81,7 +81,7 @@ export const CompanyDetails = ({
         />
       )}
       {notificationParty && (
-        <NotificationSettingsModal
+        <CompanyNotificationSettingsModal
           notificationParty={
             { ...notificationParty, notificationSettings: notificationSettingsForParty } as NotificationAccountsType
           }

@@ -9,8 +9,13 @@ import {
   SettingsSection,
 } from '@altinn/altinn-components';
 import { MobileIcon, PaperplaneIcon } from '@navikt/aksel-icons';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePageTitle } from '../../../hooks/usePageTitle';
+import {
+  type NotificationType,
+  UserNotificationSettingsModal,
+} from '../PartiesOverviewPage/UserNotificationSettingsModal';
 import { getBreadcrumbs } from '../PartiesOverviewPage/partyFieldToAccountList';
 import { useProfile } from '../useProfile';
 import { AccountSettings } from './AccountSettings';
@@ -18,7 +23,7 @@ import { AccountSettings } from './AccountSettings';
 export const NotificationsPage = () => {
   const { t } = useTranslation();
   usePageTitle({ baseTitle: t('component.notifications') });
-
+  const [showNotificationModal, setShowNotificationModal] = useState<NotificationType>('none');
   const { user } = useProfile();
   const userHasNotificationsActivated =
     (!!user?.email?.length && user?.email?.length > 0) ||
@@ -39,7 +44,9 @@ export const NotificationsPage = () => {
                   title={t('profile.settings.sms_notifications')}
                   value={user?.phoneNumber || 'Ingen telefonnummer registrert'}
                   badge={<span data-size="xs">{t('profile.notifications.change_phone')}</span>}
+                  onClick={() => setShowNotificationModal('phoneNumber')}
                   linkIcon
+                  as="button"
                 />
                 <Divider as="li" />
                 <SettingsItem
@@ -47,13 +54,18 @@ export const NotificationsPage = () => {
                   title={t('profile.notifications.email_for_alerts')}
                   value={user?.email || ''}
                   badge={<span data-size="xs">{t('profile.notifications.change_email')}</span>}
+                  onClick={() => setShowNotificationModal('email')}
                   linkIcon
+                  as="button"
                 />
               </>
             )}
           </List>
         </SettingsSection>
-        {userHasNotificationsActivated && <Heading size="lg">{t('profile.notifications.heading_per_actor')}</Heading>}
+        <UserNotificationSettingsModal
+          notificationType={showNotificationModal}
+          setShowModal={setShowNotificationModal}
+        />
         <AccountSettings />
       </Section>
     </PageBase>

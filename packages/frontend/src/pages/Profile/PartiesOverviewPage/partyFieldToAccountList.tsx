@@ -83,7 +83,6 @@ export const partyFieldFragmentToAccountListItem = ({
   };
 
   const flattenedParties = flattenParties(parties);
-
   const retVal = flattenedParties.map((party) => {
     const favourite = !!favoritesGroup?.parties?.find((p) => p?.includes(party.partyUuid));
     let group: GroupObject | undefined = undefined;
@@ -112,7 +111,6 @@ export const partyFieldFragmentToAccountListItem = ({
             label: 'Deg',
           }
         : undefined,
-      emailAlerts: true,
       favourite,
       partyGroups,
       groupId,
@@ -120,7 +118,6 @@ export const partyFieldFragmentToAccountListItem = ({
       isCurrentEndUser: party.isCurrentEndUser,
       isDeleted: party.isDeleted || false,
       parentId: undefined,
-      smsAlerts: true,
       name: party.name,
       parentAccount: flattenedParties?.find((item) => item.partyUuid === party.parentId),
       type: party.partyType as AccountListItemType,
@@ -135,14 +132,7 @@ export const partyFieldFragmentToAccountListItem = ({
     let children: ReactNode = null;
 
     if (party.isCurrentEndUser) {
-      children = (
-        <UserDetails
-          key={party.partyUuid}
-          id={party.partyUuid}
-          type={party.partyType as AccountListItemType}
-          name={party.name}
-        />
-      );
+      children = <UserDetails id={party.partyUuid} type={party.partyType as AccountListItemType} name={party.name} />;
     } else {
       children = (
         <CompanyDetails
