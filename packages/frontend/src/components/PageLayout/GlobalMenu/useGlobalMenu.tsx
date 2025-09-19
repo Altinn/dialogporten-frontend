@@ -3,16 +3,13 @@ import {
   ArchiveIcon,
   BellIcon,
   BookmarkIcon,
-  ClockDashedIcon,
   CogIcon,
   DocPencilIcon,
   FileCheckmarkIcon,
-  HandshakeIcon,
   HeartIcon,
   InboxFillIcon,
   InformationSquareIcon,
   LeaveIcon,
-  PadlockUnlockedIcon,
   TrashIcon,
 } from '@navikt/aksel-icons';
 import { useTranslation } from 'react-i18next';
@@ -189,7 +186,7 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
       }),
       items: [
         {
-          id: '2',
+          id: '1',
           groupId: '2',
           icon: { svgElement: HeartIcon, theme: 'default' },
           title: t('sidebar.profile.parties'),
@@ -199,27 +196,7 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
           }),
         },
         {
-          id: '3',
-          groupId: '3',
-          icon: { svgElement: HandshakeIcon, theme: 'default' },
-          title: t('sidebar.profile.authorize'),
-          selected: isRouteSelected(pathname, PageRoutes.authorize, fromView),
-          as: createMenuItemComponent({
-            to: PageRoutes.authorize + pruneSearchQueryParams(currentSearchQuery),
-          }),
-        },
-        {
-          id: '4',
-          groupId: '3',
-          icon: { svgElement: PadlockUnlockedIcon, theme: 'default' },
-          title: t('sidebar.profile.access'),
-          selected: isRouteSelected(pathname, PageRoutes.access, fromView),
-          as: createMenuItemComponent({
-            to: PageRoutes.access + pruneSearchQueryParams(currentSearchQuery),
-          }),
-        },
-        {
-          id: '5',
+          id: '2',
           groupId: '2',
           icon: { svgElement: BellIcon, theme: 'default' },
           title: t('sidebar.profile.notifications'),
@@ -229,23 +206,13 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
           }),
         },
         {
-          id: '6',
+          id: '3',
           groupId: '4',
           icon: { svgElement: CogIcon, theme: 'default' },
           title: t('sidebar.profile.settings'),
           selected: isRouteSelected(pathname, PageRoutes.settings, fromView),
           as: createMenuItemComponent({
             to: PageRoutes.settings + pruneSearchQueryParams(currentSearchQuery),
-          }),
-        },
-        {
-          id: '7',
-          groupId: '5',
-          icon: { svgElement: ClockDashedIcon, theme: 'default' },
-          title: t('sidebar.profile.activities'),
-          selected: isRouteSelected(pathname, PageRoutes.activities, fromView),
-          as: createMenuItemComponent({
-            to: PageRoutes.activities + pruneSearchQueryParams(currentSearchQuery),
           }),
         },
       ],
