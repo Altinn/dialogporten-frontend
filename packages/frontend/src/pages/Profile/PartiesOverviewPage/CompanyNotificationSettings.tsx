@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { deleteNotificationsetting, updateNotificationsetting } from '../../../api/queries';
 import type { NotificationAccountsType } from '../NotificationsPage/AccountSettings';
 import { useProfile } from '../useProfile';
+import styles from './companyNotificationSettings.module.css';
 
 export interface CompanyNotificationSettingsProps {
   notificationParty?: NotificationAccountsType | null;
@@ -132,7 +133,7 @@ export const CompanyNotificationSettings = ({
           />
         )}
       </Fieldset>
-      <ButtonGroup>
+      <ButtonGroup className={styles.buttonGroup}>
         <Button type="submit">Lagre og avslutt</Button>
         <Button variant="outline" onClick={onClose}>
           Avbryt
