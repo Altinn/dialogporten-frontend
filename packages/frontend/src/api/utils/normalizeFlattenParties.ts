@@ -10,10 +10,10 @@ export const normalizeFlattenParties = (parties: PartyFieldsFragment[]): PartyFi
   const partiesInTitleCase =
     parties.map((party) => ({
       ...party,
-      name: toTitleCase(party.name),
+      name: toTitleCase(party.name, party.partyType === 'Organization' ? 'company' : 'person'),
       subParties: party.subParties?.map((subParty) => ({
         ...subParty,
-        name: toTitleCase(subParty.name),
+        name: toTitleCase(subParty.name, subParty.partyType === 'Organization' ? 'company' : 'person'),
         isCurrentEndUser: false,
         isDeleted: party.isDeleted,
       })),
