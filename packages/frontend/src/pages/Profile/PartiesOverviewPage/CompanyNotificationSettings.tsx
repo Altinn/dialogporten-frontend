@@ -7,7 +7,7 @@ import { useProfile } from '../useProfile';
 export interface CompanyNotificationSettingsProps {
   notificationParty?: NotificationAccountsType | null;
   onClose: () => void;
-  onSave: () => void;
+  onSave?: () => void;
 }
 
 export const CompanyNotificationSettings = ({
