@@ -79,6 +79,8 @@ export const trackPageView = (pageInfo: {
     'route.state': pageInfo.state ? JSON.stringify(pageInfo.state) : '',
     'viewport.width': window.innerWidth,
     'viewport.height': window.innerHeight,
+    // Seeing issues with AI failing to calculate duration. Setting this to 0 until we see the need to have this information
+    duration: 0,
   };
 
   applicationInsights.trackPageView({
