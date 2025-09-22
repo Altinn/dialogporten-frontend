@@ -1,11 +1,12 @@
 import {
   AccountList,
+  type FilterState,
   Heading,
-  type MenuOptionProps,
   PageBase,
   PageNav,
   Section,
   Toolbar,
+  type ToolbarFilterProps,
   Typography,
 } from '@altinn/altinn-components';
 import type { PartyFieldsFragment } from 'bff-types-generated';
@@ -20,50 +21,67 @@ import { usePageTitle } from '../../../hooks/usePageTitle';
 import styles from './partiesOverviewPage.module.css';
 import { getBreadcrumbs, partyFieldFragmentToAccountListItem } from './partyFieldToAccountList';
 
-export type FilterState = Record<string, (string | number)[] | undefined>;
-
 export const PartiesOverviewPage = () => {
+  const { t } = useTranslation();
+
+  const FILTER_VALUES = {
+    PERSONS: t('parties.filter.persons'),
+    COMPANIES: t('parties.filter.companies'),
+    DELETED_PARTIES: t('parties.filter.deleted_parties'),
+    GROUPS: t('parties.filter.groups'),
+  } as const;
   const [searchValue, setSearchValue] = useState('');
-  const [filterState, setFilterState] = React.useState<FilterState>({ 'parties-filter': ['Personer', 'Virksomheter'] });
+  const [filterState, setFilterState] = React.useState<FilterState>({
+    'parties-filter': [FILTER_VALUES.PERSONS, FILTER_VALUES.COMPANIES],
+  });
   const DisableFavoriteGroups = useFeatureFlag(FeatureFlagKeys.DisableFavoriteGroups);
 
-  const showDeletedParties = filterState['parties-filter']?.includes('Slettede aktører');
-  const showGroups = filterState['parties-filter']?.includes('Slettede aktører');
-  const showCompanies = filterState['parties-filter']?.includes('Virksomheter');
-  const showPersons = filterState['parties-filter']?.includes('Personer');
+  const showDeletedParties = filterState['parties-filter']?.includes(FILTER_VALUES.DELETED_PARTIES);
+  const showGroups = filterState['parties-filter']?.includes(FILTER_VALUES.GROUPS);
+  const showCompanies = filterState['parties-filter']?.includes(FILTER_VALUES.COMPANIES);
+  const showPersons = filterState['parties-filter']?.includes(FILTER_VALUES.PERSONS);
   const noFiltersSelected = !filterState['parties-filter'] || filterState['parties-filter']?.length === 0;
   const { groups, user, addFavoriteParty, deleteFavoriteParty, favoritesGroup } = useProfile();
   const navigate = useNavigate();
   const endUserName = `${user?.party?.person?.firstName || ''} ${user?.party?.person?.lastName}`;
   const { parties: normalParties, isLoading: isLoadingParties, deletedParties } = useParties();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
-  const { t } = useTranslation();
   usePageTitle({ baseTitle: t('component.parties_overview') });
 
-  const getPartiesToShow = () => {
-    let partiesToShow = [] as PartyFieldsFragment[];
+  const filteredParties = React.useMemo(() => {
+    let filteredParties: PartyFieldsFragment[] = [];
     if (noFiltersSelected) {
-      return partiesToShow;
+      return filteredParties;
     }
     if (showGroups && !DisableFavoriteGroups) {
-      return partiesToShow.filter((party) => party.partyType === 'Group');
+      return normalParties.filter((party) => party.partyType === 'Group');
     }
-    const companiesToShow = normalParties.filter((party) => party.partyType === 'Organization');
     if (showCompanies) {
-      partiesToShow = [...partiesToShow, ...companiesToShow];
+      const companiesToShow = normalParties.filter((party) => party.partyType === 'Organization');
+      filteredParties = [...filteredParties, ...companiesToShow];
     }
-    const personsToShow = normalParties.filter((party) => party.partyType === 'Person');
     if (showPersons) {
-      partiesToShow = [...partiesToShow, ...personsToShow];
+      const personsToShow = normalParties.filter((party) => party.partyType === 'Person');
+      filteredParties = [...filteredParties, ...personsToShow];
     }
     if (showDeletedParties) {
-      partiesToShow = [...partiesToShow, ...deletedParties];
+      filteredParties = [...filteredParties, ...deletedParties];
     }
     if (searchValue) {
-      return partiesToShow.filter((party) => party.name.toLowerCase().includes(searchValue.toLowerCase()));
+      return filteredParties.filter((party) => party.name.toLowerCase().includes(searchValue.toLowerCase()));
     }
-    return partiesToShow;
-  };
+    return filteredParties;
+  }, [
+    noFiltersSelected,
+    showGroups,
+    DisableFavoriteGroups,
+    normalParties,
+    showCompanies,
+    showPersons,
+    showDeletedParties,
+    deletedParties,
+    searchValue,
+  ]);
 
   const toggleExpanded = (id: string) => {
     setExpandedItems((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]));
@@ -73,7 +91,6 @@ export const PartiesOverviewPage = () => {
     return expandedItems.includes(id);
   };
 
-  const parties = getPartiesToShow();
   if (isLoadingParties) {
     return (
       <div className={styles.noResults}>
@@ -84,50 +101,69 @@ export const PartiesOverviewPage = () => {
 
   const accountListGroups = {
     primary: {
-      title: 'Deg selv',
+      title: t('parties.groups.self'),
     },
     favourites: {
-      title: 'Favoritter',
+      title: t('parties.groups.favourites'),
     },
     persons: {
-      title: 'Favoritter',
+      title: t('parties.groups.favourites'),
     },
-    ...(!DisableFavoriteGroups ? { groups: { title: 'Grupper' } } : {}),
+    ...(!DisableFavoriteGroups ? { groups: { title: t('parties.groups.groups') } } : {}),
     secondary: {
-      title: 'Andre kontoer',
+      title: t('parties.groups.other_accounts'),
     },
   };
 
-  const filterOptions = [
+  const filterOptions: ToolbarFilterProps[] = [
     {
-      groupId: '2',
-      type: 'checkbox',
-      label: 'Personer',
-      value: 'Personer',
-    },
-    {
-      groupId: '2',
-      type: 'checkbox',
-      label: 'Virksomheter',
-      value: 'Virksomheter',
-    },
-    {
-      groupId: '3',
-      type: 'checkbox',
-      label: 'Slettede aktører',
-      value: 'Slettede aktører',
+      optionType: 'checkbox',
+      name: 'parties-filter',
+      label: t('filter_bar.add_filter"'),
+      options: [
+        {
+          label: t('parties.filter.persons'),
+          value: FILTER_VALUES.PERSONS,
+        },
+        {
+          label: t('parties.filter.companies'),
+          value: FILTER_VALUES.COMPANIES,
+        },
+        {
+          label: t('parties.filter.deleted_parties'),
+          value: FILTER_VALUES.DELETED_PARTIES,
+        },
+      ],
     },
   ];
 
-  if (!DisableFavoriteGroups) {
-    filterOptions.push({
-      groupId: '1',
-      type: 'checkbox',
-      label: 'Grupper',
-      value: 'Grupper',
-    });
-  }
-
+  const getFilterLabel = (_: string, filterValues: (string | number)[] | undefined) => {
+    if (
+      filterValues?.includes(FILTER_VALUES.PERSONS) &&
+      !filterValues?.includes(FILTER_VALUES.DELETED_PARTIES) &&
+      filterValues?.includes(FILTER_VALUES.COMPANIES)
+    ) {
+      return t('parties.filter.all_parties');
+    }
+    return (
+      filterValues
+        ?.map((value) => {
+          switch (value) {
+            case FILTER_VALUES.PERSONS:
+              return t('parties.filter.persons');
+            case FILTER_VALUES.COMPANIES:
+              return t('parties.filter.companies');
+            case FILTER_VALUES.DELETED_PARTIES:
+              return t('parties.filter.deleted_parties');
+            case FILTER_VALUES.GROUPS:
+              return t('parties.filter.groups');
+            default:
+              return value.toString();
+          }
+        })
+        .join(', ') || t('parties.filter.choose_parties')
+    );
+  };
   return (
     <PageBase color="person">
       <PageNav breadcrumbs={getBreadcrumbs(endUserName)} />
@@ -136,21 +172,15 @@ export const PartiesOverviewPage = () => {
         <Toolbar
           search={{
             name: 'party-search',
-            placeholder: 'Søk etter aktør',
+            placeholder: t('parties.search.placeholder'),
             value: searchValue,
             onChange: (e) => setSearchValue((e.target as HTMLInputElement).value),
             onClear: () => setSearchValue(''),
           }}
+          getFilterLabel={getFilterLabel}
           filterState={filterState}
           onFilterStateChange={setFilterState}
-          filters={[
-            {
-              name: 'parties-filter',
-              label: filterState['parties-filter']?.map((i) => i.toString()).join(', ') || 'Alle aktører',
-              options: filterOptions as MenuOptionProps[],
-              optionType: 'checkbox',
-            },
-          ]}
+          filters={filterOptions}
         />
       </Section>
 
@@ -158,7 +188,7 @@ export const PartiesOverviewPage = () => {
         <AccountList
           groups={accountListGroups}
           items={partyFieldFragmentToAccountListItem({
-            parties,
+            parties: filteredParties,
             isExpanded,
             toggleExpanded,
             user,
