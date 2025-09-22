@@ -82,6 +82,23 @@ export const partyFieldFragmentToAccountListItem = ({
     }
   };
 
+  const getBadge = (party: PartyFieldsFragment): BadgeProps | undefined => {
+    if (party.isDeleted) {
+      return {
+        color: 'alert',
+        variant: 'base',
+        label: 'Slettet',
+      };
+    }
+    if (party.isCurrentEndUser) {
+      return {
+        color: 'person',
+        label: 'Deg',
+      };
+    }
+    return undefined;
+  };
+
   const flattenedParties = flattenParties(parties);
   const retVal = flattenedParties.map((party) => {
     const favourite = !!favoritesGroup?.parties?.find((p) => p?.includes(party.partyUuid));
@@ -105,12 +122,7 @@ export const partyFieldFragmentToAccountListItem = ({
 
     const accountListItem = {
       accountIds: undefined,
-      badge: party.isCurrentEndUser
-        ? {
-            color: 'person' as BadgeProps['color'],
-            label: 'Deg',
-          }
-        : undefined,
+      badge: getBadge(party),
       favourite,
       partyGroups,
       groupId,

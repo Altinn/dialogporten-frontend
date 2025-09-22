@@ -24,7 +24,7 @@ export type FilterState = Record<string, (string | number)[] | undefined>;
 
 export const PartiesOverviewPage = () => {
   const [searchValue, setSearchValue] = useState('');
-  const [filterState, setFilterState] = React.useState<FilterState>({});
+  const [filterState, setFilterState] = React.useState<FilterState>({ 'parties-filter': ['Personer', 'Virksomheter'] });
   const DisableFavoriteGroups = useFeatureFlag(FeatureFlagKeys.DisableFavoriteGroups);
 
   const showDeletedParties = filterState['parties-filter']?.includes('Slettede aktører');
@@ -43,16 +43,18 @@ export const PartiesOverviewPage = () => {
   const getPartiesToShow = () => {
     let partiesToShow = [] as PartyFieldsFragment[];
     if (noFiltersSelected) {
-      partiesToShow = normalParties;
+      return partiesToShow;
     }
     if (showGroups && !DisableFavoriteGroups) {
       return partiesToShow.filter((party) => party.partyType === 'Group');
     }
+    const companiesToShow = normalParties.filter((party) => party.partyType === 'Organization');
     if (showCompanies) {
-      partiesToShow = [...partiesToShow, ...normalParties.filter((party) => party.partyType === 'Organization')];
+      partiesToShow = [...partiesToShow, ...companiesToShow];
     }
+    const personsToShow = normalParties.filter((party) => party.partyType === 'Person');
     if (showPersons) {
-      partiesToShow = [...partiesToShow, ...normalParties.filter((party) => party.partyType === 'Person')];
+      partiesToShow = [...partiesToShow, ...personsToShow];
     }
     if (showDeletedParties) {
       partiesToShow = [...partiesToShow, ...deletedParties];
