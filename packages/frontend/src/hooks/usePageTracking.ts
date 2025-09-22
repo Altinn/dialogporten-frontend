@@ -6,7 +6,10 @@ export const usePageTracking = () => {
   const location = useLocation();
 
   useEffect(() => {
-    // Track page view on route change
+    if (!Analytics.isValidTrackablePage(location.pathname)) {
+      console.debug(`Skipping page tracking for route: ${location.pathname}`);
+      return;
+    }
     Analytics.trackPageView({
       url: window.location.href,
       pathname: location.pathname,

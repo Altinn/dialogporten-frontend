@@ -8,38 +8,59 @@ let applicationInsights: ApplicationInsights | null = null;
 
 const applicationInsightsEnabled = config.applicationInsightsInstrumentationKey && import.meta.env.PROD;
 
-const getPageNameFromPath = (pathname: string): string => {
+const pageMapping: Record<string, string> = {
+  [PageRoutes.inbox]: 'Inbox',
+  [PageRoutes.sent]: 'Sent Items',
+  [PageRoutes.drafts]: 'Drafts',
+  [PageRoutes.archive]: 'Archive',
+  [PageRoutes.bin]: 'Bin',
+  [PageRoutes.savedSearches]: 'Saved Searches',
+  [PageRoutes.about]: 'About',
+  [PageRoutes.profile]: 'Profile Overview',
+  [PageRoutes.partiesOverview]: 'Parties Management',
+  [PageRoutes.notifications]: 'Notification Settings',
+  [PageRoutes.settings]: 'User Settings',
+  [PageRoutes.access]: 'Access Management',
+  [PageRoutes.activities]: 'Activity Log',
+  [PageRoutes.authorize]: 'Authorization',
+  [PageRoutes.error]: 'Error Page',
+};
+
+const dynamicRoutePatterns = [
+  {
+    pattern: /^\/inbox\/[^/]+\/?$/,
+    pageName: 'Dialog Details',
+  },
+  // Add more dynamic route patterns here as needed
+  // {
+  //   pattern: /^\/profile\/[^/]+\/?$/,
+  //   pageName: 'Profile Item'
+  // },
+];
+
+/**
+ * Check if the given pathname is a valid trackable page
+ */
+const isValidTrackablePage = (pathname: string): boolean => {
   const cleanPath = pathname.split('?')[0].split('#')[0];
 
-  const pageMapping: Record<string, string> = {
-    [PageRoutes.inbox]: 'Inbox',
-    [PageRoutes.sent]: 'Sent Items',
-    [PageRoutes.drafts]: 'Drafts',
-    [PageRoutes.archive]: 'Archive',
-    [PageRoutes.bin]: 'Bin',
-    [PageRoutes.savedSearches]: 'Saved Searches',
-    [PageRoutes.about]: 'About',
-    [PageRoutes.profile]: 'Profile Overview',
-    [PageRoutes.partiesOverview]: 'Parties Management',
-    [PageRoutes.notifications]: 'Notification Settings',
-    [PageRoutes.settings]: 'User Settings',
-    [PageRoutes.access]: 'Access Management',
-    [PageRoutes.activities]: 'Activity Log',
-    [PageRoutes.authorize]: 'Authorization',
-    [PageRoutes.error]: 'Error Page',
-  };
+  // Check static routes
+  if (pageMapping[cleanPath]) {
+    return true;
+  }
 
-  const dynamicRoutePatterns = [
-    {
-      pattern: /^\/inbox\/[^/]+\/?$/,
-      pageName: 'Dialog Details',
-    },
-    // Add more dynamic route patterns here as needed
-    // {
-    //   pattern: /^\/profile\/[^/]+\/?$/,
-    //   pageName: 'Profile Item'
-    // },
-  ];
+  // Check dynamic routes
+  for (const { pattern } of dynamicRoutePatterns) {
+    if (pattern.test(cleanPath)) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+const getPageNameFromPath = (pathname: string): string => {
+  const cleanPath = pathname.split('?')[0].split('#')[0];
 
   if (pageMapping[cleanPath]) {
     return pageMapping[cleanPath];
@@ -63,8 +84,9 @@ export const trackPageView = (pageInfo: {
 }) => {
   if (!applicationInsights) return;
 
-  const currentUrl = pageInfo.url;
   const currentPath = pageInfo.pathname;
+
+  const currentUrl = pageInfo.url;
   const enhancedPageName = getPageNameFromPath(currentPath);
 
   const enhancedProperties = {
@@ -79,15 +101,20 @@ export const trackPageView = (pageInfo: {
     'route.state': pageInfo.state ? JSON.stringify(pageInfo.state) : '',
     'viewport.width': window.innerWidth,
     'viewport.height': window.innerHeight,
-    // Seeing issues with AI failing to calculate duration. Setting this to 0 until we see the need to have this information
+    // Explicitly set duration to 0 to avoid AI calculation errors on stale pages
     duration: 0,
   };
 
-  applicationInsights.trackPageView({
-    name: enhancedPageName,
-    uri: currentUrl,
-    properties: enhancedProperties,
-  });
+  try {
+    applicationInsights.trackPageView({
+      name: enhancedPageName,
+      uri: currentUrl,
+      properties: enhancedProperties,
+    });
+    console.debug(`Successfully tracked page view: ${enhancedPageName} (${currentPath})`);
+  } catch (error) {
+    console.error('Failed to track page view:', error, { pageInfo });
+  }
 };
 
 export const trackUserAction = (action: string, properties?: Record<string, string>) => {
@@ -255,11 +282,12 @@ export const trackFetchDependency = async (
 
 export const Analytics = {
   isEnabled: applicationInsightsEnabled,
-  trackPageView: trackPageView,
-  trackUserAction: trackUserAction,
-  trackDialogAction: trackDialogAction,
+  trackPageView: applicationInsightsEnabled ? trackPageView : noop,
+  trackUserAction: applicationInsightsEnabled ? trackUserAction : noop,
+  trackDialogAction: applicationInsightsEnabled ? trackDialogAction : noop,
   trackEvent: applicationInsights?.trackEvent.bind(applicationInsights) || noop,
   trackException: applicationInsights?.trackException.bind(applicationInsights) || noop,
   trackDependency: applicationInsights?.trackDependencyData.bind(applicationInsights) || noop,
-  trackFetchDependency: trackFetchDependency,
+  trackFetchDependency: applicationInsightsEnabled ? trackFetchDependency : noop,
+  isValidTrackablePage: applicationInsightsEnabled ? isValidTrackablePage : () => false,
 };
