@@ -134,7 +134,15 @@ export const CompanyNotificationSettings = ({
         )}
       </Fieldset>
       <ButtonGroup className={styles.buttonGroup}>
-        <Button type="submit">Lagre og avslutt</Button>
+        <button type="submit" style={{ display: 'none' }} />
+        <Button
+          onClick={(e) => {
+            const form = e.currentTarget.closest('form');
+            form?.requestSubmit();
+          }}
+        >
+          Lagre og avslutt
+        </Button>
         <Button variant="outline" onClick={onClose}>
           Avbryt
         </Button>

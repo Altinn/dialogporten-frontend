@@ -229,6 +229,29 @@ if (applicationInsightsEnabled) {
 
 const noop = () => {};
 
+// Mock functions for when analytics is disabled
+const mockTrackPageView = (_pageInfo: {
+  pathname: string;
+  search: string;
+  hash: string;
+  state: string;
+  url: string;
+}) => {};
+
+const mockTrackUserAction = (_action: string, _properties?: Record<string, string>) => {};
+
+const mockTrackDialogAction = (_action: string, _dialogId?: string, _properties?: Record<string, string>) => {};
+
+const mockTrackFetchDependency = async (
+  _name: string,
+  fetchPromise: Promise<Response>,
+  _startTime: number = Date.now(),
+): Promise<Response> => {
+  return fetchPromise;
+};
+
+const mockIsValidTrackablePage = (_pathname: string): boolean => false;
+
 // Enhanced helper function to track fetch requests with same operation ID
 export const trackFetchDependency = async (
   name: string,
@@ -282,12 +305,12 @@ export const trackFetchDependency = async (
 
 export const Analytics = {
   isEnabled: applicationInsightsEnabled,
-  trackPageView: applicationInsightsEnabled ? trackPageView : noop,
-  trackUserAction: applicationInsightsEnabled ? trackUserAction : noop,
-  trackDialogAction: applicationInsightsEnabled ? trackDialogAction : noop,
+  trackPageView: applicationInsightsEnabled ? trackPageView : mockTrackPageView,
+  trackUserAction: applicationInsightsEnabled ? trackUserAction : mockTrackUserAction,
+  trackDialogAction: applicationInsightsEnabled ? trackDialogAction : mockTrackDialogAction,
   trackEvent: applicationInsights?.trackEvent.bind(applicationInsights) || noop,
   trackException: applicationInsights?.trackException.bind(applicationInsights) || noop,
   trackDependency: applicationInsights?.trackDependencyData.bind(applicationInsights) || noop,
-  trackFetchDependency: applicationInsightsEnabled ? trackFetchDependency : noop,
-  isValidTrackablePage: applicationInsightsEnabled ? isValidTrackablePage : () => false,
+  trackFetchDependency: applicationInsightsEnabled ? trackFetchDependency : mockTrackFetchDependency,
+  isValidTrackablePage: applicationInsightsEnabled ? isValidTrackablePage : mockIsValidTrackablePage,
 };
