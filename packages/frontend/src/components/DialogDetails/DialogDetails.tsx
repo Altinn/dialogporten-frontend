@@ -282,7 +282,12 @@ export const DialogDetails = ({
       >
         <p>{dialog.summary}</p>
         {subscriptionOpened && (
-          <MainContentReference content={dialog.mainContentReference} dialogToken={dialog.dialogToken} id={dialog.id} />
+          <MainContentReference
+            sender={dialog.sender.name}
+            content={dialog.mainContentReference}
+            dialogToken={dialog.dialogToken}
+            id={dialog.id}
+          />
         )}
         {dialog.attachments.length > 0 && (
           <DialogAttachments
