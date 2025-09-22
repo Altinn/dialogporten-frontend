@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.70.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.70.0...v1.70.1) (2025-09-22)
+
+
+### Bug Fixes
+
+* Capitalize double names with dash ([#2745](https://github.com/Altinn/dialogporten-frontend/issues/2745)) ([9fe8800](https://github.com/Altinn/dialogporten-frontend/commit/9fe880091fbc58ff0bca6f430345499a9e2130ea))
+* **frontend:** make page tracking more robust ([#2760](https://github.com/Altinn/dialogporten-frontend/issues/2760)) ([04c24af](https://github.com/Altinn/dialogporten-frontend/commit/04c24afc39693886b3414e9ff73ea26e9c54ea6f))
+
 ## [1.70.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.69.0...v1.70.0) (2025-09-19)
 
 
