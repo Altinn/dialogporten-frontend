@@ -66,12 +66,6 @@ test.describe('Flattened parties and subparties', () => {
 
   test('Filters shows merged parties if sub party has same name as main party', async ({ page }) => {
     await page.getByRole('button', { name: 'Test Testesen' }).first().click();
-
-    // const menu = await page.getByRole('menu');
-    // await menu.hover();
-    // await page.mouse.wheel(0, 300);
-    // await page.getByRole('menu').locator('a').filter({ hasText: 'Alle virksomheter' }).waitFor();
-
     await page
       .getByTestId('inbox-toolbar')
       .getByRole('group')
@@ -87,6 +81,8 @@ test.describe('Flattened parties and subparties', () => {
       .filter({ hasText: 'Velg avsender' })
       .click();
 
-    await expect(page.getByTestId('inbox-toolbar').getByRole('group').getByText('Oslo kommune')).toBeVisible();
+    await expect(
+      page.getByTestId('filter-base-toolbar-filter-org').locator('span').filter({ hasText: 'Oslo kommune' }).nth(1),
+    ).toBeVisible();
   });
 });

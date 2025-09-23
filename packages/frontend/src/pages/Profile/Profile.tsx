@@ -1,4 +1,12 @@
-import { DashboardHeader, Divider, List, PageBase, PageNav, SettingsItem } from '@altinn/altinn-components';
+import {
+  DashboardHeader,
+  type DashboardIconProps,
+  Divider,
+  List,
+  PageBase,
+  PageNav,
+  SettingsItem,
+} from '@altinn/altinn-components';
 import { BellIcon, CogIcon } from '@navikt/aksel-icons';
 import { t } from 'i18next';
 import { Link } from 'react-router-dom';
@@ -26,11 +34,15 @@ export const Profile = () => {
           },
         ]}
       />
-
       <DashboardHeader
         loading={isLoading}
-        type="person"
-        name={toTitleCase(user?.party?.name) || ''}
+        icon={
+          {
+            type: 'person',
+            name: toTitleCase(user?.party?.name) || '',
+          } as DashboardIconProps
+        }
+        title={toTitleCase(user?.party?.name) || ''}
         description={`${t('profile.landing.ssn')} ${user?.party?.person?.ssn}`}
       >
         <List size="sm">

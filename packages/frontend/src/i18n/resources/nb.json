@@ -154,6 +154,7 @@
   "footer.nav.privacy_policy": "Personvern",
   "footer.nav.service_messages": "Driftsmeldinger",
   "inbox.filter.multiple.sender": "{count, plural, =0 {Velg avsender} one {# avsender} other {# avsendere}}",
+  "inbox.filter.multiple.status": "{count, plural, =0 {Velg status} one {# status} other {# statuser}}",
   "inbox.heading.attachments": "{count, plural, =0 {Ingen vedlegg} one {# vedlegg} other {# vedlegg}}",
   "inbox.heading.choose_all": "Velg alle",
   "inbox.heading.description.archive": "Dette er ikke et journal- og arkivsystem. Hvis en dialog blir oppdatert vil du finne den igjen i innboksen.",

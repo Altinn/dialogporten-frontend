@@ -14,7 +14,7 @@ test.describe('Sent and Awaiting status', () => {
   test('Can filter by awaiting status using status filter', async ({ page }) => {
     await page.getByRole('button', { name: 'add' }).click();
     await page.getByTestId('inbox-toolbar').getByRole('group').locator('a').filter({ hasText: 'Velg status' }).click();
-    await page.getByTestId('inbox-toolbar').getByRole('group').getByText('Til behandling').click();
+    await page.getByRole('menuitemcheckbox', { name: 'Til behandling' }).locator('div').click();
     await page.keyboard.press('Escape');
     expect(new URL(page.url()).searchParams.get('status')).toEqual('AWAITING');
     await expect(page.getByRole('heading', { name: 'Mock Dialog Awaiting', level: 2 })).toBeVisible();
@@ -23,7 +23,7 @@ test.describe('Sent and Awaiting status', () => {
   test('Can filter to show only awaiting status dialogs', async ({ page }) => {
     await page.getByRole('button', { name: 'add' }).click();
     await page.getByTestId('inbox-toolbar').getByRole('group').locator('a').filter({ hasText: 'Velg status' }).click();
-    await page.getByTestId('inbox-toolbar').getByRole('group').getByText('Til behandling').click();
+    await page.getByRole('menuitemcheckbox', { name: 'Til behandling' }).locator('div').click();
     await page.keyboard.press('Escape');
 
     expect(new URL(page.url()).searchParams.get('status')).toEqual('AWAITING');

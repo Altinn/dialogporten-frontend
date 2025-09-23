@@ -27,7 +27,6 @@ import { useAccounts } from './Accounts/useAccounts.tsx';
 import { useFooter } from './Footer';
 import { useGlobalMenu } from './GlobalMenu';
 import { useAutocomplete, useSearchString } from './Search';
-import { useWindowSize } from './useWindowSize.tsx';
 
 export const ProtectedPageLayout = () => {
   const { isAuthenticated } = useAuth();
@@ -87,8 +86,6 @@ export const PageLayout: React.FC = () => {
     }
   };
 
-  const windowSize = useWindowSize();
-
   const [isErrorState] = useGlobalState<boolean>(QUERY_KEYS.ERROR_STATE, false);
 
   const headerProps: HeaderProps = {
@@ -124,13 +121,7 @@ export const PageLayout: React.FC = () => {
         ...(accountSearch && {
           search: accountSearch,
         }),
-        menuItemsVirtual: {
-          isVirtualized: true,
-          scrollRefStyles: {
-            maxHeight: windowSize.isTabletOrSmaller ? 'calc(100vh - 14rem)' : 'calc(80vh - 10rem)',
-            paddingBottom: '0.5rem',
-          },
-        },
+        isVirtualized: true,
       },
       logoutButton: {
         label: t('word.log_out'),
