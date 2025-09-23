@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.71.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.71.1...v1.71.2) (2025-09-23)
+
+
+### Bug Fixes
+
+* **frontend:** use start and stop tracking to avoid timing issues ([#2766](https://github.com/Altinn/dialogporten-frontend/issues/2766)) ([e54d074](https://github.com/Altinn/dialogporten-frontend/commit/e54d074d25015b0054ec55729a721a0590aa6dac))
+
 ## [1.71.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.71.0...v1.71.1) (2025-09-23)
 
 
