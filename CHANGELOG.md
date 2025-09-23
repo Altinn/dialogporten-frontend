@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.71.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.70.1...v1.71.0) (2025-09-23)
+
+
+### Features
+
+* keyboard navigation for toolbar ([#2762](https://github.com/Altinn/dialogporten-frontend/issues/2762)) ([5c24632](https://github.com/Altinn/dialogporten-frontend/commit/5c2463225ff858032e3d7c1de97d01f5094b1c8c))
+* Showing deleted actors if chosen in filter on Parties profile page ([402c030](https://github.com/Altinn/dialogporten-frontend/commit/402c0305ab73f805795521f72c22cfd94deae965))
+
 ## [1.70.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.70.0...v1.70.1) (2025-09-22)
 
 
