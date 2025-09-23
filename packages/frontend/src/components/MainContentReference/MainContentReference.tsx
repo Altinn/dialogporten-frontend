@@ -1,8 +1,9 @@
 import { Typography } from '@altinn/altinn-components';
 import { useQuery } from '@tanstack/react-query';
 import { Html, Markdown } from 'embeddable-markdown-html';
-import { memo, useState } from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Analytics } from '../../analytics.ts';
 import { type DialogByIdDetails, EmbeddableMediaType } from '../../api/hooks/useDialogById.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import styles from './mainContentReference.module.css';
@@ -16,14 +17,19 @@ const isValidURL = (url: string) => {
   }
 };
 
-const getContent = (mediaType: EmbeddableMediaType, data: string, onContentError: () => void) => {
+const getContent = (mediaType: EmbeddableMediaType, data: string) => {
   switch (mediaType) {
     case EmbeddableMediaType.markdown:
       return (
         <Markdown
-          onError={(e) => {
-            console.error('Markdown error: ', e);
-            onContentError();
+          onError={(error: ErrorEvent) => {
+            Analytics.trackException({
+              exception: error.error,
+              properties: {
+                mediaType: 'markdown',
+                errorType: 'content_rendering',
+              },
+            });
           }}
         >
           {data}
@@ -32,9 +38,14 @@ const getContent = (mediaType: EmbeddableMediaType, data: string, onContentError
     case EmbeddableMediaType.html:
       return (
         <Html
-          onError={(e) => {
-            console.error('Html error: ', e);
-            onContentError();
+          onError={(e: ErrorEvent) => {
+            Analytics.trackException({
+              exception: e.error,
+              properties: {
+                mediaType: 'html',
+                errorType: 'content_rendering',
+              },
+            });
           }}
         >
           {data}
@@ -52,7 +63,7 @@ export const MainContentReference = memo(
     id,
   }: { content: DialogByIdDetails['mainContentReference']; dialogToken: string; id: string }) => {
     const { t } = useTranslation();
-    const [hasContentError, setHasContentError] = useState(false);
+
     const validURL = content?.url ? isValidURL(content.url) : false;
     const { data, isSuccess, isError } = useQuery({
       queryKey: [QUERY_KEYS.MAIN_CONTENT_REFERENCE, id],
@@ -65,7 +76,17 @@ export const MainContentReference = memo(
           },
         });
         if (!response.ok) {
-          throw new Error(`Failed to fetch content: ${response.status} ${response.statusText}`);
+          const error = new Error(`Failed to fetch content: ${response.status} ${response.statusText}`);
+          Analytics.trackException({
+            exception: error,
+            properties: {
+              url: content!.url,
+              status: response.status,
+              statusText: response.statusText,
+              errorType: 'fetch_error',
+            },
+          });
+          throw error;
         }
         return response.text();
       },
@@ -77,14 +98,10 @@ export const MainContentReference = memo(
       return null;
     }
 
-    if (isError || hasContentError) {
+    if (isError) {
       return <Typography className={styles.mainContentReference}>{t('main_content_reference.error')}</Typography>;
     }
 
-    return (
-      <Typography className={styles.mainContentReference}>
-        {getContent(content.mediaType, data, () => setHasContentError(true))}
-      </Typography>
-    );
+    return <Typography className={styles.mainContentReference}>{getContent(content.mediaType, data)}</Typography>;
   },
 );
