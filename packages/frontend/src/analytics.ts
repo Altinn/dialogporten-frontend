@@ -75,7 +75,27 @@ const getPageNameFromPath = (pathname: string): string => {
   return cleanPath.replace(/^\//, '').replace(/\//g, ' > ') || 'Unknown Page';
 };
 
-export const trackPageView = (pageInfo: {
+export const startPageTracking = (pageInfo: {
+  pathname: string;
+  search: string;
+  hash: string;
+  state: string;
+  url: string;
+}) => {
+  if (!applicationInsights) return;
+
+  const currentPath = pageInfo.pathname;
+
+  const enhancedPageName = getPageNameFromPath(currentPath);
+
+  try {
+    applicationInsights.startTrackPage(enhancedPageName);
+  } catch (error) {
+    console.error('Failed to start page tracking:', error, { pageInfo });
+  }
+};
+
+export const stopPageTracking = (pageInfo: {
   pathname: string;
   search: string;
   hash: string;
@@ -99,21 +119,14 @@ export const trackPageView = (pageInfo: {
     'route.search': pageInfo.search,
     'route.hash': pageInfo.hash,
     'route.state': pageInfo.state ? JSON.stringify(pageInfo.state) : '',
-    'viewport.width': window.innerWidth,
-    'viewport.height': window.innerHeight,
-    // Explicitly set duration to 0 to avoid AI calculation errors on stale pages
-    duration: 0,
+    'viewport.width': String(window.innerWidth),
+    'viewport.height': String(window.innerHeight),
   };
 
   try {
-    applicationInsights.trackPageView({
-      name: enhancedPageName,
-      uri: currentUrl,
-      properties: enhancedProperties,
-    });
-    console.debug(`Successfully tracked page view: ${enhancedPageName} (${currentPath})`);
+    applicationInsights.stopTrackPage(enhancedPageName, currentUrl, enhancedProperties);
   } catch (error) {
-    console.error('Failed to track page view:', error, { pageInfo });
+    console.error('Failed to stop page tracking:', error, { pageInfo });
   }
 };
 
@@ -158,7 +171,7 @@ if (applicationInsightsEnabled) {
         enablePerfMgr: false,
         disableCookiesUsage: false,
         // To avoid issue where AI tries to calculate duration of page view, and throws an error
-        overridePageViewDuration: true,
+        overridePageViewDuration: false,
         samplingPercentage: 100,
         appId: 'arbeidsflate-frontend',
         enableDebug: true,
@@ -230,7 +243,15 @@ if (applicationInsightsEnabled) {
 const noop = () => {};
 
 // Mock functions for when analytics is disabled
-const mockTrackPageView = (_pageInfo: {
+const mockStartPageTracking = (_pageInfo: {
+  pathname: string;
+  search: string;
+  hash: string;
+  state: string;
+  url: string;
+}) => {};
+
+const mockStopPageTracking = (_pageInfo: {
   pathname: string;
   search: string;
   hash: string;
@@ -305,7 +326,8 @@ export const trackFetchDependency = async (
 
 export const Analytics = {
   isEnabled: applicationInsightsEnabled,
-  trackPageView: applicationInsightsEnabled ? trackPageView : mockTrackPageView,
+  startPageTracking: applicationInsightsEnabled ? startPageTracking : mockStartPageTracking,
+  stopPageTracking: applicationInsightsEnabled ? stopPageTracking : mockStopPageTracking,
   trackUserAction: applicationInsightsEnabled ? trackUserAction : mockTrackUserAction,
   trackDialogAction: applicationInsightsEnabled ? trackDialogAction : mockTrackDialogAction,
   trackEvent: applicationInsights?.trackEvent.bind(applicationInsights) || noop,
