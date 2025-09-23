@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.71.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.71.0...v1.71.1) (2025-09-23)
+
+
+### Bug Fixes
+
+* e2e test ([#2764](https://github.com/Altinn/dialogporten-frontend/issues/2764)) ([b371b8a](https://github.com/Altinn/dialogporten-frontend/commit/b371b8ad32a648dbadc4f9a25f05251a97144006))
+
 ## [1.71.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.70.1...v1.71.0) (2025-09-23)
 
 
