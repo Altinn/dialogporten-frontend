@@ -41,7 +41,7 @@ export const PageLayout: React.FC = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { searchValue, setSearchValue, onClear } = useSearchString();
-  const { selectedProfile, selectedParties, parties, allOrganizationsSelected, currentEndUser } = useParties();
+  const { selectedProfile, selectedParties, parties, allOrganizationsSelected } = useParties();
   const { autocomplete } = useAutocomplete({ selectedParties: selectedParties, searchValue });
 
   const { accounts, selectedAccount, accountSearch, accountGroups, onSelectAccount } = useAccounts({
@@ -114,7 +114,6 @@ export const PageLayout: React.FC = () => {
       menu: desktopMenu,
       onSelectAccount: (account: string) => onSelectAccount(account, PageRoutes.inbox),
       backLabel: t('word.back'),
-      currentEndUserLabel: t('parties.current_end_user', { name: currentEndUser?.name ?? 'n/a' }),
       accountMenu: {
         items: accounts,
         groups: accountGroups,

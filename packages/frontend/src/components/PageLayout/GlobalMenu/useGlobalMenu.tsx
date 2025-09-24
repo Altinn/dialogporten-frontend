@@ -14,6 +14,7 @@ import {
 } from '@navikt/aksel-icons';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
+import { useParties } from '../../../api/hooks/useParties.ts';
 import { createMessageBoxLink } from '../../../auth';
 import { pruneSearchQueryParams } from '../../../pages/Inbox/queryParams.ts';
 import { useProfile } from '../../../pages/Profile';
@@ -66,6 +67,7 @@ const createMenuItemComponent =
 
 export const useGlobalMenu = (): UseGlobalMenuProps => {
   const { t } = useTranslation();
+  const { currentEndUser } = useParties();
   const { pathname, search: currentSearchQuery, state } = useLocation();
   const fromView = (state as { fromView?: string })?.fromView;
   const { user } = useProfile();
@@ -218,7 +220,9 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
       ],
     },
   ];
-  const menuItems = pathname.includes(PageRoutes.profile) ? profileItems : [...inboxItems, ...inboxShortcuts];
+  const menuItems = pathname.includes(PageRoutes.profile)
+    ? profileItems
+    : [...inboxItems, ...inboxShortcuts, { groupId: 'profile-shortcut', hidden: true }];
 
   const menuGroups = {
     shortcuts: {
@@ -229,6 +233,9 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
     },
     global: {
       divider: false,
+    },
+    'profile-shortcut': {
+      title: t('parties.current_end_user', { name: currentEndUser?.name ?? 'n/a' }),
     },
   };
 
