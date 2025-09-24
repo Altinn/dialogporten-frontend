@@ -64,19 +64,9 @@ export const CompanyDetails = ({
         isCurrentEndUser={isCurrentEndUser || false}
       />
       <Divider />
-      {!isLoadingNotificaitonSettings && notificationSettingsForParty ? (
+      {!isLoadingNotificaitonSettings && (
         <PartyDetailsSetting
           notificationSetting={notificationSettingsForParty}
-          setNotificationParty={() => setNotificationParty(party as NotificationAccountsType)}
-        />
-      ) : (
-        <PartyDetailsSetting
-          key={id}
-          notificationSetting={{
-            partyUuid: id,
-            emailAddress: '',
-            phoneNumber: '',
-          }}
           setNotificationParty={() => setNotificationParty(party as NotificationAccountsType)}
         />
       )}

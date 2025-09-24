@@ -1,13 +1,11 @@
 import {
   type AccountListItemProps,
   type AccountListItemType,
-  Avatar,
   type AvatarSize,
   type AvatarType,
   type BadgeProps,
   Typography,
 } from '@altinn/altinn-components';
-import { ArrowDownRightIcon } from '@navikt/aksel-icons';
 import type { NotificationAccountsType } from '../NotificationsPage/AccountSettings';
 import { urnToOrgNr } from './partyFieldToAccountList';
 
@@ -20,31 +18,9 @@ export const getPartyIcon = ({
     return null;
   }
 
-  if (isSubparty) {
-    return (
-      <span style={{ position: 'relative' }}>
-        <Avatar name={partyName} type={partyType} />
-        <div
-          data-theme="default"
-          style={{
-            display: 'flex',
-            position: 'absolute',
-            fontSize: '.5em',
-            bottom: 0,
-            right: 0,
-            padding: '.125em',
-            marginBottom: '-.25em',
-            marginRight: '-.5em',
-          }}
-        >
-          <ArrowDownRightIcon style={{ fontSize: '1em' }} aria-label="Subunit" />
-        </div>
-      </span>
-    );
-  }
   return {
     type: partyType,
-
+    variant: isSubparty ? 'outline' : 'default',
     name: partyName,
     size: 'md' as AvatarSize,
   };

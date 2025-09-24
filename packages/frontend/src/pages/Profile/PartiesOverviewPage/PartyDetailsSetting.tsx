@@ -5,12 +5,12 @@ import type { NotificationAccountsType } from '../NotificationsPage/AccountSetti
 import { getEnabledNotificationsBadge } from './partyFieldToNotificationsList';
 
 interface PartyDetailsSettingProps {
-  notificationSetting: NotificationSettingsResponse;
+  notificationSetting?: NotificationSettingsResponse;
   setNotificationParty: (notificationParty: NotificationAccountsType) => void;
 }
 
 export const PartyDetailsSetting = ({ notificationSetting, setNotificationParty }: PartyDetailsSettingProps) => {
-  const { emailAddress: alertEmailAddress, phoneNumber: alertPhoneNumber } = notificationSetting;
+  const { emailAddress: alertEmailAddress, phoneNumber: alertPhoneNumber } = notificationSetting || {};
   const badge = getEnabledNotificationsBadge(alertEmailAddress ?? '', alertPhoneNumber ?? '');
   const title = alertPhoneNumber || alertEmailAddress ? 'Varslinger er på' : 'Ingen varslinger';
   const value =
