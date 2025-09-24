@@ -220,9 +220,7 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
       ],
     },
   ];
-  const menuItems = pathname.includes(PageRoutes.profile)
-    ? profileItems
-    : [...inboxItems, ...inboxShortcuts, { groupId: 'profile-shortcut', hidden: true }];
+  const menuItems = pathname.includes(PageRoutes.profile) ? profileItems : [...inboxItems, ...inboxShortcuts];
 
   const menuGroups = {
     shortcuts: {
@@ -256,14 +254,17 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
 
   const mobileMenu: MenuProps = {
     ...menu,
-    items: menuItems.map((item, index) => ({
-      ...item,
-      items: (item.items || []).map((item) => ({
+    items: [
+      ...menuItems.map((item, index) => ({
         ...item,
+        items: (item.items || []).map((item) => ({
+          ...item,
+          dataTestId: (item.dataTestId ?? '') + '-mobile-menu' + (item.dataTestId ? '' : '-' + index),
+        })),
         dataTestId: (item.dataTestId ?? '') + '-mobile-menu' + (item.dataTestId ? '' : '-' + index),
       })),
-      dataTestId: (item.dataTestId ?? '') + '-mobile-menu' + (item.dataTestId ? '' : '-' + index),
-    })),
+      { groupId: 'profile-shortcut', hidden: true },
+    ],
     defaultIconTheme: 'tinted',
   };
 
