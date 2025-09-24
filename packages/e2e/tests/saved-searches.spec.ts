@@ -12,7 +12,7 @@ test.describe('Saved Searches', () => {
 
   test('should save, edit, and delete a search', async ({ page, baseURL }) => {
     await page.getByRole('button', { name: 'Prøv ny innboks' }).click();
-    await page.getByRole('button', { name: 'Close tour' }).click();
+    await page.getByRole('button', { name: 'Lukk' }).click();
 
     const toolbarArea = page.getByTestId('inbox-toolbar');
     await toolbarArea.getByRole('button', { name: 'add' }).click();
