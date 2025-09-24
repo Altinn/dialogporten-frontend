@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.71.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.71.3...v1.71.4) (2025-09-24)
+
+
+### Bug Fixes
+
+* remove unwanted logged in label in sidebar ([#2772](https://github.com/Altinn/dialogporten-frontend/issues/2772)) ([05dd0e5](https://github.com/Altinn/dialogporten-frontend/commit/05dd0e5005c8e68b78bf9acdf1b56bfa878aae39))
+
 ## [1.71.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.71.2...v1.71.3) (2025-09-24)
 
 
