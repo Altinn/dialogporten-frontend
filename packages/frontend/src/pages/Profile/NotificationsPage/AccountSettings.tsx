@@ -1,4 +1,4 @@
-import { Heading, SettingsList, SettingsSection } from '@altinn/altinn-components';
+import { Heading, SettingsList } from '@altinn/altinn-components';
 import { useQueryClient } from '@tanstack/react-query';
 import type { NotificationSettingsResponse, PartyFieldsFragment } from 'bff-types-generated';
 import { useState } from 'react';
@@ -25,7 +25,7 @@ export const AccountSettings = () => {
 
   const groups = partiesWithNotificationSettings.reduce<Record<string, { title: string }>>((acc, item) => {
     if (!acc[item.partyUuid]) {
-      acc[item.partyUuid] = { title: item.name };
+      acc[item.partyUuid] = { title: '' };
     }
     return acc;
   }, {});
@@ -37,24 +37,22 @@ export const AccountSettings = () => {
   return (
     <>
       <Heading size="lg">{t('profile.notifications.heading_per_actor')}</Heading>
-      <SettingsSection spacing={6}>
-        <SettingsList
-          groups={groups}
-          items={partyFieldFragmentToNotificationsListItem({
-            flattenedParties: partiesWithNotificationSettings,
-            setNotificationParty,
-          })}
+      <SettingsList
+        groups={groups}
+        items={partyFieldFragmentToNotificationsListItem({
+          flattenedParties: partiesWithNotificationSettings,
+          setNotificationParty,
+        })}
+      />
+      {isLoadingPartiesWithNotificationSettings ? (
+        <div>Loading...</div>
+      ) : (
+        <CompanyNotificationSettingsModal
+          notificationParty={notificationParty}
+          setNotificationParty={setNotificationParty}
+          onSave={onSave}
         />
-        {isLoadingPartiesWithNotificationSettings ? (
-          <div>Loading...</div>
-        ) : (
-          <CompanyNotificationSettingsModal
-            notificationParty={notificationParty}
-            setNotificationParty={setNotificationParty}
-            onSave={onSave}
-          />
-        )}
-      </SettingsSection>
+      )}
     </>
   );
 };

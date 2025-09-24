@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.72.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.71.4...v1.72.0) (2025-09-24)
+
+
+### Features
+
+* Implemented new design for subparties ([5f02ae1](https://github.com/Altinn/dialogporten-frontend/commit/5f02ae142fc05a80c15a5717f03cf75701fcaa47))
+
+
+### Bug Fixes
+
+* Focus trap for tour popover og modal esc support ([#2769](https://github.com/Altinn/dialogporten-frontend/issues/2769)) ([4b8fe7c](https://github.com/Altinn/dialogporten-frontend/commit/4b8fe7c5935466569f26b9acedb1f0bd5663e8da))
+
 ## [1.71.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.71.3...v1.71.4) (2025-09-24)
 
 
