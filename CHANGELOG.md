@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.71.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.71.2...v1.71.3) (2025-09-24)
+
+
+### Bug Fixes
+
+* reintroduce logged in as label in global menu after it disappeared because of api changes ([#2770](https://github.com/Altinn/dialogporten-frontend/issues/2770)) ([325e46c](https://github.com/Altinn/dialogporten-frontend/commit/325e46c0183c160e3cddcb8c9ae156571f5da926))
+
 ## [1.71.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.71.1...v1.71.2) (2025-09-23)
 
 
