@@ -1,8 +1,8 @@
-import { useQuery } from '@tanstack/react-query';
 import type { NotificationSettingsResponse } from 'bff-types-generated';
 import { useMemo } from 'react';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { getNotificationsettingsByUuid, updateNotificationsetting } from '../../api/queries.ts';
+import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import type { NotificationAccountsType } from './NotificationsPage/AccountSettings.tsx';
 import { flattenParties } from './PartiesOverviewPage/partyFieldToNotificationsList.tsx';
@@ -44,31 +44,30 @@ export const usePartiesWithNotificationSettings = () => {
       .join(',');
   }, [parties]);
 
-  const { data: partiesWithNotificationSettings = [], isLoading: isLoadingNotificationSettings } = useQuery<
-    NotificationAccountsType[]
-  >({
-    queryKey: [QUERY_KEYS.PROFILE_PARTIES_WITH_NOTIFICATION_SETTINGS, 'all-parties', partiesKey],
-    queryFn: async () => {
-      if (!parties?.length) return [];
+  const { data: partiesWithNotificationSettings = [], isLoading: isLoadingNotificationSettings } =
+    useAuthenticatedQuery<NotificationAccountsType[]>({
+      queryKey: [QUERY_KEYS.PROFILE_PARTIES_WITH_NOTIFICATION_SETTINGS, 'all-parties', partiesKey],
+      queryFn: async () => {
+        if (!parties?.length) return [];
 
-      const filteredParties = flattenParties(parties)
-        .filter((party) => !party.isCurrentEndUser)
-        .filter((party) => party.partyType === 'Organization');
+        const filteredParties = flattenParties(parties)
+          .filter((party) => !party.isCurrentEndUser)
+          .filter((party) => party.partyType === 'Organization');
 
-      const partiesWithSettings = await Promise.all(
-        filteredParties.map(async (party) => {
-          const data = await getNotificationsettingsByUuid(party.partyUuid);
-          const notificationSettings = (data?.notificationsettingsByUuid as NotificationSettingsResponse) || null;
-          return { ...party, notificationSettings, key: party.partyUuid };
-        }),
-      );
+        const partiesWithSettings = await Promise.all(
+          filteredParties.map(async (party) => {
+            const data = await getNotificationsettingsByUuid(party.partyUuid);
+            const notificationSettings = (data?.notificationsettingsByUuid as NotificationSettingsResponse) || null;
+            return { ...party, notificationSettings, key: party.partyUuid };
+          }),
+        );
 
-      return partiesWithSettings;
-    },
-    enabled: !!parties?.length && !isLoadingParties,
-    refetchOnWindowFocus: false,
-    staleTime: 1000 * 60 * 10,
-  });
+        return partiesWithSettings;
+      },
+      enabled: !!parties?.length && !isLoadingParties,
+      refetchOnWindowFocus: false,
+      staleTime: 1000 * 60 * 10,
+    });
 
   const uniqueEmailAddresses: GroupedEmailAddressType[] = useMemo(() => {
     const emailMap = new Map<string, UniqueEmailAddressType[]>();

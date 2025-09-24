@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import type React from 'react';
-import { useRef } from 'react';
 import { createContext, useContext, useEffect } from 'react';
 import { getCurrentURL, getIsAuthenticated, getStoredURL, removeStoredURL, saveURL } from '../../auth';
 
@@ -11,19 +10,10 @@ interface AuthContextProps {
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const lastFocusRef = useRef(0);
   const { data: isAuthenticated, isFetchedAfterMount } = useQuery({
     queryKey: ['isAuthenticated'],
     queryFn: async () => getIsAuthenticated(),
     refetchInterval: 30 * 1000,
-    refetchOnWindowFocus: () => {
-      const now = Date.now();
-      if (now - lastFocusRef.current > 10 * 1000) {
-        lastFocusRef.current = now;
-        return true;
-      }
-      return false;
-    },
     retry: 3,
   });
 

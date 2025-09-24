@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import type { GroupObject, ProfileQuery, User } from 'bff-types-generated';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,10 +9,11 @@ import {
   getNotificationsettingsByUuid,
   profile,
 } from '../../api/queries.ts';
+import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 
 export const useProfile = () => {
-  const { data, isLoading } = useQuery<ProfileQuery>({
+  const { data, isLoading } = useAuthenticatedQuery<ProfileQuery>({
     queryKey: [QUERY_KEYS.PROFILE],
     queryFn: () => profile(),
     refetchOnWindowFocus: false,

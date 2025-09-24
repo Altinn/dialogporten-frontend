@@ -6,7 +6,7 @@ import {
 } from '@altinn/altinn-components';
 import type { QueryItemProps } from '@altinn/altinn-components';
 import type { EditableBookmarkProps } from '@altinn/altinn-components/dist/types/lib/components';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   DialogStatus,
   type SavedSearchData,
@@ -21,6 +21,7 @@ import { Link, type LinkProps } from 'react-router-dom';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { createSavedSearch, deleteSavedSearch, fetchSavedSearches, updateSavedSearch } from '../../api/queries.ts';
 import { getOrganization } from '../../api/utils/organizations.ts';
+import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useFormatDistance } from '../../i18n/useDateFnsLocale.tsx';
 import { DateFilterOption } from '../Inbox/filters.ts';
@@ -142,7 +143,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
   const queryClient = useQueryClient();
   const { openSnackbar } = useSnackbar();
 
-  const { data, isLoading, isSuccess } = useQuery<SavedSearchesQuery>({
+  const { data, isLoading, isSuccess } = useAuthenticatedQuery<SavedSearchesQuery>({
     queryKey: [QUERY_KEYS.SAVED_SEARCHES, selectedPartyIds],
     queryFn: fetchSavedSearches,
     retry: 3,
