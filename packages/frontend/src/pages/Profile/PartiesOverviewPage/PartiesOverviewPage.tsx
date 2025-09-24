@@ -36,10 +36,6 @@ export const PartiesOverviewPage = () => {
   });
   const DisableFavoriteGroups = useFeatureFlag(FeatureFlagKeys.DisableFavoriteGroups);
 
-  const showDeletedParties = filterState['parties-filter']?.includes(FILTER_VALUES.DELETED_PARTIES);
-  const showGroups = filterState['parties-filter']?.includes(FILTER_VALUES.GROUPS);
-  const showCompanies = filterState['parties-filter']?.includes(FILTER_VALUES.COMPANIES);
-  const showPersons = filterState['parties-filter']?.includes(FILTER_VALUES.PERSONS);
   const noFiltersSelected = !filterState['parties-filter'] || filterState['parties-filter']?.length === 0;
   const { groups, user, addFavoriteParty, deleteFavoriteParty, favoritesGroup } = useProfile();
   const navigate = useNavigate();
@@ -49,6 +45,10 @@ export const PartiesOverviewPage = () => {
   usePageTitle({ baseTitle: t('component.parties_overview') });
 
   const filteredParties = React.useMemo(() => {
+    const showDeletedParties = filterState['parties-filter']?.includes(FILTER_VALUES.DELETED_PARTIES);
+    const showGroups = filterState['parties-filter']?.includes(FILTER_VALUES.GROUPS);
+    const showCompanies = filterState['parties-filter']?.includes(FILTER_VALUES.COMPANIES);
+    const showPersons = filterState['parties-filter']?.includes(FILTER_VALUES.PERSONS);
     let filteredParties: PartyFieldsFragment[] = [];
     if (noFiltersSelected) {
       return filteredParties;
@@ -73,14 +73,12 @@ export const PartiesOverviewPage = () => {
     return filteredParties;
   }, [
     noFiltersSelected,
-    showGroups,
     DisableFavoriteGroups,
     normalParties,
-    showCompanies,
-    showPersons,
-    showDeletedParties,
+    filterState,
     deletedParties,
     searchValue,
+    FILTER_VALUES,
   ]);
 
   const toggleExpanded = (id: string) => {
