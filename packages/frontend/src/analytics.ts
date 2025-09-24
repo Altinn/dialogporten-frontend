@@ -181,6 +181,10 @@ if (applicationInsightsEnabled) {
     console.info('Application Insights initialized successfully');
 
     applicationInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
+      envelope.tags = envelope.tags || {};
+      envelope.tags['ai.cloud.role'] = 'frontend';
+      envelope.tags['ai.cloud.roleInstance'] = 'frontend';
+
       switch (envelope.baseType) {
         case 'RemoteDependencyData': {
           const dependencyData = envelope.baseData;
@@ -188,7 +192,6 @@ if (applicationInsightsEnabled) {
 
           if (backendTraceId) {
             // This only affects THIS specific telemetry item
-            envelope.tags = envelope.tags || {};
             envelope.tags['ai.operation.id'] = backendTraceId;
             envelope.tags['ai.operation.parentId'] = `|${backendTraceId}.${Date.now()}`;
           }
