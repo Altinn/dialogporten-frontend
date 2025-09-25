@@ -1,7 +1,7 @@
 import { Button, ButtonGroup, Fieldset, Switch, TextField } from '@altinn/altinn-components';
 import { useState } from 'react';
 import { deleteNotificationsetting, updateNotificationsetting } from '../../../api/queries';
-import type { NotificationAccountsType } from '../NotificationsPage/AccountSettings';
+import type { NotificationAccountsType } from '../NotificationsPage/NotificationsPage';
 import { useProfile } from '../useProfile';
 import styles from './companyNotificationSettings.module.css';
 

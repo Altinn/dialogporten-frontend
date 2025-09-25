@@ -6,7 +6,7 @@ import {
   type BadgeProps,
   Typography,
 } from '@altinn/altinn-components';
-import type { NotificationAccountsType } from '../NotificationsPage/AccountSettings';
+import type { NotificationAccountsType } from '../NotificationsPage/NotificationsPage';
 import { urnToOrgNr } from './partyFieldToAccountList';
 
 export const getPartyIcon = ({

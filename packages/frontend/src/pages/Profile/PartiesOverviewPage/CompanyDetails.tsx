@@ -12,8 +12,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import { useState } from 'react';
 import { QUERY_KEYS } from '../../../constants/queryKeys';
-import type { NotificationAccountsType } from '../NotificationsPage/AccountSettings';
 import { CompanyNotificationSettingsModal } from '../NotificationsPage/CompanyNotificationSettingsModal';
+import type { NotificationAccountsType } from '../NotificationsPage/NotificationsPage';
 import { useNotificationSettingsForParty } from '../useNotificationSettingsForParty';
 import { PartyDetailsSetting } from './PartyDetailsSetting';
 

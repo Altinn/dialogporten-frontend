@@ -4,7 +4,7 @@ import { useParties } from '../../api/hooks/useParties.ts';
 import { getNotificationsettingsByUuid, updateNotificationsetting } from '../../api/queries.ts';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
-import type { NotificationAccountsType } from './NotificationsPage/AccountSettings.tsx';
+import type { NotificationAccountsType } from './NotificationsPage/NotificationsPage.tsx';
 import { flattenParties } from './PartiesOverviewPage/partyFieldToNotificationsList.tsx';
 
 export interface UniqueEmailAddressType {

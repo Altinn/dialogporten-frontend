@@ -1,7 +1,7 @@
 import { type AvatarProps, ModalBase, ModalBody, ModalHeader, SettingsItem } from '@altinn/altinn-components';
 import { CompanyNotificationSettings } from '../PartiesOverviewPage/CompanyNotificationSettings';
 import { urnToOrgNr } from '../PartiesOverviewPage/partyFieldToAccountList';
-import type { NotificationAccountsType } from './AccountSettings';
+import type { NotificationAccountsType } from './NotificationsPage';
 
 interface CompanyNotificationSettingsModalProps {
   notificationParty: NotificationAccountsType | null;

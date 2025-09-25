@@ -1,7 +1,7 @@
 import { type BadgeProps, List, SettingsItem } from '@altinn/altinn-components';
 import { BellIcon } from '@navikt/aksel-icons';
 import type { NotificationSettingsResponse } from 'bff-types-generated';
-import type { NotificationAccountsType } from '../NotificationsPage/AccountSettings';
+import type { NotificationAccountsType } from '../NotificationsPage/NotificationsPage';
 import { getEnabledNotificationsBadge } from './partyFieldToNotificationsList';
 
 interface PartyDetailsSettingProps {
