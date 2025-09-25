@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.72.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.72.0...v1.72.1) (2025-09-25)
+
+
+### Bug Fixes
+
+* broken e2e tests after aria label change on close button ([#2785](https://github.com/Altinn/dialogporten-frontend/issues/2785)) ([5234bb3](https://github.com/Altinn/dialogporten-frontend/commit/5234bb3e094f6e640289f94e78e0e5cabb9233e8))
+* **frontend:** make sure we can identify the app in AI easier ([#2781](https://github.com/Altinn/dialogporten-frontend/issues/2781)) ([d689179](https://github.com/Altinn/dialogporten-frontend/commit/d6891794ed298dd42950cabdc03d90698b39063c))
+
 ## [1.72.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.71.4...v1.72.0) (2025-09-24)
 
 
