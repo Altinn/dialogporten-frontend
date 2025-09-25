@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.72.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.72.1...v1.72.2) (2025-09-25)
+
+
+### Bug Fixes
+
+* add authenticated query hooks and improve token handling ([#2783](https://github.com/Altinn/dialogporten-frontend/issues/2783)) ([efc7625](https://github.com/Altinn/dialogporten-frontend/commit/efc7625f0c6c6261cfe5b301b39e1290f01080f7))
+
 ## [1.72.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.72.0...v1.72.1) (2025-09-25)
 
 
