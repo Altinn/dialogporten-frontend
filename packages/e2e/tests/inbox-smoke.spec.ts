@@ -16,7 +16,7 @@ test.describe('Inbox smoke tests', () => {
 
   test('should fetch dialogs and open correctly', async ({ page, baseURL }) => {
     await page.getByRole('button', { name: 'Prøv ny innboks' }).click();
-    await page.getByRole('button', { name: 'Close tour' }).click();
+    await page.getByRole('button', { name: 'Lukk' }).click();
 
     await expect(page.getByRole('link', { name: 'BACK OFF! Dette er en' })).toBeVisible();
     await page.getByRole('link', { name: 'BACK OFF! Dette er en' }).click();
