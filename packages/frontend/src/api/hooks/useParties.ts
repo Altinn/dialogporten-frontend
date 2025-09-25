@@ -1,7 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import { useEffect, useMemo } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
+import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import {
   getSelectedAllPartiesFromQueryParams,
@@ -76,7 +76,7 @@ export const useParties = (): UsePartiesOutput => {
     }
   };
 
-  const { data, isLoading, isSuccess, isError } = useQuery<PartiesResult>({
+  const { data, isLoading, isSuccess, isError } = useAuthenticatedQuery<PartiesResult>({
     queryKey: [QUERY_KEYS.PARTIES],
     queryFn: fetchParties,
     staleTime: Number.POSITIVE_INFINITY,

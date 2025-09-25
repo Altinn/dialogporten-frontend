@@ -350,7 +350,7 @@ const plugin: FastifyPluginAsync<CustomOICDPluginOptions> = async (fastify, opti
       const stateIsAMatch = storedStateTruth === receivedState && storedStateTruth !== '';
 
       if (!stateIsAMatch) {
-        reply.status(401).send('State mismatch');
+        reply.redirect('/api/login');
         return;
       }
 

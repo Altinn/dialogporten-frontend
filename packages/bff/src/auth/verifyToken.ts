@@ -48,7 +48,12 @@ export const refreshToken = async (request: FastifyRequest) => {
   }
 };
 
-type ValidationStatus = 'refresh_token_expired' | 'refreshed' | 'missing_token' | 'access_token_valid';
+type ValidationStatus =
+  | 'refresh_token_expired'
+  | 'refreshed'
+  | 'missing_token'
+  | 'access_token_valid'
+  | 'access_token_invalid';
 
 /**
  * Checks the validity of the session token in the request and optionally refreshes the token if necessary.
@@ -93,7 +98,7 @@ const getIsTokenValid = async (
     }
   }
 
-  return isAccessTokenValid ? 'access_token_valid' : 'refresh_token_expired';
+  return isAccessTokenValid ? 'access_token_valid' : 'access_token_invalid';
 };
 
 const plugin: FastifyPluginAsync = async (fastify, _) => {
