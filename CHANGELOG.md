@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.74.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.73.0...v1.74.0) (2025-09-26)
+
+
+### Features
+
+* Introduce bankruptcy dialogs group and put on top of the dialog list ([#2794](https://github.com/Altinn/dialogporten-frontend/issues/2794)) ([724935c](https://github.com/Altinn/dialogporten-frontend/commit/724935ce42e0af77c7017ae2a9bb58b63ab79a63))
+
+
+### Bug Fixes
+
+* display service owners with name for preferred locale ([#2802](https://github.com/Altinn/dialogporten-frontend/issues/2802)) ([1f21aa6](https://github.com/Altinn/dialogporten-frontend/commit/1f21aa65274683d290455b15036d9e64172dc828))
+* Using test API for personal notification settings in all env except in prod ([48e4bbb](https://github.com/Altinn/dialogporten-frontend/commit/48e4bbba133bb601366abc7b303da53ceaf7018e))
+
 ## [1.73.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.72.2...v1.73.0) (2025-09-26)
 
 
