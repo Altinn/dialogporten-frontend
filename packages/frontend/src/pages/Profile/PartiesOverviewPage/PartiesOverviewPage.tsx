@@ -1,15 +1,15 @@
 import {
   AccountList,
   type AvatarProps,
-  formatDisplayName,
   type FilterState,
-  type ToolbarFilterProps,
   Heading,
   PageBase,
   PageNav,
   Section,
   Toolbar,
+  type ToolbarFilterProps,
   Typography,
+  formatDisplayName,
 } from '@altinn/altinn-components';
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import React from 'react';
@@ -20,9 +20,9 @@ import { useProfile } from '..';
 import { useParties } from '../../../api/hooks/useParties';
 import { FeatureFlagKeys, useFeatureFlag } from '../../../featureFlags';
 import { usePageTitle } from '../../../hooks/usePageTitle';
+import { PageRoutes } from '../../routes';
 import styles from './partiesOverviewPage.module.css';
 import { partyFieldFragmentToAccountListItem } from './partyFieldToAccountList';
-import { PageRoutes } from '../../routes';
 
 export const PartiesOverviewPage = () => {
   const { t } = useTranslation();

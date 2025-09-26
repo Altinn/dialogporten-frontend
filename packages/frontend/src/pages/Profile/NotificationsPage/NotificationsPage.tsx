@@ -1,6 +1,5 @@
 import {
   type AvatarProps,
-  formatDisplayName,
   Heading,
   List,
   PageBase,
@@ -11,6 +10,7 @@ import {
   SettingsList,
   SettingsSection,
   Toolbar,
+  formatDisplayName,
 } from '@altinn/altinn-components';
 import { MobileIcon, PaperplaneIcon } from '@navikt/aksel-icons';
 import { useQueryClient } from '@tanstack/react-query';
@@ -19,6 +19,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { QUERY_KEYS } from '../../../constants/queryKeys';
 import { usePageTitle } from '../../../hooks/usePageTitle';
+import { PageRoutes } from '../../routes';
 import {
   type NotificationType,
   UserNotificationSettingsModal,
@@ -27,7 +28,6 @@ import { partyFieldFragmentToNotificationsListItem } from '../PartiesOverviewPag
 import { usePartiesWithNotificationSettings } from '../usePartiesWithNotificationSettings';
 import { useProfile } from '../useProfile';
 import { CompanyNotificationSettingsModal } from './CompanyNotificationSettingsModal';
-import { PageRoutes } from '../../routes';
 
 export interface NotificationAccountsType extends PartyFieldsFragment {
   notificationSettings?: NotificationSettingsResponse;
