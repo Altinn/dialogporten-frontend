@@ -3,7 +3,7 @@ import { defineConfig, devices } from '@playwright/test';
 // Test credentials
 export const testCredentials = {
   pid: '15915299854',
-  expectedName: 'Konditor Ustabil',
+  expectedName: 'Ustabil Konditor',
 };
 
 /**

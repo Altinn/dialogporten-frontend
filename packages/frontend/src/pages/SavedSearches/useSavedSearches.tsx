@@ -257,7 +257,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
       const bookmarkLink = buildSavedSearchURL(savedSearch);
       const params: QueryItemProps[] = (savedSearch.data?.filters ?? []).map((filter) => {
         if (filter?.id === 'org') {
-          const org = getOrganization(organizations, filter.value ?? '', 'nb')?.name || filter.value;
+          const org = getOrganization(organizations, filter.value ?? '')?.name || filter.value;
           return {
             type: 'filter' as QueryItemType,
             label: org ?? '',
