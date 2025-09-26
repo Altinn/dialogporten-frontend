@@ -25,10 +25,14 @@ export const UserNotificationSettingsModal = ({
   notificationType,
   setShowModal,
 }: UserNotificationSettingsModalProps) => {
-  const { user, isLoading } = useProfile();
+  const { user, isLoading, language } = useProfile();
   const showModal = notificationType !== 'none';
   const { uniqueEmailAddresses, uniquePhoneNumbers } = usePartiesWithNotificationSettings();
-  const krrUrl = 'https://minprofil.kontaktregisteret.no/?locale=nb';
+  const isProdEnvironment = location.hostname.includes('af.altinn.no');
+  const krrBaseUrl = isProdEnvironment
+    ? 'https://minprofil.kontaktregisteret.no'
+    : 'https://minprofil.test.kontaktregisteret.no';
+  const krrUrl = `${krrBaseUrl}/?locale=${language}`;
   const krrInfoUrl = 'https://eid.difi.no/nb/kontakt-og-reservasjonsregisteret';
   const folkeRegisteretUrl = 'https://www.skatteetaten.no/person/folkeregister/flytte/';
 
