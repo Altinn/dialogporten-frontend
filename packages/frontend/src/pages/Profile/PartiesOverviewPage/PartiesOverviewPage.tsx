@@ -164,7 +164,12 @@ export const PartiesOverviewPage = () => {
   };
   return (
     <PageBase color="person">
-      <PageNav breadcrumbs={getBreadcrumbs(endUserName)} />
+      <PageNav
+        breadcrumbs={getBreadcrumbs({
+          name: endUserName ?? '',
+          type: 'person',
+        })}
+      />
       <Section as="header" spacing={6}>
         <Heading size="xl">{t('sidebar.profile.parties')}</Heading>
         <Toolbar

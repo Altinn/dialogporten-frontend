@@ -1,7 +1,6 @@
+import { formatDisplayName } from '@altinn/altinn-components';
 import type { PartyFieldsFragment, SubPartyFieldsFragment } from 'bff-types-generated';
 type PartyField = PartyFieldsFragment | SubPartyFieldsFragment;
-
-import { toTitleCase } from '../../pages/Profile';
 
 /* normalizes the parties and sub parties to title case and returns a flatten lists of PartyFieldsFragment
  where name of parent differs from sub parties
@@ -10,10 +9,18 @@ export const normalizeFlattenParties = (parties: PartyFieldsFragment[]): PartyFi
   const partiesInTitleCase =
     parties.map((party) => ({
       ...party,
-      name: toTitleCase(party.name),
+      name: formatDisplayName({
+        fullName: party.name,
+        type: party.partyType === 'Person' ? 'person' : 'company',
+        reverseNameOrder: party.partyType === 'Person',
+      }),
       subParties: party.subParties?.map((subParty) => ({
         ...subParty,
-        name: toTitleCase(subParty.name),
+        name: formatDisplayName({
+          fullName: subParty.name,
+          type: subParty.partyType === 'Person' ? 'person' : 'company',
+          reverseNameOrder: subParty.partyType === 'Person',
+        }),
         isCurrentEndUser: false,
         isDeleted: party.isDeleted,
       })),

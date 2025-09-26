@@ -45,7 +45,7 @@ describe('normalizeParties', () => {
     const result = normalizeFlattenParties(parties);
 
     expect(result.length).toBe(3);
-    expect(result[0].name).toBe('Edel Reiersen');
+    expect(result[0].name).toBe('Reiersen Edel');
     expect(result[1].name).toBe('Mysusæter Og Østre Gausdal');
     expect(result[2].name).toBe('Steinkjer Og Flateby');
   });
@@ -69,7 +69,7 @@ describe('normalizeParties', () => {
     const result = normalizeFlattenParties(partiesWithMatchingSubParty);
 
     expect(result.length).toBe(1);
-    expect(result[0].name).toBe('Matching Party');
+    expect(result[0].name).toBe('Party Matching');
   });
 
   it('should copy parent properties to sub-parties correctly', () => {
