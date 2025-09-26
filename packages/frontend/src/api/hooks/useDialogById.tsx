@@ -1,4 +1,5 @@
 import type { AttachmentLinkProps, AvatarProps, SeenByLogProps } from '@altinn/altinn-components';
+import { formatDisplayName } from '@altinn/altinn-components';
 import {
   type Actor,
   ActorType,
@@ -19,7 +20,6 @@ import { type ValueType, getPreferredPropertyByLocale } from '../../i18n/propert
 import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
-import { toTitleCase } from '../../pages/Profile';
 import { graphQLSDK } from '../queries.ts';
 import { type ActivityLogEntry, getActivityHistory } from '../utils/activities.tsx';
 import { getSeenByLabel } from '../utils/dialog.ts';
@@ -162,7 +162,12 @@ export const getActorProps = (actor: Actor, serviceOwner?: OrganizationOutput): 
   const isServiceOwner = actor.actorType === ActorType.ServiceOwner;
   const isCompany = isServiceOwner || (actor.actorId ?? '').includes('urn:altinn:organization:');
   const type: AvatarProps['type'] = isCompany ? 'company' : 'person';
-  const senderName = actor.actorName ? toTitleCase(actor.actorName) : isServiceOwner ? serviceOwner?.name || '' : '';
+  const actorName = formatDisplayName({
+    fullName: actor.actorName ?? '',
+    type: 'person',
+    reverseNameOrder: true,
+  });
+  const senderName = actor.actorName ? actorName : isServiceOwner ? serviceOwner?.name || '' : '';
   const senderLogo = isServiceOwner ? serviceOwner?.logo : undefined;
   const senderLogoAlt = senderLogo ? t('dialog.imageAltURL', { companyName: senderName }) : undefined;
 
@@ -258,7 +263,9 @@ export function mapDialogToToInboxItem(
       items: item.seenSinceLastContentUpdate.map((seen) => ({
         id: seen.id,
         isEndUser: seen.isCurrentEndUser,
-        name: (seen?.isCurrentEndUser ? (endUserParty?.name ?? '') : toTitleCase(seen.seenBy?.actorName ?? '')) || '',
+        name: seen?.isCurrentEndUser
+          ? (endUserParty?.name ?? '')
+          : formatDisplayName({ fullName: seen?.seenBy?.actorName ?? '', type: 'person', reverseNameOrder: true }),
         seenAt: seen.seenAt,
         seenAtLabel: format(seen.seenAt, formatString),
         type: 'person',

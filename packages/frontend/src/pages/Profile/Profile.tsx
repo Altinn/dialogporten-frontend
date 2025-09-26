@@ -7,18 +7,22 @@ import {
   PageNav,
   SettingsItem,
 } from '@altinn/altinn-components';
+import { formatDisplayName } from '@altinn/altinn-components';
 import { BellIcon, CogIcon } from '@navikt/aksel-icons';
 import { t } from 'i18next';
 import { Link } from 'react-router-dom';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
 import { PageRoutes } from '../routes';
-import { toTitleCase } from './name';
 import { useProfile } from './useProfile';
 
 export const Profile = () => {
   const { user, isLoading } = useProfile();
-
   usePageTitle({ baseTitle: t('sidebar.profile') });
+  const userDisplayName = formatDisplayName({
+    fullName: user?.party?.name ?? '',
+    type: 'person',
+    reverseNameOrder: true,
+  });
 
   return (
     <PageBase>
@@ -39,10 +43,10 @@ export const Profile = () => {
         icon={
           {
             type: 'person',
-            name: toTitleCase(user?.party?.name) || '',
+            name: userDisplayName,
           } as DashboardIconProps
         }
-        title={toTitleCase(user?.party?.name) || ''}
+        title={userDisplayName}
         description={`${t('profile.landing.ssn')} ${user?.party?.person?.ssn}`}
       >
         <List size="sm">

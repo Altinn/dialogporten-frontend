@@ -1,4 +1,11 @@
-import type { BadgeProps, MenuItemProps, MenuItemSize, MenuProps, Theme } from '@altinn/altinn-components';
+import {
+  type BadgeProps,
+  type MenuItemProps,
+  type MenuItemSize,
+  type MenuProps,
+  type Theme,
+  formatDisplayName,
+} from '@altinn/altinn-components';
 import {
   ArchiveIcon,
   BellIcon,
@@ -178,7 +185,11 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
       groupId: 'global',
       size: 'lg',
       icon: {
-        name: user?.party?.name || '',
+        name: formatDisplayName({
+          fullName: user?.party?.name ?? '',
+          type: 'person',
+          reverseNameOrder: true,
+        }),
       },
       title: t('sidebar.profile'),
       selected: isRouteSelected(pathname, PageRoutes.profile, fromView),

@@ -103,8 +103,16 @@ export const NotificationsPage = () => {
 
   return (
     <PageBase>
-      <PageNav breadcrumbs={getBreadcrumbs(user?.party?.name || '')} />
-      <Heading size="xl">{t('sidebar.profile.notifications')}</Heading>
+      <PageNav
+        breadcrumbs={getBreadcrumbs(
+          {
+            name: user?.party?.name ?? '',
+            type: 'person',
+          },
+          true,
+        )}
+      />
+      <Heading size="xl">{t('profile.notifications.heading')}</Heading>
 
       <Section spacing={6}>
         <Toolbar
