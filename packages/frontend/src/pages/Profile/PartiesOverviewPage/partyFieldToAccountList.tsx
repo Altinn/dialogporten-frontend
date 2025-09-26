@@ -1,14 +1,6 @@
-import type {
-  AccountListItemProps,
-  AccountListItemType,
-  AvatarProps,
-  AvatarType,
-  BadgeProps,
-} from '@altinn/altinn-components';
-import { formatDisplayName } from '@altinn/altinn-components';
+import type { AccountListItemProps, AccountListItemType, AvatarType, BadgeProps } from '@altinn/altinn-components';
 import { InboxIcon } from '@navikt/aksel-icons';
 import type { GroupObject, PartyFieldsFragment, User } from 'bff-types-generated';
-import { t } from 'i18next';
 import type { ReactNode } from 'react';
 import { PageRoutes } from '../../routes';
 import { CompanyDetails } from './CompanyDetails';
@@ -27,28 +19,6 @@ export const urnToOrgNr = (urn: string, unformatted = false) => {
     return orgOrPersonNumberUnformatted.slice(0, 6) + ' ' + orgOrPersonNumberUnformatted.slice(6);
   }
   return orgOrPersonNumberUnformatted?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-};
-
-export const getBreadcrumbs = (person?: AvatarProps, reverseNameOrder?: boolean) => {
-  if (!person) return [];
-  return [
-    {
-      label: t('word.frontpage'),
-      href: PageRoutes.inbox,
-    },
-    {
-      label: formatDisplayName({
-        fullName: person.name,
-        type: person.type as 'person' | 'company',
-        reverseNameOrder,
-      }),
-      href: PageRoutes.profile,
-    },
-    {
-      label: t('sidebar.profile.parties'),
-      href: PageRoutes.partiesOverview,
-    },
-  ];
 };
 
 function filterGroupsByPartyId(groups: GroupObject[], targetPartyId: string): GroupObject[] {
