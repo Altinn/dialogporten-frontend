@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.73.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.72.2...v1.73.0) (2025-09-26)
+
+
+### Features
+
+* Added search to Profile Notifications Page ([fdb0fe3](https://github.com/Altinn/dialogporten-frontend/commit/fdb0fe34b6b7cf6a4e584aeca9c962070b703eb5))
+* format party names by formatDisplayName ([#2796](https://github.com/Altinn/dialogporten-frontend/issues/2796)) ([9d4ca73](https://github.com/Altinn/dialogporten-frontend/commit/9d4ca73f5bd697d3817bf51a2ad019bca6c01b68))
+
 ## [1.72.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.72.1...v1.72.2) (2025-09-25)
 
 
