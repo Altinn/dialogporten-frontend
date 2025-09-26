@@ -179,6 +179,8 @@
   "inbox.heading.title.drafts": "{count, plural, =0 {No drafts} one {# draft} other {# drafts}}",
   "inbox.heading.title.inbox": "{count, plural, =0 {No messages} one {# message} other {# messages}}",
   "inbox.heading.title.sent": "{count, plural, =0 {No sent} one {# sent} other {# sent}}",
+  "inbox.heading.bankruptcy": "{count, plural, one {# Bankruptcy case} other {# Bankruptcy cases}}",
+  "inbox.heading.description.bankruptcy": "Bankruptcy cases require special handling and are displayed separately.",
   "inbox.no_parties_found": "No parties found",
   "inbox.no_results.description": "Your search yielded no results. Try searching again with a different keyword.",
   "inbox.no_results.title": "No results",
