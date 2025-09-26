@@ -3,6 +3,7 @@ import { dialogs as baseDialogs } from '../../base/dialogs'
 
 const organizationsDialogs: SearchDialogFieldsFragment[] = [
     {
+        serviceResource: 'default',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-whydoesitnot',
         endUserContext: {
@@ -44,6 +45,7 @@ const organizationsDialogs: SearchDialogFieldsFragment[] = [
         },
     },
     {
+        serviceResource: 'default',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-nowitworksfi',
         endUserContext: {
@@ -85,6 +87,7 @@ const organizationsDialogs: SearchDialogFieldsFragment[] = [
         },
     },
     {
+        serviceResource: 'default',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-nowitworksfi',
         endUserContext: {
@@ -126,6 +129,7 @@ const organizationsDialogs: SearchDialogFieldsFragment[] = [
         },
     },
     {
+        serviceResource: 'default',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-nowitworksfi',
         endUserContext: {

@@ -1,12 +1,14 @@
 import {
   AccountList,
+  type AvatarProps,
+  formatDisplayName,
   type FilterState,
+  type ToolbarFilterProps,
   Heading,
   PageBase,
   PageNav,
   Section,
   Toolbar,
-  type ToolbarFilterProps,
   Typography,
 } from '@altinn/altinn-components';
 import type { PartyFieldsFragment } from 'bff-types-generated';
@@ -19,7 +21,8 @@ import { useParties } from '../../../api/hooks/useParties';
 import { FeatureFlagKeys, useFeatureFlag } from '../../../featureFlags';
 import { usePageTitle } from '../../../hooks/usePageTitle';
 import styles from './partiesOverviewPage.module.css';
-import { getBreadcrumbs, partyFieldFragmentToAccountListItem } from './partyFieldToAccountList';
+import { partyFieldFragmentToAccountListItem } from './partyFieldToAccountList';
+import { PageRoutes } from '../../routes';
 
 export const PartiesOverviewPage = () => {
   const { t } = useTranslation();
@@ -80,6 +83,28 @@ export const PartiesOverviewPage = () => {
     searchValue,
     FILTER_VALUES,
   ]);
+
+  const getBreadcrumbs = (person?: AvatarProps, reverseNameOrder?: boolean) => {
+    if (!person) return [];
+    return [
+      {
+        label: t('word.frontpage'),
+        href: PageRoutes.inbox,
+      },
+      {
+        label: formatDisplayName({
+          fullName: person.name,
+          type: person.type as 'person' | 'company',
+          reverseNameOrder,
+        }),
+        href: PageRoutes.profile,
+      },
+      {
+        label: t('sidebar.profile.parties'),
+        href: PageRoutes.partiesOverview,
+      },
+    ];
+  };
 
   const toggleExpanded = (id: string) => {
     setExpandedItems((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]));

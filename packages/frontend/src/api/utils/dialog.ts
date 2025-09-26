@@ -118,6 +118,7 @@ export function mapDialogToToInboxItems(
       viewType: getViewTypes({ status: item.status, systemLabel: item.endUserContext?.systemLabels }, true)?.[0],
       fromServiceOwnerTransmissionsCount: item.fromServiceOwnerTransmissionsCount ?? 0,
       fromPartyTransmissionsCount: item.fromPartyTransmissionsCount ?? 0,
+      serviceResource: item.serviceResource,
     };
   });
 }

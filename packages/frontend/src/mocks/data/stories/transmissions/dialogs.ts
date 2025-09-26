@@ -2,6 +2,7 @@ import { DialogStatus, type SearchDialogFieldsFragment, SystemLabel } from 'bff-
 
 export const dialogs: SearchDialogFieldsFragment[] = [
     {
+        serviceResource: 'default',
         seenSinceLastContentUpdate: [],
         id: '019241f7-8218-7756-be82-123qwe456rtA',
         endUserContext: {
@@ -42,6 +43,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         },
     },
     {
+        serviceResource: 'default',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-a574-jksit83j1ks2',
         endUserContext: {

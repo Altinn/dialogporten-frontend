@@ -1,4 +1,6 @@
 import {
+  type AvatarProps,
+  formatDisplayName,
   Heading,
   List,
   PageBase,
@@ -21,11 +23,11 @@ import {
   type NotificationType,
   UserNotificationSettingsModal,
 } from '../PartiesOverviewPage/UserNotificationSettingsModal';
-import { getBreadcrumbs } from '../PartiesOverviewPage/partyFieldToAccountList';
 import { partyFieldFragmentToNotificationsListItem } from '../PartiesOverviewPage/partyFieldToNotificationsList';
 import { usePartiesWithNotificationSettings } from '../usePartiesWithNotificationSettings';
 import { useProfile } from '../useProfile';
 import { CompanyNotificationSettingsModal } from './CompanyNotificationSettingsModal';
+import { PageRoutes } from '../../routes';
 
 export interface NotificationAccountsType extends PartyFieldsFragment {
   notificationSettings?: NotificationSettingsResponse;
@@ -68,6 +70,28 @@ export const NotificationsPage = () => {
     }
     return false;
   });
+
+  const getBreadcrumbs = (person?: AvatarProps, reverseNameOrder?: boolean) => {
+    if (!person) return [];
+    return [
+      {
+        label: t('word.frontpage'),
+        href: PageRoutes.inbox,
+      },
+      {
+        label: formatDisplayName({
+          fullName: person.name,
+          type: person.type as 'person' | 'company',
+          reverseNameOrder,
+        }),
+        href: PageRoutes.profile,
+      },
+      {
+        label: t('sidebar.profile.notifications'),
+        href: PageRoutes.partiesOverview,
+      },
+    ];
+  };
 
   const personalNotificationSettings: SettingsItemProps[] = [
     {
@@ -112,7 +136,7 @@ export const NotificationsPage = () => {
           true,
         )}
       />
-      <Heading size="xl">{t('profile.notifications.heading')}</Heading>
+      <Heading size="xl">{t('sidebar.profile.notifications')}</Heading>
 
       <Section spacing={6}>
         <Toolbar

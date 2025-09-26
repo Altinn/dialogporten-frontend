@@ -178,6 +178,8 @@
   "inbox.heading.title.drafts": "{count, plural, =0 {Ingen utkast} one {# utkast} other {# utkast}}",
   "inbox.heading.title.inbox": "{count, plural, =0 {Innboksen er tom} one {# treff} other {# treff}}",
   "inbox.heading.title.sent": "{count, plural, =0 {Ingen sendte skjema} one {# treff i sendt} other {# treff i sendt}}",
+  "inbox.heading.bankruptcy": "{count, plural, one {# Konkurssak} other {# Konkurssaker}}",
+  "inbox.heading.description.bankruptcy": "Konkurssaker krever spesiell behandling og vises separat.",
   "inbox.no_parties_found": "Fant ingen aktører",
   "inbox.no_results.description": "Fant ikke det du søkte på. Prøv å søke på nytt med et annet søkeord.",
   "inbox.no_results.title": "Ingen treff",

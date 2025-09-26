@@ -179,6 +179,8 @@
   "inbox.heading.title.drafts": "{count, plural, =0 {Ingen utkast} one {# utkast} other {# utkast}}",
   "inbox.heading.title.inbox": "{count, plural, =0 {Ingen meldingar} one {# melding} other {# meldingar}}",
   "inbox.heading.title.sent": "{count, plural, =0 {Ingen sende meldingar} one {# sendt melding} other {# sende meldingar}}",
+  "inbox.heading.bankruptcy": "{count, plural, one {# Konkursak} other {# Konkursaker}}",
+  "inbox.heading.description.bankruptcy": "Konkurssaker krev spesiell handsaming og blir viste separat.",
   "inbox.no_parties_found": "Ingen aktørar funne",
   "inbox.no_results.description": "Søket ditt ga ingen treff. Prøv å søkje på nytt med eit anna søkjeord.",
   "inbox.no_results.title": "Ingen treff",
