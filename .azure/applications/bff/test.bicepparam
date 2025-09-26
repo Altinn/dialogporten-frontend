@@ -12,10 +12,10 @@ param workloadProfileName = 'Consumption'
 param logoutRedirectUri = 'https://at22.altinn.cloud'
 
 param platformExchangeTokenEndpointUrl = 'https://platform.at22.altinn.cloud/authentication/api/v1/exchange/id-porten?test=true'
-param platformProfileApiUrl = 'https://platform.at22.altinn.cloud/profile/api/v1/'
+param platformProfileApiUrl = 'https://platform.at23.altinn.cloud/profile/api/v1/'
 
 param ocPApimSubscriptionKey = readEnvironmentVariable('OCP_APIM_SUBSCRIPTION_KEY')
-param disableProfile = 'true'
+param disableProfile = 'false'
 
 // secrets
 param environmentKeyVaultName = readEnvironmentVariable('ENVIRONMENT_KEY_VAULT_NAME')
