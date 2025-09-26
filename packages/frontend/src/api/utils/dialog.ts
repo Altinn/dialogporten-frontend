@@ -67,7 +67,7 @@ export function mapDialogToToInboxItems(
     );
 
     const actualReceiverParty = dialogReceiverParty ?? dialogReceiverSubParty ?? endUserParty;
-    const serviceOwner = getOrganization(organizations || [], item.org, 'nb');
+    const serviceOwner = getOrganization(organizations || [], item.org);
     const { isSeenByEndUser, seenByOthersCount, seenByLabel } = getSeenByLabel(item.seenSinceLastContentUpdate, t);
 
     return {

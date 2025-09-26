@@ -198,7 +198,7 @@ export function mapDialogToToInboxItem(
   const endUserParty = parties?.find((party) => party.isCurrentEndUser);
   const dialogRecipientParty = parties?.find((party) => party.party === item.party);
   const actualRecipientParty = dialogRecipientParty ?? endUserParty;
-  const serviceOwner = getOrganization(organizations || [], item.org, 'nb');
+  const serviceOwner = getOrganization(organizations || [], item.org);
   const senderName = item.content.senderName?.value;
   const { seenByLabel } = getSeenByLabel(item.seenSinceLastContentUpdate, t);
   const transmissions = getTransmissions({

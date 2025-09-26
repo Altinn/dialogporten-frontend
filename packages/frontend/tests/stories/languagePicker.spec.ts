@@ -40,8 +40,10 @@ test.describe('Language picker', () => {
 
     await expect(page.getByTestId('searchbar-input')).toHaveAttribute('placeholder', 'Search');
     await expect(page.getByRole('button', { name: 'add' })).toHaveText('Add filter');
-
-    await expect(timeElement).toHaveText('Oslo kommune to Test Testesen');
+    const timeElementEn = listItem.locator('time').filter({
+      hasText: 'to Test Testesen',
+    });
+    await expect(timeElementEn).toContainText('City of Oslo to Test Testesen');
 
     if (isMobile) {
       await page.getByRole('button', { name: 'Menu' }).click();

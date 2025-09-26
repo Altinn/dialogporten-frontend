@@ -220,7 +220,7 @@ const createSenderOrgFilter = (
     optionType: 'checkbox',
     options: uniqueOrgs
       .map((org) => ({
-        label: getOrganization(allOrganizations, org, 'nb')?.name || org,
+        label: getOrganization(allOrganizations, org)?.name || org,
         value: org,
         badge: getFilterBadgeProps(orgCount[org] || 0),
         count: orgCount[org] || 0,

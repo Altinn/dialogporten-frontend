@@ -2,7 +2,7 @@ import type { AutocompleteItemProps, AutocompleteProps, QueryItemType } from '@a
 import type { CountableDialogFieldsFragment, OrganizationFieldsFragment } from 'bff-types-generated';
 import { t } from 'i18next';
 import { Link, type LinkProps } from 'react-router-dom';
-import { getOrganization } from '../../../api/utils/organizations.ts';
+import { getOrganization, getOrganizationByLocale } from '../../../api/utils/organizations.ts';
 import { pruneSearchQueryParams } from '../../../pages/Inbox/queryParams.ts';
 
 export const createSendersForAutocomplete = (
@@ -27,7 +27,7 @@ export const createSendersForAutocomplete = (
   const availableOrgsMatchPattern = availableOrgs.map((org) => {
     const translatedOrgNames = ['nb', 'nn', 'en']
       .map((lang) => {
-        const orgName = getOrganization(organizations || [], org, lang)?.name;
+        const orgName = getOrganizationByLocale(organizations || [], org, lang)?.name;
         return orgName ? orgName.toLowerCase() : '';
       })
       .filter((a) => !!a);
@@ -50,7 +50,7 @@ export const createSendersForAutocomplete = (
     });
 
     if (matchedOrg && searchTermLower.length >= 3) {
-      const serviceOwner = getOrganization(organizations || [], matchedOrg.org, 'nb');
+      const serviceOwner = getOrganization(organizations || [], matchedOrg.org);
       const searchCopy = [...searchTerms];
       const matchIndex = searchCopy.findIndex((term) => term.toLowerCase() === searchTermLower);
       if (matchIndex !== -1) {
