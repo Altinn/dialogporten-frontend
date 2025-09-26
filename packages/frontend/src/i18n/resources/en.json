@@ -329,5 +329,6 @@
   "word.to": "to",
   "word.unread": "Unread",
   "word.you": "you",
-  "word.inbox": "Inbox"
+  "word.inbox": "Inbox",
+  "main_content_reference.error": "Something went wrong, try again later"
 }
