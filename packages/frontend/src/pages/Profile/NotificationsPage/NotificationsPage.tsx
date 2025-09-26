@@ -1,4 +1,5 @@
 import {
+  type AvatarProps,
   Heading,
   List,
   PageBase,
@@ -9,6 +10,7 @@ import {
   SettingsList,
   SettingsSection,
   Toolbar,
+  formatDisplayName,
 } from '@altinn/altinn-components';
 import { MobileIcon, PaperplaneIcon } from '@navikt/aksel-icons';
 import { useQueryClient } from '@tanstack/react-query';
@@ -17,11 +19,11 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { QUERY_KEYS } from '../../../constants/queryKeys';
 import { usePageTitle } from '../../../hooks/usePageTitle';
+import { PageRoutes } from '../../routes';
 import {
   type NotificationType,
   UserNotificationSettingsModal,
 } from '../PartiesOverviewPage/UserNotificationSettingsModal';
-import { getBreadcrumbs } from '../PartiesOverviewPage/partyFieldToAccountList';
 import { partyFieldFragmentToNotificationsListItem } from '../PartiesOverviewPage/partyFieldToNotificationsList';
 import { usePartiesWithNotificationSettings } from '../usePartiesWithNotificationSettings';
 import { useProfile } from '../useProfile';
@@ -57,6 +59,28 @@ export const NotificationsPage = () => {
   if (partiesWithNotificationSettings.length === 0) {
     return null;
   }
+
+  const getBreadcrumbs = (person?: AvatarProps, reverseNameOrder?: boolean) => {
+    if (!person) return [];
+    return [
+      {
+        label: t('word.frontpage'),
+        href: PageRoutes.inbox,
+      },
+      {
+        label: formatDisplayName({
+          fullName: person.name,
+          type: person.type as 'person' | 'company',
+          reverseNameOrder,
+        }),
+        href: PageRoutes.profile,
+      },
+      {
+        label: t('sidebar.profile.notifications'),
+        href: PageRoutes.partiesOverview,
+      },
+    ];
+  };
 
   const filteredParties = partiesWithNotificationSettings.filter((party) => {
     if (

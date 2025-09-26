@@ -1,5 +1,6 @@
 import {
   AccountList,
+  type AvatarProps,
   type FilterState,
   Heading,
   PageBase,
@@ -8,6 +9,7 @@ import {
   Toolbar,
   type ToolbarFilterProps,
   Typography,
+  formatDisplayName,
 } from '@altinn/altinn-components';
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import React from 'react';
@@ -18,8 +20,9 @@ import { useProfile } from '..';
 import { useParties } from '../../../api/hooks/useParties';
 import { FeatureFlagKeys, useFeatureFlag } from '../../../featureFlags';
 import { usePageTitle } from '../../../hooks/usePageTitle';
+import { PageRoutes } from '../../routes';
 import styles from './partiesOverviewPage.module.css';
-import { getBreadcrumbs, partyFieldFragmentToAccountListItem } from './partyFieldToAccountList';
+import { partyFieldFragmentToAccountListItem } from './partyFieldToAccountList';
 
 export const PartiesOverviewPage = () => {
   const { t } = useTranslation();
@@ -87,6 +90,28 @@ export const PartiesOverviewPage = () => {
 
   const isExpanded = (id: string) => {
     return expandedItems.includes(id);
+  };
+
+  const getBreadcrumbs = (person?: AvatarProps, reverseNameOrder?: boolean) => {
+    if (!person) return [];
+    return [
+      {
+        label: t('word.frontpage'),
+        href: PageRoutes.inbox,
+      },
+      {
+        label: formatDisplayName({
+          fullName: person.name,
+          type: person.type as 'person' | 'company',
+          reverseNameOrder,
+        }),
+        href: PageRoutes.profile,
+      },
+      {
+        label: t('sidebar.profile.parties'),
+        href: PageRoutes.partiesOverview,
+      },
+    ];
   };
 
   if (isLoadingParties) {
