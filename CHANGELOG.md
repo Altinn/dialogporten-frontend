@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.75.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.74.0...v1.75.0) (2025-09-26)
+
+
+### Features
+
+* Use Core AT env and enable profile in AF AT env ([5de0ef7](https://github.com/Altinn/dialogporten-frontend/commit/5de0ef7b3a7090076071b37d1877f0cd4a49c85d))
+
+
+### Bug Fixes
+
+* Notification page texts ([43ea997](https://github.com/Altinn/dialogporten-frontend/commit/43ea99710e2da89cec5f48796af692f83361589b))
+
 ## [1.74.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.73.0...v1.74.0) (2025-09-26)
 
 
