@@ -51,6 +51,8 @@ interface UseGroupedDialogsProps {
   onSeenByLogModalChange: (input: CurrentSeenByLog) => void;
 }
 
+const BANKRUPTCY_SERVICE_RESOURCE = 'urn:altinn:resource:app_brg_konkursbehandling';
+
 const sortGroupedDialogs = (arr: DialogListItemProps[]) => {
   return arr.sort((a, b) => new Date(b.updatedAt ?? 0).getTime() - new Date(a.updatedAt ?? 0).getTime());
 };
@@ -178,7 +180,7 @@ const useGroupedDialogs = ({
     };
   };
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  // biome-ignore lint/correctness/useExhaustiveDependencies: This hook does not specify all of its dependencies
   return useMemo(() => {
     if (isLoading) {
       return {
@@ -188,37 +190,67 @@ const useGroupedDialogs = ({
         },
       };
     }
-    /* in all other views than inbox and not loading */
+
     if (!displaySearchResults && !isInbox && !isLoading) {
-      const groupedDialogs = items.map((item) => formatDialogItem(item, item.viewType));
+      const groups: Record<string, DialogListGroupPropsSort> = {};
+      const allDialogs: DialogListItemProps[] = [];
+
+      // bankruptcy exception
+      const bankruptcyDialogs = items.filter((item) => item.serviceResource === BANKRUPTCY_SERVICE_RESOURCE);
+      const regularItems = items.filter((item) => item.serviceResource !== BANKRUPTCY_SERVICE_RESOURCE);
+
+      // bankruptcy group
+      if (bankruptcyDialogs.length > 0) {
+        groups.bankruptcy = {
+          title: t('inbox.heading.bankruptcy', { count: bankruptcyDialogs.length }),
+          description: t('inbox.heading.description.bankruptcy'),
+          orderIndex: 9999,
+        };
+        allDialogs.push(...bankruptcyDialogs.map((item) => formatDialogItem(item, 'bankruptcy')));
+      }
+
+      groups[viewType] = {
+        title: getCollapsedGroupTitle(viewType, regularItems.length, hasNextPage),
+        description: <Trans i18nKey={`inbox.heading.description.${viewType}`} components={{ strong: <strong /> }} />,
+        orderIndex: null,
+      };
+      allDialogs.push(...regularItems.map((item) => formatDialogItem(item, item.viewType)));
+
+      const groupedDialogs = sortGroupedDialogs(allDialogs);
       if (isFetchingNextPage) {
         groupedDialogs.push(...renderLoadingItems(1));
       }
       return {
         groupedDialogs,
-        groups: {
-          [viewType]: {
-            title: getCollapsedGroupTitle(viewType, items.length, hasNextPage),
-            description: (
-              <Trans i18nKey={`inbox.heading.description.${viewType}`} components={{ strong: <strong /> }} />
-            ),
-          },
-        },
+        groups,
       };
     }
 
     const groupedItems: GroupedItem[] = [];
 
+    const bankruptcyDialogs = items.filter((item) => item.serviceResource === BANKRUPTCY_SERVICE_RESOURCE);
+    const regularDialogs = items.filter((item) => item.serviceResource !== BANKRUPTCY_SERVICE_RESOURCE);
+
+    if (bankruptcyDialogs.length > 0) {
+      groupedItems.push({
+        id: 'bankruptcy',
+        title: t('inbox.heading.bankruptcy', { count: bankruptcyDialogs.length }),
+        description: t('inbox.heading.description.bankruptcy'),
+        items: bankruptcyDialogs,
+        orderIndex: 9999, //put on top
+      });
+    }
+
     if (collapseGroups) {
       groupedItems.push({
         id: 'collapsed',
-        title: getCollapsedGroupTitle(viewType, items.length, hasNextPage),
+        title: getCollapsedGroupTitle(viewType, regularDialogs.length, hasNextPage),
         description: t('search.results.description'),
-        items,
+        items: regularDialogs,
         orderIndex: null,
       });
     } else {
-      items.reduce((acc, item, _, list) => {
+      regularDialogs.reduce((acc, item, _, list) => {
         const updatedAt = new Date(item.contentUpdatedAt);
         const month = format(updatedAt, 'LLLL');
         const capitalizedMonth = month.charAt(0).toUpperCase() + month.slice(1);
@@ -258,8 +290,8 @@ const useGroupedDialogs = ({
       groupedItems.map(({ id, title, description, orderIndex }) => [id, { title, orderIndex, description }]),
     );
 
-    const mappedGroupedDialogs = groupedItems.flatMap(({ id, items }) =>
-      items.map((item) => formatDialogItem(item, id.toString())),
+    const mappedGroupedDialogs = groupedItems.flatMap(({ id, items: groupItems }) =>
+      groupItems.map((item) => formatDialogItem(item, id.toString())),
     );
 
     const groupedDialogs = sortGroupedDialogs(mappedGroupedDialogs);
@@ -267,8 +299,9 @@ const useGroupedDialogs = ({
     if (isFetchingNextPage) {
       groupedDialogs.push(...renderLoadingItems(1));
     }
+
     return { groupedDialogs, groups };
-  }, [items, displaySearchResults, t, format, viewType, allWithinSameYear, isLoading]);
+  }, [items, displaySearchResults, t, format, viewType, allWithinSameYear, isLoading, isFetchingNextPage]);
 };
 
 export default useGroupedDialogs;
