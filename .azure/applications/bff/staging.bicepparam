@@ -13,7 +13,7 @@ param resources = {
     memory: '2Gi'
 }
 param workloadProfileName = 'Consumption'
-param logoutRedirectUri = 'https://tt02.altinn.no'
+param logoutRedirectUri = 'https://tt02.altinn.cloud/ui/Authentication/Logout'
 
 param platformExchangeTokenEndpointUrl = 'https://platform.tt02.altinn.no/authentication/api/v1/exchange/id-porten?test=true'
 param platformProfileApiUrl = 'https://platform.tt02.altinn.no/profile/api/v1/'
