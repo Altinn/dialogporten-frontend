@@ -14,7 +14,7 @@ param workloadProfileName = 'Consumption'
 param platformBaseUrl = 'https://platform.altinn.no'
 param enableInitSessionEndpoint = 'false'
 param disableProfile = 'true'
-param logoutRedirectUri = 'https://altinn.no'
+param logoutRedirectUri = 'https://altinn.no/ui/Authentication/Logout'
 
 
 param ocPApimSubscriptionKey = readEnvironmentVariable('OCP_APIM_SUBSCRIPTION_KEY')
