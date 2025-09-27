@@ -9,7 +9,7 @@ param oicdUrl = 'test.idporten.no'
 param minReplicas = 2
 param maxReplicas = 3
 param workloadProfileName = 'Consumption'
-param logoutRedirectUri = 'https://at23.altinn.cloud'
+param logoutRedirectUri = 'https://at23.altinn.cloud/ui/Authentication/Logout'
 
 param platformExchangeTokenEndpointUrl = 'https://platform.at22.altinn.cloud/authentication/api/v1/exchange/id-porten?test=true'
 param platformProfileApiUrl = 'https://platform.at23.altinn.cloud/profile/api/v1/'
