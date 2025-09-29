@@ -11,8 +11,7 @@ param maxReplicas = 3
 param graphiQLEnabled = 'false'
 param workloadProfileName = 'Consumption'
 
-param platformExchangeTokenEndpointUrl = 'https://platform.altinn.no/authentication/api/v1/exchange/id-porten'
-param platformProfileApiUrl = 'https://platform.altinn.no/profile/api/v1/'
+param platformBaseUrl = 'https://platform.altinn.no'
 param enableInitSessionEndpoint = 'false'
 param disableProfile = 'true'
 param logoutRedirectUri = 'https://altinn.no'

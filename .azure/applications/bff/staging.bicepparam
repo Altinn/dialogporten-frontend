@@ -15,8 +15,7 @@ param resources = {
 param workloadProfileName = 'Consumption'
 param logoutRedirectUri = 'https://tt02.altinn.no'
 
-param platformExchangeTokenEndpointUrl = 'https://platform.tt02.altinn.no/authentication/api/v1/exchange/id-porten?test=true'
-param platformProfileApiUrl = 'https://platform.tt02.altinn.no/profile/api/v1/'
+param platformBaseUrl = 'https://platform.tt02.altinn.no'
 
 param ocPApimSubscriptionKey = readEnvironmentVariable('OCP_APIM_SUBSCRIPTION_KEY')
 
