@@ -11,8 +11,7 @@ param maxReplicas = 3
 param workloadProfileName = 'Consumption'
 param logoutRedirectUri = 'https://tt02.altinn.no'
 
-param platformExchangeTokenEndpointUrl = 'https://platform.yt01.altinn.cloud/authentication/api/v1/exchange/id-porten?test=true'
-param platformProfileApiUrl = 'https://platform.yt01.altinn.cloud/profile/api/v1/'
+param platformBaseUrl = 'https://platform.yt01.altinn.cloud'
 
 param ocPApimSubscriptionKey = readEnvironmentVariable('OCP_APIM_SUBSCRIPTION_KEY')
 

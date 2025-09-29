@@ -3,7 +3,10 @@ import config from '../../config.ts';
 import { GroupRepository, PartyRepository, ProfileRepository } from '../../db.ts';
 import { Group, Party, ProfileTable } from '../../entities.ts';
 import type { NotificationSettingsInputData } from '../types/profile.ts';
-const { platformProfileAPI_url, platformExchangeTokenEndpointURL } = config;
+const { platformBaseURL } = config;
+
+const platformExchangeTokenEndpointURL = platformBaseURL + '/authentication/api/v1/exchange/id-porten?test=true';
+const platformProfileAPI_url = platformBaseURL + '/profile/api/v1/';
 
 type TokenType = {
   access_token: string;

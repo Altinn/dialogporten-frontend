@@ -18,8 +18,7 @@ param maxReplicas int
 @description('CPU and memory resources for the container app')
 param resources object?
 
-param platformExchangeTokenEndpointUrl string
-param platformProfileApiUrl string
+param platformBaseUrl string
 
 @secure()
 param ocPApimSubscriptionKey string
@@ -180,12 +179,8 @@ var containerAppEnvVars = concat(
       value: disableProfile
     }
     {
-      name: 'PLATFORM_EXCHANGE_TOKEN_ENDPOINT_URL'
-      value: platformExchangeTokenEndpointUrl
-    }
-    {
-      name: 'PLATFORM_PROFILE_API_URL'
-      value: platformProfileApiUrl
+      name: 'PLATFORM_BASEURL'
+      value: platformBaseUrl
     }
     {
       name: 'OCP_APIM_SUBSCRIPTION_KEY'
