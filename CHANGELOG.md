@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.76.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.75.0...v1.76.0) (2025-09-30)
+
+
+### Features
+
+* Added phone number validation same as Core backend ([531f81f](https://github.com/Altinn/dialogporten-frontend/commit/531f81fb001a1f9ab6a5c8371b64300130b0d48f))
+* Implemented new Altinn Core API endpoint for notifications ([ada23e9](https://github.com/Altinn/dialogporten-frontend/commit/ada23e92619b854844ee79ced0d79722acd6c6fc))
+* refactor global menu for profile ([#2818](https://github.com/Altinn/dialogporten-frontend/issues/2818)) ([bb9611b](https://github.com/Altinn/dialogporten-frontend/commit/bb9611bd45a6214c1977ed79cc51362f6e82a384))
+
+
+### Bug Fixes
+
+* **env:** point to at23 instead of at22 for test url + SLO A2-fix ([#2809](https://github.com/Altinn/dialogporten-frontend/issues/2809)) ([4d47236](https://github.com/Altinn/dialogporten-frontend/commit/4d472368dbdc16ab4699691fa27a77be2acb1fbf))
+* User address change URL for test env ([aa19a81](https://github.com/Altinn/dialogporten-frontend/commit/aa19a8133676efe430762ac720097dcc12709a5b))
+* wrong env assumed ([#2819](https://github.com/Altinn/dialogporten-frontend/issues/2819)) ([6f06a96](https://github.com/Altinn/dialogporten-frontend/commit/6f06a9654d735898c18c2615780b7e5f4824c07a))
+
 ## [1.75.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.74.0...v1.75.0) (2025-09-26)
 
 
