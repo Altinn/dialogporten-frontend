@@ -6,7 +6,7 @@ import {
   addFavoriteParty as addFavoritePartyRaw,
   addFavoritePartyToGroup as addFavoritePartyToGroupRaw,
   deleteFavoriteParty as deleteFavoritePartyRaw,
-  getNotificationsettingsByUuid,
+  getNotificationsettingsForCurrentUser,
   profile,
 } from '../../api/queries.ts';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
@@ -54,7 +54,7 @@ export const useProfile = () => {
     user: data?.profile?.user as User,
     groups,
     favoritesGroup,
-    getNotificationsettingsByUuid,
+    getNotificationsettingsForCurrentUser,
     deleteFavoriteParty,
     addFavoriteParty,
     addFavoritePartyToGroup,

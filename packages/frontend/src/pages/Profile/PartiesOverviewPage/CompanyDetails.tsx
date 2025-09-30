@@ -14,7 +14,7 @@ import { useState } from 'react';
 import { QUERY_KEYS } from '../../../constants/queryKeys';
 import { CompanyNotificationSettingsModal } from '../NotificationsPage/CompanyNotificationSettingsModal';
 import type { NotificationAccountsType } from '../NotificationsPage/NotificationsPage';
-import { useNotificationSettingsForParty } from '../useNotificationSettingsForParty';
+import { useNotificationSettingsForCurrentUser } from '../useNotificationSettings';
 import { PartyDetailsSetting } from './PartyDetailsSetting';
 
 export interface CompanyDetailsProps extends AccountListItemProps {
@@ -42,11 +42,14 @@ export const CompanyDetails = ({
 }: CompanyDetailsProps) => {
   const [notificationParty, setNotificationParty] = useState<NotificationAccountsType | null>(null);
   const queryClient = useQueryClient();
-  const { notificationSettingsForParty, isLoading: isLoadingNotificaitonSettings } =
-    useNotificationSettingsForParty(id);
+  const { notificationSettingsForCurrentUser, isLoading: isLoadingNotificaitonSettingsForCurrentUser } =
+    useNotificationSettingsForCurrentUser();
+  const notificationSettingsForParty = notificationSettingsForCurrentUser?.find(
+    (setting) => setting?.partyUuid === party?.partyUuid,
+  );
 
   const onSave = () => {
-    queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.NOTIFICATIONSETTINGSFORPARTY] });
+    queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.NOTIFICATION_SETTINGS_FOR_CURRENT_USER] });
   };
 
   if (!party) {
@@ -64,9 +67,9 @@ export const CompanyDetails = ({
         isCurrentEndUser={isCurrentEndUser || false}
       />
       <Divider />
-      {!isLoadingNotificaitonSettings && (
+      {!isLoadingNotificaitonSettingsForCurrentUser && (
         <PartyDetailsSetting
-          notificationSetting={notificationSettingsForParty}
+          notificationSetting={notificationSettingsForParty || undefined}
           setNotificationParty={() => setNotificationParty(party as NotificationAccountsType)}
         />
       )}

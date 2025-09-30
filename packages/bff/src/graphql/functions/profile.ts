@@ -215,11 +215,7 @@ export const getFavoritesFromCore = async (token: string) => {
   }
 };
 
-export const getNotificationsSettings = async (partyUuid: string, context: Context) => {
-  if (!partyUuid) {
-    console.error('No uuid found in session');
-    return;
-  }
+export const getNotificationsettingsForCurrentUser = async (context: Context) => {
   const newToken = await exchangeToken(context);
   if (!newToken) {
     console.error('No new token received');
@@ -228,16 +224,13 @@ export const getNotificationsSettings = async (partyUuid: string, context: Conte
 
   let data = [] as unknown[];
   try {
-    const response = await axios.get(
-      `${platformProfileAPI_url}users/current/notificationsettings/parties/${partyUuid}`,
-      {
-        headers: {
-          Authorization: `Bearer ${newToken}`,
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
+    const response = await axios.get(`${platformProfileAPI_url}users/current/notificationsettings/parties`, {
+      headers: {
+        Authorization: `Bearer ${newToken}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
       },
-    );
+    });
     data = response.data;
     if (!data) {
       console.error('No core profile data found');
@@ -253,7 +246,7 @@ export const getNotificationsSettings = async (partyUuid: string, context: Conte
         return;
       }
     } else {
-      console.error('Error fetching core notificationsSettings for user:', partyUuid, error);
+      console.error('Error fetching core notificationsSettings for user:', error);
     }
   }
   return;
