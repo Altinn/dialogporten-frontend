@@ -21,6 +21,7 @@
   "about.inbox.section.find.p1": "We know many users have large, complex inboxes. That’s why we are working on making it easier to locate old dialogues.",
   "about.inbox.section.find.title": "Easier to navigate",
   "about.inbox.title": "New inbox – better dialogues, easier to navigate",
+  "altinn.access_management": "Access management",
   "activity.status.correspondence_confirmed": "Correspondence confirmed by {actor}.",
   "activity.status.correspondence_opened": "Correspondence opened by {actor}.",
   "activity.status.dialog_closed": "Dialog closed by {actor}.",

@@ -21,6 +21,7 @@
   "about.inbox.section.find.p1": "Vi veit at mange har store, komplekse innboksar. Difor jobbar vi med å gjere det lettare å finne fram til gamle dialogar.",
   "about.inbox.section.find.title": "Enklare å finne fram",
   "about.inbox.title": "Ny innboks – betre dialogar, enklare å finne fram",
+  "altinn.access_management": "Tilgangsstyring",
   "activity.status.correspondence_confirmed": "Korrespondansen vart stadfesta av {actor}.",
   "activity.status.correspondence_opened": "Korrespondansen vart opna av {actor}.",
   "activity.status.dialog_closed": "Dialogen vart lukka av {actor}.",

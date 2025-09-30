@@ -4,22 +4,15 @@ import type {
   AccountSearchProps,
   AvatarGroupProps,
   AvatarType,
-  BadgeProps,
   MenuItemGroups,
 } from '@altinn/altinn-components';
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import { type ChangeEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { type SelectedPartyType, useParties } from '../../../api/hooks/useParties.ts';
+import { useParties } from '../../../api/hooks/useParties.ts';
 import { getPartyIds } from '../../../api/utils/dialog.ts';
 import type { PageRoutes } from '../../../pages/routes.ts';
-import { getAlertBadgeProps } from '../GlobalMenu';
-
-export interface CountableItem {
-  party: string;
-  isSeenByEndUser?: boolean;
-}
 
 interface UseAccountsProps {
   parties: PartyFieldsFragment[];
@@ -34,61 +27,6 @@ interface UseAccountsOutput {
   onSelectAccount: (account: string, route: PageRoutes) => void;
   selectedAccount?: Account;
 }
-const getAllPartyIds = (party: PartyFieldsFragment | PartyFieldsFragment[]): string[] => {
-  const subPartyIds = Array.isArray(party) ? party.flatMap((p) => getSubPartyIds(p)) : getSubPartyIds(party);
-  const partyIds = Array.isArray(party) ? party.map((p) => p.party) : [party.party];
-  return [...partyIds, ...subPartyIds];
-};
-
-export const getAccountAlertBadge = (
-  dialogs: CountableItem[],
-  party?: PartyFieldsFragment | PartyFieldsFragment[],
-): BadgeProps | undefined => {
-  if (!party || !dialogs?.length || (Array.isArray(party) && !party.length)) {
-    return undefined;
-  }
-
-  const allPartyIds = getAllPartyIds(party);
-  const count = dialogs
-    .filter((dialog) => allPartyIds.includes(dialog.party))
-    .filter((dialog) => !dialog.isSeenByEndUser).length;
-
-  return getAlertBadgeProps(count);
-};
-
-export const getAccountBadge = (
-  items: CountableItem[],
-  party: PartyFieldsFragment | PartyFieldsFragment[] | undefined,
-  dialogCountInconclusive: boolean,
-  selectedProfile?: SelectedPartyType,
-): BadgeProps | undefined => {
-  if (dialogCountInconclusive) {
-    return {
-      size: 'xs',
-      label: '',
-      color: selectedProfile,
-    };
-  }
-
-  if (!party || !items?.length || (Array.isArray(party) && !party.length)) {
-    return undefined;
-  }
-
-  const allPartyIds = getAllPartyIds(party);
-  const count = items.filter((dialog) => allPartyIds.includes(dialog.party)).length;
-
-  if (count > 0) {
-    return {
-      label: count.toString(),
-      size: 'sm',
-      color: selectedProfile,
-    };
-  }
-};
-
-const getSubPartyIds = (party?: PartyFieldsFragment): string[] => {
-  return party?.subParties?.filter((subParty) => subParty.name === party.name).map((party) => party.party) ?? [];
-};
 
 export const useAccounts = ({
   parties,
@@ -186,8 +124,9 @@ export const useAccounts = ({
     : selectedParties.map((party) => ({
         id: party.party,
         name: party.name,
-        type: party.partyType.toLowerCase() as Account['type'],
+        type: (party.partyType === 'Organization' ? 'company' : 'person') as AccountMenuItemProps['type'],
       }))[0];
+
   const selectedAccount: Account = {
     id: selectedAccountMenuItem.id,
     name: selectedAccountMenuItem.name,

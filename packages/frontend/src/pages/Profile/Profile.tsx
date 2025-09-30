@@ -10,13 +10,15 @@ import {
 import { formatDisplayName } from '@altinn/altinn-components';
 import { BellIcon, CogIcon } from '@navikt/aksel-icons';
 import { t } from 'i18next';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
+import { pruneSearchQueryParams } from '../Inbox/queryParams.ts';
 import { PageRoutes } from '../routes';
 import { useProfile } from './useProfile';
 
 export const Profile = () => {
   const { user, isLoading } = useProfile();
+  const { search } = useLocation();
   usePageTitle({ baseTitle: t('sidebar.profile') });
   const userDisplayName = formatDisplayName({
     fullName: user?.party?.name ?? '',
@@ -51,7 +53,7 @@ export const Profile = () => {
       >
         <List size="sm">
           <SettingsItem
-            as={(props) => <Link {...props} to={PageRoutes.notifications} />}
+            as={(props) => <Link {...props} to={PageRoutes.notifications + pruneSearchQueryParams(search)} />}
             icon={BellIcon}
             title={t('profile.notifications.are_on')}
             description="Alle varslinger"
@@ -63,7 +65,7 @@ export const Profile = () => {
             icon={CogIcon}
             title={t('profile.landing.more_settings')}
             linkIcon
-            as={(props) => <Link {...props} to={PageRoutes.settings} />}
+            as={(props) => <Link {...props} to={PageRoutes.settings + pruneSearchQueryParams(search)} />}
           />
         </List>
       </DashboardHeader>

@@ -43,6 +43,7 @@ export const PageLayout: React.FC = () => {
   const { searchValue, setSearchValue, onClear } = useSearchString();
   const { selectedProfile, selectedParties, parties, allOrganizationsSelected } = useParties();
   const { autocomplete } = useAutocomplete({ selectedParties: selectedParties, searchValue });
+  const [isErrorState] = useGlobalState<boolean>(QUERY_KEYS.ERROR_STATE, false);
 
   const { accounts, selectedAccount, accountSearch, accountGroups, onSelectAccount } = useAccounts({
     parties,
@@ -85,8 +86,6 @@ export const PageLayout: React.FC = () => {
       void i18n.changeLanguage(language);
     }
   };
-
-  const [isErrorState] = useGlobalState<boolean>(QUERY_KEYS.ERROR_STATE, false);
 
   const headerProps: HeaderProps = {
     currentAccount: selectedAccount,
@@ -144,6 +143,9 @@ export const PageLayout: React.FC = () => {
 
   const layoutProps: LayoutProps = {
     theme: isErrorState ? 'default' : 'subtle',
+    content: {
+      color: isProfile ? 'person' : undefined,
+    },
     skipLink: {
       href: '#main-content',
       color: 'inherit' as Color,
