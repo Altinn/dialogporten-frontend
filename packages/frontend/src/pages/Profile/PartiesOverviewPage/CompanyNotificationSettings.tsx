@@ -72,7 +72,7 @@ export const CompanyNotificationSettings = ({
         {enablePhoneNotifications && (
           <TextField
             name="tel"
-            pattern="^(?:\+47\s?)?\d{8}$"
+            pattern="^(([0-9]{5})|([0-9]{8})|((00[0-9]{2})[0-9]+)|((\+[0-9]{2})[0-9]+))$"
             required
             onInvalid={(e) => {
               if (e.currentTarget.validity.valueMissing) {
