@@ -27,13 +27,9 @@ const envVariables = z.object({
   REDIS_CONNECTION_STRING: z.string().default('redis://:mysecretpassword@127.0.0.1:6379/0'),
   CLIENT_ID: z.string().default(''),
   CLIENT_SECRET: z.string().default(''),
-  PLATFORM_EXCHANGE_TOKEN_ENDPOINT_URL: z
-    .string()
-    .default('https://platform.at22.altinn.cloud/authentication/api/v1/exchange/id-porten?test=true'),
-  PLATFORM_PROFILE_API_URL: z.string().default('https://platform.at22.altinn.cloud/profile/api/v1/'),
+  PLATFORM_BASEURL: z.string().default('https://platform.at23.altinn.cloud'),
   MIGRATION_RUN: z.preprocess(stringToBoolean, z.boolean().default(false)),
   DIALOGPORTEN_URL: z.string().default('https://altinn-dev-api.azure-api.net/dialogporten'),
-  KRR_URL: z.string().default('https://minprofil.test.kontaktregisteret.no'),
   CONTAINER_APP_REPLICA_NAME: z.string().default(''),
   ENABLE_GRAPHIQL: z.preprocess(stringToBoolean, z.boolean().default(true)),
   ENABLE_INIT_SESSION_ENDPOINT: z.preprocess(stringToBoolean, z.boolean().default(false)),
@@ -55,8 +51,7 @@ const config = {
   hostname: env.HOSTNAME,
   client_id: env.CLIENT_ID,
   client_secret: env.CLIENT_SECRET,
-  platformExchangeTokenEndpointURL: env.PLATFORM_EXCHANGE_TOKEN_ENDPOINT_URL,
-  platformProfileAPI_url: env.PLATFORM_PROFILE_API_URL,
+  platformBaseURL: env.PLATFORM_BASEURL,
   applicationInsights: {
     enabled: env.APPLICATIONINSIGHTS_ENABLED,
     connectionString: env.APPLICATIONINSIGHTS_CONNECTION_STRING,
@@ -77,7 +72,6 @@ const config = {
     graphqlUrl: `${env.DIALOGPORTEN_URL}/graphql`,
     healthUrl: `${env.DIALOGPORTEN_URL}/health`,
   },
-  krrURL: env.KRR_URL,
   enableGraphiql: env.ENABLE_GRAPHIQL,
   enableInitSessionEndpoint: env.ENABLE_INIT_SESSION_ENDPOINT,
   disableProfile: env.DISABLE_PROFILE,
