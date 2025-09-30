@@ -21,7 +21,8 @@ export const featureFlags: FeatureFlags = {
   [FeatureFlagKeys.DisableBulkActions]: true,
   [FeatureFlagKeys.DisableFavoriteGroups]: true,
   [FeatureFlagKeys.EnableProfilePages]: !location.hostname.includes('af.altinn.no'),
-  [FeatureFlagKeys.EnableProfileLinkInGlobalMenu]: import.meta.env.DEV || location.hostname.includes('af.altinn.no'),
+  [FeatureFlagKeys.EnableProfileLinkInGlobalMenu]:
+    import.meta.env.DEV || location.hostname.includes('af.at.altinn.cloud'),
   [FeatureFlagKeys.EnableAccessManagementLinkInGlobalMenu]:
-    import.meta.env.DEV || location.hostname.includes('af.altinn.no'),
+    import.meta.env.DEV || location.hostname.includes('af.at.altinn.cloud'),
 };
