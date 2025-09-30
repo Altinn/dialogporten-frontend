@@ -19,10 +19,11 @@ import {
 } from '@navikt/aksel-icons';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useProfile } from '..';
 import { useParties } from '../../../api/hooks/useParties';
 import { usePageTitle } from '../../../hooks/usePageTitle';
+import { pruneSearchQueryParams } from '../../Inbox/queryParams.ts';
 import { PageRoutes } from '../../routes';
 import { flattenParties } from '../PartiesOverviewPage/partyFieldToNotificationsList';
 import { buildAddressString } from '../buildAddressString';
@@ -30,6 +31,7 @@ import { buildAddressString } from '../buildAddressString';
 export const Settings = () => {
   const { user } = useProfile();
   const { parties: normalParties } = useParties();
+  const { search: currentSearchQuery } = useLocation();
   const flattenedParties = flattenParties(normalParties);
   const flattenedPartiesCount = flattenedParties?.filter((party) => party.partyType === 'Organization')?.length || 0;
 
@@ -89,7 +91,9 @@ export const Settings = () => {
       <SettingsSection>
         <List>
           <SettingsItem
-            as={(props) => <Link to={PageRoutes.notifications} {...props} />}
+            as={(props) => (
+              <Link to={PageRoutes.notifications + pruneSearchQueryParams(currentSearchQuery)} {...props} />
+            )}
             icon={BellIcon}
             title={t('profile.settings.notification_settings')}
             badge={!!flattenedPartiesCount && { label: `${flattenedPartiesCount} aktører` }}
