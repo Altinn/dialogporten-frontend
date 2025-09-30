@@ -39,10 +39,10 @@ export const UserNotificationSettingsModal = ({
     ? 'https://www.skatteetaten.no/person/folkeregister/flytte/'
     : 'https://testdata.skatteetaten.no/web/testnorge/soek/freg';
 
-  const userEmailGroup = uniqueEmailAddresses.find((group) => group.email === user.email);
+  const userEmailGroup = uniqueEmailAddresses.find((group) => group?.email === user.email);
   const emailUsedByPartyNames = userEmailGroup?.parties.map((party) => ({ name: party.name, type: party.type })) || [];
 
-  const userPhoneGroup = uniquePhoneNumbers.find((group) => group.phoneNumber === user.phoneNumber);
+  const userPhoneGroup = uniquePhoneNumbers.find((group) => group?.phoneNumber === user.phoneNumber);
   const phoneNumberUsedByPartyNames =
     userPhoneGroup?.parties.map((party) => ({ name: party.name, type: party.type })) || [];
   const address = `${user?.party?.person?.mailingAddress} ${user?.party?.person?.mailingPostalCode} ${user?.party?.person?.mailingPostalCity}`;

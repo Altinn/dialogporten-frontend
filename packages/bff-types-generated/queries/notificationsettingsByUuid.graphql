@@ -1,9 +1,0 @@
-query notificationsettingsByUuid($uuid: String!) {
-  notificationsettingsByUuid(uuid: $uuid) {
-    emailAddress
-    phoneNumber
-    resourceIncludeList
-    userId
-    partyUuid
-  }
-}
