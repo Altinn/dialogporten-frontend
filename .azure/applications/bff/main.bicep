@@ -33,7 +33,7 @@ param enableInitSessionEndpoint string = 'true'
 param disableProfile string = 'false'
 
 @description('URL to direct user after successful logout')
-param logoutRedirectUri string = 'https://altinn.no'
+param logoutRedirectUri string = 'https://altinn.no/ui/Authentication/Logout'
 
 @minLength(3)
 @secure()

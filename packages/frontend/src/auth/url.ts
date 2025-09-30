@@ -56,7 +56,7 @@ export const createHomeLink = () => {
   }
 
   if (location.hostname.includes('at.altinn.cloud')) {
-    return 'https://at22.altinn.cloud';
+    return 'https://at23.altinn.cloud';
   }
 
   if (location.host.includes('yt.altinn.cloud')) {
