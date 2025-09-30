@@ -35,7 +35,9 @@ export const UserNotificationSettingsModal = ({
     : 'https://minprofil.test.kontaktregisteret.no';
   const krrUrl = `${krrBaseUrl}/?locale=${i18n.language}`;
   const krrInfoUrl = 'https://eid.difi.no/nb/kontakt-og-reservasjonsregisteret';
-  const folkeRegisteretUrl = 'https://www.skatteetaten.no/person/folkeregister/flytte/';
+  const folkeRegisteretUrl = isProdEnvironment
+    ? 'https://www.skatteetaten.no/person/folkeregister/flytte/'
+    : 'https://testdata.skatteetaten.no/web/testnorge/soek/freg';
 
   const userEmailGroup = uniqueEmailAddresses.find((group) => group.email === user.email);
   const emailUsedByPartyNames = userEmailGroup?.parties.map((party) => ({ name: party.name, type: party.type })) || [];
