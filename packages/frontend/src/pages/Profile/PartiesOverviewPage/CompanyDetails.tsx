@@ -88,6 +88,7 @@ export const CompanyDetails = ({
           icon={{ svgElement: Buildings2Icon, theme: 'default' }}
           title="Organisasjonsnummer"
           value={uniqueId}
+          linkIcon
         />
         {parentAccount && (
           <>
