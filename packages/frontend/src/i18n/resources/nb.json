@@ -330,5 +330,8 @@
   "word.to": "til",
   "word.unread": "Ulest",
   "word.you": "deg",
-  "word.inbox": "Innboks"
+  "word.inbox": "Innboks",
+  "main_content_reference.error": "Ops! Noe gikk galt med innlastingen",
+  "main_content_reference.error_message": "Velg \"oppdater\" for å hente innholdet på nytt. Hvis problemet fortsetter, kontakt {sender}",
+  "main_content_reference.refetch": "Oppdater"
 }

@@ -330,5 +330,8 @@
   "word.to": "to",
   "word.unread": "Unread",
   "word.you": "you",
-  "word.inbox": "Inbox"
+  "word.inbox": "Inbox",
+  "main_content_reference.error": "Oops! Something went wrong with the loading",
+  "main_content_reference.error_message": "Select \"refresh\" to reload the content. If the problem persists, contact {sender}",
+  "main_content_reference.refetch": "Refresh"
 }
