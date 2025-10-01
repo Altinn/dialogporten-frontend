@@ -2,7 +2,7 @@ import type { MenuProps } from '@altinn/altinn-components';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { useParties } from '../../../api/hooks/useParties.ts';
-import { FeatureFlagKeys, useFeatureFlag } from '../../../featureFlags';
+import { useFeatureFlag } from '../../../featureFlags';
 import { useProfile } from '../../../pages/Profile';
 import { PageRoutes } from '../../../pages/routes.ts';
 import { buildInboxMenu } from './inboxMenu.tsx';
@@ -20,8 +20,8 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
   const fromView = (state as { fromView?: string })?.fromView;
   const { t } = useTranslation();
   const { currentEndUser } = useParties();
-  const showProfileLink: boolean = useFeatureFlag(FeatureFlagKeys.EnableProfileLinkInGlobalMenu);
-  const showAmLink: boolean = useFeatureFlag(FeatureFlagKeys.EnableAccessManagementLinkInGlobalMenu);
+  const showProfileLink: boolean = useFeatureFlag<boolean>('globalMenu.enableProfileLink', false);
+  const showAmLink: boolean = useFeatureFlag<boolean>('globalMenu.enableAccessManagementLink', false);
   const { user } = useProfile();
 
   const inboxMenus = buildInboxMenu({
