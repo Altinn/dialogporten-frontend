@@ -187,7 +187,7 @@ export function buildInboxMenu({
         icon: HandshakeFillIcon,
         hidden: !showAmLink,
         as: 'a',
-        href: 'https://am.ui.at22.altinn.cloud/accessmanagement/ui/users',
+        href: 'https://am.ui.at23.altinn.cloud/accessmanagement/ui/users',
         title: t('altinn.access_management'),
         selected: false,
         badge: {
