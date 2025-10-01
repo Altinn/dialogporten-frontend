@@ -1,5 +1,6 @@
 import {
   type AvatarProps,
+  type BreadcrumbsProps,
   Heading,
   List,
   PageBase,
@@ -17,8 +18,10 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { NotificationSettingsResponse, PartyFieldsFragment } from 'bff-types-generated';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link, useLocation } from 'react-router-dom';
 import { QUERY_KEYS } from '../../../constants/queryKeys';
 import { usePageTitle } from '../../../hooks/usePageTitle';
+import { pruneSearchQueryParams } from '../../Inbox/queryParams';
 import { PageRoutes } from '../../routes';
 import {
   type NotificationType,
@@ -35,6 +38,7 @@ export interface NotificationAccountsType extends PartyFieldsFragment {
 }
 
 export const NotificationsPage = () => {
+  const { search } = useLocation();
   const [showNotificationModal, setShowNotificationModal] = useState<NotificationType>('none');
   const [searchValue, setSearchValue] = useState('');
   const { t } = useTranslation();
@@ -44,7 +48,6 @@ export const NotificationsPage = () => {
   const { partiesWithNotificationSettings, isLoading: isLoadingPartiesWithNotificationSettings } =
     usePartiesWithNotificationSettings();
   const queryClient = useQueryClient();
-
   const onSave = () => {
     queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.NOTIFICATION_SETTINGS_FOR_CURRENT_USER] });
   };
@@ -65,7 +68,7 @@ export const NotificationsPage = () => {
     return [
       {
         label: t('word.frontpage'),
-        href: PageRoutes.inbox,
+        as: (props) => <Link {...props} to={PageRoutes.inbox + pruneSearchQueryParams(search)} />,
       },
       {
         label: formatDisplayName({
@@ -79,7 +82,7 @@ export const NotificationsPage = () => {
         label: t('sidebar.profile.notifications'),
         href: PageRoutes.partiesOverview,
       },
-    ];
+    ] as BreadcrumbsProps['items'];
   };
 
   const filteredParties = partiesWithNotificationSettings.filter((party) => {
@@ -101,8 +104,13 @@ export const NotificationsPage = () => {
       badge: {
         color: 'company',
         label: t('profile.parties', {
-          count: partiesWithNotificationSettings.filter((party) =>
-            party.notificationSettings?.phoneNumber?.includes(user?.phoneNumber || ''),
+          count: partiesWithNotificationSettings.filter(
+            (party) =>
+              party.notificationSettings?.phoneNumber?.length &&
+              party.notificationSettings?.phoneNumber?.length > 3 &&
+              user?.phoneNumber?.length &&
+              user?.phoneNumber?.length > 3 &&
+              party.notificationSettings?.phoneNumber?.includes(user?.phoneNumber || ''),
           ).length,
         }),
       },
@@ -117,8 +125,13 @@ export const NotificationsPage = () => {
       badge: {
         color: 'company',
         label: t('profile.parties', {
-          count: partiesWithNotificationSettings.filter((party) =>
-            party.notificationSettings?.emailAddress?.includes(user?.email || ''),
+          count: partiesWithNotificationSettings.filter(
+            (party) =>
+              party.notificationSettings?.emailAddress?.length &&
+              party.notificationSettings?.emailAddress?.length > 3 &&
+              user?.email?.length &&
+              user?.email?.length > 3 &&
+              party.notificationSettings?.emailAddress?.includes(user?.email || ''),
           ).length,
         }),
       },

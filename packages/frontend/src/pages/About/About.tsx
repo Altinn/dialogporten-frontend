@@ -1,27 +1,30 @@
-import { Article, Breadcrumbs, Heading, PageBase, Typography } from '@altinn/altinn-components';
+import { Article, Breadcrumbs, type BreadcrumbsProps, Heading, PageBase, Typography } from '@altinn/altinn-components';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { createMessageBoxLink } from '../../auth';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
+import { pruneSearchQueryParams } from '../Inbox/queryParams.ts';
 import { PageRoutes } from '../routes';
 
 export const AboutPage = () => {
   const { t } = useTranslation();
-
+  const { search } = useLocation();
   usePageTitle({ baseTitle: t('altinn.beta.about') });
 
   return (
     <PageBase>
       <Breadcrumbs
-        items={[
-          {
-            label: t('altinn.beta.inbox'),
-            as: (props) => <Link {...props} to={PageRoutes.inbox} />,
-          },
-          {
-            label: t('altinn.beta.about'),
-          },
-        ]}
+        items={
+          [
+            {
+              label: t('altinn.beta.inbox'),
+              as: (props) => <Link {...props} to={PageRoutes.inbox + pruneSearchQueryParams(search)} />,
+            },
+            {
+              label: t('altinn.beta.about'),
+            },
+          ] as BreadcrumbsProps['items']
+        }
       />
       <Article>
         <Heading size="xl">{t('about.inbox.title')}</Heading>
