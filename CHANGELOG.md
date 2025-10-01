@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.77.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.76.1...v1.77.0) (2025-10-01)
+
+
+### Features
+
+* Added counter to usage of private notification email/phone ([29663f7](https://github.com/Altinn/dialogporten-frontend/commit/29663f7f6671bbdcb7eaa0f7ff6e18df6a1ac761))
+
+
+### Bug Fixes
+
+* Remove link indication for org no. ([098ccb5](https://github.com/Altinn/dialogporten-frontend/commit/098ccb52ccedc2b948ae089d4c10b82fe887ed65))
+* Remove link indication for org no. ([a16bfea](https://github.com/Altinn/dialogporten-frontend/commit/a16bfea48ca9c93f4ff0a1514f0afeb5cce5a56c))
+* update url to access management to point to at23 ([#2828](https://github.com/Altinn/dialogporten-frontend/issues/2828)) ([61f3e6c](https://github.com/Altinn/dialogporten-frontend/commit/61f3e6c53b2edb0b5426f06eca9357e5424719c3))
+
 ## [1.76.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.76.0...v1.76.1) (2025-10-01)
 
 
