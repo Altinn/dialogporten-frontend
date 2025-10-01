@@ -1,9 +1,9 @@
 import { useContext } from 'react';
 import { useErrorLogger } from '../hooks/useErrorLogger';
-import type { FeatureFlagKeys } from './FeatureFlags';
+import type { FeatureFlagKey } from './FeatureFlags.ts';
 import { FeatureFlagContext } from './FeatureFlagsProvider';
 
-export function useFeatureFlag<T>(flag: FeatureFlagKeys): T {
+export function useFeatureFlag<T = boolean | number | string>(flag: FeatureFlagKey, fallback?: T): T {
   const context = useContext(FeatureFlagContext);
   const { logError } = useErrorLogger();
 
@@ -16,7 +16,8 @@ export function useFeatureFlag<T>(flag: FeatureFlagKeys): T {
       },
       'useFeatureFlag must be used within a FeatureFlagProvider',
     );
-    return undefined as T;
+    return fallback as T;
   }
-  return context[flag] as T;
+
+  return (context[flag] as T) ?? (fallback as T);
 }
