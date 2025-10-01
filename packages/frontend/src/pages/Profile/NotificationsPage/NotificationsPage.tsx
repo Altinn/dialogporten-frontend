@@ -98,7 +98,14 @@ export const NotificationsPage = () => {
       icon: { svgElement: MobileIcon, theme: 'default' },
       title: t('profile.settings.sms_notifications'),
       value: user?.phoneNumber || 'Ingen telefonnummer registrert',
-      badge: <span data-size="xs">{t('profile.notifications.change_phone')}</span>,
+      badge: {
+        color: 'company',
+        label: t('profile.parties', {
+          count: partiesWithNotificationSettings.filter((party) =>
+            party.notificationSettings?.phoneNumber?.includes(user?.phoneNumber || ''),
+          ).length,
+        }),
+      },
       onClick: () => setShowNotificationModal('phoneNumber'),
       linkIcon: true,
       as: 'button',
@@ -107,7 +114,14 @@ export const NotificationsPage = () => {
       icon: { svgElement: PaperplaneIcon, theme: 'default' },
       title: t('profile.notifications.email_for_alerts'),
       value: user?.email || '',
-      badge: <span data-size="xs">{t('profile.notifications.change_email')}</span>,
+      badge: {
+        color: 'company',
+        label: t('profile.parties', {
+          count: partiesWithNotificationSettings.filter((party) =>
+            party.notificationSettings?.emailAddress?.includes(user?.email || ''),
+          ).length,
+        }),
+      },
       onClick: () => setShowNotificationModal('email'),
       linkIcon: true,
       as: 'button',
@@ -136,7 +150,7 @@ export const NotificationsPage = () => {
           true,
         )}
       />
-      <Heading size="xl">{t('profile.notifications.heading')}</Heading>
+      <Heading size="xl">{t('sidebar.profile.notifications')}</Heading>
 
       <Section spacing={6}>
         <Toolbar
