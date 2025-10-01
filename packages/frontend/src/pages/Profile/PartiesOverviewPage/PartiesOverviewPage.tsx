@@ -1,6 +1,7 @@
 import {
   AccountList,
   type AvatarProps,
+  type BreadcrumbsProps,
   type FilterState,
   Heading,
   PageBase,
@@ -15,18 +16,19 @@ import type { PartyFieldsFragment } from 'bff-types-generated';
 import React from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useProfile } from '..';
 import { useParties } from '../../../api/hooks/useParties';
 import { FeatureFlagKeys, useFeatureFlag } from '../../../featureFlags';
 import { usePageTitle } from '../../../hooks/usePageTitle';
+import { pruneSearchQueryParams } from '../../Inbox/queryParams';
 import { PageRoutes } from '../../routes';
 import styles from './partiesOverviewPage.module.css';
 import { partyFieldFragmentToAccountListItem } from './partyFieldToAccountList';
 
 export const PartiesOverviewPage = () => {
   const { t } = useTranslation();
-
+  const { search } = useLocation();
   const FILTER_VALUES = {
     PERSONS: t('parties.filter.persons'),
     COMPANIES: t('parties.filter.companies'),
@@ -71,7 +73,11 @@ export const PartiesOverviewPage = () => {
       filteredParties = [...filteredParties, ...deletedParties];
     }
     if (searchValue) {
-      return filteredParties.filter((party) => party.name.toLowerCase().includes(searchValue.toLowerCase()));
+      return filteredParties.filter(
+        (party) =>
+          party.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+          party.party.toLowerCase().includes(searchValue.toLowerCase()),
+      );
     }
     return filteredParties;
   }, [
@@ -97,7 +103,7 @@ export const PartiesOverviewPage = () => {
     return [
       {
         label: t('word.frontpage'),
-        href: PageRoutes.inbox,
+        as: (props) => <Link {...props} to={PageRoutes.inbox + pruneSearchQueryParams(search)} />,
       },
       {
         label: formatDisplayName({
@@ -111,7 +117,7 @@ export const PartiesOverviewPage = () => {
         label: t('sidebar.profile.parties'),
         href: PageRoutes.partiesOverview,
       },
-    ];
+    ] as BreadcrumbsProps['items'];
   };
 
   if (isLoadingParties) {
