@@ -27,8 +27,11 @@ export const UserNotificationSettingsModal = ({
   setShowModal,
 }: UserNotificationSettingsModalProps) => {
   const { user, isLoading } = useProfile();
-  const showModal = notificationType !== 'none';
   const { uniqueEmailAddresses, uniquePhoneNumbers } = usePartiesWithNotificationSettings();
+  if (isLoading) {
+    return null;
+  }
+  const showModal = notificationType !== 'none';
   const isProdEnvironment = location.hostname.includes('af.altinn.no');
   const krrBaseUrl = isProdEnvironment
     ? 'https://minprofil.kontaktregisteret.no'
@@ -42,7 +45,7 @@ export const UserNotificationSettingsModal = ({
   const userEmailGroup = uniqueEmailAddresses.find((group) => group?.email === user.email);
   const emailUsedByPartyNames = userEmailGroup?.parties.map((party) => ({ name: party.name, type: party.type })) || [];
 
-  const userPhoneGroup = uniquePhoneNumbers.find((group) => group?.phoneNumber === user.phoneNumber);
+  const userPhoneGroup = uniquePhoneNumbers?.find((group) => group?.phoneNumber === user.phoneNumber);
   const phoneNumberUsedByPartyNames =
     userPhoneGroup?.parties.map((party) => ({ name: party.name, type: party.type })) || [];
   const address = `${user?.party?.person?.mailingAddress} ${user?.party?.person?.mailingPostalCode} ${user?.party?.person?.mailingPostalCity}`;
