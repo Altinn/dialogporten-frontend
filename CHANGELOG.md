@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.76.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.76.0...v1.76.1) (2025-10-01)
+
+
+### Bug Fixes
+
+* update to latest version of altinn-components 0.41.0 ([#2823](https://github.com/Altinn/dialogporten-frontend/issues/2823)) ([64de38f](https://github.com/Altinn/dialogporten-frontend/commit/64de38f625ff7a4ba725f9fa3506bb4731c6c1e7))
+
 ## [1.76.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.75.0...v1.76.0) (2025-09-30)
 
 
