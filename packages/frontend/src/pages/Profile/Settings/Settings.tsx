@@ -11,7 +11,7 @@ import {
   Toolbar,
   formatDisplayName,
 } from '@altinn/altinn-components';
-import { BellIcon, MobileIcon, PaperplaneIcon } from '@navikt/aksel-icons';
+import { BellIcon, HouseIcon, MobileIcon, PaperplaneIcon } from '@navikt/aksel-icons';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
@@ -87,14 +87,14 @@ export const Settings = () => {
       as: 'button',
     },
     {
-      icon: { svgElement: PaperplaneIcon, theme: 'default' },
-      title: t('profile.notifications.email_for_alerts'),
-      value: user?.email || '',
+      icon: { svgElement: HouseIcon, theme: 'default' },
+      title: t('word.address'),
+      value: user?.party?.person?.mailingAddress || '',
       badge: {
         color: 'company',
         label: t('word.change'),
       },
-      onClick: () => setShowNotificationModal('email'),
+      onClick: () => setShowNotificationModal('address'),
       linkIcon: true,
       as: 'button',
     },
