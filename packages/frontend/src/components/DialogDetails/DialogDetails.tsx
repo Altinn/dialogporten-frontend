@@ -25,6 +25,7 @@ import { useTranslation } from 'react-i18next';
 import { Analytics } from '../../analytics';
 import type { DialogByIdDetails } from '../../api/hooks/useDialogById.tsx';
 import type { TimelineSegmentWithTransmissions } from '../../api/utils/transmissions.ts';
+import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { getDialogStatus } from '../../pages/Inbox/status.ts';
 import { ActivityLogModal } from '../ActivityLog/activityLogModal.tsx';
@@ -82,6 +83,7 @@ const handleDialogActionClick = async (
   props: DialogActionProps,
   dialogToken: string,
   responseFinished: () => void,
+  logError: (error: Error, context?: Record<string, unknown>, errorMessage?: string) => void,
 ): Promise<void> => {
   const { url, httpMethod, prompt } = props;
 
@@ -106,10 +108,28 @@ const handleDialogActionClick = async (
       );
 
       if (!response.ok) {
-        console.error(`Error: ${response.statusText}`);
+        logError(
+          new Error(`HTTP ${response.status}: ${response.statusText}`),
+          {
+            context: 'DialogDetails.handleDialogActionClick.response',
+            url,
+            httpMethod,
+            status: response.status,
+            statusText: response.statusText,
+          },
+          `Dialog action failed: ${response.statusText}`,
+        );
       }
     } catch (error) {
-      console.error('Error performing action:', error);
+      logError(
+        error as Error,
+        {
+          context: 'DialogDetails.handleDialogActionClick.fetch',
+          url,
+          httpMethod,
+        },
+        'Error performing dialog action',
+      );
     } finally {
       responseFinished();
     }
@@ -124,6 +144,7 @@ export const DialogDetails = ({
   subscriptionOpened,
 }: DialogDetailsProps): ReactElement => {
   const { t } = useTranslation();
+  const { logError } = useErrorLogger();
   const [actionIdLoading, setActionIdLoading] = useState<string>('');
   const [showAllTransmissions, setShowAllTransmissions] = useState<boolean>(false);
 
@@ -240,7 +261,7 @@ export const DialogDetails = ({
     hidden: action.hidden,
     onClick: () => {
       setActionIdLoading(action.id);
-      void handleDialogActionClick(action, dialog.dialogToken, () => setActionIdLoading(''));
+      void handleDialogActionClick(action, dialog.dialogToken, () => setActionIdLoading(''), logError);
     },
   }));
 

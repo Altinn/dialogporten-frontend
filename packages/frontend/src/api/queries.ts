@@ -19,8 +19,9 @@ import {
   type UpdateSystemLabelMutation,
   getSdk,
 } from 'bff-types-generated';
-import { GraphQLClient, type RequestMiddleware, type ResponseMiddleware } from 'graphql-request';
+import { ClientError, GraphQLClient, type RequestMiddleware, type ResponseMiddleware } from 'graphql-request';
 import { Analytics } from '../analytics';
+import { logError } from '../utils/errorLogger';
 
 const requestMiddleware: RequestMiddleware = (request) => {
   try {
@@ -38,7 +39,16 @@ const requestMiddleware: RequestMiddleware = (request) => {
     headers.set('x-graphql-start-time', startTime.toString());
     request.headers = headers;
   } catch (err) {
-    console.error('GraphQL request middleware error:', err);
+    logError(
+      err as Error,
+      {
+        context: 'queries.requestMiddleware',
+        url: request.url,
+        method: request.method,
+        hasHeaders: !!request.headers,
+      },
+      'Error in GraphQL request middleware',
+    );
   }
 
   return request;
@@ -49,17 +59,80 @@ const responseMiddleware: ResponseMiddleware = (response) => {
     if (!Analytics.isEnabled) {
       return;
     }
-    // Handle both successful responses and errors
-    if (response instanceof Error) {
-      // This is an error case - track as a failed network request
+
+    if (response instanceof ClientError) {
+      // Extract detailed information from GraphQL errors
+      const graphqlErrors = response.response.errors || [];
+      const errorDetails = graphqlErrors.map((error) => ({
+        message: error.message,
+        path: error.path,
+        locations: error.locations,
+        extensions: error.extensions,
+      }));
+
+      const primaryError = graphqlErrors[0];
+      const errorMessage = primaryError
+        ? `GraphQL Error: ${primaryError.message}${primaryError.path ? ` at path: ${primaryError.path.join('.')}` : ''}`
+        : 'GraphQL ClientError';
+
+      logError(
+        response as Error,
+        {
+          context: 'queries.responseMiddleware.ClientError',
+          query: response.request.query,
+          variables: response.request.variables,
+          status: response.response.status,
+          errorCount: graphqlErrors.length,
+          errors: errorDetails,
+          primaryErrorPath: primaryError?.path,
+          primaryErrorExtensions: primaryError?.extensions,
+        },
+        errorMessage,
+      );
+
+      // Track dependency with more specific information
       Analytics.trackDependency({
-        id: `graphql-error-${Date.now()}`,
+        id: `graphql-client-error-${Date.now()}`,
         target: '/api/graphql',
-        name: 'NetworkError',
+        name: 'GraphQLClientError',
+        data: errorDetails.map((e) => e.message).join('; '),
+        duration: 0,
+        success: false,
+        responseCode: response.response.status || 400,
+        properties: {
+          errorCount: String(graphqlErrors.length),
+          primaryErrorPath: primaryError?.path?.join('.') || '',
+        },
+      });
+      return;
+    }
+
+    if (response instanceof Error) {
+      // This is a general error case (network, parsing, etc.)
+      const errorMessage = `GraphQL Network/Parse Error: ${response.message}`;
+
+      logError(
+        response,
+        {
+          context: 'queries.responseMiddleware.Error',
+          errorType: response.constructor.name,
+          errorStack: response.stack,
+        },
+        errorMessage,
+      );
+
+      // Track dependency as a failed network request
+      Analytics.trackDependency({
+        id: `graphql-network-error-${Date.now()}`,
+        target: '/api/graphql',
+        name: 'GraphQLNetworkError',
         data: response.message,
         duration: 0,
         success: false,
         responseCode: 500,
+        properties: {
+          errorType: response.constructor.name,
+        },
       });
       return;
     }
@@ -111,7 +184,17 @@ const responseMiddleware: ResponseMiddleware = (response) => {
       type: 'HTTP',
     });
   } catch (err) {
-    console.error('GraphQL response middleware error:', err);
+    // response is likely an Error or not a response object
+    logError(
+      err as Error,
+      {
+        context: 'queries.responseMiddleware.generalError',
+        responseType: typeof response,
+        responseConstructor: response?.constructor?.name,
+        errorType: (err as Error)?.constructor?.name,
+      },
+      'Unexpected error in GraphQL response middleware',
+    );
   }
 };
 

@@ -1,7 +1,7 @@
 import React, { type ReactNode, type ErrorInfo, useEffect, useRef } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { Analytics } from '../../analytics';
 import { QUERY_KEYS } from '../../constants/queryKeys';
+import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { PageRoutes } from '../../pages/routes';
 import { useGlobalState } from '../../useGlobalState';
 
@@ -10,6 +10,7 @@ interface ErrorBoundaryProps {
   fallbackUI?: ReactNode;
   componentName?: string;
   setIsErrorState: (isError: boolean) => void;
+  logError: (error: Error, context?: Record<string, unknown>, errorMessage?: string) => void;
 }
 
 interface ErrorBoundaryState {
@@ -29,7 +30,14 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Caught by ErrorBoundary:', error, errorInfo);
+    this.props.logError(
+      error,
+      {
+        ...errorInfo,
+        source: 'ErrorBoundary.componentDidCatch',
+      },
+      'Caught by ErrorBoundary',
+    );
     this.setState({ errorInfo, error });
     this.props.setIsErrorState(true);
   }
@@ -41,12 +49,10 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
     if (isMock || (this.state.hasError && import.meta.env.PROD)) {
       const errorToReport = this.state.error || new Error('ErrorBoundary caught an error');
       const errorInfoToReport = this.state.errorInfo || {};
-      Analytics.trackException(
-        { exception: errorToReport },
-        {
-          ...errorInfoToReport,
-        },
-      );
+      this.props.logError(errorToReport, {
+        ...errorInfoToReport,
+        componentName: this.props.componentName || 'Unknown Component',
+      });
 
       return (
         <Navigate
@@ -76,9 +82,10 @@ function ErrorBoundaryWrapper({
   componentName: string;
 }) {
   const [, setIsErrorState] = useGlobalState<boolean>(QUERY_KEYS.ERROR_STATE, false);
+  const { logError } = useErrorLogger();
 
   return (
-    <ErrorBoundary setIsErrorState={setIsErrorState} componentName={componentName}>
+    <ErrorBoundary setIsErrorState={setIsErrorState} componentName={componentName} logError={logError}>
       {children}
     </ErrorBoundary>
   );

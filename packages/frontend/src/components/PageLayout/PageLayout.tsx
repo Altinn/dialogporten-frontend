@@ -16,6 +16,7 @@ import { useParties } from '../../api/hooks/useParties.ts';
 import { updateLanguage } from '../../api/queries.ts';
 import { createHomeLink } from '../../auth';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
+import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { i18n } from '../../i18n/config.ts';
 import { getSearchStringFromQueryParams } from '../../pages/Inbox/queryParams.ts';
 import { useProfile } from '../../pages/Profile';
@@ -44,6 +45,7 @@ export const PageLayout: React.FC = () => {
   const { selectedProfile, selectedParties, parties, allOrganizationsSelected } = useParties();
   const { autocomplete } = useAutocomplete({ selectedParties: selectedParties, searchValue });
   const [isErrorState] = useGlobalState<boolean>(QUERY_KEYS.ERROR_STATE, false);
+  const { logError } = useErrorLogger();
 
   const { accounts, selectedAccount, accountSearch, accountGroups, onSelectAccount } = useAccounts({
     parties,
@@ -81,7 +83,14 @@ export const PageLayout: React.FC = () => {
     try {
       await updateLanguage(language);
     } catch (error) {
-      console.error('Failed to delete saved search:', error);
+      logError(
+        error as Error,
+        {
+          context: 'PageLayout.handleUpdateLanguage',
+          language,
+        },
+        'Error updating language',
+      );
     } finally {
       void i18n.changeLanguage(language);
     }
