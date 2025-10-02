@@ -208,6 +208,7 @@
   "parties.filter.deleted_parties": "Sletta aktørar",
   "parties.filter.groups": "Grupper",
   "parties.filter.persons": "Personar",
+  "parties.filter.show_deleted": "Vis slettede",
   "parties.groups.favourites": "Favorittar",
   "parties.groups.groups": "Grupper",
   "parties.groups.other_accounts": "Andre kontoar",

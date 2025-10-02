@@ -1,109 +1,96 @@
 import {
   AccountList,
   type AvatarProps,
-  type BreadcrumbsProps,
-  type FilterState,
   Heading,
   PageBase,
   PageNav,
   Section,
   Toolbar,
   type ToolbarFilterProps,
-  Typography,
   formatDisplayName,
 } from '@altinn/altinn-components';
-import type { PartyFieldsFragment } from 'bff-types-generated';
-import React from 'react';
-import { useState } from 'react';
+import type { FilterState } from '@altinn/altinn-components/dist/types/lib/components/Toolbar/Toolbar';
+import React, { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useProfile } from '..';
 import { useParties } from '../../../api/hooks/useParties';
-import { FeatureFlagKeys, useFeatureFlag } from '../../../featureFlags';
 import { usePageTitle } from '../../../hooks/usePageTitle';
 import { pruneSearchQueryParams } from '../../Inbox/queryParams';
 import { PageRoutes } from '../../routes';
-import styles from './partiesOverviewPage.module.css';
 import { partyFieldFragmentToAccountListItem } from './partyFieldToAccountList';
+
+enum FilterStateEnum {
+  ALL_PARTIES = 'ALL_PARTIES',
+  PERSONS = 'PERSONS',
+  COMPANIES = 'COMPANIES',
+}
 
 export const PartiesOverviewPage = () => {
   const { t } = useTranslation();
   const { search } = useLocation();
-  const FILTER_VALUES = {
-    PERSONS: t('parties.filter.persons'),
-    COMPANIES: t('parties.filter.companies'),
-    DELETED_PARTIES: t('parties.filter.deleted_parties'),
-    GROUPS: t('parties.filter.groups'),
-  } as const;
-  const [searchValue, setSearchValue] = useState('');
-  const [filterState, setFilterState] = React.useState<FilterState>({
-    'parties-filter': [FILTER_VALUES.PERSONS, FILTER_VALUES.COMPANIES],
-  });
-  const DisableFavoriteGroups = useFeatureFlag(FeatureFlagKeys.DisableFavoriteGroups);
-
-  const noFiltersSelected = !filterState['parties-filter'] || filterState['parties-filter']?.length === 0;
   const { groups, user, addFavoriteParty, deleteFavoriteParty, favoritesGroup } = useProfile();
   const navigate = useNavigate();
-  const endUserName = `${user?.party?.person?.firstName || ''} ${user?.party?.person?.lastName}`;
-  const { parties: normalParties, isLoading: isLoadingParties, deletedParties } = useParties();
+  const { parties, isLoading: isLoadingParties, deletedParties } = useParties();
+  const [searchValue, setSearchValue] = useState<string>('');
+  const [filterState, setFilterState] = React.useState<FilterState>({
+    partyScope: [FilterStateEnum.ALL_PARTIES],
+    showDeleted: [],
+  });
+  const showDeleted = (filterState?.showDeleted?.length ?? 0) > 0;
+
+  const endUserName = `${user?.party?.person?.firstName ?? ''} ${user?.party?.person?.lastName ?? ''}`.trim();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+
   usePageTitle({ baseTitle: t('component.parties_overview') });
 
   const filteredParties = React.useMemo(() => {
-    const showDeletedParties = filterState['parties-filter']?.includes(FILTER_VALUES.DELETED_PARTIES);
-    const showGroups = filterState['parties-filter']?.includes(FILTER_VALUES.GROUPS);
-    const showCompanies = filterState['parties-filter']?.includes(FILTER_VALUES.COMPANIES);
-    const showPersons = filterState['parties-filter']?.includes(FILTER_VALUES.PERSONS);
-    let filteredParties: PartyFieldsFragment[] = [];
-    if (noFiltersSelected) {
-      return filteredParties;
-    }
-    if (showGroups && !DisableFavoriteGroups) {
-      return normalParties.filter((party) => party.partyType === 'Group');
-    }
-    if (showCompanies) {
-      const companiesToShow = normalParties.filter((party) => party.partyType === 'Organization');
-      filteredParties = [...filteredParties, ...companiesToShow];
-    }
-    if (showPersons) {
-      const personsToShow = normalParties.filter((party) => party.partyType === 'Person');
-      filteredParties = [...filteredParties, ...personsToShow];
-    }
-    if (showDeletedParties) {
-      filteredParties = [...filteredParties, ...deletedParties];
-    }
-    if (searchValue) {
-      return filteredParties.filter(
-        (party) =>
-          party.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-          party.party.toLowerCase().includes(searchValue.toLowerCase()),
+    const filters = filterState?.partyScope ?? [];
+    const includeDeletedParties = showDeleted || filters.includes(FilterStateEnum.ALL_PARTIES);
+
+    let result = includeDeletedParties ? [...parties, ...deletedParties] : [...parties];
+
+    if (searchValue.length > 0) {
+      const search = searchValue.toLowerCase();
+      result = result.filter(
+        (party) => party.name.toLowerCase().includes(search) || party.party.toLowerCase().includes(search),
       );
     }
-    return filteredParties;
-  }, [
-    noFiltersSelected,
-    DisableFavoriteGroups,
-    normalParties,
-    filterState,
-    deletedParties,
-    searchValue,
-    FILTER_VALUES,
-  ]);
+
+    result = result.filter((party) => {
+      if (filters.includes(FilterStateEnum.ALL_PARTIES)) {
+        return true;
+      }
+
+      if (filters.includes(FilterStateEnum.COMPANIES) && party.partyType === 'Organization') {
+        return true;
+      }
+
+      return filters.includes(FilterStateEnum.PERSONS) && party.partyType === 'Person';
+    });
+
+    return result;
+  }, [parties, deletedParties, filterState, searchValue, showDeleted]);
 
   const toggleExpanded = (id: string) => {
     setExpandedItems((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]));
   };
 
-  const isExpanded = (id: string) => {
-    return expandedItems.includes(id);
-  };
+  const isExpanded = useCallback(
+    (id: string) => {
+      return expandedItems.includes(id);
+    },
+    [expandedItems],
+  );
 
   const getBreadcrumbs = (person?: AvatarProps, reverseNameOrder?: boolean) => {
     if (!person) return [];
     return [
       {
         label: t('word.frontpage'),
-        as: (props) => <Link {...props} to={PageRoutes.inbox + pruneSearchQueryParams(search)} />,
+        as: (props: React.ComponentProps<typeof Link>) => (
+          <Link {...props} to={PageRoutes.inbox + pruneSearchQueryParams(search)} />
+        ),
       },
       {
         label: formatDisplayName({
@@ -117,16 +104,8 @@ export const PartiesOverviewPage = () => {
         label: t('sidebar.profile.parties'),
         href: PageRoutes.partiesOverview,
       },
-    ] as BreadcrumbsProps['items'];
+    ];
   };
-
-  if (isLoadingParties) {
-    return (
-      <div className={styles.noResults}>
-        <Typography>Insert Skeleton here</Typography>
-      </div>
-    );
-  }
 
   const accountListGroups = {
     primary: {
@@ -138,7 +117,6 @@ export const PartiesOverviewPage = () => {
     persons: {
       title: t('parties.groups.favourites'),
     },
-    ...(!DisableFavoriteGroups ? { groups: { title: t('parties.groups.groups') } } : {}),
     secondary: {
       title: t('parties.groups.other_accounts'),
     },
@@ -146,46 +124,53 @@ export const PartiesOverviewPage = () => {
 
   const filterOptions: ToolbarFilterProps[] = [
     {
-      optionType: 'checkbox',
-      name: 'parties-filter',
-      label: t('filter_bar.add_filter"'),
+      optionType: 'radio',
+      name: 'partyScope',
+      label: t('filter_bar.add_filter'),
       options: [
         {
+          groupId: '1',
+          label: t('parties.filter.all_parties'),
+          value: FilterStateEnum.ALL_PARTIES,
+        },
+        {
+          groupId: '1',
           label: t('parties.filter.persons'),
-          value: FILTER_VALUES.PERSONS,
+          value: FilterStateEnum.PERSONS,
         },
         {
+          groupId: '1',
           label: t('parties.filter.companies'),
-          value: FILTER_VALUES.COMPANIES,
+          value: FilterStateEnum.COMPANIES,
         },
         {
-          label: t('parties.filter.deleted_parties'),
-          value: FILTER_VALUES.DELETED_PARTIES,
+          name: 'showDeleted',
+          type: 'checkbox',
+          groupId: 'company',
+          label: t('parties.filter.show_deleted'),
+          value: 'deleted',
+          hidden:
+            filterState?.partyScope?.includes(FilterStateEnum.PERSONS) ||
+            filterState?.partyScope?.includes(FilterStateEnum.ALL_PARTIES) ||
+            deletedParties.length === 0,
         },
       ],
     },
   ];
 
   const getFilterLabel = (_: string, filterValues: (string | number)[] | undefined) => {
-    if (
-      filterValues?.includes(FILTER_VALUES.PERSONS) &&
-      !filterValues?.includes(FILTER_VALUES.DELETED_PARTIES) &&
-      filterValues?.includes(FILTER_VALUES.COMPANIES)
-    ) {
+    if (filterValues?.includes(FilterStateEnum.ALL_PARTIES)) {
       return t('parties.filter.all_parties');
     }
+
     return (
       filterValues
         ?.map((value) => {
           switch (value) {
-            case FILTER_VALUES.PERSONS:
+            case FilterStateEnum.PERSONS:
               return t('parties.filter.persons');
-            case FILTER_VALUES.COMPANIES:
-              return t('parties.filter.companies');
-            case FILTER_VALUES.DELETED_PARTIES:
-              return t('parties.filter.deleted_parties');
-            case FILTER_VALUES.GROUPS:
-              return t('parties.filter.groups');
+            case FilterStateEnum.COMPANIES:
+              return showDeleted ? t('parties.labels.all_organizations') : t('parties.filter.companies');
             default:
               return value.toString();
           }
@@ -217,22 +202,39 @@ export const PartiesOverviewPage = () => {
           filters={filterOptions}
         />
       </Section>
-
       <Section spacing={6}>
-        <AccountList
-          groups={accountListGroups}
-          items={partyFieldFragmentToAccountListItem({
-            parties: filteredParties,
-            isExpanded,
-            toggleExpanded,
-            user,
-            favoritesGroup,
-            addFavoriteParty,
-            deleteFavoriteParty,
-            groups,
-            navigate,
-          })}
-        />
+        {isLoadingParties ? (
+          <AccountList
+            groups={{ loading: { title: t('word.loading') } }}
+            items={[
+              {
+                id: 'loading',
+                groupId: 'loading',
+                loading: true,
+                title: 'is loading, nothing here',
+                type: 'company',
+                disabled: true,
+                interactive: false,
+                name: '',
+              },
+            ]}
+          />
+        ) : (
+          <AccountList
+            groups={accountListGroups}
+            items={partyFieldFragmentToAccountListItem({
+              parties: filteredParties,
+              isExpanded,
+              toggleExpanded,
+              user,
+              favoritesGroup,
+              addFavoriteParty,
+              deleteFavoriteParty,
+              groups,
+              navigate,
+            })}
+          />
+        )}
       </Section>
     </PageBase>
   );

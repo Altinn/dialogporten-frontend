@@ -202,6 +202,7 @@
   "onboarding.tour.search.title": "Søk",
   "parties.current_end_user": "Logget inn som {name}",
   "parties.filter.all_parties": "Alle aktører",
+  "parties.filter.show_deleted": "Vis slettede",
   "parties.filter.choose_parties": "Velg aktører",
   "parties.filter.companies": "Virksomheter",
   "parties.filter.deleted_parties": "Slettede aktører",

@@ -58,7 +58,7 @@ export const partyFieldFragmentToAccountListItem = ({
     if (isFavorite) {
       await deleteFavoriteParty(partyUuid);
     } else {
-      addFavoriteParty(partyUuid);
+      await addFavoriteParty(partyUuid);
     }
   };
 
