@@ -11,7 +11,10 @@ import { Buildings2Icon, HeartFillIcon, HeartIcon, InboxIcon } from '@navikt/aks
 import { useQueryClient } from '@tanstack/react-query';
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { QUERY_KEYS } from '../../../constants/queryKeys';
+import { pruneSearchQueryParams } from '../../Inbox/queryParams';
+import { PageRoutes } from '../../routes';
 import { CompanyNotificationSettingsModal } from '../NotificationsPage/CompanyNotificationSettingsModal';
 import type { NotificationAccountsType } from '../NotificationsPage/NotificationsPage';
 import { useNotificationSettingsForCurrentUser } from '../useNotificationSettings';
@@ -113,6 +116,7 @@ export interface AccountToolbarProps extends AccountListItemProps {
 }
 
 export const AccountToolbar = ({ id, isCurrentEndUser, favourite, onToggleFavourite }: AccountToolbarProps) => {
+  const { search } = useLocation();
   return (
     <Flex spacing={2} size="xs">
       {!isCurrentEndUser && (
@@ -124,7 +128,7 @@ export const AccountToolbar = ({ id, isCurrentEndUser, favourite, onToggleFavour
           {favourite ? 'Fjern favoritt' : 'Legg til favoritt'}
         </Button>
       )}
-      <Button icon={InboxIcon} variant="outline">
+      <Button icon={InboxIcon} variant="outline" href={PageRoutes.inbox + pruneSearchQueryParams(search)} as="a">
         Gå til Innboks
       </Button>
     </Flex>
