@@ -1,4 +1,6 @@
 import {
+  Button,
+  ButtonGroup,
   DsButton,
   DsLink,
   ModalBase,
@@ -80,7 +82,8 @@ export const UserNotificationSettingsModal = ({
             />
             <Typography>
               Primære varslingsadresser hentes fra et felles kontaktregister for stat og kommune. Endre i{' '}
-              <DsLink href={krrInfoUrl}>Kontakt og reservasjonsregisteret</DsLink>.
+              <DsLink href={krrInfoUrl}>Kontakt og reservasjonsregisteret</DsLink>, et felles kontaktregister for stat
+              og kommune. Gå videre for å endre.
             </Typography>
             <LinkButton href={krrUrl}>Endre mobiltelefon</LinkButton>
           </ModalBody>
@@ -109,7 +112,8 @@ export const UserNotificationSettingsModal = ({
             <NotificationUsedByList currentEnduserName={user?.party?.name || ''} avatarItems={emailUsedByPartyNames} />
             <Typography>
               Primære varslingsadresser hentes fra et felles kontaktregister for stat og kommune. Endre i{' '}
-              <DsLink href={krrInfoUrl}>Kontakt og reservasjonsregisteret</DsLink>.
+              <DsLink href={krrInfoUrl}>Kontakt og reservasjonsregisteret</DsLink>, et felles kontaktregister for stat
+              og kommune. Gå videre for å endre.
             </Typography>
             <LinkButton href={krrUrl}>Endre e-postadresse</LinkButton>
           </ModalBody>
@@ -132,11 +136,15 @@ export const UserNotificationSettingsModal = ({
               <PadlockLockedFillIcon fontSize="1.5rem" />
               <p>Adresse</p>
             </div>
-            <Textarea className={styles.textField} name="address" placeholder="Adresse" value={address} disabled />
+            <Textarea name="address" placeholder="Adresse" value={address} readOnly />
             <Typography>
               Altinn bruker adressen din fra <DsLink href={krrInfoUrl}>Folkeregisteret</DsLink>.
             </Typography>
-            <LinkButton href={folkeRegisteretUrl}>Meld adresseendring</LinkButton>
+            <ButtonGroup>
+              <Button variant="outline" href={folkeRegisteretUrl} icon={{ svgElement: ExternalLinkIcon }}>
+                Endre adresse
+              </Button>
+            </ButtonGroup>
           </ModalBody>
         </>
       );
