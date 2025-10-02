@@ -26,7 +26,18 @@ export const getPartyIcon = ({
   };
 };
 
-export const getEnabledNotificationsBadge = (notificationEmailAddress: string, notificationPhoneNumber: string) => {
+export const getEnabledNotificationsBadge = (
+  notificationEmailAddress: string,
+  notificationPhoneNumber: string,
+  isDeleted?: boolean,
+) => {
+  if (isDeleted) {
+    return {
+      color: 'alert',
+      variant: 'base',
+      label: 'Slettet',
+    };
+  }
   if (notificationEmailAddress && notificationPhoneNumber) {
     return {
       color: 'company' as BadgeProps['color'],
@@ -91,6 +102,7 @@ export const partyFieldFragmentToNotificationsListItem = ({
       badge: getEnabledNotificationsBadge(
         party?.notificationSettings?.emailAddress || '',
         party?.notificationSettings?.phoneNumber || '',
+        party.isDeleted,
       ),
       emailAlerts: true,
       linkIcon: true,
