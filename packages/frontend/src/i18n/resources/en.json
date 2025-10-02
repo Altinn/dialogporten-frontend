@@ -208,6 +208,7 @@
   "parties.filter.deleted_parties": "Deleted parties",
   "parties.filter.groups": "Groups",
   "parties.filter.persons": "Persons",
+  "parties.filter.show_deleted": "Show deleted",
   "parties.groups.favourites": "Favorites",
   "parties.groups.groups": "Groups",
   "parties.groups.other_accounts": "Other accounts",
