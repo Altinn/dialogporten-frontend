@@ -1,9 +1,9 @@
 import React, { type ReactNode, type ErrorInfo, useEffect, useRef } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
+import { Analytics } from '../../analytics';
 import { QUERY_KEYS } from '../../constants/queryKeys';
 import { PageRoutes } from '../../pages/routes';
 import { useGlobalState } from '../../useGlobalState';
-import { Analytics } from '../../analytics';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
