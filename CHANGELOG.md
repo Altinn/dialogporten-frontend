@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.78.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.77.0...v1.78.0) (2025-10-02)
+
+
+### Features
+
+* Settings page + other profile improvements ([c054d5b](https://github.com/Altinn/dialogporten-frontend/commit/c054d5ba908065bd7da88a454584b33c48bad45a))
+
+
+### Bug Fixes
+
+* **frontend:** avoid tracking unhandled exceptions ([#2845](https://github.com/Altinn/dialogporten-frontend/issues/2845)) ([0a57683](https://github.com/Altinn/dialogporten-frontend/commit/0a5768391ea43420339d53ae8660d17ef10a510a))
+* Some minor fixes to Settings page ([4af0faa](https://github.com/Altinn/dialogporten-frontend/commit/4af0faa104c4feac3f6a17e02a368eb4e6446b7e))
+
 ## [1.77.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.76.1...v1.77.0) (2025-10-01)
 
 
