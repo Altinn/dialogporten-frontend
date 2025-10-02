@@ -45,8 +45,8 @@ importers:
         specifier: 13.0.1
         version: 13.0.1
       '@fastify/otel':
-        specifier: 0.7.0
-        version: 0.7.0(@opentelemetry/api@1.9.0)
+        specifier: 0.9.4
+        version: 0.9.4(@opentelemetry/api@1.9.0)
       '@fastify/session':
         specifier: ^11.1.0
         version: 11.1.0
@@ -2114,8 +2114,8 @@ packages:
   '@fastify/merge-json-schemas@0.2.1':
     resolution: {integrity: sha512-OA3KGBCy6KtIvLf8DINC5880o5iBlDX4SxzLQS8HorJAbqluzLRn80UXU0bxZn7UOFhFgpRJDasfwn9nG4FG4A==}
 
-  '@fastify/otel@0.7.0':
-    resolution: {integrity: sha512-lqCXe0q34/KdiNGBOTfNazxwp28kILcCWXMgDs0MeOeGOvbxVuK9LffuKJP1+T0kFmuXSbpTIV8sdzEb/yGBZA==}
+  '@fastify/otel@0.9.4':
+    resolution: {integrity: sha512-NboTg+WAJPQ/prwmXA9ey2araV2Dj5+5NoCP5dZ5sI49wGKuZZ3k0kGLiFD1CIPEh2bI2G2HXF7ozTbDauh9Yg==}
     peerDependencies:
       '@opentelemetry/api': ^1.9.0
 
@@ -2409,6 +2409,7 @@ packages:
   '@graphql-tools/prisma-loader@8.0.17':
     resolution: {integrity: sha512-fnuTLeQhqRbA156pAyzJYN0KxCjKYRU5bz1q/SKOwElSnAU4k7/G1kyVsWLh7fneY78LoMNH5n+KlFV8iQlnyg==}
     engines: {node: '>=16.0.0'}
+    deprecated: 'This package was intended to be used with an older versions of Prisma.\nThe newer versions of Prisma has a different approach to GraphQL integration.\nTherefore, this package is no longer needed and has been deprecated and removed.\nLearn more: https://www.prisma.io/graphql'
     peerDependencies:
       graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
 
@@ -12792,11 +12793,11 @@ snapshots:
     dependencies:
       dequal: 2.0.3
 
-  '@fastify/otel@0.7.0(@opentelemetry/api@1.9.0)':
+  '@fastify/otel@0.9.4(@opentelemetry/api@1.9.0)':
     dependencies:
       '@opentelemetry/api': 1.9.0
       '@opentelemetry/core': 2.1.0(@opentelemetry/api@1.9.0)
-      '@opentelemetry/instrumentation': 0.200.0(@opentelemetry/api@1.9.0)
+      '@opentelemetry/instrumentation': 0.203.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/semantic-conventions': 1.37.0
       minimatch: 10.0.3
     transitivePeerDependencies:
