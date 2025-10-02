@@ -161,7 +161,7 @@ if (applicationInsightsEnabled) {
         enableAutoRouteTracking: false, // Disable auto tracking, we'll handle it manually
         autoTrackPageVisitTime: false,
         enableCorsCorrelation: true,
-        enableUnhandledPromiseRejectionTracking: true,
+        enableUnhandledPromiseRejectionTracking: false,
         enableAjaxErrorStatusText: true,
         disableAjaxTracking: true,
         disableFetchTracking: true,
