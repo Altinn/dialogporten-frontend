@@ -16,6 +16,7 @@ import { useParties } from '../../../api/hooks/useParties';
 import { usePageTitle } from '../../../hooks/usePageTitle';
 import { pruneSearchQueryParams } from '../../Inbox/queryParams';
 import { PageRoutes } from '../../routes';
+import { AccountListSkeleton } from '../AccountListSkeleton';
 import { useAccountFilters } from '../NotificationsPage/useAccountFilters';
 import { partyFieldFragmentToAccountListItem } from './partyFieldToAccountList';
 
@@ -114,24 +115,8 @@ export const PartiesOverviewPage = () => {
           onFilterStateChange={setFilterState}
           filters={filters}
         />
-      </Section>
-      <Section spacing={6}>
         {isLoadingParties ? (
-          <AccountList
-            groups={{ loading: { title: t('word.loading') } }}
-            items={[
-              {
-                id: 'loading',
-                groupId: 'loading',
-                loading: true,
-                title: 'is loading, nothing here',
-                type: 'company',
-                disabled: true,
-                interactive: false,
-                name: '',
-              },
-            ]}
-          />
+          <AccountListSkeleton />
         ) : (
           <AccountList
             groups={accountListGroups}
