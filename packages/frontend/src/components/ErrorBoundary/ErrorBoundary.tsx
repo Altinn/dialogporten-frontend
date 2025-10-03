@@ -30,14 +30,6 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    this.props.logError(
-      error,
-      {
-        ...errorInfo,
-        source: 'ErrorBoundary.componentDidCatch',
-      },
-      'Caught by ErrorBoundary',
-    );
     this.setState({ errorInfo, error });
     this.props.setIsErrorState(true);
   }
@@ -49,10 +41,15 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
     if (isMock || (this.state.hasError && import.meta.env.PROD)) {
       const errorToReport = this.state.error || new Error('ErrorBoundary caught an error');
       const errorInfoToReport = this.state.errorInfo || {};
-      this.props.logError(errorToReport, {
-        ...errorInfoToReport,
-        componentName: this.props.componentName || 'Unknown Component',
-      });
+      this.props.logError(
+        errorToReport,
+        {
+          ...errorInfoToReport,
+          context: 'ErrorBoundary.render',
+          componentName: this.props.componentName || 'Unknown Component',
+        },
+        'ErrorBoundary caught an error',
+      );
 
       return (
         <Navigate
