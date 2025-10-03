@@ -147,6 +147,16 @@ module frontendAvailabilityTest '../modules/applicationInsights/availabilityTest
   }
 }
 
+module appConfiguration '../modules/appConfiguration/main.bicep' = {
+  scope: resourceGroup
+  name: 'appConfiguration'
+  params: {
+    namePrefix: namePrefix
+    location: location
+    tags: tags
+  }
+}
+
 module containerAppEnv '../modules/containerAppEnv/main.bicep' = {
   scope: resourceGroup
   name: 'containerAppEnv'
@@ -287,3 +297,5 @@ output resourceGroupName string = resourceGroup.name
 output postgreServerName string = postgresql.outputs.serverName
 output appInsightsSourceMapStorageAccountName string = appInsights.outputs.sourceMapStorageAccountName
 output appInsightsSourceMapContainerName string = appInsights.outputs.sourceMapContainerName
+output appConfigurationName string = appConfiguration.outputs.name
+output appConfigurationEndpoint string = appConfiguration.outputs.endpoint
