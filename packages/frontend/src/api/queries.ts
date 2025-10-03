@@ -89,21 +89,6 @@ const responseMiddleware: ResponseMiddleware = (response) => {
         },
         errorMessage,
       );
-
-      // Track dependency with more specific information
-      Analytics.trackDependency({
-        id: `graphql-client-error-${Date.now()}`,
-        target: '/api/graphql',
-        name: 'GraphQLClientError',
-        data: errorDetails.map((e) => e.message).join('; '),
-        duration: 0,
-        success: false,
-        responseCode: response.response.status || 400,
-        properties: {
-          errorCount: String(graphqlErrors.length),
-          primaryErrorPath: primaryError?.path?.join('.') || '',
-        },
-      });
       return;
     }
 
@@ -120,20 +105,6 @@ const responseMiddleware: ResponseMiddleware = (response) => {
         },
         errorMessage,
       );
-
-      // Track dependency as a failed network request
-      Analytics.trackDependency({
-        id: `graphql-network-error-${Date.now()}`,
-        target: '/api/graphql',
-        name: 'GraphQLNetworkError',
-        data: response.message,
-        duration: 0,
-        success: false,
-        responseCode: 500,
-        properties: {
-          errorType: response.constructor.name,
-        },
-      });
       return;
     }
 
@@ -148,23 +119,6 @@ const responseMiddleware: ResponseMiddleware = (response) => {
 
     const startTime = Number.parseInt(startTimeStr, 10);
     const duration = Date.now() - startTime;
-    const success = !response.errors || response.errors.length === 0;
-
-    // Use the actual HTTP status from the response, or determine based on errors
-    let responseCode = response.status || 200;
-    if (!success && response.errors) {
-      // Check if it's a network error or GraphQL error based on error messages
-      const hasNetworkError = response.errors.some(
-        (error) =>
-          error.message?.toLowerCase().includes('network') ||
-          error.message?.toLowerCase().includes('fetch') ||
-          error.message?.toLowerCase().includes('failed to fetch'),
-      );
-      responseCode = hasNetworkError ? 500 : 400;
-
-      // Log GraphQL errors for debugging
-      console.debug(`GraphQL operation ${operationName} completed with errors:`, response.errors);
-    }
 
     // Track the GraphQL operation as a dependency
     Analytics.trackDependency({
@@ -172,9 +126,9 @@ const responseMiddleware: ResponseMiddleware = (response) => {
       target: '/api/graphql',
       name: operationName,
       duration: duration,
-      success: success,
+      success: true,
       startTime: new Date(startTime),
-      responseCode: responseCode,
+      responseCode: response.status,
       properties: {
         'backend.traceId': backendTraceId,
         'correlation.source': 'backend-response',
