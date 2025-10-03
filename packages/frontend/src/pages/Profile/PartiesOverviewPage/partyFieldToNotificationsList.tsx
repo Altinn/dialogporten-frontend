@@ -78,11 +78,13 @@ export const flattenParties = (parties: NotificationAccountsType[]) => {
 export interface PartyFieldFragmentToNotificationsListItemProps {
   flattenedParties: NotificationAccountsType[];
   setNotificationParty: (notification: NotificationAccountsType | null) => void;
+  groupName: string;
 }
 
 export const partyFieldFragmentToNotificationsListItem = ({
   flattenedParties,
   setNotificationParty,
+  groupName,
 }: PartyFieldFragmentToNotificationsListItemProps) => {
   if (!flattenedParties || flattenedParties.length === 0) {
     return [];
@@ -108,13 +110,14 @@ export const partyFieldFragmentToNotificationsListItem = ({
       linkIcon: true,
       parentId: party.parentId,
       id: party.partyUuid,
-      groupId: party.parentId || party.partyUuid,
+      groupId: groupName,
       isCurrentEndUser: party.isCurrentEndUser,
       isDeleted: party.isDeleted || false,
       smsAlerts: true,
       type: party.partyType as AccountListItemType,
       title: party.name,
       collapsible: false,
+      isLoading: true,
       name: party.name,
       onClick: () => setNotificationParty(party),
       as: 'button',

@@ -139,14 +139,12 @@ export const usePartiesWithNotificationSettings = () => {
     }));
   }, [partiesWithNotificationSettings]);
 
-  const isLoading = isLoadingParties || isLoadingNotificationSettings;
-
   return {
     partiesWithNotificationSettings: partiesWithNotificationSettings.filter((party) => !party.isDeleted),
     deletedPartiesWithNotificationSettings: partiesWithNotificationSettings.filter((party) => party.isDeleted),
     uniqueEmailAddresses,
     uniquePhoneNumbers,
-    isLoading,
+    isLoading: isLoadingParties || isLoadingNotificationSettings,
     updateNotificationsetting,
   };
 };
