@@ -8,7 +8,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App.tsx';
 import { AuthProvider } from './components/Login/AuthContext.tsx';
 import { LoggerContextProvider } from './contexts/LoggerContext.tsx';
-import { FeatureFlagProvider, featureFlags } from './featureFlags';
+import { FeatureFlagProvider } from './featureFlags';
 import { OnboardingTourProvider } from './onboardingTour';
 
 declare const __APP_VERSION__: string;
@@ -35,7 +35,7 @@ if (element) {
         <LoggerContextProvider>
           <QueryClientProvider client={queryClient}>
             <BrowserRouter>
-              <FeatureFlagProvider flags={featureFlags}>
+              <FeatureFlagProvider>
                 <AuthProvider>
                   <RootProvider>
                     <OnboardingTourProvider>

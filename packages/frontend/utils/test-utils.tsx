@@ -3,7 +3,7 @@ import { type RenderOptions, render } from '@testing-library/react';
 import type { ReactElement } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { SelectedDialogsContainer } from '..';
-import { FeatureFlagProvider, featureFlags } from '../src/featureFlags';
+import { FeatureFlagProvider } from '../src/featureFlags';
 import '../src/i18n/config.ts';
 import { RootProvider } from '@altinn/altinn-components';
 import { MockAuthProvider } from '../src/components/Login/MockAuthContext.tsx';
@@ -30,7 +30,7 @@ export const createCustomWrapper = (
     return (
       <RootProvider>
         <QueryClientProvider client={queryClient}>
-          <FeatureFlagProvider flags={featureFlags}>
+          <FeatureFlagProvider>
             <MockAuthProvider>
               <MemoryRouter initialEntries={options?.initialEntries ?? ['/']}>
                 <SelectedDialogsContainer>{children}</SelectedDialogsContainer>
