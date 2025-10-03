@@ -2,14 +2,11 @@ import {
   type AvatarProps,
   type BreadcrumbsProps,
   Heading,
-  List,
   PageBase,
   PageNav,
   Section,
-  SettingsItem,
   type SettingsItemProps,
   SettingsList,
-  SettingsSection,
   Toolbar,
   formatDisplayName,
 } from '@altinn/altinn-components';
@@ -23,6 +20,7 @@ import { QUERY_KEYS } from '../../../constants/queryKeys';
 import { usePageTitle } from '../../../hooks/usePageTitle';
 import { pruneSearchQueryParams } from '../../Inbox/queryParams';
 import { PageRoutes } from '../../routes';
+import { AccountListSkeleton } from '../AccountListSkeleton';
 import {
   type NotificationType,
   UserNotificationSettingsModal,
@@ -43,7 +41,7 @@ export const NotificationsPage = () => {
   const { search } = useLocation();
   const [showNotificationModal, setShowNotificationModal] = useState<NotificationType>('none');
   const [searchValue, setSearchValue] = useState('');
-  const { user } = useProfile();
+  const { user, isLoading: isLoadingUser } = useProfile();
   const [notificationParty, setNotificationParty] = useState<NotificationAccountsType | null>(null);
   const { partiesWithNotificationSettings, isLoading: isLoadingPartiesWithNotificationSettings } =
     usePartiesWithNotificationSettings();
@@ -56,16 +54,16 @@ export const NotificationsPage = () => {
     partiesToFilter: partiesWithNotificationSettings,
   });
 
-  const groups = partiesWithNotificationSettings.reduce<Record<string, { title: string }>>((acc, item) => {
-    if (!acc[item.partyUuid]) {
-      acc[item.partyUuid] = { title: '' };
-    }
-    return acc;
-  }, {});
-
-  if (partiesWithNotificationSettings.length === 0) {
-    return null;
-  }
+  const personalNotificationSettingsGroupId = t('profile.notifications.heading');
+  const actorNotificationSettingsGroupId = t('profile.notifications.heading_per_actor');
+  const groups = {
+    [personalNotificationSettingsGroupId]: {
+      title: personalNotificationSettingsGroupId,
+    },
+    [actorNotificationSettingsGroupId]: {
+      title: actorNotificationSettingsGroupId,
+    },
+  };
 
   const getBreadcrumbs = (person?: AvatarProps, reverseNameOrder?: boolean) => {
     if (!person) return [];
@@ -94,6 +92,7 @@ export const NotificationsPage = () => {
       icon: { svgElement: MobileIcon, theme: 'default' },
       title: t('profile.settings.sms_notifications'),
       value: user?.phoneNumber || 'Ingen telefonnummer registrert',
+      groupId: personalNotificationSettingsGroupId,
       badge: {
         color: 'company',
         label: t('profile.parties', {
@@ -115,6 +114,7 @@ export const NotificationsPage = () => {
       icon: { svgElement: PaperplaneIcon, theme: 'default' },
       title: t('profile.notifications.email_for_alerts'),
       value: user?.email || '',
+      groupId: t('profile.notifications.heading'),
       badge: {
         color: 'company',
         label: t('profile.parties', {
@@ -172,42 +172,28 @@ export const NotificationsPage = () => {
           onFilterStateChange={setFilterState}
           filters={filters}
         />
-        <Heading size="md">{t('profile.notifications.heading')}</Heading>
-        {personalNotificationSettingsFiltered.length > 0 ? (
-          <>
-            <SettingsSection>
-              <List>
-                {personalNotificationSettingsFiltered.map((setting, index) => (
-                  <SettingsItem key={index} {...setting} />
-                ))}
-              </List>
-            </SettingsSection>
-          </>
-        ) : (
-          <span>{t('emptyState.noHits.title')}</span>
-        )}
-
-        <Heading size="lg">{t('profile.notifications.heading_per_actor')}</Heading>
-        {filteredParties.length > 0 ? (
+        {isLoadingPartiesWithNotificationSettings || isLoadingUser ? (
+          <AccountListSkeleton />
+        ) : filteredParties.length > 0 ? (
           <SettingsList
             groups={groups}
-            items={partyFieldFragmentToNotificationsListItem({
-              flattenedParties: filteredParties,
-              setNotificationParty,
-            })}
+            items={[
+              ...personalNotificationSettingsFiltered,
+              ...partyFieldFragmentToNotificationsListItem({
+                flattenedParties: filteredParties,
+                setNotificationParty,
+                groupName: actorNotificationSettingsGroupId,
+              }),
+            ]}
           />
         ) : (
           <span>{t('emptyState.noHits.title')}</span>
         )}
-        {isLoadingPartiesWithNotificationSettings ? (
-          <div>Loading...</div>
-        ) : (
-          <CompanyNotificationSettingsModal
-            notificationParty={notificationParty}
-            setNotificationParty={setNotificationParty}
-            onSave={onSave}
-          />
-        )}
+        <CompanyNotificationSettingsModal
+          notificationParty={notificationParty}
+          setNotificationParty={setNotificationParty}
+          onSave={onSave}
+        />
       </Section>
       <UserNotificationSettingsModal notificationType={showNotificationModal} setShowModal={setShowNotificationModal} />
     </PageBase>

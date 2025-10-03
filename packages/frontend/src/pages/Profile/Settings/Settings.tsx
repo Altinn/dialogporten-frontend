@@ -2,12 +2,10 @@ import {
   type AvatarProps,
   type BreadcrumbsProps,
   Heading,
-  List,
   PageBase,
   PageNav,
-  SettingsItem,
   type SettingsItemProps,
-  SettingsSection,
+  SettingsList,
   Toolbar,
   formatDisplayName,
 } from '@altinn/altinn-components';
@@ -20,6 +18,7 @@ import { useParties } from '../../../api/hooks/useParties';
 import { usePageTitle } from '../../../hooks/usePageTitle';
 import { pruneSearchQueryParams } from '../../Inbox/queryParams.ts';
 import { PageRoutes } from '../../routes';
+import { AccountListSkeleton } from '../AccountListSkeleton';
 import {
   type NotificationType,
   UserNotificationSettingsModal,
@@ -27,16 +26,25 @@ import {
 import { flattenParties } from '../PartiesOverviewPage/partyFieldToNotificationsList';
 
 export const Settings = () => {
-  const { user } = useProfile();
+  const { t } = useTranslation();
+  const { user, isLoading: isLoadingUser } = useProfile();
   const { search } = useLocation();
   const [showNotificationModal, setShowNotificationModal] = useState<NotificationType>('none');
   const [searchValue, setSearchValue] = useState('');
-  const { parties: normalParties } = useParties();
+  const { parties: normalParties, isLoading: isLoadingParties } = useParties();
   const { search: currentSearchQuery } = useLocation();
   const flattenedParties = flattenParties(normalParties);
   const flattenedPartiesCount = flattenedParties?.filter((party) => party.partyType === 'Organization')?.length || 0;
-
-  const { t } = useTranslation();
+  const contactSettingsGroupId = t('profile.settings.contact_settings');
+  const otherSettingsGroupId = t('profile.settings.more_contact_settings');
+  const groups = {
+    [contactSettingsGroupId]: {
+      title: contactSettingsGroupId,
+    },
+    [otherSettingsGroupId]: {
+      title: otherSettingsGroupId,
+    },
+  };
   usePageTitle({ baseTitle: t('component.settings') });
 
   const getBreadcrumbs = (person?: AvatarProps, reverseNameOrder?: boolean) => {
@@ -64,6 +72,7 @@ export const Settings = () => {
   const personalNotificationSettings: SettingsItemProps[] = [
     {
       icon: { svgElement: MobileIcon, theme: 'default' },
+      groupId: contactSettingsGroupId,
       title: t('profile.settings.sms_notifications'),
       value: user?.phoneNumber || 'Ingen telefonnummer registrert',
       badge: {
@@ -76,6 +85,7 @@ export const Settings = () => {
     },
     {
       icon: { svgElement: PaperplaneIcon, theme: 'default' },
+      groupId: contactSettingsGroupId,
       title: t('profile.notifications.email_for_alerts'),
       value: user?.email || '',
       badge: {
@@ -88,6 +98,7 @@ export const Settings = () => {
     },
     {
       icon: { svgElement: HouseIcon, theme: 'default' },
+      groupId: contactSettingsGroupId,
       title: t('word.address'),
       value: user?.party?.person?.mailingAddress || '',
       badge: {
@@ -113,6 +124,7 @@ export const Settings = () => {
   const otherSettings: SettingsItemProps[] = [
     {
       icon: BellIcon,
+      groupId: otherSettingsGroupId,
       title: t('profile.settings.notification_settings'),
       badge: !!flattenedPartiesCount && { label: `${flattenedPartiesCount} aktører`, color: 'company' },
       as: (props) => <Link to={PageRoutes.notifications + pruneSearchQueryParams(currentSearchQuery)} {...props} />,
@@ -129,6 +141,7 @@ export const Settings = () => {
         .toLowerCase()
         .includes(searchValue.toLowerCase()),
   );
+  const combinedSettings = [...personalNotificationSettingsFiltered, ...otherSettingsFiltered];
 
   return (
     <PageBase>
@@ -149,31 +162,11 @@ export const Settings = () => {
           onClear: () => setSearchValue(''),
         }}
       />
-      <Heading size="md">{t('profile.settings.contact_settings')}</Heading>
-      {personalNotificationSettingsFiltered.length > 0 ? (
-        <>
-          <SettingsSection>
-            <List>
-              {personalNotificationSettingsFiltered.map((setting, index) => (
-                <SettingsItem key={index} {...setting} />
-              ))}
-            </List>
-          </SettingsSection>
-        </>
-      ) : (
-        <span>{t('emptyState.noHits.title')}</span>
-      )}
-      <Heading size="md">{t('profile.settings.more_contact_settings')}</Heading>
-      {otherSettingsFiltered.length > 0 ? (
-        <>
-          <SettingsSection>
-            <List>
-              {otherSettingsFiltered.map((setting, index) => (
-                <SettingsItem key={index} {...setting} />
-              ))}
-            </List>
-          </SettingsSection>
-        </>
+
+      {isLoadingParties || isLoadingUser ? (
+        <AccountListSkeleton title={t('profile.settings.settings_loading')} />
+      ) : combinedSettings.length > 0 ? (
+        <SettingsList groups={groups} items={combinedSettings} />
       ) : (
         <span>{t('emptyState.noHits.title')}</span>
       )}
