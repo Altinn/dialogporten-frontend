@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.79.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.78.1...v1.79.0) (2025-10-03)
+
+
+### Features
+
+* Added toolbar filter to Notification Page ([47bb7da](https://github.com/Altinn/dialogporten-frontend/commit/47bb7dabb4ca7066fd8448ddfba33d72e7aca72f))
+* **infra:** add app configuration ([#2859](https://github.com/Altinn/dialogporten-frontend/issues/2859)) ([335466e](https://github.com/Altinn/dialogporten-frontend/commit/335466ecc5d980e1ac09a35fa5235775ea32c476))
+
+
+### Bug Fixes
+
+* **frontend:** improve error tracking ([#2853](https://github.com/Altinn/dialogporten-frontend/issues/2853)) ([5047109](https://github.com/Altinn/dialogporten-frontend/commit/5047109ae3f0b8bd15a0a6e3ca80b4cbffce807d))
+
 ## [1.78.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.78.0...v1.78.1) (2025-10-02)
 
 
