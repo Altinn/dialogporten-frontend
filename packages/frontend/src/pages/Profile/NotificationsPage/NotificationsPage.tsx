@@ -31,18 +31,18 @@ import { partyFieldFragmentToNotificationsListItem } from '../PartiesOverviewPag
 import { usePartiesWithNotificationSettings } from '../usePartiesWithNotificationSettings';
 import { useProfile } from '../useProfile';
 import { CompanyNotificationSettingsModal } from './CompanyNotificationSettingsModal';
+import { useAccountFilters } from './useAccountFilters';
 
 export interface NotificationAccountsType extends PartyFieldsFragment {
   notificationSettings?: NotificationSettingsResponse;
   parentId?: string;
 }
-
 export const NotificationsPage = () => {
+  const { t } = useTranslation();
+  usePageTitle({ baseTitle: t('component.notifications') });
   const { search } = useLocation();
   const [showNotificationModal, setShowNotificationModal] = useState<NotificationType>('none');
   const [searchValue, setSearchValue] = useState('');
-  const { t } = useTranslation();
-  usePageTitle({ baseTitle: t('component.notifications') });
   const { user } = useProfile();
   const [notificationParty, setNotificationParty] = useState<NotificationAccountsType | null>(null);
   const { partiesWithNotificationSettings, isLoading: isLoadingPartiesWithNotificationSettings } =
@@ -51,6 +51,10 @@ export const NotificationsPage = () => {
   const onSave = () => {
     queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.NOTIFICATION_SETTINGS_FOR_CURRENT_USER] });
   };
+  const { filters, getFilterLabel, filterState, setFilterState, filteredParties } = useAccountFilters({
+    searchValue,
+    partiesToFilter: partiesWithNotificationSettings,
+  });
 
   const groups = partiesWithNotificationSettings.reduce<Record<string, { title: string }>>((acc, item) => {
     if (!acc[item.partyUuid]) {
@@ -84,17 +88,6 @@ export const NotificationsPage = () => {
       },
     ] as BreadcrumbsProps['items'];
   };
-
-  const filteredParties = partiesWithNotificationSettings.filter((party) => {
-    if (
-      party.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-      party.notificationSettings?.emailAddress?.toLowerCase().includes(searchValue.toLowerCase()) ||
-      party.notificationSettings?.phoneNumber?.toLowerCase().includes(searchValue.toLowerCase())
-    ) {
-      return true;
-    }
-    return false;
-  });
 
   const personalNotificationSettings: SettingsItemProps[] = [
     {
@@ -174,6 +167,10 @@ export const NotificationsPage = () => {
             onChange: (e) => setSearchValue((e.target as HTMLInputElement).value),
             onClear: () => setSearchValue(''),
           }}
+          getFilterLabel={getFilterLabel}
+          filterState={filterState}
+          onFilterStateChange={setFilterState}
+          filters={filters}
         />
         <Heading size="md">{t('profile.notifications.heading')}</Heading>
         {personalNotificationSettingsFiltered.length > 0 ? (

@@ -34,7 +34,7 @@ export interface GroupedPhoneNumberType {
 }
 
 export const usePartiesWithNotificationSettings = () => {
-  const { parties, isLoading: isLoadingParties } = useParties();
+  const { parties, deletedParties, isLoading: isLoadingParties } = useParties();
   const { notificationSettingsForCurrentUser } = useNotificationSettingsForCurrentUser();
   const partiesKey = useMemo(() => {
     if (!parties?.length) return null;
@@ -56,7 +56,7 @@ export const usePartiesWithNotificationSettings = () => {
     queryFn: async () => {
       if (!parties?.length) return [];
 
-      const filteredParties = flattenParties(parties)
+      const filteredParties = flattenParties([...parties, ...deletedParties])
         .filter((party) => !party.isCurrentEndUser)
         .filter((party) => party.partyType === 'Organization');
 
@@ -142,7 +142,8 @@ export const usePartiesWithNotificationSettings = () => {
   const isLoading = isLoadingParties || isLoadingNotificationSettings;
 
   return {
-    partiesWithNotificationSettings,
+    partiesWithNotificationSettings: partiesWithNotificationSettings.filter((party) => !party.isDeleted),
+    deletedPartiesWithNotificationSettings: partiesWithNotificationSettings.filter((party) => party.isDeleted),
     uniqueEmailAddresses,
     uniquePhoneNumbers,
     isLoading,

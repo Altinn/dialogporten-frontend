@@ -1,7 +1,6 @@
 import {
   Button,
   ButtonGroup,
-  DsButton,
   DsLink,
   ModalBase,
   ModalBody,
@@ -85,7 +84,11 @@ export const UserNotificationSettingsModal = ({
               <DsLink href={krrInfoUrl}>Kontakt og reservasjonsregisteret</DsLink>, et felles kontaktregister for stat
               og kommune. Gå videre for å endre.
             </Typography>
-            <LinkButton href={krrUrl}>Endre mobiltelefon</LinkButton>
+            <ButtonGroup>
+              <Button variant="outline" href={krrUrl} icon={{ svgElement: ExternalLinkIcon }} as="a" reverse>
+                Endre mobiltelefon
+              </Button>
+            </ButtonGroup>
           </ModalBody>
         </>
       );
@@ -115,7 +118,11 @@ export const UserNotificationSettingsModal = ({
               <DsLink href={krrInfoUrl}>Kontakt og reservasjonsregisteret</DsLink>, et felles kontaktregister for stat
               og kommune. Gå videre for å endre.
             </Typography>
-            <LinkButton href={krrUrl}>Endre e-postadresse</LinkButton>
+            <ButtonGroup>
+              <Button variant="outline" href={krrUrl} icon={{ svgElement: ExternalLinkIcon }} as="a" reverse>
+                Endre e-postadresse
+              </Button>
+            </ButtonGroup>
           </ModalBody>
         </>
       );
@@ -141,7 +148,13 @@ export const UserNotificationSettingsModal = ({
               Altinn bruker adressen din fra <DsLink href={krrInfoUrl}>Folkeregisteret</DsLink>.
             </Typography>
             <ButtonGroup>
-              <Button variant="outline" href={folkeRegisteretUrl} icon={{ svgElement: ExternalLinkIcon }}>
+              <Button
+                variant="outline"
+                href={folkeRegisteretUrl}
+                icon={{ svgElement: ExternalLinkIcon }}
+                as="a"
+                reverse
+              >
                 Endre adresse
               </Button>
             </ButtonGroup>
@@ -156,20 +169,5 @@ export const UserNotificationSettingsModal = ({
     <ModalBase open={showModal} onClose={() => setShowModal('none')}>
       {renderNotificationType()}
     </ModalBase>
-  );
-};
-
-type LinkButtonProps = {
-  href: string;
-  children: React.ReactNode;
-};
-
-const LinkButton = ({ href, children }: LinkButtonProps) => {
-  return (
-    <DsButton asChild variant="secondary" className={styles.linkButton}>
-      <a target="_blank" rel="noreferrer" href={href}>
-        {children} <ExternalLinkIcon />
-      </a>
-    </DsButton>
   );
 };

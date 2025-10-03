@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.78.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.78.0...v1.78.1) (2025-10-02)
+
+
+### Bug Fixes
+
+* fix safari icons on zoom ([#2851](https://github.com/Altinn/dialogporten-frontend/issues/2851)) ([a817271](https://github.com/Altinn/dialogporten-frontend/commit/a817271f9f44f21d25104f5c1b78ee535324be1a))
+* improvements to filtering party types in party overview ([#2849](https://github.com/Altinn/dialogporten-frontend/issues/2849)) ([7d8326d](https://github.com/Altinn/dialogporten-frontend/commit/7d8326d623026abd750c99f22854e076df53bd39))
+
 ## [1.78.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.77.0...v1.78.0) (2025-10-02)
 
 
