@@ -23,6 +23,7 @@ import { createSavedSearch, deleteSavedSearch, fetchSavedSearches, updateSavedSe
 import { getOrganization } from '../../api/utils/organizations.ts';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
+import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { useFormatDistance } from '../../i18n/useDateFnsLocale.tsx';
 import { DateFilterOption } from '../Inbox/filters.ts';
 import { useOrganizations } from '../Inbox/useOrganizations.ts';
@@ -142,6 +143,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { openSnackbar } = useSnackbar();
+  const { logError } = useErrorLogger();
 
   const { data, isLoading, isSuccess } = useAuthenticatedQuery<SavedSearchesQuery>({
     queryKey: [QUERY_KEYS.SAVED_SEARCHES, selectedPartyIds],
@@ -187,7 +189,14 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
         message: t('savedSearches.saved_error'),
         color: 'danger',
       });
-      console.error('Error creating saved search: ', error);
+      logError(
+        error as Error,
+        {
+          context: 'useSavedSearches.saveSearch',
+          data,
+        },
+        'Failed to create saved search',
+      );
     } finally {
       void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.SAVED_SEARCHES] });
       setIsCTALoading(false);
@@ -204,7 +213,14 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
       });
       await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.SAVED_SEARCHES] });
     } catch (error) {
-      console.error('Failed to delete saved search:', error);
+      logError(
+        error as Error,
+        {
+          context: 'useSavedSearches.deleteSearch',
+          savedSearchId,
+        },
+        'Failed to delete saved search',
+      );
       openSnackbar({
         message: t('savedSearches.delete_failed'),
         color: 'danger',

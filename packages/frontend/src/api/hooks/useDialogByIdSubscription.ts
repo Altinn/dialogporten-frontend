@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { SSE } from 'sse.js';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
+import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { pruneSearchQueryParams } from '../../pages/Inbox/queryParams.ts';
 import { PageRoutes } from '../../pages/routes.ts';
 
@@ -14,6 +15,7 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
   const searchParams = new URLSearchParams(window.location.search);
   const isMock = searchParams.get('mock') === 'true';
   const { search } = useLocation();
+  const { logError } = useErrorLogger();
 
   const eventSourceRef = useRef<SSE | null>(null);
   const lastInvalidatedDate = useRef<string>(new Date().toISOString());
@@ -33,7 +35,15 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
     eventSourceRef.current = eventSource;
 
     const onError = (err: Event) => {
-      console.error('EventSource error:', err);
+      logError(
+        new Error('EventSource error'),
+        {
+          context: 'useDialogByIdSubscription.onError',
+          dialogId,
+          event: err.type,
+        },
+        'EventSource connection error',
+      );
     };
 
     const onOpen = () => {
@@ -63,7 +73,15 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
           void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.DIALOGS] });
         }
       } catch (e) {
-        console.error('Error parsing event data:', e);
+        logError(
+          e as Error,
+          {
+            context: 'useDialogByIdSubscription.onMessage.parseEventData',
+            dialogId,
+            eventData: event.data,
+          },
+          'Error parsing event data',
+        );
       }
     };
 
@@ -78,7 +96,7 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
       eventSource.close();
       eventSourceRef.current = null;
     };
-  }, [dialogId, dialogToken, queryClient, navigate, search]);
+  }, [dialogId, dialogToken, queryClient, navigate, search, logError]);
 
   if (isMock) {
     return true;

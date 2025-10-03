@@ -1,6 +1,7 @@
 import { Button, ButtonGroup, Fieldset, Switch, TextField } from '@altinn/altinn-components';
 import { useState } from 'react';
 import { deleteNotificationsetting, updateNotificationsetting } from '../../../api/queries';
+import { useErrorLogger } from '../../../hooks/useErrorLogger';
 import type { NotificationAccountsType } from '../NotificationsPage/NotificationsPage';
 import { useProfile } from '../useProfile';
 import styles from './companyNotificationSettings.module.css';
@@ -17,6 +18,7 @@ export const CompanyNotificationSettings = ({
   onSave,
 }: CompanyNotificationSettingsProps) => {
   const { user } = useProfile();
+  const { logError } = useErrorLogger();
   const notificationSetting = notificationParty?.notificationSettings;
   const alertPhoneNumber = notificationSetting?.phoneNumber || user.phoneNumber || '';
   const alertEmailAddress = notificationSetting?.emailAddress || user.email || '';
@@ -55,7 +57,16 @@ export const CompanyNotificationSettings = ({
       }
       onClose();
     } catch (err) {
-      console.error('Failed to update notification settings:', err);
+      logError(
+        err as Error,
+        {
+          context: 'CompanyNotificationSettings.handleUpdateNotificationSettings',
+          partyUuid,
+          enablePhoneNotifications,
+          enableEmailNotifications,
+        },
+        'Error updating notification settings',
+      );
     }
   };
 
