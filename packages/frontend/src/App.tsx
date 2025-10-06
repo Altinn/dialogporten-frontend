@@ -20,7 +20,7 @@ import { usePageTracking } from './hooks/usePageTracking.ts';
 import { AboutPage } from './pages/About/About.tsx';
 
 function App() {
-  const enableProfilePages = useFeatureFlag<boolean>('profile.enableRoutes', false);
+  const enableProfilePages = useFeatureFlag<boolean>('profile.enableRoutes', true);
 
   // Add page tracking
   usePageTracking();

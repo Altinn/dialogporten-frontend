@@ -44,6 +44,9 @@ param appInsightConnectionString string
 @minLength(3)
 @secure()
 param environmentKeyVaultName string
+@minLength(3)
+@secure()
+param appConfigConnectionString string
 
 @description('Additional environment variables to be added to the container app')
 param additionalEnvironmentVariables array = []
@@ -100,12 +103,14 @@ var idPortenSessionSecretSecret = {
   identity: 'System'
 }
 
+
 var secrets = [
   dbConnectionStringSecret
   redisConnectionStringSecret
   idPortenClientIdSecret
   idPortenClientSecretSecret
-  idPortenSessionSecretSecret
+  idPortenSessionSecretSecret,
+  appConfigConnectionString
 ]
 
 var containerAppEnvVars = concat(
@@ -189,6 +194,10 @@ var containerAppEnvVars = concat(
     {
         name: 'LOGOUT_REDIRECT_URI'
         value: logoutRedirectUri
+    }
+    {
+        name: 'APP_CONFIG_CONNECTION_STRING'
+        value: appConfigConnectionString
     }
   ],
   additionalEnvironmentVariables

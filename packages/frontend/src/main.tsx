@@ -8,7 +8,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App.tsx';
 import { AuthProvider } from './components/Login/AuthContext.tsx';
 import { LoggerContextProvider } from './contexts/LoggerContext.tsx';
-import { FeatureFlagProvider } from './featureFlags';
+import { FeatureFlagProvider, loadFeatureFlags } from './featureFlags';
 import { OnboardingTourProvider } from './onboardingTour';
 
 declare const __APP_VERSION__: string;
@@ -25,17 +25,26 @@ async function enableMocking() {
   }
 }
 
+async function loadFeatures() {
+  try {
+    return await loadFeatureFlags();
+  } catch (err) {
+    console.error('Failed to load feature flags:', err);
+    return {};
+  }
+}
 const element = document.getElementById('root');
+
 if (element) {
   const root = ReactDOM.createRoot(element);
   const queryClient = new QueryClient();
-  enableMocking().then(() => {
+  Promise.all([enableMocking(), loadFeatures()]).then(([_, initialFlags]) => {
     root.render(
       <React.StrictMode>
         <LoggerContextProvider>
           <QueryClientProvider client={queryClient}>
             <BrowserRouter>
-              <FeatureFlagProvider>
+              <FeatureFlagProvider initialFlags={initialFlags}>
                 <AuthProvider>
                   <RootProvider>
                     <OnboardingTourProvider>

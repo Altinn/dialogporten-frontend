@@ -9,16 +9,24 @@ export const FeatureFlagContext = createContext<FeatureFlagValues | undefined>(u
 
 interface FeatureFlagProviderProps {
   children: ReactNode;
+  initialFlags?: Record<string, unknown>;
 }
 
-export const FeatureFlagProvider: React.FC<FeatureFlagProviderProps> = ({ children }) => {
+export async function loadFeatureFlags() {
+  const res = await fetch('/api/features');
+  if (!res.ok) throw new Error('Failed to load feature flags');
+  return res.json();
+}
+
+export const FeatureFlagProvider: React.FC<FeatureFlagProviderProps> = ({ children, initialFlags }) => {
   const { data } = useQuery<Record<string, unknown>>({
     queryKey: ['featureFlags'],
-    queryFn: async () => {
-      const res = await fetch('/api/features');
-      if (!res.ok) throw new Error('Failed to load feature flags');
-      return res.json();
-    },
+    queryFn: loadFeatureFlags,
+    initialData: initialFlags,
+    refetchInterval: 10 * 60 * 1000, // TODO: How often should we refetch?
+    staleTime: 10 * 60 * 1000,
+    refetchOnMount: initialFlags ? false : 'always',
+    enabled: true,
   });
 
   const resolvedFlags: FeatureFlagValues = featureFlagDefinitions.reduce((acc, def) => {
