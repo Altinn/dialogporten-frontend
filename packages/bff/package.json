@@ -17,8 +17,8 @@
     "typeorm": "typeorm-ts-node-esm"
   },
   "dependencies": {
-    "@azure/app-configuration": "^1.9.0",
-    "@azure/app-configuration-provider": "^2.2.0",
+    "@azure/app-configuration": "1.9.0",
+    "@azure/app-configuration-provider": "2.2.0",
     "@azure/monitor-opentelemetry": "1.13.1",
     "@digdir/dialogporten-node-logger": "workspace:*",
     "@digdir/dialogporten-schema": "1.79.7-5f58832",

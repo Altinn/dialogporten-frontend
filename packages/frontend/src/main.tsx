@@ -10,6 +10,7 @@ import { AuthProvider } from './components/Login/AuthContext.tsx';
 import { LoggerContextProvider } from './contexts/LoggerContext.tsx';
 import { FeatureFlagProvider, loadFeatureFlags } from './featureFlags';
 import { OnboardingTourProvider } from './onboardingTour';
+import { logError } from './utils/errorLogger.ts';
 
 declare const __APP_VERSION__: string;
 console.info('App Version:', __APP_VERSION__);
@@ -28,8 +29,15 @@ async function enableMocking() {
 async function loadFeatures() {
   try {
     return await loadFeatureFlags();
-  } catch (err) {
-    console.error('Failed to load feature flags:', err);
+  } catch (error) {
+    logError(
+      error as Error,
+      {
+        context: 'main.loadFeatures',
+        date: new Date().toISOString(),
+      },
+      'Error loading feature flags',
+    );
     return {};
   }
 }

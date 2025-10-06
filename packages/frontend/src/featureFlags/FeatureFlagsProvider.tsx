@@ -23,7 +23,7 @@ export const FeatureFlagProvider: React.FC<FeatureFlagProviderProps> = ({ childr
     queryKey: ['featureFlags'],
     queryFn: loadFeatureFlags,
     initialData: initialFlags,
-    refetchInterval: 10 * 60 * 1000, // TODO: How often should we refetch?
+    refetchInterval: 1_200_000, // 20 minutes
     staleTime: 10 * 60 * 1000,
     refetchOnMount: initialFlags ? false : 'always',
     enabled: true,

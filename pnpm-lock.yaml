@@ -24,10 +24,10 @@ importers:
   packages/bff:
     dependencies:
       '@azure/app-configuration':
-        specifier: ^1.9.0
+        specifier: 1.9.0
         version: 1.9.0
       '@azure/app-configuration-provider':
-        specifier: ^2.2.0
+        specifier: 2.2.0
         version: 2.2.0
       '@azure/monitor-opentelemetry':
         specifier: 1.13.1
