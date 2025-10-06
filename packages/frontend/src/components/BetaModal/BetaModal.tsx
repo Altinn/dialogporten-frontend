@@ -12,6 +12,17 @@ import styles from './betaModal.module.css';
 
 const betaKey = 'arbeidsflate:beta-modal-displayed';
 
+const ALLOWED_ROUTES = [
+  PageRoutes.inbox,
+  PageRoutes.sent,
+  PageRoutes.drafts,
+  PageRoutes.archive,
+  PageRoutes.bin,
+  PageRoutes.savedSearches,
+  PageRoutes.inboxItem,
+  PageRoutes.about,
+];
+
 export const BetaModal = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -20,7 +31,8 @@ export const BetaModal = () => {
   const isFirstTime = localStorage.getItem(betaKey) === null;
   const [isOpen, setIsOpen] = useState<boolean>(isFirstTime);
   const [_, setShowTour] = useGlobalState<boolean>(QUERY_KEYS.SHOW_TOUR, false);
-  const { search } = useLocation();
+  const { search, pathname } = useLocation();
+  const isAllowed = ALLOWED_ROUTES.includes(pathname as PageRoutes);
 
   const onTryBeta = () => {
     localStorage.setItem(betaKey, 'true');
@@ -34,7 +46,7 @@ export const BetaModal = () => {
     setIsOpen(false);
   };
 
-  if (isMock) return null;
+  if (isMock || !isAllowed) return null;
 
   if (isOpen) {
     return (
