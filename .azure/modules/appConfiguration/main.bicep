@@ -16,7 +16,7 @@ type Sku = {
 param sku Sku = { name: 'Standard' }
 
 @description('Whether to disable local authentication (use Entra ID only)')
-param disableLocalAuth bool = true
+param disableLocalAuth bool = false
 
 @description('Number of days to retain soft-deleted configuration stores')
 @minValue(1)
@@ -27,7 +27,7 @@ param softDeleteRetentionInDays int = 7
 param enablePurgeProtection bool = false
 
 resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2025-02-01-preview' = {
-  name: '${namePrefix}-appconfig'
+  name: '${namePrefix}-appConfiguration'
   location: location
   sku: sku
   properties: {
