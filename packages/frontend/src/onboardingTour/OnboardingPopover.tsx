@@ -9,9 +9,10 @@ import styles from './onboardingPopover.module.css';
 interface OnboardingPopoverProps {
   titleKey: string;
   infoTextKey: string;
+  hideNextButton?: boolean;
 }
 
-export const OnboardingPopover = ({ titleKey, infoTextKey }: OnboardingPopoverProps) => {
+export const OnboardingPopover = ({ titleKey, infoTextKey, hideNextButton }: OnboardingPopoverProps) => {
   const { selectedProfile } = useParties();
   const { t } = useTranslation();
   const { currentStep, steps, setCurrentStep, setIsOpen } = useTour();
@@ -97,15 +98,16 @@ export const OnboardingPopover = ({ titleKey, infoTextKey }: OnboardingPopoverPr
             </Button>
           )}
         </div>
-        {!isLast ? (
-          <Button color={selectedProfile} onClick={handleNext}>
-            {t('onboarding.next')}
-          </Button>
-        ) : (
-          <Button color={selectedProfile} onClick={handleFinish}>
-            {t('onboarding.finish')}
-          </Button>
-        )}
+        {!hideNextButton &&
+          (!isLast ? (
+            <Button color={selectedProfile} onClick={handleNext}>
+              {t('onboarding.next')}
+            </Button>
+          ) : (
+            <Button color={selectedProfile} onClick={handleFinish}>
+              {t('onboarding.finish')}
+            </Button>
+          ))}
       </div>
     </div>
   );

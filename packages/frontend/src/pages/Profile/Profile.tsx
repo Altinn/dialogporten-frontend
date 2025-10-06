@@ -4,6 +4,7 @@ import { CogIcon } from '@navikt/aksel-icons';
 import { t } from 'i18next';
 import { Link, type LinkProps, useLocation } from 'react-router-dom';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
+import { useProfileOnboarding } from '../../onboardingTour/useProfileOnboarding';
 import { pruneSearchQueryParams } from '../Inbox/queryParams.ts';
 import { PageRoutes } from '../routes';
 import { SettingsType, useSettings } from './Settings/useSettings.tsx';
@@ -17,7 +18,9 @@ export const Profile = () => {
       includeGroups: [SettingsType.alerts],
     },
   });
+
   usePageTitle({ baseTitle: t('sidebar.profile') });
+  useProfileOnboarding({ isLoading, pageType: 'main' });
 
   const allSettings = [
     ...settings,
@@ -29,6 +32,7 @@ export const Profile = () => {
       as: (props: LinkProps) => <Link {...props} to={PageRoutes.settings + pruneSearchQueryParams(search)} />,
     },
   ];
+
   const userDisplayName = formatDisplayName({
     fullName: user?.party?.name ?? '',
     type: 'person',

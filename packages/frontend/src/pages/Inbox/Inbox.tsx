@@ -24,7 +24,7 @@ import { isSavedSearchDisabled } from '../../components/SavedSearchButton/savedS
 import { SeenByModal } from '../../components/SeenByModal/SeenByModal.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
-import { useDynamicTour } from '../../onboardingTour';
+import { useInboxOnboarding } from '../../onboardingTour';
 import { PageRoutes } from '../routes.ts';
 import { FilterCategory, readFiltersFromURLQuery } from './filters.ts';
 import styles from './inbox.module.css';
@@ -127,7 +127,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     }
   }, [isLoading]);
 
-  useDynamicTour({
+  useInboxOnboarding({
     isLoadingParties,
     isLoadingDialogs,
     dialogsSuccess,

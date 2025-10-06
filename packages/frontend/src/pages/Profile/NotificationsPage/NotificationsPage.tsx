@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { useParties } from '../../../api/hooks/useParties.ts';
 import { usePageTitle } from '../../../hooks/usePageTitle';
-
 import { getBreadcrumbs } from '../Settings/Settings.tsx';
 import { SettingsType, useSettings } from '../Settings/useSettings.tsx';
 import { useProfile } from '../useProfile';
