@@ -12,6 +12,7 @@ import { BellIcon, CogIcon } from '@navikt/aksel-icons';
 import { t } from 'i18next';
 import { Link, useLocation } from 'react-router-dom';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
+import { useProfileOnboarding } from '../../onboardingTour/useProfileOnboarding';
 import { pruneSearchQueryParams } from '../Inbox/queryParams.ts';
 import { PageRoutes } from '../routes';
 import { useProfile } from './useProfile';
@@ -20,6 +21,7 @@ export const Profile = () => {
   const { user, isLoading } = useProfile();
   const { search } = useLocation();
   usePageTitle({ baseTitle: t('sidebar.profile') });
+  useProfileOnboarding({ isLoading });
   const userDisplayName = formatDisplayName({
     fullName: user?.party?.name ?? '',
     type: 'person',
