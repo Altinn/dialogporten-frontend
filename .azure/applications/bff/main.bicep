@@ -109,7 +109,7 @@ var secrets = [
   redisConnectionStringSecret
   idPortenClientIdSecret
   idPortenClientSecretSecret
-  idPortenSessionSecretSecret,
+  idPortenSessionSecretSecret
   appConfigConnectionString
 ]
 
