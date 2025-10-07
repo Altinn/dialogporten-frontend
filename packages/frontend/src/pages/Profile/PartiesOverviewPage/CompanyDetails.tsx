@@ -1,8 +1,8 @@
 import { type AccountListItemProps, Divider, List, Section, SettingsItem } from '@altinn/altinn-components';
-import { Buildings2Icon } from '@navikt/aksel-icons';
+import { HashtagIcon } from '@navikt/aksel-icons';
 import { useQueryClient } from '@tanstack/react-query';
 import type { PartyFieldsFragment } from 'bff-types-generated';
-import { useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import { QUERY_KEYS } from '../../../constants/queryKeys';
 import { CompanyNotificationSettingsModal } from '../NotificationsPage/CompanyNotificationSettingsModal';
 import type { NotificationAccountsType } from '../NotificationsPage/NotificationsPage';
@@ -12,19 +12,18 @@ import { PartyDetailsSetting } from './PartyDetailsSetting';
 
 export interface CompanyDetailsProps extends AccountListItemProps {
   party?: PartyFieldsFragment;
-  parentAccount?: NotificationAccountsType;
   userId?: string;
   alertEmailAddress?: string;
   alertPhoneNumber?: string;
   contactEmailAddress?: string;
   contactPhoneNumber?: string;
   address?: string;
+  children?: ReactNode;
 }
 
 export const CompanyDetails = ({
   uniqueId,
   party,
-  parentAccount,
   favourite,
   onToggleFavourite,
   icon,
@@ -32,6 +31,7 @@ export const CompanyDetails = ({
   type,
   name,
   id,
+  children,
 }: CompanyDetailsProps) => {
   const [notificationParty, setNotificationParty] = useState<NotificationAccountsType | null>(null);
   const queryClient = useQueryClient();
@@ -78,22 +78,12 @@ export const CompanyDetails = ({
       <List size="sm">
         <Divider as="li" />
         <SettingsItem
-          icon={{ svgElement: Buildings2Icon, theme: 'default' }}
-          title="Organisasjonsnummer"
+          icon={{ svgElement: HashtagIcon, theme: 'default' }}
+          title={`${type === 'company' ? 'Organisasjonsnummer' : 'Fødselsnummer'}`}
           value={uniqueId}
         />
-        {parentAccount && (
-          <>
-            <Divider as="li" />
-            <SettingsItem
-              icon={{ svgElement: Buildings2Icon, theme: 'default' }}
-              title="Overordnet organisasjon"
-              value={parentAccount.name}
-              linkIcon
-            />
-          </>
-        )}
       </List>
+      {children}
     </Section>
   );
 };

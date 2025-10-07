@@ -60,15 +60,9 @@ export const NotificationsPage = () => {
     searchValue,
     partiesToFilter: partiesWithNotificationSettings,
   });
-
-  const personalNotificationSettingsGroupId = t('profile.notifications.heading');
-  const actorNotificationSettingsGroupId = t('profile.notifications.heading_per_actor');
   const groups = {
-    [personalNotificationSettingsGroupId]: {
-      title: personalNotificationSettingsGroupId,
-    },
-    [actorNotificationSettingsGroupId]: {
-      title: actorNotificationSettingsGroupId,
+    self: {
+      title: t('profile.notifications.heading'),
     },
     persons: {
       title: t('parties.filter.persons'),
@@ -106,7 +100,7 @@ export const NotificationsPage = () => {
       icon: { svgElement: MobileIcon, theme: 'default' },
       title: t('profile.settings.sms_notifications'),
       value: user?.phoneNumber || 'Ingen telefonnummer registrert',
-      groupId: personalNotificationSettingsGroupId,
+      groupId: 'self',
       badge: {
         color: 'company',
         label: t('profile.parties', {
@@ -137,7 +131,7 @@ export const NotificationsPage = () => {
       icon: { svgElement: PaperplaneIcon, theme: 'default' },
       title: t('profile.notifications.email_for_alerts'),
       value: user?.email || '',
-      groupId: t('profile.notifications.heading'),
+      groupId: 'self',
       badge: {
         color: 'company',
         label: t('profile.parties', {
@@ -210,7 +204,7 @@ export const NotificationsPage = () => {
             items={[
               ...personalNotificationSettingsFiltered,
               ...partyFieldFragmentToNotificationsListItem({
-                parties: filteredParties,
+                flattenedParties: filteredParties,
                 setNotificationParty,
               }),
             ]}

@@ -19,7 +19,7 @@ export const getPartyIcon = ({
 
   return {
     type: partyType,
-    variant: isSubparty ? 'outline' : 'default',
+    variant: isSubparty ? 'outline' : undefined,
     name: partyName,
     size: 'md' as AvatarSize,
   };
@@ -58,35 +58,18 @@ export const getEnabledNotificationsBadge = (
   return <Typography size="xs">Sett opp varsling</Typography>;
 };
 
-export const flattenParties = (parties: NotificationAccountsType[]) => {
-  const flattenedParties: NotificationAccountsType[] = [];
-  for (const party of parties) {
-    flattenedParties.push(party);
-    if (party.subParties) {
-      for (const subParty of party.subParties) {
-        flattenedParties.push({
-          ...subParty,
-          parentId: party.partyUuid,
-        } as NotificationAccountsType);
-      }
-    }
-  }
-  return flattenedParties;
-};
-
 export interface PartyFieldFragmentToNotificationsListItemProps {
-  parties: NotificationAccountsType[];
+  flattenedParties: NotificationAccountsType[];
   setNotificationParty: (notification: NotificationAccountsType | null) => void;
 }
 
 export const partyFieldFragmentToNotificationsListItem = ({
-  parties,
+  flattenedParties,
   setNotificationParty,
 }: PartyFieldFragmentToNotificationsListItemProps) => {
-  if (!parties || parties.length === 0) {
+  if (!flattenedParties || flattenedParties.length === 0) {
     return [];
   }
-  const flattenedParties = flattenParties(parties);
 
   const retVal = flattenedParties.map((party) => {
     const isOrganization = party.partyType === 'Organization';
@@ -109,7 +92,6 @@ export const partyFieldFragmentToNotificationsListItem = ({
       parentId: party.parentId,
       id: party.partyUuid,
       groupId: party.partyType === 'Person' ? 'persons' : 'companies',
-      groupName: party.name,
       isCurrentEndUser: party.isCurrentEndUser,
       isDeleted: party.isDeleted || false,
       type: party.partyType === 'Person' ? 'person' : 'company',
@@ -125,15 +107,12 @@ export const partyFieldFragmentToNotificationsListItem = ({
 
   const self = retVal.filter((party) => party.isCurrentEndUser).map((party) => ({ ...party, groupId: 'self' }));
   const companies = groupParties(
-    retVal.filter((party) => !party.favourite && party.type === 'company'),
+    retVal.filter((party) => party.type === 'company'),
     'companies',
   );
   const persons = retVal
-    .filter((party) => !party.favourite && party.type === 'person' && !party.isCurrentEndUser)
+    .filter((party) => party.type === 'person' && !party.isCurrentEndUser)
     .map((party, i) => ({ ...party, groupId: i === 0 ? 'persons' : party.name }));
-  const favorites = groupParties(
-    retVal.filter((party) => party.favourite && !party.isCurrentEndUser),
-    'favorites',
-  );
-  return [...self, ...favorites, ...persons, ...companies];
+
+  return [...self, ...persons, ...companies];
 };

@@ -1,12 +1,34 @@
-import type { AccountListItemProps, AccountListItemType, AvatarType, BadgeProps } from '@altinn/altinn-components';
+import {
+  type AccountListItemProps,
+  type AccountListItemType,
+  AccountOrganization,
+  type AvatarType,
+  type BadgeProps,
+} from '@altinn/altinn-components';
 import { InboxIcon } from '@navikt/aksel-icons';
 import type { GroupObject, PartyFieldsFragment, User } from 'bff-types-generated';
 import type { ReactNode } from 'react';
 import { PageRoutes } from '../../routes';
+import type { NotificationAccountsType } from '../NotificationsPage/NotificationsPage';
 import { CompanyDetails } from './CompanyDetails';
 import { UserDetails } from './UserDetails';
-import { flattenParties, getPartyIcon } from './partyFieldToNotificationsList';
+import { getPartyIcon } from './partyFieldToNotificationsList';
 
+export const flattenParties = (parties: NotificationAccountsType[]) => {
+  const flattenedParties: NotificationAccountsType[] = [];
+  for (const party of parties) {
+    flattenedParties.push(party);
+    if (party.subParties) {
+      for (const subParty of party.subParties) {
+        flattenedParties.push({
+          ...subParty,
+          parentId: party.partyUuid,
+        } as NotificationAccountsType);
+      }
+    }
+  }
+  return flattenedParties;
+};
 export const urnToOrgNr = (urn: string, unformatted = false) => {
   if (!urn) return '';
   const identifier = 'identifier-no:';
@@ -80,12 +102,7 @@ export const partyFieldFragmentToAccountList = ({
     const favourite = !!(favoritesGroup?.parties?.length && favoritesGroup.parties.some((p) => p === party.partyUuid));
 
     const isOrganization = party.partyType === 'Organization';
-    let groupId = 'secondary';
-    if (party.isCurrentEndUser) {
-      groupId = 'primary';
-    } else if (favourite) {
-      groupId = 'favourites';
-    }
+
     const icon = getPartyIcon({
       partyName: party.name,
       partyType: isOrganization ? ('company' as AvatarType) : ('person' as AvatarType),
@@ -96,7 +113,6 @@ export const partyFieldFragmentToAccountList = ({
       accountIds: undefined,
       badge: getBadge(party),
       favourite,
-      groupId,
       id: party.partyUuid,
       isCurrentEndUser: party.isCurrentEndUser,
       isDeleted: party.isDeleted || false,
@@ -119,19 +135,51 @@ export const partyFieldFragmentToAccountList = ({
         <UserDetails id={party.party} user={user} type={party.partyType as AccountListItemType} name={party.name} />
       );
     } else {
+      const accounts = parties?.filter((item) => item.name.includes(party.name)) || [];
       children = (
         <CompanyDetails
           uniqueId={urnToOrgNr(party.party)}
           id={party.party}
-          type={party.partyType as AccountListItemType}
+          type={accountListItem.type as AccountListItemType}
           name={party.name}
           favourite={favourite}
           onToggleFavourite={() => onToggleFavourite(accountListItem.favourite, party.partyUuid)}
           icon={icon}
           badge={accountListItem.badge}
           party={party}
-          parentAccount={accountListItem.parentAccount}
-        />
+        >
+          {accountListItem.type === 'company' && (
+            <AccountOrganization
+              items={accounts?.map((item) => ({
+                avatar: {
+                  type: 'company' as AvatarType,
+                  name: item.name,
+                  variant:
+                    flattenedParties?.find((p) => p.partyUuid === item.partyUuid)?.parentId !== undefined
+                      ? 'outline'
+                      : undefined,
+                },
+                items: item.subParties?.map((subParty) => ({
+                  avatar: {
+                    type: 'company' as AvatarType,
+                    name: subParty.name,
+                    variant: 'outline',
+                  },
+                  title: subParty.name,
+                  parentId: item.partyUuid,
+                  parentAccount: item,
+                  description: `${urnToOrgNr(subParty.party)} `,
+                  selected: party.partyUuid === subParty.partyUuid,
+                  as: 'a',
+                })),
+                title: item.name,
+                description: urnToOrgNr(item.party),
+                selected: party.partyUuid === item.partyUuid,
+                as: 'a',
+              }))}
+            />
+          )}
+        </CompanyDetails>
       );
     }
 
@@ -140,7 +188,7 @@ export const partyFieldFragmentToAccountList = ({
       onToggleFavourite: () => onToggleFavourite(favourite, party.partyUuid),
       children,
       contextMenu: {
-        id: groupId + party.partyUuid + '-menu',
+        id: accountListItem.id + party.partyUuid + '-menu',
         items: [
           {
             id: party.partyUuid + 'inbox',
