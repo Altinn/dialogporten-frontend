@@ -18,12 +18,20 @@ import { pruneSearchQueryParams } from '../../Inbox/queryParams';
 import { PageRoutes } from '../../routes';
 import { AccountListSkeleton } from '../AccountListSkeleton';
 import { useAccountFilters } from '../NotificationsPage/useAccountFilters';
-import { partyFieldFragmentToAccountListItem } from './partyFieldToAccountList';
+import { partyFieldFragmentToAccountList } from './partyFieldToAccountList';
 
 export const PartiesOverviewPage = () => {
   const { t } = useTranslation();
   const { search } = useLocation();
-  const { groups, user, addFavoriteParty, deleteFavoriteParty, favoritesGroup } = useProfile();
+  const {
+    user,
+    addFavoriteParty,
+    deleteFavoriteParty,
+    favoritesGroup,
+    isLoading: isLoadingProfile,
+    isSuccess: isSuccessProfile,
+  } = useProfile();
+
   const navigate = useNavigate();
   const { parties, isLoading: isLoadingParties } = useParties();
   const [searchValue, setSearchValue] = useState<string>('');
@@ -73,24 +81,33 @@ export const PartiesOverviewPage = () => {
   };
 
   const accountListGroups = {
-    primary: {
+    self: {
       title: t('parties.groups.self'),
     },
-    favourites: {
+    favorites: {
       title: t('parties.groups.favourites'),
     },
     persons: {
-      title: t('parties.groups.favourites'),
+      title: t('parties.filter.persons'),
     },
-    secondary: {
-      title: t('parties.groups.other_accounts'),
+    companies: {
+      title: t('parties.filter.companies'),
     },
   };
 
-  // Below code needed to make current user be top of the page
-  const currentEndUser = filteredParties.find((party) => party.isCurrentEndUser);
-  const otherUsers = filteredParties.find((party) => !party.isCurrentEndUser);
-  const sortedParties = [...(currentEndUser ? [currentEndUser] : []), ...(otherUsers ? [otherUsers] : [])];
+  const accountListItems =
+    !isLoadingParties && !isLoadingProfile && user && filteredParties.length
+      ? partyFieldFragmentToAccountList({
+          parties: filteredParties,
+          isExpanded,
+          toggleExpanded,
+          favoritesGroup: isSuccessProfile && favoritesGroup ? favoritesGroup : undefined,
+          user,
+          addFavoriteParty,
+          deleteFavoriteParty,
+          navigate,
+        })
+      : [];
 
   return (
     <PageBase color="person">
@@ -115,23 +132,10 @@ export const PartiesOverviewPage = () => {
           onFilterStateChange={setFilterState}
           filters={filters}
         />
-        {isLoadingParties ? (
+        {isLoadingParties || isLoadingProfile || !accountListItems.length ? (
           <AccountListSkeleton />
         ) : (
-          <AccountList
-            groups={accountListGroups}
-            items={partyFieldFragmentToAccountListItem({
-              parties: sortedParties,
-              isExpanded,
-              toggleExpanded,
-              user,
-              favoritesGroup,
-              addFavoriteParty,
-              deleteFavoriteParty,
-              groups,
-              navigate,
-            })}
-          />
+          <AccountList groups={accountListGroups} items={accountListItems} />
         )}
       </Section>
     </PageBase>

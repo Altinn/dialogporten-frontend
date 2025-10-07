@@ -1,23 +1,13 @@
-import {
-  type AccountListItemProps,
-  Button,
-  Divider,
-  Flex,
-  List,
-  Section,
-  SettingsItem,
-} from '@altinn/altinn-components';
-import { Buildings2Icon, HeartFillIcon, HeartIcon, InboxIcon } from '@navikt/aksel-icons';
+import { type AccountListItemProps, Divider, List, Section, SettingsItem } from '@altinn/altinn-components';
+import { Buildings2Icon } from '@navikt/aksel-icons';
 import { useQueryClient } from '@tanstack/react-query';
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
 import { QUERY_KEYS } from '../../../constants/queryKeys';
-import { pruneSearchQueryParams } from '../../Inbox/queryParams';
-import { PageRoutes } from '../../routes';
 import { CompanyNotificationSettingsModal } from '../NotificationsPage/CompanyNotificationSettingsModal';
 import type { NotificationAccountsType } from '../NotificationsPage/NotificationsPage';
 import { useNotificationSettingsForCurrentUser } from '../useNotificationSettings';
+import { AccountToolbar } from './AccountToolbar';
 import { PartyDetailsSetting } from './PartyDetailsSetting';
 
 export interface CompanyDetailsProps extends AccountListItemProps {
@@ -81,7 +71,7 @@ export const CompanyDetails = ({
           notificationParty={
             { ...notificationParty, notificationSettings: notificationSettingsForParty } as NotificationAccountsType
           }
-          setNotificationParty={(updatedParty: NotificationAccountsType | null) => setNotificationParty(updatedParty)}
+          onClose={() => setNotificationParty(null)}
           onSave={onSave}
         />
       )}
@@ -105,32 +95,5 @@ export const CompanyDetails = ({
         )}
       </List>
     </Section>
-  );
-};
-
-export interface AccountToolbarProps extends AccountListItemProps {
-  id: string;
-  isCurrentEndUser: boolean;
-  favourite?: boolean;
-  onToggleFavourite?: (id: string) => void;
-}
-
-export const AccountToolbar = ({ id, isCurrentEndUser, favourite, onToggleFavourite }: AccountToolbarProps) => {
-  const { search } = useLocation();
-  return (
-    <Flex spacing={2} size="xs">
-      {!isCurrentEndUser && (
-        <Button
-          variant={favourite ? 'tinted' : 'outline'}
-          icon={favourite ? HeartFillIcon : HeartIcon}
-          onClick={() => onToggleFavourite?.(id)}
-        >
-          {favourite ? 'Fjern favoritt' : 'Legg til favoritt'}
-        </Button>
-      )}
-      <Button icon={InboxIcon} variant="outline" href={PageRoutes.inbox + pruneSearchQueryParams(search)} as="a">
-        Gå til Innboks
-      </Button>
-    </Flex>
   );
 };

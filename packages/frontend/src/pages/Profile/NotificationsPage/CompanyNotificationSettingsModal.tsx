@@ -1,17 +1,17 @@
-import { type AvatarProps, ModalBase, ModalBody, ModalHeader, SettingsItem } from '@altinn/altinn-components';
+import { type AvatarProps, SettingsModal } from '@altinn/altinn-components';
 import { CompanyNotificationSettings } from '../PartiesOverviewPage/CompanyNotificationSettings';
 import { urnToOrgNr } from '../PartiesOverviewPage/partyFieldToAccountList';
 import type { NotificationAccountsType } from './NotificationsPage';
 
 interface CompanyNotificationSettingsModalProps {
   notificationParty: NotificationAccountsType | null;
-  setNotificationParty: (notificationParty: NotificationAccountsType | null) => void;
+  onClose: () => void;
   onSave?: () => void;
 }
 
 export const CompanyNotificationSettingsModal = ({
   notificationParty,
-  setNotificationParty,
+  onClose,
   onSave,
 }: CompanyNotificationSettingsModalProps) => {
   const partyType = notificationParty?.partyType === 'Organization' ? 'company' : 'person';
@@ -25,27 +25,19 @@ export const CompanyNotificationSettingsModal = ({
   }
 
   return (
-    <ModalBase open={true} onClose={() => setNotificationParty(null)}>
-      <ModalHeader onClose={() => setNotificationParty(null)}>
-        <SettingsItem
-          icon={computedIcon as AvatarProps}
-          color={partyType}
-          title={notificationParty?.name}
-          description={
-            (notificationParty?.partyType === 'Organization' ? 'Org.nr. ' : 'Fødselsnummer: ') +
-            urnToOrgNr(notificationParty.party) +
-            (notificationParty.parentId ? ', del av ' + notificationParty.name : '')
-          }
-          interactive={false}
-        />
-      </ModalHeader>
-      <ModalBody>
-        <CompanyNotificationSettings
-          notificationParty={notificationParty}
-          onClose={() => setNotificationParty(null)}
-          onSave={onSave}
-        />
-      </ModalBody>
-    </ModalBase>
+    <SettingsModal
+      open={true}
+      onClose={onClose}
+      description={
+        (notificationParty?.partyType === 'Organization' ? 'Org.nr. ' : 'Fødselsnummer: ') +
+        urnToOrgNr(notificationParty.party) +
+        (notificationParty.parentId ? ', del av ' + notificationParty.name : '')
+      }
+      title={notificationParty?.name}
+      color={partyType}
+      icon={computedIcon as AvatarProps}
+    >
+      <CompanyNotificationSettings notificationParty={notificationParty} onClose={onClose} onSave={onSave} />
+    </SettingsModal>
   );
 };

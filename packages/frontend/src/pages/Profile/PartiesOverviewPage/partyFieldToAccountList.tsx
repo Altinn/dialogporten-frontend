@@ -21,31 +21,26 @@ export const urnToOrgNr = (urn: string, unformatted = false) => {
   return orgOrPersonNumberUnformatted?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 };
 
-function filterGroupsByPartyId(groups: GroupObject[], targetPartyId: string): GroupObject[] {
-  return groups.filter((group) => group.parties?.some((party) => party === targetPartyId) ?? false);
-}
-
 export interface PartyFieldFragmentToAccountListItemProps {
   parties: PartyFieldsFragment[];
   isExpanded: (id: string) => boolean;
   toggleExpanded: (id: string) => void;
-  user: User;
   favoritesGroup?: GroupObject;
   addFavoriteParty: (partyId: string) => Promise<void>;
   deleteFavoriteParty: (partyId: string) => Promise<void>;
-  groups: GroupObject[];
   navigate: (route: PageRoutes) => void;
+  user?: User;
 }
 
-export const partyFieldFragmentToAccountListItem = ({
+export const partyFieldFragmentToAccountList = ({
   parties,
   isExpanded,
   toggleExpanded,
   favoritesGroup,
   addFavoriteParty,
   deleteFavoriteParty,
-  groups,
   navigate,
+  user,
 }: PartyFieldFragmentToAccountListItemProps) => {
   if (!parties || parties.length === 0) {
     return [];
@@ -80,19 +75,16 @@ export const partyFieldFragmentToAccountListItem = ({
   };
 
   const flattenedParties = flattenParties(parties);
+
   const retVal = flattenedParties.map((party) => {
-    const favourite = !!favoritesGroup?.parties?.find((p) => p?.includes(party.partyUuid));
-    let group: GroupObject | undefined = undefined;
-    if (favourite) group = favoritesGroup;
-    const partyGroups = filterGroupsByPartyId(groups, party.partyUuid);
+    const favourite = !!(favoritesGroup?.parties?.length && favoritesGroup.parties.some((p) => p === party.partyUuid));
+
     const isOrganization = party.partyType === 'Organization';
     let groupId = 'secondary';
     if (party.isCurrentEndUser) {
       groupId = 'primary';
     } else if (favourite) {
       groupId = 'favourites';
-    } else {
-      groupId = 'secondary';
     }
     const icon = getPartyIcon({
       partyName: party.name,
@@ -104,15 +96,14 @@ export const partyFieldFragmentToAccountListItem = ({
       accountIds: undefined,
       badge: getBadge(party),
       favourite,
-      partyGroups,
       groupId,
       id: party.partyUuid,
       isCurrentEndUser: party.isCurrentEndUser,
       isDeleted: party.isDeleted || false,
-      parentId: undefined,
+      parentId: party.parentId,
       name: party.name,
       parentAccount: flattenedParties?.find((item) => item.partyUuid === party.parentId),
-      type: party.partyType as AccountListItemType,
+      type: party.partyType === 'Person' ? 'person' : 'company',
       title: party.name,
       collapsible: true,
       expanded: isExpanded(party.partyUuid),
@@ -124,12 +115,14 @@ export const partyFieldFragmentToAccountListItem = ({
     let children: ReactNode = null;
 
     if (party.isCurrentEndUser) {
-      children = <UserDetails id={party.partyUuid} type={party.partyType as AccountListItemType} name={party.name} />;
+      children = (
+        <UserDetails id={party.party} user={user} type={party.partyType as AccountListItemType} name={party.name} />
+      );
     } else {
       children = (
         <CompanyDetails
           uniqueId={urnToOrgNr(party.party)}
-          id={party.partyUuid}
+          id={party.party}
           type={party.partyType as AccountListItemType}
           name={party.name}
           favourite={favourite}
@@ -147,7 +140,7 @@ export const partyFieldFragmentToAccountListItem = ({
       onToggleFavourite: () => onToggleFavourite(favourite, party.partyUuid),
       children,
       contextMenu: {
-        id: group?.name + party.partyUuid + '-menu',
+        id: groupId + party.partyUuid + '-menu',
         items: [
           {
             id: party.partyUuid + 'inbox',
@@ -160,5 +153,24 @@ export const partyFieldFragmentToAccountListItem = ({
       },
     } as AccountListItemProps;
   });
-  return retVal;
+
+  const self = retVal.filter((party) => party.isCurrentEndUser).map((party) => ({ ...party, groupId: 'self' }));
+  const companies = groupParties(
+    retVal.filter((party) => !party.favourite && party.type === 'company'),
+    'companies',
+  );
+  const persons = retVal
+    .filter((party) => !party.favourite && party.type === 'person' && !party.isCurrentEndUser)
+    .map((party, i) => ({ ...party, groupId: i === 0 ? 'persons' : party.name }));
+  const favorites = groupParties(
+    retVal.filter((party) => party.favourite && !party.isCurrentEndUser),
+    'favorites',
+  );
+  return [...self, ...favorites, ...persons, ...companies];
+};
+
+export const groupParties = (parties: AccountListItemProps[], groupId: string) => {
+  let grouped = parties.map((party, i) => ({ ...party, groupId: i === 0 ? groupId : party.name }));
+  grouped = grouped.map((party) => (party.parentId === grouped[0].id ? { ...party, groupId } : party));
+  return grouped;
 };
