@@ -42,7 +42,7 @@ export const SaveSearchButton = ({ disabled, className, filterState, viewType }:
         variant="tertiary"
         isLoading={isCTALoading}
       >
-        <BookmarkFillIcon fontSize="0.875rem" />
+        <BookmarkFillIcon width="0.875rem" height="0.875rem" />
         {t('filter_bar.saved_search')}
       </ProfileButton>
     );
