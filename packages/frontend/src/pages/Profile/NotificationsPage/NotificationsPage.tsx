@@ -18,7 +18,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import { QUERY_KEYS } from '../../../constants/queryKeys';
 import { usePageTitle } from '../../../hooks/usePageTitle';
-import { useProfileNotificationsOnboarding } from '../../../onboardingTour/useProfileNotificationsOnboarding';
+import { useProfileOnboarding } from '../../../onboardingTour/useProfileOnboarding';
 import { pruneSearchQueryParams } from '../../Inbox/queryParams';
 import { PageRoutes } from '../../routes';
 import { AccountListSkeleton } from '../AccountListSkeleton';
@@ -54,8 +54,9 @@ export const NotificationsPage = () => {
   const { partiesWithNotificationSettings, isLoading: isLoadingPartiesWithNotificationSettings } =
     usePartiesWithNotificationSettings();
 
-  useProfileNotificationsOnboarding({
+  useProfileOnboarding({
     isLoading: isLoadingUser && isLoadingPartiesWithNotificationSettings,
+    pageType: 'notifications',
   });
   const queryClient = useQueryClient();
   const onSave = () => {

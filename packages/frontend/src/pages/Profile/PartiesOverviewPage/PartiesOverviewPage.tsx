@@ -14,7 +14,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useProfile } from '..';
 import { useParties } from '../../../api/hooks/useParties';
 import { usePageTitle } from '../../../hooks/usePageTitle';
-import { useProfilePartiesOnboarding } from '../../../onboardingTour/useProfilePartiesOnboarding';
+import { useProfileOnboarding } from '../../../onboardingTour/useProfileOnboarding';
 import { pruneSearchQueryParams } from '../../Inbox/queryParams';
 import { PageRoutes } from '../../routes';
 import { AccountListSkeleton } from '../AccountListSkeleton';
@@ -45,7 +45,7 @@ export const PartiesOverviewPage = () => {
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
   usePageTitle({ baseTitle: t('component.parties_overview') });
-  useProfilePartiesOnboarding({ isLoading: isLoadingParties });
+  useProfileOnboarding({ isLoading: isLoadingParties, pageType: 'parties' });
 
   const toggleExpanded = (id: string) => {
     setExpandedItems((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]));
