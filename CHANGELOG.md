@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.81.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.80.0...v1.81.0) (2025-10-07)
+
+
+### Features
+
+* Fixed actor list bugs. Added grouping logic. Refactoring ([3b75b98](https://github.com/Altinn/dialogporten-frontend/commit/3b75b9879a13369f32bde6e77812ef2f26b60169))
+
+
+### Bug Fixes
+
+* saved search safari fix ([#2873](https://github.com/Altinn/dialogporten-frontend/issues/2873)) ([3774a4e](https://github.com/Altinn/dialogporten-frontend/commit/3774a4ea490e18d9512850a18815c027a391bd21))
+
 ## [1.80.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.79.0...v1.80.0) (2025-10-07)
 
 
