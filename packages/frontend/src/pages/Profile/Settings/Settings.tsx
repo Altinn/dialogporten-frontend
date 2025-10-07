@@ -16,6 +16,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useProfile } from '..';
 import { useParties } from '../../../api/hooks/useParties';
 import { usePageTitle } from '../../../hooks/usePageTitle';
+import { useProfileSettingsOnboarding } from '../../../onboardingTour/useProfileSettingsOnboarding';
 import { pruneSearchQueryParams } from '../../Inbox/queryParams.ts';
 import { PageRoutes } from '../../routes';
 import { AccountListSkeleton } from '../AccountListSkeleton';
@@ -34,6 +35,8 @@ export const Settings = () => {
   const flattenedParties = flattenParties(normalParties);
   const flattenedPartiesCount = flattenedParties?.filter((party) => party.partyType === 'Organization')?.length || 0;
   const contactSettingsGroupId = t('profile.settings.contact_settings');
+
+  useProfileSettingsOnboarding({ isLoading: isLoadingUser && isLoadingParties });
   const otherSettingsGroupId = t('profile.settings.more_contact_settings');
   const groups = {
     [contactSettingsGroupId]: {

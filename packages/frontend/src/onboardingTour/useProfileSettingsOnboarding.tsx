@@ -2,30 +2,30 @@ import { useTour } from '@reactour/tour';
 import { useEffect, useState } from 'react';
 import { OnboardingPopover } from './OnboardingPopover';
 
-interface UseProfileOnboardingProps {
+interface UseProfileSettingsOnboardingProps {
   isLoading: boolean;
 }
 
-const PROFILE_ONBOARDING_KEY = 'arbeidsflate:profile-onboarding-completed';
+const PROFILE_SETTINGS_ONBOARDING_KEY = 'arbeidsflate:profile-settings-onboarding-completed';
 
-const profileTourSteps = [
+const profileSettingsTourSteps = [
   {
-    selector: '[data-testid="dashboard-header"]',
-    content: <OnboardingPopover titleKey="first profile tour step" infoTextKey="some text about the profile page" />,
+    selector: 'aside nav a[href*="settings"]',
+    content: <OnboardingPopover titleKey="Settings title" infoTextKey="lorem ipsum" />,
   },
 ];
 
-export const useProfileOnboarding = ({ isLoading }: UseProfileOnboardingProps) => {
+export const useProfileSettingsOnboarding = ({ isLoading }: UseProfileSettingsOnboardingProps) => {
   const tour = useTour();
   const { setIsOpen, setCurrentStep } = tour;
   const [hasInitialized, setHasInitialized] = useState(false);
-  const hasCompletedOnboarding = localStorage.getItem(PROFILE_ONBOARDING_KEY) === 'true';
+  const hasCompletedOnboarding = localStorage.getItem(PROFILE_SETTINGS_ONBOARDING_KEY) === 'true';
   const shouldInitializeTour = !isLoading && !hasInitialized && !hasCompletedOnboarding;
 
   useEffect(() => {
     if (shouldInitializeTour) {
       if ('setSteps' in tour && typeof tour.setSteps === 'function') {
-        tour.setSteps(profileTourSteps);
+        tour.setSteps(profileSettingsTourSteps);
       }
 
       setCurrentStep(0);
@@ -36,7 +36,7 @@ export const useProfileOnboarding = ({ isLoading }: UseProfileOnboardingProps) =
 
   useEffect(() => {
     if (!tour.isOpen && hasInitialized) {
-      localStorage.setItem(PROFILE_ONBOARDING_KEY, 'true');
+      localStorage.setItem(PROFILE_SETTINGS_ONBOARDING_KEY, 'true');
       setHasInitialized(false);
     }
   }, [tour.isOpen, hasInitialized]);
