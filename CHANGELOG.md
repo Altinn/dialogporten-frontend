@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.80.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.79.0...v1.80.0) (2025-10-07)
+
+
+### Features
+
+* Added skeleton loading to Profile pages ([26f2d03](https://github.com/Altinn/dialogporten-frontend/commit/26f2d03d8377cce641a2a29ec638f5c08f787b58))
+
+
+### Bug Fixes
+
+* Fix savedSearch icon on Safari zoom ([#2872](https://github.com/Altinn/dialogporten-frontend/issues/2872)) ([cd90497](https://github.com/Altinn/dialogporten-frontend/commit/cd90497d094082a0a3654d4807fc51205209f726))
+* **infra:** ensure correct naming for app configuration ([#2866](https://github.com/Altinn/dialogporten-frontend/issues/2866)) ([6ddfb07](https://github.com/Altinn/dialogporten-frontend/commit/6ddfb07991bdb7202d1683c625ffeba71c6148d1))
+
 ## [1.79.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.78.1...v1.79.0) (2025-10-03)
 
 
