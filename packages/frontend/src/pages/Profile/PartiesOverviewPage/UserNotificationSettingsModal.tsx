@@ -1,38 +1,27 @@
-import {
-  Button,
-  ButtonGroup,
-  DsLink,
-  ModalBase,
-  ModalBody,
-  ModalHeader,
-  SettingsItem,
-  TextField,
-  Textarea,
-  Typography,
-} from '@altinn/altinn-components';
-import { BellIcon, ExternalLinkIcon, PadlockLockedFillIcon } from '@navikt/aksel-icons';
+import { Button, ButtonGroup, DsLink, SettingsModal, TextField, Textarea, Typography } from '@altinn/altinn-components';
+import { ExternalLinkIcon, PadlockLockedFillIcon } from '@navikt/aksel-icons';
 import i18n from 'i18next';
+import { useTranslation } from 'react-i18next';
+import type { UserNotificationType } from '../NotificationsPage/NotificationsPage';
 import { usePartiesWithNotificationSettings } from '../usePartiesWithNotificationSettings';
 import { useProfile } from '../useProfile';
 import { NotificationUsedByList } from './NotificationUsedByList';
 import styles from './UserNotificationSettingsModal.module.css';
 export type NotificationType = 'email' | 'phoneNumber' | 'address' | 'none';
 
-interface UserNotificationSettingsModalProps {
-  notificationType: NotificationType;
-  setShowModal: (notificationType: NotificationType) => void;
+export interface UserNotificationSettingsModalProps {
+  userNotification?: UserNotificationType;
+  onClose: () => void;
 }
 
-export const UserNotificationSettingsModal = ({
-  notificationType,
-  setShowModal,
-}: UserNotificationSettingsModalProps) => {
+export const UserNotificationSettingsModal = ({ userNotification, onClose }: UserNotificationSettingsModalProps) => {
   const { user, isLoading } = useProfile();
+  const { t } = useTranslation();
   const { uniqueEmailAddresses, uniquePhoneNumbers } = usePartiesWithNotificationSettings();
   if (isLoading) {
     return null;
   }
-  const showModal = notificationType !== 'none';
+  const showModal = userNotification?.notificationType !== undefined;
   const isProdEnvironment = location.hostname.includes('af.altinn.no');
   const krrBaseUrl = isProdEnvironment
     ? 'https://minprofil.kontaktregisteret.no'
@@ -51,123 +40,89 @@ export const UserNotificationSettingsModal = ({
     userPhoneGroup?.parties.map((party) => ({ name: party.name, type: party.type })) || [];
   const address = `${user?.party?.person?.mailingAddress} ${user?.party?.person?.mailingPostalCode} ${user?.party?.person?.mailingPostalCity}`;
 
-  if (!notificationType || isLoading) {
+  if (!userNotification || isLoading) {
     return null;
   }
 
   const renderNotificationType = () => {
-    if (notificationType === 'phoneNumber') {
+    if (userNotification?.notificationType === 'phoneNumber') {
       return (
         <>
-          <ModalHeader onClose={() => setShowModal('none')}>
-            <SettingsItem icon={BellIcon} color="person" title={'Varslinger på SMS'} interactive={false} />
-          </ModalHeader>
-          <ModalBody>
-            <div className={styles.flexContainer}>
-              <PadlockLockedFillIcon fontSize="1.5rem" />
-              <p>Primær mobiltelefon</p>
-            </div>
-            <TextField
-              className={styles.textField}
-              name="phone"
-              type="tel"
-              placeholder="Mobiltelefon"
-              value={user.phoneNumber || ''}
-              disabled
-            />
-            <NotificationUsedByList
-              currentEnduserName={user?.party?.name || ''}
-              avatarItems={phoneNumberUsedByPartyNames}
-            />
-            <Typography>
-              Primære varslingsadresser hentes fra et felles kontaktregister for stat og kommune. Endre i{' '}
-              <DsLink href={krrInfoUrl}>Kontakt og reservasjonsregisteret</DsLink>, et felles kontaktregister for stat
-              og kommune. Gå videre for å endre.
-            </Typography>
-            <ButtonGroup>
-              <Button variant="outline" href={krrUrl} icon={{ svgElement: ExternalLinkIcon }} as="a" reverse>
-                Endre mobiltelefon
-              </Button>
-            </ButtonGroup>
-          </ModalBody>
+          <div className={styles.flexContainer}>
+            <PadlockLockedFillIcon fontSize="1.5rem" />
+            <p>Mobiltelefon</p>
+          </div>
+          <TextField
+            className={styles.textField}
+            name="phone"
+            type="tel"
+            placeholder="Mobiltelefon"
+            value={user.phoneNumber || ''}
+            readOnly
+          />
+
+          <NotificationUsedByList
+            currentEnduserName={user?.party?.name || ''}
+            avatarItems={phoneNumberUsedByPartyNames}
+          />
         </>
       );
     }
-    if (notificationType === 'email') {
+    if (userNotification?.notificationType === 'email') {
       return (
         <>
-          <ModalHeader onClose={() => setShowModal('none')}>
-            <SettingsItem icon={BellIcon} color="person" title={'Varslinger på e-post'} interactive={false} />
-          </ModalHeader>
-          <ModalBody>
-            <div className={styles.flexContainer}>
-              <PadlockLockedFillIcon fontSize="1.5rem" />
-              <p>Primær e-postadresse</p>
-            </div>
-            <TextField
-              className={styles.textField}
-              name="email"
-              type="email"
-              placeholder="E-postadresse"
-              value={user.email || ''}
-              disabled
-            />
-            <NotificationUsedByList currentEnduserName={user?.party?.name || ''} avatarItems={emailUsedByPartyNames} />
-            <Typography>
-              Primære varslingsadresser hentes fra et felles kontaktregister for stat og kommune. Endre i{' '}
-              <DsLink href={krrInfoUrl}>Kontakt og reservasjonsregisteret</DsLink>, et felles kontaktregister for stat
-              og kommune. Gå videre for å endre.
-            </Typography>
-            <ButtonGroup>
-              <Button variant="outline" href={krrUrl} icon={{ svgElement: ExternalLinkIcon }} as="a" reverse>
-                Endre e-postadresse
-              </Button>
-            </ButtonGroup>
-          </ModalBody>
+          <div className={styles.flexContainer}>
+            <PadlockLockedFillIcon fontSize="1.5rem" />
+            <p>E-postadresse</p>
+          </div>
+          <TextField
+            className={styles.textField}
+            name="email"
+            type="email"
+            placeholder="E-postadresse"
+            value={user.email || ''}
+            readOnly
+          />
+          <NotificationUsedByList currentEnduserName={user?.party?.name || ''} avatarItems={emailUsedByPartyNames} />
         </>
       );
     }
-    if (notificationType === 'address') {
+    if (userNotification?.notificationType === 'address') {
       return (
         <>
-          <ModalHeader onClose={() => setShowModal('none')}>
-            <SettingsItem
-              icon={{ iconUrl: 'https://altinncdn.no/orgs/skd/skd.svg' }}
-              color="person"
-              title={'Endre adresse'}
-              interactive={false}
-            />
-          </ModalHeader>
-          <ModalBody>
-            <div className={styles.flexContainer}>
-              <PadlockLockedFillIcon fontSize="1.5rem" />
-              <p>Adresse</p>
-            </div>
-            <Textarea name="address" placeholder="Adresse" value={address} readOnly />
-            <Typography>
-              Altinn bruker adressen din fra <DsLink href={krrInfoUrl}>Folkeregisteret</DsLink>.
-            </Typography>
-            <ButtonGroup>
-              <Button
-                variant="outline"
-                href={folkeRegisteretUrl}
-                icon={{ svgElement: ExternalLinkIcon }}
-                as="a"
-                reverse
-              >
-                Endre adresse
-              </Button>
-            </ButtonGroup>
-          </ModalBody>
+          <div className={styles.flexContainer}>
+            <PadlockLockedFillIcon fontSize="1.5rem" />
+            <p>Adresse</p>
+          </div>
+          <Textarea name="address" placeholder="Adresse" value={address} readOnly />
         </>
       );
     }
     return null;
   };
 
+  const mobileAndPhoneText = (
+    <Typography>
+      Primære varslingsadresser hentes fra et felles kontaktregister for stat og kommune. Endre i{' '}
+      <DsLink href={krrInfoUrl}>Kontakt og reservasjonsregisteret</DsLink>, et felles kontaktregister for stat og
+      kommune. Gå videre for å endre.
+    </Typography>
+  );
+  const addressText = (
+    <Typography>
+      Altinn bruker adressen din fra <DsLink href={folkeRegisteretUrl}>Folkeregisteret</DsLink>.
+    </Typography>
+  );
+
   return (
-    <ModalBase open={showModal} onClose={() => setShowModal('none')}>
+    <SettingsModal open={showModal} onClose={onClose} title={userNotification?.title} icon={userNotification?.icon}>
       {renderNotificationType()}
-    </ModalBase>
+      {userNotification?.notificationType === 'address' ? addressText : mobileAndPhoneText}
+      <ButtonGroup>
+        <Button variant="outline" href={krrUrl} icon={{ svgElement: ExternalLinkIcon }} as="a" reverse>
+          {t('profile.change_contact_settings')}
+        </Button>
+      </ButtonGroup>
+    </SettingsModal>
   );
 };

@@ -19,17 +19,15 @@ import { usePageTitle } from '../../../hooks/usePageTitle';
 import { pruneSearchQueryParams } from '../../Inbox/queryParams.ts';
 import { PageRoutes } from '../../routes';
 import { AccountListSkeleton } from '../AccountListSkeleton';
-import {
-  type NotificationType,
-  UserNotificationSettingsModal,
-} from '../PartiesOverviewPage/UserNotificationSettingsModal';
+import type { UserNotificationType } from '../NotificationsPage/NotificationsPage.tsx';
+import { UserNotificationSettingsModal } from '../PartiesOverviewPage/UserNotificationSettingsModal';
 import { flattenParties } from '../PartiesOverviewPage/partyFieldToNotificationsList';
 
 export const Settings = () => {
   const { t } = useTranslation();
   const { user, isLoading: isLoadingUser } = useProfile();
   const { search } = useLocation();
-  const [showNotificationModal, setShowNotificationModal] = useState<NotificationType>('none');
+  const [showNotificationModal, setShowNotificationModal] = useState<UserNotificationType | undefined>();
   const [searchValue, setSearchValue] = useState('');
   const { parties: normalParties, isLoading: isLoadingParties } = useParties();
   const { search: currentSearchQuery } = useLocation();
@@ -79,7 +77,12 @@ export const Settings = () => {
         color: 'company',
         label: t('word.change'),
       },
-      onClick: () => setShowNotificationModal('phoneNumber'),
+      onClick: () =>
+        setShowNotificationModal({
+          icon: MobileIcon,
+          title: t('profile.settings.sms_notifications'),
+          notificationType: 'phoneNumber',
+        }),
       linkIcon: true,
       as: 'button',
     },
@@ -92,7 +95,12 @@ export const Settings = () => {
         color: 'company',
         label: t('word.change'),
       },
-      onClick: () => setShowNotificationModal('email'),
+      onClick: () =>
+        setShowNotificationModal({
+          icon: PaperplaneIcon,
+          title: t('profile.notifications.email_for_alerts'),
+          notificationType: 'email',
+        }),
       linkIcon: true,
       as: 'button',
     },
@@ -105,7 +113,8 @@ export const Settings = () => {
         color: 'company',
         label: t('word.change'),
       },
-      onClick: () => setShowNotificationModal('address'),
+      onClick: () =>
+        setShowNotificationModal({ icon: HouseIcon, title: t('word.address'), notificationType: 'address' }),
       linkIcon: true,
       as: 'button',
     },
@@ -170,7 +179,10 @@ export const Settings = () => {
       ) : (
         <span>{t('emptyState.noHits.title')}</span>
       )}
-      <UserNotificationSettingsModal notificationType={showNotificationModal} setShowModal={setShowNotificationModal} />
+      <UserNotificationSettingsModal
+        userNotification={showNotificationModal}
+        onClose={() => setShowNotificationModal(undefined)}
+      />
     </PageBase>
   );
 };

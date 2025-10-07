@@ -13,7 +13,7 @@ import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 
 export const useProfile = () => {
-  const { data, isLoading } = useAuthenticatedQuery<ProfileQuery>({
+  const { data, isLoading, isSuccess } = useAuthenticatedQuery<ProfileQuery>({
     queryKey: [QUERY_KEYS.PROFILE],
     queryFn: () => profile(),
     refetchOnWindowFocus: false,
@@ -22,7 +22,8 @@ export const useProfile = () => {
   const { i18n } = useTranslation();
   const groups = (data?.profile?.groups as GroupObject[]) || ([] as GroupObject[]);
   const language = data?.profile?.language || i18n.language || 'nb';
-  const favoritesGroup = groups.find((group) => group!.isFavorite) as GroupObject;
+  const favoritesGroup = groups.find((group) => group?.isFavorite);
+
   const queryClient = useQueryClient();
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: Full control of what triggers this code is needed
@@ -54,6 +55,7 @@ export const useProfile = () => {
     user: data?.profile?.user as User,
     groups,
     favoritesGroup,
+    isSuccess,
     getNotificationsettingsForCurrentUser,
     deleteFavoriteParty,
     addFavoriteParty,

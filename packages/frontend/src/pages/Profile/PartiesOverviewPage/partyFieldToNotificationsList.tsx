@@ -1,13 +1,12 @@
 import {
   type AccountListItemProps,
-  type AccountListItemType,
   type AvatarSize,
   type AvatarType,
   type BadgeProps,
   Typography,
 } from '@altinn/altinn-components';
 import type { NotificationAccountsType } from '../NotificationsPage/NotificationsPage';
-import { urnToOrgNr } from './partyFieldToAccountList';
+import { groupParties, urnToOrgNr } from './partyFieldToAccountList';
 
 export const getPartyIcon = ({
   partyName,
@@ -76,19 +75,18 @@ export const flattenParties = (parties: NotificationAccountsType[]) => {
 };
 
 export interface PartyFieldFragmentToNotificationsListItemProps {
-  flattenedParties: NotificationAccountsType[];
+  parties: NotificationAccountsType[];
   setNotificationParty: (notification: NotificationAccountsType | null) => void;
-  groupName: string;
 }
 
 export const partyFieldFragmentToNotificationsListItem = ({
-  flattenedParties,
+  parties,
   setNotificationParty,
-  groupName,
 }: PartyFieldFragmentToNotificationsListItemProps) => {
-  if (!flattenedParties || flattenedParties.length === 0) {
+  if (!parties || parties.length === 0) {
     return [];
   }
+  const flattenedParties = flattenParties(parties);
 
   const retVal = flattenedParties.map((party) => {
     const isOrganization = party.partyType === 'Organization';
@@ -110,14 +108,13 @@ export const partyFieldFragmentToNotificationsListItem = ({
       linkIcon: true,
       parentId: party.parentId,
       id: party.partyUuid,
-      groupId: groupName,
+      groupId: party.partyType === 'Person' ? 'persons' : 'companies',
+      groupName: party.name,
       isCurrentEndUser: party.isCurrentEndUser,
       isDeleted: party.isDeleted || false,
-      smsAlerts: true,
-      type: party.partyType as AccountListItemType,
+      type: party.partyType === 'Person' ? 'person' : 'company',
       title: party.name,
       collapsible: false,
-      isLoading: true,
       name: party.name,
       onClick: () => setNotificationParty(party),
       as: 'button',
@@ -125,5 +122,18 @@ export const partyFieldFragmentToNotificationsListItem = ({
       description: `${isOrganization ? 'Org.nr. ' : 'Fødselsnummer: '} ${urnToOrgNr(party.party)}${party.parentId ? `, del av ${party.name}` : ''}`,
     } as AccountListItemProps;
   });
-  return retVal;
+
+  const self = retVal.filter((party) => party.isCurrentEndUser).map((party) => ({ ...party, groupId: 'self' }));
+  const companies = groupParties(
+    retVal.filter((party) => !party.favourite && party.type === 'company'),
+    'companies',
+  );
+  const persons = retVal
+    .filter((party) => !party.favourite && party.type === 'person' && !party.isCurrentEndUser)
+    .map((party, i) => ({ ...party, groupId: i === 0 ? 'persons' : party.name }));
+  const favorites = groupParties(
+    retVal.filter((party) => party.favourite && !party.isCurrentEndUser),
+    'favorites',
+  );
+  return [...self, ...favorites, ...persons, ...companies];
 };

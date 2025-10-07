@@ -56,9 +56,9 @@ export const usePartiesWithNotificationSettings = () => {
     queryFn: async () => {
       if (!parties?.length) return [];
 
-      const filteredParties = flattenParties([...parties, ...deletedParties])
-        .filter((party) => !party.isCurrentEndUser)
-        .filter((party) => party.partyType === 'Organization');
+      const filteredParties = flattenParties([...parties, ...deletedParties]).filter(
+        (party) => !party.isCurrentEndUser,
+      );
 
       const partiesWithSettings = await Promise.all(
         filteredParties.map(async (party) => {

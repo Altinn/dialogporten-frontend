@@ -18,6 +18,7 @@ export const CompanyNotificationSettings = ({
   onSave,
 }: CompanyNotificationSettingsProps) => {
   const { user } = useProfile();
+  const color = 'person';
   const { logError } = useErrorLogger();
   const notificationSetting = notificationParty?.notificationSettings;
   const alertPhoneNumber = notificationSetting?.phoneNumber || user.phoneNumber || '';
@@ -77,6 +78,7 @@ export const CompanyNotificationSettings = ({
           label={'Varsle på SMS'}
           name="smsAlerts"
           value="SMS"
+          color={color}
           checked={enablePhoneNotifications}
           onChange={() => setEnablePhoneNotifications((prev) => !prev)}
         />
@@ -84,6 +86,7 @@ export const CompanyNotificationSettings = ({
           <TextField
             name="tel"
             pattern="^(([0-9]{5})|([0-9]{8})|((00[0-9]{2})[0-9]+)|((\+[0-9]{2})[0-9]+))$"
+            color={color}
             required
             onInvalid={(e) => {
               if (e.currentTarget.validity.valueMissing) {
@@ -112,6 +115,7 @@ export const CompanyNotificationSettings = ({
           label={'Varsle på E-post'}
           name="emailAlerts"
           value="E-post"
+          color={color}
           checked={enableEmailNotifications}
           onChange={() => setEnableEmailNotifications((prev) => !prev)}
         />
@@ -119,6 +123,7 @@ export const CompanyNotificationSettings = ({
           <TextField
             name="email"
             pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
+            color={color}
             required
             onInvalid={(e) => {
               if (e.currentTarget.validity.valueMissing) {
@@ -145,8 +150,10 @@ export const CompanyNotificationSettings = ({
         )}
       </Fieldset>
       <ButtonGroup className={styles.buttonGroup}>
-        <Button type="submit">Lagre og avslutt</Button>
-        <Button variant="outline" onClick={onClose}>
+        <Button type="submit" color={color}>
+          Lagre og avslutt
+        </Button>
+        <Button variant="outline" onClick={onClose} color={color}>
           Avbryt
         </Button>
       </ButtonGroup>

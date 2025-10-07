@@ -10,7 +10,7 @@ import {
   Toolbar,
   formatDisplayName,
 } from '@altinn/altinn-components';
-import { MobileIcon, PaperplaneIcon } from '@navikt/aksel-icons';
+import { BellIcon, MobileIcon, PaperplaneIcon } from '@navikt/aksel-icons';
 import { useQueryClient } from '@tanstack/react-query';
 import type { NotificationSettingsResponse, PartyFieldsFragment } from 'bff-types-generated';
 import { useState } from 'react';
@@ -35,11 +35,18 @@ export interface NotificationAccountsType extends PartyFieldsFragment {
   notificationSettings?: NotificationSettingsResponse;
   parentId?: string;
 }
+
+export interface UserNotificationType {
+  icon: AvatarProps;
+  title: string;
+  notificationType: NotificationType;
+}
+
 export const NotificationsPage = () => {
   const { t } = useTranslation();
   usePageTitle({ baseTitle: t('component.notifications') });
   const { search } = useLocation();
-  const [showNotificationModal, setShowNotificationModal] = useState<NotificationType>('none');
+  const [showNotificationModal, setShowNotificationModal] = useState<UserNotificationType | undefined>();
   const [searchValue, setSearchValue] = useState('');
   const { user, isLoading: isLoadingUser } = useProfile();
   const [notificationParty, setNotificationParty] = useState<NotificationAccountsType | null>(null);
@@ -62,6 +69,12 @@ export const NotificationsPage = () => {
     },
     [actorNotificationSettingsGroupId]: {
       title: actorNotificationSettingsGroupId,
+    },
+    persons: {
+      title: t('parties.filter.persons'),
+    },
+    companies: {
+      title: t('parties.filter.companies'),
     },
   };
 
@@ -89,6 +102,7 @@ export const NotificationsPage = () => {
 
   const personalNotificationSettings: SettingsItemProps[] = [
     {
+      id: '1',
       icon: { svgElement: MobileIcon, theme: 'default' },
       title: t('profile.settings.sms_notifications'),
       value: user?.phoneNumber || 'Ingen telefonnummer registrert',
@@ -106,11 +120,20 @@ export const NotificationsPage = () => {
           ).length,
         }),
       },
-      onClick: () => setShowNotificationModal('phoneNumber'),
+      onClick: () => {
+        setShowNotificationModal({
+          icon: BellIcon,
+          title: t('profile.settings.sms_notifications'),
+
+          notificationType: 'phoneNumber' as const,
+        });
+      },
+      interactive: true,
       linkIcon: true,
       as: 'button',
     },
     {
+      id: '2',
       icon: { svgElement: PaperplaneIcon, theme: 'default' },
       title: t('profile.notifications.email_for_alerts'),
       value: user?.email || '',
@@ -128,7 +151,14 @@ export const NotificationsPage = () => {
           ).length,
         }),
       },
-      onClick: () => setShowNotificationModal('email'),
+      onClick: () => {
+        setShowNotificationModal({
+          icon: BellIcon,
+          title: t('profile.notifications.email_for_alerts'),
+          notificationType: 'email',
+        });
+      },
+      interactive: true,
       linkIcon: true,
       as: 'button',
     },
@@ -180,9 +210,8 @@ export const NotificationsPage = () => {
             items={[
               ...personalNotificationSettingsFiltered,
               ...partyFieldFragmentToNotificationsListItem({
-                flattenedParties: filteredParties,
+                parties: filteredParties,
                 setNotificationParty,
-                groupName: actorNotificationSettingsGroupId,
               }),
             ]}
           />
@@ -191,11 +220,14 @@ export const NotificationsPage = () => {
         )}
         <CompanyNotificationSettingsModal
           notificationParty={notificationParty}
-          setNotificationParty={setNotificationParty}
+          onClose={() => setNotificationParty(null)}
           onSave={onSave}
         />
       </Section>
-      <UserNotificationSettingsModal notificationType={showNotificationModal} setShowModal={setShowNotificationModal} />
+      <UserNotificationSettingsModal
+        userNotification={showNotificationModal}
+        onClose={() => setShowNotificationModal(undefined)}
+      />
     </PageBase>
   );
 };
