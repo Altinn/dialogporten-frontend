@@ -21,7 +21,7 @@ import { PageRoutes } from '../../routes';
 import { AccountListSkeleton } from '../AccountListSkeleton';
 import type { UserNotificationType } from '../NotificationsPage/NotificationsPage.tsx';
 import { UserNotificationSettingsModal } from '../PartiesOverviewPage/UserNotificationSettingsModal';
-import { flattenParties } from '../PartiesOverviewPage/partyFieldToNotificationsList';
+import { flattenParties } from '../PartiesOverviewPage/partyFieldToAccountList';
 
 export const Settings = () => {
   const { t } = useTranslation();
