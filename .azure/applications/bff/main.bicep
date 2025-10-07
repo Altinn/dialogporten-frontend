@@ -44,9 +44,6 @@ param appInsightConnectionString string
 @minLength(3)
 @secure()
 param environmentKeyVaultName string
-@minLength(3)
-@secure()
-param appConfigConnectionString string
 
 @description('Additional environment variables to be added to the container app')
 param additionalEnvironmentVariables array = []
@@ -103,6 +100,11 @@ var idPortenSessionSecretSecret = {
   identity: 'System'
 }
 
+var appConfigConnectionStringSecret = {
+  name: 'app-config-connection-string'
+  keyVaultUrl: '${keyVaultUrl}/appConfigConnectionString'
+  identity: 'System'
+}
 
 var secrets = [
   dbConnectionStringSecret
@@ -110,7 +112,7 @@ var secrets = [
   idPortenClientIdSecret
   idPortenClientSecretSecret
   idPortenSessionSecretSecret
-  appConfigConnectionString
+  appConfigConnectionStringSecret
 ]
 
 var containerAppEnvVars = concat(
@@ -197,7 +199,7 @@ var containerAppEnvVars = concat(
     }
     {
         name: 'APP_CONFIG_CONNECTION_STRING'
-        value: appConfigConnectionString
+        value: appConfigConnectionStringSecret.name
     }
   ],
   additionalEnvironmentVariables
