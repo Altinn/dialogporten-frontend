@@ -1,10 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
+import type { PartyFieldsFragment } from 'bff-types-generated';
 import { useMemo } from 'react';
-import { useParties } from '../../api/hooks/useParties.ts';
 import { updateNotificationsetting } from '../../api/queries.ts';
+import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import type { NotificationAccountsType } from './NotificationsPage/NotificationsPage.tsx';
-import { flattenParties } from './PartiesOverviewPage/partyFieldToNotificationsList.tsx';
 import { useNotificationSettingsForCurrentUser } from './useNotificationSettings.tsx';
 
 export interface UniqueEmailAddressType {
@@ -33,9 +32,25 @@ export interface GroupedPhoneNumberType {
   parties: UniquePhoneNumberType[];
 }
 
-export const usePartiesWithNotificationSettings = () => {
-  const { parties, deletedParties, isLoading: isLoadingParties } = useParties();
+export const flattenParties = (parties: NotificationAccountsType[]) => {
+  const flattenedParties: NotificationAccountsType[] = [];
+  for (const party of parties) {
+    flattenedParties.push(party);
+    if (party.subParties) {
+      for (const subParty of party.subParties) {
+        flattenedParties.push({
+          ...subParty,
+          parentId: party.partyUuid,
+        } as NotificationAccountsType);
+      }
+    }
+  }
+  return flattenedParties;
+};
+
+export const usePartiesWithNotificationSettings = (parties: PartyFieldsFragment[]) => {
   const { notificationSettingsForCurrentUser } = useNotificationSettingsForCurrentUser();
+
   const partiesKey = useMemo(() => {
     if (!parties?.length) return null;
     return parties
@@ -44,36 +59,32 @@ export const usePartiesWithNotificationSettings = () => {
       .join(',');
   }, [parties]);
 
-  const { data: partiesWithNotificationSettings = [], isLoading: isLoadingNotificationSettings } = useQuery<
-    NotificationAccountsType[]
-  >({
-    queryKey: [
-      QUERY_KEYS.PROFILE_PARTIES_WITH_NOTIFICATION_SETTINGS,
-      'all-parties',
-      partiesKey,
-      notificationSettingsForCurrentUser,
-    ],
-    queryFn: async () => {
-      if (!parties?.length) return [];
+  const { data: partiesWithNotificationSettings = [], isLoading: isLoadingNotificationSettings } =
+    useAuthenticatedQuery<NotificationAccountsType[]>({
+      queryKey: [
+        QUERY_KEYS.PROFILE_PARTIES_WITH_NOTIFICATION_SETTINGS,
+        'all-parties',
+        partiesKey,
+        notificationSettingsForCurrentUser,
+      ],
+      queryFn: async () => {
+        if (!parties?.length) return [];
 
-      const filteredParties = flattenParties([...parties, ...deletedParties]).filter(
-        (party) => !party.isCurrentEndUser,
-      );
+        const filteredParties = flattenParties(parties).filter((party) => !party.isCurrentEndUser);
 
-      const partiesWithSettings = await Promise.all(
-        filteredParties.map(async (party) => {
-          const notificationSettings = notificationSettingsForCurrentUser?.find(
-            (setting) => setting?.partyUuid === party.partyUuid,
-          );
-          return { ...party, notificationSettings: notificationSettings || undefined, key: party.partyUuid };
-        }),
-      );
-      return partiesWithSettings;
-    },
-    enabled: !!parties?.length && !isLoadingParties,
-    refetchOnWindowFocus: false,
-    staleTime: 1000 * 60 * 10,
-  });
+        return await Promise.all(
+          filteredParties.map(async (party) => {
+            const notificationSettings =
+              notificationSettingsForCurrentUser?.find((setting) => setting?.partyUuid === party.partyUuid) ??
+              undefined;
+            return { ...party, notificationSettings, key: party.partyUuid };
+          }),
+        );
+      },
+      enabled: !!parties?.length,
+      refetchOnWindowFocus: false,
+      staleTime: 1000 * 60 * 10,
+    });
 
   const uniqueEmailAddresses: GroupedEmailAddressType[] = useMemo(() => {
     const emailMap = new Map<string, UniqueEmailAddressType[]>();
@@ -144,7 +155,7 @@ export const usePartiesWithNotificationSettings = () => {
     deletedPartiesWithNotificationSettings: partiesWithNotificationSettings.filter((party) => party.isDeleted),
     uniqueEmailAddresses,
     uniquePhoneNumbers,
-    isLoading: isLoadingParties || isLoadingNotificationSettings,
+    isLoading: isLoadingNotificationSettings,
     updateNotificationsetting,
   };
 };

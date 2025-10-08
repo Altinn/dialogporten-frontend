@@ -1,4 +1,4 @@
-import { formatDisplayName } from '@altinn/altinn-components';
+import { type AvatarType, formatDisplayName } from '@altinn/altinn-components';
 import {
   DialogStatus,
   type GetAllDialogsForPartiesQueryVariables,
@@ -85,8 +85,11 @@ export function mapDialogToToInboxItems(
       },
       recipient: {
         name: actualReceiverParty?.name ?? dialogReceiverSubParty?.name ?? '',
-        type: 'person',
+        type: actualReceiverParty?.partyType as AvatarType,
+        variant:
+          !actualReceiverParty?.subParties && actualReceiverParty?.partyType === 'Organization' ? 'outline' : 'solid',
       },
+      color: actualReceiverParty?.partyType === 'Organization' ? 'company' : 'person',
       contentUpdatedAt: item.contentUpdatedAt,
       guiAttachmentCount: item.guiAttachmentCount ?? 0,
       createdAt: item.createdAt,

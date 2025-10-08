@@ -4,6 +4,7 @@ import type {
   AccountSearchProps,
   AvatarGroupProps,
   AvatarType,
+  BadgeProps,
   MenuItemGroups,
 } from '@altinn/altinn-components';
 import type { PartyFieldsFragment } from 'bff-types-generated';
@@ -12,39 +13,139 @@ import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useParties } from '../../../api/hooks/useParties.ts';
 import { getPartyIds } from '../../../api/utils/dialog.ts';
+import { useProfile } from '../../../pages/Profile';
+import { SettingsType } from '../../../pages/Profile/Settings/useSettings.tsx';
 import type { PageRoutes } from '../../../pages/routes.ts';
+
+interface UseAccountOptions {
+  showDescription?: boolean;
+  showFavorites?: boolean;
+  showGroups?: boolean;
+  groups?: Record<string, Record<string, string>>;
+}
+
+export interface PartyItemProp extends AccountMenuItemProps {
+  uuid: string;
+  isDeleted?: boolean;
+  parentId?: string | undefined;
+  parentName?: string | undefined;
+  isFavorite?: boolean;
+  isCurrentEndUser?: boolean;
+  badge?: BadgeProps;
+  isParent?: boolean;
+}
 
 interface UseAccountsProps {
   parties: PartyFieldsFragment[];
   selectedParties: PartyFieldsFragment[];
   allOrganizationsSelected: boolean;
+  options?: UseAccountOptions;
+  isLoading?: boolean;
 }
 
 interface UseAccountsOutput {
-  accounts: AccountMenuItemProps[];
+  accounts: PartyItemProp[];
   accountGroups: MenuItemGroups;
   accountSearch: AccountSearchProps | undefined;
+  filterAccount?: (item: AccountMenuItemProps, search: string) => boolean;
   onSelectAccount: (account: string, route: PageRoutes) => void;
   selectedAccount?: Account;
+  currentAccount?: Account;
 }
+
+export const urnToSSNOrOrgNo = (urn: string) => {
+  const ssnOrOrgNo = urn.split('identifier-no:')[1];
+  const isPerson = urn.includes('person');
+
+  if (isPerson) {
+    return ssnOrOrgNo.slice(0, 6) + '\u2009' + 'XXXXX';
+  }
+  return [ssnOrOrgNo.slice(0, 3), ssnOrOrgNo.slice(3, 6), ssnOrOrgNo.slice(6, 9)].join('\u2009');
+};
 
 export const useAccounts = ({
   parties,
   selectedParties,
   allOrganizationsSelected,
+  options: inputOptions,
+  isLoading,
 }: UseAccountsProps): UseAccountsOutput => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const { setSelectedPartyIds } = useParties();
+  const { favoritesGroup } = useProfile();
   const [searchString, setSearchString] = useState<string>('');
   const accountSearchThreshold = 2;
-
   const showSearch = parties.length > accountSearchThreshold;
 
-  const endUser = parties.find((party) => party.partyType === 'Person' && party.isCurrentEndUser);
-  const nonEndUsers = parties.filter((party) => party.partyType === 'Person' && !party.isCurrentEndUser);
+  const filterAccount = (item: AccountMenuItemProps, search: string) => {
+    if (search.length && item.groupId === SettingsType.favorites) {
+      return false;
+    }
+
+    if (search) {
+      const partyItem: PartyItemProp = item as PartyItemProp;
+      const normalized = search.trim().toLowerCase();
+      const parts = normalized.split(/\s+/);
+      const title = (partyItem.name ?? '').toString().toLowerCase();
+      const parentName = (partyItem.parentName ?? '').toString().toLowerCase();
+      return (
+        parts.some((part) => title.includes(part) || parentName.includes(part)) ||
+        title.includes(normalized) ||
+        parentName.includes(normalized)
+      );
+    }
+    return false;
+  };
+
+  const loadingAccountMenuItem: AccountMenuItemProps = {
+    id: 'loading-account',
+    type: 'person' as AccountMenuItemProps['type'],
+    groupId: 'loading',
+    title: '',
+    loading: true,
+    icon: { name: '', type: 'person' },
+    name: '',
+  };
+
+  const { groupId: _, ...loadingAccount } = loadingAccountMenuItem;
+
+  if (isLoading) {
+    return {
+      accounts: [loadingAccountMenuItem as PartyItemProp],
+      accountGroups: { loading: { title: 'Laster' } },
+      selectedAccount: loadingAccount as Account,
+      accountSearch: undefined,
+      onSelectAccount: () => {},
+      currentAccount: loadingAccount as Account,
+    };
+  }
+
+  const currentEndUser = parties.find((party) => party.partyType === 'Person' && party.isCurrentEndUser);
+  const otherPeople = parties.filter((party) => party.partyType === 'Person' && !party.isCurrentEndUser);
   const organizations = parties.filter((party) => party.partyType === 'Organization');
+
+  const defaultGroups = {
+    primary: {
+      title: t('parties.groups.favourites'),
+    },
+    groups: { title: '' },
+    persons: {
+      title: 'Personer',
+    },
+    companies: {
+      title: 'Virksomheter',
+    },
+  };
+  const defaultOptions: UseAccountOptions = {
+    showDescription: true,
+    showFavorites: true,
+    showGroups: false,
+    groups: defaultGroups,
+  };
+
+  const options = { ...defaultOptions, ...inputOptions };
 
   if (!selectedParties?.length) {
     return {
@@ -56,86 +157,139 @@ export const useAccounts = ({
   }
 
   const accountGroups: MenuItemGroups = {
-    ...(endUser && {
-      primary: {
-        title: t('parties.groups.self'),
-      },
-    }),
-    ...(organizations.length && {
-      secondary: {
-        title: t('parties.groups.other_accounts'),
-      },
-    }),
+    ...options.groups,
+    ...(organizations.length && options.groups?.companies
+      ? {
+          [organizations?.[0].party]: options.groups?.companies,
+        }
+      : {}),
   };
 
-  const endUserAccount: AccountMenuItemProps = {
-    id: endUser?.party ?? '',
-    name: endUser?.name ?? '',
-    type: 'person' as AccountMenuItemProps['type'],
-    groupId: 'primary',
-    icon: { name: endUser?.name ?? '', type: 'person' as AvatarType },
-  };
+  const description = currentEndUser?.party ? t('word.ssn') + urnToSSNOrOrgNo(currentEndUser!.party!) : '';
+  const endUserAccount: PartyItemProp | undefined = currentEndUser
+    ? {
+        id: currentEndUser?.party ?? '',
+        name: currentEndUser?.name ?? '',
+        type: 'person' as AccountMenuItemProps['type'],
+        groupId: 'primary',
+        icon: { name: currentEndUser?.name ?? '', type: 'person' as AvatarType },
+        isCurrentEndUser: true,
+        uuid: currentEndUser?.partyUuid ?? '',
+        description: options.showDescription ? description : undefined,
+        badge: { color: 'person', label: t('badge.you') },
+      }
+    : undefined;
 
-  const otherUsersAccounts = nonEndUsers.map((noEnderUserParty) => {
+  const otherPeopleAccounts: PartyItemProp[] = otherPeople.map((person) => {
+    const description = t('word.ssn') + urnToSSNOrOrgNo(person.party);
     return {
-      id: noEnderUserParty.party,
-      name: noEnderUserParty.name,
+      id: person.party,
+      name: person.name,
       type: 'person' as AccountMenuItemProps['type'],
-      groupId: 'other_users',
-      icon: { name: noEnderUserParty.name, type: 'person' as AvatarType },
+      icon: { name: person.name, type: 'person' as AvatarType },
+      isDeleted: person.isDeleted,
+      isFavorite: favoritesGroup?.parties?.includes(person.partyUuid),
+      isCurrentEndUser: false,
+      uuid: person.partyUuid,
+      description: options.showDescription ? description : undefined,
+      badge: person.isDeleted ? { color: 'danger', label: t('badge.deleted'), variant: 'base' } : undefined,
+      groupId: 'persons',
     };
   });
 
-  const organizationAccounts: AccountMenuItemProps[] = organizations.map((party) => {
+  const organizationAccounts: PartyItemProp[] = organizations.map((party) => {
+    const isParent = Array.isArray(parties.find((p) => p.party === party.party)?.subParties);
+    const parent = isParent
+      ? undefined
+      : organizations.find((org) => org?.subParties?.find((subparty) => subparty.party === party.party));
+    const description = parent?.name
+      ? `↳ ${t('word.orgNo')} ${urnToSSNOrOrgNo(party.party)}, ${t('account.partOf')} ${parent?.name}`
+      : `${t('word.orgNo')} ${urnToSSNOrOrgNo(party.party)}`;
+
     return {
       id: party.party,
       name: party.name,
       type: 'company' as AccountMenuItemProps['type'],
-      groupId: 'secondary',
-      icon: { name: party.name, type: 'company' as AvatarType },
+      icon: { name: party.name, type: 'company' as AvatarType, variant: isParent ? 'solid' : 'outline' },
+      isDeleted: party.isDeleted,
+      isFavorite: favoritesGroup?.parties?.includes(party.partyUuid),
+      isCurrentEndUser: false,
+      uuid: party.partyUuid,
+      disabled: party.hasOnlyAccessToSubParties,
+      isParent,
+      parentId: parent?.party,
+      parentName: parent?.name,
+      description: options.showDescription ? description : undefined,
+      badge: party.isDeleted ? { color: 'danger', label: t('badge.deleted'), variant: 'base' } : undefined,
+      groupId: parent?.party ?? party.party,
     };
   });
 
-  const allOrganizationsAccount: AccountMenuItemProps = {
+  const allOrganizationsAccount: PartyItemProp = {
+    uuid: 'N/A',
     id: 'ALL',
     name: t('parties.labels.all_organizations'),
     type: 'group',
-    groupId: 'secondary',
+    groupId: 'groups',
     icon: {
-      type: 'company' as AccountMenuItemProps['type'],
-      items: organizations.map((party) => ({
-        id: party.party,
+      type: 'group' as AccountMenuItemProps['type'],
+      items: organizationAccounts.map((party) => ({
+        id: party.id,
         name: party.name,
         type: 'company' as AccountMenuItemProps['type'],
+        variant: party.isParent ? 'solid' : 'outline',
       })),
     } as AvatarGroupProps,
   };
 
-  const accounts: AccountMenuItemProps[] = [
-    ...(endUser ? [endUserAccount] : []),
-    ...otherUsersAccounts,
-    ...(organizationAccounts.length > 1 && getPartyIds(organizations).length <= 20
-      ? [...organizationAccounts, allOrganizationsAccount]
-      : organizationAccounts),
+  const favorites = [...organizationAccounts, ...otherPeopleAccounts]
+    .filter((a) => a.isFavorite)
+    .map((a) => ({ ...a, groupId: 'favorites' }));
+
+  const accounts: PartyItemProp[] = [
+    ...(endUserAccount ? [endUserAccount] : []),
+    ...(options.showFavorites ? favorites : []),
+    ...(options.showGroups
+      ? organizationAccounts.length > 1 && getPartyIds(organizations).length <= 20
+        ? [allOrganizationsAccount]
+        : []
+      : []),
+    ...otherPeopleAccounts,
+    ...organizationAccounts,
   ];
 
-  const selectedAccountMenuItem: AccountMenuItemProps = allOrganizationsSelected
+  const selectedAccountMenuItem = allOrganizationsSelected
     ? allOrganizationsAccount
-    : selectedParties.map((party) => ({
-        id: party.party,
-        name: party.name,
-        type: (party.partyType === 'Organization' ? 'company' : 'person') as AccountMenuItemProps['type'],
-      }))[0];
+    : accounts.find((account) => selectedParties[0]?.party === account.id);
 
-  const selectedAccount: Account = {
-    id: selectedAccountMenuItem.id,
-    name: selectedAccountMenuItem.name,
-    type: selectedAccountMenuItem.type as 'company' | 'person',
-    icon: {
-      type: selectedAccountMenuItem.type as AvatarType,
-      name: selectedAccountMenuItem.name,
-    },
-  };
+  const selectedAccount = (
+    selectedAccountMenuItem
+      ? {
+          id: selectedAccountMenuItem.id,
+          name: selectedAccountMenuItem.name,
+          description:
+            options.showDescription && selectedAccountMenuItem.description
+              ? String(selectedAccountMenuItem.description)
+              : undefined,
+          type: selectedAccountMenuItem.type,
+          icon: selectedAccountMenuItem.icon,
+        }
+      : loadingAccount
+  ) as Account;
+
+  const currentAccount: Account = allOrganizationsSelected
+    ? {
+        id: endUserAccount?.id ?? 'not_found',
+        name: endUserAccount?.name ?? '',
+        description:
+          options.showDescription && endUserAccount?.description ? String(endUserAccount?.description) : undefined,
+        type: 'person',
+        icon: {
+          type: 'person',
+          name: endUserAccount?.name ?? '',
+        },
+      }
+    : selectedAccount || loadingAccount;
 
   const accountSearch = showSearch
     ? {
@@ -175,5 +329,7 @@ export const useAccounts = ({
     selectedAccount,
     accountSearch,
     onSelectAccount,
+    currentAccount,
+    filterAccount,
   };
 };

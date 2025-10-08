@@ -1,5 +1,4 @@
 import { expect, test } from '@playwright/test';
-import { testCredentials } from '../playwright.config';
 import { loginUser } from './utils/auth';
 
 test.describe('Inbox smoke tests', () => {

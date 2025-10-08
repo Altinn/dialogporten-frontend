@@ -6,8 +6,8 @@ import {
   type LayoutProps,
   type MenuItemProps,
   type Size,
+  Snackbar,
 } from '@altinn/altinn-components';
-import { Snackbar } from '@altinn/altinn-components';
 import { useQueryClient } from '@tanstack/react-query';
 import { type ChangeEvent, useEffect, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -42,15 +42,16 @@ export const PageLayout: React.FC = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { searchValue, setSearchValue, onClear } = useSearchString();
-  const { selectedProfile, selectedParties, parties, allOrganizationsSelected } = useParties();
+  const { selectedProfile, selectedParties, parties, allOrganizationsSelected, isLoading } = useParties();
   const { autocomplete } = useAutocomplete({ selectedParties: selectedParties, searchValue });
   const [isErrorState] = useGlobalState<boolean>(QUERY_KEYS.ERROR_STATE, false);
   const { logError } = useErrorLogger();
 
-  const { accounts, selectedAccount, accountSearch, accountGroups, onSelectAccount } = useAccounts({
+  const { accounts, accountSearch, accountGroups, onSelectAccount, currentAccount, filterAccount } = useAccounts({
     parties,
     selectedParties,
     allOrganizationsSelected,
+    isLoading,
   });
 
   const footer: FooterProps = useFooter();
@@ -97,7 +98,7 @@ export const PageLayout: React.FC = () => {
   };
 
   const headerProps: HeaderProps = {
-    currentAccount: selectedAccount,
+    currentAccount,
     logo: {
       as: (props: MenuItemProps) => {
         // @ts-ignore
@@ -120,9 +121,10 @@ export const PageLayout: React.FC = () => {
     globalMenu: {
       menuLabel: t('word.menu'),
       menu: desktopMenu,
-      onSelectAccount: (account: string) => onSelectAccount(account, PageRoutes.inbox),
+      onSelectAccount: (account: string) => onSelectAccount(account, isProfile ? PageRoutes.profile : PageRoutes.inbox),
       backLabel: t('word.back'),
       accountMenu: {
+        filterAccount,
         items: accounts,
         groups: accountGroups,
         ...(accountSearch && {

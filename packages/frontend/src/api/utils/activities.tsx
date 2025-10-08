@@ -4,7 +4,7 @@ import { t } from 'i18next';
 import { getPreferredPropertyByLocale } from '../../i18n/property.ts';
 import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
 import { getActorProps } from '../hooks/useDialogById.tsx';
-import type { SelectedPartyType } from '../hooks/useParties.ts';
+import type { ProfileType } from '../hooks/useParties.ts';
 import type { OrganizationOutput } from './organizations.ts';
 import { getTransmissions } from './transmissions.ts';
 
@@ -122,7 +122,7 @@ export const getActivityHistory = ({
   transmissions: TransmissionFieldsFragment[];
   format: FormatFunction;
   serviceOwner?: OrganizationOutput;
-  selectedProfile?: SelectedPartyType;
+  selectedProfile?: ProfileType;
 }): ActivityLogEntry[] => {
   const dialogHistoryActivities: ActivityLogEntry[] = getDialogHistoryForActivities(
     activities,

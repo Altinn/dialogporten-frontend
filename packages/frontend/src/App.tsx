@@ -21,6 +21,7 @@ import { AboutPage } from './pages/About/About.tsx';
 
 function App() {
   const enableProfilePages = useFeatureFlag<boolean>('profile.enableRoutes', true);
+  const enableNotificationsPage = useFeatureFlag<boolean>('profile.enableNotificationsPage', true);
 
   // Add page tracking
   usePageTracking();
@@ -40,10 +41,12 @@ function App() {
                 path={PageRoutes.partiesOverview}
                 element={withErrorBoundary(<PartiesOverviewPage key="partys" />, 'Parties Overview')}
               />
-              <Route
-                path={PageRoutes.notifications}
-                element={withErrorBoundary(<NotificationsPage />, 'Notifications')}
-              />
+              {enableNotificationsPage && (
+                <Route
+                  path={PageRoutes.notifications}
+                  element={withErrorBoundary(<NotificationsPage />, 'Notifications')}
+                />
+              )}
               <Route path={PageRoutes.settings} element={withErrorBoundary(<Settings />, 'Settings')} />
               <Route path={PageRoutes.access} element={withErrorBoundary(<Access />, 'Access')} />
               <Route path={PageRoutes.activities} element={withErrorBoundary(<Activities />, 'Activities')} />

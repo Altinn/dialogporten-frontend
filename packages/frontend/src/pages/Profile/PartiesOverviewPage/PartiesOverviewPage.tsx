@@ -1,122 +1,183 @@
 import {
   AccountList,
-  type AvatarProps,
+  AccountListItemDetails,
+  type AccountListItemProps,
   Heading,
   PageBase,
   PageNav,
   Section,
+  type SettingsItemProps,
   Toolbar,
-  formatDisplayName,
 } from '@altinn/altinn-components';
-import { useCallback, useState } from 'react';
+import type { AccountListItemType } from '@altinn/altinn-components/dist/types/lib/components/Account/AccountListItem';
+import { BellIcon, HashtagIcon, InboxIcon } from '@navikt/aksel-icons';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, type LinkProps, useLocation } from 'react-router-dom';
 import { useProfile } from '..';
 import { useParties } from '../../../api/hooks/useParties';
+import { type PartyItemProp, urnToSSNOrOrgNo, useAccounts } from '../../../components/PageLayout/Accounts/useAccounts';
 import { usePageTitle } from '../../../hooks/usePageTitle';
-import { pruneSearchQueryParams } from '../../Inbox/queryParams';
-import { PageRoutes } from '../../routes';
-import { AccountListSkeleton } from '../AccountListSkeleton';
-import { useAccountFilters } from '../NotificationsPage/useAccountFilters';
-import { partyFieldFragmentToAccountList } from './partyFieldToAccountList';
+import { getBreadcrumbs } from '../Settings/Settings.tsx';
+import { useSettings } from '../Settings/useSettings.tsx';
+import { useAccountFilters } from '../useAccountFilters.tsx';
 
 export const PartiesOverviewPage = () => {
   const { t } = useTranslation();
   const { search } = useLocation();
-  const {
-    user,
-    addFavoriteParty,
-    deleteFavoriteParty,
-    favoritesGroup,
-    isLoading: isLoadingProfile,
-    isSuccess: isSuccessProfile,
-  } = useProfile();
-
-  const navigate = useNavigate();
-  const { parties, isLoading: isLoadingParties } = useParties();
+  const { getAccountAlertSettings, settings } = useSettings();
+  const { addFavoriteParty, deleteFavoriteParty } = useProfile();
+  const { parties, deletedParties, selectedParties, allOrganizationsSelected, isLoading } = useParties();
   const [searchValue, setSearchValue] = useState<string>('');
-  const { filters, getFilterLabel, filterState, setFilterState, filteredParties } = useAccountFilters({
+  const [expandedItem, setExpandedItem] = useState<string>('');
+
+  const { filters, getFilterLabel, filterState, setFilterState, filteredParties, isSearching } = useAccountFilters({
     searchValue,
-    partiesToFilter: parties,
+    partiesToFilter: [...parties, ...deletedParties],
   });
 
-  const endUserName = `${user?.party?.person?.firstName ?? ''} ${user?.party?.person?.lastName ?? ''}`.trim();
-  const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  const { accounts, accountGroups } = useAccounts({
+    parties: filteredParties,
+    selectedParties,
+    allOrganizationsSelected,
+    isLoading,
+    options: {
+      showFavorites: !isSearching,
+    },
+  });
 
   usePageTitle({ baseTitle: t('component.parties_overview') });
 
-  const toggleExpanded = (id: string) => {
-    setExpandedItems((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]));
+  const toggleExpanded = (id: string) => setExpandedItem((currentId) => (currentId === id ? '' : id));
+
+  const onToggleFavourite = async (partyUuid: string, isFavorite?: boolean) => {
+    if (isFavorite) {
+      await deleteFavoriteParty(partyUuid);
+    } else {
+      await addFavoriteParty(partyUuid);
+    }
   };
 
-  const isExpanded = useCallback(
-    (id: string) => {
-      return expandedItems.includes(id);
-    },
-    [expandedItems],
-  );
+  // TODO: Add more cases
+  const getPartyButtons = (isCurrentEndUser: boolean) => {
+    if (isCurrentEndUser) {
+      return [{ label: 'Gå til innboks', as: (props: LinkProps) => <Link {...props} to="/" /> }];
+    }
+  };
 
-  const getBreadcrumbs = (person?: AvatarProps, reverseNameOrder?: boolean) => {
-    if (!person) return [];
+  const getPartyNotificationsSettings = (id: string): SettingsItemProps[] => {
+    if (id && typeof getAccountAlertSettings === 'function') {
+      return [
+        {
+          ...getAccountAlertSettings!(id!),
+          id: 'mobile',
+          icon: BellIcon,
+          title: 'Varslingsadresser',
+        },
+      ];
+    }
+    return [];
+  };
+
+  const getCompanySettings = (id: string): SettingsItemProps[] => {
     return [
+      ...getPartyNotificationsSettings(id),
       {
-        label: t('word.frontpage'),
-        as: (props: React.ComponentProps<typeof Link>) => (
-          <Link {...props} to={PageRoutes.inbox + pruneSearchQueryParams(search)} />
-        ),
-      },
-      {
-        label: formatDisplayName({
-          fullName: person.name,
-          type: person.type as 'person' | 'company',
-          reverseNameOrder,
-        }),
-        href: PageRoutes.profile,
-      },
-      {
-        label: t('sidebar.profile.parties'),
-        href: PageRoutes.partiesOverview,
+        id: 'orgNr',
+        icon: HashtagIcon,
+        title: 'Organisasjonsnummer',
+        value: urnToSSNOrOrgNo(id),
       },
     ];
   };
 
-  const accountListGroups = {
-    self: {
-      title: t('parties.groups.self'),
-    },
-    favorites: {
-      title: t('parties.groups.favourites'),
-    },
-    persons: {
-      title: t('parties.filter.persons'),
-    },
-    companies: {
-      title: t('parties.filter.companies'),
-    },
+  const getPersonSettings = (id: string): SettingsItemProps[] => {
+    return [
+      ...getPartyNotificationsSettings(id),
+      {
+        id: 'snr',
+        icon: HashtagIcon,
+        title: 'Fødselsnummer',
+        value: urnToSSNOrOrgNo(id),
+      },
+    ];
   };
 
-  const accountListItems =
-    !isLoadingParties && !isLoadingProfile && user && filteredParties.length
-      ? partyFieldFragmentToAccountList({
-          parties: filteredParties,
-          isExpanded,
-          toggleExpanded,
-          favoritesGroup: isSuccessProfile && favoritesGroup ? favoritesGroup : undefined,
-          user,
-          addFavoriteParty,
-          deleteFavoriteParty,
-          navigate,
-        })
-      : [];
+  const PartyDetails = ({
+    type,
+    isCurrentEndUser,
+    id,
+  }: { type: AccountListItemType; isCurrentEndUser: boolean; id: string }) => {
+    if (isCurrentEndUser) {
+      const contactSettings = settings.filter((s) => s.groupId === 'contact');
+      return (
+        <AccountListItemDetails color="person" buttons={getPartyButtons(isCurrentEndUser)} settings={contactSettings} />
+      );
+    }
+
+    if (type === 'company') {
+      return (
+        <AccountListItemDetails
+          color="company"
+          settings={getCompanySettings(id)}
+          buttons={getPartyButtons(isCurrentEndUser)}
+        />
+      );
+    }
+
+    if (type === 'person') {
+      return (
+        <AccountListItemDetails
+          color="person"
+          settings={getPersonSettings(id)}
+          buttons={getPartyButtons(isCurrentEndUser)}
+        />
+      );
+    }
+
+    return null;
+  };
+
+  const mapAccountToPartyListItem = (account: PartyItemProp): AccountListItemProps => {
+    const { label: _, variant: __, ...party } = account;
+    const itemId = account.id + account.groupId;
+    return {
+      ...party,
+      groupId: String(party.groupId),
+      favourite: party.isFavorite,
+      isCurrentEndUser: party.isCurrentEndUser,
+      isDeleted: party.isDeleted,
+      collapsible: true,
+      expanded: expandedItem === itemId,
+      onClick: () => toggleExpanded(itemId),
+      as: 'button',
+      title: party.name,
+      onToggleFavourite: () => onToggleFavourite(party.uuid, party.isFavorite),
+      children: <PartyDetails type={party.type} isCurrentEndUser={party.isCurrentEndUser ?? false} id={party.id} />,
+      contextMenu: {
+        id: party.groupId + party.id + '-menu',
+        items: [
+          {
+            id: party.groupId + 'inbox',
+            groupId: 'inbox',
+            icon: InboxIcon,
+            title: 'Gå til Innboks',
+            as: (props) => <Link to={'/?party=' + party.id} {...props} />,
+          },
+        ],
+      },
+    };
+  };
+
+  const accountListItems = accounts.map(mapAccountToPartyListItem);
+  const hits = accountListItems.map((a) => ({ ...a, groupId: 'search' }));
+  const searchGroup = {
+    search: { title: accountListItems.length + ' hits' },
+  };
 
   return (
     <PageBase color="person">
-      <PageNav
-        breadcrumbs={getBreadcrumbs({
-          name: endUserName ?? '',
-          type: 'person',
-        })}
-      />
+      <PageNav breadcrumbs={getBreadcrumbs(t('sidebar.profile'), t('sidebar.profile.parties'), search)} />
       <Section as="header" spacing={6}>
         <Heading size="xl">{t('sidebar.profile.parties')}</Heading>
         <Toolbar
@@ -132,11 +193,7 @@ export const PartiesOverviewPage = () => {
           onFilterStateChange={setFilterState}
           filters={filters}
         />
-        {isLoadingParties || isLoadingProfile || !accountListItems.length ? (
-          <AccountListSkeleton />
-        ) : (
-          <AccountList groups={accountListGroups} items={accountListItems} />
-        )}
+        <AccountList groups={isSearching ? searchGroup : accountGroups} items={isSearching ? hits : accountListItems} />
       </Section>
     </PageBase>
   );

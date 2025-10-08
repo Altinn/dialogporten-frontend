@@ -1,25 +1,34 @@
-import {
-  DashboardHeader,
-  type DashboardIconProps,
-  Divider,
-  List,
-  PageBase,
-  PageNav,
-  SettingsItem,
-} from '@altinn/altinn-components';
+import { DashboardHeader, type DashboardIconProps, PageBase, SettingsList } from '@altinn/altinn-components';
 import { formatDisplayName } from '@altinn/altinn-components';
-import { BellIcon, CogIcon } from '@navikt/aksel-icons';
+import { CogIcon } from '@navikt/aksel-icons';
 import { t } from 'i18next';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, type LinkProps, useLocation } from 'react-router-dom';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
 import { pruneSearchQueryParams } from '../Inbox/queryParams.ts';
 import { PageRoutes } from '../routes';
+import { SettingsType, useSettings } from './Settings/useSettings.tsx';
 import { useProfile } from './useProfile';
 
 export const Profile = () => {
   const { user, isLoading } = useProfile();
   const { search } = useLocation();
+  const { settings } = useSettings({
+    options: {
+      includeGroups: [SettingsType.alerts],
+    },
+  });
   usePageTitle({ baseTitle: t('sidebar.profile') });
+
+  const allSettings = [
+    ...settings,
+    {
+      id: 'more-settings',
+      icon: CogIcon,
+      title: t('profile.landing.more_settings'),
+      linkIcon: true,
+      as: (props: LinkProps) => <Link {...props} to={PageRoutes.settings + pruneSearchQueryParams(search)} />,
+    },
+  ];
   const userDisplayName = formatDisplayName({
     fullName: user?.party?.name ?? '',
     type: 'person',
@@ -28,18 +37,6 @@ export const Profile = () => {
 
   return (
     <PageBase>
-      <PageNav
-        breadcrumbs={[
-          {
-            label: t('word.frontpage'),
-            href: PageRoutes.inbox,
-          },
-          {
-            label: t('sidebar.profile'),
-            href: PageRoutes.profile,
-          },
-        ]}
-      />
       <DashboardHeader
         loading={isLoading}
         icon={
@@ -50,27 +47,8 @@ export const Profile = () => {
         }
         title={userDisplayName}
         description={`${t('profile.landing.ssn')} ${user?.party?.person?.ssn}`}
-      >
-        <List size="sm">
-          <SettingsItem
-            id="notifications"
-            as={(props) => <Link {...props} to={PageRoutes.notifications + pruneSearchQueryParams(search)} />}
-            icon={BellIcon}
-            title={t('profile.notifications.are_on')}
-            description="Alle varslinger"
-            badge={{ label: 'SMS og Epost' }}
-            linkIcon
-          />
-          <Divider as="li" />
-          <SettingsItem
-            id="more-settings"
-            icon={CogIcon}
-            title={t('profile.landing.more_settings')}
-            linkIcon
-            as={(props) => <Link {...props} to={PageRoutes.settings + pruneSearchQueryParams(search)} />}
-          />
-        </List>
-      </DashboardHeader>
+      />
+      <SettingsList items={allSettings} />
     </PageBase>
   );
 };

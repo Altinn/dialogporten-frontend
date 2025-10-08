@@ -27,7 +27,7 @@ import { type OrganizationOutput, getOrganization } from '../utils/organizations
 import { type TimelineSegmentWithTransmissions, getTransmissions } from '../utils/transmissions.ts';
 import { getViewTypes } from '../utils/viewType.ts';
 import type { InboxViewType } from './useDialogs.tsx';
-import { type SelectedPartyType, useParties } from './useParties.ts';
+import { type ProfileType, useParties } from './useParties.ts';
 
 export enum EmbeddableMediaType {
   markdown = 'application/vnd.dialogporten.frontchannelembed-url;type=text/markdown',
@@ -184,7 +184,7 @@ export function mapDialogToToInboxItem(
   parties: PartyFieldsFragment[],
   organizations: OrganizationFieldsFragment[],
   format: FormatFunction,
-  selectedProfile: SelectedPartyType,
+  selectedProfile: ProfileType,
 ): DialogByIdDetails | undefined {
   if (!item) {
     return undefined;
