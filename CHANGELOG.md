@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.81.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.81.0...v1.81.1) (2025-10-08)
+
+
+### Bug Fixes
+
+* Fix savedsearch icon size and globalmenu icons on safari ([#2887](https://github.com/Altinn/dialogporten-frontend/issues/2887)) ([e59d051](https://github.com/Altinn/dialogporten-frontend/commit/e59d051bbc2a409145ab6542f75adca3faef091d))
+
 ## [1.81.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.80.0...v1.81.0) (2025-10-07)
 
 
