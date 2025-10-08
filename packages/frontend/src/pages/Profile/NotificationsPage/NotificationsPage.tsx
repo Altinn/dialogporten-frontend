@@ -207,13 +207,15 @@ export const NotificationsPage = () => {
         ) : filteredParties.length > 0 ? (
           <SettingsList
             groups={groups}
-            items={[
-              ...personalNotificationSettingsFiltered,
-              ...partyFieldFragmentToNotificationsListItem({
-                parties: filteredParties,
-                setNotificationParty,
-              }),
-            ]}
+            items={
+              [
+                ...personalNotificationSettingsFiltered,
+                ...partyFieldFragmentToNotificationsListItem({
+                  parties: filteredParties,
+                  setNotificationParty,
+                }),
+              ] as SettingsItemProps[]
+            }
           />
         ) : (
           <span>{t('emptyState.noHits.title')}</span>

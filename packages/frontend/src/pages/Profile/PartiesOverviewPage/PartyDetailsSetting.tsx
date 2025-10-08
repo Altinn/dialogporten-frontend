@@ -21,9 +21,10 @@ export const PartyDetailsSetting = ({ notificationSetting, setNotificationParty 
   return (
     <List size="sm">
       <SettingsItem
+        id="notification-settings"
         icon={BellIcon}
         title={title}
-        value={value}
+        value={value ?? undefined}
         badge={badge as BadgeProps}
         linkIcon
         onClick={() => setNotificationParty(notificationSetting as NotificationAccountsType)}

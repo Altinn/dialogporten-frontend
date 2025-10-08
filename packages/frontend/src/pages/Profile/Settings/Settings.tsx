@@ -69,6 +69,7 @@ export const Settings = () => {
 
   const personalNotificationSettings: SettingsItemProps[] = [
     {
+      id: 'sms-notifications',
       icon: { svgElement: MobileIcon, theme: 'default' },
       groupId: contactSettingsGroupId,
       title: t('profile.settings.sms_notifications'),
@@ -87,6 +88,7 @@ export const Settings = () => {
       as: 'button',
     },
     {
+      id: 'email-alerts',
       icon: { svgElement: PaperplaneIcon, theme: 'default' },
       groupId: contactSettingsGroupId,
       title: t('profile.notifications.email_for_alerts'),
@@ -105,6 +107,7 @@ export const Settings = () => {
       as: 'button',
     },
     {
+      id: 'address',
       icon: { svgElement: HouseIcon, theme: 'default' },
       groupId: contactSettingsGroupId,
       title: t('word.address'),
@@ -132,6 +135,7 @@ export const Settings = () => {
 
   const otherSettings: SettingsItemProps[] = [
     {
+      id: 'notification-settings',
       icon: BellIcon,
       groupId: otherSettingsGroupId,
       title: t('profile.settings.notification_settings'),

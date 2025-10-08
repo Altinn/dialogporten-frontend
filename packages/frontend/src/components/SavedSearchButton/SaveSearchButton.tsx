@@ -42,7 +42,7 @@ export const SaveSearchButton = ({ disabled, className, filterState, viewType }:
         variant="tertiary"
         isLoading={isCTALoading}
       >
-        <BookmarkFillIcon width="0.875rem" height="0.875rem" />
+        <BookmarkFillIcon width="1.25rem" height="1.25rem" />
         {t('filter_bar.saved_search')}
       </ProfileButton>
     );
@@ -57,7 +57,7 @@ export const SaveSearchButton = ({ disabled, className, filterState, viewType }:
       variant="tertiary"
       isLoading={isCTALoading}
     >
-      <BookmarkIcon width="0.875rem" height="0.875rem" />
+      <BookmarkIcon width="1.25rem" height="1.25rem" />
       {t('filter_bar.save_search')}
     </ProfileButton>
   );
