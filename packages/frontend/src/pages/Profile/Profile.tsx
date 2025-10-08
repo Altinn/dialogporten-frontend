@@ -53,6 +53,7 @@ export const Profile = () => {
       >
         <List size="sm">
           <SettingsItem
+            id="notifications"
             as={(props) => <Link {...props} to={PageRoutes.notifications + pruneSearchQueryParams(search)} />}
             icon={BellIcon}
             title={t('profile.notifications.are_on')}
@@ -62,6 +63,7 @@ export const Profile = () => {
           />
           <Divider as="li" />
           <SettingsItem
+            id="more-settings"
             icon={CogIcon}
             title={t('profile.landing.more_settings')}
             linkIcon

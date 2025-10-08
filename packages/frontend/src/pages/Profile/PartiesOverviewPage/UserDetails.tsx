@@ -25,6 +25,7 @@ export const UserDetails = ({ id, type, name, user }: UserDetailsProps) => {
       <Divider />
       <List size="sm">
         <SettingsItem
+          id="mobile-phone"
           icon={MobileIcon}
           title="Mobiltelefon"
           value={alertPhoneNumber?.length ? alertPhoneNumber : 'Mobilnummer ikke registrert'}
@@ -36,6 +37,7 @@ export const UserDetails = ({ id, type, name, user }: UserDetailsProps) => {
           as="button"
         />
         <SettingsItem
+          id="email-address"
           icon={PaperplaneIcon}
           title="E-postadresse"
           value={alertEmailAddress?.length ? alertEmailAddress : 'Epostadresse ikke registrert'}
@@ -48,6 +50,7 @@ export const UserDetails = ({ id, type, name, user }: UserDetailsProps) => {
         />
         <Divider as="li" />
         <SettingsItem
+          id="address"
           icon={HouseHeartIcon}
           title="Adresse"
           value={address}

@@ -78,6 +78,7 @@ export const CompanyDetails = ({
       <List size="sm">
         <Divider as="li" />
         <SettingsItem
+          id="organization-number"
           icon={{ svgElement: Buildings2Icon, theme: 'default' }}
           title="Organisasjonsnummer"
           value={uniqueId}
@@ -86,6 +87,7 @@ export const CompanyDetails = ({
           <>
             <Divider as="li" />
             <SettingsItem
+              id="parent-organization"
               icon={{ svgElement: Buildings2Icon, theme: 'default' }}
               title="Overordnet organisasjon"
               value={parentAccount.name}

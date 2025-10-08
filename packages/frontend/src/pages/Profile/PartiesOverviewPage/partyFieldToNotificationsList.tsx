@@ -120,6 +120,7 @@ export const partyFieldFragmentToNotificationsListItem = ({
       as: 'button',
       icon,
       description: `${isOrganization ? 'Org.nr. ' : 'Fødselsnummer: '} ${urnToOrgNr(party.party)}${party.parentId ? `, del av ${party.name}` : ''}`,
+      variant: undefined,
     } as AccountListItemProps;
   });
 
