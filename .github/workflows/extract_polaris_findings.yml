@@ -1,0 +1,41 @@
+name: Run Polaris Extract and Upload findings
+
+permissions:
+  contents: read
+  security-events: write
+
+on:
+  schedule:
+    - cron: "0 13 * * 1" # Runs every Monday at 13:00 (example schedule, adjust as needed)
+  workflow_dispatch:
+
+jobs:
+  extract-findings:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run extract_findings.py
+        env:
+          POLARIS_URL: ${{ secrets.POLARIS_URL }}
+          POLARIS_TOKEN: ${{ secrets.POLARIS_TOKEN }}
+          POLARIS_PORTFOLIO_ID: ${{ secrets.POLARIS_PORTFOLIO_ID }}
+          POLARIS_PROJECT_ID: ${{ secrets.POLARIS_PROJECT_ID }}
+
+        #Update the run command to match your appplication
+        run: |
+          python .github/tools/extract_findings.py "$POLARIS_URL" "$POLARIS_TOKEN" "$POLARIS_PORTFOLIO_ID" "$POLARIS_PROJECT_ID"
+
+      - name: Upload SARIF to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: "Polaris python code/polaris_issues.sarif" # Update path
