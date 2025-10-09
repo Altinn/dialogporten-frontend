@@ -14,7 +14,7 @@ const STORAGE_KEYS = {
   settings: 'arbeidsflate:profile-settings-onboarding-completed',
 };
 
-const TOUR_STEPS = {
+const getTourSteps = (setCurrentStep: (step: number | ((prev: number) => number)) => void) => ({
   main: [
     {
       selector: 'aside nav a[href*="profile"]',
@@ -51,6 +51,40 @@ const TOUR_STEPS = {
       selector: 'aside nav a[href*="parties"]',
       content: <OnboardingPopover titleKey="test title" infoTextKey="test description" />,
     },
+    {
+      selector: '#main-content header input[name="party-search"]',
+      content: (
+        <OnboardingPopover
+          titleKey="Search and filter"
+          infoTextKey="Use the search and filter tools to find your actors"
+        />
+      ),
+      highlightedSelectors: ['#main-content header div[class*="_toolbar_"]'],
+    },
+    {
+      selector: '#main-content ul li[data-interactive="true"]:first-of-type',
+      content: <OnboardingPopover titleKey="Your profile" infoTextKey="This is your personal profile card" />,
+    },
+    {
+      selector: '#main-content ul li[data-selected="true"]:first-of-type',
+      content: (
+        <OnboardingPopover
+          titleKey="Profile details"
+          infoTextKey="Here you can view and manage your contact information"
+        />
+      ),
+      action: () => {
+        const closedLi = document.querySelector('#main-content ul li[data-interactive="true"]:first-of-type');
+        if (closedLi && closedLi.getAttribute('data-selected') !== 'true') {
+          const button = closedLi.querySelector('button');
+          if (button instanceof HTMLElement) {
+            button.click();
+          }
+        }
+      },
+      mutationObservables: ['#main-content ul li:first-of-type'],
+      resizeObservables: ['#main-content ul li:first-of-type'],
+    },
   ],
   notifications: [
     {
@@ -64,7 +98,7 @@ const TOUR_STEPS = {
       content: <OnboardingPopover titleKey="Settings title" infoTextKey="lorem ipsum" />,
     },
   ],
-};
+});
 
 export const useProfileOnboarding = ({ isLoading, pageType }: UseProfileOnboardingProps) => {
   const tour = useTour();
@@ -78,7 +112,7 @@ export const useProfileOnboarding = ({ isLoading, pageType }: UseProfileOnboardi
 
   useEffect(() => {
     if (shouldInitializeTour) {
-      const steps = TOUR_STEPS[pageType];
+      const steps = getTourSteps(setCurrentStep)[pageType];
 
       if ('setSteps' in tour && typeof tour.setSteps === 'function') {
         tour.setSteps(steps);
