@@ -2,8 +2,7 @@ import type { FilterState, ToolbarFilterProps, ToolbarProps } from '@altinn/alti
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { usePartiesWithNotificationSettings } from '../usePartiesWithNotificationSettings.tsx';
-import type { NotificationAccountsType } from './NotificationsPage.tsx';
+import type { NotificationAccountsType } from './NotificationsPage/NotificationsPage.tsx';
 
 enum FilterStateEnum {
   ALL_PARTIES = 'ALL_PARTIES',
@@ -17,6 +16,7 @@ interface UseFiltersOutput {
   filterState: FilterState;
   setFilterState: (filterState: FilterState) => void;
   filteredParties: PartyFieldsFragment[];
+  isSearching: boolean;
 }
 
 interface UseAccountFiltersProps {
@@ -25,12 +25,11 @@ interface UseAccountFiltersProps {
 }
 
 export const useAccountFilters = ({ searchValue, partiesToFilter }: UseAccountFiltersProps): UseFiltersOutput => {
+  const { t } = useTranslation();
   const [filterState, setFilterState] = useState<FilterState>({
     partyScope: [FilterStateEnum.ALL_PARTIES],
     showDeleted: [],
   });
-  const { t } = useTranslation();
-  const { deletedPartiesWithNotificationSettings } = usePartiesWithNotificationSettings();
   const showDeleted = (filterState?.showDeleted?.length ?? 0) > 0;
 
   const filterOptions: ToolbarFilterProps[] = [
@@ -63,7 +62,7 @@ export const useAccountFilters = ({ searchValue, partiesToFilter }: UseAccountFi
           hidden:
             filterState?.partyScope?.includes(FilterStateEnum.PERSONS) ||
             filterState?.partyScope?.includes(FilterStateEnum.ALL_PARTIES) ||
-            deletedPartiesWithNotificationSettings.length === 0,
+            !showDeleted,
         },
       ],
     },
@@ -94,9 +93,7 @@ export const useAccountFilters = ({ searchValue, partiesToFilter }: UseAccountFi
     const filters = filterState?.partyScope ?? [];
     const includeDeletedParties = showDeleted || filters.includes(FilterStateEnum.ALL_PARTIES);
 
-    let result = includeDeletedParties
-      ? [...partiesToFilter, ...deletedPartiesWithNotificationSettings]
-      : [...partiesToFilter];
+    let result = includeDeletedParties ? partiesToFilter : partiesToFilter.filter((party) => !party.isDeleted);
 
     if (searchValue.length > 0) {
       const search = searchValue.toLowerCase();
@@ -118,7 +115,9 @@ export const useAccountFilters = ({ searchValue, partiesToFilter }: UseAccountFi
     });
 
     return result;
-  }, [partiesToFilter, deletedPartiesWithNotificationSettings, filterState, searchValue, showDeleted]);
+  }, [partiesToFilter, filterState, searchValue, showDeleted]);
 
-  return { filters: filterOptions, getFilterLabel, filterState, setFilterState, filteredParties };
+  const isSearching = searchValue.length > 0 || filterState.partyScope?.[0] !== FilterStateEnum.ALL_PARTIES;
+
+  return { filters: filterOptions, getFilterLabel, filterState, setFilterState, filteredParties, isSearching };
 };

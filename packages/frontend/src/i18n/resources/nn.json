@@ -44,6 +44,9 @@
   "altinn.beta.exit": "Ta meg tilbake",
   "altinn.beta.inbox": "Innboks Beta",
   "altinn.beta.try": "Prøv ny innboks",
+  "account.partOf": "del av",
+  "badge.deleted": "Slettet",
+  "badge.you": "Deg",
   "betaModal.description": "Vi held på å fornye innboksen, og du får eit tidleg innblikk, vi kallar det beta. Han er framleis under utvikling, så nokre meldingar kan mangle. Vi håpar likevel du vil prøve.",
   "betaModal.exitButton": "Gå til dagens innboks",
   "betaModal.fabAltText": "Om Beta",
@@ -340,6 +343,8 @@
   "word.unread": "Ulest",
   "word.you": "deg",
   "word.inbox": "Innboks",
+  "word.ssn": "Fødselsnummer: ",
+  "word.orgNo": "Org. nr. : ",
   "main_content_reference.error": "Ops! Noko gjekk gale med innlastinga",
   "main_content_reference.error_message": "Vel \"oppdater\" for å hente innhaldet på nytt. Dersom problemet held fram, kontakt {sender}",
   "main_content_reference.refetch": "Oppdater"

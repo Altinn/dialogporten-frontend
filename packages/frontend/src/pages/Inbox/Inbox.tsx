@@ -48,6 +48,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     selectedParties,
     allOrganizationsSelected,
     parties,
+    deletedParties,
     partiesEmptyList,
     isError: unableToLoadParties,
     isLoading: isLoadingParties,
@@ -96,10 +97,13 @@ export const Inbox = ({ viewType }: InboxProps) => {
     }
   }, [searchParams.toString()]);
 
-  const { accounts, selectedAccount, accountSearch, accountGroups, onSelectAccount } = useAccounts({
-    parties,
+  const { accounts, selectedAccount, accountSearch, accountGroups, onSelectAccount, filterAccount } = useAccounts({
+    parties: [...parties, ...deletedParties],
     selectedParties,
     allOrganizationsSelected,
+    options: {
+      showGroups: true,
+    },
   });
 
   const { filters, getFilterLabel } = useFilters({ viewType });
@@ -178,6 +182,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
                 groups: accountGroups,
                 currentAccount: selectedAccount,
                 onSelectAccount: (account: string) => onSelectAccount(account, PageRoutes[viewType]),
+                filterAccount,
                 isVirtualized: true,
               }}
               filterState={filterState}

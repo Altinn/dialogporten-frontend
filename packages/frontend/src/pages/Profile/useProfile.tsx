@@ -12,11 +12,12 @@ import {
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 
-export const useProfile = () => {
+export const useProfile = (disabled?: boolean) => {
   const { data, isLoading, isSuccess } = useAuthenticatedQuery<ProfileQuery>({
     queryKey: [QUERY_KEYS.PROFILE],
     queryFn: () => profile(),
     refetchOnWindowFocus: false,
+    enabled: !disabled,
   });
 
   const { i18n } = useTranslation();

@@ -1,4 +1,4 @@
-import type { MenuItemProps, MenuItemSize, MenuProps, Theme } from '@altinn/altinn-components';
+import { Badge, type MenuItemProps, type MenuItemSize, type MenuProps, type Theme } from '@altinn/altinn-components';
 import { formatDisplayName } from '@altinn/altinn-components';
 import { BellIcon, CogIcon, HandshakeFillIcon, HeartIcon, InboxFillIcon, PersonCircleIcon } from '@navikt/aksel-icons';
 import { pruneSearchQueryParams } from '../../../pages/Inbox/queryParams.ts';
@@ -77,6 +77,7 @@ export function buildProfileMenu({
           as: createMenuItemComponent({
             to: PageRoutes.notifications + pruneSearchQueryParams(currentSearchQuery),
           }),
+          hidden: true,
         },
         {
           id: '3',
@@ -111,15 +112,16 @@ export function buildProfileMenu({
       size: 'lg',
       icon: InboxFillIcon,
       iconTheme: 'tinted',
-      title: t('sidebar.inbox'),
+      title: (
+        <>
+          {t('sidebar.inbox')} <Badge label={t('word.beta')} />
+        </>
+      ),
       selected: isRouteSelected(pathname, PageRoutes.inbox, fromView),
       expanded: true,
       as: createMenuItemComponent({
         to: PageRoutes.inbox + pruneSearchQueryParams(currentSearchQuery),
       }),
-      badge: {
-        label: t('word.beta'),
-      },
     },
     {
       id: 'am',
@@ -131,10 +133,11 @@ export function buildProfileMenu({
       hidden: !showAmLink,
       as: 'a',
       href: 'https://am.ui.at23.altinn.cloud/accessmanagement/ui/users',
-      title: t('altinn.access_management'),
-      badge: {
-        label: t('word.beta'),
-      },
+      title: (
+        <>
+          {t('altinn.access_management')} <Badge label={t('word.beta')} />
+        </>
+      ),
     },
   ];
 

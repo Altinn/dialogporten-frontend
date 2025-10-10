@@ -29,26 +29,16 @@ export const normalizeFlattenParties = (parties: PartyFieldsFragment[]): PartyFi
   return partiesInTitleCase.reduce<PartyField[]>((acc, party) => {
     const subParties = party.subParties ?? [];
 
-    const subPartiesNotMatchingParentByName = subParties.filter(
-      (subParty) => subParty.name.toLowerCase() !== party.name.toLowerCase(),
-    );
     const subPartiesMatchingParentByName = subParties.filter(
       (subParty) => subParty.name.toLowerCase() === party.name.toLowerCase(),
     );
-
-    // Skip parent if it's only allowed to access sub-parties
-    if (party.hasOnlyAccessToSubParties) {
-      // Promote sub-parties with different name
-      acc.push(...subParties);
-    } else {
-      // Include parent, and attach only matching sub-parties
-      acc.push({
-        ...party,
-        subParties: subPartiesMatchingParentByName,
-      });
-      // Promote others
-      acc.push(...subPartiesNotMatchingParentByName);
-    }
+    // Include parent, and attach only matching sub-parties
+    acc.push({
+      ...party,
+      subParties: subPartiesMatchingParentByName,
+    });
+    // Promote others
+    acc.push(...subParties);
 
     return acc;
   }, []) as PartyFieldsFragment[];

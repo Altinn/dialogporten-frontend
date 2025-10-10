@@ -11,7 +11,7 @@ import { useGlobalState } from '../../useGlobalState.ts';
 import { graphQLSDK } from '../queries.ts';
 import { normalizeFlattenParties } from '../utils/normalizeFlattenParties.ts';
 
-export type SelectedPartyType = 'company' | 'person';
+export type ProfileType = 'company' | 'person' | 'neutral';
 
 interface UsePartiesOutput {
   parties: PartyFieldsFragment[];
@@ -25,7 +25,7 @@ interface UsePartiesOutput {
   setSelectedPartyIds: (parties: string[], allOrganizationsSelected: boolean) => void;
   currentEndUser: PartyFieldsFragment | undefined;
   allOrganizationsSelected: boolean;
-  selectedProfile: SelectedPartyType;
+  selectedProfile: ProfileType;
   partiesEmptyList: boolean;
 }
 
@@ -171,7 +171,7 @@ export const useParties = (): UsePartiesOutput => {
   const isCompanyProfile =
     isCompanyFromParams || allOrganizationsSelected || selectedParties?.[0]?.partyType === 'Organization';
 
-  const selectedProfile = (isCompanyProfile ? 'company' : 'person') as 'company' | 'person';
+  const selectedProfile = allOrganizationsSelected ? 'neutral' : isCompanyProfile ? 'company' : 'person';
 
   return {
     isLoading,
