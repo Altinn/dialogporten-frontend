@@ -54,12 +54,18 @@ interface UseAccountsOutput {
 }
 
 export const urnToSSNOrOrgNo = (urn: string) => {
-  const ssnOrOrgNo = urn.split('identifier-no:')[1];
+  const parts = urn.split('identifier-no:');
+  if (parts.length < 2) return '';
+
+  const ssnOrOrgNo = parts[1];
   const isPerson = urn.includes('person');
+
+  if (!ssnOrOrgNo) return '';
 
   if (isPerson) {
     return ssnOrOrgNo.slice(0, 6) + '\u2009' + 'XXXXX';
   }
+
   return [ssnOrOrgNo.slice(0, 3), ssnOrOrgNo.slice(3, 6), ssnOrOrgNo.slice(6, 9)].join('\u2009');
 };
 
@@ -202,9 +208,10 @@ export const useAccounts = ({
     const parent = isParent
       ? undefined
       : organizations.find((org) => org?.subParties?.find((subparty) => subparty.party === party.party));
-    const description = parent?.name
-      ? `↳ ${t('word.orgNo')} ${urnToSSNOrOrgNo(party.party)}, ${t('account.partOf')} ${parent?.name}`
-      : `${t('word.orgNo')} ${urnToSSNOrOrgNo(party.party)}`;
+    const description =
+      parent?.name && party?.party
+        ? `↳ ${t('word.orgNo')} ${urnToSSNOrOrgNo(party.party)}, ${t('account.partOf')} ${parent?.name}`
+        : `${t('word.orgNo')} ${urnToSSNOrOrgNo(party.party)}`;
 
     return {
       id: party.party,
