@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.82.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.81.1...v1.82.0) (2025-10-10)
+
+
+### Features
+
+* basic feature toggle API  ([6efc36a](https://github.com/Altinn/dialogporten-frontend/commit/6efc36aa6f260a763f521601d39b737a95a874ae))
+* basic feature toggle API  ([#2835](https://github.com/Altinn/dialogporten-frontend/issues/2835)) ([6efc36a](https://github.com/Altinn/dialogporten-frontend/commit/6efc36aa6f260a763f521601d39b737a95a874ae))
+* organize accounts across AF ([#2890](https://github.com/Altinn/dialogporten-frontend/issues/2890)) ([02f0b8d](https://github.com/Altinn/dialogporten-frontend/commit/02f0b8dc464a0d83b36142869fa15e940c747a02))
+
 ## [1.81.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.81.0...v1.81.1) (2025-10-08)
 
 
