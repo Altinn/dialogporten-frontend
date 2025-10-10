@@ -146,13 +146,13 @@ export const AccountAlertsDetails = ({ notificationParty, onClose }: AccountAler
         <ButtonGroup>
           <Button type="submit">Lagre</Button>
           <Button
+            type="button"
             variant="outline"
             onClick={() => {
-              // TODO: This needs improvements, but works for now
-              const modal = document.querySelector('dialog') as HTMLDialogElement | null;
-              if (modal?.close) {
-                modal.close();
-              }
+              /* Close the nearest <dialog> element (since this component is rendered inside it)
+              Using `closest('dialog')` keeps it scoped to this instance instead of querying the entire DOM.
+              This is a pragmatic solution until the dialog exposes an onClose prop or ref we can call directly. */
+              document.activeElement?.closest('dialog')?.close();
               onClose?.();
             }}
           >
