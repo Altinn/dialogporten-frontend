@@ -100,12 +100,19 @@ var idPortenSessionSecretSecret = {
   identity: 'System'
 }
 
+var appConfigConnectionStringSecret = {
+  name: 'app-config-connection-string'
+  keyVaultUrl: '${keyVaultUrl}/appConfigConnectionString'
+  identity: 'System'
+}
+
 var secrets = [
   dbConnectionStringSecret
   redisConnectionStringSecret
   idPortenClientIdSecret
   idPortenClientSecretSecret
   idPortenSessionSecretSecret
+  appConfigConnectionStringSecret
 ]
 
 var containerAppEnvVars = concat(
@@ -189,6 +196,10 @@ var containerAppEnvVars = concat(
     {
         name: 'LOGOUT_REDIRECT_URI'
         value: logoutRedirectUri
+    }
+    {
+        name: 'APP_CONFIG_CONNECTION_STRING'
+        value: appConfigConnectionStringSecret.name
     }
   ],
   additionalEnvironmentVariables

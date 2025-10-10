@@ -12,12 +12,23 @@ import healthChecks from './azure/HealthChecks.ts';
 import healthProbes from './azure/HealthProbes.ts';
 import config from './config.ts';
 import { connectToDB } from './db.ts';
+import featureApi from './features/featureApi.js';
 import graphqlApi from './graphql/api.ts';
 import { fastifyHeaders } from './graphql/fastifyHeaders.ts';
 import graphqlStream from './graphql/subscription.ts';
 import redisClient from './redisClient.ts';
 
-const { version, port, host, oidc_url, hostname, client_id, client_secret, redisConnectionString } = config;
+const {
+  version,
+  port,
+  host,
+  oidc_url,
+  hostname,
+  client_id,
+  client_secret,
+  redisConnectionString,
+  appConfigConnectionString,
+} = config;
 
 const startServer = async (): Promise<void> => {
   const { secret, enableGraphiql } = config;
@@ -54,6 +65,7 @@ const startServer = async (): Promise<void> => {
       httpOnly: true,
     },
   };
+
   if (redisConnectionString) {
     const store = new RedisStore({
       client: redisClient,
@@ -76,6 +88,9 @@ const startServer = async (): Promise<void> => {
     client_secret,
   });
   server.register(userApi);
+  server.register(featureApi, {
+    appConfigConnectionString,
+  });
   server.register(graphqlApi);
   server.register(graphqlStream);
 

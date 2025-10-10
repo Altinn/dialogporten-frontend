@@ -16,6 +16,7 @@ const envVariables = z.object({
   DB_CONNECTION_STRING: z.string().default('postgres://postgres:mysecretpassword@localhost:5432/dialogporten'),
   APPLICATIONINSIGHTS_CONNECTION_STRING: z.string().optional(),
   APPLICATIONINSIGHTS_ENABLED: z.preprocess(stringToBoolean, z.boolean().default(false)),
+  APP_CONFIG_CONNECTION_STRING: z.string().default(''),
   PORT: z.coerce.number().default(3000),
   OIDC_URL: z.string().default('test.idporten.no'),
   HOSTNAME: z.string().default('http://localhost'),
@@ -76,6 +77,7 @@ const config = {
   enableInitSessionEndpoint: env.ENABLE_INIT_SESSION_ENDPOINT,
   disableProfile: env.DISABLE_PROFILE,
   logoutRedirectUri: env.LOGOUT_REDIRECT_URI,
+  appConfigConnectionString: env.APP_CONFIG_CONNECTION_STRING,
 };
 
 export default config;

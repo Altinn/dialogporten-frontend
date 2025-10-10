@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { ErrorResetHandler, withErrorBoundary } from './components/ErrorBoundary/ErrorBoundary.tsx';
 import { ProtectedPageLayout } from './components/PageLayout/PageLayout.tsx';
-import { FeatureFlagKeys, useFeatureFlag } from './featureFlags';
+import { useFeatureFlag } from './featureFlags';
 import { DialogDetailsPage } from './pages/DialogDetailsPage';
 import { ErrorPage } from './pages/Error/Error.tsx';
 import { Inbox } from './pages/Inbox';
@@ -20,7 +20,7 @@ import { usePageTracking } from './hooks/usePageTracking.ts';
 import { AboutPage } from './pages/About/About.tsx';
 
 function App() {
-  const EnableProfilePages = useFeatureFlag(FeatureFlagKeys.EnableProfilePages);
+  const enableProfilePages = useFeatureFlag<boolean>('profile.enableRoutes', true);
 
   // Add page tracking
   usePageTracking();
@@ -33,7 +33,7 @@ function App() {
             path={PageRoutes.inbox}
             element={withErrorBoundary(<Inbox key="inbox" viewType={'inbox'} />, 'Inbox')}
           />
-          {!!EnableProfilePages && (
+          {enableProfilePages && (
             <>
               <Route path={PageRoutes.profile} element={withErrorBoundary(<Profile />, 'Profile')} />
               <Route
