@@ -14,7 +14,7 @@ const STORAGE_KEYS = {
   settings: 'arbeidsflate:profile-settings-onboarding-completed',
 };
 
-const getTourSteps = (setCurrentStep: (step: number | ((prev: number) => number)) => void) => ({
+const getTourSteps = () => ({
   main: [
     {
       selector: 'aside nav a[href*="profile"]',
@@ -112,7 +112,7 @@ export const useProfileOnboarding = ({ isLoading, pageType }: UseProfileOnboardi
 
   useEffect(() => {
     if (shouldInitializeTour) {
-      const steps = getTourSteps(setCurrentStep)[pageType];
+      const steps = getTourSteps()[pageType];
 
       if ('setSteps' in tour && typeof tour.setSteps === 'function') {
         tour.setSteps(steps);
