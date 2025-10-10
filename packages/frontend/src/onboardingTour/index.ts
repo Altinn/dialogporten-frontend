@@ -1,2 +1,2 @@
-export { useDynamicTour } from './useDynamicTour.tsx';
+export { useInboxOnboarding } from './useInboxOnboarding.tsx';
 export { OnboardingTourProvider } from './OnboardingTourProvider';

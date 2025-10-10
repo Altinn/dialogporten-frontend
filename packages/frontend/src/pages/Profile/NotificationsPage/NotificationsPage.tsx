@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import { QUERY_KEYS } from '../../../constants/queryKeys';
 import { usePageTitle } from '../../../hooks/usePageTitle';
+import { useProfileOnboarding } from '../../../onboardingTour/useProfileOnboarding';
 import { pruneSearchQueryParams } from '../../Inbox/queryParams';
 import { PageRoutes } from '../../routes';
 import { AccountListSkeleton } from '../AccountListSkeleton';
@@ -52,6 +53,11 @@ export const NotificationsPage = () => {
   const [notificationParty, setNotificationParty] = useState<NotificationAccountsType | null>(null);
   const { partiesWithNotificationSettings, isLoading: isLoadingPartiesWithNotificationSettings } =
     usePartiesWithNotificationSettings();
+
+  useProfileOnboarding({
+    isLoading: isLoadingUser && isLoadingPartiesWithNotificationSettings,
+    pageType: 'notifications',
+  });
   const queryClient = useQueryClient();
   const onSave = () => {
     queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.NOTIFICATION_SETTINGS_FOR_CURRENT_USER] });

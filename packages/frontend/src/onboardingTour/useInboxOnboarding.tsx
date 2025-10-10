@@ -5,7 +5,7 @@ import { QUERY_KEYS } from '../constants/queryKeys';
 import { useGlobalState } from '../useGlobalState';
 import { OnboardingPopover } from './OnboardingPopover';
 
-interface UseDynamicTourProps {
+interface UseInboxOnboardingProps {
   isLoadingParties: boolean;
   isLoadingDialogs: boolean;
   dialogsSuccess: boolean;
@@ -51,13 +51,13 @@ export const mobileTourSteps = [
   },
 ];
 
-export const useDynamicTour = ({
+export const useInboxOnboarding = ({
   isLoadingParties,
   isLoadingDialogs,
   dialogsSuccess,
   dialog,
   viewType,
-}: UseDynamicTourProps) => {
+}: UseInboxOnboardingProps) => {
   const [globalTour, setGlobalTour] = useGlobalState<boolean>(QUERY_KEYS.SHOW_TOUR, false);
   const windowSize = useWindowSize();
   const tour = useTour();
