@@ -165,12 +165,14 @@ var frontendGatewayBackend = {
   probe: frontendProbe
 }
 
+var maintenanceHostName = 'dialogportentemp.z1.web.${environment().suffixes.storage}'
+
 var maintenancePool = {
   name: '${gatewayName}-maintenancePool'
   properties: {
     backendAddresses: [
       {
-        fqdn: 'dialogportentemp.z1.web${environment().suffixes.storage}'
+        fqdn: maintenanceHostName
       }
     ]
   }
@@ -179,7 +181,7 @@ var maintenancePool = {
 var maintenanceProbe = {
   name: '${gatewayName}-maintenancePool-probe'
   properties: {
-    host: 'dialogportentemp.z1.web${environment().suffixes.storage}'
+    host: maintenanceHostName
     protocol: 'Https'
     path: '/'
     interval: 30
@@ -196,7 +198,7 @@ var maintenanceHttpSettings = {
     protocol: 'Https'
     cookieBasedAffinity: 'Disabled'
     pickHostNameFromBackendAddress: false
-    hostName: 'dialogportentemp.z1.web${environment().suffixes.storage}'
+    hostName: maintenanceHostName
     requestTimeout: 60
     probe: {
       id: resourceId('Microsoft.Network/applicationGateways/probes', gatewayName, maintenanceProbe.name)
