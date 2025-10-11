@@ -36,8 +36,8 @@ importers:
         specifier: workspace:*
         version: link:../node-logger
       '@digdir/dialogporten-schema':
-        specifier: 1.79.7-5f58832
-        version: 1.79.7-5f58832
+        specifier: 1.86.0
+        version: 1.86.0
       '@fastify/cookie':
         specifier: ^11.0.2
         version: 11.0.2
@@ -1715,8 +1715,8 @@ packages:
   '@digdir/designsystemet-theme@1.0.6':
     resolution: {integrity: sha512-Cj8aaQ5GtnJTdzHmOHap0B9ldGItRQ3NKpqlz4VF+wda0YQIgXlsiWi01ayYhU344u1gSGxdj3Dh3gg9GMOAfw==}
 
-  '@digdir/dialogporten-schema@1.79.7-5f58832':
-    resolution: {integrity: sha512-EsnfUK5ZYKWxmL0TMftfpcwkacg05RiXLEhZEy4RGzcRTvF8j5e+zmBBXd8Hzr96mpT1CMUv6haCPL0ziIMnzg==}
+  '@digdir/dialogporten-schema@1.86.0':
+    resolution: {integrity: sha512-pBODrnjU46L/7qEFTZH+9ZC30pUtdNvWNK+63qkoXNKbveE1OJuljtLMS+RNidARl6uQtTVCDYJmoXarBZIgvg==}
     engines: {node: '22'}
 
   '@discoveryjs/json-ext@0.5.7':
@@ -2461,6 +2461,7 @@ packages:
   '@graphql-tools/prisma-loader@8.0.17':
     resolution: {integrity: sha512-fnuTLeQhqRbA156pAyzJYN0KxCjKYRU5bz1q/SKOwElSnAU4k7/G1kyVsWLh7fneY78LoMNH5n+KlFV8iQlnyg==}
     engines: {node: '>=16.0.0'}
+    deprecated: 'This package was intended to be used with an older versions of Prisma.\nThe newer versions of Prisma has a different approach to GraphQL integration.\nTherefore, this package is no longer needed and has been deprecated and removed.\nLearn more: https://www.prisma.io/graphql'
     peerDependencies:
       graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
 
@@ -11929,7 +11930,7 @@ snapshots:
 
   '@digdir/designsystemet-theme@1.0.6': {}
 
-  '@digdir/dialogporten-schema@1.79.7-5f58832': {}
+  '@digdir/dialogporten-schema@1.86.0': {}
 
   '@discoveryjs/json-ext@0.5.7': {}
 
