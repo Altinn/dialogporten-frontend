@@ -21,8 +21,6 @@ export const normalizeFlattenParties = (parties: PartyFieldsFragment[]): PartyFi
           type: subParty.partyType === 'Person' ? 'person' : 'company',
           reverseNameOrder: subParty.partyType === 'Person',
         }),
-        isCurrentEndUser: false,
-        isDeleted: party.isDeleted,
       })),
     })) ?? [];
 
