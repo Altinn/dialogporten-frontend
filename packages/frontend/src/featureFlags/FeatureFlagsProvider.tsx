@@ -13,13 +13,9 @@ interface FeatureFlagProviderProps {
 }
 
 export async function loadFeatureFlags() {
-  return {};
-  // TODO: Temporarily disabled till values are properly loaded
-  /*
   const res = await fetch('/api/features');
   if (!res.ok) throw new Error('Failed to load feature flags');
   return res.json();
-   */
 }
 
 export const FeatureFlagProvider: React.FC<FeatureFlagProviderProps> = ({ children, initialFlags }) => {

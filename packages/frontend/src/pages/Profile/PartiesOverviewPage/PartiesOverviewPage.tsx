@@ -11,7 +11,7 @@ import {
 } from '@altinn/altinn-components';
 import type { AccountListItemType } from '@altinn/altinn-components/dist/types/lib/components/Account/AccountListItem';
 import { BellIcon, HashtagIcon, InboxIcon } from '@navikt/aksel-icons';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps, useLocation } from 'react-router-dom';
 import { useProfile } from '..';
@@ -175,7 +175,8 @@ export const PartiesOverviewPage = () => {
     };
   };
 
-  const accountListItems = accounts.map(mapAccountToPartyListItem);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  const accountListItems = useMemo(() => accounts.map(mapAccountToPartyListItem), [accounts]);
   const hits = accountListItems.map((a) => ({ ...a, groupId: 'search' }));
   const searchGroup = {
     search: { title: accountListItems.length + ' hits' },

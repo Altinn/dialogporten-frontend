@@ -10,6 +10,7 @@ const defaultFeatureFlags: Record<string, boolean | number | string> = {
   'globalMenu.enableProfileLink': false,
   'globalMenu.enableAccessManagementLink': false,
   'profile.enableNotificationsPage': false,
+  'debug.test': false, // only used for debugging
 };
 
 /* Fore more details, cf. https://learn.microsoft.com/en-us/azure/azure-app-configuration/quickstart-feature-flag-javascript?tabs=entra-id */
