@@ -51,7 +51,7 @@ export const usePageTitle = ({ baseTitle, searchValue, filterState, getFilterLab
       }
     }
 
-    const title = titleParts.join(' + ') + ` - Altinn ${t('word.inbox')}`;
+    const title = titleParts.join(' + ') + ` - Altinn ${t('word.beta')}`;
 
     document.title = title;
   }, [baseTitle, searchValue, filterState, getFilterLabel, t]);
