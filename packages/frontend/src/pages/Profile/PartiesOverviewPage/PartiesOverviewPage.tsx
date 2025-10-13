@@ -16,7 +16,11 @@ import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps, useLocation } from 'react-router-dom';
 import { useProfile } from '..';
 import { useParties } from '../../../api/hooks/useParties';
-import { type PartyItemProp, urnToSSNOrOrgNo, useAccounts } from '../../../components/PageLayout/Accounts/useAccounts';
+import {
+  type PartyItemProp,
+  formatNorwegianId,
+  useAccounts,
+} from '../../../components/PageLayout/Accounts/useAccounts';
 import { usePageTitle } from '../../../hooks/usePageTitle';
 import { useProfileOnboarding } from '../../../onboardingTour/useProfileOnboarding';
 import { PageRoutes } from '../../routes.ts';
@@ -87,19 +91,19 @@ export const PartiesOverviewPage = () => {
         id: 'orgNr',
         icon: HashtagIcon,
         title: 'Organisasjonsnummer',
-        value: urnToSSNOrOrgNo(id),
+        value: formatNorwegianId(id, false),
       },
     ];
   };
 
-  const getPersonSettings = (id: string): SettingsItemProps[] => {
+  const getPersonSettings = (id: string, isCurrentEndUser: boolean): SettingsItemProps[] => {
     return [
       ...getPartyNotificationsSettings(id),
       {
         id: 'snr',
         icon: HashtagIcon,
         title: 'Fødselsnummer',
-        value: urnToSSNOrOrgNo(id),
+        value: formatNorwegianId(id, isCurrentEndUser),
       },
     ];
   };
@@ -134,7 +138,7 @@ export const PartiesOverviewPage = () => {
       return (
         <AccountListItemDetails
           color="person"
-          settings={getPersonSettings(id)}
+          settings={getPersonSettings(id, isCurrentEndUser)}
           buttons={getPartyButtons(isCurrentEndUser, id)}
         />
       );
