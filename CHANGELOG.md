@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.82.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.82.1...v1.82.2) (2025-10-13)
+
+
+### Bug Fixes
+
+* **bff:** use correct secret ref for app configuration conn string ([#2911](https://github.com/Altinn/dialogporten-frontend/issues/2911)) ([778c960](https://github.com/Altinn/dialogporten-frontend/commit/778c960ef9c5ea2cc83ead1e91712ad2c1964512))
+* **infra:** ensure correct hostname for maintenance backend ([#2884](https://github.com/Altinn/dialogporten-frontend/issues/2884)) ([102a4dc](https://github.com/Altinn/dialogporten-frontend/commit/102a4dcd45c73a7a3ef7088cc0b7803978c3b97c))
+
 ## [1.82.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.82.0...v1.82.1) (2025-10-13)
 
 
