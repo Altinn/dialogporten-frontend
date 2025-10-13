@@ -53,17 +53,24 @@ interface UseAccountsOutput {
   currentAccount?: Account;
 }
 
-export const urnToSSNOrOrgNo = (urn: string) => {
-  const parts = urn.split('identifier-no:');
+export const formatSSN = (ssn: string, maskIdentifierSuffix: boolean) => {
+  if (maskIdentifierSuffix) {
+    return ssn.slice(0, 6) + '\u2009' + 'XXXXX';
+  }
+  return ssn.slice(0, 6) + '\u2009' + ssn.slice(6);
+};
+
+export const formatNorwegianId = (partyId: string, isCurrentEndUser: boolean) => {
+  const parts = partyId.split('identifier-no:');
   if (parts.length < 2) return '';
 
   const ssnOrOrgNo = parts[1];
-  const isPerson = urn.includes('person');
+  const isPerson = partyId.includes('person');
 
   if (!ssnOrOrgNo) return '';
 
   if (isPerson) {
-    return ssnOrOrgNo.slice(0, 6) + '\u2009' + 'XXXXX';
+    return formatSSN(ssnOrOrgNo, !isCurrentEndUser);
   }
 
   return [ssnOrOrgNo.slice(0, 3), ssnOrOrgNo.slice(3, 6), ssnOrOrgNo.slice(6, 9)].join('\u2009');
@@ -171,7 +178,7 @@ export const useAccounts = ({
       : {}),
   };
 
-  const description = currentEndUser?.party ? t('word.ssn') + urnToSSNOrOrgNo(currentEndUser!.party!) : '';
+  const description = currentEndUser?.party ? t('word.ssn') + formatNorwegianId(currentEndUser!.party!, true) : '';
   const endUserAccount: PartyItemProp | undefined = currentEndUser
     ? {
         id: currentEndUser?.party ?? '',
@@ -187,7 +194,7 @@ export const useAccounts = ({
     : undefined;
 
   const otherPeopleAccounts: PartyItemProp[] = otherPeople.map((person) => {
-    const description = t('word.ssn') + urnToSSNOrOrgNo(person.party);
+    const description = t('word.ssn') + formatNorwegianId(person.party, false);
     return {
       id: person.party,
       name: person.name,
@@ -210,8 +217,8 @@ export const useAccounts = ({
       : organizations.find((org) => org?.subParties?.find((subparty) => subparty.party === party.party));
     const description =
       parent?.name && party?.party
-        ? `↳ ${t('word.orgNo')} ${urnToSSNOrOrgNo(party.party)}, ${t('account.partOf')} ${parent?.name}`
-        : `${t('word.orgNo')} ${urnToSSNOrOrgNo(party.party)}`;
+        ? `↳ ${t('word.orgNo')} ${formatNorwegianId(party.party, false)}, ${t('account.partOf')} ${parent?.name}`
+        : `${t('word.orgNo')} ${formatNorwegianId(party.party, false)}`;
 
     return {
       id: party.party,
