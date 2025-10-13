@@ -199,7 +199,7 @@ var containerAppEnvVars = concat(
     }
     {
         name: 'APP_CONFIG_CONNECTION_STRING'
-        value: appConfigConnectionStringSecret.name
+        secretRef: appConfigConnectionStringSecret.name
     }
   ],
   additionalEnvironmentVariables
