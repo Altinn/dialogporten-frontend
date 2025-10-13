@@ -106,6 +106,10 @@ export const PageLayout: React.FC = () => {
         return <Link to={createHomeLink()} {...props} />;
       },
     },
+    badge: {
+      label: t('word.beta'),
+      color: 'person',
+    },
     search: {
       expanded: false,
       name: t('word.search'),

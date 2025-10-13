@@ -1,4 +1,4 @@
-import { Badge, type MenuItemProps, type MenuItemSize, type MenuProps, type Theme } from '@altinn/altinn-components';
+import type { MenuItemProps, MenuItemSize, MenuProps, Theme } from '@altinn/altinn-components';
 import {
   ArchiveIcon,
   BookmarkIcon,
@@ -81,11 +81,7 @@ export function buildInboxMenu({
       groupId: 'global',
       size: 'lg',
       icon: InboxFillIcon,
-      title: (
-        <>
-          {t('sidebar.inbox')} <Badge label={t('word.beta')} />
-        </>
-      ),
+      title: t('sidebar.inbox'),
       selected: isRouteSelected(pathname, PageRoutes.inbox, fromView),
       expanded: true,
       as: createMenuItemComponent({
@@ -189,11 +185,7 @@ export function buildInboxMenu({
         hidden: !showAmLink,
         as: 'a',
         href: 'https://am.ui.at23.altinn.cloud/accessmanagement/ui/users',
-        title: (
-          <>
-            {t('altinn.access_management')} <Badge label={t('word.beta')} />
-          </>
-        ),
+        title: t('altinn.access_management'),
         selected: false,
       },
       ...inboxOnlyShortcuts,
