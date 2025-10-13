@@ -48,7 +48,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
     selectedParties,
     allOrganizationsSelected,
     parties,
-    deletedParties,
     partiesEmptyList,
     isError: unableToLoadParties,
     isLoading: isLoadingParties,
@@ -98,7 +97,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
   }, [searchParams.toString()]);
 
   const { accounts, selectedAccount, accountSearch, accountGroups, onSelectAccount, filterAccount } = useAccounts({
-    parties: [...parties, ...deletedParties],
+    parties,
     selectedParties,
     allOrganizationsSelected,
     options: {

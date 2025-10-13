@@ -27,13 +27,13 @@ export const PartiesOverviewPage = () => {
   const { search } = useLocation();
   const { getAccountAlertSettings, settings } = useSettings();
   const { addFavoriteParty, deleteFavoriteParty } = useProfile();
-  const { parties, deletedParties, selectedParties, allOrganizationsSelected, isLoading } = useParties();
+  const { parties, selectedParties, allOrganizationsSelected, isLoading } = useParties();
   const [searchValue, setSearchValue] = useState<string>('');
   const [expandedItem, setExpandedItem] = useState<string>('');
 
   const { filters, getFilterLabel, filterState, setFilterState, filteredParties, isSearching } = useAccountFilters({
     searchValue,
-    partiesToFilter: [...parties, ...deletedParties],
+    parties: parties,
   });
 
   const { accounts, accountGroups } = useAccounts({

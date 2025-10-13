@@ -87,18 +87,12 @@ export const getNotificationsSettingsBadge = ({
 };
 
 export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettingsInput = {}): UseSettingsOutput => {
-  const {
-    isLoading: isLoadingParties,
-    parties,
-    deletedParties,
-    selectedParties,
-    allOrganizationsSelected,
-  } = useParties();
+  const { isLoading: isLoadingParties, parties, selectedParties, allOrganizationsSelected } = useParties();
   const { user } = useProfile();
   const { t } = useTranslation();
   const [searchString, setSearchString] = useState<string>('');
   const { partiesWithNotificationSettings, uniqueEmailAddresses, uniquePhoneNumbers } =
-    usePartiesWithNotificationSettings([...parties, ...deletedParties]);
+    usePartiesWithNotificationSettings(parties);
 
   const getUsedByEmail = (email?: string): UsedByLogItemProps[] | undefined => {
     if (!email) return undefined;

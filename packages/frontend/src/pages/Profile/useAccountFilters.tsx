@@ -2,7 +2,6 @@ import type { FilterState, ToolbarFilterProps, ToolbarProps } from '@altinn/alti
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { NotificationAccountsType } from './NotificationsPage/NotificationsPage.tsx';
 
 enum FilterStateEnum {
   ALL_PARTIES = 'ALL_PARTIES',
@@ -21,10 +20,10 @@ interface UseFiltersOutput {
 
 interface UseAccountFiltersProps {
   searchValue: string;
-  partiesToFilter: PartyFieldsFragment[] | NotificationAccountsType[];
+  parties: PartyFieldsFragment[];
 }
 
-export const useAccountFilters = ({ searchValue, partiesToFilter }: UseAccountFiltersProps): UseFiltersOutput => {
+export const useAccountFilters = ({ searchValue, parties }: UseAccountFiltersProps): UseFiltersOutput => {
   const { t } = useTranslation();
   const [filterState, setFilterState] = useState<FilterState>({
     partyScope: [FilterStateEnum.ALL_PARTIES],
@@ -93,7 +92,7 @@ export const useAccountFilters = ({ searchValue, partiesToFilter }: UseAccountFi
     const filters = filterState?.partyScope ?? [];
     const includeDeletedParties = showDeleted || filters.includes(FilterStateEnum.ALL_PARTIES);
 
-    let result = includeDeletedParties ? partiesToFilter : partiesToFilter.filter((party) => !party.isDeleted);
+    let result = includeDeletedParties ? parties : parties.filter((party) => !party.isDeleted);
 
     if (searchValue.length > 0) {
       const search = searchValue.toLowerCase();
@@ -115,7 +114,7 @@ export const useAccountFilters = ({ searchValue, partiesToFilter }: UseAccountFi
     });
 
     return result;
-  }, [partiesToFilter, filterState, searchValue, showDeleted]);
+  }, [parties, filterState, searchValue, showDeleted]);
 
   const isSearching = searchValue.length > 0 || filterState.partyScope?.[0] !== FilterStateEnum.ALL_PARTIES;
 
