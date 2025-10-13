@@ -1,7 +1,6 @@
-import { Button, ButtonGroup, FloatingActionButton, Modal, Typography } from '@altinn/altinn-components';
-import { InformationSquareIcon } from '@navikt/aksel-icons';
+import { Button, ButtonGroup, Modal, Typography } from '@altinn/altinn-components';
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { createMessageBoxLink } from '../../auth';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
@@ -36,43 +35,39 @@ export const BetaModal = () => {
 
   if (isMock) return null;
 
-  if (isOpen) {
-    return (
-      <Modal
-        open
-        closedBy={isFirstTime ? 'none' : 'closerequest'}
-        dismissable={!isFirstTime}
-        variant="default"
-        onClose={handleClose}
-      >
-        <Typography>
-          <h1>{t('betaModal.title')}</h1>
-          <p>{t('betaModal.description')}</p>
-        </Typography>
-        <ButtonGroup className={styles.buttons}>
-          <Button onClick={onTryBeta}>{t('betaModal.tryButton')}</Button>
-          <Button as="a" href={createMessageBoxLink()} variant="outline">
-            {t('betaModal.exitButton')}
-          </Button>
-        </ButtonGroup>
-        <Typography size="sm">
-          <Link
-            target="_blank"
-            to={PageRoutes.about + pruneSearchQueryParams(search)}
-            onClick={() => localStorage.setItem(betaKey, 'true')}
-          >
-            {t('betaModal.learnMore')}
-          </Link>
-        </Typography>
-      </Modal>
-    );
+  if (!isOpen) {
+    return null;
   }
 
   return (
-    <FloatingActionButton
-      onClick={() => setIsOpen(true)}
-      icon={InformationSquareIcon}
-      iconAltText={t('betaModal.fabAltText')}
-    />
+    <Modal
+      open
+      closedBy={isFirstTime ? 'none' : 'closerequest'}
+      dismissable={!isFirstTime}
+      variant="default"
+      onClose={handleClose}
+    >
+      <Typography>
+        <h1>{t('betaModal.title')}</h1>
+        <p>
+          <Trans i18nKey="betaModal.description" components={{ strong: <strong />, b: <b /> }} />
+        </p>
+      </Typography>
+      <ButtonGroup className={styles.buttons}>
+        <Button onClick={onTryBeta}>{t('betaModal.tryButton')}</Button>
+        <Button as="a" href={createMessageBoxLink()} variant="outline">
+          {t('betaModal.exitButton')}
+        </Button>
+      </ButtonGroup>
+      <Typography size="sm">
+        <Link
+          target="_blank"
+          to={PageRoutes.about + pruneSearchQueryParams(search)}
+          onClick={() => localStorage.setItem(betaKey, 'true')}
+        >
+          {t('betaModal.learnMore')}
+        </Link>
+      </Typography>
+    </Modal>
   );
 };

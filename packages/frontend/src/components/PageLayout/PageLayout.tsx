@@ -23,6 +23,7 @@ import { useProfile } from '../../pages/Profile';
 import { PageRoutes } from '../../pages/routes.ts';
 import { useGlobalState } from '../../useGlobalState.ts';
 import { BetaModal } from '../BetaModal';
+import { FloatingDropdown } from '../FloatingDropdown/FloatingDropdown.tsx';
 import { useAuth } from '../Login/AuthContext.tsx';
 import { useAccounts } from './Accounts/useAccounts.tsx';
 import { useFooter } from './Footer';
@@ -175,6 +176,7 @@ export const PageLayout: React.FC = () => {
         <Outlet />
         <Snackbar />
         <BetaModal />
+        <FloatingDropdown />
       </Layout>
     </>
   );

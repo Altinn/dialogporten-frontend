@@ -18,6 +18,7 @@ import { useProfile } from '..';
 import { useParties } from '../../../api/hooks/useParties';
 import { type PartyItemProp, urnToSSNOrOrgNo, useAccounts } from '../../../components/PageLayout/Accounts/useAccounts';
 import { usePageTitle } from '../../../hooks/usePageTitle';
+import { useProfileOnboarding } from '../../../onboardingTour/useProfileOnboarding';
 import { getBreadcrumbs } from '../Settings/Settings.tsx';
 import { useSettings } from '../Settings/useSettings.tsx';
 import { useAccountFilters } from '../useAccountFilters.tsx';
@@ -47,6 +48,7 @@ export const PartiesOverviewPage = () => {
   });
 
   usePageTitle({ baseTitle: t('component.parties_overview') });
+  useProfileOnboarding({ isLoading, pageType: 'parties' });
 
   const toggleExpanded = (id: string) => setExpandedItem((currentId) => (currentId === id ? '' : id));
 
