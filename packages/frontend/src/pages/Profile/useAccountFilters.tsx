@@ -96,9 +96,18 @@ export const useAccountFilters = ({ searchValue, parties }: UseAccountFiltersPro
 
     if (searchValue.length > 0) {
       const search = searchValue.toLowerCase();
-      result = result.filter(
-        (party) => party.name.toLowerCase().includes(search) || party.party.toLowerCase().includes(search),
-      );
+      const normalized = search.trim().toLowerCase();
+      const parts = normalized.split(/\s+/);
+
+      result = result.filter((s) => {
+        const name = (s.name ?? '').toString().toLowerCase();
+        const party = (s.party ?? '').toString().toLowerCase();
+        return (
+          parts.some((part) => name.includes(part) || party.includes(part)) ||
+          name.includes(normalized) ||
+          party.includes(normalized)
+        );
+      });
     }
 
     result = result.filter((party) => {
