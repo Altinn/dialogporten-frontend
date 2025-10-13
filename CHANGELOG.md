@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.82.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.82.0...v1.82.1) (2025-10-13)
+
+
+### Bug Fixes
+
+* deleted parties not possible to choose as selected or current party ([#2904](https://github.com/Altinn/dialogporten-frontend/issues/2904)) ([c703ea6](https://github.com/Altinn/dialogporten-frontend/commit/c703ea6d330fe892774ffee4e4dcbc58698e8cf4))
+
 ## [1.82.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.81.1...v1.82.0) (2025-10-10)
 
 
