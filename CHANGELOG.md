@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.83.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.82.3...v1.83.0) (2025-10-13)
+
+
+### Features
+
+* Onboarding profile ([#2867](https://github.com/Altinn/dialogporten-frontend/issues/2867)) ([dcdd801](https://github.com/Altinn/dialogporten-frontend/commit/dcdd8016a86488b23668bd4bc3b56b8b0ac842f8))
+
+
+### Bug Fixes
+
+* sub parties with different names than parent does not get grouped ([#2921](https://github.com/Altinn/dialogporten-frontend/issues/2921)) ([a23e9c2](https://github.com/Altinn/dialogporten-frontend/commit/a23e9c2240d76324956ed32cabae6b9aacb5be5d))
+
 ## [1.82.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.82.2...v1.82.3) (2025-10-13)
 
 
