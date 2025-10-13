@@ -64,18 +64,9 @@ const defaultOptions = {
 export const getNotificationsSettingsBadge = ({
   phoneNumber,
   email,
-  isDeleted,
 }: { phoneNumber?: string | undefined; email?: string | undefined; isDeleted?: boolean }): BadgeProps => {
   const phoneLabel = phoneNumber?.length ? 'SMS' : '';
   const emailLabel = email?.length ? 'E-post' : '';
-
-  if (isDeleted) {
-    return {
-      color: 'danger',
-      variant: 'base',
-      label: 'Slettet',
-    };
-  }
 
   if (!phoneNumber && !email) {
     return {
@@ -210,7 +201,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
       ) : (
         <AccountAlertsDetails notificationParty={notificationAccount} onClose={() => {}} />
       ),
-      badge: getNotificationsSettingsBadge({ phoneNumber, email, isDeleted: account?.isDeleted }),
+      badge: getNotificationsSettingsBadge({ phoneNumber, email }),
     };
   };
 

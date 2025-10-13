@@ -19,6 +19,7 @@ import { useParties } from '../../../api/hooks/useParties';
 import { type PartyItemProp, urnToSSNOrOrgNo, useAccounts } from '../../../components/PageLayout/Accounts/useAccounts';
 import { usePageTitle } from '../../../hooks/usePageTitle';
 import { useProfileOnboarding } from '../../../onboardingTour/useProfileOnboarding';
+import { PageRoutes } from '../../routes.ts';
 import { getBreadcrumbs } from '../Settings/Settings.tsx';
 import { useSettings } from '../Settings/useSettings.tsx';
 import { useAccountFilters } from '../useAccountFilters.tsx';
@@ -60,11 +61,9 @@ export const PartiesOverviewPage = () => {
     }
   };
 
-  // TODO: Add more cases
-  const getPartyButtons = (isCurrentEndUser: boolean) => {
-    if (isCurrentEndUser) {
-      return [{ label: 'Gå til innboks', as: (props: LinkProps) => <Link {...props} to="/" /> }];
-    }
+  const getPartyButtons = (isCurrentEndUser: boolean, partyId: string) => {
+    const inboxLink = PageRoutes.inbox + (isCurrentEndUser ? '' : `?party=${partyId}`);
+    return [{ label: 'Gå til innboks', as: (props: LinkProps) => <Link {...props} to={inboxLink} /> }];
   };
 
   const getPartyNotificationsSettings = (id: string): SettingsItemProps[] => {
@@ -113,7 +112,11 @@ export const PartiesOverviewPage = () => {
     if (isCurrentEndUser) {
       const contactSettings = settings.filter((s) => s.groupId === 'contact');
       return (
-        <AccountListItemDetails color="person" buttons={getPartyButtons(isCurrentEndUser)} settings={contactSettings} />
+        <AccountListItemDetails
+          color="person"
+          buttons={getPartyButtons(isCurrentEndUser, id)}
+          settings={contactSettings}
+        />
       );
     }
 
@@ -122,7 +125,7 @@ export const PartiesOverviewPage = () => {
         <AccountListItemDetails
           color="company"
           settings={getCompanySettings(id)}
-          buttons={getPartyButtons(isCurrentEndUser)}
+          buttons={getPartyButtons(isCurrentEndUser, id)}
         />
       );
     }
@@ -132,7 +135,7 @@ export const PartiesOverviewPage = () => {
         <AccountListItemDetails
           color="person"
           settings={getPersonSettings(id)}
-          buttons={getPartyButtons(isCurrentEndUser)}
+          buttons={getPartyButtons(isCurrentEndUser, id)}
         />
       );
     }
@@ -152,6 +155,7 @@ export const PartiesOverviewPage = () => {
       collapsible: true,
       expanded: expandedItem === itemId,
       onClick: () => toggleExpanded(itemId),
+      highlightWords: (searchValue ?? '').split(' '),
       as: 'button',
       title: party.name,
       onToggleFavourite: () => onToggleFavourite(party.uuid, party.isFavorite),
