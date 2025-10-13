@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.83.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.83.0...v1.83.1) (2025-10-13)
+
+
+### Bug Fixes
+
+* format ssn consistently across af ([#2929](https://github.com/Altinn/dialogporten-frontend/issues/2929)) ([ecbc813](https://github.com/Altinn/dialogporten-frontend/commit/ecbc813cb103856119015955a853a6acb54338ef))
+* Page title beta suffix ([#2924](https://github.com/Altinn/dialogporten-frontend/issues/2924)) ([a5695ee](https://github.com/Altinn/dialogporten-frontend/commit/a5695eeb7ee06fa7fb79f8d27fe43a38efc41dfc))
+
 ## [1.83.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.82.3...v1.83.0) (2025-10-13)
 
 
