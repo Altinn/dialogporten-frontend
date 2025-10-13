@@ -1,8 +1,9 @@
-import { DashboardHeader, type DashboardIconProps, PageBase, SettingsList } from '@altinn/altinn-components';
+import { DashboardHeader, PageBase, SettingsList } from '@altinn/altinn-components';
 import { formatDisplayName } from '@altinn/altinn-components';
 import { CogIcon } from '@navikt/aksel-icons';
 import { t } from 'i18next';
 import { Link, type LinkProps, useLocation } from 'react-router-dom';
+import { formatSSN } from '../../components/PageLayout/Accounts/useAccounts.tsx';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
 import { useProfileOnboarding } from '../../onboardingTour/useProfileOnboarding';
 import { pruneSearchQueryParams } from '../Inbox/queryParams.ts';
@@ -43,14 +44,12 @@ export const Profile = () => {
     <PageBase>
       <DashboardHeader
         loading={isLoading}
-        icon={
-          {
-            type: 'person',
-            name: userDisplayName,
-          } as DashboardIconProps
-        }
+        icon={{
+          type: 'person',
+          name: userDisplayName,
+        }}
         title={userDisplayName}
-        description={`${t('profile.landing.ssn')} ${user?.party?.person?.ssn}`}
+        description={`${t('profile.landing.ssn')} ${user?.party?.ssn ? formatSSN(user?.party?.ssn, false) : ''}`}
       />
       <SettingsList items={allSettings} />
     </PageBase>
