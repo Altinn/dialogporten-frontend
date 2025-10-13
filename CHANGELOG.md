@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.82.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.82.2...v1.82.3) (2025-10-13)
+
+
+### Bug Fixes
+
+* inconsistent avatar groups for used by for notifications ([#2919](https://github.com/Altinn/dialogporten-frontend/issues/2919)) ([c2b010a](https://github.com/Altinn/dialogporten-frontend/commit/c2b010ab63718cb71db54a70e2397c2338db06f5))
+
 ## [1.82.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.82.1...v1.82.2) (2025-10-13)
 
 
