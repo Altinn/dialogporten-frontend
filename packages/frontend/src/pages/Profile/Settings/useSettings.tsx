@@ -1,5 +1,7 @@
 import {
   AvatarGroup,
+  type AvatarGroupProps,
+  type AvatarVariant,
   type BadgeProps,
   type SettingsGroupProps,
   type SettingsItemProps,
@@ -97,14 +99,23 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
   const getUsedByEmail = (email?: string): UsedByLogItemProps[] | undefined => {
     if (!email) return undefined;
     const userEmailGroup = uniqueEmailAddresses.find((group) => group?.email === email);
-    return (
-      (userEmailGroup?.parties ?? []).map((party) => ({
-        id: party.partyUuid,
+    return (userEmailGroup?.parties ?? []).map((party) => ({
+      id: party.partyUuid,
+      name: party.name,
+      type: party.type,
+      avatar: {
         name: party.name,
         type: party.type,
-        variant: party.hasParentParty ? 'outline' : 'solid',
-      })) || []
-    );
+        variant: (party.hasParentParty ? 'outline' : 'solid') as AvatarVariant,
+      },
+    }));
+  };
+
+  const getAvatarGroup = (items?: UsedByLogItemProps[]): AvatarGroupProps['items'] => {
+    if (items?.length) {
+      return items.map((item) => (item.avatar ? item.avatar : { name: item.name, type: item.type }));
+    }
+    return [];
   };
 
   const getUsedByPhoneNumber = (phoneNumber?: string): UsedByLogItemProps[] | undefined => {
@@ -115,7 +126,11 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
         id: party.partyUuid,
         name: party.name,
         type: party.type,
-        variant: (party.hasParentParty ? 'outline' : 'solid') as UsedByLogItemProps['variant'],
+        avatar: {
+          name: party.name,
+          type: party.type,
+          variant: (party.hasParentParty ? 'outline' : 'solid') as AvatarVariant,
+        },
       })) || []
     );
   };
@@ -271,7 +286,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
     icon: PersonRectangleIcon,
     title: 'Varslingsprofil for e-post',
     value: uea.email,
-    badge: <AvatarGroup items={getUsedByEmail(uea.email)} size="lg" />,
+    badge: <AvatarGroup items={getAvatarGroup(getUsedByEmail(uea.email))} size="lg" />,
     variant: 'modal',
     children: (
       <ContactProfileDetails
@@ -290,7 +305,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
     icon: PersonRectangleIcon,
     title: 'Varslingsprofil for SMS',
     value: uep.phoneNumber,
-    badge: <AvatarGroup items={getUsedByPhoneNumber(uep.phoneNumber)} size="lg" />,
+    badge: <AvatarGroup items={getAvatarGroup(getUsedByPhoneNumber(uep.phoneNumber))} size="lg" />,
     variant: 'modal',
     children: (
       <ContactProfileDetails

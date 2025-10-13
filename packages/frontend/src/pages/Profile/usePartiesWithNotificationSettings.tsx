@@ -32,22 +32,6 @@ export interface GroupedPhoneNumberType {
   parties: UniquePhoneNumberType[];
 }
 
-export const flattenParties = (parties: NotificationAccountsType[]) => {
-  const flattenedParties: NotificationAccountsType[] = [];
-  for (const party of parties) {
-    flattenedParties.push(party);
-    if (party.subParties) {
-      for (const subParty of party.subParties) {
-        flattenedParties.push({
-          ...subParty,
-          parentId: party.partyUuid,
-        } as NotificationAccountsType);
-      }
-    }
-  }
-  return flattenedParties;
-};
-
 export const usePartiesWithNotificationSettings = (parties: PartyFieldsFragment[]) => {
   const { notificationSettingsForCurrentUser } = useNotificationSettingsForCurrentUser();
 
@@ -70,7 +54,7 @@ export const usePartiesWithNotificationSettings = (parties: PartyFieldsFragment[
       queryFn: async () => {
         if (!parties?.length) return [];
 
-        const filteredParties = flattenParties(parties).filter((party) => !party.isCurrentEndUser);
+        const filteredParties = parties.filter((party) => !party.isCurrentEndUser);
 
         return await Promise.all(
           filteredParties.map(async (party) => {
@@ -88,7 +72,6 @@ export const usePartiesWithNotificationSettings = (parties: PartyFieldsFragment[
 
   const uniqueEmailAddresses: GroupedEmailAddressType[] = useMemo(() => {
     const emailMap = new Map<string, UniqueEmailAddressType[]>();
-
     const emails = partiesWithNotificationSettings
       .map(
         (party: NotificationAccountsType) =>
@@ -97,7 +80,7 @@ export const usePartiesWithNotificationSettings = (parties: PartyFieldsFragment[
             partyUuid: party.partyUuid,
             name: party.name,
             type: party.partyType === 'Organization' ? 'company' : 'person',
-            hasParentParty: !!party.parentId,
+            hasParentParty: !Array.isArray(party.subParties),
           }) as UniqueEmailAddressType,
       )
       .filter(
@@ -129,7 +112,7 @@ export const usePartiesWithNotificationSettings = (parties: PartyFieldsFragment[
             partyUuid: party.partyUuid,
             name: party.name,
             type: party.partyType === 'Organization' ? 'company' : 'person',
-            hasParentParty: !!party.parentId,
+            hasParentParty: !Array.isArray(party.subParties),
           }) as UniquePhoneNumberType,
       )
       .filter(
