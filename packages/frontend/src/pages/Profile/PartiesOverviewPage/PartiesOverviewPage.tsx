@@ -39,11 +39,12 @@ export const PartiesOverviewPage = () => {
 
   const { filters, getFilterLabel, filterState, setFilterState, filteredParties, isSearching } = useAccountFilters({
     searchValue,
-    parties: parties,
+    parties,
   });
 
   const { accounts, accountGroups } = useAccounts({
     parties: filteredParties,
+    availableParties: parties,
     selectedParties,
     allOrganizationsSelected,
     isLoading,
@@ -72,12 +73,13 @@ export const PartiesOverviewPage = () => {
 
   const getPartyNotificationsSettings = (id: string): SettingsItemProps[] => {
     if (id && typeof getAccountAlertSettings === 'function') {
+      const settings = getAccountAlertSettings(id);
       return [
         {
-          ...getAccountAlertSettings!(id!),
+          ...settings,
           id: 'mobile',
           icon: BellIcon,
-          title: 'Varslingsadresser',
+          title: settings?.value ? 'Mine varslinger' : 'Ingen varslinger',
         },
       ];
     }
@@ -190,11 +192,11 @@ export const PartiesOverviewPage = () => {
     <PageBase color="person">
       <PageNav breadcrumbs={getBreadcrumbs(t('sidebar.profile'), t('sidebar.profile.parties'), search)} />
       <Section as="header" spacing={6}>
-        <Heading size="xl">{t('sidebar.profile.parties')}</Heading>
+        <Heading size="xl">Aktørinnstillinger</Heading>
         <Toolbar
           search={{
             name: 'party-search',
-            placeholder: t('parties.search.placeholder'),
+            placeholder: t('parties.search'),
             value: searchValue,
             onChange: (e) => setSearchValue((e.target as HTMLInputElement).value),
             onClear: () => setSearchValue(''),

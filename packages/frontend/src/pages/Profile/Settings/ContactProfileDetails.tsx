@@ -48,15 +48,32 @@ export const ContactProfileDetails = ({
   return (
     <>
       {(variant === 'phone' || variant === 'alerts') && (
-        <TextField label="Mobiltelefon" value={phoneNumber} size="sm" readOnly={readOnly} />
+        <TextField
+          label="Mobiltelefon"
+          placeholder="Mobilnummer for varslinger"
+          value={phoneNumber}
+          size="sm"
+          readOnly={readOnly}
+        />
       )}
       {(variant === 'email' || variant === 'alerts') && (
-        <TextField label="E-postadresse" value={emailAddress} size="sm" readOnly={readOnly} />
+        <TextField
+          label="E-postadresse"
+          placeholder="E-postadresse for varslinger"
+          value={emailAddress}
+          size="sm"
+          readOnly={readOnly}
+        />
       )}
       {variant === 'address' && (
         <>
-          <TextField label="Adresse" value={mailingAddress} size="sm" readOnly={readOnly} />
-          <TextField label="Sted" value={`${mailingPostalCode}, ${mailingPostalCity}`} size="sm" readOnly={readOnly} />
+          <TextField label="Postadresse" value={mailingAddress} size="sm" readOnly={readOnly} />
+          <TextField
+            label="Postnummer og sted"
+            value={`${mailingPostalCode} ${mailingPostalCity}`}
+            size="sm"
+            readOnly={readOnly}
+          />
         </>
       )}
       {usedByItems.length > 0 && (
@@ -72,8 +89,8 @@ export const ContactProfileDetails = ({
         <>
           <Typography size="sm">
             <p>
-              Adressen er hentet fra <a href={folkeRegisteretUrl}>Folkeregisteret</a>. Hvis adressen er feil må du endre
-              den der.
+              Altinn bruker postadressen din fra <a href={folkeRegisteretUrl}>Folkeregisteret</a>. Hvis adressen er feil
+              må du endre den der.
             </p>
           </Typography>
           <ButtonGroup size="md">

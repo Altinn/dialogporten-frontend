@@ -110,7 +110,6 @@ export function buildProfileMenu({
           as: createMenuItemComponent({
             to: PageRoutes.notifications + pruneSearchQueryParams(currentSearchQuery),
           }),
-          hidden: true,
         },
         {
           id: '3',

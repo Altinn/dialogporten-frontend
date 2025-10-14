@@ -32,18 +32,18 @@ export const Settings = () => {
   const { settingsGroups, settings, settingsSearch } = useSettings({
     isLoading: isLoadingUser || isLoadingParties,
     options: {
-      excludeGroups: [SettingsType.alerts],
+      includeGroups: [SettingsType.contact],
     },
   });
 
   return (
     <PageBase>
       <Breadcrumbs items={getBreadcrumbs(t('sidebar.profile'), t('sidebar.profile.settings'), search)} />
-      <Heading size="xl">{t('sidebar.profile.settings')}</Heading>
+      <Heading size="xl">Personlige innstillinger</Heading>
       <Toolbar
         search={{
           ...settingsSearch,
-          placeholder: t('parties.search.placeholder'),
+          placeholder: 'Søk i innstillinger',
         }}
       />
       {settings.length === 0 && <Heading size="lg">Ingen treff</Heading>}
