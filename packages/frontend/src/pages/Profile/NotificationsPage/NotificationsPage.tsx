@@ -52,6 +52,7 @@ export const NotificationsPage = () => {
           placeholder: 'Søk i varslinger',
         }}
       />
+      {settings.length === 0 && <Heading size="lg">{t('profile.settings.no_results')}</Heading>}
       <SettingsList items={settings} groups={settingsGroups} />
     </PageBase>
   );

@@ -130,7 +130,7 @@ export const useAccounts = ({
   if (isLoading) {
     return {
       accounts: [loadingAccountMenuItem as PartyItemProp],
-      accountGroups: { loading: { title: 'Laster' } },
+      accountGroups: { loading: { title: t('profile.accounts.loading') } },
       selectedAccount: loadingAccount as Account,
       accountSearch: undefined,
       onSelectAccount: () => {},
@@ -144,14 +144,14 @@ export const useAccounts = ({
 
   const defaultGroups = {
     primary: {
-      title: 'Meg og mine favoritter',
+      title: t('profile.accounts.me_and_favorites'),
     },
     groups: { title: '' },
     persons: {
-      title: 'Andre personer',
+      title: t('profile.accounts.persons'),
     },
     companies: {
-      title: 'Alle virksomheter',
+      title: t('profile.accounts.companies'),
     },
   };
   const defaultOptions: UseAccountOptions = {
@@ -221,7 +221,7 @@ export const useAccounts = ({
 
     const description =
       parent?.name && party?.party
-        ? `↳ ${t('word.orgNo')} ${formatNorwegianId(party.party, false)}, ${t('account.partOf')} ${parent?.name}`
+        ? `↳ ${t('word.orgNo')} ${formatNorwegianId(party.party, false)}, ${t('profile.account.partOf')} ${parent?.name}`
         : `${t('word.orgNo')} ${formatNorwegianId(party.party, false)}`;
 
     return {

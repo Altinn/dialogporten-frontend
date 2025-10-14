@@ -47,35 +47,42 @@ interface UseSettingsOutput {
   getAccountAlertSettings?: (id: string) => SettingsItemProps;
 }
 
-const defaultGroups = {
-  [SettingsType.contact]: { title: 'Kontaktinformasjon' },
-  [SettingsType.alerts]: { title: 'Varsling' },
-  [SettingsType.companies]: { title: 'Varslinger for virksomheter' },
-  [SettingsType.persons]: { title: 'Varslinger for andre personer' },
-  [SettingsType.primary]: { title: 'Varslinger for favoritter' },
-  [SettingsType.profiles]: { title: 'Alternative varslingsadresser' },
-};
-const defaultOptions = {
-  groups: defaultGroups,
+const getDefaultGroups = (t: (key: string) => string) => ({
+  [SettingsType.contact]: { title: t('profile.settings.contact_information') },
+  [SettingsType.alerts]: { title: t('profile.settings.notifications') },
+  [SettingsType.companies]: { title: t('profile.settings.company_notifications') },
+  [SettingsType.persons]: { title: t('profile.settings.person_notifications') },
+  [SettingsType.primary]: { title: t('profile.settings.favorite_notifications') },
+  [SettingsType.profiles]: { title: t('profile.settings.alternative_addresses') },
+});
+
+const getDefaultOptions = (t: (key: string) => string) => ({
+  groups: getDefaultGroups(t),
   includeGroups: undefined,
   excludeGroups: undefined,
-};
+});
 
 export const getNotificationsSettingsBadge = ({
   phoneNumber,
   email,
-}: { phoneNumber?: string | undefined; email?: string | undefined; isDeleted?: boolean }): BadgeProps => {
-  const phoneLabel = phoneNumber?.length ? 'SMS' : '';
-  const emailLabel = email?.length ? 'E-post' : '';
+  t,
+}: {
+  phoneNumber?: string | undefined;
+  email?: string | undefined;
+  isDeleted?: boolean;
+  t: (key: string) => string;
+}): BadgeProps => {
+  const phoneLabel = phoneNumber?.length ? t('profile.settings.sms') : '';
+  const emailLabel = email?.length ? t('profile.settings.email') : '';
 
   if (!phoneNumber && !email) {
     return {
       variant: 'text',
-      label: 'Legg til',
+      label: t('profile.settings.add'),
     };
   }
   return {
-    label: [emailLabel, phoneLabel].filter(Boolean).join(emailLabel && phoneLabel ? ' og ' : ''),
+    label: [emailLabel, phoneLabel].filter(Boolean).join(emailLabel && phoneLabel ? t('profile.settings.and') : ''),
   };
 };
 
@@ -104,9 +111,9 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
 
   const getChangeSettingsBadge = (value?: string) => {
     if (value) {
-      return { label: 'Endre', variant: 'text' as BadgeProps['variant'] };
+      return { label: t('profile.settings.change'), variant: 'text' as BadgeProps['variant'] };
     }
-    return { label: 'Legg til', variant: 'text' as BadgeProps['variant'] };
+    return { label: t('profile.settings.add'), variant: 'text' as BadgeProps['variant'] };
   };
 
   const getAvatarGroup = (items?: UsedByLogItemProps[]): AvatarGroupProps['items'] => {
@@ -133,7 +140,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
     );
   };
 
-  const options = { ...defaultOptions, ...inputOptions };
+  const options = { ...getDefaultOptions(t), ...inputOptions };
 
   const { accounts, accountGroups } = useAccounts({
     isLoading: isLoadingParties,
@@ -157,7 +164,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
     placeholder: '',
     getResultsLabel: (hits: number) => {
       if (hits === 0) {
-        return 'Ingen treff';
+        return t('profile.settings.no_results');
       }
       return t('parties.results', { hits });
     },
@@ -177,7 +184,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
         },
       ],
       settingsGroups: {
-        loading: { title: 'Laster' },
+        loading: { title: t('profile.settings.loading') },
       },
     };
   }
@@ -210,7 +217,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
       ) : (
         <AccountAlertsDetails notificationParty={notificationAccount} />
       ),
-      badge: getNotificationsSettingsBadge({ phoneNumber, email }),
+      badge: getNotificationsSettingsBadge({ phoneNumber, email, t }),
     };
   };
 
@@ -230,7 +237,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
       id: 'contact-mobile',
       groupId: SettingsType.contact,
       icon: MobileIcon,
-      title: 'Mobiltelefon',
+      title: t('profile.settings.mobile_phone'),
       value: user?.phoneNumber || '',
       badge: getChangeSettingsBadge(user?.phoneNumber || ''),
       variant: 'modal',
@@ -247,7 +254,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
       id: 'contact-email',
       groupId: SettingsType.contact,
       icon: PaperplaneIcon,
-      title: 'E-postadresse',
+      title: t('profile.settings.email_address'),
       value: user?.email || '',
       badge: getChangeSettingsBadge(user?.email || ''),
       variant: 'modal',
@@ -264,7 +271,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
       id: 'contact-address',
       groupId: SettingsType.contact,
       icon: HouseHeartIcon,
-      title: 'Adresse',
+      title: t('profile.settings.address'),
       value: address,
       badge: getChangeSettingsBadge(address),
       variant: 'modal',
@@ -284,7 +291,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
     id: 'contact-profile-email-setting-' + uea.email,
     groupId: SettingsType.profiles,
     icon: PersonRectangleIcon,
-    title: 'Varslingsprofil for e-post',
+    title: t('profile.settings.notification_profile_email'),
     value: uea.email,
     badge: <AvatarGroup items={getAvatarGroup(getUsedByEmail(uea.email))} size="lg" />,
     variant: 'modal',
@@ -293,7 +300,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
         variant="email"
         emailAddress={uea.email}
         usedByItems={getUsedByEmail(uea.email)}
-        description="Snart kan du endre varslingsadressene dine her."
+        description={t('profile.settings.coming_soon')}
         readOnly
       />
     ),
@@ -303,7 +310,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
     id: 'contact-profile-phone-setting-' + uep.phoneNumber,
     groupId: SettingsType.profiles,
     icon: PersonRectangleIcon,
-    title: 'Varslingsprofil for SMS',
+    title: t('profile.settings.notification_profile_sms'),
     value: uep.phoneNumber,
     badge: <AvatarGroup items={getAvatarGroup(getUsedByPhoneNumber(uep.phoneNumber))} size="lg" />,
     variant: 'modal',
@@ -313,7 +320,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
         phoneNumber={uep.phoneNumber}
         readOnly
         usedByItems={getUsedByPhoneNumber(uep.phoneNumber)}
-        description="Snart kan du endre varslingsadressene dine her."
+        description={t('profile.settings.coming_soon')}
       />
     ),
   }));
@@ -323,9 +330,9 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
       id: 'alert-mobile',
       groupId: SettingsType.alerts,
       icon: BellIcon,
-      title: 'Varslinger på SMS',
+      title: t('profile.settings.sms_notifications'),
       value: user?.phoneNumber || '',
-      badge: getChangeSettingsBadge(user?.phoneNumber || ''),
+      badge: { label: t('profile.settings.change'), variant: 'text' },
       variant: 'modal',
       children: (
         <ContactProfileDetails
@@ -340,9 +347,9 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
       id: 'alert-email',
       groupId: SettingsType.alerts,
       icon: BellIcon,
-      title: 'Varslinger på e-post',
+      title: t('profile.settings.email_notifications'),
       value: user?.email || '',
-      badge: getChangeSettingsBadge(user?.email || ''),
+      badge: { label: t('profile.settings.change'), variant: 'text' },
       variant: 'modal',
       children: <ContactProfileDetails variant="email" emailAddress={user?.email || ''} readOnly />,
     },
@@ -385,7 +392,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
 
     return {
       settingsGroups: {
-        'search-results': { title: hits.length + ' treff' },
+        'search-results': { title: t('search.hits', { count: hits.length }) },
       },
       settings: hits,
       settingsSearch,
