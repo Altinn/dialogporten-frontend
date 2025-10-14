@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.83.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.83.1...v1.83.2) (2025-10-14)
+
+
+### Bug Fixes
+
+* re-enable feature toggle api ([#2930](https://github.com/Altinn/dialogporten-frontend/issues/2930)) ([63fc65d](https://github.com/Altinn/dialogporten-frontend/commit/63fc65ddad23e1b45eaaab161e2144a80519106b))
+
 ## [1.83.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.83.0...v1.83.1) (2025-10-13)
 
 
