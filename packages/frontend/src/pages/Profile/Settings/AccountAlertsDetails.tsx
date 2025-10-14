@@ -18,8 +18,8 @@ export const AccountAlertsDetails = ({ notificationParty, onClose }: AccountAler
 
   const { logError } = useErrorLogger();
   const notificationSetting = notificationParty?.notificationSettings;
-  const alertPhoneNumber = notificationSetting?.phoneNumber || user.phoneNumber || '';
-  const alertEmailAddress = notificationSetting?.emailAddress || user.email || '';
+  const alertPhoneNumber = notificationSetting?.phoneNumber || user?.phoneNumber || '';
+  const alertEmailAddress = notificationSetting?.emailAddress || user?.email || '';
   const partyUuid = notificationSetting?.partyUuid || notificationParty?.partyUuid || '';
 
   const [enablePhoneNotifications, setEnablePhoneNotifications] = useState<boolean>(
