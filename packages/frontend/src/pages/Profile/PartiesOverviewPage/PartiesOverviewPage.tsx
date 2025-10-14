@@ -53,7 +53,7 @@ export const PartiesOverviewPage = () => {
     },
   });
 
-  usePageTitle({ baseTitle: t('component.parties_overview') });
+  usePageTitle({ baseTitle: t('component.parties_settings') });
   useProfileOnboarding({ isLoading, pageType: 'parties' });
 
   const toggleExpanded = (id: string) => setExpandedItem((currentId) => (currentId === id ? '' : id));
@@ -68,7 +68,7 @@ export const PartiesOverviewPage = () => {
 
   const getPartyButtons = (isCurrentEndUser: boolean, partyId: string) => {
     const inboxLink = PageRoutes.inbox + (isCurrentEndUser ? '' : `?party=${partyId}`);
-    return [{ label: 'Gå til innboks', as: (props: LinkProps) => <Link {...props} to={inboxLink} /> }];
+    return [{ label: t('parties.go_to_inbox'), as: (props: LinkProps) => <Link {...props} to={inboxLink} /> }];
   };
 
   const getPartyNotificationsSettings = (id: string): SettingsItemProps[] => {
@@ -79,7 +79,9 @@ export const PartiesOverviewPage = () => {
           ...settings,
           id: 'mobile',
           icon: BellIcon,
-          title: settings?.value ? 'Mine varslinger' : 'Ingen varslinger',
+          title: settings.value
+            ? t('profile.notifications.my_notifications')
+            : t('profile.notifications.no_notifications'),
         },
       ];
     }
@@ -92,7 +94,7 @@ export const PartiesOverviewPage = () => {
       {
         id: 'orgNr',
         icon: HashtagIcon,
-        title: 'Organisasjonsnummer',
+        title: t('profile.organization_number'),
         value: formatNorwegianId(id, false),
       },
     ];
@@ -104,7 +106,7 @@ export const PartiesOverviewPage = () => {
       {
         id: 'snr',
         icon: HashtagIcon,
-        title: 'Fødselsnummer',
+        title: t('profile.birth_number'),
         value: formatNorwegianId(id, isCurrentEndUser),
       },
     ];
@@ -173,7 +175,7 @@ export const PartiesOverviewPage = () => {
             id: party.groupId + 'inbox',
             groupId: 'inbox',
             icon: InboxIcon,
-            title: 'Gå til Innboks',
+            title: t('profile.go_to_inbox'),
             as: (props) => <Link to={'/?party=' + party.id} {...props} />,
           },
         ],
@@ -185,14 +187,14 @@ export const PartiesOverviewPage = () => {
   const accountListItems = useMemo(() => accounts.map(mapAccountToPartyListItem), [accounts]);
   const hits = accountListItems.map((a) => ({ ...a, groupId: 'search' }));
   const searchGroup = {
-    search: { title: accountListItems.length + ' hits' },
+    search: { title: t('search.hits', { count: accountListItems.length }) },
   };
 
   return (
     <PageBase color="person">
       <PageNav breadcrumbs={getBreadcrumbs(t('sidebar.profile'), t('sidebar.profile.parties'), search)} />
       <Section as="header" spacing={6}>
-        <Heading size="xl">Aktørinnstillinger</Heading>
+        <Heading size="xl">{t('component.parties_settings')}</Heading>
         <Toolbar
           search={{
             name: 'party-search',
@@ -206,6 +208,7 @@ export const PartiesOverviewPage = () => {
           onFilterStateChange={setFilterState}
           filters={filters}
         />
+        {isSearching && hits.length === 0 && <Heading size="lg">{t('profile.settings.no_results')}</Heading>}
         <AccountList groups={isSearching ? searchGroup : accountGroups} items={isSearching ? hits : accountListItems} />
       </Section>
     </PageBase>

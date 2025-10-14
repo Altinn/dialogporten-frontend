@@ -48,28 +48,16 @@ export const ContactProfileDetails = ({
   return (
     <>
       {(variant === 'phone' || variant === 'alerts') && (
-        <TextField
-          label="Mobiltelefon"
-          placeholder="Mobilnummer for varslinger"
-          value={phoneNumber}
-          size="sm"
-          readOnly={readOnly}
-        />
+        <TextField label={t('contact_profile.mobile_phone')} value={phoneNumber} size="sm" readOnly={readOnly} />
       )}
       {(variant === 'email' || variant === 'alerts') && (
-        <TextField
-          label="E-postadresse"
-          placeholder="E-postadresse for varslinger"
-          value={emailAddress}
-          size="sm"
-          readOnly={readOnly}
-        />
+        <TextField label={t('contact_profile.email_address')} value={emailAddress} size="sm" readOnly={readOnly} />
       )}
       {variant === 'address' && (
         <>
-          <TextField label="Postadresse" value={mailingAddress} size="sm" readOnly={readOnly} />
+          <TextField label={t('contact_profile.address')} value={mailingAddress} size="sm" readOnly={readOnly} />
           <TextField
-            label="Postnummer og sted"
+            label={t('contact_profile.location')}
             value={`${mailingPostalCode} ${mailingPostalCity}`}
             size="sm"
             readOnly={readOnly}
@@ -77,7 +65,11 @@ export const ContactProfileDetails = ({
         </>
       )}
       {usedByItems.length > 0 && (
-        <UsedByLog endUserLabel="Deg" items={usedByItems} title={'Brukes av ' + usedByItems?.length + ' aktører'} />
+        <UsedByLog
+          endUserLabel={t('contact_profile.used_by_you')}
+          items={usedByItems}
+          title={t('contact_profile.used_by_actors', { count: usedByItems?.length })}
+        />
       )}
       {description && (
         <Typography size="sm">
@@ -89,8 +81,9 @@ export const ContactProfileDetails = ({
         <>
           <Typography size="sm">
             <p>
-              Altinn bruker postadressen din fra <a href={folkeRegisteretUrl}>Folkeregisteret</a>. Hvis adressen er feil
-              må du endre den der.
+              {t('contact_profile.address_from_register_part1')}{' '}
+              <a href={folkeRegisteretUrl}>{t('contact_profile.address_from_register_link')}</a>
+              {t('contact_profile.address_from_register_part2')}
             </p>
           </Typography>
           <ButtonGroup size="md">
@@ -104,8 +97,8 @@ export const ContactProfileDetails = ({
           <>
             <Typography size="sm">
               <p>
-                Altinn bruker kontaktinformasjon fra <a href={krrInfoUrl}>Kontakt- og reservasjonsregisteret</a>, et
-                felles kontaktregister for stat og kommune.
+                {t('contact_profile.contact_info_part1')} <a href={krrInfoUrl}>{t('contact_profile.email_register')}</a>
+                {t('contact_profile.contact_info_part2')}
               </p>
             </Typography>
             <ButtonGroup size="md">

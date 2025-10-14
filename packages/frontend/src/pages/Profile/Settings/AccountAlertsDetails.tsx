@@ -10,6 +10,7 @@ import {
 } from '@altinn/altinn-components';
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { deleteNotificationsetting, updateNotificationsetting } from '../../../api/queries.ts';
 import { QUERY_KEYS } from '../../../constants/queryKeys.ts';
 import { useErrorLogger } from '../../../hooks/useErrorLogger.ts';
@@ -24,6 +25,7 @@ export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetails
   const { user } = useProfile();
   const queryClient = useQueryClient();
   const { openSnackbar } = useSnackbar();
+  const { t } = useTranslation();
 
   const { logError } = useErrorLogger();
   const notificationSetting = notificationParty?.notificationSettings;
@@ -77,19 +79,19 @@ This is a pragmatic solution until the dialog exposes an onClose prop or ref we 
         const result = await updateNotificationsetting(updatedSettings);
         if (!result?.updateNotificationSetting?.success) {
           openSnackbar({
-            message: 'Det skjedde en feil, varslinger ble ikke endret',
+            message: t('profile.account_alerts.snackbar.error'),
             color: 'danger',
           });
         } else {
           openSnackbar({
-            message: 'Varslinger ble endret',
+            message: t('profile.account_alerts.snackbar.success'),
             color: 'accent',
           });
         }
       } else {
         await deleteNotificationsetting(partyUuid);
         openSnackbar({
-          message: 'Varslinger ble endret',
+          message: t('profile.account_alerts.snackbar.success'),
           color: 'accent',
         });
       }
@@ -105,7 +107,7 @@ This is a pragmatic solution until the dialog exposes an onClose prop or ref we 
         'Error updating notification settings',
       );
       openSnackbar({
-        message: 'Det skjedde en feil, varslinger ble ikke endret',
+        message: t('profile.account_alerts.snackbar.error'),
         color: 'danger',
       });
     } finally {
@@ -118,7 +120,7 @@ This is a pragmatic solution until the dialog exposes an onClose prop or ref we 
       <Section spacing={6}>
         <Fieldset size="sm">
           <Switch
-            label={'Varsle på SMS'}
+            label={t('profile.account_alerts.notify_sms')}
             name="smsAlerts"
             value="SMS"
             checked={enablePhoneNotifications}
@@ -131,9 +133,9 @@ This is a pragmatic solution until the dialog exposes an onClose prop or ref we 
               required
               onInvalid={(e) => {
                 if (e.currentTarget.validity.valueMissing) {
-                  e.currentTarget.setCustomValidity('Telefonnummer må fylles ut');
+                  e.currentTarget.setCustomValidity(t('profile.account_alerts.phone_required'));
                 } else if (e.currentTarget.validity.patternMismatch) {
-                  e.currentTarget.setCustomValidity('Telefonnummer er ugyldig');
+                  e.currentTarget.setCustomValidity(t('profile.account_alerts.phone_invalid'));
                 } else {
                   e.currentTarget.setCustomValidity('');
                 }
@@ -141,34 +143,34 @@ This is a pragmatic solution until the dialog exposes an onClose prop or ref we 
               onChange={(e) => {
                 setAlertPhoneNumberState(e.target.value);
                 if (e.currentTarget.validity.valueMissing) {
-                  e.currentTarget.setCustomValidity('Telefonnummer må fylles ut');
+                  e.currentTarget.setCustomValidity(t('profile.account_alerts.phone_required'));
                 } else if (e.currentTarget.validity.patternMismatch) {
-                  e.currentTarget.setCustomValidity('Telefonnummer er ugyldig');
+                  e.currentTarget.setCustomValidity(t('profile.account_alerts.phone_invalid'));
                 } else {
                   e.currentTarget.setCustomValidity('');
                 }
               }}
-              placeholder="Mobiltelefon"
+              placeholder={t('profile.account_alerts.phone_placeholder')}
               value={alertPhoneNumberState}
             />
           )}
           <Switch
-            label={'Varsle på e-post'}
+            label={t('profile.account_alerts.notify_email')}
             name="emailAlerts"
-            value="E-post"
+            value={t('profile.account_alerts.switch_email_value')}
             checked={enableEmailNotifications}
             onChange={() => setEnableEmailNotifications((prev) => !prev)}
           />
           {enableEmailNotifications && (
             <TextField
               name="email"
-              pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
+              pattern={`^((""[^""]+"")|(([a-zA-Z0-9!#$%&'*+\\-=?\\^_\`{|}~])+(\.([a-zA-Z0-9!#$%&'*+\\-=?\\^_\`{|}~])+)*))@((((([a-zA-Z0-9æøåÆØÅ]([a-zA-Z0-9\-æøåÆØÅ]{0,61})[a-zA-Z0-9æøåÆØÅ]\.)|[a-zA-Z0-9æøåÆØÅ]\.){1,9})([a-zA-Z]{2,14}))|((\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})))$`}
               required
               onInvalid={(e) => {
                 if (e.currentTarget.validity.valueMissing) {
-                  e.currentTarget.setCustomValidity('E-postadresse må fylles ut');
+                  e.currentTarget.setCustomValidity(t('profile.account_alerts.email_required'));
                 } else if (e.currentTarget.validity.patternMismatch) {
-                  e.currentTarget.setCustomValidity('E-postadresse er ugyldig');
+                  e.currentTarget.setCustomValidity(t('profile.account_alerts.email_invalid'));
                 } else {
                   e.currentTarget.setCustomValidity('');
                 }
@@ -176,28 +178,28 @@ This is a pragmatic solution until the dialog exposes an onClose prop or ref we 
               onChange={(e) => {
                 setAlertEmailAddressState(e.target.value);
                 if (e.currentTarget.validity.valueMissing) {
-                  e.currentTarget.setCustomValidity('E-postadresse må fylles ut');
+                  e.currentTarget.setCustomValidity(t('profile.account_alerts.email_required'));
                 } else if (e.currentTarget.validity.patternMismatch) {
-                  e.currentTarget.setCustomValidity('E-postadresse er ugyldig');
+                  e.currentTarget.setCustomValidity(t('profile.account_alerts.email_invalid'));
                 } else {
                   e.currentTarget.setCustomValidity('');
                 }
               }}
-              placeholder="E-postadresse"
+              placeholder={t('profile.account_alerts.email_placeholder')}
               value={alertEmailAddressState}
             />
           )}
         </Fieldset>
         <Typography size="sm">
-          {isAnotherPerson && <p>Dette er dine varslinger for denne personen.</p>}
-          {isCompany && <p>Dette er dine personlige varslinger, ikke virksomhetens lovpålagte varslingsadresser.</p>}
+          {isAnotherPerson && <p>{t('profile.notifications.personal_for_person')}</p>}
+          {isCompany && <p>{t('profile.notifications.personal_explanation')}</p>}
         </Typography>
         <ButtonGroup>
           <Button type="submit" disabled={!isDirty}>
-            Lagre
+            {t('profile.account_alerts.save')}
           </Button>
           <Button type="button" variant="outline" onClick={handleClose}>
-            Avbryt
+            {t('profile.account_alerts.cancel')}
           </Button>
         </ButtonGroup>
       </Section>

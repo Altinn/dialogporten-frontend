@@ -39,14 +39,14 @@ export const Settings = () => {
   return (
     <PageBase>
       <Breadcrumbs items={getBreadcrumbs(t('sidebar.profile'), t('sidebar.profile.settings'), search)} />
-      <Heading size="xl">Personlige innstillinger</Heading>
+      <Heading size="xl">{t('profile.settings.personal_settings')}</Heading>
       <Toolbar
         search={{
           ...settingsSearch,
-          placeholder: 'Søk i innstillinger',
+          placeholder: t('profile.settings.search_placeholder'),
         }}
       />
-      {settings.length === 0 && <Heading size="lg">Ingen treff</Heading>}
+      {settings.length === 0 && <Heading size="lg">{t('profile.settings.no_results')}</Heading>}
       <SettingsList items={settings} groups={settingsGroups} />
     </PageBase>
   );
