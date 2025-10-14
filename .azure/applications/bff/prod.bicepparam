@@ -13,7 +13,7 @@ param workloadProfileName = 'Consumption'
 
 param platformBaseUrl = 'https://platform.altinn.no'
 param enableInitSessionEndpoint = 'false'
-param disableProfile = 'true'
+param disableProfile = 'false'
 param logoutRedirectUri = 'https://altinn.no/ui/Authentication/Logout'
 
 
