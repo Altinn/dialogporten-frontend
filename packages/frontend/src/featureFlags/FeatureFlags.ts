@@ -6,15 +6,10 @@ export interface FeatureFlagDefinition {
   default: boolean | number | string; // fallback value
 }
 
-const isLocalhost = window.location.hostname === 'app.localhost';
-const isAT = window.location.hostname === 'af.at.altinn.cloud';
-const isTT = window.location.hostname === 'af.tt.altinn.no';
-
-// TODO: Until actual value fetching source is verified
 export const featureFlagDefinitions = [
-  { key: 'profile.enableRoutes', type: 'boolean', default: isLocalhost || isAT || isTT },
-  { key: 'globalMenu.enableProfileLink', type: 'boolean', default: isLocalhost || isAT || isTT },
-  { key: 'globalMenu.enableAccessManagementLink', type: 'boolean', default: isLocalhost || isAT },
+  { key: 'profile.enableRoutes', type: 'boolean', default: false },
+  { key: 'globalMenu.enableProfileLink', type: 'boolean', default: false },
+  { key: 'globalMenu.enableAccessManagementLink', type: 'boolean', default: false },
   { key: 'profile.enableNotificationsPage', type: 'boolean', default: false },
 ] as const satisfies readonly FeatureFlagDefinition[];
 
