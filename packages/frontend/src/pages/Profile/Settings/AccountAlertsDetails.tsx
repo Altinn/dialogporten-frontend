@@ -49,6 +49,12 @@ This is a pragmatic solution until the dialog exposes an onClose prop or ref we 
     document.activeElement?.closest('dialog')?.close();
   };
 
+  const isDirty =
+    (enablePhoneNotifications && alertPhoneNumberState !== alertPhoneNumber) ||
+    (enableEmailNotifications && alertEmailAddressState !== alertEmailAddress) ||
+    enablePhoneNotifications !== (!!notificationSetting?.phoneNumber && alertPhoneNumber.length > 0) ||
+    enableEmailNotifications !== (!!notificationSetting?.emailAddress && alertEmailAddress.length > 0);
+
   const handleUpdateNotificationSettings = async (e: React.FormEvent<HTMLFormElement>) => {
     handleClose();
 
@@ -187,7 +193,9 @@ This is a pragmatic solution until the dialog exposes an onClose prop or ref we 
           {isCompany && <p>Dette er dine personlige varslinger, ikke virksomhetens lovpålagte varslingsadresser.</p>}
         </Typography>
         <ButtonGroup>
-          <Button type="submit">Lagre</Button>
+          <Button type="submit" disabled={!isDirty}>
+            Lagre
+          </Button>
           <Button type="button" variant="outline" onClick={handleClose}>
             Avbryt
           </Button>
