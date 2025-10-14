@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.83.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.83.3...v1.83.4) (2025-10-14)
+
+
+### Bug Fixes
+
+* **bff:** increase max replicas ([#2941](https://github.com/Altinn/dialogporten-frontend/issues/2941)) ([3b5837c](https://github.com/Altinn/dialogporten-frontend/commit/3b5837cc37d74b5ef4013c8dbfde0450419af71f))
+* Hide onboarding trigger on profile notifications and settings ([#2944](https://github.com/Altinn/dialogporten-frontend/issues/2944)) ([c52e162](https://github.com/Altinn/dialogporten-frontend/commit/c52e162bdf7dacbcfce84b12af65a8556c870b95))
+* tweaks before release ([#2947](https://github.com/Altinn/dialogporten-frontend/issues/2947)) ([844ebe3](https://github.com/Altinn/dialogporten-frontend/commit/844ebe3d28e8bdb8e20026b25d891f2ac4889ee6))
+* Updated link and about texts ([a2fa7bc](https://github.com/Altinn/dialogporten-frontend/commit/a2fa7bcc55e8913a9e7fad11dc4751643f321529))
+
 ## [1.83.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.83.2...v1.83.3) (2025-10-14)
 
 
