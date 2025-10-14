@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.83.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.83.2...v1.83.3) (2025-10-14)
+
+
+### Bug Fixes
+
+* enable api integration for core in production ([#2933](https://github.com/Altinn/dialogporten-frontend/issues/2933)) ([9103ace](https://github.com/Altinn/dialogporten-frontend/commit/9103acef9afa8b0074ff91f8a6d709c8ab3be35c))
+* **frontend:** clean up errors reported on failed queries ([#2940](https://github.com/Altinn/dialogporten-frontend/issues/2940)) ([dd1ee49](https://github.com/Altinn/dialogporten-frontend/commit/dd1ee49b48071e405840880e9fe13fd121fdd345))
+
 ## [1.83.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.83.1...v1.83.2) (2025-10-14)
 
 
