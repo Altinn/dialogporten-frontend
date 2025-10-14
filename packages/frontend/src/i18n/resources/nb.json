@@ -259,7 +259,7 @@
   "profile.account_alerts.snackbar.error": "Det skjedde en feil, varslinger ble ikke endret",
   "profile.account_alerts.snackbar.success": "Varslinger ble endret",
   "profile.account_alerts.switch_email_value": "E-post",
-  "profile.accounts.companies": "Virksomheter",
+  "profile.accounts.companies": "Alle virksomheter",
   "profile.accounts.loading": "Laster",
   "profile.accounts.me_and_favorites": "Meg og mine favoritter",
   "profile.accounts.persons": "Personer",

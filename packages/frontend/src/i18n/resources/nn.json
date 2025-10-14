@@ -259,7 +259,7 @@
   "profile.account_alerts.snackbar.error": "Det oppstod ein feil, varslingar vart ikkje endra",
   "profile.account_alerts.snackbar.success": "Varslingar vart endra",
   "profile.account_alerts.switch_email_value": "E-post",
-  "profile.accounts.companies": "Verksemder",
+  "profile.accounts.companies": "Alle verksemder",
   "profile.accounts.loading": "Lastar",
   "profile.accounts.me_and_favorites": "Meg og mine favorittar",
   "profile.accounts.persons": "Personar",
