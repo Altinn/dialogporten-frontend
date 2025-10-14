@@ -7,7 +7,7 @@ param hostName = 'https://af.altinn.no'
 param dialogportenURL = 'https://altinn-prod-api.azure-api.net/dialogporten'
 param oicdUrl = 'idporten.no'
 param minReplicas = 2
-param maxReplicas = 3
+param maxReplicas = 10
 param graphiQLEnabled = 'false'
 param workloadProfileName = 'Consumption'
 
