@@ -50,7 +50,7 @@ export function buildInboxMenu({
     },
   };
 
-  const inboxOnlyShortcuts: MenuItemProps[] = [
+  const betaShortcuts: MenuItemProps[] = [
     {
       id: 'beta-about',
       dataTestId: 'sidebar-about',
@@ -162,7 +162,7 @@ export function buildInboxMenu({
         ...item,
         iconTheme: idx === 0 ? 'base' : item.iconTheme,
       })),
-      ...inboxOnlyShortcuts,
+      ...betaShortcuts,
     ],
   };
 
@@ -188,7 +188,7 @@ export function buildInboxMenu({
         title: t('altinn.access_management'),
         selected: false,
       },
-      ...inboxOnlyShortcuts,
+      ...betaShortcuts,
       {
         groupId: 'profile-shortcut',
         id: 'profile',

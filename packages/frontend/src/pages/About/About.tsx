@@ -1,12 +1,24 @@
-import { Article, Breadcrumbs, type BreadcrumbsProps, Heading, PageBase, Typography } from '@altinn/altinn-components';
+import {
+  Article,
+  Breadcrumbs,
+  type BreadcrumbsProps,
+  Heading,
+  List,
+  ListItem,
+  PageBase,
+  Section,
+  Typography,
+} from '@altinn/altinn-components';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
-import { createMessageBoxLink } from '../../auth';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
 import { pruneSearchQueryParams } from '../Inbox/queryParams.ts';
 import { PageRoutes } from '../routes';
 
 export const AboutPage = () => {
+  const [expandInboxInfo, setExpandInboxInfo] = useState(false);
+  const [expandProfileInfo, setExpandProfileInfo] = useState(false);
   const { t } = useTranslation();
   const { search } = useLocation();
   usePageTitle({ baseTitle: t('altinn.beta.about') });
@@ -30,34 +42,35 @@ export const AboutPage = () => {
         <Heading size="xl">{t('about.inbox.title')}</Heading>
         <Typography maxWidth="65ch">
           <p>{t('about.inbox.intro1')}</p>
-          <p>
-            {t('about.inbox.intro2')}{' '}
-            <a href={t('about.altinn.link')} target="_blank" rel="noreferrer">
-              {t('about.inbox.intro.link')}
-            </a>
-          </p>
 
-          <h2>{t('about.inbox.section.dialogs.title')}</h2>
-          <p>{t('about.inbox.section.dialogs.p1')}</p>
-          <ul>
-            <li>{t('about.inbox.section.dialogs.li1')}</li>
-            <li>{t('about.inbox.section.dialogs.li2')}</li>
-          </ul>
-
-          <h2>{t('about.inbox.section.find.title')}</h2>
-          <p>{t('about.inbox.section.find.p1')}</p>
-          <ul>
-            <li>{t('about.inbox.section.find.li1')}</li>
-            <li>{t('about.inbox.section.find.li2')}</li>
-            <li>{t('about.inbox.section.find.li3')}</li>
-          </ul>
-
-          <h2>{t('about.inbox.section.availability.title')}</h2>
-          <p>{t('about.inbox.section.availability.p1')}</p>
-          <p>
-            {t('about.inbox.section.availability.p2')}{' '}
-            <a href={createMessageBoxLink()}>{t('about.inbox.section.availability.link')}</a>
-          </p>
+          <List>
+            <ListItem
+              collapsible
+              title={<Typography maxWidth="65ch">{t('about.inbox.section.dialogs.title')}</Typography>}
+              expanded={expandInboxInfo}
+              as="button"
+              onClick={() => setExpandInboxInfo((prev) => !prev)}
+            >
+              <Section padding={6}>
+                <Typography maxWidth="65ch">
+                  <p>{t('about.inbox.section.dialogs.p1')}</p>
+                </Typography>
+              </Section>
+            </ListItem>
+            <ListItem
+              collapsible
+              title={<Typography maxWidth="65ch">{t('about.inbox.section.profile.title')}</Typography>}
+              expanded={expandProfileInfo}
+              as="button"
+              onClick={() => setExpandProfileInfo((prev) => !prev)}
+            >
+              <Section padding={6}>
+                <Typography maxWidth="65ch">
+                  <p>{t('about.inbox.section.profile.p1')}</p>
+                </Typography>
+              </Section>
+            </ListItem>
+          </List>
 
           <h2>{t('about.inbox.section.feedback.title')}</h2>
           <p>
