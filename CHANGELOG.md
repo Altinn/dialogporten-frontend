@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.84.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.83.5...v1.84.0) (2025-10-14)
+
+
+### Features
+
+* Added i18n strings for Profile page. ([5ba95cb](https://github.com/Altinn/dialogporten-frontend/commit/5ba95cb0777137e88e1b53bca1ce48ab05f7ef61))
+
+
+### Bug Fixes
+
+* Fixed companies string ([95bc41f](https://github.com/Altinn/dialogporten-frontend/commit/95bc41fd8e30f39c5c6c9de03cbbbf78fc34ad3d))
+
 ## [1.83.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.83.4...v1.83.5) (2025-10-14)
 
 
