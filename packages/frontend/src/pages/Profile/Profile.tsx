@@ -16,7 +16,7 @@ export const Profile = () => {
   const { search } = useLocation();
   const { settings } = useSettings({
     options: {
-      includeGroups: [SettingsType.alerts],
+      includeGroups: [SettingsType.contact],
     },
   });
 

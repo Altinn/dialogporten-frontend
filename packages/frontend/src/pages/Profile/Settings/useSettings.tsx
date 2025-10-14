@@ -102,6 +102,13 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
     }));
   };
 
+  const getChangeSettingsBadge = (value?: string) => {
+    if (value) {
+      return { label: 'Endre', variant: 'text' as BadgeProps['variant'] };
+    }
+    return { label: 'Legg til', variant: 'text' as BadgeProps['variant'] };
+  };
+
   const getAvatarGroup = (items?: UsedByLogItemProps[]): AvatarGroupProps['items'] => {
     if (items?.length) {
       return items.map((item) => (item.avatar ? item.avatar : { name: item.name, type: item.type }));
@@ -194,12 +201,14 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
       icon: account?.icon,
       variant: 'modal' as SettingsItemVariant,
       modalProps: {
+        icon: account?.icon,
+        title: account?.name,
         description: account?.description ? String(account?.description) : '',
       },
       children: account?.isCurrentEndUser ? (
         <ContactProfileDetails variant="alerts" phoneNumber={phoneNumber} emailAddress={email} readOnly />
       ) : (
-        <AccountAlertsDetails notificationParty={notificationAccount} onClose={() => {}} />
+        <AccountAlertsDetails notificationParty={notificationAccount} />
       ),
       badge: getNotificationsSettingsBadge({ phoneNumber, email }),
     };
@@ -223,7 +232,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
       icon: MobileIcon,
       title: 'Mobiltelefon',
       value: user?.phoneNumber || '',
-      badge: { label: 'Endre', variant: 'text' },
+      badge: getChangeSettingsBadge(user?.phoneNumber || ''),
       variant: 'modal',
       children: (
         <ContactProfileDetails
@@ -240,7 +249,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
       icon: PaperplaneIcon,
       title: 'E-postadresse',
       value: user?.email || '',
-      badge: { label: 'Endre', variant: 'text' },
+      badge: getChangeSettingsBadge(user?.email || ''),
       variant: 'modal',
       children: (
         <ContactProfileDetails
@@ -257,7 +266,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
       icon: HouseHeartIcon,
       title: 'Adresse',
       value: address,
-      badge: { label: 'Endre', variant: 'text' },
+      badge: getChangeSettingsBadge(address),
       variant: 'modal',
       children: (
         <ContactProfileDetails
@@ -316,7 +325,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
       icon: BellIcon,
       title: 'Varslinger på SMS',
       value: user?.phoneNumber || '',
-      badge: { label: 'Endre', variant: 'text' },
+      badge: getChangeSettingsBadge(user?.phoneNumber || ''),
       variant: 'modal',
       children: (
         <ContactProfileDetails
@@ -333,7 +342,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
       icon: BellIcon,
       title: 'Varslinger på e-post',
       value: user?.email || '',
-      badge: { label: 'Endre', variant: 'text' },
+      badge: getChangeSettingsBadge(user?.email || ''),
       variant: 'modal',
       children: <ContactProfileDetails variant="email" emailAddress={user?.email || ''} readOnly />,
     },

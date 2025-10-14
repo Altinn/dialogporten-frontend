@@ -253,10 +253,10 @@ export const getNotificationsettingsForCurrentUser = async (context: Context) =>
 };
 
 export const updateNotificationsSetting = async (
-  notificationSettinInput: NotificationSettingsInputData,
+  notificationSettingsInput: NotificationSettingsInputData,
   context: Context,
 ) => {
-  const { partyUuid } = notificationSettinInput;
+  const { partyUuid } = notificationSettingsInput;
   try {
     if (!partyUuid) {
       console.error('No uuid found in data');
@@ -270,7 +270,7 @@ export const updateNotificationsSetting = async (
     }
     const response = await axios.put(
       `${platformProfileAPI_url}users/current/notificationsettings/parties/${partyUuid}`,
-      notificationSettinInput,
+      notificationSettingsInput,
       {
         headers: {
           Authorization: `Bearer ${newToken}`,

@@ -1,4 +1,13 @@
-import { Button, ButtonGroup, Fieldset, Section, Switch, TextField } from '@altinn/altinn-components';
+import {
+  Button,
+  ButtonGroup,
+  Fieldset,
+  Section,
+  Switch,
+  TextField,
+  Typography,
+  useSnackbar,
+} from '@altinn/altinn-components';
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { deleteNotificationsetting, updateNotificationsetting } from '../../../api/queries.ts';
@@ -9,12 +18,12 @@ import { useProfile } from '../useProfile.tsx';
 
 export interface AccountAlertsDetailsProps {
   notificationParty?: NotificationAccountsType | null;
-  onClose: () => void;
 }
 
-export const AccountAlertsDetails = ({ notificationParty, onClose }: AccountAlertsDetailsProps) => {
+export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetailsProps) => {
   const { user } = useProfile();
   const queryClient = useQueryClient();
+  const { openSnackbar } = useSnackbar();
 
   const { logError } = useErrorLogger();
   const notificationSetting = notificationParty?.notificationSettings;
@@ -30,8 +39,19 @@ export const AccountAlertsDetails = ({ notificationParty, onClose }: AccountAler
   );
   const [alertEmailAddressState, setAlertEmailAddressState] = useState<string>(alertEmailAddress);
   const [alertPhoneNumberState, setAlertPhoneNumberState] = useState<string>(alertPhoneNumber);
+  const isAnotherPerson = notificationParty?.partyType === 'Person' && !notificationParty.isCurrentEndUser;
+  const isCompany = notificationParty?.partyType === 'Organization';
+
+  const handleClose = () => {
+    /* Close the nearest <dialog> element (since this component is rendered inside it)
+Using `closest('dialog')` keeps it scoped to this instance instead of querying the entire DOM.
+This is a pragmatic solution until the dialog exposes an onClose prop or ref we can call directly. */
+    document.activeElement?.closest('dialog')?.close();
+  };
 
   const handleUpdateNotificationSettings = async (e: React.FormEvent<HTMLFormElement>) => {
+    handleClose();
+
     e.preventDefault();
     const updatedSettings = notificationSetting?.partyUuid
       ? {
@@ -48,9 +68,24 @@ export const AccountAlertsDetails = ({ notificationParty, onClose }: AccountAler
         };
     try {
       if (enableEmailNotifications || enablePhoneNotifications) {
-        await updateNotificationsetting(updatedSettings);
+        const result = await updateNotificationsetting(updatedSettings);
+        if (!result?.updateNotificationSetting?.success) {
+          openSnackbar({
+            message: 'Det skjedde en feil, varslinger ble ikke endret',
+            color: 'danger',
+          });
+        } else {
+          openSnackbar({
+            message: 'Varslinger ble endret',
+            color: 'accent',
+          });
+        }
       } else {
         await deleteNotificationsetting(partyUuid);
+        openSnackbar({
+          message: 'Varslinger ble endret',
+          color: 'accent',
+        });
       }
     } catch (err) {
       logError(
@@ -63,6 +98,10 @@ export const AccountAlertsDetails = ({ notificationParty, onClose }: AccountAler
         },
         'Error updating notification settings',
       );
+      openSnackbar({
+        message: 'Det skjedde en feil, varslinger ble ikke endret',
+        color: 'danger',
+      });
     } finally {
       void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.NOTIFICATION_SETTINGS_FOR_CURRENT_USER] });
     }
@@ -108,7 +147,7 @@ export const AccountAlertsDetails = ({ notificationParty, onClose }: AccountAler
             />
           )}
           <Switch
-            label={'Varsle på E-post'}
+            label={'Varsle på e-post'}
             name="emailAlerts"
             value="E-post"
             checked={enableEmailNotifications}
@@ -143,19 +182,13 @@ export const AccountAlertsDetails = ({ notificationParty, onClose }: AccountAler
             />
           )}
         </Fieldset>
+        <Typography size="sm">
+          {isAnotherPerson && <p>Dette er dine varslinger for denne personen.</p>}
+          {isCompany && <p>Dette er dine personlige varslinger, ikke virksomhetens lovpålagte varslingsadresser.</p>}
+        </Typography>
         <ButtonGroup>
           <Button type="submit">Lagre</Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => {
-              /* Close the nearest <dialog> element (since this component is rendered inside it)
-              Using `closest('dialog')` keeps it scoped to this instance instead of querying the entire DOM.
-              This is a pragmatic solution until the dialog exposes an onClose prop or ref we can call directly. */
-              document.activeElement?.closest('dialog')?.close();
-              onClose?.();
-            }}
-          >
+          <Button type="button" variant="outline" onClick={handleClose}>
             Avbryt
           </Button>
         </ButtonGroup>

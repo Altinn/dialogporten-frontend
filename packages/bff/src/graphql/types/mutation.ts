@@ -137,8 +137,11 @@ export const UpdateNotificationSetting = extendType({
       },
       resolve: async (_, { data }, ctx) => {
         try {
-          await updateNotificationsSetting(data, ctx);
-          return { success: true, message: 'NotificationSetting updated successfully' };
+          const response = await updateNotificationsSetting(data, ctx);
+          if (typeof response !== 'undefined') {
+            return { success: true, message: 'NotificationSetting updated successfully' };
+          }
+          return { success: false, message: 'NotificationSetting updated failed' };
         } catch (error) {
           console.error('Failed to update NotificationSetting:', error);
           return error;

@@ -41,6 +41,7 @@ interface UseAccountsProps {
   allOrganizationsSelected: boolean;
   options?: UseAccountOptions;
   isLoading?: boolean;
+  availableParties?: PartyFieldsFragment[];
 }
 
 interface UseAccountsOutput {
@@ -82,6 +83,7 @@ export const useAccounts = ({
   allOrganizationsSelected,
   options: inputOptions,
   isLoading,
+  availableParties: availablePartiesInput,
 }: UseAccountsProps): UseAccountsOutput => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -91,6 +93,7 @@ export const useAccounts = ({
   const [searchString, setSearchString] = useState<string>('');
   const accountSearchThreshold = 2;
   const showSearch = parties.length > accountSearchThreshold;
+  const availableParties = availablePartiesInput ?? parties;
 
   const filterAccount = (item: AccountMenuItemProps, search: string) => {
     if (search.length && item.groupId === SettingsType.favorites) {
@@ -141,14 +144,14 @@ export const useAccounts = ({
 
   const defaultGroups = {
     primary: {
-      title: t('parties.groups.favourites'),
+      title: 'Meg og mine favoritter',
     },
     groups: { title: '' },
     persons: {
-      title: 'Personer',
+      title: 'Andre personer',
     },
     companies: {
-      title: 'Virksomheter',
+      title: 'Alle virksomheter',
     },
   };
   const defaultOptions: UseAccountOptions = {
@@ -211,10 +214,11 @@ export const useAccounts = ({
   });
 
   const organizationAccounts: PartyItemProp[] = organizations.map((party) => {
-    const isParent = Array.isArray(parties.find((p) => p.party === party.party)?.subParties);
+    const isParent = Array.isArray(availableParties.find((p) => p.party === party.party)?.subParties);
     const parent = isParent
       ? undefined
-      : organizations.find((org) => org?.subParties?.find((subparty) => subparty.party === party.party));
+      : availableParties.find((org) => org?.subParties?.find((subparty) => subparty.party === party.party));
+
     const description =
       parent?.name && party?.party
         ? `↳ ${t('word.orgNo')} ${formatNorwegianId(party.party, false)}, ${t('account.partOf')} ${parent?.name}`
