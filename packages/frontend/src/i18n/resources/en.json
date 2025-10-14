@@ -259,7 +259,7 @@
   "profile.account_alerts.snackbar.error": "An error occurred, notifications were not changed",
   "profile.account_alerts.snackbar.success": "Notifications were changed",
   "profile.account_alerts.switch_email_value": "Email",
-  "profile.accounts.companies": "Organizations",
+  "profile.accounts.companies": "All organizations",
   "profile.accounts.loading": "Loading",
   "profile.accounts.me_and_favorites": "Me and my favorites",
   "profile.accounts.persons": "Persons",
