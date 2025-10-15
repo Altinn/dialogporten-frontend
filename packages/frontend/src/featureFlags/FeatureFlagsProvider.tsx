@@ -15,8 +15,9 @@ interface FeatureFlagProviderProps {
 
 export async function loadFeatureFlags() {
   const res = await Analytics.trackFetchDependency('loadFeatureFlags', fetch('/api/features'));
-  if (!res.ok) throw new Error('Failed to load feature flags');
-  return res.json();
+  if (res.ok) {
+    return res.json();
+  }
 }
 
 export const FeatureFlagProvider: React.FC<FeatureFlagProviderProps> = ({ children, initialFlags }) => {
