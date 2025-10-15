@@ -32,6 +32,9 @@
       "cache": false
     },
     "dev": {
+      "dependsOn": [
+        "build:bff-types-generated"
+      ],
       "cache": false,
       "persistent": true
     },

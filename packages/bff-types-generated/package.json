@@ -2,6 +2,7 @@
   "name": "bff-types-generated",
   "main": "src/index.ts",
   "scripts": {
+    "prepare": "pnpm build --filter=@digdir/dialogporten-node-logger && pnpm generate:types-gql",
     "dev": "pnpm build:watch",
     "build": "pnpm generate:types-gql",
     "build:watch": "nodemon --watch 'src/**' --watch 'queries' --ext 'ts,graphql' --exec 'pnpm build'",
