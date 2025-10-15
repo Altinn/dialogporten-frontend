@@ -13,7 +13,7 @@
     },
     "build": {
       "env": ["BASEURL", "URL", "BUILD_VERSION"],
-      "dependsOn": ["build:bff-types-generated", "packages/node-logger/dist/**"],
+      "dependsOn": ["build:bff-types-generated", "prepare:@digdir/dialogporten-node-logger"],
       "cache": false
     },
     "dev": {
