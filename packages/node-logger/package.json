@@ -4,6 +4,7 @@
   "description": "A logger for nodejs",
   "main": "dist/index.js",
   "scripts": {
+    "prepare": "tsc",
     "build": "tsc",
     "test": "npm run build && TEST_LOGGING=true node dist/index.js"
   },
