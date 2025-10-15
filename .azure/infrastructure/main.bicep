@@ -167,6 +167,7 @@ module containerAppEnv '../modules/containerAppEnv/main.bicep' = {
     subnetId: vnet.outputs.containerAppEnvironmentSubnetId
     zoneRedundancyEnabled: containerAppEnvZoneRedundancyEnabled
     workloadProfiles: containerAppEnvWorkloadProfiles
+    appInsightsConnectionString: appInsights.outputs.connectionString
     tags: tags
   }
 }
