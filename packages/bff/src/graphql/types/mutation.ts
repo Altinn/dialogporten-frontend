@@ -1,4 +1,3 @@
-import { logger } from '@digdir/dialogporten-node-logger';
 import { extendType, intArg, nonNull, stringArg } from 'nexus';
 import {
   addFavoriteParty,
@@ -26,7 +25,7 @@ export const Mutation = extendType({
           const result = await deleteSavedSearch(id);
           return { success: result?.affected && result?.affected > 0, message: 'Saved search deleted successfully' };
         } catch (error) {
-          logger.error(error, 'Failed to delete saved search:');
+          console.error('Failed to delete saved search:', error);
           return { success: false, message: 'Failed to delete saved search' };
         }
       },
@@ -49,7 +48,7 @@ export const UpdateSavedSearch = extendType({
           await updateSavedSearch(id, name);
           return { success: true, message: 'Saved search updated successfully' };
         } catch (error) {
-          logger.error(error, 'Failed to updated saved search:');
+          console.error('Failed to updated saved search:', error);
           return { success: false, message: 'Failed to updated saved search' };
         }
       },
@@ -77,7 +76,7 @@ export const CreateSavedSearch = extendType({
           }
           return await createSavedSearch({ name, data, profile });
         } catch (error) {
-          logger.error(error, 'Failed to create saved search:');
+          console.error('Failed to create saved search:', error);
           return error;
         }
       },
@@ -98,7 +97,7 @@ export const AddFavoriteParty = extendType({
           await addFavoriteParty(ctx, partyId);
           return { success: true, message: 'FavoriteParty added successfully' };
         } catch (error) {
-          logger.error(error, 'Failed to add favorite party:');
+          console.error('Failed to add favorite party:', error);
           return error;
         }
       },
@@ -120,7 +119,7 @@ export const AddFavoritePartyToGroup = extendType({
           await addFavoritePartyToGroup(ctx.session.get('pid'), partyId, groupName);
           return { success: true, message: 'FavoriteParty added successfully' };
         } catch (error) {
-          logger.error(error, 'Failed to add favorite party:');
+          console.error('Failed to add favorite party:', error);
           return error;
         }
       },
@@ -144,7 +143,7 @@ export const UpdateNotificationSetting = extendType({
           }
           return { success: false, message: 'NotificationSetting updated failed' };
         } catch (error) {
-          logger.error(error, 'Failed to update NotificationSetting:');
+          console.error('Failed to update NotificationSetting:', error);
           return error;
         }
       },
@@ -165,7 +164,7 @@ export const DeleteNotificationSetting = extendType({
           await deleteNotificationsSetting(partyUuid, ctx);
           return { success: true, message: 'NotificationSetting deleted successfully' };
         } catch (error) {
-          logger.error(error, 'Failed to delete NotificationSetting:');
+          console.error('Failed to delete NotificationSetting:', error);
           return error;
         }
       },
@@ -186,7 +185,7 @@ export const DeleteFavoriteParty = extendType({
           await deleteFavoriteParty(ctx, partyId);
           return { success: true, message: 'Favorite Party deleted successfully' };
         } catch (error) {
-          logger.error(error, 'Failed to delete favorite party:');
+          console.error('Failed to delete favorite party:', error);
           return error;
         }
       },
@@ -208,7 +207,7 @@ export const UpdateLanguage = extendType({
           await updateLanguage(pid, language);
           return { success: true };
         } catch (error) {
-          logger.error(error, 'Failed to update language:');
+          console.error('Failed to update language:', error);
           return error;
         }
       },
