@@ -1,19 +1,34 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "tasks": {
-    "build:bff-types-generated": {
-      "dependsOn": ["^build"],
-      "outputs": ["generated/**"],
+    "build:@digdir/dialogporten-node-logger": {
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "packages/node-logger/dist/**"
+      ],
       "cache": false
     },
-    "build:@digdir/dialogporten-node-logger": {
-      "dependsOn": ["build:bff-types-generated", "^build"],
-      "outputs": ["packages/node-logger/dist/**"],
+    "build:bff-types-generated": {
+      "dependsOn": [
+        "build:@digdir/dialogporten-node-logger",
+        "^build"
+      ],
+      "outputs": [
+        "generated/**"
+      ],
       "cache": false
     },
     "build": {
-      "env": ["BASEURL", "URL", "BUILD_VERSION"],
-      "dependsOn": ["build:@digdir/dialogporten-node-logger"],
+      "env": [
+        "BASEURL",
+        "URL",
+        "BUILD_VERSION"
+      ],
+      "dependsOn": [
+        "build:bff-types-generated"
+      ],
       "cache": false
     },
     "dev": {
