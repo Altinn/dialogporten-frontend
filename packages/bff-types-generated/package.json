@@ -10,6 +10,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@digdir/dialogporten-node-logger": "workspace:*",
     "@graphql-codegen/cli": "^5.0.6",
     "@graphql-codegen/typescript-operations": "^4.6.1",
     "@graphql-tools/stitch": "^9.4.23",
