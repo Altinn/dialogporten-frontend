@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.85.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.84.1...v1.85.0) (2025-10-15)
+
+
+### Features
+
+* Bump AC v42.5 ([#2966](https://github.com/Altinn/dialogporten-frontend/issues/2966)) ([416526e](https://github.com/Altinn/dialogporten-frontend/commit/416526e7c50f0a07848c3839e123581c14b659b3))
+
+
+### Bug Fixes
+
+* **bff:** ensure error logger is used for errors ([#2953](https://github.com/Altinn/dialogporten-frontend/issues/2953)) ([157b738](https://github.com/Altinn/dialogporten-frontend/commit/157b738283e1b51af2ec9ffd3af491129cb21090))
+* Bump AC v42.4 ([#2960](https://github.com/Altinn/dialogporten-frontend/issues/2960)) ([e4c341e](https://github.com/Altinn/dialogporten-frontend/commit/e4c341e240fc45ebb6e5177fdbdebd70d3041ad9))
+* **frontend:** ensure we trace feature flag request ([#2963](https://github.com/Altinn/dialogporten-frontend/issues/2963)) ([6122bf4](https://github.com/Altinn/dialogporten-frontend/commit/6122bf4b8151216880bd49ff01c113665d178424))
+* only show attachment links with consumer type AttachmentUrlConsumer.Gui ([#2965](https://github.com/Altinn/dialogporten-frontend/issues/2965)) ([b9af5be](https://github.com/Altinn/dialogporten-frontend/commit/b9af5be37421591053c274e4fe230fe030d7e4c0))
+
 ## [1.84.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.84.0...v1.84.1) (2025-10-15)
 
 
