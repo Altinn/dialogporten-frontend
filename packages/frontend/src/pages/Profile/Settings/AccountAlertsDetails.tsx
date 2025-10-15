@@ -32,7 +32,6 @@ export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetails
   const alertPhoneNumber = notificationSetting?.phoneNumber || user?.phoneNumber || '';
   const alertEmailAddress = notificationSetting?.emailAddress || user?.email || '';
   const partyUuid = notificationSetting?.partyUuid || notificationParty?.partyUuid || '';
-
   const [enablePhoneNotifications, setEnablePhoneNotifications] = useState<boolean>(
     !!notificationSetting?.phoneNumber && alertPhoneNumber.length > 0,
   );
@@ -41,6 +40,7 @@ export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetails
   );
   const [alertEmailAddressState, setAlertEmailAddressState] = useState<string>(alertEmailAddress);
   const [alertPhoneNumberState, setAlertPhoneNumberState] = useState<string>(alertPhoneNumber);
+
   const isAnotherPerson = notificationParty?.partyType === 'Person' && !notificationParty.isCurrentEndUser;
   const isCompany = notificationParty?.partyType === 'Organization';
 
@@ -164,7 +164,8 @@ This is a pragmatic solution until the dialog exposes an onClose prop or ref we 
           {enableEmailNotifications && (
             <TextField
               name="email"
-              pattern={`^((""[^""]+"")|(([a-zA-Z0-9!#$%&'*+\\-=?\\^_\`{|}~])+(\.([a-zA-Z0-9!#$%&'*+\\-=?\\^_\`{|}~])+)*))@((((([a-zA-Z0-9æøåÆØÅ]([a-zA-Z0-9\-æøåÆØÅ]{0,61})[a-zA-Z0-9æøåÆØÅ]\.)|[a-zA-Z0-9æøåÆØÅ]\.){1,9})([a-zA-Z]{2,14}))|((\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})))$`}
+              type="email"
+              pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
               required
               onInvalid={(e) => {
                 if (e.currentTarget.validity.valueMissing) {
