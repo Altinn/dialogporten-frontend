@@ -236,6 +236,7 @@ export const getNotificationsettingsForCurrentUser = async (context: Context) =>
       console.error('No core profile data found');
       return;
     }
+
     return data;
   } catch (error) {
     if (typeof error === 'object' && error !== null) {
@@ -260,7 +261,7 @@ export const updateNotificationsSetting = async (
   try {
     if (!partyUuid) {
       console.error('No uuid found in data');
-      return [];
+      return;
     }
     const newToken = await exchangeToken(context);
 
