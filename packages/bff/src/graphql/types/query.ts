@@ -1,3 +1,4 @@
+import { logger } from '@digdir/dialogporten-node-logger';
 import { list, objectType, stringArg } from 'nexus';
 import config from '../../config.ts';
 import { SavedSearchRepository } from '../../db.ts';
@@ -34,7 +35,7 @@ export const Query = objectType({
         try {
           return await getOrganizationsFromRedis();
         } catch (error) {
-          console.error('Failed to fetch organizations from Redis:', error);
+          logger.error(error, 'Failed to fetch organizations from Redis:');
           throw new Error('Failed to fetch organizations');
         }
       },
