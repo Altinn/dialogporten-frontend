@@ -107,6 +107,7 @@ export const getAttachmentLinks = (attachments: AttachmentFieldsFragment[]): Att
     .flatMap((attachment) =>
       attachment.urls
         .filter((url) => url.url !== 'urn:dialogporten:unauthorized')
+        .filter((url) => url.consumerType === AttachmentUrlConsumer.Gui)
         .map((url) => ({
           label: getPreferredPropertyByLocale(attachment.displayName)?.value || url.url,
           href: url.url,
