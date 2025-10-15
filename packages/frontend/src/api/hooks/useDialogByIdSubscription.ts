@@ -34,13 +34,12 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
     });
     eventSourceRef.current = eventSource;
 
-    const onError = (err: Event) => {
+    const onError = (err: Error) => {
       logError(
-        new Error('EventSource error'),
+        err,
         {
           context: 'useDialogByIdSubscription.onError',
           dialogId,
-          event: err.type,
         },
         'EventSource connection error',
       );
