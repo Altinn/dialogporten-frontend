@@ -4,7 +4,7 @@ param environment = 'prod'
 param location = 'norwayeast'
 param imageTag = readEnvironmentVariable('IMAGE_TAG')
 param minReplicas = 2
-param maxReplicas = 3
+param maxReplicas = 10
 param workloadProfileName = 'Consumption'
 
 // secrets

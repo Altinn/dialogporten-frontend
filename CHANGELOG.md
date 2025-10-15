@@ -1,5 +1,78 @@
 # Changelog
 
+## [1.86.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.85.0...v1.86.0) (2025-10-15)
+
+
+### Features
+
+* **infra:** Enable OTEL for container app env ([#2968](https://github.com/Altinn/dialogporten-frontend/issues/2968)) ([1286382](https://github.com/Altinn/dialogporten-frontend/commit/1286382fe80aacfb9c50919b3a84aadede4bff70))
+
+
+### Bug Fixes
+
+* **bff:** ensure more errors are logged using node-logger ([#2967](https://github.com/Altinn/dialogporten-frontend/issues/2967)) ([0b5f016](https://github.com/Altinn/dialogporten-frontend/commit/0b5f0168c903e133169c2dbf1a3e2139d76dc0cd))
+* minor tweaks to props for deleted accounts ([#2973](https://github.com/Altinn/dialogporten-frontend/issues/2973)) ([7184c01](https://github.com/Altinn/dialogporten-frontend/commit/7184c01fc9740a1f3ed3cd2615877d6c8cacf266))
+* Skip onboarding steps for hidden elements ([#2971](https://github.com/Altinn/dialogporten-frontend/issues/2971)) ([1b619a2](https://github.com/Altinn/dialogporten-frontend/commit/1b619a2104f711f93e75d66176b22dd47dbe7941))
+
+## [1.85.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.84.1...v1.85.0) (2025-10-15)
+
+
+### Features
+
+* Bump AC v42.5 ([#2966](https://github.com/Altinn/dialogporten-frontend/issues/2966)) ([416526e](https://github.com/Altinn/dialogporten-frontend/commit/416526e7c50f0a07848c3839e123581c14b659b3))
+
+
+### Bug Fixes
+
+* **bff:** ensure error logger is used for errors ([#2953](https://github.com/Altinn/dialogporten-frontend/issues/2953)) ([157b738](https://github.com/Altinn/dialogporten-frontend/commit/157b738283e1b51af2ec9ffd3af491129cb21090))
+* Bump AC v42.4 ([#2960](https://github.com/Altinn/dialogporten-frontend/issues/2960)) ([e4c341e](https://github.com/Altinn/dialogporten-frontend/commit/e4c341e240fc45ebb6e5177fdbdebd70d3041ad9))
+* **frontend:** ensure we trace feature flag request ([#2963](https://github.com/Altinn/dialogporten-frontend/issues/2963)) ([6122bf4](https://github.com/Altinn/dialogporten-frontend/commit/6122bf4b8151216880bd49ff01c113665d178424))
+* only show attachment links with consumer type AttachmentUrlConsumer.Gui ([#2965](https://github.com/Altinn/dialogporten-frontend/issues/2965)) ([b9af5be](https://github.com/Altinn/dialogporten-frontend/commit/b9af5be37421591053c274e4fe230fe030d7e4c0))
+
+## [1.84.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.84.0...v1.84.1) (2025-10-15)
+
+
+### Bug Fixes
+
+* Fixing notification settings on deleted party ([#2956](https://github.com/Altinn/dialogporten-frontend/issues/2956)) ([4be90ea](https://github.com/Altinn/dialogporten-frontend/commit/4be90ea52af0c895e976703cd777acb7a704bd74))
+
+## [1.84.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.83.5...v1.84.0) (2025-10-14)
+
+
+### Features
+
+* Added i18n strings for Profile page. ([5ba95cb](https://github.com/Altinn/dialogporten-frontend/commit/5ba95cb0777137e88e1b53bca1ce48ab05f7ef61))
+
+
+### Bug Fixes
+
+* Fixed companies string ([95bc41f](https://github.com/Altinn/dialogporten-frontend/commit/95bc41fd8e30f39c5c6c9de03cbbbf78fc34ad3d))
+
+## [1.83.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.83.4...v1.83.5) (2025-10-14)
+
+
+### Bug Fixes
+
+* disable save button for notification setting if there are no changes ([#2948](https://github.com/Altinn/dialogporten-frontend/issues/2948)) ([3bbf3a8](https://github.com/Altinn/dialogporten-frontend/commit/3bbf3a8da51ff48bcd7a2cc68ac2affedc7d9d60))
+
+## [1.83.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.83.3...v1.83.4) (2025-10-14)
+
+
+### Bug Fixes
+
+* **bff:** increase max replicas ([#2941](https://github.com/Altinn/dialogporten-frontend/issues/2941)) ([3b5837c](https://github.com/Altinn/dialogporten-frontend/commit/3b5837cc37d74b5ef4013c8dbfde0450419af71f))
+* Hide onboarding trigger on profile notifications and settings ([#2944](https://github.com/Altinn/dialogporten-frontend/issues/2944)) ([c52e162](https://github.com/Altinn/dialogporten-frontend/commit/c52e162bdf7dacbcfce84b12af65a8556c870b95))
+* tweaks before release ([#2947](https://github.com/Altinn/dialogporten-frontend/issues/2947)) ([844ebe3](https://github.com/Altinn/dialogporten-frontend/commit/844ebe3d28e8bdb8e20026b25d891f2ac4889ee6))
+* Updated link and about texts ([a2fa7bc](https://github.com/Altinn/dialogporten-frontend/commit/a2fa7bcc55e8913a9e7fad11dc4751643f321529))
+
+## [1.83.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.83.2...v1.83.3) (2025-10-14)
+
+
+### Bug Fixes
+
+* enable api integration for core in production ([#2933](https://github.com/Altinn/dialogporten-frontend/issues/2933)) ([9103ace](https://github.com/Altinn/dialogporten-frontend/commit/9103acef9afa8b0074ff91f8a6d709c8ab3be35c))
+* **frontend:** clean up errors reported on failed queries ([#2940](https://github.com/Altinn/dialogporten-frontend/issues/2940)) ([dd1ee49](https://github.com/Altinn/dialogporten-frontend/commit/dd1ee49b48071e405840880e9fe13fd121fdd345))
+
 ## [1.83.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.83.1...v1.83.2) (2025-10-14)
 
 

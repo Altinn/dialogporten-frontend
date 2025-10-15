@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import type React from 'react';
 import { type ReactNode, createContext } from 'react';
+import { Analytics } from '../analytics';
 import { featureFlagDefinitions, getFeatureFlag } from './FeatureFlags';
 
 export type FeatureFlagValues = Record<string, boolean | number | string | undefined>;
@@ -13,7 +14,7 @@ interface FeatureFlagProviderProps {
 }
 
 export async function loadFeatureFlags() {
-  const res = await fetch('/api/features');
+  const res = await Analytics.trackFetchDependency('loadFeatureFlags', fetch('/api/features'));
   if (!res.ok) throw new Error('Failed to load feature flags');
   return res.json();
 }

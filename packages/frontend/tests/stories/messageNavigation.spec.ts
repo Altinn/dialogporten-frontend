@@ -29,7 +29,8 @@ test.describe('Message navigation', () => {
     expect(new URL(page.url()).searchParams.has('party')).toBe(true);
 
     await page.getByRole('button', { name: 'Firma AS' }).first().click();
-    await toolbarArea.locator('li').filter({ hasText: 'Alle virksomheter' }).locator('visible=true').click();
+
+    await toolbarArea.locator('a').filter({ hasText: 'Alle virksomheter' }).locator('visible=true').click();
     await expect(page.getByRole('button', { name: 'Alle virksomheter' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'This is a message 1 for Firma AS' })).toBeVisible();
     await page.getByRole('link', { name: 'This is a message 1 for Firma AS' }).click();

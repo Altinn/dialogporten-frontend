@@ -41,6 +41,7 @@ interface UseAccountsProps {
   allOrganizationsSelected: boolean;
   options?: UseAccountOptions;
   isLoading?: boolean;
+  availableParties?: PartyFieldsFragment[];
 }
 
 interface UseAccountsOutput {
@@ -82,6 +83,7 @@ export const useAccounts = ({
   allOrganizationsSelected,
   options: inputOptions,
   isLoading,
+  availableParties: availablePartiesInput,
 }: UseAccountsProps): UseAccountsOutput => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -91,6 +93,7 @@ export const useAccounts = ({
   const [searchString, setSearchString] = useState<string>('');
   const accountSearchThreshold = 2;
   const showSearch = parties.length > accountSearchThreshold;
+  const availableParties = availablePartiesInput ?? parties;
 
   const filterAccount = (item: AccountMenuItemProps, search: string) => {
     if (search.length && item.groupId === SettingsType.favorites) {
@@ -127,7 +130,7 @@ export const useAccounts = ({
   if (isLoading) {
     return {
       accounts: [loadingAccountMenuItem as PartyItemProp],
-      accountGroups: { loading: { title: 'Laster' } },
+      accountGroups: { loading: { title: t('profile.accounts.loading') } },
       selectedAccount: loadingAccount as Account,
       accountSearch: undefined,
       onSelectAccount: () => {},
@@ -141,14 +144,14 @@ export const useAccounts = ({
 
   const defaultGroups = {
     primary: {
-      title: t('parties.groups.favourites'),
+      title: t('profile.accounts.me_and_favorites'),
     },
     groups: { title: '' },
     persons: {
-      title: 'Personer',
+      title: t('profile.accounts.persons'),
     },
     companies: {
-      title: 'Virksomheter',
+      title: t('profile.accounts.companies'),
     },
   };
   const defaultOptions: UseAccountOptions = {
@@ -211,20 +214,21 @@ export const useAccounts = ({
   });
 
   const organizationAccounts: PartyItemProp[] = organizations.map((party) => {
-    const isParent = Array.isArray(parties.find((p) => p.party === party.party)?.subParties);
+    const isParent = Array.isArray(availableParties.find((p) => p.party === party.party)?.subParties);
     const parent = isParent
       ? undefined
-      : organizations.find((org) => org?.subParties?.find((subparty) => subparty.party === party.party));
+      : availableParties.find((org) => org?.subParties?.find((subparty) => subparty.party === party.party));
+
     const description =
       parent?.name && party?.party
-        ? `↳ ${t('word.orgNo')} ${formatNorwegianId(party.party, false)}, ${t('account.partOf')} ${parent?.name}`
+        ? `↳ ${t('word.orgNo')} ${formatNorwegianId(party.party, false)}, ${t('profile.account.partOf')} ${parent?.name}`
         : `${t('word.orgNo')} ${formatNorwegianId(party.party, false)}`;
 
     return {
       id: party.party,
       name: party.name,
       type: 'company' as AccountMenuItemProps['type'],
-      icon: { name: party.name, type: 'company' as AvatarType, variant: isParent ? 'solid' : 'outline' },
+      icon: { name: party.name, type: 'company' as AvatarType, isParent, isDeleted: party.isDeleted },
       isDeleted: party.isDeleted,
       isFavorite: favoritesGroup?.parties?.includes(party.partyUuid),
       isCurrentEndUser: false,

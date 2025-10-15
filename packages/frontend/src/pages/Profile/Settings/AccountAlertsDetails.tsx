@@ -1,6 +1,16 @@
-import { Button, ButtonGroup, Fieldset, Section, Switch, TextField } from '@altinn/altinn-components';
+import {
+  Button,
+  ButtonGroup,
+  Fieldset,
+  Section,
+  Switch,
+  TextField,
+  Typography,
+  useSnackbar,
+} from '@altinn/altinn-components';
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { deleteNotificationsetting, updateNotificationsetting } from '../../../api/queries.ts';
 import { QUERY_KEYS } from '../../../constants/queryKeys.ts';
 import { useErrorLogger } from '../../../hooks/useErrorLogger.ts';
@@ -9,19 +19,19 @@ import { useProfile } from '../useProfile.tsx';
 
 export interface AccountAlertsDetailsProps {
   notificationParty?: NotificationAccountsType | null;
-  onClose: () => void;
 }
 
-export const AccountAlertsDetails = ({ notificationParty, onClose }: AccountAlertsDetailsProps) => {
+export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetailsProps) => {
   const { user } = useProfile();
   const queryClient = useQueryClient();
+  const { openSnackbar } = useSnackbar();
+  const { t } = useTranslation();
 
   const { logError } = useErrorLogger();
   const notificationSetting = notificationParty?.notificationSettings;
   const alertPhoneNumber = notificationSetting?.phoneNumber || user?.phoneNumber || '';
   const alertEmailAddress = notificationSetting?.emailAddress || user?.email || '';
   const partyUuid = notificationSetting?.partyUuid || notificationParty?.partyUuid || '';
-
   const [enablePhoneNotifications, setEnablePhoneNotifications] = useState<boolean>(
     !!notificationSetting?.phoneNumber && alertPhoneNumber.length > 0,
   );
@@ -31,7 +41,25 @@ export const AccountAlertsDetails = ({ notificationParty, onClose }: AccountAler
   const [alertEmailAddressState, setAlertEmailAddressState] = useState<string>(alertEmailAddress);
   const [alertPhoneNumberState, setAlertPhoneNumberState] = useState<string>(alertPhoneNumber);
 
+  const isAnotherPerson = notificationParty?.partyType === 'Person' && !notificationParty.isCurrentEndUser;
+  const isCompany = notificationParty?.partyType === 'Organization';
+
+  const handleClose = () => {
+    /* Close the nearest <dialog> element (since this component is rendered inside it)
+Using `closest('dialog')` keeps it scoped to this instance instead of querying the entire DOM.
+This is a pragmatic solution until the dialog exposes an onClose prop or ref we can call directly. */
+    document.activeElement?.closest('dialog')?.close();
+  };
+
+  const isDirty =
+    (enablePhoneNotifications && alertPhoneNumberState !== alertPhoneNumber) ||
+    (enableEmailNotifications && alertEmailAddressState !== alertEmailAddress) ||
+    enablePhoneNotifications !== (!!notificationSetting?.phoneNumber && alertPhoneNumber.length > 0) ||
+    enableEmailNotifications !== (!!notificationSetting?.emailAddress && alertEmailAddress.length > 0);
+
   const handleUpdateNotificationSettings = async (e: React.FormEvent<HTMLFormElement>) => {
+    handleClose();
+
     e.preventDefault();
     const updatedSettings = notificationSetting?.partyUuid
       ? {
@@ -48,9 +76,24 @@ export const AccountAlertsDetails = ({ notificationParty, onClose }: AccountAler
         };
     try {
       if (enableEmailNotifications || enablePhoneNotifications) {
-        await updateNotificationsetting(updatedSettings);
+        const result = await updateNotificationsetting(updatedSettings);
+        if (!result?.updateNotificationSetting?.success) {
+          openSnackbar({
+            message: t('profile.account_alerts.snackbar.error'),
+            color: 'danger',
+          });
+        } else {
+          openSnackbar({
+            message: t('profile.account_alerts.snackbar.success'),
+            color: 'accent',
+          });
+        }
       } else {
         await deleteNotificationsetting(partyUuid);
+        openSnackbar({
+          message: t('profile.account_alerts.snackbar.success'),
+          color: 'accent',
+        });
       }
     } catch (err) {
       logError(
@@ -63,6 +106,10 @@ export const AccountAlertsDetails = ({ notificationParty, onClose }: AccountAler
         },
         'Error updating notification settings',
       );
+      openSnackbar({
+        message: t('profile.account_alerts.snackbar.error'),
+        color: 'danger',
+      });
     } finally {
       void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.NOTIFICATION_SETTINGS_FOR_CURRENT_USER] });
     }
@@ -73,7 +120,7 @@ export const AccountAlertsDetails = ({ notificationParty, onClose }: AccountAler
       <Section spacing={6}>
         <Fieldset size="sm">
           <Switch
-            label={'Varsle på SMS'}
+            label={t('profile.account_alerts.notify_sms')}
             name="smsAlerts"
             value="SMS"
             checked={enablePhoneNotifications}
@@ -86,9 +133,9 @@ export const AccountAlertsDetails = ({ notificationParty, onClose }: AccountAler
               required
               onInvalid={(e) => {
                 if (e.currentTarget.validity.valueMissing) {
-                  e.currentTarget.setCustomValidity('Telefonnummer må fylles ut');
+                  e.currentTarget.setCustomValidity(t('profile.account_alerts.phone_required'));
                 } else if (e.currentTarget.validity.patternMismatch) {
-                  e.currentTarget.setCustomValidity('Telefonnummer er ugyldig');
+                  e.currentTarget.setCustomValidity(t('profile.account_alerts.phone_invalid'));
                 } else {
                   e.currentTarget.setCustomValidity('');
                 }
@@ -96,34 +143,35 @@ export const AccountAlertsDetails = ({ notificationParty, onClose }: AccountAler
               onChange={(e) => {
                 setAlertPhoneNumberState(e.target.value);
                 if (e.currentTarget.validity.valueMissing) {
-                  e.currentTarget.setCustomValidity('Telefonnummer må fylles ut');
+                  e.currentTarget.setCustomValidity(t('profile.account_alerts.phone_required'));
                 } else if (e.currentTarget.validity.patternMismatch) {
-                  e.currentTarget.setCustomValidity('Telefonnummer er ugyldig');
+                  e.currentTarget.setCustomValidity(t('profile.account_alerts.phone_invalid'));
                 } else {
                   e.currentTarget.setCustomValidity('');
                 }
               }}
-              placeholder="Mobiltelefon"
+              placeholder={t('profile.account_alerts.phone_placeholder')}
               value={alertPhoneNumberState}
             />
           )}
           <Switch
-            label={'Varsle på E-post'}
+            label={t('profile.account_alerts.notify_email')}
             name="emailAlerts"
-            value="E-post"
+            value={t('profile.account_alerts.switch_email_value')}
             checked={enableEmailNotifications}
             onChange={() => setEnableEmailNotifications((prev) => !prev)}
           />
           {enableEmailNotifications && (
             <TextField
               name="email"
+              type="email"
               pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
               required
               onInvalid={(e) => {
                 if (e.currentTarget.validity.valueMissing) {
-                  e.currentTarget.setCustomValidity('E-postadresse må fylles ut');
+                  e.currentTarget.setCustomValidity(t('profile.account_alerts.email_required'));
                 } else if (e.currentTarget.validity.patternMismatch) {
-                  e.currentTarget.setCustomValidity('E-postadresse er ugyldig');
+                  e.currentTarget.setCustomValidity(t('profile.account_alerts.email_invalid'));
                 } else {
                   e.currentTarget.setCustomValidity('');
                 }
@@ -131,32 +179,28 @@ export const AccountAlertsDetails = ({ notificationParty, onClose }: AccountAler
               onChange={(e) => {
                 setAlertEmailAddressState(e.target.value);
                 if (e.currentTarget.validity.valueMissing) {
-                  e.currentTarget.setCustomValidity('E-postadresse må fylles ut');
+                  e.currentTarget.setCustomValidity(t('profile.account_alerts.email_required'));
                 } else if (e.currentTarget.validity.patternMismatch) {
-                  e.currentTarget.setCustomValidity('E-postadresse er ugyldig');
+                  e.currentTarget.setCustomValidity(t('profile.account_alerts.email_invalid'));
                 } else {
                   e.currentTarget.setCustomValidity('');
                 }
               }}
-              placeholder="E-postadresse"
+              placeholder={t('profile.account_alerts.email_placeholder')}
               value={alertEmailAddressState}
             />
           )}
         </Fieldset>
+        <Typography size="sm">
+          {isAnotherPerson && <p>{t('profile.notifications.personal_for_person')}</p>}
+          {isCompany && <p>{t('profile.notifications.personal_explanation')}</p>}
+        </Typography>
         <ButtonGroup>
-          <Button type="submit">Lagre</Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => {
-              /* Close the nearest <dialog> element (since this component is rendered inside it)
-              Using `closest('dialog')` keeps it scoped to this instance instead of querying the entire DOM.
-              This is a pragmatic solution until the dialog exposes an onClose prop or ref we can call directly. */
-              document.activeElement?.closest('dialog')?.close();
-              onClose?.();
-            }}
-          >
-            Avbryt
+          <Button type="submit" disabled={!isDirty}>
+            {t('profile.account_alerts.save')}
+          </Button>
+          <Button type="button" variant="outline" onClick={handleClose}>
+            {t('profile.account_alerts.cancel')}
           </Button>
         </ButtonGroup>
       </Section>

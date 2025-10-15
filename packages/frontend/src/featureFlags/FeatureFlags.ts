@@ -10,7 +10,6 @@ export const featureFlagDefinitions = [
   { key: 'profile.enableRoutes', type: 'boolean', default: false },
   { key: 'globalMenu.enableProfileLink', type: 'boolean', default: false },
   { key: 'globalMenu.enableAccessManagementLink', type: 'boolean', default: false },
-  { key: 'profile.enableNotificationsPage', type: 'boolean', default: false },
 ] as const satisfies readonly FeatureFlagDefinition[];
 
 export type FeatureFlagKey = (typeof featureFlagDefinitions)[number]['key'];

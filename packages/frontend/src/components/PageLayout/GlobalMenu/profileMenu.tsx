@@ -1,6 +1,16 @@
 import type { MenuItemProps, MenuItemSize, MenuProps, Theme } from '@altinn/altinn-components';
 import { formatDisplayName } from '@altinn/altinn-components';
-import { BellIcon, CogIcon, HandshakeFillIcon, HeartIcon, InboxFillIcon, PersonCircleIcon } from '@navikt/aksel-icons';
+import {
+  BellIcon,
+  CogIcon,
+  HandshakeFillIcon,
+  HeartIcon,
+  InboxFillIcon,
+  InformationSquareIcon,
+  LeaveIcon,
+  PersonCircleIcon,
+} from '@navikt/aksel-icons';
+import { createMessageBoxLink } from '../../../auth/index.ts';
 import { pruneSearchQueryParams } from '../../../pages/Inbox/queryParams.ts';
 import { PageRoutes } from '../../../pages/routes.ts';
 import { createMenuItemComponent, isRouteSelected } from './shared.tsx';
@@ -38,6 +48,29 @@ export function buildProfileMenu({
     },
   };
 
+  const betaShortcuts: MenuItemProps[] = [
+    {
+      id: 'beta-about',
+      dataTestId: 'sidebar-about',
+      groupId: 'shortcuts',
+      icon: InformationSquareIcon,
+      title: t('altinn.beta.about'),
+      as: createMenuItemComponent({
+        to: PageRoutes.about + pruneSearchQueryParams(currentSearchQuery),
+      }),
+      selected: isRouteSelected(pathname, PageRoutes.about, fromView),
+    },
+    {
+      id: 'beta-exit',
+      dataTestId: 'sidebar-exit',
+      groupId: 'shortcuts',
+      icon: LeaveIcon,
+      title: t('altinn.beta.exit'),
+      as: createMenuItemComponent({
+        to: createMessageBoxLink(),
+      }),
+    },
+  ];
   const profileItems: MenuItemProps[] = [
     {
       id: '1',
@@ -77,7 +110,6 @@ export function buildProfileMenu({
           as: createMenuItemComponent({
             to: PageRoutes.notifications + pruneSearchQueryParams(currentSearchQuery),
           }),
-          hidden: true,
         },
         {
           id: '3',
@@ -98,10 +130,13 @@ export function buildProfileMenu({
     color: 'person',
     variant: 'subtle',
     defaultIconTheme: 'default',
-    items: profileItems.map((item, idx) => ({
-      ...item,
-      iconTheme: idx === 0 ? 'base' : item.iconTheme,
-    })),
+    items: [
+      ...profileItems.map((item, idx) => ({
+        ...item,
+        iconTheme: idx === 0 ? 'base' : item.iconTheme,
+      })),
+      ...betaShortcuts,
+    ],
   };
 
   const globalMenuItems: MenuItemProps[] = [
@@ -131,6 +166,7 @@ export function buildProfileMenu({
       href: 'https://am.ui.at23.altinn.cloud/accessmanagement/ui/users',
       title: t('altinn.access_management'),
     },
+    ...betaShortcuts,
   ];
 
   const profileMenuItem: MenuItemProps = {
@@ -154,6 +190,7 @@ export function buildProfileMenu({
 
   const mobileMenu: MenuProps = {
     ...desktopMenu,
+    ...betaShortcuts,
     items: [
       ...globalMenuItems,
       {

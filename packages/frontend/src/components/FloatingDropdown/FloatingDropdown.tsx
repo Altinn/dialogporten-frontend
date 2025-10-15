@@ -7,12 +7,17 @@ import { QUERY_KEYS } from '../../constants/queryKeys';
 import { PageRoutes } from '../../pages/routes';
 import { useGlobalState } from '../../useGlobalState';
 
+// Hide "vis nye funksjoner" (onboarding) on pages:
+const TOUR_BLACKLISTED_PAGES = [PageRoutes.notifications, PageRoutes.settings];
+
 export const FloatingDropdown = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [_, setShowTour] = useGlobalState<boolean>(QUERY_KEYS.SHOW_TOUR, false);
   const [__, setShowProfileTour] = useGlobalState<boolean>(QUERY_KEYS.SHOW_PROFILE_TOUR, false);
+
+  const isTourBlacklisted = TOUR_BLACKLISTED_PAGES.includes(location.pathname as PageRoutes);
 
   const handleStartTour = () => {
     const isProfilePage = location.pathname.startsWith('/profile');
@@ -29,22 +34,22 @@ export const FloatingDropdown = () => {
     window.location.href = createMessageBoxLink();
   };
 
-  return (
-    <FloatingDropdownAc
-      icon={QuestionmarkIcon}
-      iconAltText={'?'}
-      items={[
-        {
-          icon: QuestionmarkIcon,
-          title: t('floating_dropdown.show_new_functionality'),
-          onClick: handleStartTour,
-        },
-        {
-          icon: LeaveIcon,
-          title: t('altinn.beta.exit'),
-          onClick: handleGoBack,
-        },
-      ]}
-    />
-  );
+  const items = [
+    ...(!isTourBlacklisted
+      ? [
+          {
+            icon: QuestionmarkIcon,
+            title: t('floating_dropdown.show_new_functionality'),
+            onClick: handleStartTour,
+          },
+        ]
+      : []),
+    {
+      icon: LeaveIcon,
+      title: t('altinn.beta.exit'),
+      onClick: handleGoBack,
+    },
+  ];
+
+  return <FloatingDropdownAc icon={QuestionmarkIcon} iconAltText={'?'} items={items} />;
 };

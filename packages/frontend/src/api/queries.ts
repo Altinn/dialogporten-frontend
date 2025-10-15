@@ -75,8 +75,12 @@ const responseMiddleware: ResponseMiddleware = (response) => {
         ? `GraphQL Error: ${primaryError.message}${primaryError.path ? ` at path: ${primaryError.path.join('.')}` : ''}`
         : 'GraphQL ClientError';
 
+      const error: Error = response as Error;
+      error.name = 'GraphQLClientError';
+      error.message = errorMessage;
+
       logError(
-        response as Error,
+        error,
         {
           context: 'queries.responseMiddleware.ClientError',
           query: response.request.query,
