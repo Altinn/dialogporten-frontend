@@ -10,6 +10,9 @@ param subnetId string = ''
 @description('The name of the Application Insights workspace associated with the container app environment')
 param appInsightWorkspaceName string
 
+@description('The connection string for the Application Insights workspace associated with the container app environment')
+param appInsightsConnectionString string
+
 @description('Whether to enable zone redundancy for the container app environment')
 param zoneRedundancyEnabled bool = false
 
@@ -36,6 +39,17 @@ resource containerAppEnv 'Microsoft.App/managedEnvironments@2024-10-02-preview' 
       logAnalyticsConfiguration: {
         customerId: appInsightsWorkspace.properties.customerId
         sharedKey: appInsightsWorkspace.listKeys().primarySharedKey
+      }
+    }
+    appInsightsConfiguration: {
+      connectionString: appInsightsConnectionString
+    }
+    openTelemetryConfiguration: {
+      tracesConfiguration: {
+        destinations: ['appInsights']
+      }
+      logsConfiguration: {
+        destinations: ['appInsights']
       }
     }
     zoneRedundant: zoneRedundancyEnabled
