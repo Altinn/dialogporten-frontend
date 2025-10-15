@@ -6,6 +6,12 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
+  verify-release-please-branch:
+    if: !startsWith(github.head_ref, 'release-please-')
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Confirmed not to be a release please branch"
+
   generate-git-short-sha:
     name: Generate git short sha
     uses: ./.github/workflows/workflow-generate-git-short-sha.yml
