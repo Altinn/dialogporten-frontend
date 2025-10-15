@@ -141,7 +141,7 @@ export const addFavoritePartyToGroup = async (pid: string, partyId: string, cate
     if (!alreadyInGroup) {
       party.groups = [...party.groups, group];
     } else {
-      console.info(`Party ${partyId} already exists in group ${categoryName}, skipping addition`);
+      logger.info(`Party ${partyId} already exists in group ${categoryName}, skipping addition`);
       return currentProfile;
     }
   }
