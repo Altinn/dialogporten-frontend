@@ -1,5 +1,5 @@
-import axios from 'axios';
 import { logger } from '@digdir/dialogporten-node-logger';
+import axios from 'axios';
 import config from '../../config.ts';
 import { GroupRepository, PartyRepository, ProfileRepository } from '../../db.ts';
 import { Group, Party, ProfileTable } from '../../entities.ts';
