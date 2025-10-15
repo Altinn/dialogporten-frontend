@@ -2,7 +2,7 @@
   "name": "bff-types-generated",
   "main": "src/index.ts",
   "scripts": {
-    "prepare": "pnpm build --filter=@digdir/dialogporten-node-logger && pnpm generate:types-gql",
+    "prepare": "pnpm generate:types-gql",
     "dev": "pnpm build:watch",
     "build": "pnpm generate:types-gql",
     "build:watch": "nodemon --watch 'src/**' --watch 'queries' --ext 'ts,graphql' --exec 'pnpm build'",
@@ -10,7 +10,6 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@digdir/dialogporten-node-logger": "workspace:*",
     "@graphql-codegen/cli": "^5.0.6",
     "@graphql-codegen/typescript-operations": "^4.6.1",
     "@graphql-tools/stitch": "^9.4.23",
