@@ -291,7 +291,7 @@ export const handleAuthRequest = async (request: FastifyRequest, reply: FastifyR
     reply.redirect('/');
   } catch (e: unknown) {
     if (axios.isAxiosError(e)) {
-      logger.error(e.response?.data, 'handleAuthRequest error e.data');
+      logger.error({ data: e.response?.data }, 'handleAuthRequest error e.data');
     } else {
       logger.error(e, 'handleAuthRequest error');
     }

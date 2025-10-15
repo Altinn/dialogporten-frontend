@@ -41,7 +41,7 @@ export const exchangeToken = async (context: Context): Promise<string> => {
     });
     return newToken;
   } catch (error) {
-    logger.error('exchangeToken: Error fetching new token:', error);
+    logger.error(error, 'exchangeToken: Error fetching new token:');
   }
   return '';
 };
@@ -103,7 +103,7 @@ export const addFavoriteParty = async (context: Context, partyUuid: string) => {
     );
     return [response.data as Group];
   } catch (error) {
-    logger.error('Error adding favorite:', error);
+    logger.error(error, 'Error adding favorite:');
     throw new Error('Failed to add favorite');
   }
 };
