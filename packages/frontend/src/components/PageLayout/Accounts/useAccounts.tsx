@@ -228,7 +228,7 @@ export const useAccounts = ({
       id: party.party,
       name: party.name,
       type: 'company' as AccountMenuItemProps['type'],
-      icon: { name: party.name, type: 'company' as AvatarType, variant: isParent ? 'solid' : 'outline' },
+      icon: { name: party.name, type: 'company' as AvatarType, isParent, isDeleted: party.isDeleted },
       isDeleted: party.isDeleted,
       isFavorite: favoritesGroup?.parties?.includes(party.partyUuid),
       isCurrentEndUser: false,
