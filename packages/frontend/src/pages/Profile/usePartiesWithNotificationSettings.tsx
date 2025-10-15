@@ -134,8 +134,7 @@ export const usePartiesWithNotificationSettings = (parties: PartyFieldsFragment[
   }, [partiesWithNotificationSettings]);
 
   return {
-    partiesWithNotificationSettings: partiesWithNotificationSettings.filter((party) => !party.isDeleted),
-    deletedPartiesWithNotificationSettings: partiesWithNotificationSettings.filter((party) => party.isDeleted),
+    partiesWithNotificationSettings: partiesWithNotificationSettings,
     uniqueEmailAddresses,
     uniquePhoneNumbers,
     isLoading: isLoadingNotificationSettings,
