@@ -7,7 +7,7 @@ on:
 
 jobs:
   verify-release-please-branch:
-    if: !startsWith(github.head_ref, 'release-please-')
+    if: ${{ !startsWith(github.head_ref, 'release-please-') }}
     runs-on: ubuntu-latest
     steps:
       - run: echo "Confirmed not to be a release please branch"
