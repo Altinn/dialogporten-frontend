@@ -19,6 +19,14 @@ dev: ## Runs Docker compose in watch mode for development
 compose-down: ## Runs `docker compose down`
 	docker compose down
 
+compose-clean: ## Stops containers and removes dangling images
+	docker compose down
+	docker image prune -f
+
+compose-deep-clean: ## Full cleanup: stops containers, removes volumes and all unused images
+	docker compose down -v
+	docker system prune -af --volumes
+
 pull: ## Pulls and stores images locally and builds project
 	docker compose pull && docker pull node:22-slim && docker compose build
 
