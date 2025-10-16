@@ -31,11 +31,10 @@ jobs:
           POLARIS_PORTFOLIO_ID: ${{ secrets.POLARIS_PORTFOLIO_ID }}
           POLARIS_PROJECT_ID: ${{ secrets.POLARIS_PROJECT_ID }}
 
-        #Update the run command to match your appplication
         run: |
           python .github/tools/extract_findings.py "$POLARIS_URL" "$POLARIS_TOKEN" "$POLARIS_PORTFOLIO_ID" "$POLARIS_PROJECT_ID"
 
       - name: Upload SARIF to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: "Polaris python code/polaris_issues.sarif" # Update path
+          sarif_file: "Polaris python .github/tools/polaris_issues.sarif"
