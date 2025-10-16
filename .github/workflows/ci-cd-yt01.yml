@@ -59,11 +59,7 @@ jobs:
 
   upload-source-maps:
     name: Upload source maps to Application Insights
-    needs:
-      [
-        check-for-changes,
-        deploy-infrastructure,
-      ]
+    needs: [check-for-changes, deploy-infrastructure]
     if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasApplicationChanges == 'true') }}
     uses: ./.github/workflows/workflow-upload-source-maps.yml
     secrets:
@@ -76,15 +72,10 @@ jobs:
       environment: yt01
       version: ${{ github.event.client_payload.version }}
       ref: "refs/tags/v${{ github.event.client_payload.version }}"
-      
+
   deploy-apps:
     name: Deploy apps to YT01
-    needs:
-      [
-        check-for-changes,
-        deploy-infrastructure,
-        upload-source-maps
-      ]
+    needs: [check-for-changes, deploy-infrastructure, upload-source-maps]
     if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasApplicationChanges == 'true') }}
     uses: ./.github/workflows/workflow-deploy-apps.yml
     secrets:
@@ -94,7 +85,6 @@ jobs:
       AZURE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
       AZURE_ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
       AZURE_CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
-      AZURE_APP_INSIGHTS_CONNECTION_STRING: ${{ secrets.AZURE_APP_INSIGHTS_CONNECTION_STRING }}
       AZURE_APPLICATION_INSIGHTS_INSTRUMENTATION_KEY: ${{ secrets.AZURE_APPLICATION_INSIGHTS_INSTRUMENTATION_KEY }}
       OCP_APIM_SUBSCRIPTION_KEY: ${{ secrets.OCP_APIM_SUBSCRIPTION_KEY }}
     with:
@@ -117,11 +107,7 @@ jobs:
 
   send-slack-message-on-failure:
     name: Send Slack message on failure
-    needs: [
-      deploy-infrastructure,
-      upload-source-maps,
-      deploy-apps,
-    ]
+    needs: [deploy-infrastructure, upload-source-maps, deploy-apps]
     if: ${{ always() && failure() && !cancelled() }}
     uses: ./.github/workflows/workflow-send-ci-cd-status-slack-message.yml
     with:
@@ -131,16 +117,16 @@ jobs:
       apps_status: ${{ needs.deploy-apps.result }}
     secrets:
       SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-      SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_CI_CD_STATUS }} 
+      SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_CI_CD_STATUS }}
 
   send-deployment-to-swarmia:
     name: Send deployment to Swarmia
     if: ${{ always() && !failure() && !cancelled() }}
     uses: ./.github/workflows/workflow-swarmia-deployment.yml
-    needs: [ deploy-infrastructure, deploy-apps ]
+    needs: [deploy-infrastructure, deploy-apps]
     with:
       app-name: arbeidsflate
-      environment: 'yt01'
+      environment: "yt01"
       version: ${{ github.event.client_payload.version }}
     secrets:
       token: ${{ secrets.SWARMIA_DEPLOYMENTS_AUTHORIZATION }}

@@ -1,88 +1,108 @@
 import type { IncomingMessage } from 'node:http';
-import { useAzureMonitor } from '@azure/monitor-opentelemetry';
 import { logger } from '@digdir/dialogporten-node-logger';
 import { FastifyOtelInstrumentation } from '@fastify/otel';
-import { type ProxyTracerProvider, metrics, trace } from '@opentelemetry/api';
-import { registerInstrumentations } from '@opentelemetry/instrumentation';
+import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-grpc';
+import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
 import { GraphQLInstrumentation } from '@opentelemetry/instrumentation-graphql';
 import { HttpInstrumentation, type HttpInstrumentationConfig } from '@opentelemetry/instrumentation-http';
 import { IORedisInstrumentation } from '@opentelemetry/instrumentation-ioredis';
+import { PgInstrumentation } from '@opentelemetry/instrumentation-pg';
 import { resourceFromAttributes } from '@opentelemetry/resources';
-// SEMRESATTRS_SERVICE_INSTANCE_ID is deprecaed, but the replacement ATTR_SERVICE_INSTANCE_ID is not available in the semantic-conventions package
+import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
+import { NodeSDK } from '@opentelemetry/sdk-node';
 import { ATTR_SERVICE_NAME, SEMRESATTRS_SERVICE_INSTANCE_ID } from '@opentelemetry/semantic-conventions';
 import config from './config.ts';
 
-const { applicationInsights } = config;
+const { openTelemetry } = config;
 
-const initializeApplicationInsights = () => {
-  if (!applicationInsights.connectionString) {
-    const errorMsg =
-      'Unable to initialize Application Insights: Application Insights enabled, but connection string is missing.';
-    logger.error(errorMsg);
-    throw new Error(errorMsg);
-  }
+// Configure HTTP instrumentation with filtering
+const httpInstrumentationConfig: HttpInstrumentationConfig = {
+  enabled: true,
+  ignoreIncomingRequestHook: (request: IncomingMessage) => {
+    // Ignore OPTIONS incoming requests
+    if (request.method === 'OPTIONS') {
+      return true;
+    }
+    // Ignore readiness and liveness probes
+    if (request.url === '/api/liveness' || request.url === '/api/readiness') {
+      return true;
+    }
+    return false;
+  },
+};
 
+// Configure instrumentations
+const instrumentations = [
+  new HttpInstrumentation(httpInstrumentationConfig),
+  new IORedisInstrumentation(),
+  new FastifyOtelInstrumentation(),
+  new GraphQLInstrumentation({
+    ignoreTrivialResolveSpans: true,
+    mergeItems: true,
+  }),
+  new PgInstrumentation(),
+];
+
+// Create custom resource with service information
+const resource = resourceFromAttributes({
+  [ATTR_SERVICE_NAME]: config.info.name,
+  [SEMRESATTRS_SERVICE_INSTANCE_ID]: config.info.instanceId || 'local-dev',
+});
+
+const initializeOpenTelemetry = () => {
   try {
-    const customResource = resourceFromAttributes({
-      [ATTR_SERVICE_NAME]: config.info.name,
-      [SEMRESATTRS_SERVICE_INSTANCE_ID]: config.info.instanceId,
+    if (!config.openTelemetry.enabled) {
+      logger.info('OpenTelemetry disabled - no OTEL_EXPORTER_OTLP_ENDPOINT configured');
+      return null;
+    }
+
+    const traceExporter: OTLPTraceExporter = new OTLPTraceExporter({
+      url: openTelemetry.endpoint,
     });
-
-    // register the azure monitor exporter
-    useAzureMonitor({
-      resource: customResource,
-      azureMonitorExporterOptions: {
-        connectionString: applicationInsights.connectionString,
-      },
-      instrumentationOptions: {
-        http: { enabled: true },
-        azureSdk: { enabled: true },
-        postgreSql: { enabled: true },
-      },
-    });
-
-    const httpInstrumentationConfig: HttpInstrumentationConfig = {
-      enabled: true,
-      ignoreIncomingRequestHook: (request: IncomingMessage) => {
-        // Ignore OPTIONS incoming requests
-        if (request.method === 'OPTIONS') {
-          return true;
-        }
-        // Ignore readiness and liveness probes
-        if (request.url === '/api/liveness' || request.url === '/api/readiness') {
-          return true;
-        }
-        return false;
-      },
-    };
-
-    // register additional instrumentations that are not included in the azure monitor exporter
-    const instrumentations = [
-      new HttpInstrumentation(httpInstrumentationConfig),
-      new IORedisInstrumentation(),
-      new FastifyOtelInstrumentation(),
-      new GraphQLInstrumentation({
-        ignoreTrivialResolveSpans: true,
-        mergeItems: true,
+    const metricReader: PeriodicExportingMetricReader = new PeriodicExportingMetricReader({
+      exporter: new OTLPMetricExporter({
+        url: openTelemetry.endpoint,
       }),
-    ];
-
-    const tracerProvider = (trace.getTracerProvider() as ProxyTracerProvider).getDelegate();
-    const meterProvider = metrics.getMeterProvider();
-
-    registerInstrumentations({
-      tracerProvider: tracerProvider,
-      meterProvider: meterProvider,
-      instrumentations: instrumentations,
+      exportIntervalMillis: 30000,
     });
 
-    logger.info('Application Insights initialized');
+    logger.info(
+      {
+        endpoint: openTelemetry.endpoint,
+        protocol: openTelemetry.protocol,
+        serviceName: config.info.name,
+        instanceId: config.info.instanceId,
+      },
+      'Initializing OpenTelemetry with OTLP exporter',
+    );
+
+    // Initialize NodeSDK
+    const sdk = new NodeSDK({
+      resource,
+      traceExporter,
+      metricReaders: [metricReader],
+      instrumentations,
+    });
+
+    sdk.start();
+
+    logger.info(
+      {
+        mode: openTelemetry.enabled ? 'production' : 'local-dev',
+        serviceName: config.info.name,
+        instanceId: config.info.instanceId,
+      },
+      'OpenTelemetry initialized successfully',
+    );
+
+    return sdk;
   } catch (error) {
-    logger.error('Error initializing Application Insights:', error);
-    throw error;
+    logger.error(error, 'Error initializing OpenTelemetry');
+    if (openTelemetry.enabled) {
+      throw error;
+    }
+    return null;
   }
 };
 
-if (applicationInsights.enabled) {
-  initializeApplicationInsights();
-}
+export const otelSDK = initializeOpenTelemetry();

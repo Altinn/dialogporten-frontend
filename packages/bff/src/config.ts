@@ -14,8 +14,8 @@ const envVariables = z.object({
   GIT_SHA: z.string().default('v6.1.5'),
   HOST: z.string().default('0.0.0.0'),
   DB_CONNECTION_STRING: z.string().default('postgres://postgres:mysecretpassword@localhost:5432/dialogporten'),
-  APPLICATIONINSIGHTS_CONNECTION_STRING: z.string().optional(),
-  APPLICATIONINSIGHTS_ENABLED: z.preprocess(stringToBoolean, z.boolean().default(false)),
+  OTEL_EXPORTER_OTLP_ENDPOINT: z.string().optional(),
+  OTEL_EXPORTER_OTLP_PROTOCOL: z.enum(['http/protobuf', 'http/json', 'grpc']).default('http/protobuf'),
   APP_CONFIG_CONNECTION_STRING: z.string().default(''),
   PORT: z.coerce.number().default(3000),
   OIDC_URL: z.string().default('test.idporten.no'),
@@ -53,9 +53,10 @@ const config = {
   client_id: env.CLIENT_ID,
   client_secret: env.CLIENT_SECRET,
   platformBaseURL: env.PLATFORM_BASEURL,
-  applicationInsights: {
-    enabled: env.APPLICATIONINSIGHTS_ENABLED,
-    connectionString: env.APPLICATIONINSIGHTS_CONNECTION_STRING,
+  openTelemetry: {
+    enabled: !!env.OTEL_EXPORTER_OTLP_ENDPOINT,
+    endpoint: env.OTEL_EXPORTER_OTLP_ENDPOINT,
+    protocol: env.OTEL_EXPORTER_OTLP_PROTOCOL,
   },
   postgresql: {
     connectionString: env.DB_CONNECTION_STRING,
