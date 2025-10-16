@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.88.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.87.0...v1.88.0) (2025-10-16)
+
+
+### Features
+
+* Add extended status label to dialog list ([#2985](https://github.com/Altinn/dialogporten-frontend/issues/2985)) ([72f7ad5](https://github.com/Altinn/dialogporten-frontend/commit/72f7ad55cf4891db35ecce4e4f87a5b639078a07))
+
+
+### Bug Fixes
+
+* Improving issue where Header breaks into two lines ([9708621](https://github.com/Altinn/dialogporten-frontend/commit/9708621dd1d0616f35f37d194fc7cd5873e0a547))
+* Output folder path ([4cf08d4](https://github.com/Altinn/dialogporten-frontend/commit/4cf08d40a27bf487accaf81b97f8238a5d79ea89))
+* Output path for polaris extraction ([a991447](https://github.com/Altinn/dialogporten-frontend/commit/a99144703c8e15ef80b89daaf44e151c9c4ab22b))
+
 ## [1.87.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.86.0...v1.87.0) (2025-10-16)
 
 
