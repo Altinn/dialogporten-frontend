@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.87.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.86.0...v1.87.0) (2025-10-16)
+
+
+### Features
+
+* Add integration between Polaris and Github ([8317a16](https://github.com/Altinn/dialogporten-frontend/commit/8317a168a09e4575083f401769230a57cd8fe573))
+
+
+### Bug Fixes
+
+* subscription issues ([#2979](https://github.com/Altinn/dialogporten-frontend/issues/2979)) ([d6f7720](https://github.com/Altinn/dialogporten-frontend/commit/d6f77202bc5c74311a5d4f93a8d0de8883316161))
+
 ## [1.86.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.85.0...v1.86.0) (2025-10-15)
 
 
