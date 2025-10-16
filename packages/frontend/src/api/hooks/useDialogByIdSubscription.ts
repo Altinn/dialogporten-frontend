@@ -8,6 +8,9 @@ import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { pruneSearchQueryParams } from '../../pages/Inbox/queryParams.ts';
 import { PageRoutes } from '../../pages/routes.ts';
 
+type EventSourceEvent = Error & {
+  responseCode: number;
+};
 export const useDialogByIdSubscription = (dialogId: string | undefined, dialogToken: string | undefined): boolean => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const queryClient = useQueryClient();
@@ -18,88 +21,96 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
   const { logError } = useErrorLogger();
 
   const eventSourceRef = useRef<SSE | null>(null);
-  const lastInvalidatedDate = useRef<string>(new Date().toISOString());
+  const lastInvalidatedDate = useRef(new Date().toISOString());
+  const isFirstRender = useRef(true);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    if (!dialogId || !dialogToken) return;
-
-    if (eventSourceRef.current) {
-      eventSourceRef.current.close();
-      eventSourceRef.current = null;
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
     }
 
-    const eventSource = new SSE(`/api/graphql/stream?dialogId=${dialogId}`, {
-      headers: { 'digdir-dialog-token': dialogToken },
-      withCredentials: true,
-    });
-    eventSourceRef.current = eventSource;
+    if (!dialogId || !dialogToken || isMock) return;
 
-    const onError = (err: Error) => {
-      logError(
-        err,
-        {
-          context: 'useDialogByIdSubscription.onError',
-          dialogId,
-        },
-        'EventSource connection error',
-      );
-    };
+    let cancelled = false;
 
-    const onOpen = () => {
-      setIsOpen(true);
-    };
+    const connect = () => {
+      if (cancelled) return;
+      if (!navigator.onLine) return;
 
-    const onNext = (event: MessageEvent) => {
-      try {
-        const jsonPayload = JSON.parse(event.data);
-        const updatedType: DialogEventType | undefined = jsonPayload.data?.dialogEvents?.type;
-
-        const now = new Date().toISOString();
-        if (lastInvalidatedDate?.current) {
-          const diff = new Date(now).getTime() - new Date(lastInvalidatedDate.current).getTime();
-
-          if (diff <= 500) {
-            /* Debounce per 500 ms */
-            return;
-          }
-          lastInvalidatedDate.current = now;
-        }
-
-        if (updatedType === DialogEventType.DialogDeleted) {
-          navigate(PageRoutes.inbox + pruneSearchQueryParams(search.toString()));
-        } else if (updatedType === DialogEventType.DialogUpdated) {
-          void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.DIALOG_BY_ID] });
-          void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.DIALOGS] });
-        }
-      } catch (e) {
-        logError(
-          e as Error,
-          {
-            context: 'useDialogByIdSubscription.onMessage.parseEventData',
-            dialogId,
-            eventData: event.data,
-          },
-          'Error parsing event data',
-        );
+      // Close existing connection before creating a new one
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+        eventSourceRef.current = null;
       }
+
+      const eventSource = new SSE(`/api/graphql/stream?dialogId=${dialogId}`, {
+        headers: { 'digdir-dialog-token': dialogToken },
+        withCredentials: true,
+      });
+      eventSourceRef.current = eventSource;
+
+      eventSource.addEventListener('open', () => {
+        if (cancelled) return;
+        setIsOpen(true);
+      });
+
+      eventSource.addEventListener('next', (event: MessageEvent) => {
+        if (cancelled) return;
+        try {
+          const jsonPayload = JSON.parse(event.data);
+          const updatedType: DialogEventType | undefined = jsonPayload.data?.dialogEvents?.type;
+          const now = new Date().toISOString();
+          const diff = new Date(now).getTime() - new Date(lastInvalidatedDate.current).getTime();
+          if (diff <= 500) return;
+          lastInvalidatedDate.current = now;
+
+          if (updatedType === DialogEventType.DialogDeleted) {
+            navigate(PageRoutes.inbox + pruneSearchQueryParams(search.toString()));
+          } else if (updatedType === DialogEventType.DialogUpdated) {
+            void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.DIALOG_BY_ID] });
+            void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.DIALOGS] });
+          }
+        } catch (e) {
+          logError(
+            e as Error,
+            {
+              context: 'useDialogByIdSubscription.onMessage.parseEventData',
+              dialogId,
+              eventData: event.data,
+            },
+            'Error parsing event data',
+          );
+        }
+      });
+
+      eventSource.addEventListener('error', (err: EventSourceEvent) => {
+        if (cancelled) return;
+        if (err.responseCode === 0) {
+          eventSource.close();
+          setIsOpen(false);
+          return;
+        }
+        logError(err, { context: 'useDialogByIdSubscription.onError', dialogId }, 'EventSource connection error');
+        eventSource.close();
+        setIsOpen(false);
+        setTimeout(connect, 500);
+      });
     };
 
-    eventSource.addEventListener('next', onNext);
-    eventSource.addEventListener('error', onError);
-    eventSource.addEventListener('open', onOpen);
+    connect();
+    window.addEventListener('online', connect);
 
     return () => {
-      eventSource.removeEventListener('next', onNext);
-      eventSource.removeEventListener('error', onError);
-      eventSource.removeEventListener('open', onOpen);
-      eventSource.close();
-      eventSourceRef.current = null;
+      cancelled = true;
+      window.removeEventListener('online', connect);
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+        eventSourceRef.current = null;
+      }
     };
-  }, [dialogId, dialogToken, queryClient, navigate, search, logError]);
+  }, [dialogId, dialogToken, search, isMock]);
 
-  if (isMock) {
-    return true;
-  }
-
-  return isOpen;
+  return isMock || isOpen;
 };
