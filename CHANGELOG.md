@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.88.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.88.1...v1.88.2) (2025-10-16)
+
+
+### Bug Fixes
+
+* flaky e2e profile test ([#2991](https://github.com/Altinn/dialogporten-frontend/issues/2991)) ([686e459](https://github.com/Altinn/dialogporten-frontend/commit/686e459c4b53350fa7aa3d125fc528a7d3a286aa))
+
 ## [1.88.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.88.0...v1.88.1) (2025-10-16)
 
 
