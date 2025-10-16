@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.88.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.88.0...v1.88.1) (2025-10-16)
+
+
+### Bug Fixes
+
+* feature api error ([#2988](https://github.com/Altinn/dialogporten-frontend/issues/2988)) ([fada77b](https://github.com/Altinn/dialogporten-frontend/commit/fada77b90461f4d7e0696ea86e266ac0e835a0ff))
+
 ## [1.88.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.87.0...v1.88.0) (2025-10-16)
 
 
