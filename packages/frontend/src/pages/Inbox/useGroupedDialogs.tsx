@@ -170,6 +170,7 @@ const useGroupedDialogs = ({
       seenByLog: item.seenByLog,
       unread: item.seenSinceLastContentUpdate.length === 0,
       status: getDialogStatus(item.status, t),
+      extendedStatusLabel: item.extendedStatus,
       controls: <ContextMenu {...contextMenu} />,
       updatedAt: item.contentUpdatedAt,
       updatedAtLabel: format(item.contentUpdatedAt, formatString),
