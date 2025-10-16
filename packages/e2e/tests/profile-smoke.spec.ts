@@ -23,19 +23,28 @@ test.describe('Profile smoke tests', () => {
   });
 
   test('should enable notifications', async ({ page, baseURL }) => {
-    await page.goto(`${baseURL}/profile?mock=true`);
+    await page.goto(`${baseURL}/profile`);
+    await page.getByRole('button', { name: 'Prøv ny innboks' }).click();
+    await page.getByRole('button', { name: 'Lukk' }).click();
+    await page.getByRole('button', { name: 'Meny', exact: true }).click();
+    await page.getByRole('link', { name: 'Min profil' }).click();
+
+    await page.getByRole('button', { name: 'Neste' }).click();
+    await page.getByRole('button', { name: 'Ferdig' }).click();
 
     await page.getByRole('link', { name: 'Mine varsler' }).click();
     await page.getByRole('button', { name: 'Konge Glad Tiger AS' }).first().click();
-    await page.getByRole('switch', { name: 'Varsle på E-post' }).check();
-    expect(page.getByRole('button', { name: 'Lagre' })).not.toBeDisabled();
-    await page.getByRole('button', { name: 'Lagre' }).click();
-    expect(page.getByRole('alert')).toBeVisible();
+    const switchLocator = page.getByRole('switch', { name: 'Varsle på E-post' });
 
-    await page.getByText('KKonge Glad Tiger ASnullstillt@default.digdir.no').click();
-    await page.getByRole('switch', { name: 'Varsle på E-post' }).uncheck();
-    await page.getByRole('button', { name: 'Lagre' }).click();
+    const isChecked = await switchLocator.isChecked();
 
-    await expect(page.locator('section').filter({ hasText: 'Varslingsprofil for e-' })).toBeVisible();
+    if (!isChecked) {
+      await switchLocator.check();
+    } else {
+      await switchLocator.uncheck();
+    }
+
+    await page.getByRole('button', { name: 'Lagre' }).click();
+    await page.getByText('Varslinger ble endret').click();
   });
 });
