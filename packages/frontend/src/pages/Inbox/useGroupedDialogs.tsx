@@ -23,8 +23,8 @@ import { getDialogStatus } from './status.ts';
 
 interface GroupedItem {
   id: string | number;
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   items: InboxItemInput[];
   orderIndex: number | null;
 }
@@ -207,8 +207,6 @@ const useGroupedDialogs = ({
       // bankruptcy group
       if (bankruptcyDialogs.length > 0) {
         groups.bankruptcy = {
-          title: t('inbox.heading.bankruptcy', { count: bankruptcyDialogs.length }),
-          description: t('inbox.heading.description.bankruptcy'),
           orderIndex: 9999,
         };
         allDialogs.push(...bankruptcyDialogs.map((item) => formatDialogItem(item, 'bankruptcy')));
@@ -239,8 +237,6 @@ const useGroupedDialogs = ({
     if (bankruptcyDialogs.length > 0) {
       groupedItems.push({
         id: 'bankruptcy',
-        title: t('inbox.heading.bankruptcy', { count: bankruptcyDialogs.length }),
-        description: t('inbox.heading.description.bankruptcy'),
         items: bankruptcyDialogs,
         orderIndex: 9999, //put on top
       });
