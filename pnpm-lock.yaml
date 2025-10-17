@@ -398,8 +398,8 @@ importers:
   packages/frontend:
     dependencies:
       '@altinn/altinn-components':
-        specifier: 0.43.1
-        version: 0.43.1(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        specifier: 0.43.2
+        version: 0.43.2(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@microsoft/applicationinsights-react-js':
         specifier: 19.3.7
         version: 19.3.7(history@4.10.1)(react@19.1.0)(tslib@2.8.1)
@@ -615,8 +615,8 @@ packages:
     resolution: {integrity: sha512-p6t8ue0XZNjcRiqNkb5QAM0qQRAKsCiebZ6n9JjWA+p8fWf8BvnhO55y2fO28g3GW0Imj7PrAuyBuxq8aDVQwQ==}
     engines: {node: '>= 14.0.0'}
 
-  '@altinn/altinn-components@0.43.1':
-    resolution: {integrity: sha512-FpaE8GCi1cDLTKr0mkyoUF0Q/VDeFK5C4evxZgmqTno2Tzaj/wThFEhApQUe0i4lXG3R4SuuSDosw0y65IGzyQ==}
+  '@altinn/altinn-components@0.43.2':
+    resolution: {integrity: sha512-kBVPHBlWKFzwncAAdqhrraNyDMNV8kLXJWHLT6/dY9bO41aZeVhT8+c77lvnmTMgkzuY260hMR+EyXArWeOiCg==}
     peerDependencies:
       react: '>=18.3.1 || ^19.0.0'
       react-dom: '>=18.3.1 || ^19.0.0'
@@ -10477,7 +10477,7 @@ snapshots:
     dependencies:
       '@algolia/client-common': 5.19.0
 
-  '@altinn/altinn-components@0.43.1(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+  '@altinn/altinn-components@0.43.2(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
     dependencies:
       '@digdir/designsystemet-css': 1.0.6
       '@digdir/designsystemet-react': 1.0.6(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
