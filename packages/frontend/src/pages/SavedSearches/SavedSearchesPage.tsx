@@ -31,6 +31,8 @@ export const SavedSearchesPage = () => {
                 groups: accountGroups,
                 currentAccount: selectedAccount,
                 onSelectAccount: (account: string) => onSelectAccount(account, PageRoutes.savedSearches),
+                isVirtualized: true,
+                title: t('parties.change_label'),
               }}
             />
           ) : null}

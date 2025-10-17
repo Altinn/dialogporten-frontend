@@ -183,6 +183,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
                 onSelectAccount: (account: string) => onSelectAccount(account, PageRoutes[viewType]),
                 filterAccount,
                 isVirtualized: true,
+                title: t('parties.change_label'),
               }}
               filterState={filterState}
               getFilterLabel={getFilterLabel}
