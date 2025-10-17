@@ -59,11 +59,7 @@ jobs:
 
   upload-source-maps:
     name: Upload source maps to Application Insights
-    needs:
-      [
-        check-for-changes,
-        deploy-infrastructure,
-      ]
+    needs: [check-for-changes, deploy-infrastructure]
     if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasApplicationChanges == 'true') }}
     uses: ./.github/workflows/workflow-upload-source-maps.yml
     secrets:
@@ -79,12 +75,7 @@ jobs:
 
   deploy-apps:
     name: Deploy apps to staging
-    needs:
-      [
-        check-for-changes,
-        deploy-infrastructure,
-        upload-source-maps
-      ]
+    needs: [check-for-changes, deploy-infrastructure, upload-source-maps]
     # we want deployment of apps to be dependent on deployment of infrastructure, but if infrastructure is skipped, we still want to deploy the apps
     if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasApplicationChanges == 'true') }}
     uses: ./.github/workflows/workflow-deploy-apps.yml
@@ -96,7 +87,6 @@ jobs:
       AZURE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
       AZURE_ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
       AZURE_CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
-      AZURE_APP_INSIGHTS_CONNECTION_STRING: ${{ secrets.AZURE_APP_INSIGHTS_CONNECTION_STRING }}
       AZURE_APPLICATION_INSIGHTS_INSTRUMENTATION_KEY: ${{ secrets.AZURE_APPLICATION_INSIGHTS_INSTRUMENTATION_KEY }}
       OCP_APIM_SUBSCRIPTION_KEY: ${{ secrets.OCP_APIM_SUBSCRIPTION_KEY }}
     with:
@@ -116,7 +106,7 @@ jobs:
       environment: staging
     secrets:
       GH_TOKEN: ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}
-  
+
   publish-node-logger-to-npm:
     needs: [check-for-changes, deploy-apps]
     if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasNodeLoggerChanges == 'true') }}
@@ -130,12 +120,13 @@ jobs:
 
   send-slack-message-on-failure:
     name: Send Slack message on failure
-    needs: [
-      deploy-infrastructure,
-      upload-source-maps,
-      deploy-apps,
-      publish-node-logger-to-npm,
-    ]
+    needs:
+      [
+        deploy-infrastructure,
+        upload-source-maps,
+        deploy-apps,
+        publish-node-logger-to-npm,
+      ]
     if: ${{ always() && failure() && !cancelled() }}
     uses: ./.github/workflows/workflow-send-ci-cd-status-slack-message.yml
     with:
@@ -152,10 +143,10 @@ jobs:
     name: Send deployment to Swarmia
     if: ${{ always() && !failure() && !cancelled() }}
     uses: ./.github/workflows/workflow-swarmia-deployment.yml
-    needs: [ deploy-infrastructure, deploy-apps ]
+    needs: [deploy-infrastructure, deploy-apps]
     with:
       app-name: arbeidsflate
-      environment: 'staging'
+      environment: "staging"
       version: ${{ github.event.client_payload.version }}
     secrets:
       token: ${{ secrets.SWARMIA_DEPLOYMENTS_AUTHORIZATION }}

@@ -16,6 +16,7 @@ import featureApi from './features/featureApi.js';
 import graphqlApi from './graphql/api.ts';
 import { fastifyHeaders } from './graphql/fastifyHeaders.ts';
 import graphqlStream from './graphql/subscription.ts';
+import { otelSDK } from './instrumentation.ts';
 import redisClient from './redisClient.ts';
 
 const {
@@ -125,6 +126,12 @@ const startServer = async (): Promise<void> => {
       if (dataSource?.isInitialized) {
         await dataSource.destroy();
         logger.info('Disconnected from PostgreSQL.');
+      }
+
+      // Shutdown OpenTelemetry SDK
+      if (otelSDK) {
+        await otelSDK.shutdown();
+        logger.info('OpenTelemetry SDK shut down successfully.');
       }
 
       process.exit(0);

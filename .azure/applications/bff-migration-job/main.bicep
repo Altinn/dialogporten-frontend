@@ -14,9 +14,6 @@ param oicdUrl string
 param containerAppEnvironmentName string
 @minLength(3)
 @secure()
-param appInsightConnectionString string
-@minLength(3)
-@secure()
 param environmentKeyVaultName string
 
 @description('The workload profile name to use, defaults to "Consumption"')
@@ -81,12 +78,12 @@ var secrets = [
 
 var containerAppEnvVars = [
   {
-    name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
-    value: appInsightConnectionString
+    name: 'OTEL_EXPORTER_OTLP_ENDPOINT'
+    value: 'http://localhost:4318'
   }
   {
-    name: 'APPLICATIONINSIGHTS_ENABLED'
-    value: 'true'
+    name: 'OTEL_EXPORTER_OTLP_PROTOCOL'
+    value: 'http/protobuf'
   }
   {
     name: 'DB_CONNECTION_STRING'

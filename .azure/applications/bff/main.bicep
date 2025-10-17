@@ -40,9 +40,6 @@ param logoutRedirectUri string = 'https://altinn.no/ui/Authentication/Logout'
 param containerAppEnvironmentName string
 @minLength(3)
 @secure()
-param appInsightConnectionString string
-@minLength(3)
-@secure()
 param environmentKeyVaultName string
 
 @description('Additional environment variables to be added to the container app')
@@ -118,12 +115,12 @@ var secrets = [
 var containerAppEnvVars = concat(
   [
     {
-      name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
-      value: appInsightConnectionString
+      name: 'OTEL_EXPORTER_OTLP_ENDPOINT'
+      value: 'http://localhost:4318'
     }
     {
-      name: 'APPLICATIONINSIGHTS_ENABLED'
-      value: 'true'
+      name: 'OTEL_EXPORTER_OTLP_PROTOCOL'
+      value: 'http/protobuf'
     }
     {
       name: 'DB_CONNECTION_STRING'
