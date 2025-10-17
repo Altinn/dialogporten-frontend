@@ -115,14 +115,6 @@ var secrets = [
 var containerAppEnvVars = concat(
   [
     {
-      name: 'OTEL_EXPORTER_OTLP_ENDPOINT'
-      value: 'http://localhost:4318'
-    }
-    {
-      name: 'OTEL_EXPORTER_OTLP_PROTOCOL'
-      value: 'http/protobuf'
-    }
-    {
       name: 'DB_CONNECTION_STRING'
       secretRef: dbConnectionStringSecret.name
     }
