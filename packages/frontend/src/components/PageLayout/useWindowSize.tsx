@@ -11,11 +11,21 @@ interface WindowSize {
 }
 
 export function useWindowSize(): WindowSize {
-  const [windowSize, setWindowSize] = useState<WindowSize>({
-    width: undefined,
-    height: undefined,
-    isMobile: false,
-    isTabletOrSmaller: false,
+  const [windowSize, setWindowSize] = useState<WindowSize>(() => {
+    if (typeof window !== 'undefined') {
+      return {
+        width: window.innerWidth,
+        height: window.innerHeight,
+        isMobile: window.innerWidth <= mobileBreakpoint,
+        isTabletOrSmaller: window.innerWidth < tabletBreakpoint,
+      };
+    }
+    return {
+      width: undefined,
+      height: undefined,
+      isMobile: false,
+      isTabletOrSmaller: false,
+    };
   });
 
   useEffect(() => {

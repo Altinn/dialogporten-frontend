@@ -15,7 +15,10 @@ const envVariables = z.object({
   HOST: z.string().default('0.0.0.0'),
   DB_CONNECTION_STRING: z.string().default('postgres://postgres:mysecretpassword@localhost:5432/dialogporten'),
   OTEL_EXPORTER_OTLP_ENDPOINT: z.string().optional(),
-  OTEL_EXPORTER_OTLP_PROTOCOL: z.enum(['http/protobuf', 'http/json', 'grpc']).default('http/protobuf'),
+  OTEL_EXPORTER_OTLP_PROTOCOL: z
+    .enum(['http/protobuf', 'http/json', 'grpc'])
+    .default('http/protobuf')
+    .or(z.literal('').transform(() => 'http/protobuf')),
   APP_CONFIG_CONNECTION_STRING: z.string().default(''),
   PORT: z.coerce.number().default(3000),
   OIDC_URL: z.string().default('test.idporten.no'),
