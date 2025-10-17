@@ -14,7 +14,7 @@ test.describe('Testing filter bar', () => {
       .locator('a')
       .filter({ hasText: 'Velg avsender' })
       .click();
-    await page.getByRole('menuitemcheckbox', { name: 'Skatteetaten' }).locator('div').click();
+    await page.getByRole('menuitemcheckbox', { name: 'Skatteetaten' }).locator('div').first().click();
     await page.keyboard.press('Escape');
   });
 
