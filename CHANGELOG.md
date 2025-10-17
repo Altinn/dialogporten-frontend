@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.89.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.88.2...v1.89.0) (2025-10-17)
+
+
+### Features
+
+* **bff:** use otel exporter to export logs, metrics and traces ([#2990](https://github.com/Altinn/dialogporten-frontend/issues/2990)) ([600b320](https://github.com/Altinn/dialogporten-frontend/commit/600b32075ec2ceedf2747eea7e1684f6d2f6f3ce))
+
+
+### Bug Fixes
+
+* Add row gab to header ([d73e9d8](https://github.com/Altinn/dialogporten-frontend/commit/d73e9d82f46fbdb8777afa78d20f29b9d618db33))
+* **bff:** remove hardcoded otel endpoint and protocol ([#2996](https://github.com/Altinn/dialogporten-frontend/issues/2996)) ([e08c2b8](https://github.com/Altinn/dialogporten-frontend/commit/e08c2b8a86068b14ff45d582e961f5724e12f519))
+* Remove bankruptcy group title and description ([#2993](https://github.com/Altinn/dialogporten-frontend/issues/2993)) ([39f96db](https://github.com/Altinn/dialogporten-frontend/commit/39f96db89b9843a34408f2dcf58790a19f66848e))
+* Set correct default window size ([#2998](https://github.com/Altinn/dialogporten-frontend/issues/2998)) ([3066acc](https://github.com/Altinn/dialogporten-frontend/commit/3066accf4a689e45f50e933c7d880666a9c8eb96))
+* title for account menu on mobile ([#2997](https://github.com/Altinn/dialogporten-frontend/issues/2997)) ([5e4fbfd](https://github.com/Altinn/dialogporten-frontend/commit/5e4fbfd5d0fc8f05c1317a0169c00e0aec8c072d))
+
 ## [1.88.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.88.1...v1.88.2) (2025-10-16)
 
 
