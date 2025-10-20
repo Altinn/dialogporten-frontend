@@ -256,8 +256,23 @@ export const handleAuthRequest = async (request: FastifyRequest, reply: FastifyR
     const { pid, locale = 'nb', nonce: receivedNonce, sid: idpSid } = decodedIDToken;
 
     const nonceIsAMatch = storedNonceTruth === receivedNonce && storedNonceTruth !== '';
-    const refreshTokenExpiresAt = new Date(now.getTime() + customToken.refresh_token_expires_in * 1000).toISOString();
-    const accessTokenExpiresAt = new Date(now.getTime() + customToken.expires_in * 1000).toISOString();
+
+    const refreshTokenExpiresIn = customToken.refresh_token_expires_in || 1200; // 20 minutes default
+    const accessTokenExpiresIn = customToken.expires_in || 1200; // 20 minutes default
+
+    if (!customToken.refresh_token_expires_in || !customToken.expires_in) {
+      logger.warn(
+        {
+          refresh_token_expires_in: customToken.refresh_token_expires_in,
+          expires_in: customToken.expires_in,
+          using_defaults: true,
+        },
+        'Using default token expiration values',
+      );
+    }
+
+    const refreshTokenExpiresAt = new Date(now.getTime() + refreshTokenExpiresIn * 1000).toISOString();
+    const accessTokenExpiresAt = new Date(now.getTime() + accessTokenExpiresIn * 1000).toISOString();
 
     if (!nonceIsAMatch) {
       reply.status(401).send('Nonce mismatch');
