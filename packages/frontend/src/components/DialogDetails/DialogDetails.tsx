@@ -129,15 +129,6 @@ const handleDialogActionClick = async (
       );
 
       if (!response.ok) {
-        Analytics.trackEvent(ANALYTICS_EVENTS.GUI_ACTION_FAILED, {
-          'action.id': id,
-          'action.title': title,
-          'action.httpMethod': httpMethod,
-          'error.status': response.status,
-          'error.statusText': response.statusText,
-        });
-        console.error(`Error: ${response.statusText}`);
-      } else {
         Analytics.trackEvent(ANALYTICS_EVENTS.GUI_ACTION_SUCCESS, {
           'action.id': id,
           'action.title': title,
@@ -158,13 +149,6 @@ const handleDialogActionClick = async (
         );
       }
     } catch (error) {
-      Analytics.trackEvent(ANALYTICS_EVENTS.GUI_ACTION_FAILED, {
-        'action.id': id,
-        'action.title': title,
-        'action.httpMethod': httpMethod,
-        'error.message': error instanceof Error ? error.message : 'Unknown error',
-        'error.type': 'network_error',
-      });
       console.error('Error performing action:', error);
       logError(
         error as Error,

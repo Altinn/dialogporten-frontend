@@ -96,12 +96,6 @@ export const PageLayout: React.FC = () => {
         'user.currentPage': window.location.pathname,
       });
     } catch (error) {
-      Analytics.trackEvent(ANALYTICS_EVENTS.USER_LANGUAGE_CHANGE_FAILED, {
-        'language.from': previousLanguage,
-        'language.to': language,
-        'language.source': 'header_picker',
-        'error.message': error instanceof Error ? error.message : 'Unknown error',
-      });
       console.error('Failed to update language:', error);
       logError(
         error as Error,
