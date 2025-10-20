@@ -46,21 +46,19 @@ export type AnalyticsEventName = (typeof ANALYTICS_EVENTS)[keyof typeof ANALYTIC
  * @param success - Whether the move operation was successful
  * @returns The appropriate analytics event name
  */
-export const getDialogMoveEvent = (toLabel: SystemLabel, success: boolean): AnalyticsEventName => {
-  if (success) {
-    switch (toLabel) {
-      case SystemLabel.Default:
-        return ANALYTICS_EVENTS.DIALOG_MOVE_TO_INBOX_SUCCESS;
-      case SystemLabel.Archive:
-        return ANALYTICS_EVENTS.DIALOG_MOVE_TO_ARCHIVE_SUCCESS;
-      case SystemLabel.Bin:
-        return ANALYTICS_EVENTS.DIALOG_MOVE_TO_BIN_SUCCESS;
-      case SystemLabel.MarkedAsUnopened:
-        return ANALYTICS_EVENTS.DIALOG_MOVE_TO_MARKED_AS_UNOPENED_SUCCESS;
-      case SystemLabel.Sent:
-        return ANALYTICS_EVENTS.DIALOG_MOVE_TO_SENT_SUCCESS;
-      default:
-        return ANALYTICS_EVENTS.DIALOG_MOVE_TO_INBOX_SUCCESS; // fallback
-    }
+export const getDialogMoveEvent = (toLabel: SystemLabel): AnalyticsEventName => {
+  switch (toLabel) {
+    case SystemLabel.Default:
+      return ANALYTICS_EVENTS.DIALOG_MOVE_TO_INBOX_SUCCESS;
+    case SystemLabel.Archive:
+      return ANALYTICS_EVENTS.DIALOG_MOVE_TO_ARCHIVE_SUCCESS;
+    case SystemLabel.Bin:
+      return ANALYTICS_EVENTS.DIALOG_MOVE_TO_BIN_SUCCESS;
+    case SystemLabel.MarkedAsUnopened:
+      return ANALYTICS_EVENTS.DIALOG_MOVE_TO_MARKED_AS_UNOPENED_SUCCESS;
+    case SystemLabel.Sent:
+      return ANALYTICS_EVENTS.DIALOG_MOVE_TO_SENT_SUCCESS;
+    default:
+      return ANALYTICS_EVENTS.DIALOG_MOVE_TO_INBOX_SUCCESS; // fallback
   }
 };
