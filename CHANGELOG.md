@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.89.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.89.0...v1.89.1) (2025-10-20)
+
+
+### Bug Fixes
+
+* refresh token default values ([#3002](https://github.com/Altinn/dialogporten-frontend/issues/3002)) ([d4f122c](https://github.com/Altinn/dialogporten-frontend/commit/d4f122c220df8a346ab17d1bc400bf0dcac4167d))
+
 ## [1.89.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.88.2...v1.89.0) (2025-10-17)
 
 
