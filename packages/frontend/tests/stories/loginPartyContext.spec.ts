@@ -27,7 +27,7 @@ test.describe('LoginPartyContext', () => {
     expect(firmaAs.found).toEqual(true);
 
     const toolbar = page.getByTestId('inbox-toolbar');
-    await expect(toolbar.getByText('Alle virksomheter').locator('visible=true')).toBeVisible();
+    await expect(toolbar.locator('a').filter({ hasText: 'Alle virksomheter' })).toBeVisible();
 
     const TestBedriftAS = await getToolbarAccountInfo(page, 'Testbedrift AS');
     expect(TestBedriftAS.found).toEqual(true);
@@ -61,7 +61,7 @@ test.describe('LoginPartyContext', () => {
     ).toBeVisible();
 
     await page.getByRole('button', { name: 'Testbedrift AS Avd Sub' }).click();
-    await AlleVirksomheter.item.click();
+    await page.locator('a').filter({ hasText: 'TTT5Alle virksomheter' }).click();
 
     await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).not.toBeVisible();
     await expect(page.getByRole('link', { name: 'This is a message 1 for Firma AS' })).toBeVisible();

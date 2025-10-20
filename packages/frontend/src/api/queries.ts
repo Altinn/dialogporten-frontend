@@ -8,7 +8,7 @@ import {
   type GetAllDialogsForPartiesQuery,
   type GetSearchAutocompleteDialogsQuery,
   type NotificationSettingsInput,
-  type NotificationsettingsByUuidQuery,
+  type NotificationsettingsForCurrentUserQuery,
   type OrganizationsQuery,
   type SavedSearchInput,
   type SavedSearchesQuery,
@@ -19,8 +19,9 @@ import {
   type UpdateSystemLabelMutation,
   getSdk,
 } from 'bff-types-generated';
-import { GraphQLClient, type RequestMiddleware, type ResponseMiddleware } from 'graphql-request';
+import { ClientError, GraphQLClient, type RequestMiddleware, type ResponseMiddleware } from 'graphql-request';
 import { Analytics } from '../analytics';
+import { logError } from '../utils/errorLogger';
 
 const requestMiddleware: RequestMiddleware = (request) => {
   try {
@@ -38,7 +39,16 @@ const requestMiddleware: RequestMiddleware = (request) => {
     headers.set('x-graphql-start-time', startTime.toString());
     request.headers = headers;
   } catch (err) {
-    console.error('GraphQL request middleware error:', err);
+    logError(
+      err as Error,
+      {
+        context: 'queries.requestMiddleware',
+        url: request.url,
+        method: request.method,
+        hasHeaders: !!request.headers,
+      },
+      'Error in GraphQL request middleware',
+    );
   }
 
   return request;
@@ -49,18 +59,56 @@ const responseMiddleware: ResponseMiddleware = (response) => {
     if (!Analytics.isEnabled) {
       return;
     }
-    // Handle both successful responses and errors
+
+    if (response instanceof ClientError) {
+      // Extract detailed information from GraphQL errors
+      const graphqlErrors = response.response.errors || [];
+      const errorDetails = graphqlErrors.map((error) => ({
+        message: error.message,
+        path: error.path,
+        locations: error.locations,
+        extensions: error.extensions,
+      }));
+
+      const primaryError = graphqlErrors[0];
+      const errorMessage = primaryError
+        ? `GraphQL Error: ${primaryError.message}${primaryError.path ? ` at path: ${primaryError.path.join('.')}` : ''}`
+        : 'GraphQL ClientError';
+
+      const error: Error = response as Error;
+      error.name = 'GraphQLClientError';
+      error.message = errorMessage;
+
+      logError(
+        error,
+        {
+          context: 'queries.responseMiddleware.ClientError',
+          query: response.request.query,
+          variables: response.request.variables,
+          status: response.response.status,
+          errorCount: graphqlErrors.length,
+          errors: errorDetails,
+          primaryErrorPath: primaryError?.path,
+          primaryErrorExtensions: primaryError?.extensions,
+        },
+        errorMessage,
+      );
+      return;
+    }
+
     if (response instanceof Error) {
-      // This is an error case - track as a failed network request
-      Analytics.trackDependency({
-        id: `graphql-error-${Date.now()}`,
-        target: '/api/graphql',
-        name: 'NetworkError',
-        data: response.message,
-        duration: 0,
-        success: false,
-        responseCode: 500,
-      });
+      // This is a general error case (network, parsing, etc.)
+      const errorMessage = `GraphQL Network/Parse Error: ${response.message}`;
+
+      logError(
+        response,
+        {
+          context: 'queries.responseMiddleware.Error',
+          errorType: response.constructor.name,
+          errorStack: response.stack,
+        },
+        errorMessage,
+      );
       return;
     }
 
@@ -75,23 +123,6 @@ const responseMiddleware: ResponseMiddleware = (response) => {
 
     const startTime = Number.parseInt(startTimeStr, 10);
     const duration = Date.now() - startTime;
-    const success = !response.errors || response.errors.length === 0;
-
-    // Use the actual HTTP status from the response, or determine based on errors
-    let responseCode = response.status || 200;
-    if (!success && response.errors) {
-      // Check if it's a network error or GraphQL error based on error messages
-      const hasNetworkError = response.errors.some(
-        (error) =>
-          error.message?.toLowerCase().includes('network') ||
-          error.message?.toLowerCase().includes('fetch') ||
-          error.message?.toLowerCase().includes('failed to fetch'),
-      );
-      responseCode = hasNetworkError ? 500 : 400;
-
-      // Log GraphQL errors for debugging
-      console.debug(`GraphQL operation ${operationName} completed with errors:`, response.errors);
-    }
 
     // Track the GraphQL operation as a dependency
     Analytics.trackDependency({
@@ -99,9 +130,9 @@ const responseMiddleware: ResponseMiddleware = (response) => {
       target: '/api/graphql',
       name: operationName,
       duration: duration,
-      success: success,
+      success: true,
       startTime: new Date(startTime),
-      responseCode: responseCode,
+      responseCode: response.status,
       properties: {
         'backend.traceId': backendTraceId,
         'correlation.source': 'backend-response',
@@ -111,7 +142,17 @@ const responseMiddleware: ResponseMiddleware = (response) => {
       type: 'HTTP',
     });
   } catch (err) {
-    console.error('GraphQL response middleware error:', err);
+    // response is likely an Error or not a response object
+    logError(
+      err as Error,
+      {
+        context: 'queries.responseMiddleware.generalError',
+        responseType: typeof response,
+        responseConstructor: response?.constructor?.name,
+        errorType: (err as Error)?.constructor?.name,
+      },
+      'Unexpected error in GraphQL response middleware',
+    );
   }
 };
 
@@ -139,15 +180,13 @@ export const deleteFavoriteParty = (partyId: string): Promise<DeleteFavoritePart
   graphQLSDK.DeleteFavoriteParty({ partyId });
 export const createSavedSearch = (name: string, data: SavedSearchInput): Promise<CreateSavedSearchMutation> =>
   graphQLSDK.CreateSavedSearch({ name, data });
-export const getNotificationsettingsByUuid = (uuid: string): Promise<NotificationsettingsByUuidQuery> =>
-  graphQLSDK.notificationsettingsByUuid({ uuid });
+export const getNotificationsettingsForCurrentUser = (): Promise<NotificationsettingsForCurrentUserQuery> =>
+  graphQLSDK.notificationsettingsForCurrentUser();
 export const updateNotificationsetting = (
   data: NotificationSettingsInput,
 ): Promise<UpdateNotificationSettingMutation> => graphQLSDK.UpdateNotificationSetting({ data });
 export const deleteNotificationsetting = (partyUuid: string): Promise<DeleteNotificationSettingMutation> =>
   graphQLSDK.DeleteNotificationSetting({ partyUuid });
-export const getNotificationAddressByOrgNumber = (orgnr: string): Promise<NotificationsettingsByUuidQuery> =>
-  graphQLSDK.getNotificationAddressByOrgNumber({ orgnr });
 export const updateSystemLabel = (
   dialogId: string,
   addLabels: SystemLabel | SystemLabel[],

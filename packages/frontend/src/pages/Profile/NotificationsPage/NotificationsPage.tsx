@@ -1,61 +1,59 @@
-import {
-  Divider,
-  Heading,
-  List,
-  PageBase,
-  PageNav,
-  Section,
-  SettingsItem,
-  SettingsSection,
-} from '@altinn/altinn-components';
-import { MobileIcon, PaperplaneIcon } from '@navikt/aksel-icons';
+import { Breadcrumbs, Heading, PageBase, SettingsList, Toolbar } from '@altinn/altinn-components';
+import type { NotificationSettingsResponse, PartyFieldsFragment } from 'bff-types-generated';
 import { useTranslation } from 'react-i18next';
-import { usePageTitle } from '../../../utils/usePageTitle';
-import { getBreadcrumbs } from '../PartiesOverviewPage/partyFieldToAccountList';
+import { useLocation } from 'react-router-dom';
+import { useParties } from '../../../api/hooks/useParties.ts';
+import { usePageTitle } from '../../../hooks/usePageTitle';
+import { getBreadcrumbs } from '../Settings/Settings.tsx';
+import { SettingsType, useSettings } from '../Settings/useSettings.tsx';
 import { useProfile } from '../useProfile';
-import { AccountSettings } from './AccountSettings';
+
+export interface NotificationAccountsType extends PartyFieldsFragment {
+  notificationSettings?: NotificationSettingsResponse;
+  parentId?: string;
+}
 
 export const NotificationsPage = () => {
   const { t } = useTranslation();
+  const { search } = useLocation();
+  const { isLoading: isLoadingUser } = useProfile();
+  const { isLoading: isLoadingParties } = useParties();
+
   usePageTitle({ baseTitle: t('component.notifications') });
 
-  const { user } = useProfile();
-  const userHasNotificationsActivated =
-    (!!user?.email?.length && user?.email?.length > 0) ||
-    (!!user?.phoneNumber?.length && user?.phoneNumber?.length > 0);
+  const { settingsGroups, settings, settingsSearch } = useSettings({
+    isLoading: isLoadingUser || isLoadingParties,
+    options: {
+      excludeGroups: [SettingsType.contact, SettingsType.primary, SettingsType.favorites],
+      groups: {
+        [SettingsType.alerts]: {
+          title: 'Varslingsadresser',
+        },
+        [SettingsType.profiles]: {
+          title: 'Varslingsprofiler',
+        },
+        [SettingsType.persons]: {
+          title: 'Varslinger for andre personer',
+        },
+        [SettingsType.companies]: {
+          title: 'Varslinger for virksomheter',
+        },
+      },
+    },
+  });
 
   return (
     <PageBase>
-      <PageNav breadcrumbs={getBreadcrumbs(user?.party?.name || '')} />
-      <Heading size="xl">{t('profile.notifications.heading')}</Heading>
-
-      <Section spacing={6}>
-        <SettingsSection>
-          <List>
-            {userHasNotificationsActivated && (
-              <>
-                <SettingsItem
-                  icon={{ svgElement: MobileIcon, theme: 'default' }}
-                  title={t('profile.settings.sms_notifications')}
-                  value={user?.phoneNumber || 'Ingen telefonnummer registrert'}
-                  badge={<span data-size="xs">{t('profile.notifications.change_phone')}</span>}
-                  linkIcon
-                />
-                <Divider as="li" />
-                <SettingsItem
-                  icon={{ svgElement: PaperplaneIcon, theme: 'default' }}
-                  title={t('profile.notifications.email_for_alerts')}
-                  value={user?.email || ''}
-                  badge={<span data-size="xs">{t('profile.notifications.change_email')}</span>}
-                  linkIcon
-                />
-              </>
-            )}
-          </List>
-        </SettingsSection>
-        {userHasNotificationsActivated && <Heading size="lg">{t('profile.notifications.heading_per_actor')}</Heading>}
-        <AccountSettings />
-      </Section>
+      <Breadcrumbs items={getBreadcrumbs(t('sidebar.profile'), t('sidebar.profile.notifications'), search)} />
+      <Heading size="xl">Varslingsinnstillinger</Heading>
+      <Toolbar
+        search={{
+          ...settingsSearch,
+          placeholder: 'Søk i varslinger',
+        }}
+      />
+      {settings.length === 0 && <Heading size="lg">{t('profile.settings.no_results')}</Heading>}
+      <SettingsList items={settings} groups={settingsGroups} />
     </PageBase>
   );
 };

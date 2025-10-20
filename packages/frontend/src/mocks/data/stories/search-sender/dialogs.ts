@@ -1,6 +1,7 @@
 import { DialogStatus, type SearchDialogFieldsFragment, SystemLabel } from 'bff-types-generated';
 export const dialogs: SearchDialogFieldsFragment[] = [
     {
+        serviceResource: 'default',
         seenSinceLastContentUpdate: [],
         id: '1',
         endUserContext: {
@@ -38,6 +39,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         },
     },
     {
+        serviceResource: 'default',
         seenSinceLastContentUpdate: [],
         id: '2',
         endUserContext: {
@@ -75,6 +77,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         },
     },
     {
+        serviceResource: 'default',
         seenSinceLastContentUpdate: [],
         id: '3',
         endUserContext: {

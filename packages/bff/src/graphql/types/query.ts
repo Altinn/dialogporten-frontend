@@ -1,9 +1,10 @@
+import { logger } from '@digdir/dialogporten-node-logger';
 import { list, objectType, stringArg } from 'nexus';
 import config from '../../config.ts';
 import { SavedSearchRepository } from '../../db.ts';
 import {
   getNotificationAddressByOrgNumber,
-  getNotificationsSettings,
+  getNotificationsettingsForCurrentUser,
   getOrCreateProfile,
   getUserFromCore,
 } from '../functions/profile.ts';
@@ -34,7 +35,7 @@ export const Query = objectType({
         try {
           return await getOrganizationsFromRedis();
         } catch (error) {
-          console.error('Failed to fetch organizations from Redis:', error);
+          logger.error(error, 'Failed to fetch organizations from Redis:');
           throw new Error('Failed to fetch organizations');
         }
       },
@@ -54,15 +55,12 @@ export const Query = objectType({
       },
     });
 
-    t.field('notificationsettingsByUuid', {
-      type: 'NotificationSettingsResponse',
-      args: {
-        uuid: stringArg(),
-      },
-      resolve: async (_source, { uuid }, ctx) => {
+    t.field('notificationsettingsForCurrentUser', {
+      type: list('NotificationSettingsResponse'),
+      resolve: async (_source, _args, ctx) => {
         const { disableProfile } = config;
-        if (!disableProfile && uuid) {
-          const result = await getNotificationsSettings(uuid, ctx);
+        if (!disableProfile) {
+          const result = await getNotificationsettingsForCurrentUser(ctx);
           return result || null;
         }
         return null;

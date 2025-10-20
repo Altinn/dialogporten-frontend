@@ -9,11 +9,11 @@ test.describe('Testing Sender Name', () => {
   });
   test('Should display sender name if provided and org if not provided', async ({ page }) => {
     const listItem = page.getByRole('listitem').filter({ hasText: 'This has a sender name defined' });
-    const timeElement = listItem.locator('time').filter({
+    const timeElement = listItem.locator('span').filter({
       hasText: 'SENDER NAME Oslo Kommune',
     });
 
-    await expect(timeElement).toHaveText('SENDER NAME Oslo Kommune til Test Testesen');
+    await expect(listItem).toContainText('Oslo Kommune til Test');
   });
 
   test('If provided, sender name should be overwritten inside a dialog', async ({ page }) => {

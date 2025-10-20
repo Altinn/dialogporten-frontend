@@ -2,7 +2,7 @@ import { Heading, List, ListItem, type ListItemProps, PageBase, PageNav, Toolbar
 import { PlusIcon } from '@navikt/aksel-icons';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { usePageTitle } from '../../../utils/usePageTitle';
+import { usePageTitle } from '../../../hooks/usePageTitle';
 import { PageRoutes } from '../../routes';
 
 const dummyUsers: ListItemProps[] = [

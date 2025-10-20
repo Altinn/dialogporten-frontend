@@ -12,12 +12,18 @@ test.describe('Saved Searches', () => {
 
   test('should save, edit, and delete a search', async ({ page, baseURL }) => {
     await page.getByRole('button', { name: 'Prøv ny innboks' }).click();
-    await page.getByRole('button', { name: 'Close tour' }).click();
+    await page.getByRole('button', { name: 'Lukk' }).click();
 
     const toolbarArea = page.getByTestId('inbox-toolbar');
     await toolbarArea.getByRole('button', { name: 'add' }).click();
     await toolbarArea.getByText('Velg avsender').locator('visible=true').click();
-    await toolbarArea.getByLabel('Digitaliseringsdirektoratet').locator('visible=true').check();
+    await page
+      .getByTestId('filter-base-toolbar-filter-org')
+      .locator('span')
+      .filter({ hasText: 'Digitaliseringsdirektoratet' })
+      .nth(1)
+      .click();
+
     await page.keyboard.press('Escape');
 
     await page.getByRole('button', { name: 'Lagre søk' }).click();

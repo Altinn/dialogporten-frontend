@@ -1,7 +1,8 @@
 import type { FilterState } from '@altinn/altinn-components/dist/types/lib/components/Toolbar/Toolbar';
-import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
+import { keepPreviousData } from '@tanstack/react-query';
 import type { DialogStatus, GetAllDialogsForPartiesQuery, PartyFieldsFragment, SystemLabel } from 'bff-types-generated';
 import { useRef } from 'react';
+import { useAuthenticatedInfiniteQuery } from '../../auth/useAuthenticatedInfiniteQuery.tsx';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
 import { normalizeFilterDefaults } from '../../pages/Inbox/filters.ts';
@@ -53,7 +54,7 @@ export const useDialogs = ({ parties, viewType, filterState, search, queryKey }:
     searchQuery: search,
   });
 
-  const query = useInfiniteQuery<GetAllDialogsForPartiesQuery>({
+  const query = useAuthenticatedInfiniteQuery<GetAllDialogsForPartiesQuery>({
     queryKey: [queryKey, partyIds, viewTypeKey, queryVariables, search],
     staleTime: 1000 * 60 * 10,
     retry: 3,

@@ -8,40 +8,50 @@ const envVariables = z.object({
     .enum(['true', 'false'])
     .transform((val) => val === 'true')
     .default('false'),
+  OTEL_EXPORTER_OTLP_ENDPOINT: z.string().optional(),
 });
 
 const env = envVariables.parse(process.env);
 
 console.info(`node-logger: Log level set to ${env.LOG_LEVEL}`);
 
-const defaultOptions: pino.LoggerOptions = {
-  formatters: {
-    level: (label: string) => {
-      // specify that we want to use the log level label instead of the value for easier consumption by third party services
-      // label will be the actual textual representation of the log level (e.g. "info", "debug", "error", etc.)
-      return { level: label };
-    },
-  },
-  level: env.LOG_LEVEL,
+const openTelemetryTransport = {
+  target: 'pino-opentelemetry-transport',
 };
 
-const prettyTransport = pino.transport({
+const pinoPrettyTransport = {
   target: 'pino-pretty',
   options: {
-    destination: 1, // stdout
+    destination: 1,
     colorize: true,
     levelFirst: true,
   },
-});
+};
 
-let pinoLogger: pino.Logger;
-
-pinoLogger = pino(
-  {
-    ...defaultOptions,
+const jsonTransport = {
+  target: 'pino/file',
+  options: {
+    destination: 1,
   },
-  env.LOGGER_FORMAT === 'json' ? undefined : prettyTransport,
-);
+};
+
+const consoleTransport = env.LOGGER_FORMAT === 'json' ? jsonTransport : pinoPrettyTransport;
+
+// biome-ignore lint/suspicious/noExplicitAny: poor typings from pino
+let transports: any;
+
+// Configure transports based on OTEL endpoint availability
+if (env.OTEL_EXPORTER_OTLP_ENDPOINT) {
+  console.info('node-logger: Using console and OpenTelemetry transports');
+  transports = pino.transport({
+    targets: [openTelemetryTransport, consoleTransport],
+  });
+} else {
+  console.info('node-logger: Using console transport only');
+  transports = pino.transport(consoleTransport);
+}
+
+const pinoLogger = pino({ level: env.LOG_LEVEL }, transports);
 
 export const createContextLogger = (context: Record<string | number | symbol, unknown>) => {
   const child = pinoLogger.child(context);

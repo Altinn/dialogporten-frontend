@@ -1,7 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import { useEffect, useMemo } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
+import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import {
   getSelectedAllPartiesFromQueryParams,
@@ -11,11 +11,10 @@ import { useGlobalState } from '../../useGlobalState.ts';
 import { graphQLSDK } from '../queries.ts';
 import { normalizeFlattenParties } from '../utils/normalizeFlattenParties.ts';
 
-export type SelectedPartyType = 'company' | 'person';
+export type ProfileType = 'company' | 'person' | 'neutral';
 
 interface UsePartiesOutput {
   parties: PartyFieldsFragment[];
-  deletedParties: PartyFieldsFragment[];
   isSuccess: boolean;
   isError: boolean;
   isLoading: boolean;
@@ -25,13 +24,8 @@ interface UsePartiesOutput {
   setSelectedPartyIds: (parties: string[], allOrganizationsSelected: boolean) => void;
   currentEndUser: PartyFieldsFragment | undefined;
   allOrganizationsSelected: boolean;
-  selectedProfile: SelectedPartyType;
+  selectedProfile: ProfileType;
   partiesEmptyList: boolean;
-}
-
-interface PartiesResult {
-  parties: PartyFieldsFragment[];
-  deletedParties: PartyFieldsFragment[];
 }
 
 const stripQueryParamsForParty = (searchParamString: string) => {
@@ -41,14 +35,9 @@ const stripQueryParamsForParty = (searchParamString: string) => {
   return params.toString();
 };
 
-const fetchParties = async (): Promise<PartiesResult> => {
+const fetchParties = async (): Promise<PartyFieldsFragment[]> => {
   const response = await graphQLSDK.parties();
-  const normalizedParties = normalizeFlattenParties(response.parties);
-
-  return {
-    parties: normalizedParties.filter((party) => !party.isDeleted),
-    deletedParties: normalizedParties.filter((party) => party.isDeleted),
-  };
+  return normalizeFlattenParties(response.parties);
 };
 
 const createPartyParams = (searchParamString: string, key: string, value: string): URLSearchParams => {
@@ -76,7 +65,7 @@ export const useParties = (): UsePartiesOutput => {
     }
   };
 
-  const { data, isLoading, isSuccess, isError } = useQuery<PartiesResult>({
+  const { data, isLoading, isSuccess, isError } = useAuthenticatedQuery<PartyFieldsFragment[]>({
     queryKey: [QUERY_KEYS.PARTIES],
     queryFn: fetchParties,
     staleTime: Number.POSITIVE_INFINITY,
@@ -109,24 +98,24 @@ export const useParties = (): UsePartiesOutput => {
       const params = createPartyParams(searchParamsString, 'party', encodeURIComponent(partyIds[0]));
       handleChangSearchParams(params);
     }
-    handleSetSelectedParties(data?.parties.filter((party) => partyIds.includes(party.party)) ?? []);
+    handleSetSelectedParties(data?.filter((party) => partyIds.includes(party.party)) ?? []);
   };
 
   const selectAllOrganizations = () => {
     const allOrgParties =
-      data?.parties?.filter((party) => party.party.includes('organization')).map((party) => party.party) ?? [];
+      data?.filter((party) => party.party.includes('organization')).map((party) => party.party) ?? [];
     setSelectedPartyIds(allOrgParties, true);
   };
 
   const getPartyFromURL = () => {
     const partyFromQuery = getSelectedPartyFromQueryParams(searchParams);
     if (partyFromQuery) {
-      return data?.parties?.find((party) => party.party === partyFromQuery);
+      return data?.find((party) => party.party === partyFromQuery);
     }
   };
 
   const getEndUserParty = () => {
-    return data?.parties?.find((party) => party.isCurrentEndUser);
+    return data?.find((party) => party.isCurrentEndUser);
   };
 
   const handlePartySelection = () => {
@@ -160,18 +149,18 @@ export const useParties = (): UsePartiesOutput => {
   // biome-ignore lint/correctness/useExhaustiveDependencies: Full control of what triggers this code is needed
   useEffect(() => {
     if (isSuccess) {
-      if (data?.parties?.length > 0) {
+      if (data?.length > 0) {
         handlePartySelection();
       } else {
         setPartiesEmptyList(true);
       }
     }
-  }, [isSuccess, data?.parties, location.search]);
+  }, [isSuccess, data, location.search]);
 
   const isCompanyProfile =
     isCompanyFromParams || allOrganizationsSelected || selectedParties?.[0]?.partyType === 'Organization';
 
-  const selectedProfile = (isCompanyProfile ? 'company' : 'person') as 'company' | 'person';
+  const selectedProfile = allOrganizationsSelected ? 'neutral' : isCompanyProfile ? 'company' : 'person';
 
   return {
     isLoading,
@@ -181,9 +170,8 @@ export const useParties = (): UsePartiesOutput => {
     selectedPartyIds: selectedParties.map((party) => party.party) ?? [],
     setSelectedParties: handleSetSelectedParties,
     setSelectedPartyIds,
-    parties: data?.parties ?? [],
-    currentEndUser: data?.parties.find((party) => party.isCurrentEndUser),
-    deletedParties: data?.deletedParties ?? [],
+    parties: data ?? [],
+    currentEndUser: data?.find((party) => party.isCurrentEndUser),
     allOrganizationsSelected,
     selectedProfile,
     partiesEmptyList,

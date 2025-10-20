@@ -1,172 +1,215 @@
 import {
   AccountList,
+  AccountListItemDetails,
+  type AccountListItemProps,
   Heading,
-  type MenuOptionProps,
   PageBase,
   PageNav,
   Section,
+  type SettingsItemProps,
   Toolbar,
-  Typography,
 } from '@altinn/altinn-components';
-import type { PartyFieldsFragment } from 'bff-types-generated';
-import React from 'react';
-import { useState } from 'react';
+import type { AccountListItemType } from '@altinn/altinn-components/dist/types/lib/components/Account/AccountListItem';
+import { BellIcon, HashtagIcon, InboxIcon } from '@navikt/aksel-icons';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { Link, type LinkProps, useLocation } from 'react-router-dom';
 import { useProfile } from '..';
 import { useParties } from '../../../api/hooks/useParties';
-import { FeatureFlagKeys, useFeatureFlag } from '../../../featureFlags';
-import { usePageTitle } from '../../../utils/usePageTitle';
-import styles from './partiesOverviewPage.module.css';
-import { getBreadcrumbs, partyFieldFragmentToAccountListItem } from './partyFieldToAccountList';
-
-export type FilterState = Record<string, (string | number)[] | undefined>;
+import {
+  type PartyItemProp,
+  formatNorwegianId,
+  useAccounts,
+} from '../../../components/PageLayout/Accounts/useAccounts';
+import { usePageTitle } from '../../../hooks/usePageTitle';
+import { useProfileOnboarding } from '../../../onboardingTour/useProfileOnboarding';
+import { PageRoutes } from '../../routes.ts';
+import { getBreadcrumbs } from '../Settings/Settings.tsx';
+import { useSettings } from '../Settings/useSettings.tsx';
+import { useAccountFilters } from '../useAccountFilters.tsx';
 
 export const PartiesOverviewPage = () => {
-  const [searchValue, setSearchValue] = useState('');
-  const [filterState, setFilterState] = React.useState<FilterState>({});
-  const DisableFavoriteGroups = useFeatureFlag(FeatureFlagKeys.DisableFavoriteGroups);
-
-  const showDeletedParties = filterState['parties-filter']?.includes('Slettede aktører');
-  const showGroups = filterState['parties-filter']?.includes('Slettede aktører');
-  const showCompanies = filterState['parties-filter']?.includes('Virksomheter');
-  const showPersons = filterState['parties-filter']?.includes('Personer');
-  const noFiltersSelected = !filterState['parties-filter'] || filterState['parties-filter']?.length === 0;
-  const { groups, user, addFavoriteParty, deleteFavoriteParty, favoritesGroup } = useProfile();
-  const navigate = useNavigate();
-  const endUserName = `${user?.party?.person?.firstName || ''} ${user?.party?.person?.lastName}`;
-  const { parties: normalParties, isLoading: isLoadingParties, deletedParties } = useParties();
-  const [expandedItems, setExpandedItems] = useState<string[]>([]);
   const { t } = useTranslation();
-  usePageTitle({ baseTitle: t('component.parties_overview') });
+  const { search } = useLocation();
+  const { getAccountAlertSettings, settings } = useSettings();
+  const { addFavoriteParty, deleteFavoriteParty } = useProfile();
+  const { parties, selectedParties, allOrganizationsSelected, isLoading } = useParties();
+  const [searchValue, setSearchValue] = useState<string>('');
+  const [expandedItem, setExpandedItem] = useState<string>('');
 
-  const getPartiesToShow = () => {
-    let partiesToShow = [] as PartyFieldsFragment[];
-    if (noFiltersSelected) {
-      partiesToShow = normalParties;
+  const { filters, getFilterLabel, filterState, setFilterState, filteredParties, isSearching } = useAccountFilters({
+    searchValue,
+    parties,
+  });
+
+  const { accounts, accountGroups } = useAccounts({
+    parties: filteredParties,
+    availableParties: parties,
+    selectedParties,
+    allOrganizationsSelected,
+    isLoading,
+    options: {
+      showFavorites: !isSearching,
+    },
+  });
+
+  usePageTitle({ baseTitle: t('component.parties_settings') });
+  useProfileOnboarding({ isLoading, pageType: 'parties' });
+
+  const toggleExpanded = (id: string) => setExpandedItem((currentId) => (currentId === id ? '' : id));
+
+  const onToggleFavourite = async (partyUuid: string, isFavorite?: boolean) => {
+    if (isFavorite) {
+      await deleteFavoriteParty(partyUuid);
+    } else {
+      await addFavoriteParty(partyUuid);
     }
-    if (showGroups && !DisableFavoriteGroups) {
-      return partiesToShow.filter((party) => party.partyType === 'Group');
-    }
-    if (showCompanies) {
-      partiesToShow = [...partiesToShow, ...normalParties.filter((party) => party.partyType === 'Organization')];
-    }
-    if (showPersons) {
-      partiesToShow = [...partiesToShow, ...normalParties.filter((party) => party.partyType === 'Person')];
-    }
-    if (showDeletedParties) {
-      partiesToShow = [...partiesToShow, ...deletedParties];
-    }
-    if (searchValue) {
-      return partiesToShow.filter((party) => party.name.toLowerCase().includes(searchValue.toLowerCase()));
-    }
-    return partiesToShow;
   };
 
-  const toggleExpanded = (id: string) => {
-    setExpandedItems((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]));
+  const getPartyButtons = (isCurrentEndUser: boolean, partyId: string) => {
+    const inboxLink = PageRoutes.inbox + (isCurrentEndUser ? '' : `?party=${partyId}`);
+    return [{ label: t('parties.go_to_inbox'), as: (props: LinkProps) => <Link {...props} to={inboxLink} /> }];
   };
 
-  const isExpanded = (id: string) => {
-    return expandedItems.includes(id);
+  const getPartyNotificationsSettings = (id: string): SettingsItemProps[] => {
+    if (id && typeof getAccountAlertSettings === 'function') {
+      const settings = getAccountAlertSettings(id);
+      return [
+        {
+          ...settings,
+          id: 'mobile',
+          icon: BellIcon,
+          title: settings.value
+            ? t('profile.notifications.my_notifications')
+            : t('profile.notifications.no_notifications'),
+        },
+      ];
+    }
+    return [];
   };
 
-  const parties = getPartiesToShow();
-  if (isLoadingParties) {
-    return (
-      <div className={styles.noResults}>
-        <Typography>Insert Skeleton here</Typography>
-      </div>
-    );
-  }
-
-  const accountListGroups = {
-    primary: {
-      title: 'Deg selv',
-    },
-    favourites: {
-      title: 'Favoritter',
-    },
-    persons: {
-      title: 'Favoritter',
-    },
-    ...(!DisableFavoriteGroups ? { groups: { title: 'Grupper' } } : {}),
-    secondary: {
-      title: 'Andre kontoer',
-    },
+  const getCompanySettings = (id: string): SettingsItemProps[] => {
+    return [
+      ...getPartyNotificationsSettings(id),
+      {
+        id: 'orgNr',
+        icon: HashtagIcon,
+        title: t('profile.organization_number'),
+        value: formatNorwegianId(id, false),
+      },
+    ];
   };
 
-  const filterOptions = [
-    {
-      groupId: '2',
-      type: 'checkbox',
-      label: 'Personer',
-      value: 'Personer',
-    },
-    {
-      groupId: '2',
-      type: 'checkbox',
-      label: 'Virksomheter',
-      value: 'Virksomheter',
-    },
-    {
-      groupId: '3',
-      type: 'checkbox',
-      label: 'Slettede aktører',
-      value: 'Slettede aktører',
-    },
-  ];
+  const getPersonSettings = (id: string, isCurrentEndUser: boolean): SettingsItemProps[] => {
+    return [
+      ...getPartyNotificationsSettings(id),
+      {
+        id: 'snr',
+        icon: HashtagIcon,
+        title: t('profile.birth_number'),
+        value: formatNorwegianId(id, isCurrentEndUser),
+      },
+    ];
+  };
 
-  if (!DisableFavoriteGroups) {
-    filterOptions.push({
-      groupId: '1',
-      type: 'checkbox',
-      label: 'Grupper',
-      value: 'Grupper',
-    });
-  }
+  const PartyDetails = ({
+    type,
+    isCurrentEndUser,
+    id,
+  }: { type: AccountListItemType; isCurrentEndUser: boolean; id: string }) => {
+    if (isCurrentEndUser) {
+      const contactSettings = settings.filter((s) => s.groupId === 'contact');
+      return (
+        <AccountListItemDetails
+          color="person"
+          buttons={getPartyButtons(isCurrentEndUser, id)}
+          settings={contactSettings}
+        />
+      );
+    }
+
+    if (type === 'company') {
+      return (
+        <AccountListItemDetails
+          color="company"
+          settings={getCompanySettings(id)}
+          buttons={getPartyButtons(isCurrentEndUser, id)}
+        />
+      );
+    }
+
+    if (type === 'person') {
+      return (
+        <AccountListItemDetails
+          color="person"
+          settings={getPersonSettings(id, isCurrentEndUser)}
+          buttons={getPartyButtons(isCurrentEndUser, id)}
+        />
+      );
+    }
+
+    return null;
+  };
+
+  const mapAccountToPartyListItem = (account: PartyItemProp): AccountListItemProps => {
+    const { label: _, variant: __, ...party } = account;
+    const itemId = account.id + account.groupId;
+    return {
+      ...party,
+      groupId: String(party.groupId),
+      favourite: party.isFavorite,
+      isCurrentEndUser: party.isCurrentEndUser,
+      isDeleted: party.isDeleted,
+      collapsible: true,
+      expanded: expandedItem === itemId,
+      onClick: () => toggleExpanded(itemId),
+      highlightWords: (searchValue ?? '').split(' '),
+      as: 'button',
+      title: party.name,
+      onToggleFavourite: () => onToggleFavourite(party.uuid, party.isFavorite),
+      children: <PartyDetails type={party.type} isCurrentEndUser={party.isCurrentEndUser ?? false} id={party.id} />,
+      contextMenu: {
+        id: party.groupId + party.id + '-menu',
+        items: [
+          {
+            id: party.groupId + 'inbox',
+            groupId: 'inbox',
+            icon: InboxIcon,
+            title: t('profile.go_to_inbox'),
+            as: (props) => <Link to={'/?party=' + party.id} {...props} />,
+          },
+        ],
+      },
+    };
+  };
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  const accountListItems = useMemo(() => accounts.map(mapAccountToPartyListItem), [accounts]);
+  const hits = accountListItems.map((a) => ({ ...a, groupId: 'search' }));
+  const searchGroup = {
+    search: { title: t('search.hits', { count: accountListItems.length }) },
+  };
 
   return (
     <PageBase color="person">
-      <PageNav breadcrumbs={getBreadcrumbs(endUserName)} />
+      <PageNav breadcrumbs={getBreadcrumbs(t('sidebar.profile'), t('sidebar.profile.parties'), search)} />
       <Section as="header" spacing={6}>
-        <Heading size="xl">{t('sidebar.profile.parties')}</Heading>
+        <Heading size="xl">{t('component.parties_settings')}</Heading>
         <Toolbar
           search={{
             name: 'party-search',
-            placeholder: 'Søk etter aktør',
+            placeholder: t('parties.search'),
             value: searchValue,
             onChange: (e) => setSearchValue((e.target as HTMLInputElement).value),
             onClear: () => setSearchValue(''),
           }}
+          getFilterLabel={getFilterLabel}
           filterState={filterState}
           onFilterStateChange={setFilterState}
-          filters={[
-            {
-              name: 'parties-filter',
-              label: filterState['parties-filter']?.map((i) => i.toString()).join(', ') || 'Alle aktører',
-              options: filterOptions as MenuOptionProps[],
-              optionType: 'checkbox',
-            },
-          ]}
+          filters={filters}
         />
-      </Section>
-
-      <Section spacing={6}>
-        <AccountList
-          groups={accountListGroups}
-          items={partyFieldFragmentToAccountListItem({
-            parties,
-            isExpanded,
-            toggleExpanded,
-            user,
-            favoritesGroup,
-            addFavoriteParty,
-            deleteFavoriteParty,
-            groups,
-            navigate,
-          })}
-        />
+        {isSearching && hits.length === 0 && <Heading size="lg">{t('profile.settings.no_results')}</Heading>}
+        <AccountList groups={isSearching ? searchGroup : accountGroups} items={isSearching ? hits : accountListItems} />
       </Section>
     </PageBase>
   );

@@ -13,14 +13,12 @@ param resources = {
     memory: '2Gi'
 }
 param workloadProfileName = 'Consumption'
-param logoutRedirectUri = 'https://tt02.altinn.no'
+param logoutRedirectUri = 'https://tt02.altinn.no/ui/Authentication/Logout'
 
-param platformExchangeTokenEndpointUrl = 'https://platform.tt02.altinn.no/authentication/api/v1/exchange/id-porten?test=true'
-param platformProfileApiUrl = 'https://platform.tt02.altinn.no/profile/api/v1/'
+param platformBaseUrl = 'https://platform.tt02.altinn.no'
 
 param ocPApimSubscriptionKey = readEnvironmentVariable('OCP_APIM_SUBSCRIPTION_KEY')
 
 // secrets
 param environmentKeyVaultName = readEnvironmentVariable('ENVIRONMENT_KEY_VAULT_NAME')
 param containerAppEnvironmentName = readEnvironmentVariable('CONTAINER_APP_ENVIRONMENT_NAME')
-param appInsightConnectionString = readEnvironmentVariable('APP_INSIGHTS_CONNECTION_STRING')

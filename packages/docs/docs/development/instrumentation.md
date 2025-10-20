@@ -5,7 +5,7 @@ This document describes the observability setup for the Dialogporten Frontend ap
 ## Overview
 
 The application uses a hybrid approach to observability:
-- **BFF**: OpenTelemetry (OTEL) with Azure Monitor exporter
+- **BFF**: OpenTelemetry (OTEL) with OTLP exporter to Azure Container Apps OTEL Collector
 - **Frontend**: Application Insights SDK directly
 
 Both components are configured to work together, providing end-to-end tracing correlation through trace IDs.
@@ -14,35 +14,53 @@ Both components are configured to work together, providing end-to-end tracing co
 
 ### Technology Stack
 - **OpenTelemetry SDK**: Core instrumentation framework
-- **Azure Monitor Exporter**: Sends telemetry data to Application Insights
+- **OTLP Exporter**: Sends telemetry data to Azure Container Apps OTEL Collector
+- **Pino OpenTelemetry Transport**: Automatic log instrumentation
 - **Custom Instrumentations**: Additional OTEL instrumentations for specific libraries
 
 ### Configuration
 
-The BFF uses OpenTelemetry with the Azure Monitor exporter configured in `packages/bff/src/instrumentation.ts`:
+The BFF uses OpenTelemetry with the OTLP exporter configured in `packages/bff/src/instrumentation.ts`:
 
 ```typescript
-import { useAzureMonitor } from '@azure/monitor-opentelemetry';
-import { registerInstrumentations } from '@opentelemetry/instrumentation';
+import { NodeSDK } from '@opentelemetry/sdk-node';
+import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
+import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http';
 ```
 
 #### Key Features:
-1. **Azure Monitor Integration**: Direct export to Application Insights
+1. **OTLP Integration**: Exports to Azure Container Apps OTEL Collector which forwards to Application Insights
 2. **Resource Attribution**: Custom service name and instance ID
-3. **Multi-Library Support**: HTTP, GraphQL, Redis, and Fastify instrumentation
+3. **Multi-Library Support**: HTTP, GraphQL, Redis, PostgreSQL, and Fastify instrumentation
 4. **Trace ID Propagation**: Adds `X-Trace-Id` header to all responses
+5. **Automatic Log Instrumentation**: All logs and exceptions are sent through OpenTelemetry
 
 #### Enabled Instrumentations:
 - **HTTP Instrumentation**: Tracks incoming/outgoing HTTP requests
 - **GraphQL Instrumentation**: Monitors GraphQL operations with span merging
 - **IORedis Instrumentation**: Tracks Redis operations
 - **Fastify OTEL Instrumentation**: Framework-specific instrumentation
-- **PostgreSQL Instrumentation**: Database query tracking (via Azure Monitor)
+- **PostgreSQL Instrumentation**: Database query tracking
 
 #### Filtering and Optimization:
 - **Health Check Filtering**: Excludes `/api/liveness` and `/api/readiness` endpoints
 - **OPTIONS Request Filtering**: Ignores CORS preflight requests
 - **GraphQL Optimization**: Ignores trivial resolver spans and merges related spans
+
+### Logging Integration
+
+The BFF uses Pino logger with OpenTelemetry transport for automatic log instrumentation:
+
+#### Production Mode (with OTEL endpoint):
+- All logs (trace, debug, info, warn, error, fatal) are sent through OpenTelemetry
+- Logs are automatically correlated with traces using trace context
+- No console output - all logs go through OTLP exporter
+
+#### Local Development Mode (without OTEL endpoint):
+- Logs are output to console with pretty formatting or json formatting
+- No telemetry is sent to remote collectors
+
+The logger automatically detects the presence of `OTEL_EXPORTER_OTLP_ENDPOINT` environment variable to determine which mode to use.
 
 ### Trace ID Propagation
 
@@ -136,7 +154,7 @@ sequenceDiagram
     BFF->>Frontend: Response + X-Trace-Id header
     Note over Frontend: Extract trace ID from header
     Frontend->>Application Insights: Dependency telemetry with backend trace ID
-    BFF->>Application Insights: Span telemetry via Azure Monitor
+    BFF->>Application Insights: Span telemetry via OTLP → OTEL Collector → App Insights
     Note over Application Insights: Correlated telemetry with matching trace IDs
 ```
 
@@ -144,12 +162,14 @@ sequenceDiagram
 
 ### BFF Environment Variables
 ```bash
-# Application Insights connection string
-APPLICATION_INSIGHTS_CONNECTION_STRING="InstrumentationKey=..."
+# OpenTelemetry OTLP endpoint (automatically set by Azure Container Apps)
+OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4318"
 
-# Enable/disable instrumentation
-APPLICATION_INSIGHTS_ENABLED=true
+# OpenTelemetry protocol (optional, defaults to http/protobuf)
+OTEL_EXPORTER_OTLP_PROTOCOL="http/protobuf"  # Options: http/protobuf, http/json, grpc
 ```
+
+**Note**: When `OTEL_EXPORTER_OTLP_ENDPOINT` is not set, the BFF runs in local development mode with console output for logs and traces.
 
 ### Frontend Configuration
 The frontend receives its instrumentation key through a global variable. For details on how to add new environment variables, see the [Environment Variables](./environment+variables.md) documentation.

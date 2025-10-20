@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
 import type { OrganizationFieldsFragment, OrganizationsQuery } from 'bff-types-generated';
 import { fetchOrganizations } from '../../api/queries.ts';
+import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 
 interface UseOrganizationsOutput {
@@ -10,7 +10,7 @@ interface UseOrganizationsOutput {
 }
 
 export const useOrganizations = (): UseOrganizationsOutput => {
-  const { data, isLoading, isSuccess } = useQuery<OrganizationsQuery>({
+  const { data, isLoading, isSuccess } = useAuthenticatedQuery<OrganizationsQuery>({
     queryKey: [QUERY_KEYS.ORGANIZATIONS],
     queryFn: fetchOrganizations,
     retry: 3,

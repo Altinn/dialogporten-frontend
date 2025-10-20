@@ -15,12 +15,11 @@ test('should navigate to inbox when account is chosen from global menu', async (
   }
 
   expect(page.url()).toEqual(appURLDrafts);
-  /* chose all organizations from the global menu */
+
   await page.getByRole('button', { name: 'Meny' }).first().click();
   await page.getByRole('banner').getByRole('button', { name: 'Test Testesen' }).click();
-  await page.locator('a').filter({ hasText: 'Alle virksomheter' }).click();
+  await page.locator('a').filter({ hasText: 'Firma AS' }).click();
 
-  expect(new URL(page.url()).searchParams.get('allParties')).toBe('true');
-  expect(new URL(page.url()).searchParams.get('party')).toBe(null);
+  expect(new URL(page.url()).searchParams.get('party')).toBe('urn%3Aaltinn%3Aorganization%3Aidentifier-no%3A1');
   expect(matchPathName(page.url(), appURLInbox)).toBe(true);
 });

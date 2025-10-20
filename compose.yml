@@ -66,7 +66,7 @@ services:
     command: >
       redis-server --save 20 1 --loglevel warning --requirepass mysecretpassword
     healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
+      test: ["CMD", "redis-cli", "ping"]
       interval: 2s
       timeout: 5s
       retries: 5
@@ -77,7 +77,7 @@ services:
     image: redis/redisinsight
     environment:
       RI_APP_PORT: 80
-      RI_APP_HOST: '0.0.0.0'
+      RI_APP_HOST: "0.0.0.0"
     ports:
       - 8080:80
     labels:
@@ -97,7 +97,7 @@ services:
       POSTGRES_PASSWORD: mysecretpassword
       POSTGRES_DB: dialogporten
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres -d dialogporten" ]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d dialogporten"]
       interval: 10s
       timeout: 20s
       retries: 5
@@ -117,6 +117,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.pgadmin4.rule=Host(`pgadmin4.localhost`)"
+
   bff:
     container_name: bff
     restart: always
@@ -135,8 +136,12 @@ services:
       PORT: 80
       NODE_ENV: production
       COOKIE_SECURE: false
-      APPLICATIONINSIGHTS_CONNECTION_STRING: ${APPLICATIONINSIGHTS_CONNECTION_STRING}
-      APPLICATIONINSIGHTS_ENABLED: ${APPLICATIONINSIGHTS_ENABLED}
+      # OpenTelemetry configuration (connect to Jaeger on host machine)
+      OTEL_NAMESPACE: ${OTEL_NAMESPACE}
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT}
+      OTEL_EXPORTER_OTLP_PROTOCOL: ${OTEL_EXPORTER_OTLP_PROTOCOL}
+      OTEL_RESOURCE_ATTRIBUTES: ${OTEL_RESOURCE_ATTRIBUTES}
+      APP_CONFIG_CONNECTION_STRING: ${APP_CONFIG_CONNECTION_STRING}
       ENABLE_INIT_SESSION_ENDPOINT: true
       DISABLE_PROFILE: false
     labels:
@@ -160,6 +165,13 @@ services:
         - action: sync+restart
           path: ./packages/bff-types-generated/
           target: /app/packages/bff-types-generated/
+          ignore:
+            - node_modules/
+            - .azure/
+            - .git/
+        - action: rebuild
+          path: ./packages/node-logger/
+          target: /app/packages/node-logger/
           ignore:
             - node_modules/
             - .azure/

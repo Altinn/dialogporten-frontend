@@ -7,7 +7,7 @@ export const parties: PartyFieldsFragment[] = [
     subParties: [],
     isAccessManager: true,
     isMainAdministrator: false,
-    name: 'TEST TESTESEN',
+    name: 'TESTESEN TEST',
     isCurrentEndUser: true,
     isDeleted: false,
     hasOnlyAccessToSubParties: false,   

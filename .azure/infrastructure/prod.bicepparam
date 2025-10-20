@@ -29,13 +29,14 @@ param applicationGatewayConfiguration = {
   }
   autoscaleConfiguration: {
     minCapacity: 1
-    maxCapacity: 2
+    maxCapacity: 4
   }
   hostName: 'af.altinn.no'
   sslCertificate: {
     keyVaultName: readEnvironmentVariable('CERTIFICATE_KEY_VAULT_NAME')
     secretKey: 'af-altinn-no'
   }
+  zones: ['1', '2']
 }
 
 // PostgreSQL Configuration

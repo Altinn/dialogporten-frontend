@@ -1,10 +1,11 @@
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { keepPreviousData } from '@tanstack/react-query';
 import type {
   CountableDialogFieldsFragment,
   GetAllDialogsForCountQuery,
   PartyFieldsFragment,
 } from 'bff-types-generated';
 import { useMemo } from 'react';
+import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { graphQLSDK } from '../queries.ts';
 import { getPartyIds, getQueryVariables } from '../utils/dialog.ts';
@@ -24,7 +25,7 @@ export const useDialogsCount = (parties?: PartyFieldsFragment[], viewType?: Inbo
   const partiesToUse = parties ? parties : selectedParties;
   const partyIds = getPartyIds(partiesToUse);
 
-  const { data } = useQuery<GetAllDialogsForCountQuery>({
+  const { data } = useAuthenticatedQuery<GetAllDialogsForCountQuery>({
     queryKey: [QUERY_KEYS.COUNT_DIALOGS, partyIds, viewType],
     staleTime: 1000 * 60 * 10,
     retry: 3,

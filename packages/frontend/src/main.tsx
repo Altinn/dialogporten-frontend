@@ -8,8 +8,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App.tsx';
 import { AuthProvider } from './components/Login/AuthContext.tsx';
 import { LoggerContextProvider } from './contexts/LoggerContext.tsx';
-import { FeatureFlagProvider, featureFlags } from './featureFlags';
+import { FeatureFlagProvider, loadFeatureFlags } from './featureFlags';
 import { OnboardingTourProvider } from './onboardingTour';
+import { logError } from './utils/errorLogger.ts';
 
 declare const __APP_VERSION__: string;
 console.info('App Version:', __APP_VERSION__);
@@ -25,17 +26,42 @@ async function enableMocking() {
   }
 }
 
+async function loadFeatures() {
+  try {
+    if (window.location.pathname === '/logout') {
+      return {
+        'profile.enableRoutes': false,
+        'globalMenu.enableProfileLink': false,
+        'globalMenu.enableAccessManagementLink': false,
+        'profile.enableNotificationsPage': false,
+        'debug.test': false,
+      };
+    }
+    return await loadFeatureFlags();
+  } catch (error) {
+    logError(
+      error as Error,
+      {
+        context: 'main.loadFeatures',
+        date: new Date().toISOString(),
+      },
+      'Error loading feature flags',
+    );
+    return {};
+  }
+}
 const element = document.getElementById('root');
+
 if (element) {
   const root = ReactDOM.createRoot(element);
   const queryClient = new QueryClient();
-  enableMocking().then(() => {
+  Promise.all([enableMocking(), loadFeatures()]).then(([_, initialFlags]) => {
     root.render(
       <React.StrictMode>
         <LoggerContextProvider>
           <QueryClientProvider client={queryClient}>
             <BrowserRouter>
-              <FeatureFlagProvider flags={featureFlags}>
+              <FeatureFlagProvider initialFlags={initialFlags}>
                 <AuthProvider>
                   <RootProvider>
                     <OnboardingTourProvider>

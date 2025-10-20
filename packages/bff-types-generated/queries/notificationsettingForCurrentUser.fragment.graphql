@@ -1,0 +1,7 @@
+fragment NotificationsettingForCurrentUserFields on NotificationSettingsResponse {
+  emailAddress
+  phoneNumber
+  resourceIncludeList
+  userId
+  partyUuid
+}

@@ -11,7 +11,7 @@ export const QUERY_KEYS = {
   MAIN_CONTENT_REFERENCE: 'mainContentReference',
   SAVED_SEARCHES: 'savedSearches',
   PROFILE: 'profile',
-  NOTIFICATIONSETTINGSFORPARTY: 'notificationsettingsforparty',
+  NOTIFICATION_SETTINGS_FOR_CURRENT_USER: 'notificationSettingsForCurrentUser',
   PROFILE_PARTIES_WITH_NOTIFICATION_SETTINGS: 'profilePartiesWithNotificationSettings',
   ORGANIZATIONS: 'organizations',
   SEARCH_VALUE: 'searchValue',
@@ -21,4 +21,5 @@ export const QUERY_KEYS = {
   SET_UNDO_LABEL_LOADING: 'setUndoLabelLoading',
   ERROR_STATE: 'errorState',
   SHOW_TOUR: 'showTour',
+  SHOW_PROFILE_TOUR: 'showProfileTour',
 };

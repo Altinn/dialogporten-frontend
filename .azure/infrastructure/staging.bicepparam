@@ -34,6 +34,8 @@ param applicationGatewayConfiguration = {
     keyVaultName: readEnvironmentVariable('CERTIFICATE_KEY_VAULT_NAME')
     secretKey: 'star-tt-altinn-no'
   }
+  // remove after testing
+  zones: ['1', '2']
 }
 
 // PostgreSQL Configuration

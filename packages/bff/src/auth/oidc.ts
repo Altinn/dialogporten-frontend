@@ -291,9 +291,9 @@ export const handleAuthRequest = async (request: FastifyRequest, reply: FastifyR
     reply.redirect('/');
   } catch (e: unknown) {
     if (axios.isAxiosError(e)) {
-      console.error('handleAuthRequest error e.data', e.response?.data);
+      logger.error({ data: e.response?.data }, 'handleAuthRequest error e.data');
     } else {
-      console.error('handleAuthRequest error', e);
+      logger.error(e, 'handleAuthRequest error');
     }
     reply.status(500);
   }
@@ -350,7 +350,7 @@ const plugin: FastifyPluginAsync<CustomOICDPluginOptions> = async (fastify, opti
       const stateIsAMatch = storedStateTruth === receivedState && storedStateTruth !== '';
 
       if (!stateIsAMatch) {
-        reply.status(401).send('State mismatch');
+        reply.redirect('/api/login');
         return;
       }
 

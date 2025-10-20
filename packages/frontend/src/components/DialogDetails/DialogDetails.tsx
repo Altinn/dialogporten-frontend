@@ -26,6 +26,7 @@ import { Analytics } from '../../analytics';
 import { ANALYTICS_EVENTS } from '../../analyticsEvents';
 import type { DialogByIdDetails } from '../../api/hooks/useDialogById.tsx';
 import type { TimelineSegmentWithTransmissions } from '../../api/utils/transmissions.ts';
+import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { getDialogStatus } from '../../pages/Inbox/status.ts';
 import { ActivityLogModal } from '../ActivityLog/activityLogModal.tsx';
@@ -83,6 +84,7 @@ const handleDialogActionClick = async (
   props: DialogActionProps,
   dialogToken: string,
   responseFinished: () => void,
+  logError: (error: Error, context?: Record<string, unknown>, errorMessage?: string) => void,
 ): Promise<void> => {
   const { id, title, url, httpMethod, prompt } = props;
 
@@ -143,6 +145,17 @@ const handleDialogActionClick = async (
           'action.type': 'api_call',
           'response.status': response.status,
         });
+        logError(
+          new Error(`HTTP ${response.status}: ${response.statusText}`),
+          {
+            context: 'DialogDetails.handleDialogActionClick.response',
+            url,
+            httpMethod,
+            status: response.status,
+            statusText: response.statusText,
+          },
+          `Dialog action failed: ${response.statusText}`,
+        );
       }
     } catch (error) {
       Analytics.trackEvent(ANALYTICS_EVENTS.GUI_ACTION_FAILED, {
@@ -153,6 +166,15 @@ const handleDialogActionClick = async (
         'error.type': 'network_error',
       });
       console.error('Error performing action:', error);
+      logError(
+        error as Error,
+        {
+          context: 'DialogDetails.handleDialogActionClick.fetch',
+          url,
+          httpMethod,
+        },
+        'Error performing dialog action',
+      );
     } finally {
       responseFinished();
     }
@@ -167,6 +189,7 @@ export const DialogDetails = ({
   subscriptionOpened,
 }: DialogDetailsProps): ReactElement => {
   const { t } = useTranslation();
+  const { logError } = useErrorLogger();
   const [actionIdLoading, setActionIdLoading] = useState<string>('');
   const [showAllTransmissions, setShowAllTransmissions] = useState<boolean>(false);
 
@@ -283,7 +306,7 @@ export const DialogDetails = ({
     hidden: action.hidden,
     onClick: () => {
       setActionIdLoading(action.id);
-      void handleDialogActionClick(action, dialog.dialogToken, () => setActionIdLoading(''));
+      void handleDialogActionClick(action, dialog.dialogToken, () => setActionIdLoading(''), logError);
     },
   }));
 
@@ -325,7 +348,12 @@ export const DialogDetails = ({
       >
         <p>{dialog.summary}</p>
         {subscriptionOpened && (
-          <MainContentReference content={dialog.mainContentReference} dialogToken={dialog.dialogToken} id={dialog.id} />
+          <MainContentReference
+            sender={dialog.sender.name}
+            content={dialog.mainContentReference}
+            dialogToken={dialog.dialogToken}
+            id={dialog.id}
+          />
         )}
         {dialog.attachments.length > 0 && (
           <DialogAttachments

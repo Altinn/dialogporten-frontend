@@ -9,18 +9,16 @@ param oicdUrl = 'test.idporten.no'
 param minReplicas = 2
 param maxReplicas = 3
 param workloadProfileName = 'Consumption'
-param logoutRedirectUri = 'https://at22.altinn.cloud'
+param logoutRedirectUri = 'https://at23.altinn.cloud/ui/Authentication/Logout'
 
-param platformExchangeTokenEndpointUrl = 'https://platform.at22.altinn.cloud/authentication/api/v1/exchange/id-porten?test=true'
-param platformProfileApiUrl = 'https://platform.at22.altinn.cloud/profile/api/v1/'
+param platformBaseUrl = 'https://platform.at23.altinn.cloud'
 
 param ocPApimSubscriptionKey = readEnvironmentVariable('OCP_APIM_SUBSCRIPTION_KEY')
-param disableProfile = 'true'
+param disableProfile = 'false'
 
 // secrets
 param environmentKeyVaultName = readEnvironmentVariable('ENVIRONMENT_KEY_VAULT_NAME')
 param containerAppEnvironmentName = readEnvironmentVariable('CONTAINER_APP_ENVIRONMENT_NAME')
-param appInsightConnectionString = readEnvironmentVariable('APP_INSIGHTS_CONNECTION_STRING')
 
 param additionalEnvironmentVariables = [
   {

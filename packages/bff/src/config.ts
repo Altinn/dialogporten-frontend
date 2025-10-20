@@ -14,8 +14,12 @@ const envVariables = z.object({
   GIT_SHA: z.string().default('v6.1.5'),
   HOST: z.string().default('0.0.0.0'),
   DB_CONNECTION_STRING: z.string().default('postgres://postgres:mysecretpassword@localhost:5432/dialogporten'),
-  APPLICATIONINSIGHTS_CONNECTION_STRING: z.string().optional(),
-  APPLICATIONINSIGHTS_ENABLED: z.preprocess(stringToBoolean, z.boolean().default(false)),
+  OTEL_EXPORTER_OTLP_ENDPOINT: z.string().optional(),
+  OTEL_EXPORTER_OTLP_PROTOCOL: z
+    .enum(['http/protobuf', 'http/json', 'grpc'])
+    .default('http/protobuf')
+    .or(z.literal('').transform(() => 'http/protobuf')),
+  APP_CONFIG_CONNECTION_STRING: z.string().default(''),
   PORT: z.coerce.number().default(3000),
   OIDC_URL: z.string().default('test.idporten.no'),
   HOSTNAME: z.string().default('http://localhost'),
@@ -27,17 +31,14 @@ const envVariables = z.object({
   REDIS_CONNECTION_STRING: z.string().default('redis://:mysecretpassword@127.0.0.1:6379/0'),
   CLIENT_ID: z.string().default(''),
   CLIENT_SECRET: z.string().default(''),
-  PLATFORM_EXCHANGE_TOKEN_ENDPOINT_URL: z
-    .string()
-    .default('https://platform.at22.altinn.cloud/authentication/api/v1/exchange/id-porten?test=true'),
-  PLATFORM_PROFILE_API_URL: z.string().default('https://platform.at22.altinn.cloud/profile/api/v1/'),
+  PLATFORM_BASEURL: z.string().default('https://platform.at23.altinn.cloud'),
   MIGRATION_RUN: z.preprocess(stringToBoolean, z.boolean().default(false)),
   DIALOGPORTEN_URL: z.string().default('https://altinn-dev-api.azure-api.net/dialogporten'),
   CONTAINER_APP_REPLICA_NAME: z.string().default(''),
   ENABLE_GRAPHIQL: z.preprocess(stringToBoolean, z.boolean().default(true)),
   ENABLE_INIT_SESSION_ENDPOINT: z.preprocess(stringToBoolean, z.boolean().default(false)),
   DISABLE_PROFILE: z.preprocess(stringToBoolean, z.boolean().default(false)),
-  LOGOUT_REDIRECT_URI: z.string().default('https://tt02.altinn.no'),
+  LOGOUT_REDIRECT_URI: z.string().default('https://tt02.altinn.no/ui/Authentication/Logout'),
 });
 
 const env = envVariables.parse(process.env);
@@ -54,11 +55,11 @@ const config = {
   hostname: env.HOSTNAME,
   client_id: env.CLIENT_ID,
   client_secret: env.CLIENT_SECRET,
-  platformExchangeTokenEndpointURL: env.PLATFORM_EXCHANGE_TOKEN_ENDPOINT_URL,
-  platformProfileAPI_url: env.PLATFORM_PROFILE_API_URL,
-  applicationInsights: {
-    enabled: env.APPLICATIONINSIGHTS_ENABLED,
-    connectionString: env.APPLICATIONINSIGHTS_CONNECTION_STRING,
+  platformBaseURL: env.PLATFORM_BASEURL,
+  openTelemetry: {
+    enabled: !!env.OTEL_EXPORTER_OTLP_ENDPOINT,
+    endpoint: env.OTEL_EXPORTER_OTLP_ENDPOINT,
+    protocol: env.OTEL_EXPORTER_OTLP_PROTOCOL,
   },
   postgresql: {
     connectionString: env.DB_CONNECTION_STRING,
@@ -80,6 +81,7 @@ const config = {
   enableInitSessionEndpoint: env.ENABLE_INIT_SESSION_ENDPOINT,
   disableProfile: env.DISABLE_PROFILE,
   logoutRedirectUri: env.LOGOUT_REDIRECT_URI,
+  appConfigConnectionString: env.APP_CONFIG_CONNECTION_STRING,
 };
 
 export default config;

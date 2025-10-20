@@ -6,30 +6,31 @@ import {
   type LayoutProps,
   type MenuItemProps,
   type Size,
+  Snackbar,
 } from '@altinn/altinn-components';
-import { Snackbar } from '@altinn/altinn-components';
 import { useQueryClient } from '@tanstack/react-query';
 import { type ChangeEvent, useEffect, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, Outlet, useLocation, useSearchParams } from 'react-router-dom';
+import { Analytics } from '../../analytics';
+import { ANALYTICS_EVENTS } from '../../analyticsEvents';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { updateLanguage } from '../../api/queries.ts';
 import { createHomeLink } from '../../auth';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
+import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { i18n } from '../../i18n/config.ts';
 import { getSearchStringFromQueryParams } from '../../pages/Inbox/queryParams.ts';
 import { useProfile } from '../../pages/Profile';
 import { PageRoutes } from '../../pages/routes.ts';
 import { useGlobalState } from '../../useGlobalState.ts';
 import { BetaModal } from '../BetaModal';
+import { FloatingDropdown } from '../FloatingDropdown/FloatingDropdown.tsx';
 import { useAuth } from '../Login/AuthContext.tsx';
-import { Analytics } from '../../analytics';
-import { ANALYTICS_EVENTS } from '../../analyticsEvents';
 import { useAccounts } from './Accounts/useAccounts.tsx';
 import { useFooter } from './Footer';
 import { useGlobalMenu } from './GlobalMenu';
 import { useAutocomplete, useSearchString } from './Search';
-import { useWindowSize } from './useWindowSize.tsx';
 
 export const ProtectedPageLayout = () => {
   const { isAuthenticated } = useAuth();
@@ -44,13 +45,16 @@ export const PageLayout: React.FC = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { searchValue, setSearchValue, onClear } = useSearchString();
-  const { selectedProfile, selectedParties, parties, allOrganizationsSelected, currentEndUser } = useParties();
+  const { selectedProfile, selectedParties, parties, allOrganizationsSelected, isLoading } = useParties();
   const { autocomplete } = useAutocomplete({ selectedParties: selectedParties, searchValue });
+  const [isErrorState] = useGlobalState<boolean>(QUERY_KEYS.ERROR_STATE, false);
+  const { logError } = useErrorLogger();
 
-  const { accounts, selectedAccount, accountSearch, accountGroups, onSelectAccount } = useAccounts({
+  const { accounts, accountSearch, accountGroups, onSelectAccount, currentAccount, filterAccount } = useAccounts({
     parties,
     selectedParties,
     allOrganizationsSelected,
+    isLoading,
   });
 
   const footer: FooterProps = useFooter();
@@ -99,22 +103,30 @@ export const PageLayout: React.FC = () => {
         'error.message': error instanceof Error ? error.message : 'Unknown error',
       });
       console.error('Failed to update language:', error);
+      logError(
+        error as Error,
+        {
+          context: 'PageLayout.handleUpdateLanguage',
+          language,
+        },
+        'Error updating language',
+      );
     } finally {
       void i18n.changeLanguage(language);
     }
   };
 
-  const windowSize = useWindowSize();
-
-  const [isErrorState] = useGlobalState<boolean>(QUERY_KEYS.ERROR_STATE, false);
-
   const headerProps: HeaderProps = {
-    currentAccount: selectedAccount,
+    currentAccount,
     logo: {
       as: (props: MenuItemProps) => {
         // @ts-ignore
         return <Link to={createHomeLink()} {...props} />;
       },
+    },
+    badge: {
+      label: t('word.beta'),
+      color: 'person',
     },
     search: {
       expanded: false,
@@ -132,22 +144,16 @@ export const PageLayout: React.FC = () => {
     globalMenu: {
       menuLabel: t('word.menu'),
       menu: desktopMenu,
-      onSelectAccount: (account: string) => onSelectAccount(account, PageRoutes.inbox),
+      onSelectAccount: (account: string) => onSelectAccount(account, isProfile ? PageRoutes.profile : PageRoutes.inbox),
       backLabel: t('word.back'),
-      currentEndUserLabel: t('parties.current_end_user', { name: currentEndUser?.name ?? 'n/a' }),
       accountMenu: {
+        filterAccount,
         items: accounts,
         groups: accountGroups,
         ...(accountSearch && {
           search: accountSearch,
         }),
-        menuItemsVirtual: {
-          isVirtualized: true,
-          scrollRefStyles: {
-            maxHeight: windowSize.isTabletOrSmaller ? 'calc(100vh - 14rem)' : 'calc(80vh - 10rem)',
-            paddingBottom: '0.5rem',
-          },
-        },
+        isVirtualized: true,
       },
       logoutButton: {
         label: t('word.log_out'),
@@ -176,6 +182,9 @@ export const PageLayout: React.FC = () => {
 
   const layoutProps: LayoutProps = {
     theme: isErrorState ? 'default' : 'subtle',
+    content: {
+      color: isProfile ? 'person' : undefined,
+    },
     skipLink: {
       href: '#main-content',
       color: 'inherit' as Color,
@@ -194,6 +203,7 @@ export const PageLayout: React.FC = () => {
         <Outlet />
         <Snackbar />
         <BetaModal />
+        <FloatingDropdown />
       </Layout>
     </>
   );

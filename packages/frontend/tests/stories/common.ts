@@ -40,6 +40,10 @@ export async function expectIsCompanyPage(page: Page) {
   await expect(page.locator('#root > .app > div')).toHaveAttribute('data-color', 'company');
 }
 
+export async function expectIsNeutralPage(page: Page) {
+  await expect(page.locator('#root > .app > div')).toHaveAttribute('data-color', 'neutral');
+}
+
 export async function expectIsPersonPage(page: Page) {
   await expect(page.locator('#root > .app > div')).toHaveAttribute('data-color', 'person');
 }

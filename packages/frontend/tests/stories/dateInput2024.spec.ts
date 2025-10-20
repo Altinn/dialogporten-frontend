@@ -18,11 +18,7 @@ test.describe('Date filter, system date set 2024', () => {
 
   test('Date filter - quick filters functionality', async ({ page }) => {
     await page.getByRole('button', { name: 'add' }).click();
-
-    await expect(
-      page.getByTestId('inbox-toolbar').getByRole('group').locator('a').filter({ hasText: 'Oppdatert dato' }),
-    ).toBeVisible();
-
+    await expect(page.locator('a').filter({ hasText: 'Oppdatert dato' })).toBeVisible();
     await page
       .getByTestId('inbox-toolbar')
       .getByRole('group')
@@ -30,19 +26,23 @@ test.describe('Date filter, system date set 2024', () => {
       .filter({ hasText: 'Oppdatert dato' })
       .click();
 
-    await expect(page.getByTestId('inbox-toolbar').getByRole('group').getByText('I dag')).toBeVisible();
-    await expect(page.locator('li').filter({ hasText: 'I dag' }).locator('span > span').nth(3)).toHaveText('3');
+    await expect(page.getByRole('menuitemcheckbox', { name: 'I dag' }).first()).toBeVisible();
+    await expect(page.locator('li').filter({ hasText: 'I dag' }).locator('span > span').nth(4)).toHaveText('3');
 
-    await expect(page.getByTestId('inbox-toolbar').getByRole('group').getByText('Denne måneden')).toBeVisible();
-    await expect(page.locator('li').filter({ hasText: 'Denne måneden' }).locator('span > span').nth(3)).toHaveText('3');
+    await expect(page.getByRole('menuitemcheckbox', { name: 'Denne måneden' }).locator('div').first()).toBeVisible();
+    await expect(
+      page.locator('li').filter({ hasText: 'Denne måneden' }).first().locator('span > span').nth(4),
+    ).toHaveText('3');
 
-    await expect(page.getByTestId('inbox-toolbar').getByRole('group').getByText('Siste tolv måneder')).toBeVisible();
-    await expect(page.locator('li').filter({ hasText: 'Siste tolv måneder' }).locator('span > span').nth(3)).toHaveText(
+    await expect(
+      page.getByRole('menuitemcheckbox', { name: 'Siste tolv måneder' }).locator('div').first(),
+    ).toBeVisible();
+    await expect(page.locator('li').filter({ hasText: 'Siste tolv måneder' }).locator('span > span').nth(4)).toHaveText(
       '9',
     );
 
-    await page.getByTestId('inbox-toolbar').getByRole('group').getByText('I dag').click();
-    await expect(page.locator('button').filter({ hasText: 'I dag' })).toBeVisible();
+    await page.getByRole('menuitemcheckbox', { name: 'I dag' }).first().locator('div').click;
+    await expect(page.getByTestId('updated')).toBeVisible();
 
     await expect(page.getByRole('link', { name: 'Mocked system date Dec 31, 2024' })).toBeVisible();
     await expect(

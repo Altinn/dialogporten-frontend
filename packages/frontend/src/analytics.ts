@@ -1,46 +1,67 @@
 import { ReactPlugin } from '@microsoft/applicationinsights-react-js';
 import type { ITelemetryItem, ITelemetryPlugin } from '@microsoft/applicationinsights-web';
 import { ApplicationInsights } from '@microsoft/applicationinsights-web';
+import type { AnalyticsEventName } from './analyticsEvents';
 import { config } from './config';
 import { PageRoutes } from './pages/routes';
-import type { AnalyticsEventName } from './analyticsEvents';
 
 let applicationInsights: ApplicationInsights | null = null;
 
 const applicationInsightsEnabled = config.applicationInsightsInstrumentationKey && import.meta.env.PROD;
 
-const getPageNameFromPath = (pathname: string): string => {
+const pageMapping: Record<string, string> = {
+  [PageRoutes.inbox]: 'Inbox',
+  [PageRoutes.sent]: 'Sent Items',
+  [PageRoutes.drafts]: 'Drafts',
+  [PageRoutes.archive]: 'Archive',
+  [PageRoutes.bin]: 'Bin',
+  [PageRoutes.savedSearches]: 'Saved Searches',
+  [PageRoutes.about]: 'About',
+  [PageRoutes.profile]: 'Profile Overview',
+  [PageRoutes.partiesOverview]: 'Parties Management',
+  [PageRoutes.notifications]: 'Notification Settings',
+  [PageRoutes.settings]: 'User Settings',
+  [PageRoutes.access]: 'Access Management',
+  [PageRoutes.activities]: 'Activity Log',
+  [PageRoutes.authorize]: 'Authorization',
+  [PageRoutes.error]: 'Error Page',
+};
+
+const dynamicRoutePatterns = [
+  {
+    pattern: /^\/inbox\/[^/]+\/?$/,
+    pageName: 'Dialog Details',
+  },
+  // Add more dynamic route patterns here as needed
+  // {
+  //   pattern: /^\/profile\/[^/]+\/?$/,
+  //   pageName: 'Profile Item'
+  // },
+];
+
+/**
+ * Check if the given pathname is a valid trackable page
+ */
+const isValidTrackablePage = (pathname: string): boolean => {
   const cleanPath = pathname.split('?')[0].split('#')[0];
 
-  const pageMapping: Record<string, string> = {
-    [PageRoutes.inbox]: 'Inbox',
-    [PageRoutes.sent]: 'Sent Items',
-    [PageRoutes.drafts]: 'Drafts',
-    [PageRoutes.archive]: 'Archive',
-    [PageRoutes.bin]: 'Bin',
-    [PageRoutes.savedSearches]: 'Saved Searches',
-    [PageRoutes.about]: 'About',
-    [PageRoutes.profile]: 'Profile Overview',
-    [PageRoutes.partiesOverview]: 'Parties Management',
-    [PageRoutes.notifications]: 'Notification Settings',
-    [PageRoutes.settings]: 'User Settings',
-    [PageRoutes.access]: 'Access Management',
-    [PageRoutes.activities]: 'Activity Log',
-    [PageRoutes.authorize]: 'Authorization',
-    [PageRoutes.error]: 'Error Page',
-  };
+  // Check static routes
+  if (pageMapping[cleanPath]) {
+    return true;
+  }
 
-  const dynamicRoutePatterns = [
-    {
-      pattern: /^\/inbox\/[^/]+\/?$/,
-      pageName: 'Dialog Details',
-    },
-    // Add more dynamic route patterns here as needed
-    // {
-    //   pattern: /^\/profile\/[^/]+\/?$/,
-    //   pageName: 'Profile Item'
-    // },
-  ];
+  // Check dynamic routes
+  for (const { pattern } of dynamicRoutePatterns) {
+    if (pattern.test(cleanPath)) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+const getPageNameFromPath = (pathname: string): string => {
+  const cleanPath = pathname.split('?')[0].split('#')[0];
 
   if (pageMapping[cleanPath]) {
     return pageMapping[cleanPath];
@@ -55,7 +76,7 @@ const getPageNameFromPath = (pathname: string): string => {
   return cleanPath.replace(/^\//, '').replace(/\//g, ' > ') || 'Unknown Page';
 };
 
-export const trackPageView = (pageInfo: {
+const startPageTracking = (pageInfo: {
   pathname: string;
   search: string;
   hash: string;
@@ -64,8 +85,29 @@ export const trackPageView = (pageInfo: {
 }) => {
   if (!applicationInsights) return;
 
-  const currentUrl = pageInfo.url;
   const currentPath = pageInfo.pathname;
+
+  const enhancedPageName = getPageNameFromPath(currentPath);
+
+  try {
+    applicationInsights.startTrackPage(enhancedPageName);
+  } catch (error) {
+    console.error('Failed to start page tracking:', error, { pageInfo });
+  }
+};
+
+const stopPageTracking = (pageInfo: {
+  pathname: string;
+  search: string;
+  hash: string;
+  state: string;
+  url: string;
+}) => {
+  if (!applicationInsights) return;
+
+  const currentPath = pageInfo.pathname;
+
+  const currentUrl = pageInfo.url;
   const enhancedPageName = getPageNameFromPath(currentPath);
 
   const enhancedProperties = {
@@ -78,36 +120,15 @@ export const trackPageView = (pageInfo: {
     'route.search': pageInfo.search,
     'route.hash': pageInfo.hash,
     'route.state': pageInfo.state ? JSON.stringify(pageInfo.state) : '',
-    'viewport.width': window.innerWidth,
-    'viewport.height': window.innerHeight,
+    'viewport.width': String(window.innerWidth),
+    'viewport.height': String(window.innerHeight),
   };
 
-  applicationInsights.trackPageView({
-    name: enhancedPageName,
-    uri: currentUrl,
-    properties: enhancedProperties,
-  });
-};
-
-export const trackUserAction = (action: string, properties?: Record<string, string>) => {
-  if (!applicationInsights) return;
-
-  applicationInsights.trackEvent({
-    name: `User.${action}`,
-    properties: {
-      'page.current': getPageNameFromPath(window.location.pathname),
-      timestamp: new Date().toISOString(),
-      ...properties,
-    },
-  });
-};
-
-export const trackDialogAction = (action: string, dialogId?: string, properties?: Record<string, string>) => {
-  trackUserAction(`Dialog.${action}`, {
-    'dialog.id': dialogId || '',
-    'dialog.action': action,
-    ...properties,
-  });
+  try {
+    applicationInsights.stopTrackPage(enhancedPageName, currentUrl, enhancedProperties);
+  } catch (error) {
+    console.error('Failed to stop page tracking:', error, { pageInfo });
+  }
 };
 
 /**
@@ -115,7 +136,7 @@ export const trackDialogAction = (action: string, dialogId?: string, properties?
  * @param eventName - The name of the event to track (use ANALYTICS_EVENTS constants)
  * @param properties - Additional properties to include with the event
  */
-export const trackEvent = (eventName: AnalyticsEventName, properties?: Record<string, string | number | boolean>) => {
+const trackEvent = (eventName: AnalyticsEventName, properties?: Record<string, string | number | boolean>) => {
   if (!applicationInsights) return;
 
   const enhancedProperties = {
@@ -142,17 +163,19 @@ if (applicationInsightsEnabled) {
         instrumentationKey: config.applicationInsightsInstrumentationKey,
         extensions: [reactPlugin as unknown as ITelemetryPlugin],
         enableAutoRouteTracking: false, // Disable auto tracking, we'll handle it manually
-        autoTrackPageVisitTime: true,
+        autoTrackPageVisitTime: false,
         enableCorsCorrelation: true,
-        enableUnhandledPromiseRejectionTracking: true,
+        enableUnhandledPromiseRejectionTracking: false,
         enableAjaxErrorStatusText: true,
         disableAjaxTracking: true,
         disableFetchTracking: true,
         enableRequestHeaderTracking: false,
         enableResponseHeaderTracking: false,
         enableAjaxPerfTracking: false,
-        enablePerfMgr: true,
+        enablePerfMgr: false,
         disableCookiesUsage: false,
+        // To avoid issue where AI tries to calculate duration of page view, and throws an error
+        overridePageViewDuration: false,
         samplingPercentage: 100,
         appId: 'arbeidsflate-frontend',
         enableDebug: true,
@@ -162,6 +185,10 @@ if (applicationInsightsEnabled) {
     console.info('Application Insights initialized successfully');
 
     applicationInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
+      envelope.tags = envelope.tags || {};
+      envelope.tags['ai.cloud.role'] = 'frontend';
+      envelope.tags['ai.cloud.roleInstance'] = 'frontend';
+
       switch (envelope.baseType) {
         case 'RemoteDependencyData': {
           const dependencyData = envelope.baseData;
@@ -169,7 +196,6 @@ if (applicationInsightsEnabled) {
 
           if (backendTraceId) {
             // This only affects THIS specific telemetry item
-            envelope.tags = envelope.tags || {};
             envelope.tags['ai.operation.id'] = backendTraceId;
             envelope.tags['ai.operation.parentId'] = `|${backendTraceId}.${Date.now()}`;
           }
@@ -223,8 +249,37 @@ if (applicationInsightsEnabled) {
 
 const noop = () => {};
 
+// Mock functions for when analytics is disabled
+const mockStartPageTracking = (_pageInfo: {
+  pathname: string;
+  search: string;
+  hash: string;
+  state: string;
+  url: string;
+}) => {};
+
+const mockStopPageTracking = (_pageInfo: {
+  pathname: string;
+  search: string;
+  hash: string;
+  state: string;
+  url: string;
+}) => {};
+
+const mockTrackEvent = (_action: string, _properties?: Record<string, string | number | boolean>) => {};
+
+const mockTrackFetchDependency = async (
+  _name: string,
+  fetchPromise: Promise<Response>,
+  _startTime: number = Date.now(),
+): Promise<Response> => {
+  return fetchPromise;
+};
+
+const mockIsValidTrackablePage = (_pathname: string): boolean => false;
+
 // Enhanced helper function to track fetch requests with same operation ID
-export const trackFetchDependency = async (
+const trackFetchDependency = async (
   name: string,
   fetchPromise: Promise<Response>,
   startTime: number = Date.now(),
@@ -276,12 +331,11 @@ export const trackFetchDependency = async (
 
 export const Analytics = {
   isEnabled: applicationInsightsEnabled,
-  trackPageView: trackPageView,
-  trackUserAction: trackUserAction,
-  trackDialogAction: trackDialogAction,
-  trackEvent: trackEvent,
-  trackEventRaw: applicationInsights?.trackEvent.bind(applicationInsights) || noop,
+  startPageTracking: applicationInsightsEnabled ? startPageTracking : mockStartPageTracking,
+  stopPageTracking: applicationInsightsEnabled ? stopPageTracking : mockStopPageTracking,
+  trackEvent: applicationInsightsEnabled ? trackEvent : mockTrackEvent,
   trackException: applicationInsights?.trackException.bind(applicationInsights) || noop,
   trackDependency: applicationInsights?.trackDependencyData.bind(applicationInsights) || noop,
-  trackFetchDependency: trackFetchDependency,
+  trackFetchDependency: applicationInsightsEnabled ? trackFetchDependency : mockTrackFetchDependency,
+  isValidTrackablePage: applicationInsightsEnabled ? isValidTrackablePage : mockIsValidTrackablePage,
 };

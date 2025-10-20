@@ -7,7 +7,7 @@ export const parties: PartyFieldsFragment[] = [
     subParties: [],
     isAccessManager: true,
     isMainAdministrator: false,
-    name: 'TEST TESTESEN',
+    name: 'TESTESEN TEST',
     isCurrentEndUser: true,
     isDeleted: false,
     partyUuid: 'urn:altinn:person:identifier-no:1337',

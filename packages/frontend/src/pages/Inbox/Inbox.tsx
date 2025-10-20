@@ -19,13 +19,12 @@ import { createFiltersURLQuery } from '../../auth';
 import { EmptyState } from '../../components/EmptyState/EmptyState.tsx';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
 import { useSearchString } from '../../components/PageLayout/Search/';
-import { useWindowSize } from '../../components/PageLayout/useWindowSize.tsx';
 import { SaveSearchButton } from '../../components/SavedSearchButton/SaveSearchButton.tsx';
 import { isSavedSearchDisabled } from '../../components/SavedSearchButton/savedSearchEnabled.ts';
 import { SeenByModal } from '../../components/SeenByModal/SeenByModal.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
-import { useDynamicTour } from '../../onboardingTour';
-import { usePageTitle } from '../../utils/usePageTitle.tsx';
+import { usePageTitle } from '../../hooks/usePageTitle.tsx';
+import { useInboxOnboarding } from '../../onboardingTour';
 import { PageRoutes } from '../routes.ts';
 import { FilterCategory, readFiltersFromURLQuery } from './filters.ts';
 import styles from './inbox.module.css';
@@ -97,16 +96,19 @@ export const Inbox = ({ viewType }: InboxProps) => {
     }
   }, [searchParams.toString()]);
 
-  const { accounts, selectedAccount, accountSearch, accountGroups, onSelectAccount } = useAccounts({
+  const { accounts, selectedAccount, accountSearch, accountGroups, onSelectAccount, filterAccount } = useAccounts({
     parties,
     selectedParties,
     allOrganizationsSelected,
+    options: {
+      showGroups: true,
+    },
   });
 
   const { filters, getFilterLabel } = useFilters({ viewType });
 
   usePageTitle({
-    baseTitle: viewType.charAt(0).toUpperCase() + viewType.slice(1),
+    baseTitle: viewType,
     searchValue: enteredSearchValue,
     filterState,
     getFilterLabel,
@@ -125,7 +127,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     }
   }, [isLoading]);
 
-  useDynamicTour({
+  useInboxOnboarding({
     isLoadingParties,
     isLoadingDialogs,
     dialogsSuccess,
@@ -143,8 +145,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
     isLoading,
     isFetchingNextPage,
   });
-
-  const windowSize = useWindowSize();
 
   if (unableToLoadParties) {
     return (
@@ -181,13 +181,9 @@ export const Inbox = ({ viewType }: InboxProps) => {
                 groups: accountGroups,
                 currentAccount: selectedAccount,
                 onSelectAccount: (account: string) => onSelectAccount(account, PageRoutes[viewType]),
-                menuItemsVirtual: {
-                  isVirtualized: true,
-                  scrollRefStyles: {
-                    maxHeight: windowSize.isTabletOrSmaller ? 'calc(100vh - 14rem)' : 'calc(80vh - 10rem)',
-                    paddingBottom: '0.5rem',
-                  },
-                },
+                filterAccount,
+                isVirtualized: true,
+                title: t('parties.change_label'),
               }}
               filterState={filterState}
               getFilterLabel={getFilterLabel}

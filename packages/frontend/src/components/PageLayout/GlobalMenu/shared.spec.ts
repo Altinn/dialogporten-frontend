@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { PageRoutes } from '../../../pages/routes';
-import { isRouteSelected } from './useGlobalMenu.tsx';
+import { isRouteSelected } from './shared.tsx';
 
 describe('useGlobalMenu', () => {
   describe('is route selected', () => {

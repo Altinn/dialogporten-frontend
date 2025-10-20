@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { Trans } from 'react-i18next';
 import { Link, type LinkProps } from 'react-router-dom';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
+import { useParties } from '../../api/hooks/useParties.ts';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { useDialogActions } from '../DialogDetailsPage/useDialogActions.tsx';
 import type { CurrentSeenByLog } from './Inbox.tsx';
@@ -22,8 +23,8 @@ import { getDialogStatus } from './status.ts';
 
 interface GroupedItem {
   id: string | number;
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   items: InboxItemInput[];
   orderIndex: number | null;
 }
@@ -50,6 +51,8 @@ interface UseGroupedDialogsProps {
   /* used to open modal with seen by log */
   onSeenByLogModalChange: (input: CurrentSeenByLog) => void;
 }
+
+const BANKRUPTCY_SERVICE_RESOURCE = 'urn:altinn:resource:app_brg_konkursbehandling';
 
 const sortGroupedDialogs = (arr: DialogListItemProps[]) => {
   return arr.sort((a, b) => new Date(b.updatedAt ?? 0).getTime() - new Date(a.updatedAt ?? 0).getTime());
@@ -116,6 +119,7 @@ const useGroupedDialogs = ({
   const { t } = useTranslation();
   const format = useFormat();
   const systemLabelActions = useDialogActions();
+  const { allOrganizationsSelected } = useParties();
   const collapseGroups = displaySearchResults || viewType !== 'inbox';
   const getCollapsedGroupTitle = (viewType: InboxViewType, count: number, hasNextPage: boolean) =>
     (hasNextPage ? t('word.moreThan') : '') + t(`inbox.heading.title.${viewType}`, { count });
@@ -160,10 +164,13 @@ const useGroupedDialogs = ({
       summary: item.viewType === 'inbox' ? item.summary : undefined,
       state: getDialogState(item.viewType),
       recipient: item.recipient,
+      color: allOrganizationsSelected ? 'company' : undefined,
+      grouped: allOrganizationsSelected,
       attachmentsCount: item.guiAttachmentCount,
       seenByLog: item.seenByLog,
       unread: item.seenSinceLastContentUpdate.length === 0,
       status: getDialogStatus(item.status, t),
+      extendedStatusLabel: item.extendedStatus,
       controls: <ContextMenu {...contextMenu} />,
       updatedAt: item.contentUpdatedAt,
       updatedAtLabel: format(item.contentUpdatedAt, formatString),
@@ -178,7 +185,7 @@ const useGroupedDialogs = ({
     };
   };
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  // biome-ignore lint/correctness/useExhaustiveDependencies: This hook does not specify all of its dependencies
   return useMemo(() => {
     if (isLoading) {
       return {
@@ -188,37 +195,63 @@ const useGroupedDialogs = ({
         },
       };
     }
-    /* in all other views than inbox and not loading */
+
     if (!displaySearchResults && !isInbox && !isLoading) {
-      const groupedDialogs = items.map((item) => formatDialogItem(item, item.viewType));
+      const groups: Record<string, DialogListGroupPropsSort> = {};
+      const allDialogs: DialogListItemProps[] = [];
+
+      // bankruptcy exception
+      const bankruptcyDialogs = items.filter((item) => item.serviceResource === BANKRUPTCY_SERVICE_RESOURCE);
+      const regularItems = items.filter((item) => item.serviceResource !== BANKRUPTCY_SERVICE_RESOURCE);
+
+      // bankruptcy group
+      if (bankruptcyDialogs.length > 0) {
+        groups.bankruptcy = {
+          orderIndex: 9999,
+        };
+        allDialogs.push(...bankruptcyDialogs.map((item) => formatDialogItem(item, 'bankruptcy')));
+      }
+
+      groups[viewType] = {
+        title: getCollapsedGroupTitle(viewType, regularItems.length, hasNextPage),
+        description: <Trans i18nKey={`inbox.heading.description.${viewType}`} components={{ strong: <strong /> }} />,
+        orderIndex: null,
+      };
+      allDialogs.push(...regularItems.map((item) => formatDialogItem(item, item.viewType)));
+
+      const groupedDialogs = sortGroupedDialogs(allDialogs);
       if (isFetchingNextPage) {
         groupedDialogs.push(...renderLoadingItems(1));
       }
       return {
         groupedDialogs,
-        groups: {
-          [viewType]: {
-            title: getCollapsedGroupTitle(viewType, items.length, hasNextPage),
-            description: (
-              <Trans i18nKey={`inbox.heading.description.${viewType}`} components={{ strong: <strong /> }} />
-            ),
-          },
-        },
+        groups,
       };
     }
 
     const groupedItems: GroupedItem[] = [];
 
+    const bankruptcyDialogs = items.filter((item) => item.serviceResource === BANKRUPTCY_SERVICE_RESOURCE);
+    const regularDialogs = items.filter((item) => item.serviceResource !== BANKRUPTCY_SERVICE_RESOURCE);
+
+    if (bankruptcyDialogs.length > 0) {
+      groupedItems.push({
+        id: 'bankruptcy',
+        items: bankruptcyDialogs,
+        orderIndex: 9999, //put on top
+      });
+    }
+
     if (collapseGroups) {
       groupedItems.push({
         id: 'collapsed',
-        title: getCollapsedGroupTitle(viewType, items.length, hasNextPage),
+        title: getCollapsedGroupTitle(viewType, regularDialogs.length, hasNextPage),
         description: t('search.results.description'),
-        items,
+        items: regularDialogs,
         orderIndex: null,
       });
     } else {
-      items.reduce((acc, item, _, list) => {
+      regularDialogs.reduce((acc, item, _, list) => {
         const updatedAt = new Date(item.contentUpdatedAt);
         const month = format(updatedAt, 'LLLL');
         const capitalizedMonth = month.charAt(0).toUpperCase() + month.slice(1);
@@ -258,8 +291,8 @@ const useGroupedDialogs = ({
       groupedItems.map(({ id, title, description, orderIndex }) => [id, { title, orderIndex, description }]),
     );
 
-    const mappedGroupedDialogs = groupedItems.flatMap(({ id, items }) =>
-      items.map((item) => formatDialogItem(item, id.toString())),
+    const mappedGroupedDialogs = groupedItems.flatMap(({ id, items: groupItems }) =>
+      groupItems.map((item) => formatDialogItem(item, id.toString())),
     );
 
     const groupedDialogs = sortGroupedDialogs(mappedGroupedDialogs);
@@ -267,8 +300,9 @@ const useGroupedDialogs = ({
     if (isFetchingNextPage) {
       groupedDialogs.push(...renderLoadingItems(1));
     }
+
     return { groupedDialogs, groups };
-  }, [items, displaySearchResults, t, format, viewType, allWithinSameYear, isLoading]);
+  }, [items, displaySearchResults, t, format, viewType, allWithinSameYear, isLoading, isFetchingNextPage]);
 };
 
 export default useGroupedDialogs;

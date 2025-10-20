@@ -1,5 +1,4 @@
 import type { AutocompleteItemProps, AutocompleteProps } from '@altinn/altinn-components';
-import { useQuery } from '@tanstack/react-query';
 import type { DialogStatus, GetSearchAutocompleteDialogsQuery, PartyFieldsFragment } from 'bff-types-generated';
 import { t } from 'i18next';
 import { useMemo } from 'react';
@@ -12,6 +11,7 @@ import {
   mapAutocompleteDialogsDtoToInboxItem,
 } from '../../../api/utils/autcomplete.ts';
 import { getPartyIds } from '../../../api/utils/dialog.ts';
+import { useAuthenticatedQuery } from '../../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../../constants/queryKeys.ts';
 import { pruneSearchQueryParams } from '../../../pages/Inbox/queryParams.ts';
 import { useOrganizations } from '../../../pages/Inbox/useOrganizations.ts';
@@ -120,7 +120,7 @@ export const useAutocomplete = ({ selectedParties, searchValue }: searchDialogsP
     isSuccess,
     isLoading,
     isFetching,
-  } = useQuery<GetSearchAutocompleteDialogsQuery>({
+  } = useAuthenticatedQuery<GetSearchAutocompleteDialogsQuery>({
     queryKey: [QUERY_KEYS.SEARCH_AUTOCOMPLETE_DIALOGS, partyURIs, debouncedSearchString],
     queryFn: () => searchAutocompleteDialogs(partyURIs, debouncedSearchString),
     staleTime: 1000 * 60 * 10,

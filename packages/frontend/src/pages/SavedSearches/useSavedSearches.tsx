@@ -6,7 +6,7 @@ import {
 } from '@altinn/altinn-components';
 import type { QueryItemProps } from '@altinn/altinn-components';
 import type { EditableBookmarkProps } from '@altinn/altinn-components/dist/types/lib/components';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   DialogStatus,
   type SavedSearchData,
@@ -18,16 +18,18 @@ import {
 import { type ChangeEvent, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps } from 'react-router-dom';
+import { Analytics } from '../../analytics';
+import { ANALYTICS_EVENTS } from '../../analyticsEvents';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { createSavedSearch, deleteSavedSearch, fetchSavedSearches, updateSavedSearch } from '../../api/queries.ts';
 import { getOrganization } from '../../api/utils/organizations.ts';
+import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
+import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { useFormatDistance } from '../../i18n/useDateFnsLocale.tsx';
 import { DateFilterOption } from '../Inbox/filters.ts';
 import { useOrganizations } from '../Inbox/useOrganizations.ts';
 import { PageRoutes } from '../routes.ts';
-import { Analytics } from '../../analytics';
-import { ANALYTICS_EVENTS } from '../../analyticsEvents';
 import { buildSavedSearchURL } from './bookmarkURL.ts';
 import { autoFormatRelativeTime, getMostRecentSearchDate } from './searchUtils.ts';
 
@@ -143,8 +145,9 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { openSnackbar } = useSnackbar();
+  const { logError } = useErrorLogger();
 
-  const { data, isLoading, isSuccess } = useQuery<SavedSearchesQuery>({
+  const { data, isLoading, isSuccess } = useAuthenticatedQuery<SavedSearchesQuery>({
     queryKey: [QUERY_KEYS.SAVED_SEARCHES, selectedPartyIds],
     queryFn: fetchSavedSearches,
     retry: 3,
@@ -206,7 +209,14 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
         message: t('savedSearches.saved_error'),
         color: 'danger',
       });
-      console.error('Error creating saved search: ', error);
+      logError(
+        error as Error,
+        {
+          context: 'useSavedSearches.saveSearch',
+          data,
+        },
+        'Failed to create saved search',
+      );
     } finally {
       void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.SAVED_SEARCHES] });
       setIsCTALoading(false);
@@ -234,6 +244,14 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
       });
 
       console.error('Failed to delete saved search:', error);
+      logError(
+        error as Error,
+        {
+          context: 'useSavedSearches.deleteSearch',
+          savedSearchId,
+        },
+        'Failed to delete saved search',
+      );
       openSnackbar({
         message: t('savedSearches.delete_failed'),
         color: 'danger',
@@ -247,10 +265,12 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
     try {
       await updateSavedSearch(id, savedSearchInputValue ?? '');
 
-      Analytics.trackEvent(ANALYTICS_EVENTS.SAVED_SEARCH_UPDATE_SUCCESS, {
-        'search.id': id,
-        'search.newTitleLength': savedSearchInputValue?.length || 0,
-      });
+      if (savedSearchInputValue) {
+        Analytics.trackEvent(ANALYTICS_EVENTS.SAVED_SEARCH_UPDATE_SUCCESS, {
+          'search.id': id,
+          'search.newTitleLength': savedSearchInputValue?.length || 0,
+        });
+      }
 
       openSnackbar({
         message: t('savedSearches.update_success'),
@@ -298,7 +318,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
       const bookmarkLink = buildSavedSearchURL(savedSearch);
       const params: QueryItemProps[] = (savedSearch.data?.filters ?? []).map((filter) => {
         if (filter?.id === 'org') {
-          const org = getOrganization(organizations, filter.value ?? '', 'nb')?.name || filter.value;
+          const org = getOrganization(organizations, filter.value ?? '')?.name || filter.value;
           return {
             type: 'filter' as QueryItemType,
             label: org ?? '',

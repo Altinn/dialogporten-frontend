@@ -11,6 +11,7 @@ export interface InboxItemInput {
   recipient: AvatarProps;
   createdAt: string;
   status: DialogStatus;
+  extendedStatus?: string;
   hasUnopenedContent: boolean;
   contentUpdatedAt: string;
   label: SystemLabel[];
@@ -24,4 +25,5 @@ export interface InboxItemInput {
   seenByLog: SeenByLogProps;
   dueAt?: string;
   seenSinceLastContentUpdate: SeenLogFieldsFragment[];
+  serviceResource?: string;
 }

@@ -18,8 +18,7 @@ param maxReplicas int
 @description('CPU and memory resources for the container app')
 param resources object?
 
-param platformExchangeTokenEndpointUrl string
-param platformProfileApiUrl string
+param platformBaseUrl string
 
 @secure()
 param ocPApimSubscriptionKey string
@@ -34,14 +33,11 @@ param enableInitSessionEndpoint string = 'true'
 param disableProfile string = 'false'
 
 @description('URL to direct user after successful logout')
-param logoutRedirectUri string = 'https://altinn.no'
+param logoutRedirectUri string = 'https://altinn.no/ui/Authentication/Logout'
 
 @minLength(3)
 @secure()
 param containerAppEnvironmentName string
-@minLength(3)
-@secure()
-param appInsightConnectionString string
 @minLength(3)
 @secure()
 param environmentKeyVaultName string
@@ -101,24 +97,23 @@ var idPortenSessionSecretSecret = {
   identity: 'System'
 }
 
+var appConfigConnectionStringSecret = {
+  name: 'app-config-connection-string'
+  keyVaultUrl: '${keyVaultUrl}/appConfigConnectionString'
+  identity: 'System'
+}
+
 var secrets = [
   dbConnectionStringSecret
   redisConnectionStringSecret
   idPortenClientIdSecret
   idPortenClientSecretSecret
   idPortenSessionSecretSecret
+  appConfigConnectionStringSecret
 ]
 
 var containerAppEnvVars = concat(
   [
-    {
-      name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
-      value: appInsightConnectionString
-    }
-    {
-      name: 'APPLICATIONINSIGHTS_ENABLED'
-      value: 'true'
-    }
     {
       name: 'DB_CONNECTION_STRING'
       secretRef: dbConnectionStringSecret.name
@@ -180,12 +175,8 @@ var containerAppEnvVars = concat(
       value: disableProfile
     }
     {
-      name: 'PLATFORM_EXCHANGE_TOKEN_ENDPOINT_URL'
-      value: platformExchangeTokenEndpointUrl
-    }
-    {
-      name: 'PLATFORM_PROFILE_API_URL'
-      value: platformProfileApiUrl
+      name: 'PLATFORM_BASEURL'
+      value: platformBaseUrl
     }
     {
       name: 'OCP_APIM_SUBSCRIPTION_KEY'
@@ -194,6 +185,10 @@ var containerAppEnvVars = concat(
     {
         name: 'LOGOUT_REDIRECT_URI'
         value: logoutRedirectUri
+    }
+    {
+        name: 'APP_CONFIG_CONNECTION_STRING'
+        secretRef: appConfigConnectionStringSecret.name
     }
   ],
   additionalEnvironmentVariables
