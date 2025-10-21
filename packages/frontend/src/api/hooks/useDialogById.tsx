@@ -77,6 +77,8 @@ export interface DialogByIdDetails {
 
   /* dialog status */
   status: DialogStatus;
+  /* extended dialog status */
+  extendedStatusLabel?: string;
   /* all actions (including end-user) that have seen the dialog since last update */
   seenByLog: SeenByLogProps;
   /* due date for dialog: This is the last date when the dialog is expected to be completed. */
@@ -214,6 +216,7 @@ export function mapDialogToToInboxItem(
     id: item.id,
     title: getPreferredPropertyByLocale(titleObj)?.value ?? '',
     status: item.status,
+    extendedStatusLabel: item.extendedStatus || undefined,
     summary: getPreferredPropertyByLocale(summaryObj)?.value ?? '',
     sentCount: item.fromPartyTransmissionsCount ?? 0,
     receivedCount: item.fromServiceOwnerTransmissionsCount ?? 0,
