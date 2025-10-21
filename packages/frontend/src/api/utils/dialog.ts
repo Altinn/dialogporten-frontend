@@ -62,9 +62,9 @@ export function mapDialogToToInboxItems(
     const senderName = item.content.senderName?.value;
 
     const dialogReceiverParty = parties?.find((party) => party.party === item.party);
-    const dialogReceiverSubParty = parties?.find((party) =>
-      (party.subParties ?? []).some((subParty) => subParty.party === item.party),
-    );
+    const dialogReceiverSubParty = parties
+      ?.flatMap((party) => party.subParties ?? [])
+      .find((subParty) => subParty.party === item.party);
 
     const actualReceiverParty = dialogReceiverParty ?? dialogReceiverSubParty ?? endUserParty;
     const serviceOwner = getOrganization(organizations || [], item.org);
@@ -87,7 +87,9 @@ export function mapDialogToToInboxItems(
         name: actualReceiverParty?.name ?? dialogReceiverSubParty?.name ?? '',
         type: actualReceiverParty?.partyType as AvatarType,
         variant:
-          !actualReceiverParty?.subParties && actualReceiverParty?.partyType === 'Organization' ? 'outline' : 'solid',
+          dialogReceiverParty && !dialogReceiverParty.subParties && actualReceiverParty?.partyType === 'Organization'
+            ? 'outline'
+            : 'solid',
       },
       color: actualReceiverParty?.partyType === 'Organization' ? 'company' : 'person',
       contentUpdatedAt: item.contentUpdatedAt,
