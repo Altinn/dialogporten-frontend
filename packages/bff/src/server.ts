@@ -1,3 +1,6 @@
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { logger } from '@digdir/dialogporten-node-logger';
 import cookie from '@fastify/cookie';
 import cors from '@fastify/cors';
@@ -18,6 +21,10 @@ import { fastifyHeaders } from './graphql/fastifyHeaders.ts';
 import graphqlStream from './graphql/subscription.ts';
 import { otelSDK } from './instrumentation.ts';
 import redisClient from './redisClient.ts';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const errorTemplate = readFileSync(join(__dirname, 'templates', 'error.html'), 'utf-8');
 
 const {
   version,
@@ -78,6 +85,16 @@ const startServer = async (): Promise<void> => {
     logger.info('Setting up fastify-session');
     server.register(session, cookieSessionConfig);
   }
+
+  server.setErrorHandler((error, request, reply) => {
+    logger.error(error, `Error handling request ${request.method} ${request.url}`);
+
+    const html = errorTemplate.replaceAll('{{statusCode}}', String(error.statusCode || 500));
+    reply
+      .code(error.statusCode || 500)
+      .type('text/html')
+      .send(html);
+  });
 
   server.register(verifyToken);
   server.register(healthProbes, { version });
