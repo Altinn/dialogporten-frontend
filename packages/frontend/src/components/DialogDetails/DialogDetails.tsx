@@ -294,6 +294,7 @@ export const DialogDetails = ({
           label: t('dialog.activity_log.title'),
         }}
         attachmentsCount={dialog.attachments?.length}
+        extendedStatusLabel={dialog.extendedStatusLabel}
       />
       <DialogBody
         sender={dialog.sender}
