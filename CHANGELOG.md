@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.90.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.89.3...v1.90.0) (2025-10-23)
+
+
+### Features
+
+* Added paries expanded view organization tree ([6d3e3fa](https://github.com/Altinn/dialogporten-frontend/commit/6d3e3fad25b9444ab30c2d4cd8bd0da21dc8e13b))
+
+
+### Bug Fixes
+
+* Account list - support org search ([#3035](https://github.com/Altinn/dialogporten-frontend/issues/3035)) ([570c784](https://github.com/Altinn/dialogporten-frontend/commit/570c784d766f9e288cf6b0e318992bd2b5dcada5))
+
 ## [1.89.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.89.2...v1.89.3) (2025-10-23)
 
 
