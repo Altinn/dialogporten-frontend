@@ -295,7 +295,7 @@ export const handleAuthRequest = async (request: FastifyRequest, reply: FastifyR
     } else {
       logger.error(e, 'handleAuthRequest error');
     }
-    reply.status(500);
+    throw e;
   }
 };
 
@@ -334,32 +334,22 @@ const redirectToAuthorizationURI = async (request: FastifyRequest, reply: Fastif
 
 const plugin: FastifyPluginAsync<CustomOICDPluginOptions> = async (fastify, options) => {
   fastify.get('/api/login', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      await redirectToAuthorizationURI(request, reply);
-    } catch (e) {
-      logger.error('login error', e);
-      reply.status(500);
-    }
+    await redirectToAuthorizationURI(request, reply);
   });
 
   /* Post login: retrieves token, stores values to user session and redirects to client */
   fastify.get('/api/cb', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const storedStateTruth = request.session.get('state') || '';
-      const receivedState = (request.query as { state: string }).state || '';
-      const stateIsAMatch = storedStateTruth === receivedState && storedStateTruth !== '';
+    const storedStateTruth = request.session.get('state') || '';
+    const receivedState = (request.query as { state: string }).state || '';
+    const stateIsAMatch = storedStateTruth === receivedState && storedStateTruth !== '';
 
-      if (!stateIsAMatch) {
-        reply.redirect('/api/login');
-        return;
-      }
-
-      /* Handle the callback from the OIDC provider */
-      await handleAuthRequest(request, reply);
-    } catch (e) {
-      logger.error('callback error', e);
-      reply.status(500);
+    if (!stateIsAMatch) {
+      reply.redirect('/api/login');
+      return;
     }
+
+    /* Handle the callback from the OIDC provider */
+    await handleAuthRequest(request, reply);
   });
 
   fastify.get('/api/logout', { preHandler: fastify.verifyToken(false) }, handleLogout);
