@@ -1,6 +1,7 @@
 import { ReactPlugin } from '@microsoft/applicationinsights-react-js';
 import type { ITelemetryItem, ITelemetryPlugin } from '@microsoft/applicationinsights-web';
 import { ApplicationInsights } from '@microsoft/applicationinsights-web';
+import type { AnalyticsEventName } from './analyticsEvents';
 import { config } from './config';
 import { PageRoutes } from './pages/routes';
 
@@ -75,7 +76,7 @@ const getPageNameFromPath = (pathname: string): string => {
   return cleanPath.replace(/^\//, '').replace(/\//g, ' > ') || 'Unknown Page';
 };
 
-export const startPageTracking = (pageInfo: {
+const startPageTracking = (pageInfo: {
   pathname: string;
   search: string;
   hash: string;
@@ -95,7 +96,7 @@ export const startPageTracking = (pageInfo: {
   }
 };
 
-export const stopPageTracking = (pageInfo: {
+const stopPageTracking = (pageInfo: {
   pathname: string;
   search: string;
   hash: string;
@@ -130,24 +131,27 @@ export const stopPageTracking = (pageInfo: {
   }
 };
 
-export const trackUserAction = (action: string, properties?: Record<string, string>) => {
+/**
+ * Track custom events with Application Insights
+ * @param eventName - The name of the event to track (use ANALYTICS_EVENTS constants)
+ * @param properties - Additional properties to include with the event
+ */
+const trackEvent = (eventName: AnalyticsEventName, properties?: Record<string, string | number | boolean>) => {
   if (!applicationInsights) return;
 
-  applicationInsights.trackEvent({
-    name: `User.${action}`,
-    properties: {
-      'page.current': getPageNameFromPath(window.location.pathname),
-      timestamp: new Date().toISOString(),
-      ...properties,
-    },
-  });
-};
-
-export const trackDialogAction = (action: string, dialogId?: string, properties?: Record<string, string>) => {
-  trackUserAction(`Dialog.${action}`, {
-    'dialog.id': dialogId || '',
-    'dialog.action': action,
+  const enhancedProperties = {
+    'page.current': getPageNameFromPath(window.location.pathname),
+    'page.url': window.location.href,
+    timestamp: new Date().toISOString(),
+    'user.agent': navigator.userAgent,
+    'viewport.width': window.innerWidth,
+    'viewport.height': window.innerHeight,
     ...properties,
+  };
+
+  applicationInsights.trackEvent({
+    name: eventName,
+    properties: enhancedProperties,
   });
 };
 
@@ -262,9 +266,7 @@ const mockStopPageTracking = (_pageInfo: {
   url: string;
 }) => {};
 
-const mockTrackUserAction = (_action: string, _properties?: Record<string, string>) => {};
-
-const mockTrackDialogAction = (_action: string, _dialogId?: string, _properties?: Record<string, string>) => {};
+const mockTrackEvent = (_action: string, _properties?: Record<string, string | number | boolean>) => {};
 
 const mockTrackFetchDependency = async (
   _name: string,
@@ -277,7 +279,7 @@ const mockTrackFetchDependency = async (
 const mockIsValidTrackablePage = (_pathname: string): boolean => false;
 
 // Enhanced helper function to track fetch requests with same operation ID
-export const trackFetchDependency = async (
+const trackFetchDependency = async (
   name: string,
   fetchPromise: Promise<Response>,
   startTime: number = Date.now(),
@@ -331,9 +333,7 @@ export const Analytics = {
   isEnabled: applicationInsightsEnabled,
   startPageTracking: applicationInsightsEnabled ? startPageTracking : mockStartPageTracking,
   stopPageTracking: applicationInsightsEnabled ? stopPageTracking : mockStopPageTracking,
-  trackUserAction: applicationInsightsEnabled ? trackUserAction : mockTrackUserAction,
-  trackDialogAction: applicationInsightsEnabled ? trackDialogAction : mockTrackDialogAction,
-  trackEvent: applicationInsights?.trackEvent.bind(applicationInsights) || noop,
+  trackEvent: applicationInsightsEnabled ? trackEvent : mockTrackEvent,
   trackException: applicationInsights?.trackException.bind(applicationInsights) || noop,
   trackDependency: applicationInsights?.trackDependencyData.bind(applicationInsights) || noop,
   trackFetchDependency: applicationInsightsEnabled ? trackFetchDependency : mockTrackFetchDependency,
