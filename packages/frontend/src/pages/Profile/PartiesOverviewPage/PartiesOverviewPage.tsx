@@ -2,6 +2,7 @@ import {
   AccountList,
   AccountListItemDetails,
   type AccountListItemProps,
+  type AvatarType,
   Heading,
   PageBase,
   PageNav,
@@ -33,7 +34,7 @@ export const PartiesOverviewPage = () => {
   const { search } = useLocation();
   const { getAccountAlertSettings, settings } = useSettings();
   const { addFavoriteParty, deleteFavoriteParty } = useProfile();
-  const { parties, selectedParties, allOrganizationsSelected, isLoading } = useParties();
+  const { parties, selectedParties, allOrganizationsSelected, isLoading, flattenedParties } = useParties();
   const [searchValue, setSearchValue] = useState<string>('');
   const [expandedItem, setExpandedItem] = useState<string>('');
 
@@ -112,11 +113,91 @@ export const PartiesOverviewPage = () => {
     ];
   };
 
+  const createSubPartyItem = (
+    subParty: { party: string; name: string },
+    parentItem: { party: string; name: string; parentId?: string },
+    currentParty: { party: string } | undefined,
+    groupId: string | undefined,
+  ) => ({
+    avatar: {
+      type: 'company' as AvatarType,
+      name: subParty.name,
+      variant: 'outline' as const,
+    },
+    title: subParty.name,
+    parentId: parentItem.parentId,
+    parentAccount: parentItem,
+    description: `${formatNorwegianId(subParty.party, false)} `,
+    selected: subParty.party === currentParty?.party,
+    onClick: () => setExpandedItem(subParty.party + groupId),
+    as: 'a' as const,
+  });
+
+  const createOrganizationItem = (
+    item: {
+      party: string;
+      name: string;
+      parentId?: string;
+      subParties?: Array<{ party: string; name: string }>;
+    },
+    currentParty: { party: string } | undefined,
+    groupId: string | undefined,
+  ) => ({
+    avatar: {
+      type: 'company' as AvatarType,
+      name: item.name,
+      variant: item.parentId ? ('outline' as const) : undefined,
+    },
+    onClick: () => setExpandedItem(item.party + groupId),
+    items: item.subParties?.map((subParty) => createSubPartyItem(subParty, item, currentParty, groupId)),
+    title: item.name,
+    description: formatNorwegianId(item.party, false),
+    selected: item.party === currentParty?.party,
+    as: 'a' as const,
+  });
+
+  const getOrganizationAccounts = (
+    currentParty: { party: string } | undefined,
+    parentParty: { party: string } | undefined,
+    flattenedParties: Array<{
+      party: string;
+      name: string;
+      parentId?: string;
+      subParties?: Array<{ party: string; name: string }>;
+    }>,
+    groupId: string | undefined,
+  ) => {
+    const organizationAccounts = parentParty
+      ? flattenedParties?.filter((item) => item.party.includes(parentParty.party)) || []
+      : flattenedParties?.filter((item) => item.party.includes(currentParty?.party ?? '')) || [];
+
+    return organizationAccounts?.map((item) => createOrganizationItem(item, currentParty, groupId));
+  };
+
   const PartyDetails = ({
     type,
     isCurrentEndUser,
     id,
   }: { type: AccountListItemType; isCurrentEndUser: boolean; id: string }) => {
+    const currentParty = flattenedParties?.find((item) => item.party === id);
+    const parentParty = flattenedParties?.find((item) => item.partyUuid === currentParty?.parentId);
+    const groupId = settings.find((item) => item.id === id)?.groupId;
+
+    const organizationAccounts = useMemo(() => {
+      if (type !== 'company') return undefined;
+      return getOrganizationAccounts(
+        currentParty,
+        parentParty,
+        flattenedParties as Array<{
+          party: string;
+          name: string;
+          parentId?: string;
+          subParties?: Array<{ party: string; name: string }>;
+        }>,
+        groupId,
+      );
+    }, [type, currentParty, parentParty, groupId]);
+
     if (isCurrentEndUser) {
       const contactSettings = settings.filter((s) => s.groupId === 'contact');
       return (
@@ -129,11 +210,13 @@ export const PartiesOverviewPage = () => {
     }
 
     if (type === 'company') {
+      const companySettings = getCompanySettings(id);
       return (
         <AccountListItemDetails
           color="company"
-          settings={getCompanySettings(id)}
+          settings={companySettings}
           buttons={getPartyButtons(isCurrentEndUser, id)}
+          organization={organizationAccounts}
         />
       );
     }

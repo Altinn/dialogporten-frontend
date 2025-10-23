@@ -26,6 +26,7 @@ interface UsePartiesOutput {
   allOrganizationsSelected: boolean;
   selectedProfile: ProfileType;
   partiesEmptyList: boolean;
+  flattenedParties: FlattenedParty[];
 }
 
 const stripQueryParamsForParty = (searchParamString: string) => {
@@ -38,6 +39,10 @@ const stripQueryParamsForParty = (searchParamString: string) => {
 const fetchParties = async (): Promise<PartyFieldsFragment[]> => {
   const response = await graphQLSDK.parties();
   return normalizeFlattenParties(response.parties);
+};
+
+type FlattenedParty = PartyFieldsFragment & {
+  parentId?: string;
 };
 
 const createPartyParams = (searchParamString: string, key: string, value: string): URLSearchParams => {
@@ -162,10 +167,22 @@ export const useParties = (): UsePartiesOutput => {
 
   const selectedProfile = allOrganizationsSelected ? 'neutral' : isCompanyProfile ? 'company' : 'person';
 
+  const flattenedParties = useMemo(() => {
+    if (!data) return [];
+    return data.flatMap((party) => [
+      party,
+      ...(party.subParties?.map((subParty) => ({
+        ...subParty,
+        parentId: party.partyUuid,
+      })) ?? []),
+    ]) as FlattenedParty[];
+  }, [data]);
+
   return {
     isLoading,
     isSuccess,
     isError,
+    flattenedParties: flattenedParties,
     selectedParties,
     selectedPartyIds: selectedParties.map((party) => party.party) ?? [],
     setSelectedParties: handleSetSelectedParties,
