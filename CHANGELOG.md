@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.89.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.89.2...v1.89.3) (2025-10-23)
+
+
+### Bug Fixes
+
+* Add extended status to detailed view ([#3011](https://github.com/Altinn/dialogporten-frontend/issues/3011)) ([72bd20f](https://github.com/Altinn/dialogporten-frontend/commit/72bd20ff50d0120cf380bf752b3855da05363e8d))
+* Set correct sender name for sub parties ([#3017](https://github.com/Altinn/dialogporten-frontend/issues/3017)) ([403449d](https://github.com/Altinn/dialogporten-frontend/commit/403449da3f4022974ee8945219b8d62bb43bcd4d))
+
 ## [1.89.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.89.1...v1.89.2) (2025-10-20)
 
 
