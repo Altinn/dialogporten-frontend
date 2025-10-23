@@ -106,10 +106,12 @@ export const useAccounts = ({
       const parts = normalized.split(/\s+/);
       const title = (partyItem.name ?? '').toString().toLowerCase();
       const parentName = (partyItem.parentName ?? '').toString().toLowerCase();
+      const description = (partyItem.description ?? '').toString().toLowerCase();
       return (
-        parts.some((part) => title.includes(part) || parentName.includes(part)) ||
+        parts.some((part) => title.includes(part) || parentName.includes(part) || description.includes(part)) ||
         title.includes(normalized) ||
-        parentName.includes(normalized)
+        parentName.includes(normalized) ||
+        description.includes(normalized)
       );
     }
     return false;
