@@ -202,7 +202,7 @@
   "inbox.unable_to_load_parties.link": "logg ut",
   "inbox.unable_to_load_parties.title": "Teknisk feil",
   "main_content_reference.error": "Ops! Noko gjekk gale med innlastinga",
-  "main_content_reference.error_message": "Vel \"oppdater\" for å hente innhaldet på nytt. Dersom problemet held fram, kontakt {sender}",
+  "main_content_reference.error_message": "Vel «oppdater» for å hente innhaldet på nytt. Viss problemet fortset, kontakt brukarstøtte.",
   "main_content_reference.refetch": "Oppdater",
   "onboarding.finish": "Ferdig",
   "onboarding.next": "Neste",
