@@ -46,7 +46,11 @@ export const AboutPage = () => {
           <List>
             <ListItem
               collapsible
-              title={<Typography maxWidth="65ch">{t('about.inbox.section.dialogs.title')}</Typography>}
+              title={
+                <Typography maxWidth="65ch">
+                  <h3>{t('about.inbox.section.dialogs.title')}</h3>
+                </Typography>
+              }
               expanded={expandInboxInfo}
               as="button"
               onClick={() => setExpandInboxInfo((prev) => !prev)}
@@ -54,12 +58,21 @@ export const AboutPage = () => {
               <Section padding={6}>
                 <Typography maxWidth="65ch">
                   <p>{t('about.inbox.section.dialogs.p1')}</p>
+                  <ul>
+                    <li>{t('about.inbox.section.dialogs.bullet1')}</li>
+                    <li>{t('about.inbox.section.dialogs.bullet2')}</li>
+                    <li>{t('about.inbox.section.dialogs.bullet3')}</li>
+                  </ul>
                 </Typography>
               </Section>
             </ListItem>
             <ListItem
               collapsible
-              title={<Typography maxWidth="65ch">{t('about.inbox.section.profile.title')}</Typography>}
+              title={
+                <Typography maxWidth="65ch">
+                  <h3>{t('about.inbox.section.profile.title')}</h3>
+                </Typography>
+              }
               expanded={expandProfileInfo}
               as="button"
               onClick={() => setExpandProfileInfo((prev) => !prev)}
@@ -67,12 +80,16 @@ export const AboutPage = () => {
               <Section padding={6}>
                 <Typography maxWidth="65ch">
                   <p>{t('about.inbox.section.profile.p1')}</p>
+                  <ul>
+                    <li>{t('about.inbox.section.profile.bullet1')}</li>
+                    <li>{t('about.inbox.section.profile.bullet2')}</li>
+                  </ul>
                 </Typography>
               </Section>
             </ListItem>
           </List>
 
-          <h2>{t('about.inbox.section.feedback.title')}</h2>
+          <h3>{t('about.inbox.section.feedback.title')}</h3>
           <p>
             {t('about.inbox.section.feedback.p1')}{' '}
             <a href="mailto:support@altinn.no">{t('about.inbox.section.feedback.email')}</a>
