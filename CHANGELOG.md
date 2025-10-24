@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.90.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.90.0...v1.90.1) (2025-10-24)
+
+
+### Bug Fixes
+
+* Implement new texts for About page ([b124b51](https://github.com/Altinn/dialogporten-frontend/commit/b124b512a3af19c33525f858a8f99901832cb84a))
+* Update MainContentRef error message ([#3043](https://github.com/Altinn/dialogporten-frontend/issues/3043)) ([08034e0](https://github.com/Altinn/dialogporten-frontend/commit/08034e0e472e2ff7752d540b2ad33e387f536d26))
+
 ## [1.90.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.89.3...v1.90.0) (2025-10-23)
 
 
