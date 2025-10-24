@@ -197,7 +197,7 @@
   "inbox.unable_to_load_parties.link": "log out",
   "inbox.unable_to_load_parties.title": "Technical Error",
   "main_content_reference.error": "Oops! Something went wrong with the loading",
-  "main_content_reference.error_message": "Select \"refresh\" to reload the content. If the problem persists, contact {sender}",
+  "main_content_reference.error_message": "Select \"refresh\" to reload the content. If the problem persists, contact user support.",
   "main_content_reference.refetch": "Refresh",
   "onboarding.finish": "Finish",
   "onboarding.next": "Next",

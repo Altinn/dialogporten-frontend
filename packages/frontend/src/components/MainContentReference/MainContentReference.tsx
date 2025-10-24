@@ -61,8 +61,7 @@ export const MainContentReference = memo(
     content,
     dialogToken,
     id,
-    sender,
-  }: { content: DialogByIdDetails['mainContentReference']; dialogToken: string; id: string; sender?: string }) => {
+  }: { content: DialogByIdDetails['mainContentReference']; dialogToken: string; id: string }) => {
     const { t } = useTranslation();
 
     const validURL = content?.url ? isValidURL(content.url) : false;
@@ -113,7 +112,7 @@ export const MainContentReference = memo(
         <Alert
           variant="danger"
           heading={t('main_content_reference.error')}
-          message={t('main_content_reference.error_message', { sender: sender ?? '' })}
+          message={t('main_content_reference.error_message')}
         >
           <Button color="neutral" variant="outline" onClick={() => refetch()}>
             {t('main_content_reference.refetch')}
