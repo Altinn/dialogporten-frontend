@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.90.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.90.1...v1.90.2) (2025-10-27)
+
+
+### Bug Fixes
+
+* About page texts ([#3050](https://github.com/Altinn/dialogporten-frontend/issues/3050)) ([322bc01](https://github.com/Altinn/dialogporten-frontend/commit/322bc0133d4e6cca4207f49081580445aa79021f))
+
 ## [1.90.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.90.0...v1.90.1) (2025-10-24)
 
 
