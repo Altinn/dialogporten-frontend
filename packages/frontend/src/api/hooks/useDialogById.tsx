@@ -44,6 +44,8 @@ export interface EmbeddedContent {
 export interface DialogByIdDetails {
   /* id of dialog */
   id: string;
+  /* serviceResourceType (source) */
+  serviceResourceType: string;
   /* summary of dialog by locale,sorted by preference */
   summary: string;
   /* sender of dialog, fallbacks to dialog's service owner */
@@ -214,6 +216,7 @@ export function mapDialogToToInboxItem(
 
   return {
     id: item.id,
+    serviceResourceType: item.serviceResourceType,
     title: getPreferredPropertyByLocale(titleObj)?.value ?? '',
     status: item.status,
     extendedStatusLabel: item.extendedStatus || undefined,
