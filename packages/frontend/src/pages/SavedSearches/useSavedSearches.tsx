@@ -18,6 +18,8 @@ import {
 import { type ChangeEvent, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps } from 'react-router-dom';
+import { Analytics } from '../../analytics';
+import { ANALYTICS_EVENTS } from '../../analyticsEvents';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { createSavedSearch, deleteSavedSearch, fetchSavedSearches, updateSavedSearch } from '../../api/queries.ts';
 import { getOrganization } from '../../api/utils/organizations.ts';
@@ -180,6 +182,15 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
         fromView: PageRoutes[viewType],
       };
       await createSavedSearch('', data);
+
+      Analytics.trackEvent(ANALYTICS_EVENTS.SAVED_SEARCH_CREATE_SUCCESS, {
+        'search.viewType': viewType,
+        'search.hasSearchString': !!enteredSearchValue,
+        'search.searchStringLength': enteredSearchValue?.length || 0,
+        'search.partyCount': selectedParties?.length || 0,
+        'search.filterCount': Object.keys(filters).length,
+      });
+
       openSnackbar({
         message: t('savedSearches.saved_success'),
         color: 'accent',
@@ -207,12 +218,18 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
     setIsCTALoading(true);
     try {
       await deleteSavedSearch(savedSearchId);
+
+      Analytics.trackEvent(ANALYTICS_EVENTS.SAVED_SEARCH_DELETE_SUCCESS, {
+        'search.id': savedSearchId,
+      });
+
       openSnackbar({
         message: t('savedSearches.deleted_success'),
         color: 'accent',
       });
       await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.SAVED_SEARCHES] });
     } catch (error) {
+      console.error('Failed to delete saved search:', error);
       logError(
         error as Error,
         {
@@ -233,13 +250,21 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
   const handleSaveTitle = async (id: number) => {
     try {
       await updateSavedSearch(id, savedSearchInputValue ?? '');
+
+      if (savedSearchInputValue) {
+        Analytics.trackEvent(ANALYTICS_EVENTS.SAVED_SEARCH_UPDATE_SUCCESS, {
+          'search.id': id,
+          'search.newTitleLength': savedSearchInputValue?.length || 0,
+        });
+      }
+
       openSnackbar({
         message: t('savedSearches.update_success'),
         color: 'accent',
       });
       void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.SAVED_SEARCHES] });
       setExpandedId('');
-    } catch {
+    } catch (error) {
       openSnackbar({
         message: t('savedSearches.update_failed'),
         color: 'danger',

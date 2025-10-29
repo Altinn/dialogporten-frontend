@@ -12,6 +12,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { type ChangeEvent, useEffect, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, Outlet, useLocation, useSearchParams } from 'react-router-dom';
+import { Analytics } from '../../analytics';
+import { ANALYTICS_EVENTS } from '../../analyticsEvents';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { updateLanguage } from '../../api/queries.ts';
 import { createHomeLink } from '../../auth';
@@ -82,9 +84,19 @@ export const PageLayout: React.FC = () => {
   }, [searchValue]);
 
   const handleUpdateLanguage = async (language: string) => {
+    const previousLanguage = i18n.language;
+
     try {
       await updateLanguage(language);
+
+      Analytics.trackEvent(ANALYTICS_EVENTS.USER_LANGUAGE_CHANGE_SUCCESS, {
+        'language.from': previousLanguage,
+        'language.to': language,
+        'language.source': 'header_picker',
+        'user.currentPage': window.location.pathname,
+      });
     } catch (error) {
+      console.error('Failed to update language:', error);
       logError(
         error as Error,
         {
@@ -140,6 +152,11 @@ export const PageLayout: React.FC = () => {
       logoutButton: {
         label: t('word.log_out'),
         onClick: () => {
+          Analytics.trackEvent(ANALYTICS_EVENTS.USER_LOGOUT, {
+            'logout.source': 'header_button',
+            'user.currentPage': window.location.pathname,
+            'session.duration': Date.now() - (window.performance?.timing?.navigationStart || 0),
+          });
           (window as Window).location = `/api/logout`;
         },
       },
