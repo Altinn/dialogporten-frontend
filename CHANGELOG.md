@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.90.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.90.4...v1.90.5) (2025-10-29)
+
+
+### Bug Fixes
+
+* **ci:** include more packages when checking for app changes ([#3067](https://github.com/Altinn/dialogporten-frontend/issues/3067)) ([ebdd29e](https://github.com/Altinn/dialogporten-frontend/commit/ebdd29e686596badc9231a9a2a45cec1a953758a))
+
 ## [1.90.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.90.3...v1.90.4) (2025-10-29)
 
 
