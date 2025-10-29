@@ -20,6 +20,12 @@ const customSchema = {
   tagNames: allowedTags,
   attributes: {
     a: ['href'],
+    th: ['align', 'className', 'style'],
+    td: ['align', 'className', 'style'],
+    table: ['className', 'style'],
+    thead: ['className', 'style'],
+    tbody: ['className', 'style'],
+    tr: ['className', 'style'],
   },
 };
 
