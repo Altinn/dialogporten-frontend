@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.90.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.90.2...v1.90.3) (2025-10-29)
+
+
+### Bug Fixes
+
+* format name and type of avatar of party representative based on actor id ([#3060](https://github.com/Altinn/dialogporten-frontend/issues/3060)) ([58102e4](https://github.com/Altinn/dialogporten-frontend/commit/58102e4651af9442e58d6a4818fd52fcd793d8ef))
+
 ## [1.90.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.90.1...v1.90.2) (2025-10-27)
 
 
