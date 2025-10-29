@@ -167,8 +167,8 @@ export const getActorProps = (actor: Actor, serviceOwner?: OrganizationOutput): 
   const type: AvatarProps['type'] = isCompany ? 'company' : 'person';
   const actorName = formatDisplayName({
     fullName: actor.actorName ?? '',
-    type: 'person',
-    reverseNameOrder: true,
+    type,
+    reverseNameOrder: !isCompany,
   });
   const senderName = actor.actorName ? actorName : isServiceOwner ? serviceOwner?.name || '' : '';
   const senderLogo = isServiceOwner ? serviceOwner?.logo : undefined;
