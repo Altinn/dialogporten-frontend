@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.90.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.90.3...v1.90.4) (2025-10-29)
+
+
+### Bug Fixes
+
+* support left, center and right alignment for tables ([#3065](https://github.com/Altinn/dialogporten-frontend/issues/3065)) ([b9ccf7b](https://github.com/Altinn/dialogporten-frontend/commit/b9ccf7b3ea160c7affb73a364841d405c6ae2584))
+
 ## [1.90.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.90.2...v1.90.3) (2025-10-29)
 
 
