@@ -6,12 +6,12 @@ on:
       infra_base_sha:
         description: "Base SHA for infrastructure changes"
         required: false
-        default: ''
+        default: ""
         type: string
       apps_base_sha:
         description: "Base SHA for application changes"
         required: false
-        default: ''
+        default: ""
         type: string
     outputs:
       hasInfrastructureChanges:
@@ -75,6 +75,8 @@ jobs:
               - '.azure/modules/**/*'
               - 'packages/bff/**/*'
               - 'packages/frontend/**/*'
+              - 'packages/embeddable-markdown-html/**/*'
+              - 'packages/fastify-graphiql/**/*'
             migrations:
               - 'packages/bff/src/migrations/**/*'
               - '.azure/applications/bff-migration-job/**/*'
