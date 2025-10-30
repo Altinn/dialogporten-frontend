@@ -7,8 +7,7 @@ export interface FeatureFlagDefinition {
 }
 
 export const featureFlagDefinitions = [
-  { key: 'profile.enableRoutes', type: 'boolean', default: false },
-  { key: 'globalMenu.enableProfileLink', type: 'boolean', default: false },
+  { key: 'party.stopReversingPersonNameOrder', type: 'boolean', default: false },
   { key: 'globalMenu.enableAccessManagementLink', type: 'boolean', default: false },
 ] as const satisfies readonly FeatureFlagDefinition[];
 

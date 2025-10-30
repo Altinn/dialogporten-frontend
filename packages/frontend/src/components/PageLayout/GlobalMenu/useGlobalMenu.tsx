@@ -20,7 +20,6 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
   const fromView = (state as { fromView?: string })?.fromView;
   const { t } = useTranslation();
   const { currentEndUser } = useParties();
-  const showProfileLink: boolean = useFeatureFlag<boolean>('globalMenu.enableProfileLink', false);
   const showAmLink: boolean = useFeatureFlag<boolean>('globalMenu.enableAccessManagementLink', false);
   const { user } = useProfile();
 
@@ -30,7 +29,6 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
     pathname,
     currentSearchQuery,
     fromView,
-    showProfileLink,
     showAmLink,
   });
 
