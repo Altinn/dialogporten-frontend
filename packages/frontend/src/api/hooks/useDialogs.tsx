@@ -3,6 +3,7 @@ import { keepPreviousData } from '@tanstack/react-query';
 import type { DialogStatus, GetAllDialogsForPartiesQuery, PartyFieldsFragment, SystemLabel } from 'bff-types-generated';
 import { useRef } from 'react';
 import { useAuthenticatedInfiniteQuery } from '../../auth/useAuthenticatedInfiniteQuery.tsx';
+import { useFeatureFlag } from '../../featureFlags';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
 import { normalizeFilterDefaults } from '../../pages/Inbox/filters.ts';
@@ -36,6 +37,7 @@ interface UseDialogsOutput {
 
 export const useDialogs = ({ parties, viewType, filterState, search, queryKey }: UseDialogsProps): UseDialogsOutput => {
   const { organizations } = useOrganizations();
+  const stopReversingPersonNameOrder = useFeatureFlag<boolean>('party.stopReversingPersonNameOrder');
   const { selectedParties } = useParties();
   const format = useFormat();
   const partiesToUse = parties ? parties : selectedParties;
@@ -94,7 +96,7 @@ export const useDialogs = ({ parties, viewType, filterState, search, queryKey }:
     data?.pages?.[data?.pages.length - 1]?.searchDialogs?.hasNextPage === true ||
     data?.pages?.[data?.pages.length - 1]?.searchDialogs?.items === null ||
     partyIds.length >= 20;
-  const dialogs = mapDialogToToInboxItems(content, parties ?? [], organizations, format);
+  const dialogs = mapDialogToToInboxItems(content, parties ?? [], organizations, format, stopReversingPersonNameOrder);
   /*  isFetching && isPlaceholderData is used to determine if we are fetching the initial data for the query key */
   const isActuallyLoading = isLoading || (isFetching && isPlaceholderData);
 

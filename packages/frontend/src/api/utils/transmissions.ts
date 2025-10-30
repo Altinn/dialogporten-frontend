@@ -108,12 +108,13 @@ const getClockFormatString = () => {
 const createTransmissionItem = (
   transmission: TransmissionFieldsFragment,
   format: FormatFunction,
+  stopReversingPersonNameOrder: boolean,
   activities?: DialogActivityFragment[],
   serviceOwner?: OrganizationOutput,
   selectedProfile?: ProfileType,
 ): TransmissionProps => {
   const formatString = getClockFormatString();
-  const sender = getActorProps(transmission.sender, serviceOwner);
+  const sender = getActorProps(transmission.sender, stopReversingPersonNameOrder, serviceOwner);
   const unread = isTransmissionUnread(transmission.id, transmission.type, activities);
 
   return {
@@ -143,10 +144,12 @@ export const getTransmissions = ({
   format,
   activities,
   serviceOwner,
+  stopReversingPersonNameOrder,
   selectedProfile,
 }: {
   transmissions: TransmissionFieldsFragment[];
   format: FormatFunction;
+  stopReversingPersonNameOrder: boolean;
   activities?: DialogActivityFragment[];
   serviceOwner?: OrganizationOutput;
   selectedProfile?: ProfileType;
@@ -155,7 +158,14 @@ export const getTransmissions = ({
     const sortedGroup = [...group].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     const [lastTransmission] = sortedGroup;
     const items: TransmissionProps[] = sortedGroup.map((transmission) =>
-      createTransmissionItem(transmission, format, activities, serviceOwner, selectedProfile),
+      createTransmissionItem(
+        transmission,
+        format,
+        stopReversingPersonNameOrder,
+        activities,
+        serviceOwner,
+        selectedProfile,
+      ),
     );
 
     return {

@@ -42,7 +42,7 @@ describe('normalizeParties', () => {
   ];
 
   it('should return sub-parties where name differs from parent', () => {
-    const result = normalizeFlattenParties(parties);
+    const result = normalizeFlattenParties(parties, false);
 
     expect(result.length).toBe(3);
     expect(result[0].name).toBe('Reiersen Edel');
@@ -51,7 +51,7 @@ describe('normalizeParties', () => {
   });
 
   it('should copy parent properties to sub-parties correctly', () => {
-    const result = normalizeFlattenParties(parties);
+    const result = normalizeFlattenParties(parties, false);
     expect(result[2].isDeleted).toBe(false);
     expect(result[2].isCurrentEndUser).toBe(false);
   });

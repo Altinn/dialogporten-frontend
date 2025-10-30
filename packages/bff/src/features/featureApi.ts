@@ -6,10 +6,8 @@ import type { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 
 const defaultFeatureFlags: Record<string, boolean | number | string> = {
-  'profile.enableRoutes': false,
-  'globalMenu.enableProfileLink': false,
   'globalMenu.enableAccessManagementLink': false,
-  'profile.enableNotificationsPage': false,
+  'party.stopReversingPersonNameOrder': false,
   'debug.test': false, // only used for debugging
 };
 

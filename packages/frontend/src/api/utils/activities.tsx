@@ -68,6 +68,7 @@ export const getDialogHistoryForActivities = (
   activities: DialogActivityFragment[],
   format: FormatFunction,
   transmissions: TransmissionFieldsFragment[],
+  stopReversingPersonNameOrder: boolean,
   serviceOwner?: OrganizationOutput,
 ): ActivityLogItemProps[] => {
   return activities.map((activity) => {
@@ -76,7 +77,7 @@ export const getDialogHistoryForActivities = (
     const description = getPreferredPropertyByLocale(activity.description)?.value;
     const relatedTransmission = transmissions.find((transmission) => transmission.id === activity.transmissionId);
     const transmissionTitle = getPreferredPropertyByLocale(relatedTransmission?.content.title.value)?.value;
-    const actorProps: AvatarProps = getActorProps(activity.performedBy, serviceOwner);
+    const actorProps: AvatarProps = getActorProps(activity.performedBy, stopReversingPersonNameOrder, serviceOwner);
     return {
       id: activity.id,
       summary: getActivityText(activity, actorProps, description, transmissionTitle),
@@ -109,6 +110,7 @@ export type ActivityLogEntry =
  * @param format - The function to format dates.
  * @param serviceOwner - Optional service owner organization details.
  * @param selectedProfile - Optional selected party profile.
+ * @param stopReversingPersonNameOrder
  * @returns An array of activity and transmission log entries, sorted by date (descending).
  */
 export const getActivityHistory = ({
@@ -117,10 +119,12 @@ export const getActivityHistory = ({
   format,
   serviceOwner,
   selectedProfile,
+  stopReversingPersonNameOrder,
 }: {
   activities: DialogActivityFragment[];
   transmissions: TransmissionFieldsFragment[];
   format: FormatFunction;
+  stopReversingPersonNameOrder: boolean;
   serviceOwner?: OrganizationOutput;
   selectedProfile?: ProfileType;
 }): ActivityLogEntry[] => {
@@ -128,6 +132,7 @@ export const getActivityHistory = ({
     activities,
     format,
     transmissions,
+    stopReversingPersonNameOrder,
     serviceOwner,
   ).map((activity) => ({
     id: activity.id ?? '',
@@ -140,6 +145,7 @@ export const getActivityHistory = ({
     transmissions,
     format,
     activities,
+    stopReversingPersonNameOrder,
     serviceOwner,
     selectedProfile,
   }).map((transmission) => ({

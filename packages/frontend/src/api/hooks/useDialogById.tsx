@@ -16,6 +16,7 @@ import { t } from 'i18next';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import type { DialogActionProps } from '../../components';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
+import { useFeatureFlag } from '../../featureFlags';
 import { type ValueType, getPreferredPropertyByLocale } from '../../i18n/property.ts';
 import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
@@ -160,17 +161,23 @@ const getMainContentReference = (
  *   but is generally expected to be set for transmissions.
  *
  * @param actor        The actor object describing who performed or sent the action.
+ * @param stopReversingPersonNameOrder
  * @param serviceOwner Optional service owner metadata used for name/logo fallback.
  * @returns Normalized avatar props (`name`, `type`, `imageUrl`, `imageUrlAlt`).
  */
-export const getActorProps = (actor: Actor, serviceOwner?: OrganizationOutput): AvatarProps => {
+
+export const getActorProps = (
+  actor: Actor,
+  stopReversingPersonNameOrder: boolean,
+  serviceOwner?: OrganizationOutput,
+): AvatarProps => {
   const isServiceOwner = actor.actorType === ActorType.ServiceOwner;
   const isCompany = isServiceOwner || (actor.actorId ?? '').includes('urn:altinn:organization:');
   const type: AvatarProps['type'] = isCompany ? 'company' : 'person';
   const actorName = formatDisplayName({
     fullName: actor.actorName ?? '',
     type,
-    reverseNameOrder: !isCompany,
+    reverseNameOrder: stopReversingPersonNameOrder ? false : !isCompany,
   });
   const senderName = actor.actorName ? actorName : isServiceOwner ? serviceOwner?.name || '' : '';
   const senderLogo = isServiceOwner ? serviceOwner?.logo : undefined;
@@ -189,6 +196,7 @@ export function mapDialogToToInboxItem(
   parties: PartyFieldsFragment[],
   organizations: OrganizationFieldsFragment[],
   format: FormatFunction,
+  stopReversingPersonNameOrder: boolean,
   selectedProfile: ProfileType,
 ): DialogByIdDetails | undefined {
   if (!item) {
@@ -210,6 +218,7 @@ export function mapDialogToToInboxItem(
     transmissions: item.transmissions,
     format,
     activities: item.activities,
+    stopReversingPersonNameOrder,
     serviceOwner,
     selectedProfile,
   });
@@ -272,13 +281,18 @@ export function mapDialogToToInboxItem(
         isEndUser: seen.isCurrentEndUser,
         name: seen?.isCurrentEndUser
           ? (endUserParty?.name ?? '')
-          : formatDisplayName({ fullName: seen?.seenBy?.actorName ?? '', type: 'person', reverseNameOrder: true }),
+          : formatDisplayName({
+              fullName: seen?.seenBy?.actorName ?? '',
+              type: 'person',
+              reverseNameOrder: !stopReversingPersonNameOrder,
+            }),
         seenAt: seen.seenAt,
         seenAtLabel: format(seen.seenAt, formatString),
         type: 'person',
       })),
     },
     activityHistory: getActivityHistory({
+      stopReversingPersonNameOrder,
       activities: item.activities,
       transmissions: item.transmissions,
       format,
@@ -297,6 +311,7 @@ export function mapDialogToToInboxItem(
 export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseDialogByIdOutput => {
   const format = useFormat();
   const { organizations, isLoading: isOrganizationsLoading } = useOrganizations();
+  const stopReversingPersonNameOrder = useFeatureFlag<boolean>('party.stopReversingPersonNameOrder');
   const { selectedProfile } = useParties();
   const partyURIs = parties.map((party) => party.party);
   const { data, isSuccess, isLoading, isError } = useAuthenticatedQuery<GetDialogByIdQuery>({
@@ -319,7 +334,14 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
   return {
     isLoading,
     isSuccess,
-    dialog: mapDialogToToInboxItem(data?.dialogById.dialog, parties, organizations, format, selectedProfile),
+    dialog: mapDialogToToInboxItem(
+      data?.dialogById.dialog,
+      parties,
+      organizations,
+      format,
+      stopReversingPersonNameOrder,
+      selectedProfile,
+    ),
     isError,
     isAuthLevelTooLow:
       data?.dialogById?.errors?.some((error) => error.__typename === 'DialogByIdForbiddenAuthLevelTooLow') ?? false,
