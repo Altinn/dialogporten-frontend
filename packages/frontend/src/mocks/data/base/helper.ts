@@ -362,6 +362,7 @@ export const getMockedTransmissions = (dialogId: string) => {
 export const convertToDialogByIdTemplate = (input: SearchDialogFieldsFragment): DialogByIdFieldsFragment => {
   return {
     id: input.id,
+    serviceResourceType: 'example',
     dialogToken: 'MOCKED_DIALOG_TOKEN',
     party: input.party,
     org: input.org,

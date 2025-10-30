@@ -79,11 +79,31 @@ export interface DialogActionProps {
   hidden?: boolean;
 }
 
+const addReceiptReturnUrl = (url: string, param = 'returnUrl') => {
+  const receiptURL = new URL(url);
+  const gotoParam = receiptURL.searchParams.get('goto');
+
+  if (!gotoParam) {
+    // more future-safe when redirect with goto no longer is necessary
+    receiptURL.searchParams.set(param, encodeURIComponent(location.href));
+    return receiptURL.toString();
+  }
+
+  const innerUrl = new URL(decodeURIComponent(gotoParam));
+  innerUrl.searchParams.set(param, location.href);
+
+  const encodedInner = encodeURIComponent(innerUrl.toString());
+  receiptURL.search = receiptURL.search.replace(/(goto=)[^&]+/, `$1${encodedInner}`);
+
+  return receiptURL.toString();
+};
+
 const handleDialogActionClick = async (
   props: DialogActionProps,
   dialogToken: string,
   responseFinished: () => void,
   logError: (error: Error, context?: Record<string, unknown>, errorMessage?: string) => void,
+  isApp: boolean,
 ): Promise<void> => {
   const { url, httpMethod, prompt } = props;
 
@@ -94,7 +114,7 @@ const handleDialogActionClick = async (
 
   if (httpMethod === 'GET') {
     responseFinished();
-    window.open(url, '_blank');
+    window.location.href = isApp ? addReceiptReturnUrl(url) : url;
   } else {
     try {
       const response = await Analytics.trackFetchDependency(
@@ -251,7 +271,7 @@ export const DialogDetails = ({
   const formatString = clockPrefix ? `do MMMM yyyy '${clockPrefix}' HH.mm` : `do MMMM yyyy HH.mm`;
   const dueAtLabel = dialog.dueAt ? t('dialog.due_at', { date: format(dialog.dueAt, formatString) }) : '';
   const numberOfTransmissionGroups = 3;
-
+  const isApp = dialog.serviceResourceType === 'altinnapp';
   const dialogActions: DialogActionButtonProps[] = dialog.guiActions.map((action) => ({
     id: action.id,
     label: action.title,
@@ -261,7 +281,7 @@ export const DialogDetails = ({
     hidden: action.hidden,
     onClick: () => {
       setActionIdLoading(action.id);
-      void handleDialogActionClick(action, dialog.dialogToken, () => setActionIdLoading(''), logError);
+      void handleDialogActionClick(action, dialog.dialogToken, () => setActionIdLoading(''), logError, isApp);
     },
   }));
 
