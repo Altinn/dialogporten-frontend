@@ -123,11 +123,16 @@ const handleDialogActionClick = async (
           method: httpMethod,
           headers: {
             Authorization: `Bearer ${dialogToken}`,
+            Accept: 'application/json',
           },
         }),
       );
 
       if (!response.ok) {
+        let responseBody = '';
+        try {
+          responseBody = await response.text();
+        } catch {}
         logError(
           new Error(`HTTP ${response.status}: ${response.statusText}`),
           {
@@ -136,6 +141,7 @@ const handleDialogActionClick = async (
             httpMethod,
             status: response.status,
             statusText: response.statusText,
+            responseBody,
           },
           `Dialog action failed: ${response.statusText}`,
         );
