@@ -54,7 +54,7 @@ export const getOrCreateProfile = async (context: Context): Promise<ProfileTable
 
   if (!pid) {
     logger.error('No pid provided');
-    throw new Error('PID is required to get or create a profile');
+    throw new Error('PID is required to get or create a profile: ' + JSON.stringify(context.session));
   }
   const profile = await ProfileRepository!.createQueryBuilder('profile').where('profile.pid = :pid', { pid }).getOne();
   const exchangedToken = await exchangeToken(context);
