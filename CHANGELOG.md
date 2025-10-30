@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.91.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.90.5...v1.91.0) (2025-10-30)
+
+
+### Features
+
+* Add returnUrl parameter on URLs to apps with receipt to ensure that closing receipt returns back to correct inbox ([#3070](https://github.com/Altinn/dialogporten-frontend/issues/3070)) ([ad558e6](https://github.com/Altinn/dialogporten-frontend/commit/ad558e662ee335f0176707f36b6bac47a1c200e4))
+
 ## [1.90.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.90.4...v1.90.5) (2025-10-29)
 
 
