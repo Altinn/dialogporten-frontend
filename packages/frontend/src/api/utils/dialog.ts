@@ -60,6 +60,7 @@ export function mapDialogToToInboxItems(
     const summaryObj = item.content.summary?.value;
     const endUserParty = parties?.find((party) => party.isCurrentEndUser);
     const senderName = item.content.senderName?.value;
+    const extendedStatusObj = item.content.extendedStatus?.value;
 
     const dialogReceiverParty = parties?.find((party) => party.party === item.party);
     const dialogReceiverSubParty = parties
@@ -96,7 +97,7 @@ export function mapDialogToToInboxItems(
       guiAttachmentCount: item.guiAttachmentCount ?? 0,
       createdAt: item.createdAt,
       status: item.status ?? 'UnknownStatus',
-      extendedStatus: item.extendedStatus || undefined,
+      extendedStatus: getPreferredPropertyByLocale(extendedStatusObj)?.value || undefined,
       isSeenByEndUser,
       label: item.endUserContext?.systemLabels,
       org: item.org,
