@@ -13,7 +13,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0, contentUpdatedAt: "2024-01-15T11:34:00.000Z", guiAttachmentCount: 1,
     status: DialogStatus.RequiresAttention,
     createdAt: '2023-12-23T23:00:00.000Z',
-    extendedStatus: 'Extended status',
+    extendedStatus: null,
     seenSinceLastContentUpdate: [
       {
         id: 'c4f4d846-2fe7-4172-badc-abc48f9af8a5',
@@ -71,7 +71,19 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         ],
       },
       senderName: null,
-      extendedStatus: null,
+      extendedStatus: {
+        mediaType: 'text/plain',
+        value: [
+          {
+            value: 'Extended status',
+            languageCode: 'nb',
+          },
+          {
+            value: 'Extended status',
+            languageCode: 'en',
+          },
+        ],
+      },
     },
   },
   {

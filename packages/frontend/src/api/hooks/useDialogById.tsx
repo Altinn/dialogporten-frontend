@@ -213,6 +213,7 @@ export function mapDialogToToInboxItem(
   const actualRecipientParty = dialogRecipientParty ?? endUserParty;
   const serviceOwner = getOrganization(organizations || [], item.org);
   const senderName = item.content.senderName?.value;
+  const extendedStatusObj = item.content.extendedStatus?.value;
   const { seenByLabel } = getSeenByLabel(item.seenSinceLastContentUpdate, t);
   const transmissions = getTransmissions({
     transmissions: item.transmissions,
@@ -228,7 +229,7 @@ export function mapDialogToToInboxItem(
     serviceResourceType: item.serviceResourceType,
     title: getPreferredPropertyByLocale(titleObj)?.value ?? '',
     status: item.status,
-    extendedStatusLabel: item.extendedStatus || undefined,
+    extendedStatusLabel: getPreferredPropertyByLocale(extendedStatusObj)?.value || undefined,
     summary: getPreferredPropertyByLocale(summaryObj)?.value ?? '',
     sentCount: item.fromPartyTransmissionsCount ?? 0,
     receivedCount: item.fromServiceOwnerTransmissionsCount ?? 0,
