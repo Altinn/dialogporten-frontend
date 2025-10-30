@@ -126,10 +126,9 @@ export const handleLogout = async (request: FastifyRequest, reply: FastifyReply)
   if (token?.id_token) {
     const logoutRedirectUrl = `https://login.${oidc_url}/logout?post_logout_redirect_uri=${logoutRedirectUri}&id_token_hint=${token.id_token}`;
     await request.session.destroy();
-    reply.redirect(logoutRedirectUrl);
-  } else {
-    reply.code(401);
+    return reply.redirect(logoutRedirectUrl);
   }
+  return reply.code(401).send('Unauthorized: No token found');
 };
 
 export const handleFrontChannelLogout = async (request: FastifyRequest, reply: FastifyReply) => {
@@ -232,24 +231,20 @@ export const handleAuthRequest = async (request: FastifyRequest, reply: FastifyR
     const basicAuthString = `${client_id}:${client_secret}`;
     const authEncoded = `Basic ${Buffer.from(basicAuthString).toString('base64')}`;
 
-    // Send authorization request
-    const { data: token } = await axios.post(
-      tokenEndpoint,
-      {
-        grant_type: 'authorization_code',
-        client_id: client_id,
-        code_verifier: codeVerifier,
-        code: authorizationCode,
-        storedNonceTruth,
-        redirect_uri: `${hostname}/api/cb`,
+    const body = new URLSearchParams();
+    body.append('grant_type', 'authorization_code');
+    body.append('client_id', client_id);
+    body.append('code_verifier', codeVerifier);
+    body.append('code', authorizationCode);
+    body.append('storedNonceTruth', storedNonceTruth);
+    body.append('redirect_uri', `${hostname}/api/cb`);
+
+    const { data: token } = await axios.post(tokenEndpoint, body, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Authorization: authEncoded,
       },
-      {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: authEncoded,
-        },
-      },
-    );
+    });
 
     const customToken: IdportenToken = token as unknown as IdportenToken;
     const decodedIDToken = jwt.decode(customToken.id_token) as IdTokenPayload;
@@ -288,14 +283,17 @@ export const handleAuthRequest = async (request: FastifyRequest, reply: FastifyR
       await redisClient.set(`idp-sid:${idpSid}`, appSessionId, 'EX', 3600 * 8);
     }
 
-    reply.redirect('/');
+    return reply.redirect('/');
   } catch (e: unknown) {
     if (axios.isAxiosError(e)) {
       logger.error({ data: e.response?.data }, 'handleAuthRequest error e.data');
     } else {
       logger.error(e, 'handleAuthRequest error');
     }
-    throw e;
+    if (!reply.sent) {
+      return reply.code(500).send('Authentication error');
+    }
+    return;
   }
 };
 
@@ -329,12 +327,12 @@ const redirectToAuthorizationURI = async (request: FastifyRequest, reply: Fastif
   const authUrl = buildAuthorizationUrl(providerConfig, parameters);
 
   const redirectTo: URL = new URL(authUrl);
-  reply.redirect(redirectTo.href);
+  return reply.redirect(redirectTo.href);
 };
 
 const plugin: FastifyPluginAsync<CustomOICDPluginOptions> = async (fastify, options) => {
   fastify.get('/api/login', async (request: FastifyRequest, reply: FastifyReply) => {
-    await redirectToAuthorizationURI(request, reply);
+    return redirectToAuthorizationURI(request, reply);
   });
 
   /* Post login: retrieves token, stores values to user session and redirects to client */
@@ -349,7 +347,7 @@ const plugin: FastifyPluginAsync<CustomOICDPluginOptions> = async (fastify, opti
     }
 
     /* Handle the callback from the OIDC provider */
-    await handleAuthRequest(request, reply);
+    return handleAuthRequest(request, reply);
   });
 
   fastify.get('/api/logout', { preHandler: fastify.verifyToken(false) }, handleLogout);
