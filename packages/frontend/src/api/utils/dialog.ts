@@ -54,6 +54,7 @@ export function mapDialogToToInboxItems(
   parties: PartyFieldsFragment[],
   organizations: OrganizationFieldsFragment[],
   format: FormatFunction,
+  stopReversingPersonNameOrder: boolean,
 ): InboxItemInput[] {
   return input.map((item) => {
     const titleObj = item.content.title.value;
@@ -111,7 +112,7 @@ export function mapDialogToToInboxItems(
           const actorName = formatDisplayName({
             fullName: seenBy?.seenBy?.actorName ?? '',
             type: 'person',
-            reverseNameOrder: true,
+            reverseNameOrder: !stopReversingPersonNameOrder,
           });
           return {
             id: seenBy.id,

@@ -23,7 +23,6 @@ export function buildInboxMenu({
   pathname,
   currentSearchQuery,
   fromView,
-  showProfileLink,
   showAmLink,
 }: {
   t: (key: string, vars?: Record<string, string>) => string;
@@ -31,7 +30,6 @@ export function buildInboxMenu({
   pathname: string;
   currentSearchQuery: string;
   fromView?: string;
-  showProfileLink: boolean;
   showAmLink?: boolean;
 }): UseGlobalMenuProps {
   const menuGroups = {
@@ -198,7 +196,6 @@ export function buildInboxMenu({
         }),
         icon: PersonCircleIcon,
         iconTheme: 'transparent',
-        hidden: !showProfileLink,
         title: t('sidebar.profile'),
         selected: false,
         expanded: true,

@@ -3,6 +3,7 @@ import { useEffect, useMemo } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
+import { useFeatureFlag } from '../../featureFlags';
 import {
   getSelectedAllPartiesFromQueryParams,
   getSelectedPartyFromQueryParams,
@@ -36,11 +37,6 @@ const stripQueryParamsForParty = (searchParamString: string) => {
   return params.toString();
 };
 
-const fetchParties = async (): Promise<PartyFieldsFragment[]> => {
-  const response = await graphQLSDK.parties();
-  return normalizeFlattenParties(response.parties);
-};
-
 type FlattenedParty = PartyFieldsFragment & {
   parentId?: string;
 };
@@ -55,6 +51,7 @@ const createPartyParams = (searchParamString: string, key: string, value: string
 
 export const useParties = (): UsePartiesOutput => {
   const location = useLocation();
+  const stopReversingPersonNameOrder = useFeatureFlag<boolean>('party.stopReversingPersonNameOrder');
   const [searchParams, setSearchParams] = useSearchParams();
   const [allOrganizationsSelected, setAllOrganizationsSelected] = useGlobalState<boolean>(
     QUERY_KEYS.ALL_ORGANIZATIONS_SELECTED,
@@ -72,7 +69,10 @@ export const useParties = (): UsePartiesOutput => {
 
   const { data, isLoading, isSuccess, isError } = useAuthenticatedQuery<PartyFieldsFragment[]>({
     queryKey: [QUERY_KEYS.PARTIES],
-    queryFn: fetchParties,
+    queryFn: async () => {
+      const response = await graphQLSDK.parties();
+      return normalizeFlattenParties(response.parties, stopReversingPersonNameOrder);
+    },
     staleTime: Number.POSITIVE_INFINITY,
     gcTime: Number.POSITIVE_INFINITY,
     retry: 2,

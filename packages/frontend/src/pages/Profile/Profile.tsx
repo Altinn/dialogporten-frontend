@@ -2,6 +2,7 @@ import { DashboardHeader, PageBase, SettingsList } from '@altinn/altinn-componen
 import { formatDisplayName } from '@altinn/altinn-components';
 import { t } from 'i18next';
 import { formatSSN } from '../../components/PageLayout/Accounts/useAccounts.tsx';
+import { useFeatureFlag } from '../../featureFlags';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
 import { useProfileOnboarding } from '../../onboardingTour/useProfileOnboarding';
 import { SettingsType, useSettings } from './Settings/useSettings.tsx';
@@ -9,6 +10,7 @@ import { useProfile } from './useProfile';
 
 export const Profile = () => {
   const { user, isLoading } = useProfile();
+  const stopReversingPersonNameOrder = useFeatureFlag<boolean>('party.stopReversingPersonNameOrder');
   const { settings } = useSettings({
     options: {
       includeGroups: [SettingsType.contact],
@@ -21,7 +23,7 @@ export const Profile = () => {
   const userDisplayName = formatDisplayName({
     fullName: user?.party?.name ?? '',
     type: 'person',
-    reverseNameOrder: true,
+    reverseNameOrder: !stopReversingPersonNameOrder,
   });
 
   return (

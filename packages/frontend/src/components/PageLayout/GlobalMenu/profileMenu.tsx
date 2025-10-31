@@ -10,7 +10,7 @@ import {
   LeaveIcon,
   PersonCircleIcon,
 } from '@navikt/aksel-icons';
-import { createMessageBoxLink } from '../../../auth/index.ts';
+import { createMessageBoxLink } from '../../../auth';
 import { pruneSearchQueryParams } from '../../../pages/Inbox/queryParams.ts';
 import { PageRoutes } from '../../../pages/routes.ts';
 import { createMenuItemComponent, isRouteSelected } from './shared.tsx';
@@ -21,6 +21,7 @@ export function buildProfileMenu({
   currentEndUserName,
   pathname,
   currentSearchQuery,
+  stopReversingPersonNameOrder,
   fromView,
   userName,
   showAmLink = false,
@@ -29,6 +30,7 @@ export function buildProfileMenu({
   currentEndUserName?: string;
   pathname: string;
   currentSearchQuery: string;
+  stopReversingPersonNameOrder: boolean;
   fromView?: string;
   userName?: string;
   showAmLink?: boolean;
@@ -81,7 +83,7 @@ export function buildProfileMenu({
         name: formatDisplayName({
           fullName: userName ?? '',
           type: 'person',
-          reverseNameOrder: true,
+          reverseNameOrder: !stopReversingPersonNameOrder,
         }),
       },
       title: t('sidebar.profile'),

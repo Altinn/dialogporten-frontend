@@ -16,11 +16,11 @@ export interface UseGlobalMenuProps {
 
 export const useGlobalMenu = (): UseGlobalMenuProps => {
   const { pathname, search: currentSearchQuery, state } = useLocation();
+  const stopReversingPersonNameOrder = useFeatureFlag<boolean>('party.stopReversingPersonNameOrder');
   const isProfile = pathname.includes(PageRoutes.profile);
   const fromView = (state as { fromView?: string })?.fromView;
   const { t } = useTranslation();
   const { currentEndUser } = useParties();
-  const showProfileLink: boolean = useFeatureFlag<boolean>('globalMenu.enableProfileLink', false);
   const showAmLink: boolean = useFeatureFlag<boolean>('globalMenu.enableAccessManagementLink', false);
   const { user } = useProfile();
 
@@ -30,7 +30,6 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
     pathname,
     currentSearchQuery,
     fromView,
-    showProfileLink,
     showAmLink,
   });
 
@@ -39,6 +38,7 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
     currentEndUserName: currentEndUser?.name,
     pathname,
     currentSearchQuery,
+    stopReversingPersonNameOrder,
     fromView,
     userName: user?.party?.name ?? '',
     showAmLink,

@@ -30,11 +30,8 @@ async function loadFeatures() {
   try {
     if (window.location.pathname === '/logout') {
       return {
-        'profile.enableRoutes': false,
-        'globalMenu.enableProfileLink': false,
         'globalMenu.enableAccessManagementLink': false,
-        'profile.enableNotificationsPage': false,
-        'debug.test': false,
+        'party.stopReversingPersonNameOrder': false,
       };
     }
     return await loadFeatureFlags();
