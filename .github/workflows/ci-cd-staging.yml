@@ -115,8 +115,6 @@ jobs:
       version: ${{ github.event.client_payload.version }}
       pathToPackage: packages/node-logger
       ref: "refs/tags/v${{ github.event.client_payload.version }}"
-    secrets:
-      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   send-slack-message-on-failure:
     name: Send Slack message on failure
