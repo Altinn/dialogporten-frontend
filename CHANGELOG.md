@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.92.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.91.0...v1.92.0) (2025-10-31)
+
+
+### Features
+
+* add feature-flag for not reversing person names due to ongoing API changes ([#3079](https://github.com/Altinn/dialogporten-frontend/issues/3079)) ([68f2928](https://github.com/Altinn/dialogporten-frontend/commit/68f29284f1f688f53fc7a1a720c343934ff6b833))
+
+
+### Bug Fixes
+
+* Change root with content extendedStatus ([#3072](https://github.com/Altinn/dialogporten-frontend/issues/3072)) ([80807c9](https://github.com/Altinn/dialogporten-frontend/commit/80807c9bb3d7853702f02650b45733bae00cc8f8))
+
 ## [1.91.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.90.5...v1.91.0) (2025-10-30)
 
 
