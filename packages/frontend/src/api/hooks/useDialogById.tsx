@@ -1,5 +1,6 @@
 import type { AttachmentLinkProps, AvatarProps, SeenByLogProps } from '@altinn/altinn-components';
 import { formatDisplayName } from '@altinn/altinn-components';
+import { QueryClient } from '@tanstack/react-query';
 import {
   type Actor,
   ActorType,
@@ -13,6 +14,7 @@ import {
   SystemLabel,
 } from 'bff-types-generated';
 import { t } from 'i18next';
+import { useEffect } from 'react';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import type { DialogActionProps } from '../../components';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
@@ -319,6 +321,7 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
     queryKey: [QUERY_KEYS.DIALOG_BY_ID, id, organizations],
     staleTime: 1000 * 60 * 30,
     refetchInterval: 1000 * 60 * 10,
+    refetchOnMount: 'always',
     refetchOnWindowFocus: false,
     retry: 3,
     queryFn: () =>
