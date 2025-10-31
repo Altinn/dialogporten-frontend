@@ -13,9 +13,6 @@ on:
         required: false
         type: string
         default: ${{ github.ref }}
-    secrets:
-      NPM_TOKEN:
-        required: true
 
 env:
   WORKING_DIRECTORY: ${{ inputs.pathToPackage }}
@@ -34,7 +31,7 @@ jobs:
         with:
           ref: ${{ inputs.ref }}
 
-      - name: 'Setting up Node'
+      - name: "Setting up Node"
         uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
         with:
           node-version-file: .node-version
@@ -54,8 +51,6 @@ jobs:
             echo "version-exists=false" >> $GITHUB_OUTPUT
             echo "Version ${{ inputs.version }} does not exist"
           fi
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   publish-to-npm:
     runs-on: ubuntu-latest
@@ -67,7 +62,7 @@ jobs:
         with:
           ref: ${{ inputs.ref }}
 
-      - name: 'Installing Dependencies'
+      - name: "Installing Dependencies"
         uses: ./.github/actions/install
 
       - name: Update package version
@@ -78,6 +73,4 @@ jobs:
 
       - name: Publish package
         run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         working-directory: ${{ env.WORKING_DIRECTORY }}
