@@ -41,6 +41,7 @@ interface DialogDetailsProps {
   isAuthLevelTooLow?: boolean;
   isLoading?: boolean;
   subscriptionOpened?: boolean;
+  dialogToken?: string;
 }
 
 /**
@@ -167,6 +168,7 @@ export const DialogDetails = ({
   isLoading,
   isAuthLevelTooLow,
   activityModalProps,
+  dialogToken,
   subscriptionOpened,
 }: DialogDetailsProps): ReactElement => {
   const { t } = useTranslation();
@@ -187,17 +189,19 @@ export const DialogDetails = ({
       items: transmission.items?.map((item, index) => {
         return {
           ...item,
-          children: dialog.contentReferenceForTransmissions[item.id as string] ? (
-            <MainContentReference
-              id={item.id ?? `${transmission.id}-${index}`}
-              content={dialog.contentReferenceForTransmissions[item.id as string]}
-              dialogToken={dialog.dialogToken}
-            />
-          ) : null,
+          children: dialog.contentReferenceForTransmissions[item.id as string]
+            ? dialogToken && (
+                <MainContentReference
+                  id={item.id ?? `${transmission.id}-${index}`}
+                  content={dialog.contentReferenceForTransmissions[item.id as string]}
+                  dialogToken={dialogToken}
+                />
+              )
+            : null,
         };
       }),
     }));
-  }, [dialog]);
+  }, [dialog, dialogToken]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: no need with format
   const activityHistoryItems: ActivityLogSegmentProps[] = useMemo(() => {
@@ -220,19 +224,21 @@ export const DialogDetails = ({
             <TransmissionList
               items={dialogHistoryItem.items.map((item) => ({
                 ...item,
-                children: dialog.contentReferenceForTransmissions[item.id as string] ? (
-                  <MainContentReference
-                    id={item.id}
-                    content={dialog.contentReferenceForTransmissions[item.id as string]}
-                    dialogToken={dialog.dialogToken}
-                  />
-                ) : null,
+                children: dialog.contentReferenceForTransmissions[item.id as string]
+                  ? dialogToken && (
+                      <MainContentReference
+                        id={item.id}
+                        content={dialog.contentReferenceForTransmissions[item.id as string]}
+                        dialogToken={dialogToken}
+                      />
+                    )
+                  : null,
               }))}
             />
           ) : null,
       };
     });
-  }, [dialog]);
+  }, [dialog, dialogToken]);
 
   if (isLoading) {
     return (
@@ -287,7 +293,7 @@ export const DialogDetails = ({
     hidden: action.hidden,
     onClick: () => {
       setActionIdLoading(action.id);
-      void handleDialogActionClick(action, dialog.dialogToken, () => setActionIdLoading(''), logError, isApp);
+      dialogToken && void handleDialogActionClick(action, dialogToken, () => setActionIdLoading(''), logError, isApp);
     },
   }));
 
@@ -329,8 +335,8 @@ export const DialogDetails = ({
         seenByLog={dialog.seenByLog}
       >
         <p>{dialog.summary}</p>
-        {subscriptionOpened && (
-          <MainContentReference content={dialog.mainContentReference} dialogToken={dialog.dialogToken} id={dialog.id} />
+        {subscriptionOpened && dialogToken && (
+          <MainContentReference content={dialog.mainContentReference} dialogToken={dialogToken} id={dialog.id} />
         )}
         {dialog.attachments.length > 0 && (
           <DialogAttachments

@@ -98,6 +98,7 @@ interface UseDialogByIdOutput {
   isSuccess: boolean;
   isError: boolean;
   isLoading: boolean;
+  dataUpdatedAt: number;
   dialog?: DialogByIdDetails;
   isAuthLevelTooLow?: boolean;
 }
@@ -315,10 +316,11 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
   const stopReversingPersonNameOrder = useFeatureFlag<boolean>('party.stopReversingPersonNameOrder');
   const { selectedProfile } = useParties();
   const partyURIs = parties.map((party) => party.party);
-  const { data, isSuccess, isLoading, isError } = useAuthenticatedQuery<GetDialogByIdQuery>({
+  const { data, isSuccess, isLoading, isError, dataUpdatedAt } = useAuthenticatedQuery<GetDialogByIdQuery>({
     queryKey: [QUERY_KEYS.DIALOG_BY_ID, id, organizations],
     staleTime: 1000 * 60 * 30,
     refetchInterval: 1000 * 60 * 10,
+    refetchOnMount: 'always',
     refetchOnWindowFocus: false,
     retry: 3,
     queryFn: () =>
@@ -329,7 +331,7 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
   });
 
   if (isOrganizationsLoading) {
-    return { isLoading: true, isError: false, isSuccess: false };
+    return { isLoading: true, isError: false, isSuccess: false, dataUpdatedAt: Date.now() };
   }
 
   return {
@@ -343,6 +345,7 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
       stopReversingPersonNameOrder,
       selectedProfile,
     ),
+    dataUpdatedAt,
     isError,
     isAuthLevelTooLow:
       data?.dialogById?.errors?.some((error) => error.__typename === 'DialogByIdForbiddenAuthLevelTooLow') ?? false,
