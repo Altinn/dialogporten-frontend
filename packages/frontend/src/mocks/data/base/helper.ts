@@ -413,7 +413,6 @@ export const convertToDialogByIdTemplate = (input: SearchDialogFieldsFragment): 
     status: input.status,
     createdAt: input.createdAt,
     contentUpdatedAt: input.contentUpdatedAt,
-    extendedStatus: input.extendedStatus,
     content: {
       title: input.content.title,
       summary: input.content.summary,

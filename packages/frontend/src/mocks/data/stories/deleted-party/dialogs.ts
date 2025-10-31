@@ -16,7 +16,6 @@ progress: 10,
     guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2024-12-06T12:13:47.153Z',
-    extendedStatus: null,
     content: {
       title: {
         mediaType: 'text/plain',
@@ -65,7 +64,6 @@ progress: 10,
     guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2024-12-06T12:13:16.560Z',
-    extendedStatus: null,
     content: {
       title: {
         mediaType: 'text/plain',
@@ -114,7 +112,6 @@ progress: 10,
     guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2024-12-06T12:12:50.334Z',
-    extendedStatus: null,
     content: {
       title: {
         mediaType: 'text/plain',
@@ -163,7 +160,6 @@ progress: 10,
     guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2024-12-06T12:12:13.052Z',
-    extendedStatus: null,
     content: {
       title: {
         mediaType: 'text/plain',
@@ -212,7 +208,6 @@ progress: 10,
     guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2024-12-06T12:11:46.929Z',
-    extendedStatus: null,
 
     content: {
       title: {
@@ -262,7 +257,6 @@ progress: 10,
     guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2024-12-06T12:11:18.314Z',
-    extendedStatus: null,
     content: {
       title: {
         mediaType: 'text/plain',
@@ -311,7 +305,6 @@ progress: 10,
     guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2024-12-06T12:10:50.693Z',
-    extendedStatus: null,
     content: {
       title: {
         mediaType: 'text/plain',
@@ -360,7 +353,6 @@ progress: 10,
     guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2024-12-06T12:10:09.823Z',
-    extendedStatus: null,
     content: {
       title: {
         mediaType: 'text/plain',
@@ -409,7 +401,6 @@ progress: 10,
     guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2024-12-06T12:09:34.433Z',
-    extendedStatus: null,
     content: {
       title: {
         mediaType: 'text/plain',
@@ -458,7 +449,6 @@ progress: 10,
     guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2024-12-06T09:51:21.416Z',
-    extendedStatus: null,
     content: {
       title: {
         mediaType: 'text/plain',
