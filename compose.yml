@@ -128,8 +128,11 @@ services:
     environment:
       DB_CONNECTION_STRING: postgres://postgres:mysecretpassword@db:5432/dialogporten
       HOSTNAME: https://app.localhost
+      ENABLE_NEW_OIDC: ${ENABLE_NEW_OIDC}
       CLIENT_ID: ${CLIENT_ID}
       CLIENT_SECRET: ${CLIENT_SECRET}
+      OIDC_CLIENT_ID: ${OIDC_CLIENT_ID}
+      OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET}
       ENABLE_GRAPHIQL: true
       SESSION_SECRET: IDPortenSessionSecret2023MoreLettersBlaBla
       REDIS_CONNECTION_STRING: redis://:mysecretpassword@redis:6379/0
@@ -197,6 +200,9 @@ services:
     environment:
       DB_CONNECTION_STRING: postgres://postgres:mysecretpassword@db:5432/dialogporten
       HOSTNAME: https://app.localhost
+      ENABLE_NEW_OIDC: ${ENABLE_NEW_OIDC}
+      OIDC_CLIENT_ID: ${OIDC_CLIENT_ID}
+      OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET}
       CLIENT_ID: ${CLIENT_ID}
       CLIENT_SECRET: ${CLIENT_SECRET}
       SESSION_SECRET: IDPortenSessionSecret2023MoreLettersBlaBla

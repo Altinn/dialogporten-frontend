@@ -13,6 +13,7 @@ param hostName string
 param dialogportenURL string
 @minLength(3)
 param oicdUrl string
+param oidcPlatformUrl string
 param minReplicas int
 param maxReplicas int
 @description('CPU and memory resources for the container app')
@@ -30,7 +31,6 @@ param ocPApimSubscriptionKey string
 ])
 param graphiQLEnabled string = 'true'
 param enableInitSessionEndpoint string = 'true'
-param disableProfile string = 'false'
 
 @description('URL to direct user after successful logout')
 param logoutRedirectUri string = 'https://altinn.no/ui/Authentication/Logout'
@@ -91,6 +91,18 @@ var idPortenClientSecretSecret = {
   identity: 'System'
 }
 
+var oidcClientId = {
+  name: 'oidc-client-id'
+  keyVaultUrl: '${keyVaultUrl}/oidcClientId'
+  identity: 'System'
+}
+
+var oidcClientSecret = {
+  name: 'oidc-client-secret'
+  keyVaultUrl: '${keyVaultUrl}/oidcClientSecret'
+  identity: 'System'
+}
+
 var idPortenSessionSecretSecret = {
   name: 'id-porten-session-secret'
   keyVaultUrl: '${keyVaultUrl}/idPortenSessionSecret'
@@ -143,6 +155,18 @@ var containerAppEnvVars = concat(
       value: oicdUrl
     }
     {
+      name: 'OIDC_CLIENT_ID'
+      secretRef: oidcClientId.name
+    }
+    {
+      name: 'OIDC_CLIENT_SECRET'
+      secretRef: oidcClientSecret.name
+    }
+    {
+      name: 'OIDC_PLATFORM_URL'
+      value: oidcPlatformUrl
+    }
+    {
       name: 'SESSION_SECRET'
       secretRef: idPortenSessionSecretSecret.name
     }
@@ -169,10 +193,6 @@ var containerAppEnvVars = concat(
     {
       name: 'ENABLE_INIT_SESSION_ENDPOINT'
       value: enableInitSessionEndpoint
-    }
-    {
-      name: 'DISABLE_PROFILE'
-      value: disableProfile
     }
     {
       name: 'PLATFORM_BASEURL'

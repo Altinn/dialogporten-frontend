@@ -21,8 +21,9 @@ interface SeenByItem {
 
 export const getPartyIds = (partiesToUse: PartyFieldsFragment[]) => {
   const partyURIs = partiesToUse.filter((party) => !party.hasOnlyAccessToSubParties).map((party) => party.party);
-  const subPartyURIs = partiesToUse.flatMap((party) => (party.subParties ?? []).map((subParty) => subParty.party));
-  return [...partyURIs, ...subPartyURIs] as string[];
+  const subPartyURIs = partiesToUse.flatMap((party) => party.subParties?.map((subParty) => subParty.party) ?? []);
+
+  return Array.from(new Set([...partyURIs, ...subPartyURIs]));
 };
 
 export const getSeenAtLabel = (seenAt: string, format: FormatFunction): string => {

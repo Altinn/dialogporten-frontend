@@ -6,7 +6,7 @@ import { Group, Party, ProfileTable } from '../../entities.ts';
 import type { NotificationSettingsInputData } from '../types/profile.ts';
 const { platformBaseURL } = config;
 
-const platformExchangeTokenEndpointURL = platformBaseURL + '/authentication/api/v1/exchange/id-porten?test=true';
+const platformExchangeTokenEndpointURL = platformBaseURL + '/authentication/api/v1/exchange/id-porten';
 const platformProfileAPI_url = platformBaseURL + '/profile/api/v1/';
 
 type TokenType = {
@@ -25,12 +25,18 @@ interface Context {
 }
 
 export const exchangeToken = async (context: Context): Promise<string> => {
+  const { enableNewOIDC } = config;
   const token = typeof context.session.get('token') === 'object' ? (context.session.get('token') as TokenType) : null;
 
   if (!token) {
-    logger.error('exchangeToken No token found in session');
+    logger.error('exchangeToken: Unable to find token');
     return '';
   }
+
+  if (enableNewOIDC) {
+    return token.access_token;
+  }
+
   try {
     const { data: newToken } = await axios.get(platformExchangeTokenEndpointURL, {
       headers: {
@@ -47,7 +53,6 @@ export const exchangeToken = async (context: Context): Promise<string> => {
 };
 
 export const getOrCreateProfile = async (context: Context): Promise<ProfileTable> => {
-  const { disableProfile } = config;
   const pid = typeof context.session.get('pid') === 'string' ? (context.session.get('pid') as string) : '';
   const sessionLocale =
     typeof context.session.get('locale') === 'string' ? (context.session.get('locale') as string) : '';
@@ -59,7 +64,7 @@ export const getOrCreateProfile = async (context: Context): Promise<ProfileTable
 
   const profile = await ProfileRepository!.createQueryBuilder('profile').where('profile.pid = :pid', { pid }).getOne();
   const exchangedToken = await exchangeToken(context);
-  const groups = disableProfile ? [] : await getFavoritesFromCore(exchangedToken);
+  const groups = await getFavoritesFromCore(exchangedToken);
 
   if (!profile) {
     const newProfile = new ProfileTable();
