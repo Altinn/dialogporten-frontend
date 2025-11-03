@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { DialogEventType } from 'bff-types-generated';
-import { useEffect, useRef, useState } from 'react';
+import { type DialogEventPayload, DialogEventType } from 'bff-types-generated';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { SSE } from 'sse.js';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
@@ -11,7 +11,14 @@ import { PageRoutes } from '../../pages/routes.ts';
 type EventSourceEvent = Error & {
   responseCode: number;
 };
-export const useDialogByIdSubscription = (dialogId: string | undefined, dialogToken: string | undefined): boolean => {
+
+export type DialogEventData = {
+  data?: {
+    dialogEvents?: DialogEventPayload;
+  };
+};
+
+export const useDialogByIdSubscription = (dialogId: string | undefined, dialogToken: string | undefined) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -23,6 +30,7 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
   const eventSourceRef = useRef<SSE | null>(null);
   const lastInvalidatedDate = useRef(new Date().toISOString());
   const isFirstRender = useRef(true);
+  const onMessageRef = useRef<((eventData: DialogEventData, rawEvent: MessageEvent) => void) | undefined>(undefined);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
@@ -65,6 +73,8 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
           const diff = new Date(now).getTime() - new Date(lastInvalidatedDate.current).getTime();
           if (diff <= 500) return;
           lastInvalidatedDate.current = now;
+
+          onMessageRef.current?.(jsonPayload, event);
 
           if (updatedType === DialogEventType.DialogDeleted) {
             navigate(PageRoutes.inbox + pruneSearchQueryParams(search.toString()));
@@ -112,5 +122,12 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
     };
   }, [dialogId, dialogToken, search, isMock]);
 
-  return isMock || isOpen;
+  const onMessageEvent = useCallback((handler: (eventData: DialogEventData, rawEvent: MessageEvent) => void) => {
+    onMessageRef.current = handler;
+  }, []);
+
+  return {
+    isOpen: isMock || isOpen,
+    onMessageEvent,
+  };
 };

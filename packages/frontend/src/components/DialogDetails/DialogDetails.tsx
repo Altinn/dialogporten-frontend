@@ -19,11 +19,12 @@ import {
   Typography,
 } from '@altinn/altinn-components';
 import type { ActivityLogSegmentProps } from '@altinn/altinn-components/dist/types/lib/components';
-import { DialogStatus } from 'bff-types-generated';
+import { DialogEventType, DialogStatus } from 'bff-types-generated';
 import { type ReactElement, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Analytics } from '../../analytics';
 import type { DialogByIdDetails } from '../../api/hooks/useDialogById.tsx';
+import { type DialogEventData, useDialogByIdSubscription } from '../../api/hooks/useDialogByIdSubscription.ts';
 import type { TimelineSegmentWithTransmissions } from '../../api/utils/transmissions.ts';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
@@ -174,9 +175,19 @@ export const DialogDetails = ({
   const { t } = useTranslation();
   const { logError } = useErrorLogger();
   const [actionIdLoading, setActionIdLoading] = useState<string>('');
+  const [actionIdUpdating, setActionIdUpdating] = useState<string>('');
   const [showAllTransmissions, setShowAllTransmissions] = useState<boolean>(false);
-
+  const { onMessageEvent } = useDialogByIdSubscription(dialog?.id, dialog?.dialogToken);
   const format = useFormat();
+
+  onMessageEvent((eventData: DialogEventData) => {
+    if (
+      eventData.data?.dialogEvents?.type === DialogEventType.DialogUpdated &&
+      eventData.data.dialogEvents.id === dialog?.id
+    ) {
+      setActionIdUpdating('');
+    }
+  });
 
   const transmissions: TimelineSegmentWithTransmissions[] = useMemo(() => {
     if (!dialog?.transmissions) {
@@ -287,12 +298,13 @@ export const DialogDetails = ({
   const dialogActions: DialogActionButtonProps[] = dialog.guiActions.map((action) => ({
     id: action.id,
     label: action.title,
-    disabled: !!isLoading || action.disabled,
+    disabled: !!isLoading || !!action.disabled || actionIdLoading === action.id || actionIdUpdating === action.id,
     priority: action.priority.toLocaleLowerCase() as DialogButtonPriority,
-    loading: actionIdLoading === action.id,
+    loading: actionIdLoading === action.id || actionIdUpdating === action.id,
     hidden: action.hidden,
     onClick: () => {
       setActionIdLoading(action.id);
+      setActionIdUpdating(action.id);
       dialogToken && void handleDialogActionClick(action, dialogToken, () => setActionIdLoading(''), logError, isApp);
     },
   }));

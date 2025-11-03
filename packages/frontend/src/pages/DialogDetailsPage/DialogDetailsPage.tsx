@@ -53,7 +53,7 @@ export const DialogDetailsPage = () => {
   }, []);
 
   const dialogTokenIsFreshAfterMount = dataUpdatedAt > mountAtRef.current ? dialog?.dialogToken : undefined;
-  const subscriptionOpened = useDialogByIdSubscription(dialog?.id, dialogTokenIsFreshAfterMount);
+  const { isOpen: subscriptionOpened } = useDialogByIdSubscription(dialog?.id, dialogTokenIsFreshAfterMount);
   const previousPath = (location?.state?.fromView ?? '/') + location.search;
 
   return (
