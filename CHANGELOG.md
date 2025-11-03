@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.92.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.92.0...v1.92.1) (2025-11-03)
+
+
+### Bug Fixes
+
+* Fix for the 'Cannot write headers after they are sent to the client' error ([bb0c05c](https://github.com/Altinn/dialogporten-frontend/commit/bb0c05c110dc0b8e6b586bcaa1ce2494e92bf23e))
+
 ## [1.92.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.91.0...v1.92.0) (2025-11-03)
 
 
