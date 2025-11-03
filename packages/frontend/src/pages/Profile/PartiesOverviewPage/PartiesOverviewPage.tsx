@@ -237,8 +237,10 @@ export const PartiesOverviewPage = () => {
   const mapAccountToPartyListItem = (account: PartyItemProp): AccountListItemProps => {
     const { label: _, variant: __, ...party } = account;
     const itemId = account.id + account.groupId;
+    const accountType = party.type === 'subunit' ? 'company' : party.type;
     return {
       ...party,
+      type: accountType as AccountListItemType,
       groupId: String(party.groupId),
       favourite: party.isFavorite,
       isCurrentEndUser: party.isCurrentEndUser,
@@ -250,7 +252,13 @@ export const PartiesOverviewPage = () => {
       as: 'button',
       title: party.name,
       onToggleFavourite: () => onToggleFavourite(party.uuid, party.isFavorite),
-      children: <PartyDetails type={party.type} isCurrentEndUser={party.isCurrentEndUser ?? false} id={party.id} />,
+      children: (
+        <PartyDetails
+          type={accountType as AccountListItemType}
+          isCurrentEndUser={party.isCurrentEndUser ?? false}
+          id={party.id}
+        />
+      ),
       contextMenu: {
         id: party.groupId + party.id + '-menu',
         items: [
