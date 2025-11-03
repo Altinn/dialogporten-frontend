@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.92.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.92.1...v1.92.2) (2025-11-03)
+
+
+### Bug Fixes
+
+* Gui button now disables while waiting for subscription event ([e801c9f](https://github.com/Altinn/dialogporten-frontend/commit/e801c9f1aad8d5d650c2bf43959c2b81913c9cab))
+
 ## [1.92.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.92.0...v1.92.1) (2025-11-03)
 
 
