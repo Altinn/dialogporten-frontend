@@ -1,6 +1,6 @@
 import { type ContextMenuProps, DialogLayout } from '@altinn/altinn-components';
 import { ClockDashedIcon } from '@navikt/aksel-icons';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps, useLocation, useParams } from 'react-router-dom';
 import { useDialogById } from '../../api/hooks/useDialogById.tsx';
@@ -22,6 +22,7 @@ export const DialogDetailsPage = () => {
     isSuccess,
     isError,
     isAuthLevelTooLow,
+    dataUpdatedAt,
   } = useDialogById(parties, dialogId);
   const isLoading = isLoadingDialog || (!isSuccess && !isError);
   const displayDialogActions = !!(dialogId && dialog && !isLoading);
@@ -45,7 +46,14 @@ export const DialogDetailsPage = () => {
     ],
   };
 
-  const subscriptionOpened = useDialogByIdSubscription(dialog?.id, dialog?.dialogToken);
+  const mountAtRef = useRef<number>(Date.now());
+
+  useEffect(() => {
+    mountAtRef.current = Date.now();
+  }, []);
+
+  const dialogTokenIsFreshAfterMount = dataUpdatedAt > mountAtRef.current ? dialog?.dialogToken : undefined;
+  const subscriptionOpened = useDialogByIdSubscription(dialog?.id, dialogTokenIsFreshAfterMount);
   const previousPath = (location?.state?.fromView ?? '/') + location.search;
 
   return (
@@ -58,6 +66,7 @@ export const DialogDetailsPage = () => {
       contextMenu={displayDialogActions ? contextMenu : undefined}
     >
       <DialogDetails
+        dialogToken={dialogTokenIsFreshAfterMount}
         dialog={dialog}
         isLoading={isLoading}
         subscriptionOpened={subscriptionOpened}

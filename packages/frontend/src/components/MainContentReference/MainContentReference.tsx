@@ -66,7 +66,7 @@ export const MainContentReference = memo(
 
     const validURL = content?.url ? isValidURL(content.url) : false;
     const { data, isSuccess, isError, isLoading, refetch } = useQuery({
-      queryKey: [QUERY_KEYS.MAIN_CONTENT_REFERENCE, id],
+      queryKey: [QUERY_KEYS.MAIN_CONTENT_REFERENCE, id, dialogToken],
       staleTime: 1000 * 60 * 10,
       queryFn: async () => {
         const response = await fetch(content!.url, {
