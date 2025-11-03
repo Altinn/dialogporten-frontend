@@ -23,7 +23,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
         const response = await axios({
           method: 'POST',
           responseType: 'stream',
-          url: config.dialogporten.graphqlUrl,
+          url: config.dialogporten.graphqlSubscriptionUrl,
           headers: {
             'Content-Type': 'application/json; charset=utf-8',
             Authorization: `Bearer ${token!.access_token}`,
