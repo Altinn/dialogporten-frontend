@@ -7,6 +7,7 @@ import fp from 'fastify-plugin';
 
 const defaultFeatureFlags: Record<string, boolean | number | string> = {
   'globalMenu.enableAccessManagementLink': false,
+  'globalMenu.enabled': false,
   'party.stopReversingPersonNameOrder': false,
   'debug.test': false, // only used for debugging
 };
