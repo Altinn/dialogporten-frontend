@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.93.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.93.0...v1.93.1) (2025-11-04)
+
+
+### Bug Fixes
+
+* disappearing search from account menu ([#3102](https://github.com/Altinn/dialogporten-frontend/issues/3102)) ([93bf892](https://github.com/Altinn/dialogporten-frontend/commit/93bf89207bcf6e79a59a58473ac4146a8a747bd9))
+
 ## [1.93.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.92.2...v1.93.0) (2025-11-04)
 
 
