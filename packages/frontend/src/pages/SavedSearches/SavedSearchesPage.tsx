@@ -1,4 +1,4 @@
-import { BookmarksSection, PageBase, Toolbar } from '@altinn/altinn-components';
+import { BookmarksSettingsList, PageBase, Toolbar } from '@altinn/altinn-components';
 import { t } from 'i18next';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
@@ -38,7 +38,7 @@ export const SavedSearchesPage = () => {
           ) : null}
         </div>
       </PageBase>
-      {bookmarkSectionProps && <BookmarksSection {...bookmarkSectionProps} />}
+      {bookmarkSectionProps && <BookmarksSettingsList {...bookmarkSectionProps} />}
     </>
   );
 };

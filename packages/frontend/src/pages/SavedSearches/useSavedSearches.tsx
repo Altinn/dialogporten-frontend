@@ -1,11 +1,11 @@
 import {
-  type BookmarksSectionProps,
+  type BookmarksSettingsItemProps,
+  type BookmarksSettingsListProps,
   type FilterState,
   type QueryItemType,
   useSnackbar,
 } from '@altinn/altinn-components';
 import type { QueryItemProps } from '@altinn/altinn-components';
-import type { EditableBookmarkProps } from '@altinn/altinn-components/dist/types/lib/components';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   DialogStatus,
@@ -15,7 +15,7 @@ import {
   type SearchDataValueFilter,
   SystemLabel,
 } from 'bff-types-generated';
-import { type ChangeEvent, useMemo, useState } from 'react';
+import { type ChangeEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps } from 'react-router-dom';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
@@ -39,7 +39,7 @@ interface UseSavedSearchesOutput {
   currentPartySavedSearches: SavedSearchesFieldsFragment[] | undefined;
   saveSearch: (props: HandleSaveSearchProps) => Promise<void>;
   deleteSearch: (savedSearchId: number) => Promise<void>;
-  bookmarkSectionProps: BookmarksSectionProps | undefined;
+  bookmarkSectionProps: BookmarksSettingsListProps | undefined;
 }
 
 interface HandleSaveSearchProps {
@@ -135,10 +135,9 @@ export const filterSavedSearches = (
 
 export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesOutput => {
   const [isCTALoading, setIsCTALoading] = useState<boolean>(false);
-  const [savedSearchInputValue, setSavedSearchInputValue] = useState<string>('');
+  const [inputValues, setInputValues] = useState<Record<string, string>>({});
   const { organizations } = useOrganizations();
 
-  const [expandedId, setExpandedId] = useState<string>('');
   const formatDistance = useFormatDistance();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -156,14 +155,6 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
   const endUsersSavedSearches = (data?.savedSearches ?? []) as SavedSearchesFieldsFragment[];
   const lastUpdated = getMostRecentSearchDate(endUsersSavedSearches);
   const currentPartySavedSearches = filterSavedSearches(endUsersSavedSearches, selectedPartyIds || []);
-
-  const handleOnToggle = (itemId: string) => {
-    const nextExpandedId = itemId === expandedId ? '' : itemId;
-    if (nextExpandedId && endUsersSavedSearches.length) {
-      setSavedSearchInputValue(endUsersSavedSearches.find((item) => item.id.toString() === nextExpandedId)?.name ?? '');
-    }
-    setExpandedId(nextExpandedId);
-  };
 
   const saveSearch = async ({
     filters,
@@ -230,15 +221,14 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
     }
   };
 
-  const handleSaveTitle = async (id: number) => {
+  const handleSaveTitle = async (id: number, name: string) => {
     try {
-      await updateSavedSearch(id, savedSearchInputValue ?? '');
+      await updateSavedSearch(id, name ?? '');
       openSnackbar({
         message: t('savedSearches.update_success'),
         color: 'accent',
       });
       void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.SAVED_SEARCHES] });
-      setExpandedId('');
     } catch {
       openSnackbar({
         message: t('savedSearches.update_failed'),
@@ -247,30 +237,30 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
     }
   };
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  const bookmarkSectionProps = useMemo(() => {
-    if (isLoading) {
-      return {
-        title: t('savedSearches.loading_saved_searches'),
-        items: Array.from({ length: 3 }, (_, i) => ({
-          id: i.toString(),
-          title: t('savedSearches.loading_saved_searches') + randomString(),
-          expandIconAltText: t('savedSearches.expand_icon_alt_text'),
-        })),
-        loading: true,
-      };
-    }
+  let bookmarkSectionProps: BookmarksSettingsListProps | undefined;
 
-    if (isSuccess && !currentPartySavedSearches?.length) {
-      return {
-        title: t('savedSearches.no_saved_searches'),
-        items: [],
-        description: t('savedSearches.noSearchesFound'),
-      };
-    }
-
-    const items: EditableBookmarkProps[] = currentPartySavedSearches.map((savedSearch) => {
+  if (isLoading) {
+    bookmarkSectionProps = {
+      title: t('savedSearches.loading_saved_searches'),
+      items: Array.from({ length: 3 }, (_, i) => ({
+        id: i.toString(),
+        title: t('savedSearches.loading_saved_searches') + randomString(),
+        expandIconAltText: t('savedSearches.expand_icon_alt_text'),
+      })),
+      loading: true,
+    };
+  } else if (isSuccess && !currentPartySavedSearches?.length) {
+    bookmarkSectionProps = {
+      title: t('savedSearches.no_saved_searches'),
+      items: [],
+      description: t('savedSearches.noSearchesFound'),
+    };
+  } else {
+    const items: BookmarksSettingsItemProps[] = currentPartySavedSearches.map((savedSearch) => {
       const bookmarkLink = buildSavedSearchURL(savedSearch);
+      const searchId = savedSearch.id.toString();
+      const currentInputValue = inputValues[searchId] ?? savedSearch.name ?? '';
+
       const params: QueryItemProps[] = (savedSearch.data?.filters ?? []).map((filter) => {
         if (filter?.id === 'org') {
           const org = getOrganization(organizations, filter.value ?? '')?.name || filter.value;
@@ -299,18 +289,22 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
       }
 
       return {
-        id: savedSearch.id.toString(),
-        expandIconAltText: t('savedSearches.expand_icon_alt_text'),
+        id: searchId,
         title: savedSearch.name ?? '',
         as: (props: LinkProps) => <Link {...props} to={bookmarkLink} />,
         onChange: (e: ChangeEvent<HTMLInputElement>) => {
-          setSavedSearchInputValue(e.target.value);
+          setInputValues((prev) => ({ ...prev, [searchId]: e.target.value }));
         },
-        inputValue: savedSearchInputValue,
+        inputValue: currentInputValue,
+        titleField: {
+          label: t('savedSearches.bookmark.item_input_label'),
+          placeholder: t('savedSearches.bookmark.item_input_placeholder'),
+          helperText: t('savedSearches.bookmark.item_input_helper'),
+        },
         saveButton: {
           label: t('savedSearches.save_search'),
           onClick: () => {
-            void handleSaveTitle(savedSearch.id);
+            void handleSaveTitle(savedSearch.id, currentInputValue);
           },
         },
         removeButton: {
@@ -323,22 +317,15 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
       };
     });
 
-    return {
+    bookmarkSectionProps = {
       title: t('savedSearches.title', { count: currentPartySavedSearches?.length }),
       items,
       description: lastUpdated
         ? `${t('savedSearches.lastUpdated')}${autoFormatRelativeTime(lastUpdated, formatDistance)}`
         : '',
-      expandedId,
-      onToggle: handleOnToggle,
-      titleField: {
-        label: t('savedSearches.bookmark.item_input_label'),
-        placeholder: t('savedSearches.bookmark.item_input_placeholder'),
-        helperText: t('savedSearches.bookmark.item_input_helper'),
-      },
       untitled: t('savedSearches.bookmark.untitled'),
     };
-  }, [isLoading, isSuccess, currentPartySavedSearches, expandedId]);
+  }
 
   return {
     savedSearches: endUsersSavedSearches,
