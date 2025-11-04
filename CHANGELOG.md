@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.93.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.92.2...v1.93.0) (2025-11-04)
+
+
+### Features
+
+* Replace BookmarksSection with BookmarksSettingsList ([#3093](https://github.com/Altinn/dialogporten-frontend/issues/3093)) ([77e159f](https://github.com/Altinn/dialogporten-frontend/commit/77e159f535e92fc280c188b146ded20c81919056))
+
+
+### Bug Fixes
+
+* Double gui action issue ([c91f2b7](https://github.com/Altinn/dialogporten-frontend/commit/c91f2b73691752096508ec649fb8048cfce6ba8e))
+
 ## [1.92.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.92.1...v1.92.2) (2025-11-03)
 
 
