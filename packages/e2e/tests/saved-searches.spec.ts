@@ -32,12 +32,17 @@ test.describe('Saved Searches', () => {
     await page.goto(`${baseURL}/saved-searches`);
     await expect(page.getByRole('heading', { name: '1 lagret søk' })).toBeVisible();
 
-    await page.getByRole('button', { name: 'savedSearches.' }).click();
+    await page.getByRole('button', { name: 'Edit' }).click();
+
     await page.getByRole('textbox', { name: 'Tittel' }).fill('test saved search');
+
     await page.getByRole('button', { name: 'Lagre søk' }).click();
+    await page.getByRole('button', { name: 'Close' }).click();
 
     await expect(page.getByRole('link', { name: 'test saved search' })).toBeVisible();
-    await page.getByRole('button', { name: 'savedSearches.' }).click();
+
+    await page.getByRole('button', { name: 'Edit' }).click();
+
     await page.getByRole('button', { name: 'Slett' }).click();
 
     await expect(page.getByText('Søket ditt ble slettet')).toBeVisible();
