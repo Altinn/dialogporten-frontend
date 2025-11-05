@@ -122,6 +122,8 @@ var secrets = [
   idPortenClientSecretSecret
   idPortenSessionSecretSecret
   appConfigConnectionStringSecret
+  oidcClientId
+  oidcClientSecret
 ]
 
 var containerAppEnvVars = concat(
