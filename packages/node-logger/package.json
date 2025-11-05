@@ -1,5 +1,5 @@
 {
-  "name": "@digdir/dialogporten-node-logger",
+  "name": "@altinn/dialogporten-node-logger",
   "version": "1.0.0",
   "description": "A logger for nodejs",
   "main": "dist/index.js",
