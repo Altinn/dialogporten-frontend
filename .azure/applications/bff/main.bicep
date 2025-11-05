@@ -13,7 +13,7 @@ param hostName string
 param dialogportenURL string
 @minLength(3)
 param oicdUrl string
-param oidcPlatformUrl string
+param oidcPlatformUrl string = 'platform.at23.altinn.cloud/authentication/api/v1/openid'
 param minReplicas int
 param maxReplicas int
 @description('CPU and memory resources for the container app')
