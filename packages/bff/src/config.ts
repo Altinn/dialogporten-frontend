@@ -22,6 +22,8 @@ const envVariables = z.object({
   APP_CONFIG_CONNECTION_STRING: z.string().default(''),
   PORT: z.coerce.number().default(3000),
   OIDC_URL: z.string().default('test.idporten.no'),
+  OIDC_PLATFORM_URL: z.string().default('platform.at23.altinn.cloud/authentication/api/v1/openid'),
+  ENABLE_NEW_OIDC: z.preprocess(stringToBoolean, z.boolean().default(false)), // Note: Will be removed when Altinn OIDC takes over
   HOSTNAME: z.string().default('http://localhost'),
   SESSION_SECRET: z.string().min(32).default('SecretHereSecretHereSecretHereSecretHereSecretHereSecretHereSecretHere'),
   ENABLE_HTTPS: z.preprocess(stringToBoolean, z.boolean().default(false)),
@@ -29,20 +31,21 @@ const envVariables = z.object({
   COOKIE_SECURE: z.preprocess(stringToBoolean, z.boolean().default(true)),
   COOKIE_HTTP_ONLY: z.preprocess(stringToBoolean, z.boolean().default(false)),
   REDIS_CONNECTION_STRING: z.string().default('redis://:mysecretpassword@127.0.0.1:6379/0'),
-  CLIENT_ID: z.string().default(''),
-  CLIENT_SECRET: z.string().default(''),
+  OIDC_CLIENT_ID: z.string().default(''),
+  OIDC_CLIENT_SECRET: z.string().default(''),
+  CLIENT_ID: z.string().default(''), // Note: Will be removed when Altinn OIDC takes over
+  CLIENT_SECRET: z.string().default(''), // Note: Will be removed when Altinn OIDC takes over
   PLATFORM_BASEURL: z.string().default('https://platform.at23.altinn.cloud'),
   MIGRATION_RUN: z.preprocess(stringToBoolean, z.boolean().default(false)),
   DIALOGPORTEN_URL: z.string().default('https://altinn-dev-api.azure-api.net/dialogporten'),
   CONTAINER_APP_REPLICA_NAME: z.string().default(''),
   ENABLE_GRAPHIQL: z.preprocess(stringToBoolean, z.boolean().default(true)),
   ENABLE_INIT_SESSION_ENDPOINT: z.preprocess(stringToBoolean, z.boolean().default(false)),
-  DISABLE_PROFILE: z.preprocess(stringToBoolean, z.boolean().default(false)),
   LOGOUT_REDIRECT_URI: z.string().default('https://tt02.altinn.no/ui/Authentication/Logout'),
 });
 
 const env = envVariables.parse(process.env);
-
+const enableNewOIDC = env.ENABLE_NEW_OIDC;
 const config = {
   info: {
     name: 'bff',
@@ -51,10 +54,10 @@ const config = {
   version: env.GIT_SHA,
   port: env.PORT,
   host: env.HOST,
-  oidc_url: env.OIDC_URL,
   hostname: env.HOSTNAME,
-  client_id: env.CLIENT_ID,
-  client_secret: env.CLIENT_SECRET,
+  oidc_url: enableNewOIDC ? env.OIDC_PLATFORM_URL : env.OIDC_URL,
+  client_id: enableNewOIDC ? env.OIDC_CLIENT_ID : env.CLIENT_ID,
+  client_secret: enableNewOIDC ? env.OIDC_CLIENT_SECRET : env.CLIENT_SECRET,
   platformBaseURL: env.PLATFORM_BASEURL,
   openTelemetry: {
     enabled: !!env.OTEL_EXPORTER_OTLP_ENDPOINT,
@@ -79,9 +82,9 @@ const config = {
   },
   enableGraphiql: env.ENABLE_GRAPHIQL,
   enableInitSessionEndpoint: env.ENABLE_INIT_SESSION_ENDPOINT,
-  disableProfile: env.DISABLE_PROFILE,
   logoutRedirectUri: env.LOGOUT_REDIRECT_URI,
   appConfigConnectionString: env.APP_CONFIG_CONNECTION_STRING,
+  enableNewOIDC,
 };
 
 export default config;

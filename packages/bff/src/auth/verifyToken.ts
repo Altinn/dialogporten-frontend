@@ -1,19 +1,19 @@
 import { logger } from '@digdir/dialogporten-node-logger';
 import axios from 'axios';
-import type { FastifyInstance, FastifyPluginAsync, FastifyReply, FastifyRequest, IdPortenUpdatedToken } from 'fastify';
+import type { FastifyPluginAsync, FastifyReply, FastifyRequest, IdPortenUpdatedToken, ProviderConfig } from 'fastify';
 import fp from 'fastify-plugin';
 import config from '../config.ts';
-import { type SessionStorageToken, handleLogout } from './oidc.ts';
+import { type SessionStorageToken, fetchOpenIDConfig, handleLogout } from './oidc.ts';
 
-export const refreshToken = async (request: FastifyRequest) => {
+export const refreshToken = async (request: FastifyRequest, providerconfig: ProviderConfig) => {
   const token: SessionStorageToken | undefined = request.session.get('token');
-  const { client_id, client_secret, oidc_url } = config;
+  const { client_id, client_secret } = config;
 
   if (!token) {
     return;
   }
 
-  const tokenEndpoint = `https://${oidc_url}/token`;
+  const tokenEndpoint = providerconfig.token_endpoint;
   const basicAuthString = `${client_id}:${client_secret}`;
   const authEncoded = `Basic ${Buffer.from(basicAuthString).toString('base64')}`;
 
@@ -60,14 +60,14 @@ type ValidationStatus =
  *
  * @param {FastifyRequest} request - The Fastify request object containing the session token.
  * @param {boolean} allowTokenRefresh - Flag indicating whether the function should attempt to refresh tokens if the access token has expired.
- * @param fastify
+ * @param providerConfig
  * @returns {Promise<boolean>} - Returns `true` if the access token is still valid or if it has been successfully refreshed.
  *                               Returns `false` if the token is invalid or cannot be refreshed.
  */
 const getIsTokenValid = async (
   request: FastifyRequest,
   allowTokenRefresh: boolean,
-  fastify: FastifyInstance,
+  providerConfig: ProviderConfig,
 ): Promise<ValidationStatus> => {
   const token: SessionStorageToken | undefined = request.session.get('token');
 
@@ -84,7 +84,7 @@ const getIsTokenValid = async (
 
   if (accessTokenExpiresSoon && allowTokenRefresh && isRefreshTokenValid) {
     try {
-      await refreshToken(request);
+      await refreshToken(request, providerConfig);
       // Ensure that the token has been updated and valid after the refresh
       const updatedToken: SessionStorageToken | undefined = request.session.get('token');
       const updatedAccessTokenExpiresAt = new Date(updatedToken?.access_token_expires_at || '');
@@ -97,18 +97,21 @@ const getIsTokenValid = async (
       return 'refresh_token_expired';
     }
   }
-
   return isAccessTokenValid ? 'access_token_valid' : 'access_token_invalid';
 };
 
 const plugin: FastifyPluginAsync = async (fastify, _) => {
+  const { oidc_url } = config;
+  const issuerURL = `https://${oidc_url}/.well-known/openid-configuration`;
+  const providerConfig = await fetchOpenIDConfig(issuerURL);
+
   fastify.decorate('verifyToken', (allowTokenRefresh: boolean) => {
     return async (request: FastifyRequest, reply: FastifyReply) => {
       try {
-        const validationStatus: ValidationStatus = await getIsTokenValid(request, allowTokenRefresh, fastify);
+        const validationStatus: ValidationStatus = await getIsTokenValid(request, allowTokenRefresh, providerConfig);
         if (validationStatus === 'refresh_token_expired' || validationStatus === 'missing_token') {
           // Redirect to force a new login if the refresh token has expired or if the token is missing
-          return handleLogout(request, reply);
+          return handleLogout(request, reply, providerConfig);
         }
         request.tokenIsValid = validationStatus === 'access_token_valid' || validationStatus === 'refreshed';
       } catch (e) {

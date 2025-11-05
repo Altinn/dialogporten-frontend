@@ -14,7 +14,6 @@ param logoutRedirectUri = 'https://at23.altinn.cloud/ui/Authentication/Logout'
 param platformBaseUrl = 'https://platform.at23.altinn.cloud'
 
 param ocPApimSubscriptionKey = readEnvironmentVariable('OCP_APIM_SUBSCRIPTION_KEY')
-param disableProfile = 'false'
 
 // secrets
 param environmentKeyVaultName = readEnvironmentVariable('ENVIRONMENT_KEY_VAULT_NAME')
@@ -32,5 +31,9 @@ param additionalEnvironmentVariables = [
   {
     name: 'APPLICATIONINSIGHTS_ENABLED'
     value: 'false'
+  }
+  {
+    name: 'ENABLE_NEW_OIDC'
+    value: 'true'
   }
 ]

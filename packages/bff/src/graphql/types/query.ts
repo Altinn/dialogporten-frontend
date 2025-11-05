@@ -1,6 +1,5 @@
 import { logger } from '@digdir/dialogporten-node-logger';
 import { list, objectType, stringArg } from 'nexus';
-import config from '../../config.ts';
 import { SavedSearchRepository } from '../../db.ts';
 import {
   getNotificationAddressByOrgNumber,
@@ -17,9 +16,8 @@ export const Query = objectType({
     t.field('profile', {
       type: 'Profile',
       resolve: async (_source, _args, ctx) => {
-        const { disableProfile } = config;
         const profile = await getOrCreateProfile(ctx);
-        const user = disableProfile ? [] : await getUserFromCore(ctx);
+        const user = await getUserFromCore(ctx);
         const { language, groups, updatedAt } = profile;
         return {
           language,
@@ -58,12 +56,7 @@ export const Query = objectType({
     t.field('notificationsettingsForCurrentUser', {
       type: list('NotificationSettingsResponse'),
       resolve: async (_source, _args, ctx) => {
-        const { disableProfile } = config;
-        if (!disableProfile) {
-          const result = await getNotificationsettingsForCurrentUser(ctx);
-          return result || null;
-        }
-        return null;
+        return (await getNotificationsettingsForCurrentUser(ctx)) ?? null;
       },
     });
 
@@ -73,10 +66,8 @@ export const Query = objectType({
         orgnr: stringArg(),
       },
       resolve: async (_source, { orgnr }, ctx) => {
-        const { disableProfile } = config;
-        if (!disableProfile && orgnr) {
-          const result = await getNotificationAddressByOrgNumber(orgnr, ctx);
-          return result || null;
+        if (orgnr) {
+          return (await getNotificationAddressByOrgNumber(orgnr, ctx)) ?? null;
         }
         return null;
       },

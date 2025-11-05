@@ -99,12 +99,7 @@ const startServer = async (): Promise<void> => {
   server.register(verifyToken);
   server.register(healthProbes, { version });
   server.register(healthChecks, { version });
-  server.register(oidc, {
-    oidc_url,
-    hostname,
-    client_id,
-    client_secret,
-  });
+  server.register(oidc);
   server.register(userApi);
   server.register(featureApi, {
     appConfigConnectionString,

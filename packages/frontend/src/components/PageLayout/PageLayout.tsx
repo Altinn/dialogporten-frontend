@@ -10,7 +10,7 @@ import { useProfile } from '../../pages/Profile';
 import { PageRoutes } from '../../pages/routes.ts';
 import { useGlobalState } from '../../useGlobalState.ts';
 import { BetaModal } from '../BetaModal';
-import { FloatingDropdown } from '../FloatingDropdown/FloatingDropdown.tsx';
+import { FloatingDropdown } from '../FloatingDropdown';
 import { useAuth } from '../Login/AuthContext.tsx';
 import { useFooter } from './Footer';
 import { useGlobalMenu } from './GlobalMenu';
