@@ -78,6 +78,7 @@ const config = {
   migrationRun: env.MIGRATION_RUN,
   dialogporten: {
     graphqlUrl: `${env.DIALOGPORTEN_URL}/graphql`,
+    graphqlSubscriptionUrl: `${env.DIALOGPORTEN_URL}/graphql/stream`,
     healthUrl: `${env.DIALOGPORTEN_URL}/health`,
   },
   enableGraphiql: env.ENABLE_GRAPHIQL,
