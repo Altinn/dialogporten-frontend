@@ -87,6 +87,18 @@ export const useHeaderConfig = ({
       ],
       onSelect: (lang: string) => handleUpdateLanguage(lang),
     },
+    search: {
+      expanded: false,
+      name: t('word.search'),
+      placeholder: t('word.search'),
+      value: searchValue,
+      onClear: () => onClear(),
+      onChange: (event: ChangeEvent<HTMLInputElement>) => setSearchValue(event.target.value),
+      autocomplete: {
+        ...autocomplete,
+        items: autocomplete.items,
+      },
+    },
     mobileMenu,
   };
 
@@ -138,18 +150,6 @@ export const useHeaderConfig = ({
   const headerProps: HeaderProps = {
     ...commonProps,
     currentAccount,
-    search: {
-      expanded: false,
-      name: t('word.search'),
-      placeholder: t('word.search'),
-      value: searchValue,
-      onClear: () => onClear(),
-      onChange: (event: ChangeEvent<HTMLInputElement>) => setSearchValue(event.target.value),
-      autocomplete: {
-        ...autocomplete,
-        items: autocomplete.items,
-      },
-    },
     globalMenu: {
       menuLabel: t('word.menu'),
       menu: desktopMenu,
