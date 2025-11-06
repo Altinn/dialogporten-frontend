@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.94.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.94.0...v1.94.1) (2025-11-06)
+
+
+### Bug Fixes
+
+* **bff:** change URL for graphql subscriptions ([#3089](https://github.com/Altinn/dialogporten-frontend/issues/3089)) ([b829bcb](https://github.com/Altinn/dialogporten-frontend/commit/b829bcb687e9270e2874c2c5c337323c5e166125))
+* include only sub parties with same name for fetching dialogs ([#3112](https://github.com/Altinn/dialogporten-frontend/issues/3112)) ([845d1a9](https://github.com/Altinn/dialogporten-frontend/commit/845d1a94938048cf4eb1d57addd01d1d7d3c9f87))
+
 ## [1.94.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.93.1...v1.94.0) (2025-11-05)
 
 
