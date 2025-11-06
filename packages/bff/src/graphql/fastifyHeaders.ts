@@ -1,4 +1,4 @@
-import { logger } from '@digdir/dialogporten-node-logger';
+import { logger } from '@altinn/dialogporten-node-logger';
 import helmet from '@fastify/helmet';
 import { trace } from '@opentelemetry/api';
 import type { FastifyPluginAsync } from 'fastify';

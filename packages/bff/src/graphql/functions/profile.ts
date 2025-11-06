@@ -1,4 +1,4 @@
-import { logger } from '@digdir/dialogporten-node-logger';
+import { logger } from '@altinn/dialogporten-node-logger';
 import axios from 'axios';
 import config from '../../config.ts';
 import { GroupRepository, PartyRepository, ProfileRepository } from '../../db.ts';
