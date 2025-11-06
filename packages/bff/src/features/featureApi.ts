@@ -1,6 +1,6 @@
 import { setInterval } from 'node:timers';
+import { logger } from '@altinn/dialogporten-node-logger';
 import { load } from '@azure/app-configuration-provider';
-import { logger } from '@digdir/dialogporten-node-logger';
 import { ConfigurationMapFeatureFlagProvider, FeatureManager } from '@microsoft/feature-management';
 import type { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';

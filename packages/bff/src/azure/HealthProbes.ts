@@ -1,4 +1,4 @@
-import { logger } from '@digdir/dialogporten-node-logger';
+import { logger } from '@altinn/dialogporten-node-logger';
 import type { FastifyPluginAsync, FastifyReply, FastifyRequest } from 'fastify';
 import fp from 'fastify-plugin';
 

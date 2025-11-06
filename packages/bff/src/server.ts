@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { logger } from '@digdir/dialogporten-node-logger';
+import { logger } from '@altinn/dialogporten-node-logger';
 import cookie from '@fastify/cookie';
 import cors from '@fastify/cors';
 import formBody from '@fastify/formbody';

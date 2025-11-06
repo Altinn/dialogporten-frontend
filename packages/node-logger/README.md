@@ -7,7 +7,7 @@ machine readable log depending on environment.
 ## Usage
 
 ```typescript
-import { logger } from '@digdir/dialogporten-node-logger'
+import { logger } from '@altinn/dialogporten-node-logger'
 
 logger.info('Hello world')
 logger.info({such: 'context'}, 'Hello world with additional context')

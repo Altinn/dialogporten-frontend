@@ -1,5 +1,5 @@
 import type { IncomingMessage } from 'node:http';
-import { logger } from '@digdir/dialogporten-node-logger';
+import { logger } from '@altinn/dialogporten-node-logger';
 import { FastifyOtelInstrumentation } from '@fastify/otel';
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-grpc';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';

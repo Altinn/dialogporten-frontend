@@ -23,18 +23,18 @@ importers:
 
   packages/bff:
     dependencies:
+      '@altinn/dialogporten-node-logger':
+        specifier: workspace:*
+        version: link:../node-logger
       '@azure/app-configuration':
         specifier: 1.9.0
         version: 1.9.0
       '@azure/app-configuration-provider':
         specifier: 2.2.0
         version: 2.2.0
-      '@digdir/dialogporten-node-logger':
-        specifier: workspace:*
-        version: link:../node-logger
       '@digdir/dialogporten-schema':
-        specifier: 1.79.7-5f58832
-        version: 1.79.7-5f58832
+        specifier: 1.88.2-279847c
+        version: 1.88.2-279847c
       '@fastify/cookie':
         specifier: ^11.0.2
         version: 11.0.2
@@ -413,8 +413,8 @@ importers:
   packages/frontend:
     dependencies:
       '@altinn/altinn-components':
-        specifier: 0.45.4
-        version: 0.45.4(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        specifier: 0.46.0
+        version: 0.46.0(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@microsoft/applicationinsights-react-js':
         specifier: 19.3.7
         version: 19.3.7(history@4.10.1)(react@19.1.0)(tslib@2.8.1)
@@ -633,8 +633,8 @@ packages:
     resolution: {integrity: sha512-p6t8ue0XZNjcRiqNkb5QAM0qQRAKsCiebZ6n9JjWA+p8fWf8BvnhO55y2fO28g3GW0Imj7PrAuyBuxq8aDVQwQ==}
     engines: {node: '>= 14.0.0'}
 
-  '@altinn/altinn-components@0.45.4':
-    resolution: {integrity: sha512-k5bB20qtCzrrRQhKShUBIJF+B8q4JkqmR8cIZARKd4tlAdhqkfbbqBjgsNBDYGPFI0gppAWYhdu8zx7do4nL5w==}
+  '@altinn/altinn-components@0.46.0':
+    resolution: {integrity: sha512-E4x8hJjFRhHiEpifaVTStlJuGuZcbr8OBquUsIpz3nyOgBEqB4xG1pKYwJCr3CNdG3cQqn2KuSHcflhz91hZ9Q==}
     peerDependencies:
       react: '>=18.3.1 || ^19.0.0'
       react-dom: '>=18.3.1 || ^19.0.0'
@@ -1717,8 +1717,8 @@ packages:
   '@digdir/designsystemet-theme@1.0.6':
     resolution: {integrity: sha512-Cj8aaQ5GtnJTdzHmOHap0B9ldGItRQ3NKpqlz4VF+wda0YQIgXlsiWi01ayYhU344u1gSGxdj3Dh3gg9GMOAfw==}
 
-  '@digdir/dialogporten-schema@1.79.7-5f58832':
-    resolution: {integrity: sha512-EsnfUK5ZYKWxmL0TMftfpcwkacg05RiXLEhZEy4RGzcRTvF8j5e+zmBBXd8Hzr96mpT1CMUv6haCPL0ziIMnzg==}
+  '@digdir/dialogporten-schema@1.88.2-279847c':
+    resolution: {integrity: sha512-2ZipzokNhFV7IGxJRqFFgVmx8oZipGcRVWka/GeFvISefekpl9zHs1xW6C4KLqfKhzf8WQTlsOWc7sTCtkfJog==}
     engines: {node: '22'}
 
   '@discoveryjs/json-ext@0.5.7':
@@ -10428,7 +10428,7 @@ snapshots:
     dependencies:
       '@algolia/client-common': 5.19.0
 
-  '@altinn/altinn-components@0.45.4(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+  '@altinn/altinn-components@0.46.0(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
     dependencies:
       '@digdir/designsystemet-css': 1.0.6
       '@digdir/designsystemet-react': 1.0.6(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -11815,7 +11815,7 @@ snapshots:
 
   '@digdir/designsystemet-theme@1.0.6': {}
 
-  '@digdir/dialogporten-schema@1.79.7-5f58832': {}
+  '@digdir/dialogporten-schema@1.88.2-279847c': {}
 
   '@discoveryjs/json-ext@0.5.7': {}
 

@@ -1,5 +1,5 @@
 import crypto from 'node:crypto';
-import { logger } from '@digdir/dialogporten-node-logger';
+import { logger } from '@altinn/dialogporten-node-logger';
 import axios from 'axios';
 import type {
   FastifyPluginAsync,
