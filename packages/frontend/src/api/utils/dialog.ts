@@ -19,9 +19,14 @@ interface SeenByItem {
   isCurrentEndUser: boolean;
 }
 
-export const getPartyIds = (partiesToUse: PartyFieldsFragment[]) => {
+export const getPartyIds = (partiesToUse: PartyFieldsFragment[], includeOnlySubPartiesWithSameName?: boolean) => {
   const partyURIs = partiesToUse.filter((party) => !party.hasOnlyAccessToSubParties).map((party) => party.party);
-  const subPartyURIs = partiesToUse.flatMap((party) => party.subParties?.map((subParty) => subParty.party) ?? []);
+  const subPartyURIs = partiesToUse.flatMap(
+    (party) =>
+      party.subParties
+        ?.filter((subParty) => (includeOnlySubPartiesWithSameName ? subParty.name === party.name : true))
+        .map((subParty) => subParty.party) ?? [],
+  );
 
   return Array.from(new Set([...partyURIs, ...subPartyURIs]));
 };
