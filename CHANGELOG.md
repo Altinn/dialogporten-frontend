@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.94.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.93.1...v1.94.0) (2025-11-05)
+
+
+### Features
+
+* Enable Global Menu in AF ([#3101](https://github.com/Altinn/dialogporten-frontend/issues/3101)) ([05db726](https://github.com/Altinn/dialogporten-frontend/commit/05db7263a8a30ece6e6590aaf4104bad08f775fb))
+* support new altinn oidc ([#3095](https://github.com/Altinn/dialogporten-frontend/issues/3095)) ([ed912f8](https://github.com/Altinn/dialogporten-frontend/commit/ed912f801bd96f8b1317348840364fd5fb78ae61))
+
+
+### Bug Fixes
+
+* **bff:** ensure secrets for oidc are stored as secrets ([#3111](https://github.com/Altinn/dialogporten-frontend/issues/3111)) ([e42a47a](https://github.com/Altinn/dialogporten-frontend/commit/e42a47aa1adffb862aa12b2a6f4efdaf85d24ca7))
+* Fix e2e after savedSearches changes ([#3104](https://github.com/Altinn/dialogporten-frontend/issues/3104)) ([41f6d0b](https://github.com/Altinn/dialogporten-frontend/commit/41f6d0b0413e5e93b6c537a5cd84a00576bdf96a))
+* **node-logger:** move package to [@altinn](https://github.com/altinn) and enable trusted publishers ([#3084](https://github.com/Altinn/dialogporten-frontend/issues/3084)) ([4d2a773](https://github.com/Altinn/dialogporten-frontend/commit/4d2a77381d3281b74c6d2004ca63deba5567e24b))
+
 ## [1.93.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.93.0...v1.93.1) (2025-11-04)
 
 
