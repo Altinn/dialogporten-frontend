@@ -215,7 +215,7 @@ export const useHeaderConfig = ({
         onSearch: (value: string) => {
           const encodedValue = encodeURIComponent(value);
 
-          window.location.href = `${createHomeLink()}sok?q=${encodedValue}`;
+          window.location.href = `${createHomeLink()}/sok?q=${encodedValue}`;
         },
       },
       desktopMenu,
