@@ -12,6 +12,8 @@ param hostName string
 @minLength(3)
 param dialogportenURL string
 @minLength(3)
+param authContextCookieDomain string = '.altinn.cloud'
+@minLength(3)
 param oicdUrl string
 param oidcPlatformUrl string = 'platform.at23.altinn.cloud/authentication/api/v1/openid'
 param minReplicas int
@@ -211,6 +213,10 @@ var containerAppEnvVars = concat(
     {
         name: 'APP_CONFIG_CONNECTION_STRING'
         secretRef: appConfigConnectionStringSecret.name
+    }
+    {
+        name: 'AUTH_CONTEXT_COOKIE_DOMAIN'
+        value: authContextCookieDomain
     }
   ],
   additionalEnvironmentVariables
