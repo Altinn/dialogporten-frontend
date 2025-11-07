@@ -7,6 +7,7 @@ import {
   getOrCreateProfile,
   getUserFromCore,
 } from '../functions/profile.ts';
+import { getLanguageFromAltinnContext } from './cookie.js';
 import { getOrganizationsFromRedis } from './organization.ts';
 import { OrganizationResponse } from './profile.ts';
 
@@ -19,8 +20,11 @@ export const Query = objectType({
         const profile = await getOrCreateProfile(ctx);
         const user = await getUserFromCore(ctx);
         const { language, groups, updatedAt } = profile;
+        const languageFromAltinnContext = getLanguageFromAltinnContext(
+          ctx.request.raw.cookies?.altinnPersistentContext,
+        );
         return {
-          language,
+          language: languageFromAltinnContext || language,
           updatedAt,
           groups,
           user,

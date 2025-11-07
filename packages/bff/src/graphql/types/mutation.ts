@@ -1,5 +1,6 @@
 import { logger } from '@altinn/dialogporten-node-logger';
 import { extendType, intArg, nonNull, stringArg } from 'nexus';
+import config from '../../config.js';
 import {
   addFavoriteParty,
   addFavoritePartyToGroup,
@@ -10,6 +11,7 @@ import {
   updateNotificationsSetting,
 } from '../functions/profile.ts';
 import { createSavedSearch, deleteSavedSearch, updateSavedSearch } from '../functions/savedsearch.ts';
+import { languageCodes } from './cookie.js';
 import { NotificationSettingsInput, Response, SavedSearchInput, SavedSearches } from './index.ts';
 
 export const Mutation = extendType({
@@ -194,6 +196,25 @@ export const DeleteFavoriteParty = extendType({
   },
 });
 
+const updateAltinnPersistentContextValue = (existingRaw: string | undefined, ulCode: string) => {
+  const decoded = existingRaw ? decodeURIComponent(existingRaw) : '';
+  if (!decoded) return encodeURIComponent(`UL=${ulCode}`);
+
+  const parts = decoded.split('&').filter(Boolean);
+  let replaced = false;
+
+  const newParts = parts.map((p) => {
+    if (p.startsWith('UL=')) {
+      replaced = true;
+      return `UL=${ulCode}`;
+    }
+    return p;
+  });
+
+  if (!replaced) newParts.push(`UL=${ulCode}`);
+  return encodeURIComponent(newParts.join('&'));
+};
+
 export const UpdateLanguage = extendType({
   type: 'Mutation',
   definition(t) {
@@ -206,6 +227,21 @@ export const UpdateLanguage = extendType({
         try {
           const pid = ctx.session.get('pid');
           await updateLanguage(pid, language);
+          const ul = languageCodes[language];
+
+          if (ul) {
+            const current = ctx.request.raw.cookies?.altinnPersistentContext;
+            const value = updateAltinnPersistentContextValue(current, ul);
+            ctx.request.context.reply.setCookie('altinnPersistentContext', value, {
+              path: '/',
+              domain: config.authContextCookieDomain,
+              expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+              httpOnly: true,
+              sameSite: 'strict',
+              secure: true,
+            });
+          }
+
           return { success: true };
         } catch (error) {
           logger.error(error, 'Failed to update language:');
