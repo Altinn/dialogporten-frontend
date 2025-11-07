@@ -229,6 +229,15 @@ if (applicationInsightsEnabled) {
           if (message === 'Script error.' || message === 'Script error') {
             return false;
           }
+
+          // Filter benign ResizeObserver errors
+          if (
+            message.includes('ResizeObserver loop') ||
+            message.includes('ResizeObserver loop completed with undelivered notifications')
+          ) {
+            return false;
+          }
+
           break;
         }
       }

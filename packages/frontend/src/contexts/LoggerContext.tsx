@@ -11,6 +11,13 @@ type LoggerContextProviderProps = {
 export const LoggerContextProvider = ({ children }: LoggerContextProviderProps): ReactElement => {
   useEffect(() => {
     const handleWindowError = (event: ErrorEvent) => {
+      if (
+        event.message.includes('ResizeObserver loop') ||
+        event.message.includes('ResizeObserver loop completed with undelivered notifications')
+      ) {
+        return;
+      }
+
       Analytics.trackException({
         exception: event.error,
         properties: {
