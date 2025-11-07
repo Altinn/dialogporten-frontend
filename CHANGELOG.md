@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.95.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.94.1...v1.95.0) (2025-11-07)
+
+
+### Features
+
+* read language and write to altinnPersistentContext on language change ([#3121](https://github.com/Altinn/dialogporten-frontend/issues/3121)) ([e36bb5e](https://github.com/Altinn/dialogporten-frontend/commit/e36bb5ecb91fb11d34c194100315f25dfe3f7315))
+
+
+### Bug Fixes
+
+* improvements to parties overview filter ([#3124](https://github.com/Altinn/dialogporten-frontend/issues/3124)) ([5656dc6](https://github.com/Altinn/dialogporten-frontend/commit/5656dc6147e3d79843f3f3ab2288528a53a84fe0))
+* Inbox search not visible with global header ([#3120](https://github.com/Altinn/dialogporten-frontend/issues/3120)) ([ad00089](https://github.com/Altinn/dialogporten-frontend/commit/ad00089154cfa839c5f848f566e4002c806495c2))
+* remove same-site strict in altinn context cookie ([#3125](https://github.com/Altinn/dialogporten-frontend/issues/3125)) ([52f646c](https://github.com/Altinn/dialogporten-frontend/commit/52f646c9946ad0d096060b065705fc73c0144ecb))
+
 ## [1.94.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.94.0...v1.94.1) (2025-11-06)
 
 
