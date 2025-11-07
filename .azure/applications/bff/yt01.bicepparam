@@ -10,6 +10,7 @@ param minReplicas = 2
 param maxReplicas = 3
 param workloadProfileName = 'Consumption'
 param logoutRedirectUri = 'https://tt02.altinn.no/ui/Authentication/Logout'
+param authContextCookieDomain = '.altinn.no'
 
 param platformBaseUrl = 'https://platform.yt01.altinn.cloud'
 
