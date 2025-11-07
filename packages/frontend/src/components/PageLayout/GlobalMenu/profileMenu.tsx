@@ -1,6 +1,6 @@
 import type { MenuItemProps, MenuItemSize, MenuProps, Theme } from '@altinn/altinn-components';
-import { formatDisplayName } from '@altinn/altinn-components';
-import { BellIcon, CogIcon, HandshakeFillIcon, HeartIcon, InboxFillIcon, PersonCircleIcon } from '@navikt/aksel-icons';
+import { Badge, formatDisplayName } from '@altinn/altinn-components';
+import { BellIcon, CogIcon, HandshakeIcon, HeartIcon, InboxFillIcon, PersonCircleIcon } from '@navikt/aksel-icons';
 import { pruneSearchQueryParams } from '../../../pages/Inbox/queryParams.ts';
 import { PageRoutes } from '../../../pages/routes.ts';
 import { createMenuItemComponent, isRouteSelected } from './shared.tsx';
@@ -118,6 +118,7 @@ export function buildProfileMenu({
       title: t('sidebar.inbox'),
       selected: isRouteSelected(pathname, PageRoutes.inbox, fromView),
       expanded: true,
+      badge: <Badge>{t('word.beta')}</Badge>,
       as: createMenuItemComponent({
         to: PageRoutes.inbox + pruneSearchQueryParams(currentSearchQuery),
       }),
@@ -128,11 +129,12 @@ export function buildProfileMenu({
       size: 'lg',
       iconTheme: 'tinted',
       selected: false,
-      icon: HandshakeFillIcon,
+      icon: HandshakeIcon,
       hidden: !showAmLink,
       as: 'a',
       href: 'https://am.ui.at23.altinn.cloud/accessmanagement/ui/users',
       title: t('altinn.access_management'),
+      badge: <Badge>{t('word.beta')}</Badge>,
     },
   ];
 

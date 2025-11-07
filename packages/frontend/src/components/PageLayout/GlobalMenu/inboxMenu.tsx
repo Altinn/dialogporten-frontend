@@ -1,10 +1,11 @@
 import type { MenuItemProps, MenuItemSize, MenuProps, Theme } from '@altinn/altinn-components';
+import { Badge } from '@altinn/altinn-components';
 import {
   ArchiveIcon,
   BookmarkIcon,
   DocPencilIcon,
   FileCheckmarkIcon,
-  HandshakeFillIcon,
+  HandshakeIcon,
   InboxFillIcon,
   LeaveIcon,
   PersonCircleIcon,
@@ -94,6 +95,7 @@ export function buildInboxMenu({
       as: createMenuItemComponent({
         to: PageRoutes.inbox + pruneSearchQueryParams(currentSearchQuery),
       }),
+      badge: <Badge>{t('word.beta')}</Badge>,
       items: [
         {
           id: '2',
@@ -188,12 +190,13 @@ export function buildInboxMenu({
         id: 'am',
         groupId: 'global',
         size: 'lg',
-        icon: HandshakeFillIcon,
+        icon: HandshakeIcon,
         hidden: !showAmLink,
         as: 'a',
         href: 'https://am.ui.at23.altinn.cloud/accessmanagement/ui/users',
         title: t('altinn.access_management'),
         selected: false,
+        badge: <Badge>{t('word.beta')}</Badge>,
       },
       ...shortcuts,
       {

@@ -25,8 +25,8 @@ const extractDateOfBirthFromSSN = (partyId: string): string | undefined => {
   const ssn = extractIdentifierNumber(partyId);
   if (!ssn || ssn.length !== 11) return undefined;
 
-  const day = ssn.slice(0, 2);
-  const month = ssn.slice(2, 4);
+  let day = ssn.slice(0, 2);
+  let month = ssn.slice(2, 4);
   const year = ssn.slice(4, 6);
   const individualNumber = Number.parseInt(ssn.slice(6, 9), 10);
 
@@ -41,7 +41,11 @@ const extractDateOfBirthFromSSN = (partyId: string): string | undefined => {
 
   const fullYear = century + yearNum;
 
-  return `${fullYear}-${month}-${day}`;
+  //fix tenor
+  if (+month >= 13) month = (+month - 80).toString().padStart(2, '0');
+  if (+day > 31) day = (+day - 40).toString().padStart(2, '0');
+
+  return `${day}.${month}.${fullYear}`;
 };
 
 export const mapPartiesToAuthorizedParties = (parties: PartyFieldsFragment[]): AuthorizedParty[] => {

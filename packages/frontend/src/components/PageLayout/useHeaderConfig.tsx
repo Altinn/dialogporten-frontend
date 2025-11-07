@@ -166,10 +166,7 @@ export const useHeaderConfig = ({
         return <Link to={createHomeLink()} {...props} />;
       },
     },
-    badge: {
-      label: t('word.beta'),
-      color: 'person' as const,
-    },
+
     locale: {
       title: 'Språk/language',
       options: [
@@ -231,6 +228,10 @@ export const useHeaderConfig = ({
   // Old Header props structure
   const headerProps: HeaderProps = {
     ...commonProps,
+    badge: {
+      label: t('word.beta'),
+      color: 'person' as const,
+    },
     currentAccount,
     globalMenu: {
       menuLabel: t('word.menu'),
