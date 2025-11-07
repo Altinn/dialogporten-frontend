@@ -6,9 +6,9 @@ import {
   FileCheckmarkIcon,
   HandshakeFillIcon,
   InboxFillIcon,
-  InformationSquareIcon,
   LeaveIcon,
   PersonCircleIcon,
+  PlusIcon,
   TrashIcon,
 } from '@navikt/aksel-icons';
 import { createMessageBoxLink } from '../../../auth';
@@ -48,18 +48,17 @@ export function buildInboxMenu({
     },
   };
 
-  const betaShortcuts: MenuItemProps[] = [
-    {
-      id: 'beta-about',
-      dataTestId: 'sidebar-about',
-      groupId: 'shortcuts',
-      icon: InformationSquareIcon,
-      title: t('altinn.beta.about'),
-      as: createMenuItemComponent({
-        to: PageRoutes.about + pruneSearchQueryParams(currentSearchQuery),
-      }),
-      selected: isRouteSelected(pathname, PageRoutes.about, fromView),
-    },
+  const newFormLink = () => {
+    if (window.location.pathname.includes('af.at')) {
+      return 'https://info.at23.altinn.cloud/skjemaoversikt/';
+    }
+    if (window.location.pathname.includes('af.tt')) {
+      return 'https://info.tt02.altinn.no/skjemaoversikt/';
+    }
+    return 'https://info.altinn.no/skjemaoversikt/';
+  };
+
+  const shortcuts: MenuItemProps[] = [
     {
       id: 'beta-exit',
       dataTestId: 'sidebar-exit',
@@ -68,6 +67,16 @@ export function buildInboxMenu({
       title: t('altinn.beta.exit'),
       as: createMenuItemComponent({
         to: createMessageBoxLink(),
+      }),
+    },
+    {
+      id: 'new-schema',
+      dataTestId: 'sidebar-new-schema',
+      groupId: 'shortcuts',
+      icon: PlusIcon,
+      title: t('altinn.new_schema'),
+      as: createMenuItemComponent({
+        to: newFormLink(),
       }),
     },
   ];
@@ -160,7 +169,7 @@ export function buildInboxMenu({
         ...item,
         iconTheme: idx === 0 ? 'base' : item.iconTheme,
       })),
-      ...betaShortcuts,
+      ...shortcuts,
     ],
   };
 
@@ -186,7 +195,7 @@ export function buildInboxMenu({
         title: t('altinn.access_management'),
         selected: false,
       },
-      ...betaShortcuts,
+      ...shortcuts,
       {
         groupId: 'profile-shortcut',
         id: 'profile',
