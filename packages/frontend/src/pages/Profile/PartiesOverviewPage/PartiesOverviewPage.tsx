@@ -8,6 +8,7 @@ import {
   PageNav,
   Section,
   type SettingsItemProps,
+  Switch,
   Toolbar,
 } from '@altinn/altinn-components';
 import type { AccountListItemType } from '@altinn/altinn-components/dist/types/lib/components/Account/AccountListItem';
@@ -28,6 +29,7 @@ import { PageRoutes } from '../../routes.ts';
 import { getBreadcrumbs } from '../Settings/Settings.tsx';
 import { useSettings } from '../Settings/useSettings.tsx';
 import { useAccountFilters } from '../useAccountFilters.tsx';
+import styles from './partiesOverviewPage.module.css';
 
 export const PartiesOverviewPage = () => {
   const { t } = useTranslation();
@@ -37,10 +39,12 @@ export const PartiesOverviewPage = () => {
   const { parties, selectedParties, allOrganizationsSelected, isLoading, flattenedParties } = useParties();
   const [searchValue, setSearchValue] = useState<string>('');
   const [expandedItem, setExpandedItem] = useState<string>('');
+  const [includeDeletedParties, setIncludeDeletedParties] = useState<boolean>(false);
 
   const { filters, getFilterLabel, filterState, setFilterState, filteredParties, isSearching } = useAccountFilters({
     searchValue,
     parties,
+    includeDeletedParties,
   });
 
   const { accounts, accountGroups } = useAccounts({
@@ -298,7 +302,18 @@ export const PartiesOverviewPage = () => {
           filterState={filterState}
           onFilterStateChange={setFilterState}
           filters={filters}
-        />
+        >
+          {filterState?.partyScope?.[0] !== 'PERSONS' && (
+            <Switch
+              size="xs"
+              checked={includeDeletedParties}
+              onChange={(e) => setIncludeDeletedParties(e.target.checked)}
+              aria-checked={includeDeletedParties}
+              label={t('parties.filter.show_deleted')}
+              className={styles.deletedFilter}
+            />
+          )}
+        </Toolbar>
         {isSearching && hits.length === 0 && <Heading size="lg">{t('profile.settings.no_results')}</Heading>}
         <AccountList groups={isSearching ? searchGroup : accountGroups} items={isSearching ? hits : accountListItems} />
       </Section>

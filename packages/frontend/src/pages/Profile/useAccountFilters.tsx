@@ -21,15 +21,18 @@ interface UseFiltersOutput {
 interface UseAccountFiltersProps {
   searchValue: string;
   parties: PartyFieldsFragment[];
+  includeDeletedParties?: boolean;
 }
 
-export const useAccountFilters = ({ searchValue, parties }: UseAccountFiltersProps): UseFiltersOutput => {
+export const useAccountFilters = ({
+  searchValue,
+  parties,
+  includeDeletedParties = true,
+}: UseAccountFiltersProps): UseFiltersOutput => {
   const { t } = useTranslation();
   const [filterState, setFilterState] = useState<FilterState>({
     partyScope: [FilterStateEnum.ALL_PARTIES],
-    showDeleted: [],
   });
-  const showDeleted = (filterState?.showDeleted?.length ?? 0) > 0;
 
   const filterOptions: ToolbarFilterProps[] = [
     {
@@ -43,25 +46,14 @@ export const useAccountFilters = ({ searchValue, parties }: UseAccountFiltersPro
           value: FilterStateEnum.ALL_PARTIES,
         },
         {
-          groupId: '1',
+          groupId: '2',
           label: t('parties.filter.persons'),
           value: FilterStateEnum.PERSONS,
         },
         {
-          groupId: '1',
+          groupId: '2',
           label: t('parties.filter.companies'),
           value: FilterStateEnum.COMPANIES,
-        },
-        {
-          name: 'showDeleted',
-          type: 'checkbox',
-          groupId: 'company',
-          label: t('parties.filter.show_deleted'),
-          value: 'deleted',
-          hidden:
-            filterState?.partyScope?.includes(FilterStateEnum.PERSONS) ||
-            filterState?.partyScope?.includes(FilterStateEnum.ALL_PARTIES) ||
-            !showDeleted,
         },
       ],
     },
@@ -79,7 +71,7 @@ export const useAccountFilters = ({ searchValue, parties }: UseAccountFiltersPro
             case FilterStateEnum.PERSONS:
               return t('parties.filter.persons');
             case FilterStateEnum.COMPANIES:
-              return showDeleted ? t('parties.labels.all_organizations') : t('parties.filter.companies');
+              return t('parties.filter.companies');
             default:
               return value.toString();
           }
@@ -90,8 +82,6 @@ export const useAccountFilters = ({ searchValue, parties }: UseAccountFiltersPro
 
   const filteredParties = useMemo(() => {
     const filters = filterState?.partyScope ?? [];
-    const includeDeletedParties = showDeleted || filters.includes(FilterStateEnum.ALL_PARTIES);
-
     let result = includeDeletedParties ? parties : parties.filter((party) => !party.isDeleted);
 
     if (searchValue.length > 0) {
@@ -123,7 +113,7 @@ export const useAccountFilters = ({ searchValue, parties }: UseAccountFiltersPro
     });
 
     return result;
-  }, [parties, filterState, searchValue, showDeleted]);
+  }, [parties, filterState, searchValue, includeDeletedParties]);
 
   const isSearching = searchValue.length > 0 || filterState.partyScope?.[0] !== FilterStateEnum.ALL_PARTIES;
 
