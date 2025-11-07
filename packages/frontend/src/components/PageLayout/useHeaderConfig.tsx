@@ -1,17 +1,25 @@
-import type { GlobalHeaderProps, HeaderProps, MenuItemProps } from '@altinn/altinn-components';
+import {
+  type GlobalHeaderProps,
+  type HeaderProps,
+  type MenuItemProps,
+  useAccountSelector,
+} from '@altinn/altinn-components';
 import type { ChangeEvent } from 'react';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import type { useParties } from '../../api/hooks/useParties.ts';
 import { updateLanguage } from '../../api/queries.ts';
 import { createHomeLink } from '../../auth';
 import { useFeatureFlag } from '../../featureFlags';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { i18n } from '../../i18n/config.ts';
+import { useProfile } from '../../pages/Profile';
 import { PageRoutes } from '../../pages/routes.ts';
 import { useAccounts } from './Accounts/useAccounts.tsx';
 import { useGlobalMenu } from './GlobalMenu';
 import { useAutocomplete, useSearchString } from './Search';
+import { mapPartiesToAuthorizedParties } from './mapPartyToAuthorizedParty';
 
 interface UseHeaderConfigProps {
   parties: ReturnType<typeof useParties>['parties'];
@@ -36,10 +44,94 @@ export const useHeaderConfig = ({
   const { t } = useTranslation();
   const { logError } = useErrorLogger();
   const location = useLocation();
+  const navigate = useNavigate();
   const isProfile = location.pathname.includes(PageRoutes.profile);
 
   const { searchValue, setSearchValue, onClear } = useSearchString();
   const { autocomplete } = useAutocomplete({ selectedParties: selectedParties, searchValue });
+
+  const { favoritesGroup, addFavoriteParty, deleteFavoriteParty } = useProfile();
+
+  const handleToggleFavorite = useCallback(
+    async (accountUuid: string) => {
+      const isFavorite = favoritesGroup?.parties?.includes(accountUuid);
+      try {
+        if (isFavorite) {
+          await deleteFavoriteParty(accountUuid);
+        } else {
+          await addFavoriteParty(accountUuid);
+        }
+      } catch (error) {
+        logError(
+          error as Error,
+          {
+            context: 'useHeaderConfig.handleToggleFavorite',
+            accountUuid,
+            action: isFavorite ? 'remove' : 'add',
+          },
+          'Error toggling favorite party',
+        );
+      }
+    },
+    [favoritesGroup?.parties, addFavoriteParty, deleteFavoriteParty, logError],
+  );
+
+  const handleSelectAccount = useCallback(
+    (accountUuid: string) => {
+      const targetRoute = isProfile ? PageRoutes.profile : PageRoutes.inbox;
+      const party = parties.find((p) => p.partyUuid === accountUuid);
+
+      if (!party) {
+        console.error('Selected party not found:', accountUuid);
+        return;
+      }
+
+      const search = new URLSearchParams();
+
+      if (location.pathname === targetRoute) {
+        // Already on the target route, just update the party selection via URL
+        search.append('party', encodeURIComponent(party.party));
+        navigate(`${targetRoute}?${search.toString()}`, { replace: true });
+      } else {
+        search.append('party', encodeURIComponent(party.party));
+        navigate(`${targetRoute}?${search.toString()}`);
+      }
+    },
+    [parties, isProfile, location.pathname, navigate],
+  );
+
+  const currentEndUser = parties.find((party) => party.isCurrentEndUser);
+  const partyListDTO = mapPartiesToAuthorizedParties(parties);
+
+  const favoriteAccountUuids = (favoritesGroup?.parties ?? []).filter(
+    (uuid): uuid is string => uuid !== null && uuid !== undefined,
+  );
+
+  // Get A2 selected account from the cookie - across A3 projects
+  const getCookie = (name: string): string | undefined => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) {
+      const cookieValue = parts.pop()?.split(';').shift();
+      return cookieValue && cookieValue.trim() !== '' ? cookieValue : undefined;
+    }
+    return undefined;
+  };
+
+  const currentAccountUuid = getCookie('AltinnPartyUuid') ?? selectedParties[0]?.partyUuid ?? currentEndUser?.partyUuid;
+
+  const selfAccountUuid = currentEndUser?.partyUuid;
+
+  const accountSelectorData = useAccountSelector({
+    partyListDTO,
+    favoriteAccountUuids,
+    currentAccountUuid,
+    selfAccountUuid,
+    isLoading,
+    onSelectAccount: handleSelectAccount,
+    onToggleFavorite: handleToggleFavorite,
+    languageCode: i18n.language,
+  });
 
   const { accounts, accountSearch, accountGroups, onSelectAccount, currentAccount, filterAccount } = useAccounts({
     parties,
@@ -104,21 +196,7 @@ export const useHeaderConfig = ({
 
   // New GlobalHeader props structure
   if (isGlobalMenuEnabled) {
-    const accountSelector = {
-      accountMenu: {
-        items: accounts,
-        groups: accountGroups,
-        currentAccount,
-        onSelectAccount: (account: string) =>
-          onSelectAccount(account, isProfile ? PageRoutes.profile : PageRoutes.inbox),
-        filterAccount,
-        ...(accountSearch && {
-          search: accountSearch,
-        }),
-        isVirtualized: true,
-      },
-      loading: isLoading,
-    };
+    const accountSelector = accountSelectorData;
 
     const globalHeaderProps: GlobalHeaderProps = {
       ...commonProps,
@@ -134,7 +212,11 @@ export const useHeaderConfig = ({
         },
       },
       globalSearch: {
-        onSearch: () => console.log('Search hit'),
+        onSearch: (value: string) => {
+          const encodedValue = encodeURIComponent(value);
+
+          window.location.href = `${createHomeLink()}sok?q=${encodedValue}`;
+        },
       },
       desktopMenu,
       accountSelector,

@@ -23,6 +23,7 @@ import { SaveSearchButton } from '../../components/SavedSearchButton/SaveSearchB
 import { isSavedSearchDisabled } from '../../components/SavedSearchButton/savedSearchEnabled.ts';
 import { SeenByModal } from '../../components/SeenByModal/SeenByModal.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
+import { useFeatureFlag } from '../../featureFlags/index.ts';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
 import { useInboxOnboarding } from '../../onboardingTour';
 import { PageRoutes } from '../routes.ts';
@@ -58,6 +59,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const [filterState, setFilterState] = useState<FilterState>(readFiltersFromURLQuery(location.search));
   const [currentSeenByLogModal, setCurrentSeenByLogModal] = useState<CurrentSeenByLog | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
+  const isGlobalMenuEnabled = useFeatureFlag('globalMenu.enabled') as boolean;
 
   const onFiltersChange = (filters: FilterState) => {
     const currentURL = new URL(window.location.href);
@@ -170,7 +172,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
 
   return (
     <PageBase margin="page">
-      <section data-testid="inbox-toolbar">
+      <section data-testid="inbox-toolbar" style={isGlobalMenuEnabled ? { marginTop: '-1rem' } : undefined}>
         {selectedAccount ? (
           <>
             <Toolbar
