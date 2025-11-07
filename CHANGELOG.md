@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.95.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.95.0...v1.95.1) (2025-11-07)
+
+
+### Bug Fixes
+
+* env variables for cookie domain ([#3126](https://github.com/Altinn/dialogporten-frontend/issues/3126)) ([acd3af3](https://github.com/Altinn/dialogporten-frontend/commit/acd3af33965a2cdc1867ad146cece69e6c05e006))
+
 ## [1.95.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.94.1...v1.95.0) (2025-11-07)
 
 
