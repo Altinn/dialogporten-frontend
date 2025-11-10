@@ -203,15 +203,6 @@ const plugin: FastifyPluginAsync = async (fastify) => {
       const expiresInSeconds = exp - Math.floor(now.getTime() / 1000);
 
       const session = {
-        cookie: {
-          expires: null,
-          originalMaxAge: null,
-          sameSite: null,
-          secure: false,
-          path: '/',
-          httpOnly: true,
-          domain: null,
-        },
         token: {
           access_token: token,
           access_token_expires_at: expiresIn,
