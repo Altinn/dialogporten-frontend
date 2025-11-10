@@ -18,7 +18,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
       },
       // X-Frame-Options
       frameguard: {
-        action: 'sameorigin',
+        action: 'deny',
       },
       // X-Content-Type-Options
       noSniff: true,
@@ -29,6 +29,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
           scriptSrc: ["'self'"],
           objectSrc: ["'none'"],
           imgSrc: ["'self'"],
+          frameAncestors: ["'none'"],
         },
       },
       // Referrer Policy
