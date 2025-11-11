@@ -202,7 +202,7 @@ export function buildInboxMenu({
       {
         groupId: 'profile-shortcut',
         id: 'profile',
-        size: 'md',
+        size: 'sm',
         as: createMenuItemComponent({
           to: PageRoutes.profile + pruneSearchQueryParams(currentSearchQuery),
         }),

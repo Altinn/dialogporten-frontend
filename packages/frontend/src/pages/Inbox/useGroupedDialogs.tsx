@@ -164,7 +164,7 @@ const useGroupedDialogs = ({
       summary: item.viewType === 'inbox' ? item.summary : undefined,
       state: getDialogState(item.viewType),
       recipient: item.recipient,
-      color: allOrganizationsSelected ? 'company' : undefined,
+      color: item.recipient.type?.toLowerCase() as 'person' | 'company',
       grouped: allOrganizationsSelected,
       attachmentsCount: item.guiAttachmentCount,
       seenByLog: item.seenByLog,

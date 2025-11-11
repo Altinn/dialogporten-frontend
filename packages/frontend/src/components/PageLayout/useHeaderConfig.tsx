@@ -8,7 +8,7 @@ import type { ChangeEvent } from 'react';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import type { useParties } from '../../api/hooks/useParties.ts';
+import { useParties } from '../../api/hooks/useParties.ts';
 import { updateLanguage } from '../../api/queries.ts';
 import { createHomeLink } from '../../auth';
 import { useFeatureFlag } from '../../featureFlags';
@@ -51,6 +51,8 @@ export const useHeaderConfig = ({
   const { autocomplete } = useAutocomplete({ selectedParties: selectedParties, searchValue });
 
   const { favoritesGroup, addFavoriteParty, deleteFavoriteParty } = useProfile();
+
+  const { currentEndUser } = useParties();
 
   const handleToggleFavorite = useCallback(
     async (accountUuid: string) => {
@@ -100,7 +102,6 @@ export const useHeaderConfig = ({
     [parties, isProfile, location.pathname, navigate],
   );
 
-  const currentEndUser = parties.find((party) => party.isCurrentEndUser);
   const partyListDTO = mapPartiesToAuthorizedParties(parties);
 
   const favoriteAccountUuids = (favoritesGroup?.parties ?? []).filter(
@@ -118,9 +119,11 @@ export const useHeaderConfig = ({
     return undefined;
   };
 
-  const currentAccountUuid = getCookie('AltinnPartyUuid') ?? selectedParties[0]?.partyUuid ?? currentEndUser?.partyUuid;
-
+  let currentAccountUuid = getCookie('AltinnPartyUuid') ?? selectedParties[0]?.partyUuid ?? currentEndUser?.partyUuid;
   const selfAccountUuid = currentEndUser?.partyUuid;
+  if (allOrganizationsSelected) {
+    currentAccountUuid = selfAccountUuid!;
+  }
 
   const accountSelectorData = useAccountSelector({
     partyListDTO,

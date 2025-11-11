@@ -4,7 +4,7 @@ export const getSidebar = (page: Page) => page.locator('aside');
 export const getSidebarMenuItem = (page: Page, route: string) => getSidebar(page).locator(`a[href*="${route}?"]`);
 export const getSearchbarInput = (page: Page) => page.locator("[name='Søk']");
 
-export async function performSearch(page, query: string, action?: 'clear' | 'click' | 'enter') {
+export async function performSearch(page: Page, query: string, action?: 'clear' | 'click' | 'enter') {
   const endGameAction = action || 'click';
   const searchbarInput = page.locator("[name='Søk']");
   await searchbarInput.click();
@@ -21,7 +21,7 @@ export async function performSearch(page, query: string, action?: 'clear' | 'cli
   }
 }
 
-export async function selectDialogBySearch(page, query: string, action?: 'click' | 'enter' | 'nothing') {
+export async function selectDialogBySearch(page: Page, query: string, action?: 'click' | 'enter' | 'nothing') {
   const endGameAction = action || 'click';
   const searchbarInput = page.locator("[name='Søk']");
 

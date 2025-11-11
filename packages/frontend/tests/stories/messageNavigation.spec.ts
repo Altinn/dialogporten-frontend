@@ -36,7 +36,7 @@ test.describe('Message navigation', () => {
     await page.getByRole('link', { name: 'This is a message 1 for Firma AS' }).click();
     await page.getByRole('link', { name: 'Tilbake', exact: true }).click();
     await expect(page.getByRole('button', { name: 'Alle virksomheter' })).toBeVisible();
-    await expectIsNeutralPage(page);
+    await expectIsPersonPage(page);
   });
 
   test('Back button navigates to previous page the message has been opened from', async ({ page, isMobile }) => {
