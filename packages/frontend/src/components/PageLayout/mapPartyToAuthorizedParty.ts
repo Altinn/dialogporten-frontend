@@ -48,36 +48,29 @@ const extractDateOfBirthFromSSN = (partyId: string): string | undefined => {
   return `${day}.${month}.${fullYear}`;
 };
 
-export const mapPartiesToAuthorizedParties = (parties: PartyFieldsFragment[]): AuthorizedParty[] => {
-  return parties.flatMap((party) => {
-    const mainParty: AuthorizedParty = {
-      partyUuid: party.partyUuid,
-      name: party.name,
-      partyId: party.party,
-      type: party.partyType,
-      isDeleted: party.isDeleted,
-      onlyHierarchyElementWithNoAccess: party.hasOnlyAccessToSubParties,
-      authorizedResources: [],
-      authorizedRoles: [],
-      dateOfBirth: party.partyType === 'Person' ? extractDateOfBirthFromSSN(party.party) : undefined,
-      organizationNumber: party.partyType === 'Organization' ? extractIdentifierNumber(party.party) : undefined,
-      subunits: party.subParties?.map((subParty) => {
-        return {
-          partyUuid: subParty.partyUuid,
-          name: subParty.name,
-          partyId: subParty.party,
-          type: subParty.partyType,
-          dateOfBirth: subParty.partyType === 'Person' ? extractDateOfBirthFromSSN(subParty.party) : undefined,
-          isDeleted: subParty.isDeleted,
-          onlyHierarchyElementWithNoAccess: false,
-          authorizedResources: [],
-          authorizedRoles: [],
-          organizationNumber:
-            subParty.partyType === 'Organization' ? extractIdentifierNumber(subParty.party) : undefined,
-        };
-      }),
-    };
+//@ts-ignore: any type - match expecing from AuthorizedParty
+const toAuthorizedParty = (party) => {
+  return {
+    partyUuid: party.partyUuid,
+    name: party.name,
+    partyId: party.party,
+    type: party.partyType,
+    isDeleted: party.isDeleted,
+    onlyHierarchyElementWithNoAccess: party.hasOnlyAccessToSubParties ?? false,
+    authorizedResources: [],
+    authorizedRoles: [],
+    dateOfBirth: party.partyType === 'Person' ? extractDateOfBirthFromSSN(party.party) : undefined,
+    organizationNumber: party.partyType === 'Organization' ? extractIdentifierNumber(party.party) : undefined,
+  };
+};
 
-    return [mainParty];
-  });
+export const mapPartiesToAuthorizedParties = (parties: PartyFieldsFragment[]): AuthorizedParty[] => {
+  const subPartyUuids = new Set(parties.flatMap((party) => party.subParties?.map((sub) => sub.partyUuid) ?? []));
+
+  return parties
+    .filter((party) => !subPartyUuids.has(party.partyUuid))
+    .map((party) => ({
+      ...toAuthorizedParty(party),
+      subunits: party.subParties?.map(toAuthorizedParty),
+    }));
 };
