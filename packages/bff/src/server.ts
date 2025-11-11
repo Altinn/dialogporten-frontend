@@ -69,7 +69,7 @@ const startServer = async (): Promise<void> => {
     cookieName: 'arbeidsflate',
     saveUninitialized: false,
     cookie: {
-      secure: false,
+      secure: true,
       httpOnly: true,
     },
   };
