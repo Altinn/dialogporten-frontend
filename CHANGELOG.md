@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.95.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.95.1...v1.95.2) (2025-11-11)
+
+
+### Bug Fixes
+
+* ensure correct name order for name for profile landing page ([#3154](https://github.com/Altinn/dialogporten-frontend/issues/3154)) ([ab6446f](https://github.com/Altinn/dialogporten-frontend/commit/ab6446fd6e6965a46744022daf32107af4e944f0))
+* fallback to sub for self-identified users without pid ([#3156](https://github.com/Altinn/dialogporten-frontend/issues/3156)) ([4598964](https://github.com/Altinn/dialogporten-frontend/commit/4598964731a18aebd616ef279cf95a9930379283))
+* Fix data parties data structure for Global Header ([#3150](https://github.com/Altinn/dialogporten-frontend/issues/3150)) ([34124cd](https://github.com/Altinn/dialogporten-frontend/commit/34124cdec6713578214f2dad9858f505c5016838))
+* Fix global search routing ([#3135](https://github.com/Altinn/dialogporten-frontend/issues/3135)) ([2768dff](https://github.com/Altinn/dialogporten-frontend/commit/2768dffa74266198e2093d85e3575c78a7019174))
+* Fix GlobalHeader inconsistencies across apps ([#3138](https://github.com/Altinn/dialogporten-frontend/issues/3138)) ([09a37bb](https://github.com/Altinn/dialogporten-frontend/commit/09a37bb5eb31abf1296fbce25ae1fc251c8738ca))
+* Ignore benign ReizeObserver errors ([c10f7c7](https://github.com/Altinn/dialogporten-frontend/commit/c10f7c70298408ef12069b8e0b9991653c9e14d6))
+* Map GlobalHeader properties, fix styling ([#3133](https://github.com/Altinn/dialogporten-frontend/issues/3133)) ([4cb8f39](https://github.com/Altinn/dialogporten-frontend/commit/4cb8f39763dd14c5ff0021240794200382617fe5))
+* Map inbox color to match global header, fix icon sizes ([#3157](https://github.com/Altinn/dialogporten-frontend/issues/3157)) ([e719fcd](https://github.com/Altinn/dialogporten-frontend/commit/e719fcd14cd5d8c993fb85c11e0d55d4ecf7de0e))
+* Now using secure cookies and blocks framing attempts ([778726d](https://github.com/Altinn/dialogporten-frontend/commit/778726dd08210cc6bc6fc9821b1b14fa0ad5e9c4))
+* Sidebar links ([6010c5f](https://github.com/Altinn/dialogporten-frontend/commit/6010c5f9dea0a446db79bb3ef8d34c76d89ae2a2))
+
 ## [1.95.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.95.0...v1.95.1) (2025-11-07)
 
 
