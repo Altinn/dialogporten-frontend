@@ -1,4 +1,13 @@
-import { type Color, type FooterProps, Layout, type LayoutProps, type Size, Snackbar } from '@altinn/altinn-components';
+import {
+  type Color,
+  type FooterProps,
+  Layout,
+  type LayoutColor,
+  type LayoutProps,
+  type LayoutTheme,
+  type Size,
+  Snackbar,
+} from '@altinn/altinn-components';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -28,7 +37,8 @@ export const PageLayout: React.FC = () => {
   const [searchParams] = useSearchParams();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const { selectedProfile, selectedParties, parties, allOrganizationsSelected, isLoading } = useParties();
+  const { selectedProfile, selectedParties, parties, allOrganizationsSelected, isLoading, currentEndUser } =
+    useParties();
   const [isErrorState] = useGlobalState<boolean>(QUERY_KEYS.ERROR_STATE, false);
 
   const { isGlobalMenuEnabled, headerProps } = useHeaderConfig({
@@ -57,10 +67,23 @@ export const PageLayout: React.FC = () => {
     queryClient.setQueryData(['search'], () => searchString || '');
   }, [searchParams]);
 
-  const color = isProfile ? 'neutral' : selectedProfile;
+  let color: LayoutColor = 'neutral';
+  let theme: LayoutTheme = 'default';
+
+  const isSinglePartyMatchingCurrentUser =
+    selectedProfile === 'person' && selectedParties.length === 1 && selectedParties[0].party === currentEndUser?.party;
+
+  if (isSinglePartyMatchingCurrentUser || isProfile || allOrganizationsSelected) {
+    color = 'person';
+    theme = 'neutral';
+  } else {
+    color = selectedProfile === 'company' ? 'company' : 'person';
+    theme = 'subtle';
+  }
 
   const layoutProps: LayoutProps = {
-    theme: isErrorState ? 'default' : 'subtle',
+    theme,
+    color,
     content: {
       color: isProfile ? 'person' : undefined,
     },
@@ -70,7 +93,6 @@ export const PageLayout: React.FC = () => {
       size: 'xs' as Size,
       children: t('skip_link.jumpto'),
     },
-    color,
     header: headerProps,
     footer,
     sidebar: { menu: sidebarMenu, hidden: isErrorState },

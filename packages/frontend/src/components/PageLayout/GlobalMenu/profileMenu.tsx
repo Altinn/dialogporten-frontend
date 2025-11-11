@@ -141,7 +141,7 @@ export function buildProfileMenu({
   const profileMenuItem: MenuItemProps = {
     groupId: 'profile-shortcut',
     id: 'profile',
-    size: 'md',
+    size: 'sm',
     as: createMenuItemComponent({
       to: PageRoutes.profile + pruneSearchQueryParams(currentSearchQuery),
     }),
