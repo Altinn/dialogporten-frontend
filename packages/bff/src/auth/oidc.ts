@@ -76,6 +76,7 @@ export interface IdTokenPayload {
   jwt: string;
   nonce: string;
   sid: string;
+  sub: string;
 }
 
 /* interface is common denominator of /login and /token DTO */
@@ -270,7 +271,9 @@ const plugin: FastifyPluginAsync = async (fastify) => {
       const customToken: IdportenToken = token as unknown as IdportenToken;
 
       const decodedIDToken = jwt.decode(customToken.id_token) as IdTokenPayload;
-      const { pid, locale = 'nb', nonce: receivedNonce, sid: idpSid } = decodedIDToken;
+      const { locale = 'nb', nonce: receivedNonce, sid: idpSid } = decodedIDToken;
+      // use sub as fallback for self-identified users
+      const pid = decodedIDToken.pid || decodedIDToken.sub;
 
       const nonceIsAMatch = storedNonceTruth === receivedNonce && storedNonceTruth !== '';
       const refreshTokenExpiresAt = new Date(now.getTime() + customToken.refresh_token_expires_in * 1000).toISOString();
