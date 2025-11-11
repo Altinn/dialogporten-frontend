@@ -51,6 +51,9 @@ This is a pragmatic solution until the dialog exposes an onClose prop or ref we 
     document.activeElement?.closest('dialog')?.close();
   };
 
+  const emailRegex =
+    /^[a-zA-Z0-9._-]+@(([a-zA-Z0-9æøåÆØÅ]([a-zA-Z0-9æøåÆØÅ-]{0,61}[a-zA-Z0-9æøåÆØÅ])?\.){1,9})[a-zA-Z]{2,14}$/;
+
   const isDirty =
     (enablePhoneNotifications && alertPhoneNumberState !== alertPhoneNumber) ||
     (enableEmailNotifications && alertEmailAddressState !== alertEmailAddress) ||
@@ -165,7 +168,7 @@ This is a pragmatic solution until the dialog exposes an onClose prop or ref we 
             <TextField
               name="email"
               type="email"
-              pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
+              pattern={emailRegex.source}
               required
               onInvalid={(e) => {
                 if (e.currentTarget.validity.valueMissing) {
