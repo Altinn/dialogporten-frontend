@@ -15,7 +15,7 @@ import {
 import { createMessageBoxLink } from '../../../auth';
 import { pruneSearchQueryParams } from '../../../pages/Inbox/queryParams.ts';
 import { PageRoutes } from '../../../pages/routes.ts';
-import { createMenuItemComponent, isRouteSelected } from './shared.tsx';
+import { createMenuItemComponent, getAccessAMUILink, isRouteSelected } from './shared.tsx';
 import type { UseGlobalMenuProps } from './useGlobalMenu.tsx';
 
 export function buildInboxMenu({
@@ -193,7 +193,7 @@ export function buildInboxMenu({
         icon: HandshakeIcon,
         hidden: !showAmLink,
         as: 'a',
-        href: 'https://am.ui.at23.altinn.cloud/accessmanagement/ui/users',
+        href: getAccessAMUILink(),
         title: t('altinn.access_management'),
         selected: false,
         badge: <Badge>{t('word.beta')}</Badge>,

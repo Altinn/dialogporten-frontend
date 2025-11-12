@@ -3,7 +3,7 @@ import { Badge, formatDisplayName } from '@altinn/altinn-components';
 import { BellIcon, CogIcon, HandshakeIcon, HeartIcon, InboxFillIcon, PersonCircleIcon } from '@navikt/aksel-icons';
 import { pruneSearchQueryParams } from '../../../pages/Inbox/queryParams.ts';
 import { PageRoutes } from '../../../pages/routes.ts';
-import { createMenuItemComponent, isRouteSelected } from './shared.tsx';
+import { createMenuItemComponent, getAccessAMUILink, isRouteSelected } from './shared.tsx';
 import type { UseGlobalMenuProps } from './useGlobalMenu.tsx';
 
 export function buildProfileMenu({
@@ -132,7 +132,7 @@ export function buildProfileMenu({
       icon: HandshakeIcon,
       hidden: !showAmLink,
       as: 'a',
-      href: 'https://am.ui.at23.altinn.cloud/accessmanagement/ui/users',
+      href: getAccessAMUILink(),
       title: t('altinn.access_management'),
       badge: <Badge>{t('word.beta')}</Badge>,
     },
