@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.96.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.95.2...v1.96.0) (2025-11-12)
+
+
+### Features
+
+* activate new oid in staging ([#3167](https://github.com/Altinn/dialogporten-frontend/issues/3167)) ([1e8968d](https://github.com/Altinn/dialogporten-frontend/commit/1e8968dca813426076a7fa7b163375cce3e7a577))
+
+
+### Bug Fixes
+
+* change host names for environments ([#3165](https://github.com/Altinn/dialogporten-frontend/issues/3165)) ([f2b6d33](https://github.com/Altinn/dialogporten-frontend/commit/f2b6d331d3b76a323ff57f8a7b712a7218dcf9b2))
+
 ## [1.95.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.95.1...v1.95.2) (2025-11-11)
 
 
