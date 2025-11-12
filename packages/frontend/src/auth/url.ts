@@ -55,7 +55,7 @@ export const createHomeLink = () => {
     return '/';
   }
 
-  if (location.hostname.includes('at.altinn.cloud')) {
+  if (location.hostname.includes('at.altinn.cloud') || location.hostname.includes('at22.altinn.cloud')) {
     return 'https://at23.altinn.cloud';
   }
 
@@ -63,7 +63,7 @@ export const createHomeLink = () => {
     return 'https://tt02.altinn.no';
   }
 
-  if (location.host.includes('tt.altinn.no')) {
+  if (location.host.includes('tt.altinn.no') || location.host.includes('tt02.altinn.no')) {
     return 'https://tt02.altinn.no';
   }
   return 'https://altinn.no';
