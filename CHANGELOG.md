@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.96.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.96.2...v1.96.3) (2025-11-12)
+
+
+### Bug Fixes
+
+* Bumb AC containing fixes for saved search and searchbar ([#3176](https://github.com/Altinn/dialogporten-frontend/issues/3176)) ([87039f7](https://github.com/Altinn/dialogporten-frontend/commit/87039f71d69a1b52b224e919c18a32cf400ff71c))
+* form links after new domain in at and tt ([#3175](https://github.com/Altinn/dialogporten-frontend/issues/3175)) ([2546381](https://github.com/Altinn/dialogporten-frontend/commit/2546381efd4915efdb732bba466afc1db702b296))
+
 ## [1.96.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.96.1...v1.96.2) (2025-11-12)
 
 
