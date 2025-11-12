@@ -131,7 +131,7 @@ module bffAvailabilityTest '../modules/applicationInsights/availabilityTest.bice
     location: location
     tags: tags
     appInsightsId: appInsights.outputs.appInsightsId
-    url: 'https://${applicationGatewayConfiguration.hostName}/api/health'
+    url: 'https://${filter(applicationGatewayConfiguration.hostNames, h => h.isPrimary)[0].name}/api/health'
   }
 }
 
@@ -143,7 +143,7 @@ module frontendAvailabilityTest '../modules/applicationInsights/availabilityTest
     location: location
     tags: tags
     appInsightsId: appInsights.outputs.appInsightsId
-    url: 'https://${applicationGatewayConfiguration.hostName}'
+    url: 'https://${filter(applicationGatewayConfiguration.hostNames, h => h.isPrimary)[0].name}'
   }
 }
 
