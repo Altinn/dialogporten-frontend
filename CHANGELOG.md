@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.96.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.96.0...v1.96.1) (2025-11-12)
+
+
+### Bug Fixes
+
+* **bff:** fix hostname for staging ([#3171](https://github.com/Altinn/dialogporten-frontend/issues/3171)) ([ac82a55](https://github.com/Altinn/dialogporten-frontend/commit/ac82a55daf65e0cc5ba3813e8ec764a4c1d3ba6f))
+* update condition for correct links now that af has changed host in at and tt ([#3169](https://github.com/Altinn/dialogporten-frontend/issues/3169)) ([16a80fe](https://github.com/Altinn/dialogporten-frontend/commit/16a80fe2304bcbaf0b28fbc88b5a30a5274794b2))
+
 ## [1.96.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.95.2...v1.96.0) (2025-11-12)
 
 
