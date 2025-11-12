@@ -5,6 +5,7 @@ param location = 'norwayeast'
 param imageTag = readEnvironmentVariable('IMAGE_TAG')
 param hostName = 'https://af.tt02.altinn.no'
 param dialogportenURL = 'https://altinn-tt02-api.azure-api.net/dialogporten'
+param oidcPlatformUrl string = 'platform.tt02.altinn.no/authentication/api/v1/openid'
 param oicdUrl = 'test.idporten.no'
 param authContextCookieDomain = '.altinn.no'
 param minReplicas = 2
@@ -23,3 +24,10 @@ param ocPApimSubscriptionKey = readEnvironmentVariable('OCP_APIM_SUBSCRIPTION_KE
 // secrets
 param environmentKeyVaultName = readEnvironmentVariable('ENVIRONMENT_KEY_VAULT_NAME')
 param containerAppEnvironmentName = readEnvironmentVariable('CONTAINER_APP_ENVIRONMENT_NAME')
+
+param additionalEnvironmentVariables = [
+  {
+    name: 'ENABLE_NEW_OIDC'
+    value: 'true'
+  }
+]
