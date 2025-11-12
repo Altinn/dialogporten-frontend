@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.96.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.96.1...v1.96.2) (2025-11-12)
+
+
+### Bug Fixes
+
+* ensure links to access am ui are env aware ([#3173](https://github.com/Altinn/dialogporten-frontend/issues/3173)) ([816307d](https://github.com/Altinn/dialogporten-frontend/commit/816307d9f636d2bb2fe2afc1a658b602cdeb02f1))
+* hydrate preferred language in cookie if cookie is not set ([#3172](https://github.com/Altinn/dialogporten-frontend/issues/3172)) ([9cc8ef6](https://github.com/Altinn/dialogporten-frontend/commit/9cc8ef681a2573d92e2f5237d5634e91bfa815b9))
+
 ## [1.96.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.96.0...v1.96.1) (2025-11-12)
 
 
