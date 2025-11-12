@@ -29,11 +29,19 @@ param applicationGatewayConfiguration = {
     minCapacity: 1
     maxCapacity: 2
   }
-  hostName: 'af.tt.altinn.no'
-  sslCertificate: {
-    keyVaultName: readEnvironmentVariable('CERTIFICATE_KEY_VAULT_NAME')
-    secretKey: 'star-tt-altinn-no'
-  }
+  hostNames: [
+    {
+      name: 'af.tt02.altinn.no'
+      isPrimary: true
+      sslCertificateSecretKey: 'af-tt02-altinn-no'
+    }
+    {
+      name: 'af.tt.altinn.no'
+      isPrimary: false
+      sslCertificateSecretKey: 'star-tt-altinn-no'
+    }
+  ]
+  sslCertificateKeyVaultName: readEnvironmentVariable('CERTIFICATE_KEY_VAULT_NAME')
   // remove after testing
   zones: ['1', '2']
 }

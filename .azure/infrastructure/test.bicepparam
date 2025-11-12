@@ -29,11 +29,19 @@ param applicationGatewayConfiguration = {
     minCapacity: 1
     maxCapacity: 2
   }
-  hostName: 'af.at.altinn.cloud'
-  sslCertificate: {
-    keyVaultName: readEnvironmentVariable('CERTIFICATE_KEY_VAULT_NAME')
-    secretKey: 'star-at-altinn-cloud'
-  }
+  hostNames: [
+    {
+      name: 'af.at23.altinn.cloud'
+      isPrimary: true
+      sslCertificateSecretKey: 'af-at23-altinn-cloud'
+    }
+    {
+      name: 'af.at.altinn.cloud'
+      isPrimary: false
+      sslCertificateSecretKey: 'star-at-altinn-cloud'
+    }
+  ]
+  sslCertificateKeyVaultName: readEnvironmentVariable('CERTIFICATE_KEY_VAULT_NAME')
 }
 
 // PostgreSQL Configuration

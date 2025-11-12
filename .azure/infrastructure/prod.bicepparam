@@ -31,11 +31,14 @@ param applicationGatewayConfiguration = {
     minCapacity: 1
     maxCapacity: 4
   }
-  hostName: 'af.altinn.no'
-  sslCertificate: {
-    keyVaultName: readEnvironmentVariable('CERTIFICATE_KEY_VAULT_NAME')
-    secretKey: 'af-altinn-no'
-  }
+  hostNames: [
+    {
+      name: 'af.altinn.no'
+      isPrimary: true
+      sslCertificateSecretKey: 'af-altinn-no'
+    }
+  ]
+  sslCertificateKeyVaultName: readEnvironmentVariable('CERTIFICATE_KEY_VAULT_NAME')
   zones: ['1', '2']
 }
 

@@ -3,7 +3,7 @@ using './main.bicep'
 param environment = 'test'
 param location = 'norwayeast'
 param imageTag = readEnvironmentVariable('IMAGE_TAG')
-param hostName = 'https://af.at.altinn.cloud'
+param hostName = 'https://af.at23.altinn.cloud'
 param dialogportenURL = 'https://altinn-dev-api.azure-api.net/dialogporten'
 param oicdUrl = 'test.idporten.no'
 param minReplicas = 2
