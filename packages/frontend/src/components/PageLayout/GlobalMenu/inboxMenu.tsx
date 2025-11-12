@@ -50,10 +50,10 @@ export function buildInboxMenu({
   };
 
   const newFormLink = () => {
-    if (window.location.pathname.includes('af.at')) {
+    if (window.location.pathname.includes('af.at') || window.location.pathname.includes('af.at23')) {
       return 'https://info.at23.altinn.cloud/skjemaoversikt/';
     }
-    if (window.location.pathname.includes('af.tt')) {
+    if (window.location.pathname.includes('af.tt') || window.location.pathname.includes('af.tt02')) {
       return 'https://info.tt02.altinn.no/skjemaoversikt/';
     }
     return 'https://info.altinn.no/skjemaoversikt/';
