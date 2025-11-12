@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.96.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.96.3...v1.96.4) (2025-11-12)
+
+
+### Bug Fixes
+
+* Saved Searches title position fix ([#3178](https://github.com/Altinn/dialogporten-frontend/issues/3178)) ([5c2b382](https://github.com/Altinn/dialogporten-frontend/commit/5c2b382ce6f4afdd4374ccff562c7154f7f9e623))
+
 ## [1.96.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.96.2...v1.96.3) (2025-11-12)
 
 
