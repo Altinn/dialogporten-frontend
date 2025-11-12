@@ -37,6 +37,8 @@ type Configuration = {
     minCapacity: int
     maxCapacity: int
   }?
+  @minLength(1)
+  @description('Array of hostnames. Exactly one must be marked as primary (isPrimary: true).')
   hostNames: HostNameConfiguration[]
   sslCertificateKeyVaultName: string
   zones: array?
@@ -45,6 +47,16 @@ type Configuration = {
 param configuration Configuration
 
 var gatewayName = '${namePrefix}-applicationGateway'
+
+// Validate exactly one primary hostname is configured
+var primaryHostNames = filter(configuration.hostNames, h => h.isPrimary)
+var primaryHostNamesCount = length(primaryHostNames)
+
+// Assert that at least one hostname is marked as primary
+assert hasPrimaryHostname = primaryHostNamesCount >= 1
+
+// Assert that no more than one hostname is marked as primary
+assert hasOnlyOnePrimaryHostname = primaryHostNamesCount <= 1
 
 resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' existing = {
   name: containerAppEnvName
