@@ -49,11 +49,11 @@ export function buildInboxMenu({
     },
   };
 
-  const newFormLink = () => {
-    if (window.location.pathname.includes('af.at') || window.location.pathname.includes('af.at23')) {
+  const getNewFormLink = () => {
+    if (location.hostname.includes('af.at') || location.hostname.includes('af.at23')) {
       return 'https://info.at23.altinn.cloud/skjemaoversikt/';
     }
-    if (window.location.pathname.includes('af.tt') || window.location.pathname.includes('af.tt02')) {
+    if (location.hostname.includes('af.tt') || location.hostname.includes('af.tt02')) {
       return 'https://info.tt02.altinn.no/skjemaoversikt/';
     }
     return 'https://info.altinn.no/skjemaoversikt/';
@@ -77,7 +77,7 @@ export function buildInboxMenu({
       icon: PlusIcon,
       title: t('altinn.new_schema'),
       as: createMenuItemComponent({
-        to: newFormLink(),
+        to: getNewFormLink(),
       }),
     },
   ];
