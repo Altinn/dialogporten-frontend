@@ -11,7 +11,7 @@ import {
   updateNotificationsSetting,
 } from '../functions/profile.ts';
 import { createSavedSearch, deleteSavedSearch, updateSavedSearch } from '../functions/savedsearch.ts';
-import { languageCodes } from './cookie.js';
+import { languageCodes, updateAltinnPersistentContextValue } from './cookie.js';
 import { NotificationSettingsInput, Response, SavedSearchInput, SavedSearches } from './index.ts';
 
 export const Mutation = extendType({
@@ -195,25 +195,6 @@ export const DeleteFavoriteParty = extendType({
     });
   },
 });
-
-const updateAltinnPersistentContextValue = (existingRaw: string | undefined, ulCode: string) => {
-  const decoded = existingRaw ? decodeURIComponent(existingRaw) : '';
-  if (!decoded) return encodeURIComponent(`UL=${ulCode}`);
-
-  const parts = decoded.split('&').filter(Boolean);
-  let replaced = false;
-
-  const newParts = parts.map((p) => {
-    if (p.startsWith('UL=')) {
-      replaced = true;
-      return `UL=${ulCode}`;
-    }
-    return p;
-  });
-
-  if (!replaced) newParts.push(`UL=${ulCode}`);
-  return encodeURIComponent(newParts.join('&'));
-};
 
 export const UpdateLanguage = extendType({
   type: 'Mutation',

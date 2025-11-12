@@ -23,3 +23,22 @@ export const getLanguageFromAltinnContext = (encodedValue?: string): 'nb' | 'nn'
     return undefined;
   }
 };
+
+export const updateAltinnPersistentContextValue = (existingRaw: string | undefined, ulCode: string) => {
+  const decoded = existingRaw ? decodeURIComponent(existingRaw) : '';
+  if (!decoded) return encodeURIComponent(`UL=${ulCode}`);
+
+  const parts = decoded.split('&').filter(Boolean);
+  let replaced = false;
+
+  const newParts = parts.map((p) => {
+    if (p.startsWith('UL=')) {
+      replaced = true;
+      return `UL=${ulCode}`;
+    }
+    return p;
+  });
+
+  if (!replaced) newParts.push(`UL=${ulCode}`);
+  return encodeURIComponent(newParts.join('&'));
+};
