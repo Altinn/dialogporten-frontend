@@ -10,6 +10,7 @@ import { endOfDay, endOfMonth, endOfWeek, startOfDay, startOfMonth, startOfWeek,
 import { t } from 'i18next';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { getOrganization } from '../../api/utils/organizations.ts';
+import { getPreferredPropertyByLocale } from '../../i18n/property.ts';
 
 export const getExclusiveLabel = (labels: string[]): SystemLabel => {
   const EXCLUSIVE_LABELS = [SystemLabel.Archive, SystemLabel.Bin, SystemLabel.Sent, SystemLabel.Default] as const;
@@ -211,7 +212,16 @@ const createSenderOrgFilter = (
 ): ToolbarFilterProps => {
   const filteredDialogs = getFilteredDialogs(allDialogs, currentFilters, FilterCategory.ORG);
   const orgCount = countOccurrences(filteredDialogs.map((d) => d.org));
-  const uniqueOrgs = Array.from(new Set([...allDialogs.map((d) => d.org), ...orgsFromSearchState]));
+  // These should not be listed per se in the list
+  const onBehaldOfOrgs = ['ksdigi', 'asf'];
+  const senderNames = allDialogs
+    .filter((d) => onBehaldOfOrgs.includes(d.org))
+    .map((d) => getPreferredPropertyByLocale(d.content?.senderName?.value)?.value)
+    .filter((d) => !!d);
+  const uniqueSenderNames = Array.from(new Set(senderNames));
+  const uniqueOrgs = Array.from(
+    new Set([...allDialogs.map((d) => d.org), ...orgsFromSearchState, ...uniqueSenderNames]),
+  ).filter((o) => o && !onBehaldOfOrgs.includes(o) && typeof o !== 'undefined');
 
   return {
     label: t('filter_bar.label.choose_sender'),
@@ -219,12 +229,18 @@ const createSenderOrgFilter = (
     removable: true,
     optionType: 'checkbox',
     options: uniqueOrgs
-      .map((org) => ({
-        label: getOrganization(allOrganizations, org)?.name || org,
-        value: org,
-        count: orgCount[org] || 0,
-      }))
+      .map((org) => {
+        const isSenderName = senderNames.includes(org);
+        return {
+          label: getOrganization(allOrganizations, org!)?.name || org,
+          value: org,
+          count: isSenderName ? (senderNames.find((s) => s === org)?.length ?? 0) : orgCount[org] || 0,
+        };
+      })
       .filter((option) => {
+        const isSenderName = senderNames.includes(option.value);
+        if (isSenderName) return true;
+
         if (orgsFromSearchState.includes(option.value)) {
           return true;
         }

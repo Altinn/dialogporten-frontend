@@ -232,6 +232,14 @@ fragment CountableDialogFields on SearchDialog {
   endUserContext {
     systemLabels
   }
+  content {
+    senderName {
+      value {
+        languageCode
+        value
+      }
+    }
+  }
   seenSinceLastContentUpdate {
     isCurrentEndUser
   }

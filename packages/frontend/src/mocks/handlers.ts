@@ -58,6 +58,7 @@ const getAllDialogsforCountMock = graphql.query('getAllDialogsForCount', ({ vari
     status: variables.status,
   });
 
+
   return HttpResponse.json({
     data: {
       searchDialogs: {
@@ -69,6 +70,9 @@ const getAllDialogsforCountMock = graphql.query('getAllDialogsForCount', ({ vari
           status: item.status,
           endUserContext: {
             systemLabels: item.endUserContext?.systemLabels ?? [],
+          },
+          content: {
+            senderName: item.content.senderName,
           },
           seenSinceLastContentUpdate: item.seenSinceLastContentUpdate,
         })) ?? null,
