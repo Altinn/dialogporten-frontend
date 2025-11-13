@@ -4,12 +4,15 @@ import {
   DsAlert,
   DsParagraph,
   Heading,
+  List,
+  NotificationItem,
   PageBase,
   Section,
   type SeenByLogItemProps,
   Toolbar,
 } from '@altinn/altinn-components';
 import type { FilterState } from '@altinn/altinn-components/dist/types/lib/components/Toolbar/Toolbar';
+import { BellIcon } from '@navikt/aksel-icons';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useSearchParams } from 'react-router-dom';
@@ -201,6 +204,19 @@ export const Inbox = ({ viewType }: InboxProps) => {
         ) : null}
       </section>
       <Section>
+        <List>
+          <NotificationItem
+            id="alert"
+            as="a"
+            href="//vg.no"
+            icon={BellIcon}
+            iconBadge={{ label: 'Nytt innhold' }}
+            dismissable
+            title={t('inbox.old_inbox_notification')}
+            description={t('inbox.old_inbox_notification.days_ago', { count: 2 })}
+            variant="tinted"
+          />
+        </List>
         {dialogsSuccess && !dialogs.length && !isLoading && (
           <EmptyState query={enteredSearchValue} viewType={viewType} searchMode={searchMode} />
         )}
