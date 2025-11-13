@@ -31,9 +31,14 @@ param applicationGatewayConfiguration = {
   }
   hostNames: [
     {
+      name: 'af.tt02.altinn.no'
+      sslCertificateSecretKey: 'af-tt02-altinn-no'
+      enableAvailabilityTest: true
+    }
+    {
       name: 'af.tt.altinn.no'
-      isPrimary: true
       sslCertificateSecretKey: 'star-tt-altinn-no'
+      enableAvailabilityTest: false
     }
   ]
   sslCertificateKeyVaultName: readEnvironmentVariable('CERTIFICATE_KEY_VAULT_NAME')
