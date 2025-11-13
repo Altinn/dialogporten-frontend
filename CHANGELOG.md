@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.96.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.96.4...v1.96.5) (2025-11-13)
+
+
+### Bug Fixes
+
+* check for new links form ([#3180](https://github.com/Altinn/dialogporten-frontend/issues/3180)) ([139624b](https://github.com/Altinn/dialogporten-frontend/commit/139624bd0b43afb99f56b93f26d60b0af8b4b8a3))
+* Improved rules for validation of email addresses ([e97990d](https://github.com/Altinn/dialogporten-frontend/commit/e97990d7b29bf1554691e6e6b6ade92adddd1204))
+
 ## [1.96.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.96.3...v1.96.4) (2025-11-12)
 
 
