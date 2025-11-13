@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.96.7](https://github.com/Altinn/dialogporten-frontend/compare/v1.96.6...v1.96.7) (2025-11-13)
+
+
+### Bug Fixes
+
+* **infra:** add support for several hosts ([#3186](https://github.com/Altinn/dialogporten-frontend/issues/3186)) ([dc6c15e](https://github.com/Altinn/dialogporten-frontend/commit/dc6c15e0d73b2efd661377040f8823639d2936c5))
+* **infra:** naming length issue ([#3188](https://github.com/Altinn/dialogporten-frontend/issues/3188)) ([f1db0b6](https://github.com/Altinn/dialogporten-frontend/commit/f1db0b64d2e68376ec00d7afbc283cb995a790db))
+
 ## [1.96.6](https://github.com/Altinn/dialogporten-frontend/compare/v1.96.5...v1.96.6) (2025-11-13)
 
 
