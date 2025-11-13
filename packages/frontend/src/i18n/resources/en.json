@@ -200,6 +200,8 @@
   "inbox.no_parties_found": "No parties found",
   "inbox.no_results.description": "Your search yielded no results. Try searching again with a different keyword.",
   "inbox.no_results.title": "No results",
+  "inbox.old_inbox_notification": "You have messages in the old inbox",
+  "inbox.old_inbox_notification.days_ago": "{count, plural, =1 {# day ago} other {# days ago}}",
   "inbox.unable_to_load_parties.body": "We are unable to retrieve your user information at the moment. Please try again later or ",
   "inbox.unable_to_load_parties.link": "log out",
   "inbox.unable_to_load_parties.title": "Technical Error",
