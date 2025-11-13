@@ -32,13 +32,14 @@ param applicationGatewayConfiguration = {
   hostNames: [
     {
       name: 'af.yt01.altinn.cloud'
-      isPrimary: true
       sslCertificateSecretKey: 'af-yt01-altinn-cloud'
+      enableAvailabilityTest: true
     }
     {
       name: 'af.yt.altinn.cloud'
-      isPrimary: false
       sslCertificateSecretKey: 'af-yt-altinn-cloud'
+      redirectTo: 'af.yt01.altinn.cloud'
+      enableAvailabilityTest: false
     }
   ]
   sslCertificateKeyVaultName: readEnvironmentVariable('CERTIFICATE_KEY_VAULT_NAME')

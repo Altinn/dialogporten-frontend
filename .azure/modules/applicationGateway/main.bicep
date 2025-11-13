@@ -22,8 +22,9 @@ param enableMaintenancePage bool = false
 @export()
 type HostNameConfiguration = {
   name: string
-  isPrimary: bool
   sslCertificateSecretKey: string
+  redirectTo: string?
+  enableAvailabilityTest: bool
 }
 
 @export()
@@ -48,15 +49,21 @@ param configuration Configuration
 
 var gatewayName = '${namePrefix}-applicationGateway'
 
-// Validate exactly one primary hostname is configured
-var primaryHostNames = filter(configuration.hostNames, h => h.isPrimary)
-var primaryHostNamesCount = length(primaryHostNames)
+// Validate hostname configuration
+var activeHostNames = filter(configuration.hostNames, h => h.?redirectTo == null)
+var redirectingHostNames = filter(configuration.hostNames, h => h.?redirectTo != null)
+var allHostNames = [for h in configuration.hostNames: h.name]
 
-// Assert that at least one hostname is marked as primary
-assert hasPrimaryHostname = primaryHostNamesCount >= 1
+// Assert at least one active hostname (not redirecting)
+assert hasActiveHostname = length(activeHostNames) >= 1
 
-// Assert that no more than one hostname is marked as primary
-assert hasOnlyOnePrimaryHostname = primaryHostNamesCount <= 1
+// Assert all redirectTo targets exist in the hostNames array
+var invalidRedirectTargets = [for h in redirectingHostNames: h.?redirectTo != null && !contains(allHostNames, h.redirectTo!)]
+assert validRedirectTargets = length(filter(invalidRedirectTargets, invalid => invalid)) == 0
+
+// Check for circular redirects by ensuring no hostname redirects to itself
+var selfRedirects = [for h in redirectingHostNames: h.name == h.?redirectTo]
+assert noSelfRedirects = length(filter(selfRedirects, isSelf => isSelf)) == 0
 
 resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' existing = {
   name: containerAppEnvName
@@ -87,9 +94,6 @@ resource applicationGatewayAssignedIdentity 'Microsoft.ManagedIdentity/userAssig
 }
 
 var publicIpAddressId = publicIp.id
-
-// Get the primary hostname configuration
-var primaryHostName = filter(configuration.hostNames, hostname => hostname.isPrimary)[0]
 
 // Create SSL certificate secret IDs for all hostnames
 var sslCertificateSecretIds = [for hostname in configuration.hostNames: {
@@ -287,26 +291,27 @@ var httpListener = {
   }
 }
 
-// Create redirect configurations for non-primary hostnames
-var hostnameRedirectConfigurations = [for hostname in filter(configuration.hostNames, h => !h.isPrimary): {
-  name: '${gatewayName}-redirect-${replace(hostname.name, '.', '-')}-to-primary'
+// Create redirect configurations for hostnames with redirectTo set
+var hostnameRedirectConfigurations = [for hostname in redirectingHostNames: {
+  name: '${gatewayName}-redirect-${replace(hostname.name, '.', '-')}-to-${replace(hostname.?redirectTo!, '.', '-')}'
   properties: {
     redirectType: 'Permanent'
     includePath: true
     includeQueryString: true
-    targetUrl: 'https://${primaryHostName.name}'
+    targetUrl: 'https://${hostname.?redirectTo}'
     requestRoutingRules: [
       {
         id: resourceId(
           'Microsoft.Network/applicationGateways/requestRoutingRules',
           gatewayName,
-          '${gatewayName}-redirect-${replace(hostname.name, '.', '-')}-to-primary'
+          '${gatewayName}-redirect-${replace(hostname.name, '.', '-')}-to-${replace(hostname.redirectTo!, '.', '-')}'
         )
       }
     ]
   }
 }]
 
+// HTTP to HTTPS redirect - use first active hostname as target
 var httpToHttpsRedirectConfiguration = {
   name: '${gatewayName}-redirectHttpToHttps'
   properties: {
@@ -317,7 +322,7 @@ var httpToHttpsRedirectConfiguration = {
       id: resourceId(
         'Microsoft.Network/applicationGateways/httpListeners',
         gatewayName,
-        '${gatewayName}-gatewayHttpListener-443-${replace(primaryHostName.name, '.', '-')}'
+        '${gatewayName}-gatewayHttpListener-443-${replace(activeHostNames[0].name, '.', '-')}'
       )
     }
     requestRoutingRules: [
@@ -332,17 +337,17 @@ var httpToHttpsRedirectConfiguration = {
   }
 }
 
-// Create routing rules for non-primary hostnames
-var hostnameRedirectRoutingRules = [for (hostname, i) in filter(configuration.hostNames, h => !h.isPrimary): {
-  name: '${gatewayName}-redirect-${replace(hostname.name, '.', '-')}-to-primary'
+// Create routing rules for redirecting hostnames
+var hostnameRedirectRoutingRules = [for (hostname, i) in redirectingHostNames: {
+  name: '${gatewayName}-redirect-${replace(hostname.name, '.', '-')}-to-${replace(hostname.?redirectTo!, '.', '-')}'
   properties: {
-    priority: 110 + i
+    priority: 200 + i
     ruleType: 'Basic'
     redirectConfiguration: {
       id: resourceId(
         'Microsoft.Network/applicationGateways/redirectConfigurations',
         gatewayName,
-        '${gatewayName}-redirect-${replace(hostname.name, '.', '-')}-to-primary'
+        '${gatewayName}-redirect-${replace(hostname.name, '.', '-')}-to-${replace(hostname.?redirectTo!, '.', '-')}'
       )
     }
     httpListener: {
@@ -355,32 +360,36 @@ var hostnameRedirectRoutingRules = [for (hostname, i) in filter(configuration.ho
   }
 }]
 
-var primaryRoutingRule = {
-  name: '${gatewayName}-pathBasedRoutingRule-https-primary'
+// Store the path map name to avoid referencing containerAppEnvironment in routing rules variable
+var pathMapName = '${gatewayName}-bffBackendPool.pathMap'
+
+// Create routing rules for active hostnames (path-based routing)
+var activeHostnameRoutingRules = [for (hostname, i) in activeHostNames: {
+  name: '${gatewayName}-pathBasedRoutingRule-https-${replace(hostname.name, '.', '-')}'
   properties: {
-    priority: 100
+    priority: 100 + i
     ruleType: 'PathBasedRouting'
     httpListener: {
       id: resourceId(
         'Microsoft.Network/applicationGateways/httpListeners',
         gatewayName,
-        '${gatewayName}-gatewayHttpListener-443-${replace(primaryHostName.name, '.', '-')}'
+        '${gatewayName}-gatewayHttpListener-443-${replace(hostname.name, '.', '-')}'
       )
     }
     urlPathMap: {
       id: resourceId(
         'Microsoft.Network/applicationGateways/urlPathMaps',
         gatewayName,
-        '${bffGatewayBackend.pool.name}.pathMap'
+        pathMapName
       )
     }
   }
-}
+}]
 
 var httpToHttpsRoutingRule = {
   name: '${gatewayName}-redirectHttpToHttps'
   properties: {
-    priority: 200
+    priority: 300
     ruleType: 'Basic'
     redirectConfiguration: {
       id: resourceId(
@@ -536,7 +545,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2024-01-01' =
         }
       }
     ]
-    requestRoutingRules: concat([primaryRoutingRule], hostnameRedirectRoutingRules, [httpToHttpsRoutingRule])
+    requestRoutingRules: concat(activeHostnameRoutingRules, hostnameRedirectRoutingRules, [httpToHttpsRoutingRule])
   }
   identity: {
     type: 'UserAssigned'

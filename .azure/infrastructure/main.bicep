@@ -123,29 +123,32 @@ module appInsights '../modules/applicationInsights/create.bicep' = {
   }
 }
 
-module bffAvailabilityTest '../modules/applicationInsights/availabilityTest.bicep' = {
-  scope: resourceGroup
-  name: 'bffAvailabilityTest'
-  params: {
-    name: 'BFF - ${environment}'
-    location: location
-    tags: tags
-    appInsightsId: appInsights.outputs.appInsightsId
-    url: 'https://${filter(applicationGatewayConfiguration.hostNames, h => h.isPrimary)[0].name}/api/health'
-  }
-}
+// Get hostnames with availability test enabled
+var availabilityTestHostNames = filter(applicationGatewayConfiguration.hostNames, h => h.enableAvailabilityTest)
 
-module frontendAvailabilityTest '../modules/applicationInsights/availabilityTest.bicep' = {
+module bffAvailabilityTests '../modules/applicationInsights/availabilityTest.bicep' = [for (hostname, i) in availabilityTestHostNames: {
   scope: resourceGroup
-  name: 'frontendAvailabilityTest'
+  name: 'bffAvailabilityTest-${replace(hostname.name, '.', '-')}'
   params: {
-    name: 'Frontend - ${environment}'
+    name: 'BFF - ${environment} - ${hostname.name}'
     location: location
     tags: tags
     appInsightsId: appInsights.outputs.appInsightsId
-    url: 'https://${filter(applicationGatewayConfiguration.hostNames, h => h.isPrimary)[0].name}'
+    url: 'https://${hostname.name}/api/health'
   }
-}
+}]
+
+module frontendAvailabilityTests '../modules/applicationInsights/availabilityTest.bicep' = [for (hostname, i) in availabilityTestHostNames: {
+  scope: resourceGroup
+  name: 'frontendAvailabilityTest-${replace(hostname.name, '.', '-')}'
+  params: {
+    name: 'Frontend - ${environment} - ${hostname.name}'
+    location: location
+    tags: tags
+    appInsightsId: appInsights.outputs.appInsightsId
+    url: 'https://${hostname.name}'
+  }
+}]
 
 module appConfiguration '../modules/appConfiguration/main.bicep' = {
   scope: resourceGroup
