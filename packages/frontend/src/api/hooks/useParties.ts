@@ -90,6 +90,8 @@ export const useParties = (): UsePartiesOutput => {
     const partyIsPerson = partyIds.some((partyId) => partyId.includes('person'));
     const searchParamsString = searchParams.toString();
     if (allOrganizationsSelected) {
+      const partyUuid = data?.find((party) => party.isCurrentEndUser)?.partyUuid;
+      document.cookie = 'AltinnPartyUuid=' + partyUuid;
       const allPartiesParams = createPartyParams(searchParamsString, 'allParties', 'true');
       handleChangSearchParams(allPartiesParams);
     } else if (partyIsPerson) {
@@ -97,9 +99,13 @@ export const useParties = (): UsePartiesOutput => {
        * However, if current end user has multiple parties of type person, we need to resolve to current end (user logged in)
        * user party from URL.
        */
+      const partyUuid = data?.find((party) => partyIds[0] === party.party)?.partyUuid;
+      document.cookie = 'AltinnPartyUuid=' + partyUuid;
       const personParams = new URLSearchParams(stripQueryParamsForParty(searchParamsString));
       handleChangSearchParams(personParams);
     } else {
+      const partyUuid = data?.find((party) => partyIds[0] === party.party)?.partyUuid;
+      document.cookie = 'AltinnPartyUuid=' + partyUuid;
       const params = createPartyParams(searchParamsString, 'party', encodeURIComponent(partyIds[0]));
       handleChangSearchParams(params);
     }
