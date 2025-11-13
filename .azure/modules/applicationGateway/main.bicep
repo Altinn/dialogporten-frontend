@@ -292,8 +292,9 @@ var httpListener = {
 }
 
 // Create redirect configurations for hostnames with redirectTo set
+// Use take() to ensure names don't exceed 80 character limit
 var hostnameRedirectConfigurations = [for hostname in redirectingHostNames: {
-  name: '${gatewayName}-redirect-${replace(hostname.name, '.', '-')}-to-${replace(hostname.?redirectTo!, '.', '-')}'
+  name: take('${gatewayName}-redir-${replace(hostname.name, '.', '-')}', 80)
   properties: {
     redirectType: 'Permanent'
     includePath: true
@@ -304,7 +305,7 @@ var hostnameRedirectConfigurations = [for hostname in redirectingHostNames: {
         id: resourceId(
           'Microsoft.Network/applicationGateways/requestRoutingRules',
           gatewayName,
-          '${gatewayName}-redirect-${replace(hostname.name, '.', '-')}-to-${replace(hostname.redirectTo!, '.', '-')}'
+          take('${gatewayName}-redir-${replace(hostname.name, '.', '-')}', 80)
         )
       }
     ]
@@ -313,7 +314,7 @@ var hostnameRedirectConfigurations = [for hostname in redirectingHostNames: {
 
 // HTTP to HTTPS redirect - use first active hostname as target
 var httpToHttpsRedirectConfiguration = {
-  name: '${gatewayName}-redirectHttpToHttps'
+  name: '${gatewayName}-http-to-https'
   properties: {
     redirectType: 'Permanent'
     includePath: true
@@ -330,7 +331,7 @@ var httpToHttpsRedirectConfiguration = {
         id: resourceId(
           'Microsoft.Network/applicationGateways/requestRoutingRules',
           gatewayName,
-          '${gatewayName}-redirectHttpToHttps'
+          '${gatewayName}-http-to-https'
         )
       }
     ]
@@ -338,8 +339,9 @@ var httpToHttpsRedirectConfiguration = {
 }
 
 // Create routing rules for redirecting hostnames
+// Use take() to match redirect configurations and ensure names don't exceed 80 chars
 var hostnameRedirectRoutingRules = [for (hostname, i) in redirectingHostNames: {
-  name: '${gatewayName}-redirect-${replace(hostname.name, '.', '-')}-to-${replace(hostname.?redirectTo!, '.', '-')}'
+  name: take('${gatewayName}-redir-${replace(hostname.name, '.', '-')}', 80)
   properties: {
     priority: 200 + i
     ruleType: 'Basic'
@@ -347,7 +349,7 @@ var hostnameRedirectRoutingRules = [for (hostname, i) in redirectingHostNames: {
       id: resourceId(
         'Microsoft.Network/applicationGateways/redirectConfigurations',
         gatewayName,
-        '${gatewayName}-redirect-${replace(hostname.name, '.', '-')}-to-${replace(hostname.?redirectTo!, '.', '-')}'
+        take('${gatewayName}-redir-${replace(hostname.name, '.', '-')}', 80)
       )
     }
     httpListener: {
@@ -364,8 +366,9 @@ var hostnameRedirectRoutingRules = [for (hostname, i) in redirectingHostNames: {
 var pathMapName = '${gatewayName}-bffBackendPool.pathMap'
 
 // Create routing rules for active hostnames (path-based routing)
+// Use take() to ensure names don't exceed 80 character limit
 var activeHostnameRoutingRules = [for (hostname, i) in activeHostNames: {
-  name: '${gatewayName}-pathBasedRoutingRule-https-${replace(hostname.name, '.', '-')}'
+  name: take('${gatewayName}-route-${replace(hostname.name, '.', '-')}', 80)
   properties: {
     priority: 100 + i
     ruleType: 'PathBasedRouting'
@@ -387,7 +390,7 @@ var activeHostnameRoutingRules = [for (hostname, i) in activeHostNames: {
 }]
 
 var httpToHttpsRoutingRule = {
-  name: '${gatewayName}-redirectHttpToHttps'
+  name: '${gatewayName}-http-to-https'
   properties: {
     priority: 300
     ruleType: 'Basic'
@@ -395,7 +398,7 @@ var httpToHttpsRoutingRule = {
       id: resourceId(
         'Microsoft.Network/applicationGateways/redirectConfigurations',
         gatewayName,
-        '${gatewayName}-redirectHttpToHttps'
+        '${gatewayName}-http-to-https'
       )
     }
     httpListener: {
