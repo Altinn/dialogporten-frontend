@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.96.6](https://github.com/Altinn/dialogporten-frontend/compare/v1.96.5...v1.96.6) (2025-11-13)
+
+
+### Bug Fixes
+
+* revert back to tt ([#3183](https://github.com/Altinn/dialogporten-frontend/issues/3183)) ([02a3d3e](https://github.com/Altinn/dialogporten-frontend/commit/02a3d3e6cd2f9d38b3c50f181e33546f4b3d83a4))
+* Set correct account cookie after selecting account ([#3184](https://github.com/Altinn/dialogporten-frontend/issues/3184)) ([c0b12b1](https://github.com/Altinn/dialogporten-frontend/commit/c0b12b136afff9604315fbcecd2bd34aa9c022cc))
+
 ## [1.96.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.96.4...v1.96.5) (2025-11-13)
 
 
