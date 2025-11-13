@@ -2,6 +2,7 @@ import { logger } from '@altinn/dialogporten-node-logger';
 import { list, objectType, stringArg } from 'nexus';
 import config from '../../config.js';
 import { SavedSearchRepository } from '../../db.ts';
+import { getAltinn2messages } from '../functions/altinn2messages.ts';
 import {
   getNotificationAddressByOrgNumber,
   getNotificationsettingsForCurrentUser,
@@ -47,6 +48,12 @@ export const Query = objectType({
           groups,
           user,
         };
+      },
+    });
+    t.field('altinn2messages', {
+      type: 'String',
+      resolve: async (_source, _args, ctx) => {
+        return await getAltinn2messages(ctx);
       },
     });
     t.field('organizations', {

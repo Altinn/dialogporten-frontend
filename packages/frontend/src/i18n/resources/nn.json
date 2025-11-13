@@ -200,6 +200,8 @@
   "inbox.no_parties_found": "Ingen aktørar funne",
   "inbox.no_results.description": "Søket ditt ga ingen treff. Prøv å søkje på nytt med eit anna søkjeord.",
   "inbox.no_results.title": "Ingen treff",
+  "inbox.old_inbox_notification": "Du har meldingar i gammal innboks",
+  "inbox.old_inbox_notification.days_ago": "{count, plural, =1 {# dag sidan} other {# dagar sidan}}",
   "inbox.unable_to_load_parties.body": "Vi kan ikkje hente brukaropplysningane dine akkurat no. Prøv igjen seinare eller ",
   "inbox.unable_to_load_parties.link": "logg ut",
   "inbox.unable_to_load_parties.title": "Teknisk feil",
