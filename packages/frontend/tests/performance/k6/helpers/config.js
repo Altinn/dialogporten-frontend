@@ -7,7 +7,7 @@ export const afUrl = (() => {
     case 'yt':
       return 'https://af.yt01.altinn.cloud/';
     case 'tt':
-      return 'https://af.tt02.altinn.no/';
+      return 'https://af.tt.altinn.no/';
     case 'at':
       return 'https://af.at23.altinn.cloud/';
     default:

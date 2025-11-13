@@ -31,13 +31,8 @@ param applicationGatewayConfiguration = {
   }
   hostNames: [
     {
-      name: 'af.tt02.altinn.no'
-      isPrimary: true
-      sslCertificateSecretKey: 'af-tt02-altinn-no'
-    }
-    {
       name: 'af.tt.altinn.no'
-      isPrimary: false
+      isPrimary: true
       sslCertificateSecretKey: 'star-tt-altinn-no'
     }
   ]

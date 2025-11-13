@@ -11,7 +11,7 @@ on:
         options:
           - test (af.at23.altinn.cloud)
           - yt01 (af.yt01.altinn.cloud)
-          - staging (af.tt02.altinn.no)
+          - staging (af.tt.altinn.no)
           - prod (af.altinn.no)
       version:
         description: "Version to deploy. Needs to be a git tag (exclude the v prefix)"
