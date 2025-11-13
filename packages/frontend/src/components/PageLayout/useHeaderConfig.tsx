@@ -89,15 +89,10 @@ export const useHeaderConfig = ({
       }
 
       const search = new URLSearchParams();
-
-      if (location.pathname === targetRoute) {
-        // Already on the target route, just update the party selection via URL
-        search.append('party', encodeURIComponent(party.party));
-        navigate(`${targetRoute}?${search.toString()}`, { replace: true });
-      } else {
-        search.append('party', encodeURIComponent(party.party));
-        navigate(`${targetRoute}?${search.toString()}`);
-      }
+      search.append('party', encodeURIComponent(party.party));
+      navigate(`${targetRoute}?${search.toString()}`, {
+        replace: location.pathname === targetRoute,
+      });
     },
     [parties, isProfile, location.pathname, navigate],
   );
@@ -119,11 +114,8 @@ export const useHeaderConfig = ({
     return undefined;
   };
 
-  let currentAccountUuid = getCookie('AltinnPartyUuid') ?? selectedParties[0]?.partyUuid ?? currentEndUser?.partyUuid;
+  const currentAccountUuid = getCookie('AltinnPartyUuid') ?? currentEndUser?.partyUuid;
   const selfAccountUuid = currentEndUser?.partyUuid;
-  if (allOrganizationsSelected) {
-    currentAccountUuid = selfAccountUuid!;
-  }
 
   const accountSelectorData = useAccountSelector({
     partyListDTO,
