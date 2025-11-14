@@ -12,7 +12,7 @@ param hostName string
 @minLength(3)
 param dialogportenURL string
 @minLength(3)
-param authContextCookieDomain string = '.altinn.cloud'
+param authContextCookieDomain string = '.at23.altinn.cloud'
 @minLength(3)
 param oicdUrl string
 param oidcPlatformUrl string = 'platform.at23.altinn.cloud/authentication/api/v1/openid'

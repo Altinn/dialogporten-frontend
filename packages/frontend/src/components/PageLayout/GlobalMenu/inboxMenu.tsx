@@ -12,10 +12,10 @@ import {
   PlusIcon,
   TrashIcon,
 } from '@navikt/aksel-icons';
-import { createMessageBoxLink } from '../../../auth';
+import { createMessageBoxLink, getAccessAMUILink, getNewFormLink } from '../../../auth';
 import { pruneSearchQueryParams } from '../../../pages/Inbox/queryParams.ts';
 import { PageRoutes } from '../../../pages/routes.ts';
-import { createMenuItemComponent, getAccessAMUILink, isRouteSelected } from './shared.tsx';
+import { createMenuItemComponent, isRouteSelected } from './shared.tsx';
 import type { UseGlobalMenuProps } from './useGlobalMenu.tsx';
 
 export function buildInboxMenu({
@@ -25,6 +25,7 @@ export function buildInboxMenu({
   currentSearchQuery,
   fromView,
   showAmLink,
+  currentPartyUuid,
 }: {
   t: (key: string, vars?: Record<string, string>) => string;
   currentEndUserName?: string;
@@ -32,6 +33,7 @@ export function buildInboxMenu({
   currentSearchQuery: string;
   fromView?: string;
   showAmLink?: boolean;
+  currentPartyUuid?: string;
 }): UseGlobalMenuProps {
   const menuGroups = {
     shortcuts: {
@@ -49,16 +51,6 @@ export function buildInboxMenu({
     },
   };
 
-  const getNewFormLink = () => {
-    if (location.hostname.includes('af.at') || location.hostname.includes('af.at23')) {
-      return 'https://info.at23.altinn.cloud/skjemaoversikt/';
-    }
-    if (location.hostname.includes('af.tt') || location.hostname.includes('af.tt02')) {
-      return 'https://info.tt02.altinn.no/skjemaoversikt/';
-    }
-    return 'https://info.altinn.no/skjemaoversikt/';
-  };
-
   const shortcuts: MenuItemProps[] = [
     {
       id: 'beta-exit',
@@ -67,7 +59,7 @@ export function buildInboxMenu({
       icon: LeaveIcon,
       title: t('altinn.beta.exit'),
       as: createMenuItemComponent({
-        to: createMessageBoxLink(),
+        to: createMessageBoxLink(currentPartyUuid),
       }),
     },
     {
@@ -77,7 +69,7 @@ export function buildInboxMenu({
       icon: PlusIcon,
       title: t('altinn.new_schema'),
       as: createMenuItemComponent({
-        to: getNewFormLink(),
+        to: getNewFormLink(currentPartyUuid),
       }),
     },
   ];
@@ -193,7 +185,7 @@ export function buildInboxMenu({
         icon: HandshakeIcon,
         hidden: !showAmLink,
         as: 'a',
-        href: getAccessAMUILink(),
+        href: getAccessAMUILink(currentPartyUuid),
         title: t('altinn.access_management'),
         selected: false,
         badge: <Badge>{t('word.beta')}</Badge>,

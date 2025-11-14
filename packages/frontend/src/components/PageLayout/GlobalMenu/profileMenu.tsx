@@ -1,9 +1,10 @@
 import type { MenuItemProps, MenuItemSize, MenuProps, Theme } from '@altinn/altinn-components';
 import { Badge, formatDisplayName } from '@altinn/altinn-components';
 import { BellIcon, CogIcon, HandshakeIcon, HeartIcon, InboxFillIcon, PersonCircleIcon } from '@navikt/aksel-icons';
+import { getAccessAMUILink } from '../../../auth';
 import { pruneSearchQueryParams } from '../../../pages/Inbox/queryParams.ts';
 import { PageRoutes } from '../../../pages/routes.ts';
-import { createMenuItemComponent, getAccessAMUILink, isRouteSelected } from './shared.tsx';
+import { createMenuItemComponent, isRouteSelected } from './shared.tsx';
 import type { UseGlobalMenuProps } from './useGlobalMenu.tsx';
 
 export function buildProfileMenu({
@@ -15,6 +16,7 @@ export function buildProfileMenu({
   fromView,
   userName,
   showAmLink = false,
+  currentPartyUuid,
 }: {
   t: (key: string, vars?: Record<string, string>) => string;
   currentEndUserName?: string;
@@ -24,6 +26,7 @@ export function buildProfileMenu({
   fromView?: string;
   userName?: string;
   showAmLink?: boolean;
+  currentPartyUuid?: string;
 }): UseGlobalMenuProps {
   const menuGroups = {
     shortcuts: {
@@ -132,7 +135,7 @@ export function buildProfileMenu({
       icon: HandshakeIcon,
       hidden: !showAmLink,
       as: 'a',
-      href: getAccessAMUILink(),
+      href: getAccessAMUILink(currentPartyUuid),
       title: t('altinn.access_management'),
       badge: <Badge>{t('word.beta')}</Badge>,
     },

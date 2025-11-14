@@ -42,7 +42,7 @@ const envVariables = z.object({
   ENABLE_GRAPHIQL: z.preprocess(stringToBoolean, z.boolean().default(true)),
   ENABLE_INIT_SESSION_ENDPOINT: z.preprocess(stringToBoolean, z.boolean().default(false)),
   LOGOUT_REDIRECT_URI: z.string().default('https://tt02.altinn.no/ui/Authentication/Logout'),
-  AUTH_CONTEXT_COOKIE_DOMAIN: z.string().default('.altinn.cloud'),
+  AUTH_CONTEXT_COOKIE_DOMAIN: z.string().default('.at23.altinn.cloud'),
 });
 
 const env = envVariables.parse(process.env);

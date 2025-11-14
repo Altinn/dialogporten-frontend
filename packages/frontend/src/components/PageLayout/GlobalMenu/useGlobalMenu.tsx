@@ -20,7 +20,7 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
   const isProfile = pathname.includes(PageRoutes.profile);
   const fromView = (state as { fromView?: string })?.fromView;
   const { t } = useTranslation();
-  const { currentEndUser } = useParties();
+  const { currentEndUser, currentPartyUuid } = useParties();
   const showAmLink: boolean = useFeatureFlag<boolean>('globalMenu.enableAccessManagementLink', false);
   const { user } = useProfile();
 
@@ -31,6 +31,7 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
     currentSearchQuery,
     fromView,
     showAmLink,
+    currentPartyUuid,
   });
 
   const profileMenus = buildProfileMenu({
@@ -42,6 +43,7 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
     fromView,
     userName: user?.party?.name ?? '',
     showAmLink,
+    currentPartyUuid,
   });
 
   return isProfile ? profileMenus : inboxMenus;

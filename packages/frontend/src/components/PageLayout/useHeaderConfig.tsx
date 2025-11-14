@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { updateLanguage } from '../../api/queries.ts';
-import { createHomeLink } from '../../auth';
+import { getFrontPageLink } from '../../auth';
 import { useFeatureFlag } from '../../featureFlags';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { i18n } from '../../i18n/config.ts';
@@ -21,25 +21,15 @@ import { useGlobalMenu } from './GlobalMenu';
 import { useAutocomplete, useSearchString } from './Search';
 import { mapPartiesToAuthorizedParties } from './mapPartyToAuthorizedParty';
 
-interface UseHeaderConfigProps {
-  parties: ReturnType<typeof useParties>['parties'];
-  selectedParties: ReturnType<typeof useParties>['selectedParties'];
-  allOrganizationsSelected: ReturnType<typeof useParties>['allOrganizationsSelected'];
-  isLoading: ReturnType<typeof useParties>['isLoading'];
-}
-
 interface UseHeaderConfigReturn {
   isGlobalMenuEnabled: boolean;
   headerProps: HeaderProps;
 }
 
-export const useHeaderConfig = ({
-  parties,
-  selectedParties,
-  allOrganizationsSelected,
-  isLoading,
-}: UseHeaderConfigProps): UseHeaderConfigReturn => {
+export const useHeaderConfig = (): UseHeaderConfigReturn => {
   const isGlobalMenuEnabled = useFeatureFlag('globalMenu.enabled') as boolean;
+  const { currentEndUser, parties, selectedParties, isLoading, allOrganizationsSelected, currentPartyUuid } =
+    useParties();
 
   const { t } = useTranslation();
   const { logError } = useErrorLogger();
@@ -48,11 +38,9 @@ export const useHeaderConfig = ({
   const isProfile = location.pathname.includes(PageRoutes.profile);
 
   const { searchValue, setSearchValue, onClear } = useSearchString();
-  const { autocomplete } = useAutocomplete({ selectedParties: selectedParties, searchValue });
+  const { autocomplete } = useAutocomplete({ selectedParties, searchValue });
 
   const { favoritesGroup, addFavoriteParty, deleteFavoriteParty } = useProfile();
-
-  const { currentEndUser } = useParties();
 
   const handleToggleFavorite = useCallback(
     async (accountUuid: string) => {
@@ -103,24 +91,12 @@ export const useHeaderConfig = ({
     (uuid): uuid is string => uuid !== null && uuid !== undefined,
   );
 
-  // Get A2 selected account from the cookie - across A3 projects
-  const getCookie = (name: string): string | undefined => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) {
-      const cookieValue = parts.pop()?.split(';').shift();
-      return cookieValue && cookieValue.trim() !== '' ? cookieValue : undefined;
-    }
-    return undefined;
-  };
-
-  const currentAccountUuid = getCookie('AltinnPartyUuid') ?? currentEndUser?.partyUuid;
   const selfAccountUuid = currentEndUser?.partyUuid;
 
   const accountSelectorData = useAccountSelector({
     partyListDTO,
     favoriteAccountUuids,
-    currentAccountUuid,
+    currentAccountUuid: currentPartyUuid,
     selfAccountUuid,
     isLoading,
     onSelectAccount: handleSelectAccount,
@@ -157,8 +133,8 @@ export const useHeaderConfig = ({
   const commonProps = {
     logo: {
       as: (props: MenuItemProps) => {
-        // @ts-ignore
-        return <Link to={createHomeLink()} {...props} />;
+        // @ts-expect-error - LinkProps expects title: string, but we pass ReactNode
+        return <Link to={getFrontPageLink(currentPartyUuid)} {...props} />;
       },
     },
 
@@ -206,8 +182,7 @@ export const useHeaderConfig = ({
       globalSearch: {
         onSearch: (value: string) => {
           const encodedValue = encodeURIComponent(value);
-
-          window.location.href = `${createHomeLink()}/sok?q=${encodedValue}`;
+          window.location.href = `${getFrontPageLink(currentPartyUuid)}/sok?q=${encodedValue}`;
         },
       },
       desktopMenu,
