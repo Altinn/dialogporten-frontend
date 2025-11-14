@@ -25,7 +25,7 @@
     "@altinn/altinn-components": "0.46.5",
     "@microsoft/applicationinsights-react-js": "19.3.7",
     "@microsoft/applicationinsights-web": "3.3.9",
-    "@navikt/aksel-icons": "^7.22.0",
+    "@navikt/aksel-icons": "^7.33.3",
     "@reactour/tour": "^3.8.0",
     "@tanstack/react-query": "^5.85.9",
     "bff-types-generated": "workspace:*",
