@@ -37,16 +37,9 @@ export const PageLayout: React.FC = () => {
   const [searchParams] = useSearchParams();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const { selectedProfile, selectedParties, parties, allOrganizationsSelected, isLoading, currentEndUser } =
-    useParties();
+  const { selectedProfile, selectedParties, allOrganizationsSelected, currentEndUser } = useParties();
   const [isErrorState] = useGlobalState<boolean>(QUERY_KEYS.ERROR_STATE, false);
-
-  const { isGlobalMenuEnabled, headerProps } = useHeaderConfig({
-    parties,
-    selectedParties,
-    allOrganizationsSelected,
-    isLoading,
-  });
+  const { isGlobalMenuEnabled, headerProps } = useHeaderConfig();
 
   const footer: FooterProps = useFooter();
   const { sidebarMenu } = useGlobalMenu();

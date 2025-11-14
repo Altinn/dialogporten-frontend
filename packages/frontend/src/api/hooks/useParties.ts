@@ -1,5 +1,5 @@
 import type { PartyFieldsFragment } from 'bff-types-generated';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
@@ -28,6 +28,7 @@ interface UsePartiesOutput {
   selectedProfile: ProfileType;
   partiesEmptyList: boolean;
   flattenedParties: FlattenedParty[];
+  currentPartyUuid: string | undefined;
 }
 
 const stripQueryParamsForParty = (searchParamString: string) => {
@@ -49,6 +50,26 @@ const createPartyParams = (searchParamString: string, key: string, value: string
   return params;
 };
 
+const getPartyUuidFromCookie = (): string | undefined => {
+  if (typeof document === 'undefined') return undefined;
+
+  const cookies = document.cookie.split(';');
+  let partyUuid: string | undefined;
+
+  for (const cookie of cookies) {
+    const [rawKey, ...rawValParts] = cookie.split('=');
+    const key = rawKey.trim();
+    const value = rawValParts.join('=').trim();
+
+    if (key === 'AltinnPartyUuid') {
+      partyUuid = value;
+      break;
+    }
+  }
+
+  return partyUuid;
+};
+
 export const useParties = (): UsePartiesOutput => {
   const location = useLocation();
   const stopReversingPersonNameOrder = useFeatureFlag<boolean>('party.stopReversingPersonNameOrder');
@@ -59,6 +80,12 @@ export const useParties = (): UsePartiesOutput => {
   );
   const [selectedParties, setSelectedParties] = useGlobalState<PartyFieldsFragment[]>(QUERY_KEYS.SELECTED_PARTIES, []);
   const [partiesEmptyList, setPartiesEmptyList] = useGlobalState<boolean>(QUERY_KEYS.PARTIES_EMPTY_LIST, false);
+  const cookiePartyUuidRef = useRef<string | undefined>(undefined);
+  const hasInitializedFromCookieRef = useRef(false);
+
+  useEffect(() => {
+    cookiePartyUuidRef.current = getPartyUuidFromCookie();
+  }, []);
 
   const handleChangSearchParams = (searchParams: URLSearchParams) => {
     /* Avoid setting search params if they are the same as the current ones */
@@ -85,13 +112,12 @@ export const useParties = (): UsePartiesOutput => {
     }
   };
 
-  const setSelectedPartyIds = (partyIds: string[], allOrganizationsSelected: boolean) => {
-    setAllOrganizationsSelected(allOrganizationsSelected);
+  const setSelectedPartyIds = (partyIds: string[], allOrgSelected: boolean) => {
+    setAllOrganizationsSelected(allOrgSelected);
     const partyIsPerson = partyIds.some((partyId) => partyId.includes('person'));
     const searchParamsString = searchParams.toString();
-    if (allOrganizationsSelected) {
-      const partyUuid = data?.find((party) => party.isCurrentEndUser)?.partyUuid;
-      document.cookie = 'AltinnPartyUuid=' + partyUuid;
+
+    if (allOrgSelected) {
       const allPartiesParams = createPartyParams(searchParamsString, 'allParties', 'true');
       handleChangSearchParams(allPartiesParams);
     } else if (partyIsPerson) {
@@ -99,16 +125,13 @@ export const useParties = (): UsePartiesOutput => {
        * However, if current end user has multiple parties of type person, we need to resolve to current end (user logged in)
        * user party from URL.
        */
-      const partyUuid = data?.find((party) => partyIds[0] === party.party)?.partyUuid;
-      document.cookie = 'AltinnPartyUuid=' + partyUuid;
       const personParams = new URLSearchParams(stripQueryParamsForParty(searchParamsString));
       handleChangSearchParams(personParams);
     } else {
-      const partyUuid = data?.find((party) => partyIds[0] === party.party)?.partyUuid;
-      document.cookie = 'AltinnPartyUuid=' + partyUuid;
       const params = createPartyParams(searchParamsString, 'party', encodeURIComponent(partyIds[0]));
       handleChangSearchParams(params);
     }
+
     handleSetSelectedParties(data?.filter((party) => partyIds.includes(party.party)) ?? []);
   };
 
@@ -118,36 +141,54 @@ export const useParties = (): UsePartiesOutput => {
     setSelectedPartyIds(allOrgParties, true);
   };
 
-  const getPartyFromURL = () => {
+  const getPartyFromURLOrCookie = () => {
     const partyFromQuery = getSelectedPartyFromQueryParams(searchParams);
+
     if (partyFromQuery) {
       return data?.find((party) => party.party === partyFromQuery);
     }
+
+    return undefined;
   };
 
   const getEndUserParty = () => {
     return data?.find((party) => party.isCurrentEndUser);
   };
 
-  const handlePartySelection = () => {
+  const initializePartySelection = () => {
     if (getSelectedAllPartiesFromQueryParams(searchParams)) {
       selectAllOrganizations();
-    } else {
-      const orgFromURL = getPartyFromURL();
-      const currentEndUser = getEndUserParty();
-      const selectedPartyIsPerson = selectedParties.some((party) => party.party.includes('person'));
-      if (orgFromURL) {
-        setSelectedPartyIds([orgFromURL.party], false);
-      } else if (selectedPartyIsPerson) {
-        setSelectedPartyIds(
-          selectedParties.map((party) => party.party),
-          false,
-        );
-      } else if (currentEndUser) {
-        setSelectedPartyIds([currentEndUser.party], false);
-      } else {
-        console.warn('No current end user found, unable to select default parties.');
+      return;
+    }
+
+    // Cookie override – applied only once
+    if (!hasInitializedFromCookieRef.current && cookiePartyUuidRef.current && data?.length) {
+      const partyFromCookie = data.find((party) => party.partyUuid === cookiePartyUuidRef.current);
+
+      if (partyFromCookie) {
+        hasInitializedFromCookieRef.current = true;
+        setSelectedPartyIds([partyFromCookie.party], false);
+        return;
       }
+
+      hasInitializedFromCookieRef.current = true;
+    }
+
+    const orgFromURL = getPartyFromURLOrCookie();
+    const currentEndUser = getEndUserParty();
+    const selectedPartyIsPerson = selectedParties.some((party) => party.party.includes('person'));
+
+    if (orgFromURL) {
+      setSelectedPartyIds([orgFromURL.party], false);
+    } else if (selectedPartyIsPerson) {
+      setSelectedPartyIds(
+        selectedParties.map((party) => party.party),
+        false,
+      );
+    } else if (currentEndUser) {
+      setSelectedPartyIds([currentEndUser.party], false);
+    } else {
+      console.warn('No current end user found, unable to select default parties.');
     }
   };
 
@@ -161,7 +202,7 @@ export const useParties = (): UsePartiesOutput => {
   useEffect(() => {
     if (isSuccess) {
       if (data?.length > 0) {
-        handlePartySelection();
+        initializePartySelection();
       } else {
         setPartiesEmptyList(true);
       }
@@ -171,7 +212,7 @@ export const useParties = (): UsePartiesOutput => {
   const isCompanyProfile =
     isCompanyFromParams || allOrganizationsSelected || selectedParties?.[0]?.partyType === 'Organization';
 
-  const selectedProfile = allOrganizationsSelected ? 'neutral' : isCompanyProfile ? 'company' : 'person';
+  const selectedProfile: ProfileType = allOrganizationsSelected ? 'neutral' : isCompanyProfile ? 'company' : 'person';
 
   const flattenedParties = useMemo(() => {
     if (!data) return [];
@@ -184,19 +225,28 @@ export const useParties = (): UsePartiesOutput => {
     ]) as FlattenedParty[];
   }, [data]);
 
+  const currentEndUser = useMemo(() => {
+    return data?.find((party) => party.isCurrentEndUser);
+  }, [data]);
+
+  const currentPartyUuid = useMemo(() => {
+    return allOrganizationsSelected ? currentEndUser?.partyUuid : selectedParties[0]?.partyUuid;
+  }, [selectedParties, currentEndUser, allOrganizationsSelected]);
+
   return {
     isLoading,
     isSuccess,
     isError,
-    flattenedParties: flattenedParties,
+    flattenedParties,
     selectedParties,
     selectedPartyIds: selectedParties.map((party) => party.party) ?? [],
     setSelectedParties: handleSetSelectedParties,
     setSelectedPartyIds,
     parties: data ?? [],
-    currentEndUser: data?.find((party) => party.isCurrentEndUser),
+    currentEndUser,
     allOrganizationsSelected,
     selectedProfile,
     partiesEmptyList,
+    currentPartyUuid,
   };
 };
