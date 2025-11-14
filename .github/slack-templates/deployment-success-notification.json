@@ -1,0 +1,81 @@
+{
+    "channel": "${{ env.CHANNEL_ID }}",
+    "attachments": [
+        {
+            "color": "${{ env.COLOR }}",
+            "fallback": "✅ Deployment Success - ${{ env.ENVIRONMENT }} has been deployed with version v${{ env.VERSION }}. View at: ${{ env.ENVIRONMENT_URL }}",
+            "blocks": [
+                {
+                    "type": "header",
+                    "text": {
+                        "type": "plain_text",
+                        "text": "✅ Deployment Success: ${{ env.ENVIRONMENT }}",
+                        "emoji": true
+                    }
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "${{ env.VERSION_INFO }}"
+                    }
+                },
+                {
+                    "type": "section",
+                    "fields": [
+                        {
+                            "type": "mrkdwn",
+                            "text": "*Environment:*\n${{ env.ENVIRONMENT }}"
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": "*Version:*\n`v${{ env.VERSION }}`"
+                        }
+                    ]
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "*What's New in This Release:*"
+                    }
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "${{ env.CHANGES_SUMMARY }}"
+                    }
+                }
+            ]
+        },
+        {
+            "color": "${{ env.COLOR }}",
+            "blocks": [
+                {
+                    "type": "actions",
+                    "elements": [
+                        {
+                            "type": "button",
+                            "text": {
+                                "type": "plain_text",
+                                "text": "View Release Notes"
+                            },
+                            "url": "${{ env.RELEASE_URL }}"
+                        },
+                        {
+                            "type": "button",
+                            "text": {
+                                "type": "plain_text",
+                                "text": "Open Environment"
+                            },
+                            "url": "${{ env.ENVIRONMENT_URL }}",
+                            "style": "primary"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
