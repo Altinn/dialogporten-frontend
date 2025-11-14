@@ -46,14 +46,14 @@ export const createMessageBoxLink = (currentPartyUuid?: string) => {
   return createChangeReporteeAndRedirect(currentPartyUuid, url);
 };
 
-export type hostEnv = 'at23' | 'tt02' | 'yt' | 'prod';
+export type hostEnv = 'local' | 'at23' | 'tt02' | 'yt' | 'prod';
 
 const getEnvByHost = (): hostEnv => {
-  if (
-    location.hostname.includes('at.altinn.cloud') ||
-    location.hostname.includes('at23.altinn.cloud') ||
-    location.host.includes('app.localhost')
-  ) {
+  if (location.host.includes('app.localhost')) {
+    return 'local';
+  }
+
+  if (location.hostname.includes('at.altinn.cloud') || location.hostname.includes('at23.altinn.cloud')) {
     return 'at23';
   }
 
@@ -70,6 +70,7 @@ const getEnvByHost = (): hostEnv => {
 /* Used for redirect from logo in header */
 const getFrontPageURL = () => {
   const hostMap: Record<hostEnv, string> = {
+    local: 'https://at23.altinn.cloud',
     at23: 'https://at23.altinn.cloud',
     tt02: 'https://tt02.altinn.no',
     yt: 'https://yt.altinn.cloud',
@@ -93,19 +94,20 @@ export const createChangeReporteeAndRedirect = (currentPartyUuid?: string, goTo?
   return url.toString();
 };
 
-/* TODO: When landing page for accessmanagement/ui/ is available, remove users from path */
 export const getAccessAMUILink = (currentPartyUuid?: string) => {
   const hostMap: Record<hostEnv, string> = {
-    at23: 'https://am.ui.at23.altinn.cloud/accessmanagement/ui/users',
-    tt02: 'https://am.ui.tt02.altinn.no/accessmanagement/ui/users',
-    yt: 'https://am.ui.at23.altinn.cloud/accessmanagement/ui/users', // there is no am ui in yt
-    prod: 'https://am.ui.altinn.no/accessmanagement/ui/users',
+    local: 'https://am.ui.at23.altinn.cloud/accessmanagement/ui',
+    at23: 'https://am.ui.at23.altinn.cloud/accessmanagement/ui',
+    tt02: 'https://am.ui.tt02.altinn.no/accessmanagement/ui',
+    yt: 'https://am.ui.at23.altinn.cloud/accessmanagement/ui', // there is no am ui in yt
+    prod: 'https://am.ui.altinn.no/accessmanagement/ui',
   };
   return createChangeReporteeAndRedirect(currentPartyUuid, hostMap[getEnvByHost()]);
 };
 
 export const getNewFormLink = (currentPartyUuid?: string) => {
   const hostMap: Record<hostEnv, string> = {
+    local: 'https://info.at23.altinn.cloud/skjemaoversikt/',
     at23: 'https://info.at23.altinn.cloud/skjemaoversikt/',
     tt02: 'https://info.tt02.altinn.no/skjemaoversikt/',
     yt: 'https://info.tt02.altinn.no/skjemaoversikt/', // there is no am ui in yt
@@ -116,4 +118,15 @@ export const getNewFormLink = (currentPartyUuid?: string) => {
 
 export const getFrontPageLink = (currentPartyUuid?: string) => {
   return createChangeReporteeAndRedirect(currentPartyUuid, 'https://info.at23.altinn.cloud/');
+};
+
+export const getCookieDomain = () => {
+  const hostMap: Record<hostEnv, string> = {
+    local: 'app.localhost',
+    at23: '.a23.altinn.cloud',
+    tt02: '.tt02.altinn.no',
+    yt: '.yt.altinn.cloud',
+    prod: '.altinn.no',
+  };
+  return hostMap[getEnvByHost()] || hostMap.prod;
 };
