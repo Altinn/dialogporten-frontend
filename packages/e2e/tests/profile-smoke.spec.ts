@@ -16,7 +16,7 @@ test.describe('Profile smoke tests', () => {
     await page.getByRole('button', { name: 'Lukk' }).click();
 
     await page.getByRole('button', { name: 'Meny', exact: true }).click();
-    await page.getByRole('link', { name: 'Min profil' }).click();
+    await page.getByRole('link', { name: 'Din profil' }).click();
     await expect(page).toHaveURL(`${baseURL}/profile`);
     await expect(page.getByRole('heading', { name: 'Ustabil Konditor' })).toBeVisible();
     await expect(page.getByText('Fødselsnr: 159152')).toBeVisible();
@@ -27,12 +27,12 @@ test.describe('Profile smoke tests', () => {
     await page.getByRole('button', { name: 'Prøv ny innboks' }).click();
     await page.getByRole('button', { name: 'Lukk' }).click();
     await page.getByRole('button', { name: 'Meny', exact: true }).click();
-    await page.getByRole('link', { name: 'Min profil' }).click();
+    await page.getByRole('link', { name: 'Din profil' }).click();
 
     await page.getByRole('button', { name: 'Neste' }).click();
     await page.getByRole('button', { name: 'Ferdig' }).click();
 
-    await page.getByRole('link', { name: 'Mine varsler' }).click();
+    await page.getByRole('link', { name: 'Varsler' }).click();
     await page.getByRole('button', { name: 'Konge Glad Tiger AS' }).first().click();
     const switchLocator = page.getByRole('switch', { name: 'Varsle på E-post' });
 
