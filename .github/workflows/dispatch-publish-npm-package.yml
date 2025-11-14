@@ -36,6 +36,11 @@ jobs:
         with:
           node-version-file: .node-version
 
+      # Ensure npm 11.5.1 or later for trusted publishing
+      # https://github.com/orgs/community/discussions/173102
+      - name: Install npm@latest
+        run: npm install -g npm@latest
+
       - name: Fetch package name
         id: fetch-package-name
         run: echo "PACKAGE_NAME=$(jq -r '.name' package.json)" >> $GITHUB_ENV
