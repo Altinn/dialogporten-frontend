@@ -51,7 +51,7 @@ export const Query = objectType({
       },
     });
     t.field('altinn2messages', {
-      type: 'String',
+      type: list('Altinn2Message'),
       resolve: async (_source, _args, ctx) => {
         return await getAltinn2messages(ctx);
       },

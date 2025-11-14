@@ -22,13 +22,13 @@ export const parties: PartyFieldsFragment[] = [
         "name": "LATTERMILD ORIENTAL TIGER AS",
         "isCurrentEndUser": false,
         "partyUuid": "urn:altinn:person:identifier-no:1337",
-        "isDeleted": false
+        "isDeleted": false,
       }
     ],
     "name": "LATTERMILD ORIENTAL TIGER AS",
     "isCurrentEndUser": false,
     "isDeleted": false,
-"partyUuid": "party:uuid:here"
+"partyUuid": "party:uuid:here",
   },
   {
     "party": "urn:altinn:organization:identifier-no:313549461",
@@ -41,7 +41,7 @@ export const parties: PartyFieldsFragment[] = [
         "name": "DYPSINDIG FUNKSJONELL FJELLREV",
         "isCurrentEndUser": false,
         "partyUuid": "urn:altinn:person:identifier-no:1337",
-        "isDeleted": false
+        "isDeleted": false,
       },
       {
         "party": "urn:altinn:organization:identifier-no:311615688",
@@ -49,13 +49,13 @@ export const parties: PartyFieldsFragment[] = [
         "name": "UPRESIS KONSENTRISK FJELLREV",
         "isCurrentEndUser": false,
         "partyUuid": "urn:altinn:person:identifier-no:1337",
-        "isDeleted": false
+        "isDeleted": false,
       }
     ],
     "name": "ORDENTLIG VIRTUELL TIGER AS",
     "isCurrentEndUser": false,
     "isDeleted": false,
-"partyUuid": "party:uuid:here"
+"partyUuid": "party:uuid:here",
   },
   {
     "party": "urn:altinn:organization:identifier-no:313776816",
@@ -68,13 +68,13 @@ export const parties: PartyFieldsFragment[] = [
         "name": "PLUTSELIG NYBAKT TIGER AS",
         "isCurrentEndUser": false,
         "partyUuid": "urn:altinn:person:identifier-no:1337",
-        "isDeleted": false
+        "isDeleted": false,
       }
     ],
     "name": "PLUTSELIG NYBAKT TIGER AS",
     "isCurrentEndUser": false,
     "isDeleted": false,
-"partyUuid": "party:uuid:here"
+"partyUuid": "party:uuid:here",
   },
   {
     "party": "urn:altinn:organization:identifier-no:312409216",
@@ -87,12 +87,12 @@ export const parties: PartyFieldsFragment[] = [
         "name": "STYRBAR UTTRYKKSFULL TIGER AS",
         "isCurrentEndUser": false,
         "partyUuid": "urn:altinn:person:identifier-no:1337",
-        "isDeleted": false
+        "isDeleted": false,
       }
     ],
     "name": "STYRBAR UTTRYKKSFULL TIGER AS",
     "isCurrentEndUser": false,
     "isDeleted": false,
-"partyUuid": "party:uuid:here"
+"partyUuid": "party:uuid:here",
   }
 ]

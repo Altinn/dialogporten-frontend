@@ -36,6 +36,8 @@ const envVariables = z.object({
   CLIENT_ID: z.string().default(''), // Note: Will be removed when Altinn OIDC takes over
   CLIENT_SECRET: z.string().default(''), // Note: Will be removed when Altinn OIDC takes over
   PLATFORM_BASEURL: z.string().default('https://platform.at23.altinn.cloud'),
+  ALTINN2_BASE_URL: z.string().default('https://at23.altinn.cloud'),
+  ALTINN2_API_KEY: z.string().default(''),
   MIGRATION_RUN: z.preprocess(stringToBoolean, z.boolean().default(false)),
   DIALOGPORTEN_URL: z.string().default('https://altinn-dev-api.azure-api.net/dialogporten'),
   CONTAINER_APP_REPLICA_NAME: z.string().default(''),
@@ -60,6 +62,8 @@ const config = {
   client_id: enableNewOIDC ? env.OIDC_CLIENT_ID : env.CLIENT_ID,
   client_secret: enableNewOIDC ? env.OIDC_CLIENT_SECRET : env.CLIENT_SECRET,
   platformBaseURL: env.PLATFORM_BASEURL,
+  altinn2BaseURL: env.ALTINN2_BASE_URL,
+  altinn2ApiKey: env.ALTINN2_API_KEY,
   openTelemetry: {
     enabled: !!env.OTEL_EXPORTER_OTLP_ENDPOINT,
     endpoint: env.OTEL_EXPORTER_OTLP_ENDPOINT,

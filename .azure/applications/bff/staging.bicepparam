@@ -6,6 +6,7 @@ param imageTag = readEnvironmentVariable('IMAGE_TAG')
 param hostName = 'https://af.tt.altinn.no'
 param dialogportenURL = 'https://altinn-tt02-api.azure-api.net/dialogporten'
 param oidcPlatformUrl = 'platform.tt02.altinn.no/authentication/api/v1/openid'
+param altinn2BaseUrl = 'https://tt02.altinn.no'
 param oicdUrl = 'test.idporten.no'
 param authContextCookieDomain = '.tt02.altinn.no'
 param minReplicas = 2
