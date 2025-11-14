@@ -1,3 +1,31 @@
 query altinn2messages {
-  altinn2messages
+  altinn2messages {
+    MessageId
+    MessageLink
+    Subject
+    Status
+    LastChangedDateTime
+    CreatedDate
+    LastChangedBy
+    ServiceOwner
+    Type
+    ServiceCode
+    ServiceEdition
+    ArchiveReference
+    _links {
+      self {
+        href
+      }
+      print {
+        href
+        mimeType
+      }
+      portalview {
+        href
+      }
+      metadata {
+        href
+      }
+    }
+  }
 }

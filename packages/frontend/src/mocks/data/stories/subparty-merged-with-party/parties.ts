@@ -19,7 +19,6 @@ export const parties: PartyFieldsFragment[] = [
     isCurrentEndUser: true,
     isDeleted: false,
     hasOnlyAccessToSubParties: false,   partyUuid: 'urn:altinn:person:identifier-no:1337',
-
   },
   {
     party: 'urn:altinn:organization:identifier-no:2',
@@ -28,7 +27,6 @@ export const parties: PartyFieldsFragment[] = [
     isCurrentEndUser: false,
     isDeleted: false,
     hasOnlyAccessToSubParties: false,   partyUuid: 'urn:altinn:person:identifier-no:1337',
-
     subParties: [
       {
         party: 'urn:altinn:organization:identifier-sub:1',
@@ -55,7 +53,6 @@ export const parties: PartyFieldsFragment[] = [
     isCurrentEndUser: false,
     isDeleted: false,
     hasOnlyAccessToSubParties: false,   partyUuid: 'urn:altinn:person:identifier-no:1337',
-
     subParties: [
       {
         party: 'urn:altinn:organization:id-mycompanyas-sub:1',

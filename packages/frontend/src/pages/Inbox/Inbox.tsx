@@ -4,15 +4,12 @@ import {
   DsAlert,
   DsParagraph,
   Heading,
-  List,
-  NotificationItem,
   PageBase,
   Section,
   type SeenByLogItemProps,
   Toolbar,
 } from '@altinn/altinn-components';
 import type { FilterState } from '@altinn/altinn-components/dist/types/lib/components/Toolbar/Toolbar';
-import { BellIcon } from '@navikt/aksel-icons';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useSearchParams } from 'react-router-dom';
@@ -30,6 +27,7 @@ import { useFeatureFlag } from '../../featureFlags/index.ts';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
 import { useInboxOnboarding } from '../../onboardingTour';
 import { PageRoutes } from '../routes.ts';
+import { Altinn2ActiveSchemasNotification } from './Altinn2ActiveSchemasNotification.tsx';
 import { FilterCategory, readFiltersFromURLQuery } from './filters.ts';
 import styles from './inbox.module.css';
 import { useFilters } from './useFilters.tsx';
@@ -56,7 +54,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
     isError: unableToLoadParties,
     isLoading: isLoadingParties,
   } = useParties();
-
   useMockError();
   const location = useLocation();
   const [filterState, setFilterState] = useState<FilterState>(readFiltersFromURLQuery(location.search));
@@ -204,19 +201,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
         ) : null}
       </section>
       <Section>
-        <List>
-          <NotificationItem
-            id="alert"
-            as="a"
-            href="//vg.no"
-            icon={BellIcon}
-            iconBadge={{ label: 'Nytt innhold' }}
-            dismissable
-            title={t('inbox.old_inbox_notification')}
-            description={t('inbox.old_inbox_notification.days_ago', { count: 2 })}
-            variant="tinted"
-          />
-        </List>
+        <Altinn2ActiveSchemasNotification />
         {dialogsSuccess && !dialogs.length && !isLoading && (
           <EmptyState query={enteredSearchValue} viewType={viewType} searchMode={searchMode} />
         )}

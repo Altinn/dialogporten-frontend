@@ -27,7 +27,6 @@ export interface Context {
 
 export const exchangeToken = async (context: Context): Promise<string> => {
   const { enableNewOIDC } = config;
-  logger.info(`enableNewOIDC: ${enableNewOIDC ? 'true' : 'false'}`);
   const token = typeof context.session.get('token') === 'object' ? (context.session.get('token') as TokenType) : null;
 
   if (!token) {

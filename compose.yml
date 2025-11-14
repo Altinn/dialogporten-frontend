@@ -147,6 +147,8 @@ services:
       APP_CONFIG_CONNECTION_STRING: ${APP_CONFIG_CONNECTION_STRING}
       ENABLE_INIT_SESSION_ENDPOINT: true
       DISABLE_PROFILE: false
+      ALTINN2_BASE_URL: ${ALTINN2_BASE_URL}
+      ALTINN2_API_KEY: ${ALTINN2_API_KEY}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.bff.rule=Host(`app.localhost`) && PathPrefix(`/api`)"

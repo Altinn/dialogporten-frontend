@@ -23,6 +23,9 @@ param resources object?
 
 param platformBaseUrl string
 
+@minLength(3)
+param altinn2BaseUrl string = 'https://at23.altinn.cloud'
+
 @secure()
 param ocPApimSubscriptionKey string
 
@@ -117,6 +120,12 @@ var appConfigConnectionStringSecret = {
   identity: 'System'
 }
 
+var altinn2ApiKeySecret = {
+  name: 'altinn2-api-key'
+  keyVaultUrl: '${keyVaultUrl}/altinn2ApiKey'
+  identity: 'System'
+}
+
 var secrets = [
   dbConnectionStringSecret
   redisConnectionStringSecret
@@ -126,6 +135,7 @@ var secrets = [
   appConfigConnectionStringSecret
   oidcClientId
   oidcClientSecret
+  altinn2ApiKeySecret
 ]
 
 var containerAppEnvVars = concat(
@@ -217,6 +227,14 @@ var containerAppEnvVars = concat(
     {
         name: 'AUTH_CONTEXT_COOKIE_DOMAIN'
         value: authContextCookieDomain
+    }
+    {
+        name: 'ALTINN2_BASE_URL'
+        value: altinn2BaseUrl
+    }
+    {
+        name: 'ALTINN2_API_KEY'
+        secretRef: altinn2ApiKeySecret.name
     }
   ],
   additionalEnvironmentVariables
