@@ -12,13 +12,28 @@ export const ulToLang = Object.entries(languageCodes).reduce<Record<string, stri
 export const getLanguageFromAltinnContext = (encodedValue?: string): 'nb' | 'nn' | 'en' | undefined => {
   if (!encodedValue) return undefined;
 
-  try {
-    const decoded = decodeURIComponent(encodedValue);
-    const match = decoded.match(/UL=(\d+)/);
-    if (!match) return undefined;
+  const tryExtract = (s: string) => {
+    const match = s.match(/UL=(\d+)/);
+    return match?.[1];
+  };
 
-    const ulCode = match[1];
-    return ulToLang[ulCode] as 'nb' | 'nn' | 'en' | undefined;
+  try {
+    // Try as-is
+    let candidate = encodedValue;
+    let ulCode = tryExtract(candidate);
+    if (ulCode) return ulToLang[ulCode] as 'nb' | 'nn' | 'en' | undefined;
+
+    // Try decoded once
+    candidate = decodeURIComponent(encodedValue);
+    ulCode = tryExtract(candidate);
+    if (ulCode) return ulToLang[ulCode] as 'nb' | 'nn' | 'en' | undefined;
+
+    // Try decoded twice
+    candidate = decodeURIComponent(candidate);
+    ulCode = tryExtract(candidate);
+    if (ulCode) return ulToLang[ulCode] as 'nb' | 'nn' | 'en' | undefined;
+
+    return undefined;
   } catch {
     return undefined;
   }
@@ -26,7 +41,10 @@ export const getLanguageFromAltinnContext = (encodedValue?: string): 'nb' | 'nn'
 
 export const updateAltinnPersistentContextValue = (existingRaw: string | undefined, ulCode: string) => {
   const decoded = existingRaw ? decodeURIComponent(existingRaw) : '';
-  if (!decoded) return encodeURIComponent(`UL=${ulCode}`);
+
+  if (!decoded) {
+    return `UL=${encodeURIComponent(ulCode)}`;
+  }
 
   const parts = decoded.split('&').filter(Boolean);
   let replaced = false;
@@ -34,11 +52,12 @@ export const updateAltinnPersistentContextValue = (existingRaw: string | undefin
   const newParts = parts.map((p) => {
     if (p.startsWith('UL=')) {
       replaced = true;
-      return `UL=${ulCode}`;
+      return `UL=${encodeURIComponent(ulCode)}`;
     }
     return p;
   });
 
-  if (!replaced) newParts.push(`UL=${ulCode}`);
-  return encodeURIComponent(newParts.join('&'));
+  if (!replaced) newParts.push(`UL=${encodeURIComponent(ulCode)}`);
+
+  return newParts.join('&');
 };
