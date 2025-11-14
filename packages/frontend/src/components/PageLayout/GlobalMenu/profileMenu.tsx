@@ -1,6 +1,6 @@
 import type { MenuItemProps, MenuItemSize, MenuProps, Theme } from '@altinn/altinn-components';
 import { Badge, formatDisplayName } from '@altinn/altinn-components';
-import { BellIcon, CogIcon, HandshakeIcon, HeartIcon, InboxFillIcon, PersonCircleIcon } from '@navikt/aksel-icons';
+import { BellIcon, CogIcon, HeartIcon, InboxFillIcon, PadlockLockedIcon, PersonCircleIcon } from '@navikt/aksel-icons';
 import { getAccessAMUILink } from '../../../auth';
 import { pruneSearchQueryParams } from '../../../pages/Inbox/queryParams.ts';
 import { PageRoutes } from '../../../pages/routes.ts';
@@ -132,7 +132,7 @@ export function buildProfileMenu({
       size: 'lg',
       iconTheme: 'tinted',
       selected: false,
-      icon: HandshakeIcon,
+      icon: PadlockLockedIcon,
       hidden: !showAmLink,
       as: 'a',
       href: getAccessAMUILink(currentPartyUuid),
