@@ -299,7 +299,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
         await redisClient.set(`idp-sid:${idpSid}`, appSessionId, 'EX', 3600 * 8);
       }
 
-      return reply.redirect('/');
+      return reply.code(302).redirect('/');
     } catch (e: unknown) {
       if (axios.isAxiosError(e)) {
         logger.error({ data: e.response?.data }, 'handleAuthRequest error e.data');
@@ -352,17 +352,26 @@ const plugin: FastifyPluginAsync = async (fastify) => {
 
   /* Post login: retrieves token, stores values to user session and redirects to client */
   fastify.get('/api/cb', async (request: FastifyRequest, reply: FastifyReply) => {
-    const storedStateTruth = request.session.get('state') || '';
-    const receivedState = (request.query as { state: string }).state || '';
-    const stateIsAMatch = storedStateTruth === receivedState && storedStateTruth !== '';
+    try {
+      const storedStateTruth = request.session.get('state') || '';
+      const receivedState = (request.query as { state: string }).state || '';
+      const stateIsAMatch = storedStateTruth === receivedState && storedStateTruth !== '';
 
-    if (!stateIsAMatch) {
-      reply.redirect('/api/login');
-      return;
+      if (!stateIsAMatch) {
+        if (!reply.sent) {
+          return reply.redirect('/api/login');
+        }
+        return;
+      }
+
+      /* Handle the callback from the OIDC provider */
+      return await handleAuthRequest(request, reply);
+    } catch (error) {
+      logger.error(error, 'Error in /api/cb callback handler');
+      if (!reply.sent) {
+        return reply.code(500).send('Authentication callback error');
+      }
     }
-
-    /* Handle the callback from the OIDC provider */
-    return handleAuthRequest(request, reply);
   });
 
   fastify.get('/api/logout', { preHandler: fastify.verifyToken(false) }, async (request, reply) =>
