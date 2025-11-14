@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.97.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.96.7...v1.97.0) (2025-11-14)
+
+
+### Features
+
+* ensure party is forwarded on linking to external routes ([#3193](https://github.com/Altinn/dialogporten-frontend/issues/3193)) ([e00b104](https://github.com/Altinn/dialogporten-frontend/commit/e00b104a6222cddcc30408d11b028cf8a2a9df86))
+
+
+### Bug Fixes
+
+* encoding for ul value in altinnPersistentContext ([#3196](https://github.com/Altinn/dialogporten-frontend/issues/3196)) ([bde28ac](https://github.com/Altinn/dialogporten-frontend/commit/bde28ac11cd86d2505b2d38222b35ba7eff68043))
+* Fix for 'Cannot write headers after they are sent to the client' error ([859236e](https://github.com/Altinn/dialogporten-frontend/commit/859236e1f5c09d95184902522cb47256d61bd7ed))
+* Profile texts ([#3152](https://github.com/Altinn/dialogporten-frontend/issues/3152)) ([6f763b2](https://github.com/Altinn/dialogporten-frontend/commit/6f763b2331bff21579ceb55e21bb6785d7ac3437))
+
 ## [1.96.7](https://github.com/Altinn/dialogporten-frontend/compare/v1.96.6...v1.96.7) (2025-11-13)
 
 
