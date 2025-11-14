@@ -4,18 +4,16 @@ import {
   DsAlert,
   DsParagraph,
   Heading,
-  List,
-  NotificationItem,
   PageBase,
   Section,
   type SeenByLogItemProps,
   Toolbar,
 } from '@altinn/altinn-components';
 import type { FilterState } from '@altinn/altinn-components/dist/types/lib/components/Toolbar/Toolbar';
-import { BellIcon } from '@navikt/aksel-icons';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useSearchParams } from 'react-router-dom';
+import { useAltinn2Messages } from '../../api/hooks/useAltinn2Messages.tsx';
 import { type InboxViewType, useDialogs } from '../../api/hooks/useDialogs.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { createFiltersURLQuery } from '../../auth';
@@ -30,6 +28,7 @@ import { useFeatureFlag } from '../../featureFlags/index.ts';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
 import { useInboxOnboarding } from '../../onboardingTour';
 import { PageRoutes } from '../routes.ts';
+import { OldInboxNotification } from './OldInboxNotification.tsx';
 import { FilterCategory, readFiltersFromURLQuery } from './filters.ts';
 import styles from './inbox.module.css';
 import { useFilters } from './useFilters.tsx';
@@ -56,7 +55,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     isError: unableToLoadParties,
     isLoading: isLoadingParties,
   } = useParties();
-
+  const { isLoading: isLoadingAltinn2Messages } = useAltinn2Messages();
   useMockError();
   const location = useLocation();
   const [filterState, setFilterState] = useState<FilterState>(readFiltersFromURLQuery(location.search));
@@ -119,7 +118,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     getFilterLabel,
   });
 
-  const isLoading = isLoadingParties || isLoadingDialogs;
+  const isLoading = isLoadingParties || isLoadingDialogs || isLoadingAltinn2Messages;
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: This hook does not specify all of its dependencies
   useEffect(() => {
@@ -204,19 +203,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
         ) : null}
       </section>
       <Section>
-        <List>
-          <NotificationItem
-            id="alert"
-            as="a"
-            href="//vg.no"
-            icon={BellIcon}
-            iconBadge={{ label: 'Nytt innhold' }}
-            dismissable
-            title={t('inbox.old_inbox_notification')}
-            description={t('inbox.old_inbox_notification.days_ago', { count: 2 })}
-            variant="tinted"
-          />
-        </List>
+        <OldInboxNotification />
         {dialogsSuccess && !dialogs.length && !isLoading && (
           <EmptyState query={enteredSearchValue} viewType={viewType} searchMode={searchMode} />
         )}
