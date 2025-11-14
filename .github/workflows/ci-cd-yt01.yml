@@ -130,3 +130,16 @@ jobs:
       version: ${{ github.event.client_payload.version }}
     secrets:
       token: ${{ secrets.SWARMIA_DEPLOYMENTS_AUTHORIZATION }}
+
+  send-deployment-success-slack-message:
+    name: Send deployment success Slack message
+    if: ${{ always() && !failure() && !cancelled() }}
+    needs: [get-versions-from-github, deploy-infrastructure, deploy-apps]
+    uses: ./.github/workflows/workflow-send-deployment-success-slack-message.yml
+    with:
+      environment: yt01
+      version: ${{ github.event.client_payload.version }}
+      previous_version: ${{ needs.get-versions-from-github.outputs.apps_version_sha != '' && vars.LATEST_DEPLOYED_APPS_VERSION || '' }}
+    secrets:
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_RELEASES }}
