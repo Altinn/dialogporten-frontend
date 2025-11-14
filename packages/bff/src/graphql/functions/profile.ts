@@ -9,7 +9,7 @@ const { platformBaseURL } = config;
 const platformExchangeTokenEndpointURL = platformBaseURL + '/authentication/api/v1/exchange/id-porten';
 const platformProfileAPI_url = platformBaseURL + '/profile/api/v1/';
 
-type TokenType = {
+export type TokenType = {
   access_token: string;
   access_token_expires_at?: number;
   id_token?: string;
@@ -18,7 +18,8 @@ type TokenType = {
   scope: string;
   tokenUpdatedAt?: number;
 };
-interface Context {
+
+export interface Context {
   session: {
     get: (key: string) => TokenType | string | undefined;
   };
@@ -26,6 +27,7 @@ interface Context {
 
 export const exchangeToken = async (context: Context): Promise<string> => {
   const { enableNewOIDC } = config;
+  logger.info(`enableNewOIDC: ${enableNewOIDC ? 'true' : 'false'}`);
   const token = typeof context.session.get('token') === 'object' ? (context.session.get('token') as TokenType) : null;
 
   if (!token) {

@@ -1,4 +1,5 @@
 export const QUERY_KEYS = {
+  ALTINN2_MESSAGES: 'altinn2Messages',
   DIALOG_BY_ID: 'dialogById',
   PARTIES: 'parties',
   PARTIES_EMPTY_LIST: 'partiesEmptyList',
