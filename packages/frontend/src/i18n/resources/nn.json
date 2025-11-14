@@ -171,6 +171,7 @@
   "footer.nav.accessibility": "Tilgjengelegheit",
   "footer.nav.privacy_policy": "Personvern",
   "footer.nav.service_messages": "Driftsmeldingar",
+  "inbox.search.placeholder": "Søk i innboksen",
   "inbox.filter.multiple.sender": "{count, plural, =0 {Vel avsendar} one {# avsendar} other {# avsendarar}}",
   "inbox.filter.multiple.status": "{count, plural, =0 {Vel status} one {# status} other {# statuser}}",
   "inbox.heading.attachments": "{count, plural, =0 {Ingen vedlegg} one {# vedlegg} other {# vedlegg}}",
