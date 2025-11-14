@@ -99,6 +99,7 @@ export const useHeaderConfig = (): UseHeaderConfigReturn => {
     currentAccountUuid: currentPartyUuid,
     selfAccountUuid,
     isLoading,
+    isVirtualized: true,
     onSelectAccount: handleSelectAccount,
     onToggleFavorite: handleToggleFavorite,
     languageCode: i18n.language,
