@@ -13,7 +13,7 @@
     "@biomejs/biome": "1.9.4",
     "lint-staged": "^16.0.0",
     "mprocs": "^0.7.3",
-    "turbo": "2.5.3"
+    "turbo": "2.6.1"
   },
   "engines": {
     "node": ">=22.0.0"
@@ -21,7 +21,7 @@
   "lint-staged": {
     "**/*.*": "biome check --staged --no-errors-on-unmatched --write"
   },
-  "packageManager": "pnpm@10.15.1",
+  "packageManager": "pnpm@10.22.0",
   "msw": {
     "workerDirectory": [
       "dist"
