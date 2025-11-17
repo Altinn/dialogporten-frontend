@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.98.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.98.3...v1.98.4) (2025-11-17)
+
+
+### Bug Fixes
+
+* **infra:** fix compile issue for altinn2baseurl ([#3227](https://github.com/Altinn/dialogporten-frontend/issues/3227)) ([d13021c](https://github.com/Altinn/dialogporten-frontend/commit/d13021cce5f9aa605196b116c75bcf3dc69d92a2))
+
 ## [1.98.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.98.2...v1.98.3) (2025-11-17)
 
 
