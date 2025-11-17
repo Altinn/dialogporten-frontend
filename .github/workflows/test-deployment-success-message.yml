@@ -1,0 +1,43 @@
+name: Test Deployment Success Message
+
+on:
+    push:
+        branches:
+            - ci/update-node-logger-publishing-config
+
+permissions:
+    contents: read
+
+jobs:
+    test-staging:
+        name: Test Staging Deployment Success Message
+        uses: ./.github/workflows/workflow-send-deployment-success-slack-message.yml
+        with:
+            environment: staging
+            version: "1.97.1"
+            previous_version: "1.96.7"
+        secrets:
+            SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+            SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_RELEASES }}
+
+    test-yt01:
+        name: Test YT01 Deployment Success Message
+        uses: ./.github/workflows/workflow-send-deployment-success-slack-message.yml
+        with:
+            environment: yt01
+            version: "1.97.1"
+            previous_version: "1.96.7"
+        secrets:
+            SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+            SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_RELEASES }}
+
+    test-prod:
+        name: Test Production Deployment Success Message
+        uses: ./.github/workflows/workflow-send-deployment-success-slack-message.yml
+        with:
+            environment: prod
+            version: "1.97.1"
+            previous_version: "1.96.7"
+        secrets:
+            SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+            SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_RELEASES }}
