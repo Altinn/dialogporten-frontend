@@ -13,7 +13,7 @@ param logoutRedirectUri = 'https://tt02.altinn.no/ui/Authentication/Logout'
 param authContextCookieDomain = '.yt.altinn.cloud'
 
 param platformBaseUrl = 'https://platform.yt01.altinn.cloud'
-param altinn2BaseUrl string = 'https://yt01.altinn.cloud'
+param altinn2BaseUrl = 'https://yt01.altinn.cloud'
 
 param ocPApimSubscriptionKey = readEnvironmentVariable('OCP_APIM_SUBSCRIPTION_KEY')
 
