@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.98.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.98.4...v1.98.5) (2025-11-17)
+
+
+### Bug Fixes
+
+* **node-logger:** ensure correct node-version and npm version ([#3229](https://github.com/Altinn/dialogporten-frontend/issues/3229)) ([39b2556](https://github.com/Altinn/dialogporten-frontend/commit/39b2556a28509b22c5c11ddc4a3989af9bd35bfd))
+
 ## [1.98.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.98.3...v1.98.4) (2025-11-17)
 
 
