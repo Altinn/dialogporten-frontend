@@ -38,6 +38,7 @@ param applicationGatewayConfiguration = {
     {
       name: 'af.tt.altinn.no'
       sslCertificateSecretKey: 'star-tt-altinn-no'
+      redirectTo: 'af.tt02.altinn.no'
       enableAvailabilityTest: false
     }
   ]
