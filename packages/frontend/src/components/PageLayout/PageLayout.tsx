@@ -66,7 +66,10 @@ export const PageLayout: React.FC = () => {
   const isSinglePartyMatchingCurrentUser =
     selectedProfile === 'person' && selectedParties.length === 1 && selectedParties[0].party === currentEndUser?.party;
 
-  if (isSinglePartyMatchingCurrentUser || isProfile || allOrganizationsSelected) {
+  if (isSinglePartyMatchingCurrentUser) {
+    color = 'person';
+    theme = 'subtle';
+  } else if (isProfile || allOrganizationsSelected) {
     color = 'person';
     theme = 'neutral';
   } else {
