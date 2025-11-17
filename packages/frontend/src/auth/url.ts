@@ -117,7 +117,7 @@ export const getNewFormLink = (currentPartyUuid?: string) => {
 };
 
 export const getFrontPageLink = (currentPartyUuid?: string) => {
-  return createChangeReporteeAndRedirect(currentPartyUuid, 'https://info.at23.altinn.cloud/');
+  return createChangeReporteeAndRedirect(currentPartyUuid, getInfoSiteURL());
 };
 
 export const getCookieDomain = () => {
@@ -129,4 +129,42 @@ export const getCookieDomain = () => {
     prod: '.altinn.no',
   };
   return hostMap[getEnvByHost()] || hostMap.prod;
+};
+
+/* Used for footer links */
+const getInfoSiteURL = () => {
+  const hostMap: Record<hostEnv, string> = {
+    local: 'https://info.at23.altinn.cloud',
+    at23: 'https://info.at23.altinn.cloud',
+    tt02: 'https://info.tt02.altinn.no',
+    yt: 'https://info.tt02.altinn.no',
+    prod: 'https://info.altinn.no',
+  };
+
+  return hostMap[getEnvByHost()] || hostMap.prod;
+};
+
+export const getFooterLink = (currentPartyUuid: string, path: string) => {
+  return createChangeReporteeAndRedirect(currentPartyUuid, getInfoSiteURL() + path);
+};
+
+export const getFooterLinks = (currentPartyUuid: string) => {
+  return [
+    {
+      href: `${getFooterLink(currentPartyUuid, '/om-altinn/')}`,
+      resourceId: 'footer.nav.about_altinn',
+    },
+    {
+      href: `${getFooterLink(currentPartyUuid, '/om-altinn/driftsmeldinger/')}`,
+      resourceId: 'footer.nav.service_messages',
+    },
+    {
+      href: `${getFooterLink(currentPartyUuid, '/om-altinn/personvern/')}`,
+      resourceId: 'footer.nav.privacy_policy',
+    },
+    {
+      href: `${getFooterLink(currentPartyUuid, '/om-altinn/tilgjengelighet/')}`,
+      resourceId: 'footer.nav.accessibility',
+    },
+  ];
 };

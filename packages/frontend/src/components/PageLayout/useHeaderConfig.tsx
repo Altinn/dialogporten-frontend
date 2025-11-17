@@ -185,7 +185,7 @@ export const useHeaderConfig = (): UseHeaderConfigReturn => {
       globalSearch: {
         onSearch: (value: string) => {
           const encodedValue = encodeURIComponent(value);
-          window.location.href = `${getFrontPageLink(currentPartyUuid)}sok?q=${encodedValue}`;
+          window.location.href = `${getFrontPageLink(currentPartyUuid)}/sok?q=${encodedValue}`;
         },
       },
       desktopMenu,
