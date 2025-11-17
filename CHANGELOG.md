@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.98.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.98.2...v1.98.3) (2025-11-17)
+
+
+### Bug Fixes
+
+* **infra:** add redirect from tt to tt02 ([#3223](https://github.com/Altinn/dialogporten-frontend/issues/3223)) ([7f13e99](https://github.com/Altinn/dialogporten-frontend/commit/7f13e992f157c3757e8828515999446602d54a25))
+
 ## [1.98.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.98.1...v1.98.2) (2025-11-17)
 
 
