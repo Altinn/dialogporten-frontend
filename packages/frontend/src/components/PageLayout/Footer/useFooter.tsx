@@ -1,4 +1,5 @@
 import type { FooterProps } from '@altinn/altinn-components';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const footerLinks = [
@@ -22,15 +23,20 @@ const footerLinks = [
 
 export const useFooter = (): FooterProps => {
   const { t } = useTranslation();
-  return {
-    address: 'Postboks 1382 Vika, 0114 Oslo.',
-    address2: 'Org.nr. 991 825 827',
-    menu: {
-      items: footerLinks.map((link) => ({
-        id: link.resourceId,
-        href: link.href,
-        title: t(link.resourceId),
-      })),
-    },
-  };
+
+  // CRITICAL PERFORMANCE: Memoize footer to prevent Layout re-renders on navigation
+  return useMemo(
+    () => ({
+      address: 'Postboks 1382 Vika, 0114 Oslo.',
+      address2: 'Org.nr. 991 825 827',
+      menu: {
+        items: footerLinks.map((link) => ({
+          id: link.resourceId,
+          href: link.href,
+          title: t(link.resourceId),
+        })),
+      },
+    }),
+    [t],
+  );
 };

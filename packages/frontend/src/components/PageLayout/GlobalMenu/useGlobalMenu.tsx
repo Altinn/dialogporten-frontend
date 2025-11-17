@@ -1,4 +1,5 @@
 import type { MenuProps } from '@altinn/altinn-components';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { useParties } from '../../../api/hooks/useParties.ts';
@@ -24,27 +25,45 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
   const showAmLink: boolean = useFeatureFlag<boolean>('globalMenu.enableAccessManagementLink', false);
   const { user } = useProfile();
 
-  const inboxMenus = buildInboxMenu({
-    t,
-    currentEndUserName: currentEndUser?.name,
-    pathname,
-    currentSearchQuery,
-    fromView,
-    showAmLink,
-    currentPartyUuid,
-  });
+  const inboxMenus = useMemo(
+    () =>
+      buildInboxMenu({
+        t,
+        currentEndUserName: currentEndUser?.name,
+        pathname,
+        currentSearchQuery,
+        fromView,
+        showAmLink,
+        currentPartyUuid,
+      }),
+    [t, currentEndUser?.name, pathname, currentSearchQuery, fromView, showAmLink, currentPartyUuid],
+  );
 
-  const profileMenus = buildProfileMenu({
-    t,
-    currentEndUserName: currentEndUser?.name,
-    pathname,
-    currentSearchQuery,
-    stopReversingPersonNameOrder,
-    fromView,
-    userName: user?.party?.name ?? '',
-    showAmLink,
-    currentPartyUuid,
-  });
+  const profileMenus = useMemo(
+    () =>
+      buildProfileMenu({
+        t,
+        currentEndUserName: currentEndUser?.name,
+        pathname,
+        currentSearchQuery,
+        stopReversingPersonNameOrder,
+        fromView,
+        userName: user?.party?.name ?? '',
+        showAmLink,
+        currentPartyUuid,
+      }),
+    [
+      t,
+      currentEndUser?.name,
+      pathname,
+      currentSearchQuery,
+      stopReversingPersonNameOrder,
+      fromView,
+      user?.party?.name,
+      showAmLink,
+      currentPartyUuid,
+    ],
+  );
 
   return isProfile ? profileMenus : inboxMenus;
 };

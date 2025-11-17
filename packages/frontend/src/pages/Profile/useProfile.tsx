@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import type { GroupObject, ProfileQuery, User } from 'bff-types-generated';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   addFavoriteParty as addFavoritePartyRaw,
@@ -21,9 +21,18 @@ export const useProfile = (disabled?: boolean) => {
   });
 
   const { i18n } = useTranslation();
-  const groups = (data?.profile?.groups as GroupObject[]) || ([] as GroupObject[]);
+
+  // PERFORMANCE: Memoize groups to ensure stable reference
+  const groups = useMemo(() => {
+    return (data?.profile?.groups as GroupObject[]) || ([] as GroupObject[]);
+  }, [data?.profile?.groups]);
+
   const language = data?.profile?.language || i18n.language || 'nb';
-  const favoritesGroup = groups.find((group) => group?.isFavorite);
+
+  // CRITICAL PERFORMANCE: Memoize favoritesGroup to prevent cascading re-renders in useAccounts
+  const favoritesGroup = useMemo(() => {
+    return groups.find((group) => group?.isFavorite);
+  }, [groups]);
 
   const queryClient = useQueryClient();
 

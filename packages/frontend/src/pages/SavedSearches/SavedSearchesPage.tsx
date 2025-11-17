@@ -23,21 +23,23 @@ export const SavedSearchesPage = () => {
 
   return (
     <PageBase margin="page">
-      <div className={styles.gridContainer} style={isGlobalMenuEnabled ? { marginTop: '-1rem' } : undefined}>
-        {selectedAccount ? (
-          <Toolbar
-            accountMenu={{
-              items: accounts,
-              search: accountSearch,
-              groups: accountGroups,
-              currentAccount: selectedAccount,
-              onSelectAccount: (account: string) => onSelectAccount(account, PageRoutes.savedSearches),
-              isVirtualized: true,
-              title: t('parties.change_label'),
-            }}
-          />
-        ) : null}
-      </div>
+      {!isGlobalMenuEnabled && (
+        <div className={styles.gridContainer}>
+          {selectedAccount ? (
+            <Toolbar
+              accountMenu={{
+                items: accounts,
+                search: accountSearch,
+                groups: accountGroups,
+                currentAccount: selectedAccount,
+                onSelectAccount: (account: string) => onSelectAccount(account, PageRoutes.savedSearches),
+                isVirtualized: true,
+                title: t('parties.change_label'),
+              }}
+            />
+          ) : null}
+        </div>
+      )}
       {bookmarkSectionProps && <BookmarksSettingsList {...bookmarkSectionProps} />}
     </PageBase>
   );

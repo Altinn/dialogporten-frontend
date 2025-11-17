@@ -113,6 +113,16 @@ export const useParties = (): UsePartiesOutput => {
   };
 
   const setSelectedPartyIds = (partyIds: string[], allOrgSelected: boolean) => {
+    // Prevent redundant updates if selecting the same parties
+    const currentPartyIds = selectedParties
+      .map((p) => p.party)
+      .sort()
+      .join(',');
+    const newPartyIds = [...partyIds].sort().join(',');
+    if (currentPartyIds === newPartyIds && allOrganizationsSelected === allOrgSelected) {
+      return;
+    }
+
     setAllOrganizationsSelected(allOrgSelected);
     const partyIsPerson = partyIds.some((partyId) => partyId.includes('person'));
     const searchParamsString = searchParams.toString();
@@ -198,6 +208,11 @@ export const useParties = (): UsePartiesOutput => {
     return Boolean(party || allParties);
   }, [searchParams]);
 
+  // Only track party-related search params to avoid re-initialization on filter/search changes
+  const partySearchParams = useMemo(() => {
+    return `${searchParams.get('party') || ''}-${searchParams.get('allParties') || ''}`;
+  }, [searchParams]);
+
   // biome-ignore lint/correctness/useExhaustiveDependencies: Full control of what triggers this code is needed
   useEffect(() => {
     if (isSuccess) {
@@ -207,7 +222,7 @@ export const useParties = (): UsePartiesOutput => {
         setPartiesEmptyList(true);
       }
     }
-  }, [isSuccess, data, location.search]);
+  }, [isSuccess, data, partySearchParams]);
 
   const isCompanyProfile =
     isCompanyFromParams || allOrganizationsSelected || selectedParties?.[0]?.partyType === 'Organization';

@@ -5,7 +5,7 @@ import {
   useAccountSelector,
 } from '@altinn/altinn-components';
 import type { ChangeEvent } from 'react';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useParties } from '../../api/hooks/useParties.ts';
@@ -85,7 +85,7 @@ export const useHeaderConfig = (): UseHeaderConfigReturn => {
     [parties, isProfile, location.pathname, navigate],
   );
 
-  const partyListDTO = mapPartiesToAuthorizedParties(parties);
+  const partyListDTO = useMemo(() => mapPartiesToAuthorizedParties(parties), [parties]);
 
   const favoriteAccountUuids = (favoritesGroup?.parties ?? []).filter(
     (uuid): uuid is string => uuid !== null && uuid !== undefined,
@@ -114,60 +114,75 @@ export const useHeaderConfig = (): UseHeaderConfigReturn => {
 
   const { mobileMenu, desktopMenu } = useGlobalMenu();
 
-  const handleUpdateLanguage = async (language: string) => {
-    try {
-      await updateLanguage(language);
-    } catch (error) {
-      logError(
-        error as Error,
-        {
-          context: 'useHeaderConfig.handleUpdateLanguage',
-          language,
+  const handleUpdateLanguage = useCallback(
+    async (language: string) => {
+      try {
+        await updateLanguage(language);
+      } catch (error) {
+        logError(
+          error as Error,
+          {
+            context: 'useHeaderConfig.handleUpdateLanguage',
+            language,
+          },
+          'Error updating language',
+        );
+      } finally {
+        void i18n.changeLanguage(language);
+      }
+    },
+    [logError, i18n],
+  );
+
+  // Memoize commonProps to prevent header re-creation
+  const commonProps = useMemo(
+    () => ({
+      logo: {
+        as: (props: MenuItemProps) => {
+          // @ts-expect-error - LinkProps expects title: string, but we pass ReactNode
+          return <Link to={getFrontPageLink(currentPartyUuid)} {...props} />;
         },
-        'Error updating language',
-      );
-    } finally {
-      void i18n.changeLanguage(language);
-    }
-  };
-
-  const commonProps = {
-    logo: {
-      as: (props: MenuItemProps) => {
-        // @ts-expect-error - LinkProps expects title: string, but we pass ReactNode
-        return <Link to={getFrontPageLink(currentPartyUuid)} {...props} />;
       },
-    },
 
-    locale: {
-      title: 'Språk/language',
-      options: [
-        { label: t('word.locale.nb'), value: 'nb', checked: i18n.language === 'nb' },
-        { label: t('word.locale.nn'), value: 'nn', checked: i18n.language === 'nn' },
-        { label: t('word.locale.en'), value: 'en', checked: i18n.language === 'en' },
-      ],
-      onSelect: (lang: string) => handleUpdateLanguage(lang),
-    },
-    search: {
-      expanded: false,
-      name: t('word.search'),
-      placeholder: t('word.search'),
-      value: searchValue,
-      onClear: () => onClear(),
-      onChange: (event: ChangeEvent<HTMLInputElement>) => setSearchValue(event.target.value),
-      autocomplete: {
-        ...autocomplete,
-        items: autocomplete.items,
+      locale: {
+        title: 'Språk/language',
+        options: [
+          { label: t('word.locale.nb'), value: 'nb', checked: i18n.language === 'nb' },
+          { label: t('word.locale.nn'), value: 'nn', checked: i18n.language === 'nn' },
+          { label: t('word.locale.en'), value: 'en', checked: i18n.language === 'en' },
+        ],
+        onSelect: (lang: string) => handleUpdateLanguage(lang),
       },
-    },
-    mobileMenu,
-  };
+      search: {
+        expanded: false,
+        name: t('word.search'),
+        placeholder: t('word.search'),
+        value: searchValue,
+        onClear: () => onClear(),
+        onChange: (event: ChangeEvent<HTMLInputElement>) => setSearchValue(event.target.value),
+        autocomplete: {
+          ...autocomplete,
+          items: autocomplete.items,
+        },
+      },
+      mobileMenu,
+    }),
+    [
+      currentPartyUuid,
+      t,
+      i18n.language,
+      handleUpdateLanguage,
+      searchValue,
+      onClear,
+      setSearchValue,
+      autocomplete,
+      mobileMenu,
+    ],
+  );
 
-  // New GlobalHeader props structure
-  if (isGlobalMenuEnabled) {
-    const accountSelector = accountSelectorData;
-
-    const globalHeaderProps: GlobalHeaderProps = {
+  // CRITICAL PERFORMANCE: Memoize header props to prevent Layout re-renders
+  const globalHeaderProps: GlobalHeaderProps = useMemo(
+    () => ({
       ...commonProps,
       globalMenu: {
         menuLabel: t('word.menu'),
@@ -187,48 +202,58 @@ export const useHeaderConfig = (): UseHeaderConfigReturn => {
         },
       },
       desktopMenu,
-      accountSelector,
-    };
+      accountSelector: accountSelectorData,
+    }),
+    [commonProps, t, desktopMenu, currentPartyUuid, accountSelectorData],
+  );
 
-    return {
-      isGlobalMenuEnabled,
-      headerProps: globalHeaderProps,
-    };
-  }
-
-  // Old Header props structure
-  const headerProps: HeaderProps = {
-    ...commonProps,
-    badge: {
-      label: t('word.beta'),
-      color: 'person' as const,
-    },
-    currentAccount,
-    globalMenu: {
-      menuLabel: t('word.menu'),
-      menu: desktopMenu,
-      onSelectAccount: (account: string) => onSelectAccount(account, isProfile ? PageRoutes.profile : PageRoutes.inbox),
-      backLabel: t('word.back'),
-      accountMenu: {
-        filterAccount,
-        items: accounts,
-        groups: accountGroups,
-        ...(accountSearch && {
-          search: accountSearch,
-        }),
-        isVirtualized: true,
+  const oldHeaderProps: HeaderProps = useMemo(
+    () => ({
+      ...commonProps,
+      badge: {
+        label: t('word.beta'),
+        color: 'person' as const,
       },
-      logoutButton: {
-        label: t('word.log_out'),
-        onClick: () => {
-          (window as Window).location = `/api/logout`;
+      currentAccount,
+      globalMenu: {
+        menuLabel: t('word.menu'),
+        menu: desktopMenu,
+        onSelectAccount: (account: string) =>
+          onSelectAccount(account, isProfile ? PageRoutes.profile : PageRoutes.inbox),
+        backLabel: t('word.back'),
+        accountMenu: {
+          filterAccount,
+          items: accounts,
+          groups: accountGroups,
+          ...(accountSearch && {
+            search: accountSearch,
+          }),
+          isVirtualized: true,
+        },
+        logoutButton: {
+          label: t('word.log_out'),
+          onClick: () => {
+            (window as Window).location = `/api/logout`;
+          },
         },
       },
-    },
-  };
+    }),
+    [
+      commonProps,
+      t,
+      currentAccount,
+      desktopMenu,
+      onSelectAccount,
+      isProfile,
+      filterAccount,
+      accounts,
+      accountGroups,
+      accountSearch,
+    ],
+  );
 
   return {
     isGlobalMenuEnabled,
-    headerProps,
+    headerProps: isGlobalMenuEnabled ? globalHeaderProps : oldHeaderProps,
   };
 };
