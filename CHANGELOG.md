@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.98.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.97.1...v1.98.0) (2025-11-17)
+
+
+### Features
+
+* Old inbox active elements notification ([d741928](https://github.com/Altinn/dialogporten-frontend/commit/d741928c1392ed90c1c169b780d9383f85c92260))
+
+
+### Bug Fixes
+
+* bump ac which includes improvements to header ([#3219](https://github.com/Altinn/dialogporten-frontend/issues/3219)) ([486d879](https://github.com/Altinn/dialogporten-frontend/commit/486d879caba009989f8f9d9fcc3bc3d929d765df))
+* cookie overriding local preferred language ([#3207](https://github.com/Altinn/dialogporten-frontend/issues/3207)) ([2f873b3](https://github.com/Altinn/dialogporten-frontend/commit/2f873b37fde1fb5927e73e9d6d7f9f98cfa1d7ad))
+* remove search for inbox from profile ([#3208](https://github.com/Altinn/dialogporten-frontend/issues/3208)) ([7897843](https://github.com/Altinn/dialogporten-frontend/commit/7897843f23f57306350144c9946e4ea83cb528e9))
+* Update environment in footer links ([#3215](https://github.com/Altinn/dialogporten-frontend/issues/3215)) ([b4a7ea1](https://github.com/Altinn/dialogporten-frontend/commit/b4a7ea1130434d862483a70324288a34a4238322))
+* update icon for access management ui link ([#3209](https://github.com/Altinn/dialogporten-frontend/issues/3209)) ([96af093](https://github.com/Altinn/dialogporten-frontend/commit/96af093d28cc9a5c35a5e0e79042441f88b10e8c))
+
 ## [1.97.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.97.0...v1.97.1) (2025-11-14)
 
 
