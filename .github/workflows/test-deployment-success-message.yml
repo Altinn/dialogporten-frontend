@@ -3,7 +3,7 @@ name: Test Deployment Success Message
 on:
     push:
         branches:
-            - ci/update-node-logger-publishing-config
+            - ci/add-successful-deploymnets
 
 permissions:
     contents: read
