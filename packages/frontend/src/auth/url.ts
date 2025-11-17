@@ -105,7 +105,7 @@ export const getAccessAMUILink = (currentPartyUuid?: string) => {
   return createChangeReporteeAndRedirect(currentPartyUuid, hostMap[getEnvByHost()]);
 };
 
-export const getNewFormLink = (currentPartyUuid?: string) => {
+export const getNewFormLink = (currentPartyUuid?: string, language?: string) => {
   const hostMap: Record<hostEnv, string> = {
     local: 'https://info.at23.altinn.cloud/skjemaoversikt/',
     at23: 'https://info.at23.altinn.cloud/skjemaoversikt/',
@@ -113,11 +113,20 @@ export const getNewFormLink = (currentPartyUuid?: string) => {
     yt: 'https://info.tt02.altinn.no/skjemaoversikt/', // there is no am ui in yt
     prod: 'https://info.altinn.no/skjemaoversikt/',
   };
-  return createChangeReporteeAndRedirect(currentPartyUuid, hostMap[getEnvByHost()]);
+  const url = hostMap[getEnvByHost()];
+
+  if (language === 'en') {
+    return createChangeReporteeAndRedirect(currentPartyUuid, url.replace('/skjemaoversikt/', '/en/forms-overview/'));
+  }
+  if (language === 'nn') {
+    return createChangeReporteeAndRedirect(currentPartyUuid, url.replace('/skjemaoversikt/', '/nn/skjemaoversikt/'));
+  }
+
+  return createChangeReporteeAndRedirect(currentPartyUuid, url);
 };
 
-export const getFrontPageLink = (currentPartyUuid?: string) => {
-  return createChangeReporteeAndRedirect(currentPartyUuid, getInfoSiteURL());
+export const getFrontPageLink = (currentPartyUuid?: string, language?: string) => {
+  return createChangeReporteeAndRedirect(currentPartyUuid, getInfoSiteURL(language));
 };
 
 export const getCookieDomain = () => {
@@ -132,7 +141,7 @@ export const getCookieDomain = () => {
 };
 
 /* Used for footer links */
-const getInfoSiteURL = () => {
+const getInfoSiteURL = (language?: string) => {
   const hostMap: Record<hostEnv, string> = {
     local: 'https://info.at23.altinn.cloud',
     at23: 'https://info.at23.altinn.cloud',
@@ -141,29 +150,62 @@ const getInfoSiteURL = () => {
     prod: 'https://info.altinn.no',
   };
 
-  return hostMap[getEnvByHost()] || hostMap.prod;
+  const baseUrl = hostMap[getEnvByHost()] || hostMap.prod;
+
+  if (language === 'en') {
+    return `${baseUrl}/en`;
+  }
+  if (language === 'nn') {
+    return `${baseUrl}/nn`;
+  }
+  return baseUrl;
 };
 
-export const getFooterLink = (currentPartyUuid: string, path: string) => {
-  return createChangeReporteeAndRedirect(currentPartyUuid, getInfoSiteURL() + path);
+const getFooterPathForLanguage = (path: string, language?: string): string => {
+  if (language === 'en') {
+    const pathMap: Record<string, string> = {
+      '/om-altinn/': '/about-altinn/',
+      '/om-altinn/driftsmeldinger/': '/about-altinn/service-announcements/',
+      '/om-altinn/personvern/': '/about-altinn/privacy/',
+      '/om-altinn/tilgjengelighet/': '/about-altinn/tilgjengelighet/',
+    };
+    return pathMap[path] || path;
+  }
+
+  if (language === 'nn') {
+    const pathMap: Record<string, string> = {
+      '/om-altinn/': '/om-altinn/',
+      '/om-altinn/driftsmeldinger/': '/om-altinn/driftsmeldingar/',
+      '/om-altinn/personvern/': '/om-altinn/personvern/',
+      '/om-altinn/tilgjengelighet/': '/om-altinn/tilgjengelighet/',
+    };
+    return pathMap[path] || path;
+  }
+
+  return path;
 };
 
-export const getFooterLinks = (currentPartyUuid: string) => {
+export const getFooterLink = (currentPartyUuid: string, path: string, language?: string) => {
+  const mappedPath = getFooterPathForLanguage(path, language);
+  return createChangeReporteeAndRedirect(currentPartyUuid, getInfoSiteURL(language) + mappedPath);
+};
+
+export const getFooterLinks = (currentPartyUuid: string, language?: string) => {
   return [
     {
-      href: `${getFooterLink(currentPartyUuid, '/om-altinn/')}`,
+      href: `${getFooterLink(currentPartyUuid, '/om-altinn/', language)}`,
       resourceId: 'footer.nav.about_altinn',
     },
     {
-      href: `${getFooterLink(currentPartyUuid, '/om-altinn/driftsmeldinger/')}`,
+      href: `${getFooterLink(currentPartyUuid, '/om-altinn/driftsmeldinger/', language)}`,
       resourceId: 'footer.nav.service_messages',
     },
     {
-      href: `${getFooterLink(currentPartyUuid, '/om-altinn/personvern/')}`,
+      href: `${getFooterLink(currentPartyUuid, '/om-altinn/personvern/', language)}`,
       resourceId: 'footer.nav.privacy_policy',
     },
     {
-      href: `${getFooterLink(currentPartyUuid, '/om-altinn/tilgjengelighet/')}`,
+      href: `${getFooterLink(currentPartyUuid, '/om-altinn/tilgjengelighet/', language)}`,
       resourceId: 'footer.nav.accessibility',
     },
   ];

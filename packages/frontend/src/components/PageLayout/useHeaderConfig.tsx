@@ -13,7 +13,6 @@ import { updateLanguage } from '../../api/queries.ts';
 import { getFrontPageLink } from '../../auth';
 import { useFeatureFlag } from '../../featureFlags';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
-import { i18n } from '../../i18n/config.ts';
 import { useProfile } from '../../pages/Profile';
 import { PageRoutes } from '../../pages/routes.ts';
 import { useAccounts } from './Accounts/useAccounts.tsx';
@@ -31,7 +30,7 @@ export const useHeaderConfig = (): UseHeaderConfigReturn => {
   const { currentEndUser, parties, selectedParties, isLoading, allOrganizationsSelected, currentPartyUuid } =
     useParties();
 
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { logError } = useErrorLogger();
   const location = useLocation();
   const navigate = useNavigate();
@@ -135,7 +134,7 @@ export const useHeaderConfig = (): UseHeaderConfigReturn => {
     logo: {
       as: (props: MenuItemProps) => {
         // @ts-expect-error - LinkProps expects title: string, but we pass ReactNode
-        return <Link to={getFrontPageLink(currentPartyUuid)} {...props} />;
+        return <Link to={getFrontPageLink(currentPartyUuid, i18n.language)} {...props} />;
       },
     },
 
