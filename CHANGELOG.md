@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.98.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.98.0...v1.98.1) (2025-11-17)
+
+
+### Bug Fixes
+
+* Set correct theme colors in inbox ([#3217](https://github.com/Altinn/dialogporten-frontend/issues/3217)) ([deff209](https://github.com/Altinn/dialogporten-frontend/commit/deff20968de96380d4ee938f077d9d90d9337919))
+
 ## [1.98.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.97.1...v1.98.0) (2025-11-17)
 
 
