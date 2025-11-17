@@ -135,6 +135,8 @@ jobs:
     name: Send deployment success Slack message
     if: ${{ always() && !failure() && !cancelled() }}
     needs: [get-versions-from-github, deploy-infrastructure, deploy-apps]
+    permissions:
+      contents: read
     uses: ./.github/workflows/workflow-send-deployment-success-slack-message.yml
     with:
       environment: yt01
