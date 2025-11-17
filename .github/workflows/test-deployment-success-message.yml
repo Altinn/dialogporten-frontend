@@ -18,7 +18,7 @@ jobs:
             previous_version: "1.96.7"
         secrets:
             SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-            SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_RELEASES }}
+            SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_SUCCESSFUL_RELEASES }}
 
     test-yt01:
         name: Test YT01 Deployment Success Message
@@ -29,7 +29,7 @@ jobs:
             previous_version: "1.96.7"
         secrets:
             SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-            SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_RELEASES }}
+            SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_SUCCESSFUL_RELEASES }}
 
     test-prod:
         name: Test Production Deployment Success Message
@@ -40,4 +40,4 @@ jobs:
             previous_version: "1.96.7"
         secrets:
             SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-            SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_RELEASES }}
+            SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_SUCCESSFUL_RELEASES }}

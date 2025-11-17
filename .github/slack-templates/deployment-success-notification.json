@@ -9,7 +9,7 @@
                     "type": "header",
                     "text": {
                         "type": "plain_text",
-                        "text": "✅ Deployment Success: ${{ env.ENVIRONMENT }}",
+                        "text": "${{ env.ENVIRONMENT }}",
                         "emoji": true
                     }
                 },
@@ -78,4 +78,3 @@
         }
     ]
 }
-

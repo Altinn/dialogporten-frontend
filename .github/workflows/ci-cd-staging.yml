@@ -161,4 +161,4 @@ jobs:
       previous_version: ${{ needs.get-versions-from-github.outputs.apps_version_sha != '' && vars.LATEST_DEPLOYED_APPS_VERSION || '' }}
     secrets:
       SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-      SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_RELEASES }}
+      SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_SUCCESSFUL_RELEASES }}
