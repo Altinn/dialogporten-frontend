@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.98.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.98.1...v1.98.2) (2025-11-17)
+
+
+### Bug Fixes
+
+* Update info portal links with language ([#3224](https://github.com/Altinn/dialogporten-frontend/issues/3224)) ([8e9c11c](https://github.com/Altinn/dialogporten-frontend/commit/8e9c11cc4ca0155d2c53726bd178cefdc30e19ce))
+
 ## [1.98.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.98.0...v1.98.1) (2025-11-17)
 
 
