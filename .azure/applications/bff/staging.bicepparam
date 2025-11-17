@@ -3,7 +3,7 @@ using './main.bicep'
 param environment = 'staging'
 param location = 'norwayeast'
 param imageTag = readEnvironmentVariable('IMAGE_TAG')
-param hostName = 'https://af.tt.altinn.no'
+param hostName = 'https://af.tt02.altinn.no'
 param dialogportenURL = 'https://altinn-tt02-api.azure-api.net/dialogporten'
 param oidcPlatformUrl = 'platform.tt02.altinn.no/authentication/api/v1/openid'
 param altinn2BaseUrl = 'https://tt02.altinn.no'

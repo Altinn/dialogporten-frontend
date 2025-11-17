@@ -22,7 +22,7 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
   use: {
-    baseURL: process.env.E2E_BASE_URL || 'https://af.tt.altinn.no',
+    baseURL: process.env.E2E_BASE_URL || 'https://af.tt02.altinn.no',
     trace: 'on-first-retry',
   },
 
