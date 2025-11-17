@@ -15,12 +15,47 @@ import { Settings } from './pages/Profile/Settings/Settings.tsx';
 import { SavedSearchesPage } from './pages/SavedSearches';
 import { PageRoutes } from './pages/routes.ts';
 import './app.css';
+import { useEffect } from 'react';
+import { getCookieDomain } from './auth';
 import { usePageTracking } from './hooks/usePageTracking.ts';
 import { AboutPage } from './pages/About/About.tsx';
+import { useGlobalStringState } from './useGlobalState.ts';
+
+const getPartyUuidFromCookie = (): string | undefined => {
+  if (typeof document === 'undefined') return undefined;
+
+  const cookies = document.cookie.split(';');
+  let partyUuid: string | undefined;
+
+  for (const cookie of cookies) {
+    const [rawKey, ...rawValParts] = cookie.split('=');
+    const key = rawKey.trim();
+    const value = rawValParts.join('=').trim();
+
+    if (key === 'AltinnPartyUuid') {
+      partyUuid = value;
+      break;
+    }
+  }
+
+  return partyUuid;
+};
 
 function App() {
   // Add page tracking
   usePageTracking();
+  const [_, setCookiePartyUuid] = useGlobalStringState('altinnCookie', '');
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    const partyUuidFromCookie = getPartyUuidFromCookie();
+    if (partyUuidFromCookie) {
+      setCookiePartyUuid(getPartyUuidFromCookie() ?? '');
+      // Ensure this is only done once per reload, and after that, selected account, should be handled internally
+      document.cookie =
+        'AltinnPartyUuid' + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; domain=' + getCookieDomain();
+    }
+  }, []);
 
   return (
     <div className="app">

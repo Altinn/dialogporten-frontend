@@ -148,18 +148,20 @@ export const useHeaderConfig = (): UseHeaderConfigReturn => {
       ],
       onSelect: (lang: string) => handleUpdateLanguage(lang),
     },
-    search: {
-      expanded: false,
-      name: t('word.search'),
-      placeholder: t('word.search'),
-      value: searchValue,
-      onClear: () => onClear(),
-      onChange: (event: ChangeEvent<HTMLInputElement>) => setSearchValue(event.target.value),
-      autocomplete: {
-        ...autocomplete,
-        items: autocomplete.items,
-      },
-    },
+    search: isProfile
+      ? undefined
+      : {
+          expanded: false,
+          name: t('word.search'),
+          placeholder: t('inbox.search.placeholder'),
+          value: searchValue,
+          onClear: () => onClear(),
+          onChange: (event: ChangeEvent<HTMLInputElement>) => setSearchValue(event.target.value),
+          autocomplete: {
+            ...autocomplete,
+            items: autocomplete.items,
+          },
+        },
     mobileMenu,
   };
 

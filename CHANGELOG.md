@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.97.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.97.0...v1.97.1) (2025-11-14)
+
+
+### Bug Fixes
+
+* Update AC with virtualized account menu fix ([#3199](https://github.com/Altinn/dialogporten-frontend/issues/3199)) ([239eba3](https://github.com/Altinn/dialogporten-frontend/commit/239eba3f3369c13bea24b708ea8ec60e966595b5))
+
 ## [1.97.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.96.7...v1.97.0) (2025-11-14)
 
 

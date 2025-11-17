@@ -1,5 +1,5 @@
 import type { PartyFieldsFragment } from 'bff-types-generated';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
@@ -8,7 +8,7 @@ import {
   getSelectedAllPartiesFromQueryParams,
   getSelectedPartyFromQueryParams,
 } from '../../pages/Inbox/queryParams.ts';
-import { useGlobalState } from '../../useGlobalState.ts';
+import { useGlobalState, useGlobalStringState } from '../../useGlobalState.ts';
 import { graphQLSDK } from '../queries.ts';
 import { normalizeFlattenParties } from '../utils/normalizeFlattenParties.ts';
 
@@ -50,28 +50,13 @@ const createPartyParams = (searchParamString: string, key: string, value: string
   return params;
 };
 
-const getPartyUuidFromCookie = (): string | undefined => {
-  if (typeof document === 'undefined') return undefined;
-
-  const cookies = document.cookie.split(';');
-  let partyUuid: string | undefined;
-
-  for (const cookie of cookies) {
-    const [rawKey, ...rawValParts] = cookie.split('=');
-    const key = rawKey.trim();
-    const value = rawValParts.join('=').trim();
-
-    if (key === 'AltinnPartyUuid') {
-      partyUuid = value;
-      break;
-    }
-  }
-
-  return partyUuid;
-};
-
 export const useParties = (): UsePartiesOutput => {
   const location = useLocation();
+  const [cookiePartyUuid] = useGlobalStringState('altinnCookie', '');
+  const [hasInitializedFromCookie, setHasInitializedFromCookie] = useGlobalState<boolean>(
+    'hasInitializedFromCookie',
+    false,
+  );
   const stopReversingPersonNameOrder = useFeatureFlag<boolean>('party.stopReversingPersonNameOrder');
   const [searchParams, setSearchParams] = useSearchParams();
   const [allOrganizationsSelected, setAllOrganizationsSelected] = useGlobalState<boolean>(
@@ -80,12 +65,6 @@ export const useParties = (): UsePartiesOutput => {
   );
   const [selectedParties, setSelectedParties] = useGlobalState<PartyFieldsFragment[]>(QUERY_KEYS.SELECTED_PARTIES, []);
   const [partiesEmptyList, setPartiesEmptyList] = useGlobalState<boolean>(QUERY_KEYS.PARTIES_EMPTY_LIST, false);
-  const cookiePartyUuidRef = useRef<string | undefined>(undefined);
-  const hasInitializedFromCookieRef = useRef(false);
-
-  useEffect(() => {
-    cookiePartyUuidRef.current = getPartyUuidFromCookie();
-  }, []);
 
   const handleChangSearchParams = (searchParams: URLSearchParams) => {
     /* Avoid setting search params if they are the same as the current ones */
@@ -141,9 +120,8 @@ export const useParties = (): UsePartiesOutput => {
     setSelectedPartyIds(allOrgParties, true);
   };
 
-  const getPartyFromURLOrCookie = () => {
+  const getPartyFromURL = () => {
     const partyFromQuery = getSelectedPartyFromQueryParams(searchParams);
-
     if (partyFromQuery) {
       return data?.find((party) => party.party === partyFromQuery);
     }
@@ -158,23 +136,25 @@ export const useParties = (): UsePartiesOutput => {
   const initializePartySelection = () => {
     if (getSelectedAllPartiesFromQueryParams(searchParams)) {
       selectAllOrganizations();
+      setHasInitializedFromCookie(true);
       return;
     }
 
     // Cookie override – applied only once
-    if (!hasInitializedFromCookieRef.current && cookiePartyUuidRef.current && data?.length) {
-      const partyFromCookie = data.find((party) => party.partyUuid === cookiePartyUuidRef.current);
+    if (!hasInitializedFromCookie && cookiePartyUuid && data?.length) {
+      const partyFromCookie = data.find((party) => party.partyUuid === cookiePartyUuid);
 
       if (partyFromCookie) {
-        hasInitializedFromCookieRef.current = true;
-        setSelectedPartyIds([partyFromCookie.party], false);
-        return;
+        const partyFromQuery = getSelectedPartyFromQueryParams(searchParams);
+        if (!partyFromQuery) {
+          setSelectedPartyIds([partyFromCookie.party], false);
+        }
       }
 
-      hasInitializedFromCookieRef.current = true;
+      setHasInitializedFromCookie(true);
     }
 
-    const orgFromURL = getPartyFromURLOrCookie();
+    const orgFromURL = getPartyFromURL();
     const currentEndUser = getEndUserParty();
     const selectedPartyIsPerson = selectedParties.some((party) => party.party.includes('person'));
 

@@ -8,7 +8,7 @@ test.describe('Language picker', () => {
     const listItem = page.getByRole('listitem').filter({ hasText: 'Melding om bortkjøring av snø' });
     await expect(listItem).toContainText('Oslo kommune til Test Testesen');
 
-    await expect(page.getByTestId('searchbar-input')).toHaveAttribute('placeholder', 'Søk');
+    await expect(page.getByTestId('searchbar-input')).toHaveAttribute('placeholder', 'Søk i innboksen');
     await expect(page.getByRole('button', { name: 'add' })).toHaveText('Legg til filter');
 
     if (isMobile) {
@@ -35,7 +35,7 @@ test.describe('Language picker', () => {
     const body = await response.json();
     expect(body.data?.profile?.language).toBe('en');
 
-    await expect(page.getByTestId('searchbar-input')).toHaveAttribute('placeholder', 'Search');
+    await expect(page.getByTestId('searchbar-input')).toHaveAttribute('placeholder', 'Search in inbox');
     await expect(page.getByRole('button', { name: 'add' })).toHaveText('Add filter');
     await expect(listItem).toContainText('City of Oslo to Test Testesen');
 
