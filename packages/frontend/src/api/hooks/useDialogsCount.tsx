@@ -21,7 +21,7 @@ interface UseDialogsOutput {
 }
 
 export const useDialogsCount = (parties?: PartyFieldsFragment[], viewType?: InboxViewType): UseDialogsOutput => {
-  const { selectedParties } = useParties();
+  const { selectedParties, isSelfIdentifiedUser } = useParties();
   const partiesToUse = parties ? parties : selectedParties;
   const partyIds = getPartyIds(partiesToUse);
 
@@ -39,7 +39,7 @@ export const useDialogsCount = (parties?: PartyFieldsFragment[], viewType?: Inbo
           },
         }),
       ),
-    enabled: partyIds.length > 0 && partyIds.length <= 20,
+    enabled: partyIds.length > 0 && partyIds.length <= 20 && !isSelfIdentifiedUser,
     gcTime: 10 * 1000,
     placeholderData: keepPreviousData,
   });

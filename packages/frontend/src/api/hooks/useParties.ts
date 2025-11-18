@@ -29,6 +29,7 @@ interface UsePartiesOutput {
   partiesEmptyList: boolean;
   flattenedParties: FlattenedParty[];
   currentPartyUuid: string | undefined;
+  isSelfIdentifiedUser: boolean;
 }
 
 const stripQueryParamsForParty = (searchParamString: string) => {
@@ -65,6 +66,10 @@ export const useParties = (): UsePartiesOutput => {
   );
   const [selectedParties, setSelectedParties] = useGlobalState<PartyFieldsFragment[]>(QUERY_KEYS.SELECTED_PARTIES, []);
   const [partiesEmptyList, setPartiesEmptyList] = useGlobalState<boolean>(QUERY_KEYS.PARTIES_EMPTY_LIST, false);
+  const [isSelfIdentifiedUser, setIsSelfIdentifiedUser] = useGlobalState<boolean>(
+    QUERY_KEYS.IS_SELF_IDENTIFIED_USER,
+    false,
+  );
 
   const handleChangSearchParams = (searchParams: URLSearchParams) => {
     /* Avoid setting search params if they are the same as the current ones */
@@ -93,7 +98,7 @@ export const useParties = (): UsePartiesOutput => {
 
   const setSelectedPartyIds = (partyIds: string[], allOrgSelected: boolean) => {
     setAllOrganizationsSelected(allOrgSelected);
-    const partyIsPerson = partyIds.some((partyId) => partyId.includes('person'));
+    const partyIsPerson = partyIds.some((partyId) => partyId.includes('person')) || isSelfIdentifiedUser;
     const searchParamsString = searchParams.toString();
 
     if (allOrgSelected) {
@@ -183,8 +188,13 @@ export const useParties = (): UsePartiesOutput => {
     if (isSuccess) {
       if (data?.length > 0) {
         initializePartySelection();
+        if (data?.length === 1 && data[0].partyType === 'SelfIdentified') {
+          setIsSelfIdentifiedUser(true);
+        }
       } else {
         setPartiesEmptyList(true);
+        // TODO: Remove this when Dialogporten adds self-identified user to parties response
+        setIsSelfIdentifiedUser(true);
       }
     }
   }, [isSuccess, data, location.search]);
@@ -205,8 +215,9 @@ export const useParties = (): UsePartiesOutput => {
     ]) as FlattenedParty[];
   }, [data]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const currentEndUser = useMemo(() => {
-    return data?.find((party) => party.isCurrentEndUser);
+    return getEndUserParty();
   }, [data]);
 
   const currentPartyUuid = useMemo(() => {
@@ -228,5 +239,6 @@ export const useParties = (): UsePartiesOutput => {
     selectedProfile,
     partiesEmptyList,
     currentPartyUuid,
+    isSelfIdentifiedUser,
   };
 };

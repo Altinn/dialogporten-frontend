@@ -140,7 +140,8 @@ export const useAccounts = ({
     };
   }
 
-  const currentEndUser = parties.find((party) => party.partyType === 'Person' && party.isCurrentEndUser);
+  const currentEndUser =
+    parties.find((party) => party.partyType === 'Person' && party.isCurrentEndUser) || parties?.[0];
   const otherPeople = parties.filter((party) => party.partyType === 'Person' && !party.isCurrentEndUser);
   const organizations = parties.filter((party) => party.partyType === 'Organization');
 
@@ -183,7 +184,8 @@ export const useAccounts = ({
       : {}),
   };
 
-  const description = currentEndUser?.party ? t('word.ssn') + formatNorwegianId(currentEndUser!.party!, true) : '';
+  const norwegianId = formatNorwegianId(currentEndUser!.party!, true);
+  const description = currentEndUser?.party && norwegianId ? t('word.ssn') + norwegianId : '';
   const endUserAccount: PartyItemProp | undefined = currentEndUser
     ? {
         id: currentEndUser?.party ?? '',
