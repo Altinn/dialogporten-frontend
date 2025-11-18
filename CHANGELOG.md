@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.98.7](https://github.com/Altinn/dialogporten-frontend/compare/v1.98.6...v1.98.7) (2025-11-18)
+
+
+### Bug Fixes
+
+* enable new oidc in yt01 ([#3240](https://github.com/Altinn/dialogporten-frontend/issues/3240)) ([919a589](https://github.com/Altinn/dialogporten-frontend/commit/919a5896e1154752b8064c5e3ca9ea867e165cc2))
+* Update E2E_BASE_URL ([#3236](https://github.com/Altinn/dialogporten-frontend/issues/3236)) ([e582afa](https://github.com/Altinn/dialogporten-frontend/commit/e582afa97238f89bc89e4d23006430ae64e7d705))
+
 ## [1.98.6](https://github.com/Altinn/dialogporten-frontend/compare/v1.98.5...v1.98.6) (2025-11-18)
 
 
