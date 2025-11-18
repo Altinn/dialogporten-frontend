@@ -191,7 +191,6 @@ export function buildInboxMenu({
         selected: false,
         badge: <Badge>{t('word.beta')}</Badge>,
       },
-      ...shortcuts,
       {
         groupId: 'profile-shortcut',
         id: 'profile',
@@ -209,18 +208,14 @@ export function buildInboxMenu({
     ],
     defaultIconTheme: 'tinted',
   };
-
   const desktopMenu: MenuProps = {
     ...mobileMenu,
     items: [{ ...mobileMenu.items[0], expanded: false, items: [] }, ...mobileMenu.items.slice(1)],
     groups: {
       ...mobileMenu.groups,
-      shortcuts: {
-        ...mobileMenu.groups?.shortcuts,
-        divider: true,
-      },
     },
   };
+  mobileMenu.items.push(...shortcuts);
 
   return { sidebarMenu, mobileMenu, desktopMenu };
 }
