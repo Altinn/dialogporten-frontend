@@ -44,7 +44,7 @@ jobs:
         run: |
           case "$ENVIRONMENT" in
             "staging")
-              url="https://af.tt.altinn.no"
+              url="https://af.tt02.altinn.no"
               color="#FFB347"
               display_name="Staging (TT02)"
               ;;
