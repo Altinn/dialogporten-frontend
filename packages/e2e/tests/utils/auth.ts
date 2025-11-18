@@ -11,5 +11,8 @@ export async function loginUser(page: Page) {
   await page.getByLabel('Personidentifikator (').fill(pid);
   await page.getByRole('button', { name: 'Autentiser' }).click();
 
-  await expect(page.getByRole('button', { name: expectedName })).toBeVisible();
+  //global header
+  await expect(page.getByRole('button', { name: expectedName }).first()).toBeVisible();
+  //account menu
+  await expect(page.getByRole('button', { name: expectedName }).last()).toBeVisible();
 }
