@@ -10,4 +10,5 @@ envsubst '$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY' < /usr/share/nginx/html/ind
 mv /usr/share/nginx/html/index_temp.html /usr/share/nginx/html/index.html
 
 # Start Nginx
+# Note: server_tokens off in nginx.conf hides the nginx version from Server header
 exec nginx -g 'daemon off;'
