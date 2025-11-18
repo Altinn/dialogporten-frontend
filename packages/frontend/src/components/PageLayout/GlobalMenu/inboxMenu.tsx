@@ -13,6 +13,7 @@ import {
   TrashIcon,
 } from '@navikt/aksel-icons';
 import { createMessageBoxLink, getAccessAMUILink, getNewFormLink } from '../../../auth';
+import { i18n } from '../../../i18n/config.ts';
 import { pruneSearchQueryParams } from '../../../pages/Inbox/queryParams.ts';
 import { PageRoutes } from '../../../pages/routes.ts';
 import { createMenuItemComponent, isRouteSelected } from './shared.tsx';
@@ -69,7 +70,7 @@ export function buildInboxMenu({
       icon: PlusIcon,
       title: t('altinn.new_schema'),
       as: createMenuItemComponent({
-        to: getNewFormLink(currentPartyUuid),
+        to: getNewFormLink(currentPartyUuid, i18n.language),
       }),
     },
   ];

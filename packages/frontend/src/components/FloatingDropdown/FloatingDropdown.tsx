@@ -2,6 +2,7 @@ import { FloatingDropdown as FloatingDropdownAc } from '@altinn/altinn-component
 import { LeaveIcon, QuestionmarkIcon } from '@navikt/aksel-icons';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useParties } from '../../api/hooks/useParties';
 import { createMessageBoxLink } from '../../auth';
 import { QUERY_KEYS } from '../../constants/queryKeys';
 import { PageRoutes } from '../../pages/routes';
@@ -17,6 +18,8 @@ export const FloatingDropdown = () => {
   const [_, setShowTour] = useGlobalState<boolean>(QUERY_KEYS.SHOW_TOUR, false);
   const [__, setShowProfileTour] = useGlobalState<boolean>(QUERY_KEYS.SHOW_PROFILE_TOUR, false);
 
+  const { currentPartyUuid } = useParties();
+
   const isTourBlacklisted = TOUR_BLACKLISTED_PAGES.includes(location.pathname as PageRoutes);
 
   const handleStartTour = () => {
@@ -31,7 +34,7 @@ export const FloatingDropdown = () => {
   };
 
   const handleGoBack = () => {
-    window.location.href = createMessageBoxLink();
+    window.location.href = createMessageBoxLink(currentPartyUuid);
   };
 
   const items = [
