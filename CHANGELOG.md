@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.98.9](https://github.com/Altinn/dialogporten-frontend/compare/v1.98.8...v1.98.9) (2025-11-18)
+
+
+### Bug Fixes
+
+* **ci:** ensure deployment success message is run ([#3243](https://github.com/Altinn/dialogporten-frontend/issues/3243)) ([a6929ca](https://github.com/Altinn/dialogporten-frontend/commit/a6929ca3a03157b156043d00d16512e583f02e50))
+
 ## [1.98.8](https://github.com/Altinn/dialogporten-frontend/compare/v1.98.7...v1.98.8) (2025-11-18)
 
 
