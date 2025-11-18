@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.98.6](https://github.com/Altinn/dialogporten-frontend/compare/v1.98.5...v1.98.6) (2025-11-18)
+
+
+### Bug Fixes
+
+* E2e tests, global menu enabled ([#3234](https://github.com/Altinn/dialogporten-frontend/issues/3234)) ([96be6f9](https://github.com/Altinn/dialogporten-frontend/commit/96be6f958ac1392b6c3400aa928557429bf82f5b))
+* update locale for link for infoportal new schema ([#3232](https://github.com/Altinn/dialogporten-frontend/issues/3232)) ([330bc10](https://github.com/Altinn/dialogporten-frontend/commit/330bc10bd58c27f8a7489aa342165c3ca52e9f81))
+
 ## [1.98.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.98.4...v1.98.5) (2025-11-17)
 
 
