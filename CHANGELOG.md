@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.100.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.100.0...v1.100.1) (2025-11-19)
+
+
+### Bug Fixes
+
+* always load feature flag first ([#3258](https://github.com/Altinn/dialogporten-frontend/issues/3258)) ([2c9cf1c](https://github.com/Altinn/dialogporten-frontend/commit/2c9cf1c05a36c3dbc39997d93a192f930771a91c))
+* do not encode ul value in altinnPersistentContext for A2 compabilities ([#3256](https://github.com/Altinn/dialogporten-frontend/issues/3256)) ([9d7561c](https://github.com/Altinn/dialogporten-frontend/commit/9d7561c96d5badd95fcdbbd1759bc4d70d868816))
+
 ## [1.100.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.99.0...v1.100.0) (2025-11-19)
 
 
