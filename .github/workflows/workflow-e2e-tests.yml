@@ -65,7 +65,7 @@ jobs:
         env:
           DIALOG_ID: ${{ inputs.dialog_id }}
           PARTY_ID: ${{ inputs.party_id }}
-          E2E_BASE_URL: https://af.tt.altinn.no
+          E2E_BASE_URL: https://af.tt02.altinn.no
 
       - name: Get last failure timestamp
         id: get-last-failure

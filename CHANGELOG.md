@@ -1,5 +1,47 @@
 # Changelog
 
+## [1.99.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.98.9...v1.99.0) (2025-11-19)
+
+
+### Features
+
+* add support for self-identified user with warning that will not be able to have any content atm ([#3239](https://github.com/Altinn/dialogporten-frontend/issues/3239)) ([ecd4f61](https://github.com/Altinn/dialogporten-frontend/commit/ecd4f61094468c70ea135d5ed95e895dad0e3e60))
+
+
+### Bug Fixes
+
+* Global menu updates ([35924ce](https://github.com/Altinn/dialogporten-frontend/commit/35924ce3b4f26cf524328e4247ed8c4332968a31))
+
+## [1.98.9](https://github.com/Altinn/dialogporten-frontend/compare/v1.98.8...v1.98.9) (2025-11-18)
+
+
+### Bug Fixes
+
+* **ci:** ensure deployment success message is run ([#3243](https://github.com/Altinn/dialogporten-frontend/issues/3243)) ([a6929ca](https://github.com/Altinn/dialogporten-frontend/commit/a6929ca3a03157b156043d00d16512e583f02e50))
+
+## [1.98.8](https://github.com/Altinn/dialogporten-frontend/compare/v1.98.7...v1.98.8) (2025-11-18)
+
+
+### Bug Fixes
+
+* oidc url in yt01 ([#3241](https://github.com/Altinn/dialogporten-frontend/issues/3241)) ([30f4b9b](https://github.com/Altinn/dialogporten-frontend/commit/30f4b9bdd2d1720b73df7810b30b3a2cb5f6079d))
+
+## [1.98.7](https://github.com/Altinn/dialogporten-frontend/compare/v1.98.6...v1.98.7) (2025-11-18)
+
+
+### Bug Fixes
+
+* enable new oidc in yt01 ([#3240](https://github.com/Altinn/dialogporten-frontend/issues/3240)) ([919a589](https://github.com/Altinn/dialogporten-frontend/commit/919a5896e1154752b8064c5e3ca9ea867e165cc2))
+* Update E2E_BASE_URL ([#3236](https://github.com/Altinn/dialogporten-frontend/issues/3236)) ([e582afa](https://github.com/Altinn/dialogporten-frontend/commit/e582afa97238f89bc89e4d23006430ae64e7d705))
+
+## [1.98.6](https://github.com/Altinn/dialogporten-frontend/compare/v1.98.5...v1.98.6) (2025-11-18)
+
+
+### Bug Fixes
+
+* E2e tests, global menu enabled ([#3234](https://github.com/Altinn/dialogporten-frontend/issues/3234)) ([96be6f9](https://github.com/Altinn/dialogporten-frontend/commit/96be6f958ac1392b6c3400aa928557429bf82f5b))
+* update locale for link for infoportal new schema ([#3232](https://github.com/Altinn/dialogporten-frontend/issues/3232)) ([330bc10](https://github.com/Altinn/dialogporten-frontend/commit/330bc10bd58c27f8a7489aa342165c3ca52e9f81))
+
 ## [1.98.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.98.4...v1.98.5) (2025-11-17)
 
 

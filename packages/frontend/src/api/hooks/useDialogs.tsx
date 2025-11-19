@@ -38,7 +38,7 @@ interface UseDialogsOutput {
 export const useDialogs = ({ parties, viewType, filterState, search, queryKey }: UseDialogsProps): UseDialogsOutput => {
   const { organizations } = useOrganizations();
   const stopReversingPersonNameOrder = useFeatureFlag<boolean>('party.stopReversingPersonNameOrder');
-  const { selectedParties } = useParties();
+  const { selectedParties, isSelfIdentifiedUser } = useParties();
   const format = useFormat();
   const partiesToUse = parties ? parties : selectedParties;
   const partyIds = getPartyIds(partiesToUse, true);
@@ -70,7 +70,7 @@ export const useDialogs = ({ parties, viewType, filterState, search, queryKey }:
         search: searchString,
       });
     },
-    enabled: partyIds.length > 0 && partyIds.length <= 20,
+    enabled: partyIds.length > 0 && partyIds.length <= 20 && !isSelfIdentifiedUser,
     gcTime: 0,
     getNextPageParam(lastPage: GetAllDialogsForPartiesQuery): unknown | undefined | null {
       const hasNextPage = lastPage?.searchDialogs?.hasNextPage;

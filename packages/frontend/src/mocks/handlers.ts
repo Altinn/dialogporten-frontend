@@ -48,6 +48,14 @@ export const streamMock = http.get('/api/graphql/stream', async () => {
 });
 
 
+const mockAltinn2Messages = graphql.query('altinn2messages', () => {
+  return HttpResponse.json({
+    data: {
+      altinn2messages: [],
+    },
+  });
+});
+
 const getAllDialogsforCountMock = graphql.query('getAllDialogsForCount', ({ variables }) => {
   const items = filterDialogs({
     inMemoryStore,
@@ -316,5 +324,6 @@ export const handlers = [
   getAllDialogsForPartiesMock,
   getAllDialogsforCountMock,
   streamMock,
-  mutateUpdateLanguageMock
+  mutateUpdateLanguageMock,
+  mockAltinn2Messages
 ];
