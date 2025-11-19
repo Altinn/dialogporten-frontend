@@ -23,4 +23,5 @@ export const QUERY_KEYS = {
   ERROR_STATE: 'errorState',
   SHOW_TOUR: 'showTour',
   SHOW_PROFILE_TOUR: 'showProfileTour',
+  IS_SELF_IDENTIFIED_USER: 'isSelfIdentifiedUser',
 };

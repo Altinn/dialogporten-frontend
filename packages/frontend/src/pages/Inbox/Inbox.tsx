@@ -15,21 +15,21 @@ import { useTranslation } from 'react-i18next';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { type InboxViewType, useDialogs } from '../../api/hooks/useDialogs.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
-import { createFiltersURLQuery } from '../../auth';
+import { createFiltersURLQuery, createMessageBoxLink } from '../../auth';
 import { EmptyState } from '../../components/EmptyState/EmptyState.tsx';
+import { Notice } from '../../components/Notice';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
 import { useSearchString } from '../../components/PageLayout/Search/';
 import { SaveSearchButton } from '../../components/SavedSearchButton/SaveSearchButton.tsx';
 import { isSavedSearchDisabled } from '../../components/SavedSearchButton/savedSearchEnabled.ts';
 import { SeenByModal } from '../../components/SeenByModal/SeenByModal.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
-import { useFeatureFlag } from '../../featureFlags/index.ts';
+import { useFeatureFlag } from '../../featureFlags';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
 import { useInboxOnboarding } from '../../onboardingTour';
 import { PageRoutes } from '../routes.ts';
 import { Altinn2ActiveSchemasNotification } from './Altinn2ActiveSchemasNotification.tsx';
 import { FilterCategory, readFiltersFromURLQuery } from './filters.ts';
-import styles from './inbox.module.css';
 import { useFilters } from './useFilters.tsx';
 import useGroupedDialogs from './useGroupedDialogs.tsx';
 import { useMockError } from './useMockError.tsx';
@@ -51,6 +51,8 @@ export const Inbox = ({ viewType }: InboxProps) => {
     allOrganizationsSelected,
     parties,
     partiesEmptyList,
+    isSelfIdentifiedUser,
+    currentPartyUuid,
     isError: unableToLoadParties,
     isLoading: isLoadingParties,
   } = useParties();
@@ -162,12 +164,21 @@ export const Inbox = ({ viewType }: InboxProps) => {
     );
   }
 
-  if (partiesEmptyList) {
+  if (isSelfIdentifiedUser) {
     return (
-      <PageBase margin="page">
-        <h1 className={styles.noPartiesText}>{t('inbox.no_parties_found')}</h1>
-      </PageBase>
+      <Notice
+        title={t('notice.self_identified_warning.title')}
+        description={t('notice.self_identified_warning.description')}
+        link={{
+          href: createMessageBoxLink(currentPartyUuid),
+          label: t('notice.self_identified_warning.button_link'),
+        }}
+      />
     );
+  }
+
+  if (partiesEmptyList) {
+    return <Notice title={t('inbox.no_parties_found')} />;
   }
 
   return (
