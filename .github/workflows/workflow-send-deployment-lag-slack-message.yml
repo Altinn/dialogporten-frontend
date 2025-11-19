@@ -81,10 +81,13 @@ jobs:
 
       - name: Format commit summary
         id: format-commits
+        env:
+          COMMITS_JSON: ${{ inputs.commits_json }}
         run: |
           # Write commits_json to a temporary file to avoid shell parsing issues
+          # Using env var to prevent command injection
           cat > /tmp/commits.json << 'EOL'
-          ${{ inputs.commits_json }}
+          $COMMITS_JSON
           EOL
 
           if [ ! -s /tmp/commits.json ] || [ "$(cat /tmp/commits.json)" = "[]" ]; then
@@ -111,14 +114,14 @@ jobs:
 
       - name: Format author mentions
         id: format-authors
+        env:
+          COMMIT_AUTHORS: ${{ inputs.commit_authors }}
         run: |
-          authors="${{ inputs.commit_authors }}"
-
-          if [ -z "$authors" ]; then
+          if [ -z "$COMMIT_AUTHORS" ]; then
             echo "commit_authors_mentions=No authors available" >> $GITHUB_OUTPUT
           else
             # Convert comma-separated authors to Slack mentions
-            mentions=$(echo "$authors" | tr ',' '\n' | sed 's/^/@/' | tr '\n' ' ' | sed 's/ $//')
+            mentions=$(echo "$COMMIT_AUTHORS" | tr ',' '\n' | sed 's/^/@/' | tr '\n' ' ' | sed 's/ $//')
             echo "commit_authors_mentions=$mentions" >> $GITHUB_OUTPUT
           fi
 
