@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.100.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.99.0...v1.100.0) (2025-11-19)
+
+
+### Features
+
+* Update GlobalMenu with new design ref and links ([#3254](https://github.com/Altinn/dialogporten-frontend/issues/3254)) ([dc45c79](https://github.com/Altinn/dialogporten-frontend/commit/dc45c79bbf36624663daa9976f1d20071f584541))
+
+
+### Bug Fixes
+
+* 4xx errors against correspondence and graphql ([#3253](https://github.com/Altinn/dialogporten-frontend/issues/3253)) ([2309462](https://github.com/Altinn/dialogporten-frontend/commit/2309462e72c3535f51696a058eacbc2f8b2ce77b))
+* **ci:** ensure deployment lag monitor doesnt fail on long msgs ([#3250](https://github.com/Altinn/dialogporten-frontend/issues/3250)) ([32ecae4](https://github.com/Altinn/dialogporten-frontend/commit/32ecae48ce2b3086090f878d0de12749a0453fcb))
+
 ## [1.99.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.98.9...v1.99.0) (2025-11-19)
 
 
