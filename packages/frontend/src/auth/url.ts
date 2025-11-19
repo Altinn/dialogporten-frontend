@@ -105,28 +105,85 @@ export const getAccessAMUILink = (currentPartyUuid?: string) => {
   return createChangeReporteeAndRedirect(currentPartyUuid, hostMap[getEnvByHost()]);
 };
 
-export const getNewFormLink = (currentPartyUuid?: string, language?: string) => {
-  const hostMap: Record<hostEnv, string> = {
-    local: 'https://info.at23.altinn.cloud/skjemaoversikt/',
-    at23: 'https://info.at23.altinn.cloud/skjemaoversikt/',
-    tt02: 'https://info.tt02.altinn.no/skjemaoversikt/',
-    yt: 'https://info.tt02.altinn.no/skjemaoversikt/', // there is no am ui in yt
-    prod: 'https://info.altinn.no/skjemaoversikt/',
-  };
-  const url = hostMap[getEnvByHost()];
+const INFO_PORTAL_HOST_MAP: Record<hostEnv, string> = {
+  local: 'https://info.at23.altinn.cloud',
+  at23: 'https://info.at23.altinn.cloud',
+  tt02: 'https://info.tt02.altinn.no',
+  yt: 'https://info.tt02.altinn.no',
+  prod: 'https://info.altinn.no',
+};
 
+type LinkPathConfig = {
+  nb: string;
+  en: string;
+  nn: string;
+};
+
+const createInfoPortalLink = (pathConfig: LinkPathConfig, currentPartyUuid?: string, language?: string) => {
+  const baseHost = INFO_PORTAL_HOST_MAP[getEnvByHost()];
+
+  let path: string;
   if (language === 'en') {
-    return createChangeReporteeAndRedirect(currentPartyUuid, url.replace('/skjemaoversikt/', '/en/forms-overview/'));
-  }
-  if (language === 'nn') {
-    return createChangeReporteeAndRedirect(currentPartyUuid, url.replace('/skjemaoversikt/', '/nn/skjemaoversikt/'));
+    path = pathConfig.en;
+  } else if (language === 'nn') {
+    path = pathConfig.nn;
+  } else {
+    path = pathConfig.nb;
   }
 
-  return createChangeReporteeAndRedirect(currentPartyUuid, url);
+  return createChangeReporteeAndRedirect(currentPartyUuid, baseHost + path);
+};
+
+export const getNewFormLink = (currentPartyUuid?: string, language?: string) => {
+  return createInfoPortalLink(
+    {
+      nb: '/skjemaoversikt/',
+      en: '/en/forms-overview/',
+      nn: '/nn/skjemaoversikt/',
+    },
+    currentPartyUuid,
+    language,
+  );
 };
 
 export const getFrontPageLink = (currentPartyUuid?: string, language?: string) => {
   return createChangeReporteeAndRedirect(currentPartyUuid, getInfoSiteURL(language));
+};
+
+export const getAboutNewAltinnLink = (currentPartyUuid?: string, language?: string) => {
+  return createInfoPortalLink(
+    {
+      nb: '/nyheter/om-nye-altinn/',
+      en: '/en/news/About-the-new-Altinn/',
+      nn: '/nn/nyheiter/om-nye-altinn/',
+    },
+    currentPartyUuid,
+    language,
+  );
+};
+
+export const getStartNewBusinessLink = (currentPartyUuid?: string, language?: string) => {
+  return createInfoPortalLink(
+    {
+      nb: '/starte-og-drive/',
+      en: '/en/start-and-run-business/',
+      nn: '/nn/starte-og-drive/',
+    },
+    currentPartyUuid,
+    language,
+  );
+};
+
+export const getNeedHelpLink = (currentPartyUuid?: string, language?: string) => {
+  return createInfoPortalLink(
+    {
+      nb: '/hjelp/',
+      en: '/en/help/',
+      nn: '/nn/hjelp/',
+    },
+    currentPartyUuid,
+    language,
+  );
 };
 
 export const getCookieDomain = () => {
@@ -142,15 +199,7 @@ export const getCookieDomain = () => {
 
 /* Used for footer links */
 const getInfoSiteURL = (language?: string) => {
-  const hostMap: Record<hostEnv, string> = {
-    local: 'https://info.at23.altinn.cloud',
-    at23: 'https://info.at23.altinn.cloud',
-    tt02: 'https://info.tt02.altinn.no',
-    yt: 'https://info.tt02.altinn.no',
-    prod: 'https://info.altinn.no',
-  };
-
-  const baseUrl = hostMap[getEnvByHost()] || hostMap.prod;
+  const baseUrl = INFO_PORTAL_HOST_MAP[getEnvByHost()] || INFO_PORTAL_HOST_MAP.prod;
 
   if (language === 'en') {
     return `${baseUrl}/en`;

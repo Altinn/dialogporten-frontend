@@ -1,7 +1,25 @@
 import type { MenuItemProps, MenuItemSize, MenuProps, Theme } from '@altinn/altinn-components';
 import { Badge, formatDisplayName } from '@altinn/altinn-components';
-import { BellIcon, CogIcon, HeartIcon, InboxFillIcon, PadlockLockedIcon, PersonCircleIcon } from '@navikt/aksel-icons';
-import { getAccessAMUILink } from '../../../auth';
+import {
+  BellIcon,
+  Buildings2Icon,
+  ChatExclamationmarkIcon,
+  CogIcon,
+  HeartIcon,
+  InboxFillIcon,
+  InformationSquareIcon,
+  MenuGridIcon,
+  PadlockLockedIcon,
+  PersonCircleIcon,
+} from '@navikt/aksel-icons';
+import {
+  getAboutNewAltinnLink,
+  getAccessAMUILink,
+  getNeedHelpLink,
+  getNewFormLink,
+  getStartNewBusinessLink,
+} from '../../../auth';
+import { i18n } from '../../../i18n/config.ts';
 import { pruneSearchQueryParams } from '../../../pages/Inbox/queryParams.ts';
 import { PageRoutes } from '../../../pages/routes.ts';
 import { createMenuItemComponent, isRouteSelected } from './shared.tsx';
@@ -38,7 +56,13 @@ export function buildProfileMenu({
     global: {
       divider: false,
     },
+    help: {
+      divider: true,
+      defaultIconTheme: 'transparent' as Theme,
+      defaultItemSize: 'sm' as MenuItemSize,
+    },
     'profile-shortcut': {
+      divider: true,
       title: t('parties.current_end_user', { name: currentEndUserName ?? 'n/a' }),
     },
   };
@@ -67,6 +91,7 @@ export function buildProfileMenu({
           id: '1',
           groupId: '2',
           icon: HeartIcon,
+          size: 'sm',
           title: t('sidebar.profile.parties'),
           selected: isRouteSelected(pathname, PageRoutes.partiesOverview, fromView),
           as: createMenuItemComponent({
@@ -77,6 +102,7 @@ export function buildProfileMenu({
           id: '2',
           groupId: '2',
           icon: BellIcon,
+          size: 'sm',
           title: t('sidebar.profile.notifications'),
           selected: isRouteSelected(pathname, PageRoutes.notifications, fromView),
           as: createMenuItemComponent({
@@ -87,6 +113,7 @@ export function buildProfileMenu({
           id: '3',
           groupId: '4',
           icon: CogIcon,
+          size: 'sm',
           title: t('sidebar.profile.settings'),
           selected: isRouteSelected(pathname, PageRoutes.settings, fromView),
           as: createMenuItemComponent({
@@ -94,6 +121,45 @@ export function buildProfileMenu({
           }),
         },
       ],
+    },
+  ];
+
+  const helpItems: MenuItemProps[] = [
+    {
+      id: 'about-altinn',
+      dataTestId: 'sidebar-about-altinn',
+      groupId: 'help',
+      icon: InformationSquareIcon,
+      iconTheme: 'transparent',
+      size: 'sm',
+      title: t('global_menu.about_altinn'),
+      as: createMenuItemComponent({
+        to: getAboutNewAltinnLink(currentPartyUuid, i18n.language),
+      }),
+    },
+    {
+      id: 'start-business',
+      dataTestId: 'sidebar-start-business',
+      groupId: 'help',
+      icon: Buildings2Icon,
+      iconTheme: 'transparent',
+      size: 'sm',
+      title: t('global_menu.start_business'),
+      as: createMenuItemComponent({
+        to: getStartNewBusinessLink(currentPartyUuid, i18n.language),
+      }),
+    },
+    {
+      id: 'need-help',
+      dataTestId: 'sidebar-need-help',
+      groupId: 'help',
+      icon: ChatExclamationmarkIcon,
+      iconTheme: 'transparent',
+      size: 'sm',
+      title: t('global_menu.need_help'),
+      as: createMenuItemComponent({
+        to: getNeedHelpLink(currentPartyUuid, i18n.language),
+      }),
     },
   ];
 
@@ -139,6 +205,18 @@ export function buildProfileMenu({
       title: t('altinn.access_management'),
       badge: <Badge>{t('word.beta')}</Badge>,
     },
+    {
+      id: 'all-forms',
+      groupId: 'global',
+      size: 'lg',
+      icon: MenuGridIcon,
+      iconTheme: 'tinted',
+      title: t('global_menu.all_forms_services'),
+      as: createMenuItemComponent({
+        to: getNewFormLink(currentPartyUuid, i18n.language),
+      }),
+      selected: false,
+    },
   ];
 
   const profileMenuItem: MenuItemProps = {
@@ -157,13 +235,14 @@ export function buildProfileMenu({
 
   const desktopMenu: MenuProps = {
     groups: menuGroups,
-    items: [...globalMenuItems, profileMenuItem],
+    items: [...globalMenuItems, ...helpItems, profileMenuItem],
   };
 
   const mobileMenu: MenuProps = {
     ...desktopMenu,
     items: [
       ...globalMenuItems,
+      ...helpItems,
       {
         ...profileMenuItem,
         selected: isRouteSelected(pathname, PageRoutes.profile, fromView),
