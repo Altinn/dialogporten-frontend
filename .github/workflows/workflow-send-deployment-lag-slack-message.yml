@@ -59,7 +59,7 @@ jobs:
         run: |
           days=${{ inputs.days_since_prod_deploy }}
           releases=${{ inputs.release_count_diff }}
-          
+
           # Simplified severity determination
           if [ "$days" -gt 7 ] || [ "$releases" -gt 5 ]; then
             severity="Attention needed"
@@ -74,7 +74,7 @@ jobs:
             color="#87CEEB"
             emoji="ℹ️"
           fi
-          
+
           echo "severity=$severity" >> $GITHUB_OUTPUT
           echo "color=$color" >> $GITHUB_OUTPUT
           echo "emoji=$emoji" >> $GITHUB_OUTPUT
@@ -82,32 +82,38 @@ jobs:
       - name: Format commit summary
         id: format-commits
         run: |
-          commits_json='${{ inputs.commits_json }}'
-          
-          if [ "$commits_json" = "[]" ] || [ -z "$commits_json" ]; then
+          # Write commits_json to a temporary file to avoid shell parsing issues
+          cat > /tmp/commits.json << 'EOL'
+          ${{ inputs.commits_json }}
+          EOL
+
+          if [ ! -s /tmp/commits.json ] || [ "$(cat /tmp/commits.json)" = "[]" ]; then
             echo "commits_summary=No commit details available" >> $GITHUB_OUTPUT
           else
             # Format commits for Slack (limit to 10 most recent)
-            commits_summary=$(echo "$commits_json" | jq -r '
+            commits_summary=$(jq -r '
               .[0:10] | map("• `\(.sha)` \(.message) - \(.author)") | join("\n")
-            ')
+            ' /tmp/commits.json)
             
             # Add note if there are more commits
-            total_commits=$(echo "$commits_json" | jq length)
+            total_commits=$(jq length /tmp/commits.json)
             if [ "$total_commits" -gt 10 ]; then
               commits_summary="$commits_summary\n\n_... and $((total_commits - 10)) more commits_"
             fi
             
-            # Escape for GitHub output
-            commits_summary_escaped=$(echo "$commits_summary" | sed ':a;N;$!ba;s/\n/\\n/g')
-            echo "commits_summary=$commits_summary_escaped" >> $GITHUB_OUTPUT
+            # Use multiline output format to handle newlines properly
+            {
+              echo "commits_summary<<EOF"
+              echo -e "$commits_summary"
+              echo "EOF"
+            } >> $GITHUB_OUTPUT
           fi
 
       - name: Format author mentions
         id: format-authors
         run: |
           authors="${{ inputs.commit_authors }}"
-          
+
           if [ -z "$authors" ]; then
             echo "commit_authors_mentions=No authors available" >> $GITHUB_OUTPUT
           else
@@ -142,4 +148,3 @@ jobs:
           token: ${{ secrets.SLACK_BOT_TOKEN }}
           payload-templated: true
           payload-file-path: "./.github/slack-templates/deployment-lag-notification.json"
-
