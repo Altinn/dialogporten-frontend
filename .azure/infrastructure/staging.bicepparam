@@ -43,8 +43,6 @@ param applicationGatewayConfiguration = {
     }
   ]
   sslCertificateKeyVaultName: readEnvironmentVariable('CERTIFICATE_KEY_VAULT_NAME')
-  // remove after testing
-  zones: ['1', '2']
 }
 
 // PostgreSQL Configuration
