@@ -3,16 +3,27 @@ import { Badge } from '@altinn/altinn-components';
 import {
   ArchiveIcon,
   BookmarkIcon,
+  Buildings2Icon,
+  ChatExclamationmarkIcon,
   DocPencilIcon,
   FileCheckmarkIcon,
   InboxFillIcon,
+  InformationSquareIcon,
   LeaveIcon,
-  PadlockLockedIcon,
+  MenuGridIcon,
+  PadlockLockedFillIcon,
   PersonCircleIcon,
   PlusIcon,
   TrashIcon,
 } from '@navikt/aksel-icons';
-import { createMessageBoxLink, getAccessAMUILink, getNewFormLink } from '../../../auth';
+import {
+  createMessageBoxLink,
+  getAboutNewAltinnLink,
+  getAccessAMUILink,
+  getNeedHelpLink,
+  getNewFormLink,
+  getStartNewBusinessLink,
+} from '../../../auth';
 import { i18n } from '../../../i18n/config.ts';
 import { pruneSearchQueryParams } from '../../../pages/Inbox/queryParams.ts';
 import { PageRoutes } from '../../../pages/routes.ts';
@@ -46,6 +57,11 @@ export function buildInboxMenu({
     global: {
       divider: false,
     },
+    help: {
+      divider: true,
+      defaultIconTheme: 'transparent' as Theme,
+      defaultItemSize: 'sm' as MenuItemSize,
+    },
     'profile-shortcut': {
       divider: true,
       title: t('parties.current_end_user', { name: currentEndUserName ?? 'n/a' }),
@@ -75,6 +91,39 @@ export function buildInboxMenu({
     },
   ];
 
+  const helpItems: MenuItemProps[] = [
+    {
+      id: 'about-altinn',
+      dataTestId: 'about-altinn',
+      groupId: 'help',
+      icon: InformationSquareIcon,
+      title: t('global_menu.about_altinn'),
+      as: createMenuItemComponent({
+        to: getAboutNewAltinnLink(currentPartyUuid, i18n.language),
+      }),
+    },
+    {
+      id: 'start-business',
+      dataTestId: 'start-business',
+      groupId: 'help',
+      icon: Buildings2Icon,
+      title: t('global_menu.start_business'),
+      as: createMenuItemComponent({
+        to: getStartNewBusinessLink(currentPartyUuid, i18n.language),
+      }),
+    },
+    {
+      id: 'need-help',
+      dataTestId: 'need-help',
+      groupId: 'help',
+      icon: ChatExclamationmarkIcon,
+      title: t('global_menu.need_help'),
+      as: createMenuItemComponent({
+        to: getNeedHelpLink(currentPartyUuid, i18n.language),
+      }),
+    },
+  ];
+
   const inboxItems: MenuItemProps[] = [
     {
       id: '1',
@@ -82,13 +131,16 @@ export function buildInboxMenu({
       groupId: 'global',
       size: 'lg',
       icon: InboxFillIcon,
-      title: t('sidebar.inbox'),
+      title: (
+        <>
+          {t('sidebar.inbox')} <Badge>{t('word.beta')}</Badge>
+        </>
+      ),
       selected: isRouteSelected(pathname, PageRoutes.inbox, fromView),
       expanded: true,
       as: createMenuItemComponent({
         to: PageRoutes.inbox + pruneSearchQueryParams(currentSearchQuery),
       }),
-      badge: <Badge>{t('word.beta')}</Badge>,
       items: [
         {
           id: '2',
@@ -183,14 +235,31 @@ export function buildInboxMenu({
         id: 'am',
         groupId: 'global',
         size: 'lg',
-        icon: PadlockLockedIcon,
+        icon: PadlockLockedFillIcon,
+        iconTheme: 'tinted',
         hidden: !showAmLink,
         as: 'a',
         href: getAccessAMUILink(currentPartyUuid),
-        title: t('altinn.access_management'),
+        title: (
+          <>
+            {t('altinn.access_management')} <Badge>{t('word.beta')}</Badge>
+          </>
+        ),
         selected: false,
-        badge: <Badge>{t('word.beta')}</Badge>,
       },
+      {
+        id: 'all-forms',
+        groupId: 'global',
+        size: 'lg',
+        icon: MenuGridIcon,
+        iconTheme: 'tinted',
+        title: t('global_menu.all_forms_services'),
+        as: createMenuItemComponent({
+          to: getNewFormLink(currentPartyUuid, i18n.language),
+        }),
+        selected: false,
+      },
+      ...helpItems,
       {
         groupId: 'profile-shortcut',
         id: 'profile',

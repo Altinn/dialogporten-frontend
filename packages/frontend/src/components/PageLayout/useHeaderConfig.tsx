@@ -137,7 +137,6 @@ export const useHeaderConfig = (): UseHeaderConfigReturn => {
         return <Link to={getFrontPageLink(currentPartyUuid, i18n.language)} {...props} />;
       },
     },
-
     locale: {
       title: 'Språk/language',
       options: [

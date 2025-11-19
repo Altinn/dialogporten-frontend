@@ -129,6 +129,75 @@ export const getFrontPageLink = (currentPartyUuid?: string, language?: string) =
   return createChangeReporteeAndRedirect(currentPartyUuid, getInfoSiteURL(language));
 };
 
+export const getAboutNewAltinnLink = (currentPartyUuid?: string, language?: string) => {
+  const hostMap: Record<hostEnv, string> = {
+    local: 'https://info.at23.altinn.cloud/nyheter/om-nye-altinn/',
+    at23: 'https://info.at23.altinn.cloud/nyheter/om-nye-altinn/',
+    tt02: 'https://info.tt02.altinn.no/nyheter/om-nye-altinn/',
+    yt: 'https://info.tt02.altinn.no/nyheter/om-nye-altinn/',
+    prod: 'https://info.altinn.no/nyheter/om-nye-altinn/',
+  };
+  const url = hostMap[getEnvByHost()];
+
+  if (language === 'en') {
+    return createChangeReporteeAndRedirect(
+      currentPartyUuid,
+      url.replace('/nyheter/om-nye-altinn/', '/en/news/About-the-new-Altinn/'),
+    );
+  }
+  if (language === 'nn') {
+    return createChangeReporteeAndRedirect(
+      currentPartyUuid,
+      url.replace('/nyheter/om-nye-altinn/', '/nn/nyheiter/om-nye-altinn/'),
+    );
+  }
+
+  return createChangeReporteeAndRedirect(currentPartyUuid, url);
+};
+
+export const getStartNewBusinessLink = (currentPartyUuid?: string, language?: string) => {
+  const hostMap: Record<hostEnv, string> = {
+    local: 'https://info.at23.altinn.cloud/starte-og-drive/',
+    at23: 'https://info.at23.altinn.cloud/starte-og-drive/',
+    tt02: 'https://info.tt02.altinn.no/starte-og-drive/',
+    yt: 'https://info.tt02.altinn.no/starte-og-drive/',
+    prod: 'https://info.altinn.no/starte-og-drive/',
+  };
+  const url = hostMap[getEnvByHost()];
+
+  if (language === 'en') {
+    return createChangeReporteeAndRedirect(
+      currentPartyUuid,
+      url.replace('/starte-og-drive/', '/en/start-and-run-business/'),
+    );
+  }
+  if (language === 'nn') {
+    return createChangeReporteeAndRedirect(currentPartyUuid, url.replace('/starte-og-drive/', '/nn/starte-og-drive/'));
+  }
+
+  return createChangeReporteeAndRedirect(currentPartyUuid, url);
+};
+
+export const getNeedHelpLink = (currentPartyUuid?: string, language?: string) => {
+  const hostMap: Record<hostEnv, string> = {
+    local: 'https://info.at23.altinn.cloud/hjelp/',
+    at23: 'https://info.at23.altinn.cloud/hjelp/',
+    tt02: 'https://info.tt02.altinn.no/hjelp/',
+    yt: 'https://info.tt02.altinn.no/hjelp/',
+    prod: 'https://info.altinn.no/hjelp/',
+  };
+  const url = hostMap[getEnvByHost()];
+
+  if (language === 'en') {
+    return createChangeReporteeAndRedirect(currentPartyUuid, url.replace('/hjelp/', '/en/help/'));
+  }
+  if (language === 'nn') {
+    return createChangeReporteeAndRedirect(currentPartyUuid, url.replace('/hjelp/', '/nn/hjelp/'));
+  }
+
+  return createChangeReporteeAndRedirect(currentPartyUuid, url);
+};
+
 export const getCookieDomain = () => {
   const hostMap: Record<hostEnv, string> = {
     local: 'app.localhost',
