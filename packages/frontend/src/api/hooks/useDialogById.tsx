@@ -318,15 +318,20 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
   const partyURIs = parties.map((party) => party.party);
   const { data, isSuccess, isLoading, isError, dataUpdatedAt } = useAuthenticatedQuery<GetDialogByIdQuery>({
     queryKey: [QUERY_KEYS.DIALOG_BY_ID, id, organizations],
-    staleTime: 1000 * 60 * 30,
-    refetchInterval: 1000 * 60 * 10,
+    staleTime: 0,
+    refetchInterval: 1000 * 60 * 9,
     refetchOnMount: 'always',
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: (query) => {
+      if (!query.state.dataUpdatedAt) return true;
+      const NINE_MIN = 9 * 60 * 1000;
+      return Date.now() - query.state.dataUpdatedAt > NINE_MIN;
+    },
     retry: 3,
-    queryFn: () =>
-      getDialogsById(id!).then((data) => {
+    queryFn: () => {
+      return getDialogsById(id!).then((data) => {
         return data;
-      }),
+      });
+    },
     enabled: typeof id !== 'undefined' && partyURIs.length > 0,
   });
 

@@ -27,7 +27,7 @@ export const useDialogsCount = (parties?: PartyFieldsFragment[], viewType?: Inbo
 
   const { data } = useAuthenticatedQuery<GetAllDialogsForCountQuery>({
     queryKey: [QUERY_KEYS.COUNT_DIALOGS, partyIds, viewType],
-    staleTime: 1000 * 60 * 10,
+    staleTime: Number.POSITIVE_INFINITY,
     retry: 3,
     queryFn: () =>
       graphQLSDK.getAllDialogsForCount(
@@ -40,8 +40,11 @@ export const useDialogsCount = (parties?: PartyFieldsFragment[], viewType?: Inbo
         }),
       ),
     enabled: partyIds.length > 0 && partyIds.length <= 20 && !isSelfIdentifiedUser,
-    gcTime: 10 * 1000,
+    gcTime: 0,
     placeholderData: keepPreviousData,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
   });
 
   const dialogCountsByViewType = useMemo(() => {

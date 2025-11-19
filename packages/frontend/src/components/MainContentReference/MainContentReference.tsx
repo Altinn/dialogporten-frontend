@@ -1,10 +1,10 @@
 import { Alert, Button, Typography } from '@altinn/altinn-components';
-import { useQuery } from '@tanstack/react-query';
 import { Html, Markdown } from 'embeddable-markdown-html';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Analytics } from '../../analytics.ts';
 import { type DialogByIdDetails, EmbeddableMediaType } from '../../api/hooks/useDialogById.tsx';
+import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import styles from './mainContentReference.module.css';
 
@@ -65,7 +65,7 @@ export const MainContentReference = memo(
     const { t } = useTranslation();
 
     const validURL = content?.url ? isValidURL(content.url) : false;
-    const { data, isSuccess, isError, isLoading, refetch } = useQuery({
+    const { data, isSuccess, isError, isLoading, refetch } = useAuthenticatedQuery({
       queryKey: [QUERY_KEYS.MAIN_CONTENT_REFERENCE, id, dialogToken],
       staleTime: 1000 * 60 * 10,
       queryFn: async () => {
