@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.100.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.100.1...v1.100.2) (2025-11-19)
+
+
+### Bug Fixes
+
+* **infra:** remove zones from application gateway in staging ([#3259](https://github.com/Altinn/dialogporten-frontend/issues/3259)) ([9708c50](https://github.com/Altinn/dialogporten-frontend/commit/9708c50c8c891846504937eae3fab09ad76343e9))
+
 ## [1.100.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.100.0...v1.100.1) (2025-11-19)
 
 
