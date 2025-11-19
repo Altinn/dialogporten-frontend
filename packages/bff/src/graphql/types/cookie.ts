@@ -40,10 +40,10 @@ export const getLanguageFromAltinnContext = (encodedValue?: string): 'nb' | 'nn'
 };
 
 export const updateAltinnPersistentContextValue = (existingRaw: string | undefined, ulCode: string) => {
-  const decoded = existingRaw ? decodeURIComponent(existingRaw) : '';
+  const decoded = existingRaw ?? '';
 
   if (!decoded) {
-    return `UL=${encodeURIComponent(ulCode)}`;
+    return `UL=${ulCode}`;
   }
 
   const parts = decoded.split('&').filter(Boolean);
@@ -52,12 +52,12 @@ export const updateAltinnPersistentContextValue = (existingRaw: string | undefin
   const newParts = parts.map((p) => {
     if (p.startsWith('UL=')) {
       replaced = true;
-      return `UL=${encodeURIComponent(ulCode)}`;
+      return `UL=${ulCode}`;
     }
     return p;
   });
 
-  if (!replaced) newParts.push(`UL=${encodeURIComponent(ulCode)}`);
+  if (!replaced) newParts.push(`UL=${ulCode}`);
 
   return newParts.join('&');
 };
