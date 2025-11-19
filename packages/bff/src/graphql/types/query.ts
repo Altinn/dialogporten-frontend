@@ -34,10 +34,11 @@ export const Query = objectType({
             const value = updateAltinnPersistentContextValue(current, ul);
             ctx.request.context.reply.setCookie('altinnPersistentContext', value, {
               path: '/',
-              domain: config.authContextCookieDomain,
               expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
               httpOnly: true,
               secure: true,
+              domain: config.authContextCookieDomain,
+              encode: (v: string) => v,
             });
           }
         }
