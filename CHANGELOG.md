@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.102.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.102.1...v1.102.2) (2025-11-20)
+
+
+### Bug Fixes
+
+* **infra:** avoid duplicate zonal IPs ([a992985](https://github.com/Altinn/dialogporten-frontend/commit/a992985a6fb4147beee8340399b0d9836094f09a))
+
 ## [1.102.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.102.0...v1.102.1) (2025-11-20)
 
 
