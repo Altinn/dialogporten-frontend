@@ -87,6 +87,22 @@ resource publicIp 'Microsoft.Network/publicIPAddresses@2021-03-01' = {
   tags: tags
 }
 
+// to test zonal public IPs. Should be replaced by: https://github.com/Altinn/dialogporten-frontend/pull/3263
+resource zonalPublicIp 'Microsoft.Network/publicIPAddresses@2021-03-01' = {
+  name: '${gatewayName}-publicIp-zonal'
+  location: location
+  sku: {
+    name: 'Standard'
+  }
+  properties: {
+    publicIPAddressVersion: 'IPv4'
+    publicIPAllocationMethod: 'Static'
+    idleTimeoutInMinutes: 4
+  }
+  zones: ['1', '2']
+  tags: tags
+}
+
 resource applicationGatewayAssignedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
   name: '${gatewayName}-identity'
   location: location
