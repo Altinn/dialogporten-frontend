@@ -64,6 +64,19 @@ param postgresConfiguration = {
   version: '15'
 }
 
+param containerAppEnvWorkloadProfiles = [
+  {
+    name: 'Consumption'
+    workloadProfileType: 'Consumption'
+  }
+  {
+    name: 'Dedicated-D4'
+    workloadProfileType: 'D4'
+    minimumCount: 2
+    maximumCount: 10
+  }
+]
+
 // Altinn Product Dialogporten: Developers Dev
 param entraDevelopersGroupId = 'c12e51e3-5cbd-4229-8a31-5394c423fb5f'
 
