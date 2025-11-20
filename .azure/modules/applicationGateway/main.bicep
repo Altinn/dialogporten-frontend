@@ -73,8 +73,10 @@ resource appInsightsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-
   name: appInsightWorkspaceName
 }
 
+var publicIpName = !empty(configuration.?zones) ? '${gatewayName}-publicIp-zonal' : '${gatewayName}-publicIp'
+
 resource publicIp 'Microsoft.Network/publicIPAddresses@2021-03-01' = {
-  name: '${gatewayName}-publicIp'
+  name: publicIpName
   location: location
   sku: {
     name: 'Standard'
@@ -84,6 +86,7 @@ resource publicIp 'Microsoft.Network/publicIPAddresses@2021-03-01' = {
     publicIPAllocationMethod: 'Static'
     idleTimeoutInMinutes: 4
   }
+  zones: configuration.?zones
   tags: tags
 }
 
