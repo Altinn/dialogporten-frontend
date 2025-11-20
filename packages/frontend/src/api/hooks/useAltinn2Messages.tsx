@@ -10,12 +10,9 @@ export const useAltinn2Messages = () => {
     retry: 3,
     staleTime: 1000 * 60 * 10,
   });
-  const altinn2SchemasNotArchived = data?.altinn2messages?.filter(
-    (message) => message?.Type === 'FormTask' || message?.ArchiveReference === null,
-  );
 
   return {
-    altinn2messages: altinn2SchemasNotArchived,
+    altinn2messages: data?.altinn2messages,
     isLoading,
     isSuccess,
   };
