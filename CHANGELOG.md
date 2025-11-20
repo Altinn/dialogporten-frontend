@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.102.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.102.0...v1.102.1) (2025-11-20)
+
+
+### Bug Fixes
+
+* **infra:** add zonal public ip for app gateway ([#3263](https://github.com/Altinn/dialogporten-frontend/issues/3263)) ([deb8fe6](https://github.com/Altinn/dialogporten-frontend/commit/deb8fe6b2c149b38bcb9653886c836cce90d5e53))
+
 ## [1.102.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.101.0...v1.102.0) (2025-11-20)
 
 
