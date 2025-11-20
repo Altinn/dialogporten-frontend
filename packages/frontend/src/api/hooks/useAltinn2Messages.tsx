@@ -11,7 +11,7 @@ export const useAltinn2Messages = () => {
     staleTime: 1000 * 60 * 10,
   });
   const altinn2SchemasNotArchived = data?.altinn2messages?.filter(
-    (message) => message?.Type === 'FormTask' || message?.ArchiveReference === null,
+    (message) => message?.Type === 'FormTask' && message?.ArchiveReference === null,
   );
 
   return {
