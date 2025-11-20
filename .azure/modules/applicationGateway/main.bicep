@@ -73,6 +73,7 @@ resource appInsightsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-
   name: appInsightWorkspaceName
 }
 
+// ensure that we can do a proper migration related to this: https://github.com/Altinn/dialogporten-frontend/issues/2632
 var publicIpName = !empty(configuration.?zones) ? '${gatewayName}-publicIp-zonal' : '${gatewayName}-publicIp'
 
 resource publicIp 'Microsoft.Network/publicIPAddresses@2021-03-01' = {
