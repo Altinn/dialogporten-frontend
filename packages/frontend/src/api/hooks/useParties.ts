@@ -30,6 +30,7 @@ interface UsePartiesOutput {
   flattenedParties: FlattenedParty[];
   currentPartyUuid: string | undefined;
   isSelfIdentifiedUser: boolean;
+  organizationLimitReached: boolean;
 }
 
 const stripQueryParamsForParty = (searchParamString: string) => {
@@ -240,5 +241,6 @@ export const useParties = (): UsePartiesOutput => {
     partiesEmptyList,
     currentPartyUuid,
     isSelfIdentifiedUser,
+    organizationLimitReached: selectedParties.length > 20,
   };
 };

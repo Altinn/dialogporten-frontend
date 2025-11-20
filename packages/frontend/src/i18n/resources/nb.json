@@ -335,6 +335,8 @@
   "profile.settings.sms_notifications": "Varslinger på SMS",
   "route.archived": "Arkiv",
   "route.deleted": "Papirkurv",
+  "organizationLimitReached.title": "Alle virksomheter",
+  "organizationLimitReached.description": "Du har tilgang til {count} virksomheter, men vi kan foreløpig ikke vise dialoger for mer enn 20 samtidig.",
   "savedSearches.bookmark.item_input_helper": "Gi bokmerket et navn",
   "savedSearches.bookmark.item_input_label": "Tittel",
   "savedSearches.bookmark.item_input_placeholder": "Uten tittel",
