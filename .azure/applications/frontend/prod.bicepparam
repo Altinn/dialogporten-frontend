@@ -4,8 +4,8 @@ param environment = 'prod'
 param location = 'norwayeast'
 param imageTag = readEnvironmentVariable('IMAGE_TAG')
 param minReplicas = 2
-param maxReplicas = 10
-param workloadProfileName = 'Consumption'
+param maxReplicas = 15
+param workloadProfileName = 'Dedicated-D4'
 
 // secrets
 param containerAppEnvironmentName = readEnvironmentVariable('CONTAINER_APP_ENVIRONMENT_NAME')

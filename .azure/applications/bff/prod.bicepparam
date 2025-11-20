@@ -9,9 +9,13 @@ param authContextCookieDomain = '.altinn.no'
 param oicdUrl = 'idporten.no'
 param altinn2BaseUrl = 'https://altinn.no'
 param minReplicas = 2
-param maxReplicas = 10
+param maxReplicas = 15
+param resources = {
+    cpu: 1
+    memory: '2Gi'
+}
 param graphiQLEnabled = 'false'
-param workloadProfileName = 'Consumption'
+param workloadProfileName = 'Dedicated-D4'
 
 param platformBaseUrl = 'https://platform.altinn.no'
 param enableInitSessionEndpoint = 'false'
