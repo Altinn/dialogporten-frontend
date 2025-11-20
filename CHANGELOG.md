@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.101.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.100.3...v1.101.0) (2025-11-20)
+
+
+### Features
+
+* **infra:** add dedicated workload profile types to yt01 and prod ([#3271](https://github.com/Altinn/dialogporten-frontend/issues/3271)) ([66c9f21](https://github.com/Altinn/dialogporten-frontend/commit/66c9f2199f471d6381b8423cbc44004359c639c9))
+
+
+### Bug Fixes
+
+* Altinn 2 showing other than skjema messages ([b960353](https://github.com/Altinn/dialogporten-frontend/commit/b9603532b8930023b20134e851a8245918f0874e))
+* revert Altinn 2 showing other than skjema messages ([3dc5eb2](https://github.com/Altinn/dialogporten-frontend/commit/3dc5eb224527e3ec7c0273a6cc7135c482e6d82c))
+
 ## [1.100.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.100.2...v1.100.3) (2025-11-20)
 
 
