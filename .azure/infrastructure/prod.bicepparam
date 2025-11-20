@@ -68,5 +68,17 @@ param entraDevelopersGroupId = 'a94de4bf-0a83-4d30-baba-0c6a7365571c'
 // Container App Environment
 param containerAppEnvZoneRedundancyEnabled = true
 
+param containerAppEnvWorkloadProfiles = [
+  {
+    name: 'Consumption'
+    workloadProfileType: 'Consumption'
+  }
+  {
+    name: 'Dedicated-D4'
+    workloadProfileType: 'D4'
+    minimumCount: 3
+    maximumCount: 10
+  }
+]
 // Maintenance Mode
 param enableMaintenancePage = false
