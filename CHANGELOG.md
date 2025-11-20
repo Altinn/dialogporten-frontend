@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.102.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.101.0...v1.102.0) (2025-11-20)
+
+
+### Features
+
+* **apps:** add resources and move apps to dedicated profile ([#3272](https://github.com/Altinn/dialogporten-frontend/issues/3272)) ([1429e7b](https://github.com/Altinn/dialogporten-frontend/commit/1429e7b9a1601da66b897749716f1af47da8599c))
+
 ## [1.101.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.100.3...v1.101.0) (2025-11-20)
 
 
