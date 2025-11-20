@@ -32,8 +32,15 @@ export const getAltinn2messages = async (context: Context): Promise<Altinn2Messa
         ApiKey: altinn2ApiKey,
       },
     });
+    const allMessages = response.data._embedded?.messages;
 
-    return response.data._embedded?.messages;
+    const altinn2ActiveSchemas = allMessages?.filter((message) => {
+      const isActiveElement = !message?.ArchiveReference;
+      const isSchema = message?.Type === 'FormTask';
+
+      return isSchema && isActiveElement;
+    });
+    return altinn2ActiveSchemas ?? [];
   } catch (error) {
     logger.error(error, 'Error fetching altinn2messages:');
     return [];
