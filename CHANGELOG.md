@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.100.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.100.2...v1.100.3) (2025-11-20)
+
+
+### Bug Fixes
+
+* **infra:** test zonal public ip addresses ([#3264](https://github.com/Altinn/dialogporten-frontend/issues/3264)) ([e73226d](https://github.com/Altinn/dialogporten-frontend/commit/e73226d58c82bfc32b204d9bc41074dd23fa1766))
+
 ## [1.100.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.100.1...v1.100.2) (2025-11-19)
 
 
