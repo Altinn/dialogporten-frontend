@@ -184,10 +184,13 @@ export function buildProfileMenu({
       size: 'lg',
       icon: InboxFillIcon,
       iconTheme: 'tinted',
-      title: t('sidebar.inbox'),
+      title: (
+        <>
+          {t('sidebar.inbox')} <Badge>{t('word.beta')}</Badge>
+        </>
+      ),
       selected: isRouteSelected(pathname, PageRoutes.inbox, fromView),
       expanded: true,
-      badge: <Badge>{t('word.beta')}</Badge>,
       as: createMenuItemComponent({
         to: PageRoutes.inbox + pruneSearchQueryParams(currentSearchQuery),
       }),
@@ -202,8 +205,11 @@ export function buildProfileMenu({
       hidden: !showAmLink,
       as: 'a',
       href: getAccessAMUILink(currentPartyUuid),
-      title: t('altinn.access_management'),
-      badge: <Badge>{t('word.beta')}</Badge>,
+      title: (
+        <>
+          {t('altinn.access_management')} <Badge>{t('word.beta')}</Badge>
+        </>
+      ),
     },
     {
       id: 'all-forms',
