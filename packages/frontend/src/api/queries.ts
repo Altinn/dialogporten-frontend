@@ -80,6 +80,10 @@ const responseMiddleware: ResponseMiddleware = (response) => {
       error.name = 'GraphQLClientError';
       error.message = errorMessage;
 
+      if (errorMessage.includes('Request failed with status code 401')) {
+        return;
+      }
+
       logError(
         error,
         {
