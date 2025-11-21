@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.103.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.102.4...v1.103.0) (2025-11-21)
+
+
+### Features
+
+* always display all organizations option from 2 or more orgs ([#3277](https://github.com/Altinn/dialogporten-frontend/issues/3277)) ([adf38f8](https://github.com/Altinn/dialogporten-frontend/commit/adf38f880220dd635c5a5ec31a3b3ab11208944b))
+* New welcome modal, design and functionality ([#3281](https://github.com/Altinn/dialogporten-frontend/issues/3281)) ([5f04d02](https://github.com/Altinn/dialogporten-frontend/commit/5f04d02559ba9e05d1e24cb675455f3d13d42eb9))
+
+
+### Bug Fixes
+
+* **frontend:** improve security in nginx and ensure security policies do not break features ([#3285](https://github.com/Altinn/dialogporten-frontend/issues/3285)) ([2cab476](https://github.com/Altinn/dialogporten-frontend/commit/2cab4763f466e4789c47ca9bd720576eb314dbca))
+* **frontend:** revert improve security in nginx ([20f07f2](https://github.com/Altinn/dialogporten-frontend/commit/20f07f2038d101ce1f900352489aa77564b08f5c))
+* support feature toggle for dialogs count ([#3291](https://github.com/Altinn/dialogporten-frontend/issues/3291)) ([bb686a7](https://github.com/Altinn/dialogporten-frontend/commit/bb686a7e9d9d2912198e6dd3bb6ff5f33a0f2fd7))
+
 ## [1.102.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.102.3...v1.102.4) (2025-11-21)
 
 
