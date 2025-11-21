@@ -377,7 +377,6 @@ describe('useGroupedDialogs', () => {
       },
     );
 
-    console.info(mockData);
     const groups = result.current.groups;
     const uniqueOrderIndexes = [...new Set(Object.values(groups).map((item) => item.orderIndex?.toString()))];
 

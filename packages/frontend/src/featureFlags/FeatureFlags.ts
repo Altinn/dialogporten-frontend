@@ -10,6 +10,7 @@ export const featureFlagDefinitions = [
   { key: 'party.stopReversingPersonNameOrder', type: 'boolean', default: false },
   { key: 'globalMenu.enableAccessManagementLink', type: 'boolean', default: false },
   { key: 'globalMenu.enabled', type: 'boolean', default: false },
+  { key: 'inbox.disableDialogCount', type: 'boolean', default: false },
 ] as const satisfies readonly FeatureFlagDefinition[];
 
 export type FeatureFlagKey = (typeof featureFlagDefinitions)[number]['key'];
