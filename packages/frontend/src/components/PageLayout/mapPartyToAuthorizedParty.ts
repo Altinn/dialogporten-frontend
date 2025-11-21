@@ -7,7 +7,8 @@ import type { PartyFieldsFragment } from 'bff-types-generated';
  * Format: "urn:altinn:{type}:identifier-no:{number}"
  * Returns just the number part
  */
-const extractIdentifierNumber = (partyId: string): string | undefined => {
+export const extractIdentifierNumber = (partyId?: string): string | undefined => {
+  if (!partyId) return undefined;
   const parts = partyId.split('identifier-no:');
   if (parts.length < 2) return undefined;
   return parts[1];

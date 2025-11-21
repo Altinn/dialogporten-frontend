@@ -1,13 +1,20 @@
-import { NotificationItem } from '@altinn/altinn-components';
+import { type Account, NotificationItem } from '@altinn/altinn-components';
 import { BellIcon } from '@navikt/aksel-icons';
 import type { Altinn2Message } from 'bff-types-generated';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAltinn2Messages } from '../../api/hooks/useAltinn2Messages.tsx';
+import { extractIdentifierNumber } from '../../components/PageLayout/mapPartyToAuthorizedParty.ts';
 
-export const Altinn2ActiveSchemasNotification = () => {
+interface Altinn2ActiveSchemasNotificationProps {
+  selectedAccount?: Account;
+}
+
+export const Altinn2ActiveSchemasNotification = ({ selectedAccount }: Altinn2ActiveSchemasNotificationProps) => {
+  const selectedAccountIdentifier = extractIdentifierNumber(selectedAccount?.id);
+
   const { t } = useTranslation();
-  const { altinn2messages, isSuccess: altinn2messagesSuccess } = useAltinn2Messages();
+  const { altinn2messages, isSuccess: altinn2messagesSuccess } = useAltinn2Messages(selectedAccountIdentifier);
 
   const mostRecentMessage = useMemo(() => {
     return altinn2messages?.reduce((latest: Altinn2Message | null, message: Altinn2Message | null) => {
@@ -24,11 +31,14 @@ export const Altinn2ActiveSchemasNotification = () => {
     return null;
   }
 
-  const daysAgo = Math.floor(
+  if (!selectedAccount) {
+    return null;
+  }
+  const daysSinceMostRecentMessage = Math.floor(
     (Date.now() - new Date(mostRecentMessage?.LastChangedDateTime || '').getTime()) / (1000 * 60 * 60 * 24),
   );
 
-  if (daysAgo > 90) {
+  if (daysSinceMostRecentMessage > 90) {
     return null;
   }
 
@@ -41,7 +51,7 @@ export const Altinn2ActiveSchemasNotification = () => {
       iconBadge={{ label: t('inbox.old_inbox_notification.badge') }}
       dismissable
       title={t('inbox.old_inbox_notification')}
-      description={t('inbox.old_inbox_notification.days_ago', { count: daysAgo })}
+      description={t('inbox.old_inbox_notification.days_ago', { count: daysSinceMostRecentMessage })}
       variant="tinted"
     />
   );
