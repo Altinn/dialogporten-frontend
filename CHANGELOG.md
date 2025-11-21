@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.102.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.102.3...v1.102.4) (2025-11-21)
+
+
+### Bug Fixes
+
+* **frontend:** add security headers ([#3238](https://github.com/Altinn/dialogporten-frontend/issues/3238)) ([b23970b](https://github.com/Altinn/dialogporten-frontend/commit/b23970bb407f8d8573be20de3b4ccffb17bab8b1))
+* **frontend:** revert security changes ([2766091](https://github.com/Altinn/dialogporten-frontend/commit/2766091d8a4f60dd6094882181454253f4d1fbcc))
+* **infra:** disable HA for app gateway in prod ([eb18199](https://github.com/Altinn/dialogporten-frontend/commit/eb18199a1d6ecf09d9a7b8c6d2ca85f468a004b1))
+
 ## [1.102.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.102.2...v1.102.3) (2025-11-21)
 
 
