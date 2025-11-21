@@ -333,6 +333,8 @@
   "profile.settings.settings_loading": "Loading settings...",
   "profile.settings.sms": "SMS",
   "profile.settings.sms_notifications": "SMS notifications",
+  "organizationLimitReached.title": "All organisations",
+  "organizationLimitReached.description": "You have access to {count} organisations, but we currently can’t display dialogs for more than 20 at once.",
   "route.archived": "Archive",
   "route.deleted": "Bin",
   "savedSearches.bookmark.item_input_helper": "Give saved search a title",

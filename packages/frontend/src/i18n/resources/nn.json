@@ -215,6 +215,8 @@
   "onboarding.finish": "Ferdig",
   "onboarding.next": "Neste",
   "onboarding.previous": "Tilbake",
+  "organizationLimitReached.title": "Alle verksemder",
+  "organizationLimitReached.description": "Du har tilgang til {count} verksemder, men vi kan førebels ikkje vise dialogar for meir enn 20 samtidig.",
   "onboarding.tour.filter.description": "Med den nye filterfunksjonen kan du sjølv velje kva som blir vist – og få betre oversikt.",
   "onboarding.tour.filter.title": "Filter",
   "onboarding.tour.inbox.description": "Vi har byrja å byggje ut innboksen med fleire moglegheiter for å organisere meldingane dine.",

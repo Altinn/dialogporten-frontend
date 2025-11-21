@@ -55,6 +55,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     currentPartyUuid,
     isError: unableToLoadParties,
     isLoading: isLoadingParties,
+    organizationLimitReached,
   } = useParties();
   useMockError();
   const location = useLocation();
@@ -166,19 +167,51 @@ export const Inbox = ({ viewType }: InboxProps) => {
 
   if (isSelfIdentifiedUser) {
     return (
-      <Notice
-        title={t('notice.self_identified_warning.title')}
-        description={t('notice.self_identified_warning.description')}
-        link={{
-          href: createMessageBoxLink(currentPartyUuid),
-          label: t('notice.self_identified_warning.button_link'),
-        }}
-      />
+      <PageBase margin="page">
+        <Notice
+          title={t('notice.self_identified_warning.title')}
+          description={t('notice.self_identified_warning.description')}
+          link={{
+            href: createMessageBoxLink(currentPartyUuid),
+            label: t('notice.self_identified_warning.button_link'),
+          }}
+        />
+      </PageBase>
     );
   }
 
   if (partiesEmptyList) {
-    return <Notice title={t('inbox.no_parties_found')} />;
+    return (
+      <PageBase margin="page">
+        <Notice title={t('inbox.no_parties_found')} />
+      </PageBase>
+    );
+  }
+
+  if (organizationLimitReached) {
+    return (
+      <PageBase margin="page">
+        <Section data-testid="inbox-toolbar" style={isGlobalMenuEnabled ? { marginTop: '-1rem' } : undefined}>
+          <Toolbar
+            data-testid="inbox-toolbar"
+            accountMenu={{
+              items: accounts,
+              search: accountSearch,
+              groups: accountGroups,
+              currentAccount: selectedAccount,
+              onSelectAccount: (account: string) => onSelectAccount(account, PageRoutes[viewType]),
+              filterAccount,
+              isVirtualized: true,
+              title: t('parties.change_label'),
+            }}
+          />
+          <Notice
+            title={t('organizationLimitReached.title')}
+            description={t('organizationLimitReached.description', { count: selectedParties.length })}
+          />
+        </Section>
+      </PageBase>
+    );
   }
 
   return (
