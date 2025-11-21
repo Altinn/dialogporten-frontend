@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.102.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.102.2...v1.102.3) (2025-11-21)
+
+
+### Bug Fixes
+
+* Altinn 2 active elements notification showing correctly ([7ae878c](https://github.com/Altinn/dialogporten-frontend/commit/7ae878c08a551a7af58d3913ce28e0627bdff420))
+* **frontend:** filter out 401 issues ([#3282](https://github.com/Altinn/dialogporten-frontend/issues/3282)) ([09c91ab](https://github.com/Altinn/dialogporten-frontend/commit/09c91ab80c6e911bc719e93f11d6e10d1609dc22))
+
 ## [1.102.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.102.1...v1.102.2) (2025-11-20)
 
 
