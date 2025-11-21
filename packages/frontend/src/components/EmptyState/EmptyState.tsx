@@ -1,8 +1,6 @@
 import { Heading, Section, Typography } from '@altinn/altinn-components';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
-import { PageRoutes } from '../../pages/routes.ts';
 
 interface EmptyStateProps {
   query?: string;
@@ -55,7 +53,6 @@ export const EmptyState = ({ query, viewType, searchMode }: EmptyStateProps) => 
         <Heading size="lg">{t('emptyState.inbox.title')}</Heading>
         <Typography size="sm">
           <p>{t('emptyState.inbox.description', { br: <br key={'inbox-p-br'} /> })}</p>
-          <Link to={PageRoutes.about}>{t('emptyState.link.where_are_my_dialogs')}</Link>
         </Typography>
       </Section>
     );
@@ -67,7 +64,6 @@ export const EmptyState = ({ query, viewType, searchMode }: EmptyStateProps) => 
         <Heading size="lg">{t('emptyState.drafts.title')}</Heading>
         <Typography size="sm">
           <p>{t('emptyState.drafts.descriptionAfterStrong')}</p>
-          <Link to={PageRoutes.about}>{t('emptyState.link.where_are_my_dialogs')}</Link>
         </Typography>
       </Section>
     );
@@ -82,7 +78,6 @@ export const EmptyState = ({ query, viewType, searchMode }: EmptyStateProps) => 
             {t('emptyState.sent.descriptionBeforeStrong')}
             <strong>{t('emptyState.sent.descriptionBold')}</strong>
           </p>
-          <Link to={PageRoutes.about}>{t('emptyState.link.where_are_my_dialogs')}</Link>
         </Typography>
       </Section>
     );
@@ -94,7 +89,6 @@ export const EmptyState = ({ query, viewType, searchMode }: EmptyStateProps) => 
         <Heading size="lg">{t('emptyState.bin.title')}</Heading>
         <Typography size="sm">
           <p>{t('emptyState.bin.descriptionAfterBold')}</p>
-          <Link to={PageRoutes.about}>{t('emptyState.link.where_are_my_dialogs')}</Link>
         </Typography>
       </Section>
     );
@@ -106,7 +100,6 @@ export const EmptyState = ({ query, viewType, searchMode }: EmptyStateProps) => 
         <Heading size="lg">{t('emptyState.archive.title')}</Heading>
         <Typography size="sm">
           <p>{t('emptyState.archive.descriptionAfterBold')}</p>
-          <Link to={PageRoutes.about}>{t('emptyState.link.where_are_my_dialogs')}</Link>
         </Typography>
       </Section>
     );
