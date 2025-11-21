@@ -172,7 +172,8 @@ export const graphQLSDK = getSdk(
 
 export const profile = graphQLSDK.profile;
 export const fetchSavedSearches = (): Promise<SavedSearchesQuery> => graphQLSDK.savedSearches();
-export const fetchAltinn2Messages = (): Promise<Altinn2messagesQuery> => graphQLSDK.altinn2messages();
+export const fetchAltinn2Messages = (selectedAccountIdentifier: string): Promise<Altinn2messagesQuery> =>
+  graphQLSDK.altinn2messages({ selectedAccountIdentifier });
 export const fetchOrganizations = (): Promise<OrganizationsQuery> => graphQLSDK.organizations();
 export const deleteSavedSearch = (id: number): Promise<DeleteSavedSearchMutation> =>
   graphQLSDK.DeleteSavedSearch({ id });
