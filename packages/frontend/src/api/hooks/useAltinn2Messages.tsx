@@ -3,12 +3,13 @@ import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { fetchAltinn2Messages } from '../queries.ts';
 
-export const useAltinn2Messages = () => {
+export const useAltinn2Messages = (selectedAccountIdentifier?: string) => {
   const { data, isLoading, isSuccess } = useAuthenticatedQuery<Altinn2messagesQuery>({
-    queryKey: [QUERY_KEYS.ALTINN2_MESSAGES],
-    queryFn: () => fetchAltinn2Messages(),
+    queryKey: [QUERY_KEYS.ALTINN2_MESSAGES, selectedAccountIdentifier],
+    queryFn: () => fetchAltinn2Messages(selectedAccountIdentifier ?? ''),
     retry: 3,
     staleTime: 1000 * 60 * 10,
+    enabled: !!selectedAccountIdentifier,
   });
 
   return {

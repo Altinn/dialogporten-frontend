@@ -53,8 +53,11 @@ export const Query = objectType({
     });
     t.field('altinn2messages', {
       type: list('Altinn2Message'),
-      resolve: async (_source, _args, ctx) => {
-        return await getAltinn2messages(ctx);
+      args: {
+        selectedAccountIdentifier: stringArg(),
+      },
+      resolve: async (_source, { selectedAccountIdentifier }, ctx) => {
+        return await getAltinn2messages(ctx, selectedAccountIdentifier);
       },
     });
     t.field('organizations', {
