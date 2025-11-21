@@ -9,6 +9,7 @@ const defaultFeatureFlags: Record<string, boolean | number | string> = {
   'globalMenu.enableAccessManagementLink': false,
   'globalMenu.enabled': false,
   'party.stopReversingPersonNameOrder': false,
+  'inbox.disableDialogCount': false,
   'debug.test': false, // only used for debugging
 };
 

@@ -7,6 +7,7 @@ import type {
 import { useMemo } from 'react';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
+import { useFeatureFlag } from '../../featureFlags';
 import { graphQLSDK } from '../queries.ts';
 import { getPartyIds, getQueryVariables } from '../utils/dialog.ts';
 import { getViewTypes } from '../utils/viewType.ts';
@@ -24,9 +25,9 @@ export const useDialogsCount = (parties?: PartyFieldsFragment[], viewType?: Inbo
   const { selectedParties, isSelfIdentifiedUser } = useParties();
   const partiesToUse = parties ? parties : selectedParties;
   const partyIds = getPartyIds(partiesToUse);
-
+  const disableDialogCount = useFeatureFlag<boolean>('inbox.disableDialogCount');
   const { data } = useAuthenticatedQuery<GetAllDialogsForCountQuery>({
-    queryKey: [QUERY_KEYS.COUNT_DIALOGS, partyIds, viewType],
+    queryKey: [QUERY_KEYS.COUNT_DIALOGS],
     staleTime: Number.POSITIVE_INFINITY,
     retry: 3,
     queryFn: () =>
@@ -39,7 +40,7 @@ export const useDialogsCount = (parties?: PartyFieldsFragment[], viewType?: Inbo
           },
         }),
       ),
-    enabled: partyIds.length > 0 && partyIds.length <= 20 && !isSelfIdentifiedUser,
+    enabled: !disableDialogCount && partyIds.length > 0 && partyIds.length <= 20 && !isSelfIdentifiedUser,
     gcTime: 0,
     placeholderData: keepPreviousData,
     refetchOnWindowFocus: false,
