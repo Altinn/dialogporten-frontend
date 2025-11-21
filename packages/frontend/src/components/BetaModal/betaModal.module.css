@@ -1,5 +1,24 @@
-@media (max-width: 420px) {
-  .buttons[data-direction="row"] {
+.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.textContent {
+  padding-right: 2.5rem;
+}
+
+.okButton {
+  width: 10rem;
+}
+
+@media (max-width: 525px) {
+  .controls {
     flex-direction: column;
+    align-items: stretch;
+  }
+
+  .okButton {
+    margin-top: 1.5rem;
   }
 }
