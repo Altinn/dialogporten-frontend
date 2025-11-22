@@ -4,6 +4,7 @@ import config from '../../config.ts';
 import { GroupRepository, PartyRepository, ProfileRepository } from '../../db.ts';
 import { Group, Party, ProfileTable } from '../../entities.ts';
 import type { NotificationSettingsInputData } from '../types/profile.ts';
+
 const { platformBaseURL } = config;
 
 const platformExchangeTokenEndpointURL = platformBaseURL + '/authentication/api/v1/exchange/id-porten';
@@ -171,7 +172,7 @@ export const deleteFavoriteParty = async (context: Context, partyUuid: string) =
   }
   const newToken = await exchangeToken(context);
 
-  const response = await axios
+  return await axios
     .delete(`${platformProfileAPI_url}users/current/party-groups/favorites/${partyUuid}`, {
       headers: {
         Authorization: `Bearer ${newToken}`,
@@ -183,7 +184,6 @@ export const deleteFavoriteParty = async (context: Context, partyUuid: string) =
       logger.error({ status: error?.status, message: error?.message }, 'Error deleting favorite party:');
       return;
     });
-  return response;
 };
 
 export const getUserFromCore = async (context: Context) => {
