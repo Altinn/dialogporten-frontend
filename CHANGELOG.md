@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.103.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.103.0...v1.103.1) (2025-11-24)
+
+
+### Bug Fixes
+
+* Altinn 2 active elements notification now behind feature flag ([9ffa2bc](https://github.com/Altinn/dialogporten-frontend/commit/9ffa2bca511a987eba563011176e3fa5a9f9858f))
+* **fce:** connectivity problems or idle time unneccessary unmounts FCE content ([#3301](https://github.com/Altinn/dialogporten-frontend/issues/3301)) ([32967fe](https://github.com/Altinn/dialogporten-frontend/commit/32967fe44e71ac884e1d8f723f2e757f0cc11ba2))
+* **routing:** ensure AltinnPartyId cookie updates when navigating from inbox to app ([#3302](https://github.com/Altinn/dialogporten-frontend/issues/3302)) ([a45151b](https://github.com/Altinn/dialogporten-frontend/commit/a45151b8f08f58e70ecdbddc2378e3e2ec5b29fe))
+* Texts ([97dacfc](https://github.com/Altinn/dialogporten-frontend/commit/97dacfcb28487408b087a09eef27804546f88fee))
+
 ## [1.103.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.102.4...v1.103.0) (2025-11-24)
 
 
