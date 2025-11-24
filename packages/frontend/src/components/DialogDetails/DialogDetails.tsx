@@ -25,7 +25,9 @@ import { useTranslation } from 'react-i18next';
 import { Analytics } from '../../analytics';
 import type { DialogByIdDetails } from '../../api/hooks/useDialogById.tsx';
 import { type DialogEventData, useDialogByIdSubscription } from '../../api/hooks/useDialogByIdSubscription.ts';
+import { useParties } from '../../api/hooks/useParties.ts';
 import type { TimelineSegmentWithTransmissions } from '../../api/utils/transmissions.ts';
+import { createChangeReporteeAndRedirect } from '../../auth';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { getDialogStatus } from '../../pages/Inbox/status.ts';
@@ -106,6 +108,7 @@ const handleDialogActionClick = async (
   responseFinished: () => void,
   logError: (error: Error, context?: Record<string, unknown>, errorMessage?: string) => void,
   isApp: boolean,
+  currentPartyUuid: string | undefined,
 ): Promise<void> => {
   const { url, httpMethod, prompt } = props;
 
@@ -116,7 +119,7 @@ const handleDialogActionClick = async (
 
   if (httpMethod === 'GET') {
     responseFinished();
-    window.location.href = isApp ? addReceiptReturnUrl(url) : url;
+    window.location.href = isApp ? createChangeReporteeAndRedirect(currentPartyUuid, addReceiptReturnUrl(url)) : url;
   } else {
     try {
       const response = await Analytics.trackFetchDependency(
@@ -173,6 +176,7 @@ export const DialogDetails = ({
   subscriptionOpened,
 }: DialogDetailsProps): ReactElement => {
   const { t } = useTranslation();
+  const { currentPartyUuid } = useParties();
   const { logError } = useErrorLogger();
   const [actionIdLoading, setActionIdLoading] = useState<string>('');
   const [actionIdUpdating, setActionIdUpdating] = useState<string>('');
@@ -305,7 +309,15 @@ export const DialogDetails = ({
     onClick: () => {
       setActionIdLoading(action.id);
       setActionIdUpdating(action.id);
-      dialogToken && void handleDialogActionClick(action, dialogToken, () => setActionIdLoading(''), logError, isApp);
+      dialogToken &&
+        void handleDialogActionClick(
+          action,
+          dialogToken,
+          () => setActionIdLoading(''),
+          logError,
+          isApp,
+          currentPartyUuid,
+        );
     },
   }));
 
