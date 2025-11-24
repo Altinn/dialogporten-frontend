@@ -19,7 +19,7 @@ export type DialogEventData = {
 };
 
 export const useDialogByIdSubscription = (dialogId: string | undefined, dialogToken: string | undefined) => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [hasBeenOpened, setHasBeenOpened] = useState<boolean>(false);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const searchParams = new URLSearchParams(window.location.search);
@@ -61,7 +61,7 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
 
       eventSource.addEventListener('open', () => {
         if (cancelled) return;
-        setIsOpen(true);
+        setHasBeenOpened(true);
       });
 
       eventSource.addEventListener('next', (event: MessageEvent) => {
@@ -99,12 +99,10 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
         if (cancelled) return;
         if (err.responseCode === 0) {
           eventSource.close();
-          setIsOpen(false);
           return;
         }
         logError(err, { context: 'useDialogByIdSubscription.onError', dialogId }, 'EventSource connection error');
         eventSource.close();
-        setIsOpen(false);
         setTimeout(connect, 500);
       });
     };
@@ -127,7 +125,7 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
   }, []);
 
   return {
-    isOpen: isMock || isOpen,
+    hasBeenOpened: isMock || hasBeenOpened,
     onMessageEvent,
   };
 };
