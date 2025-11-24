@@ -67,7 +67,7 @@ export const MainContentReference = memo(
     const validURL = content?.url ? isValidURL(content.url) : false;
     const { data, isSuccess, isError, isLoading, refetch } = useAuthenticatedQuery({
       queryKey: [QUERY_KEYS.MAIN_CONTENT_REFERENCE, id, dialogToken],
-      staleTime: 1000 * 60 * 10,
+      staleTime: 0,
       queryFn: async () => {
         const response = await fetch(content!.url, {
           headers: {
@@ -91,6 +91,7 @@ export const MainContentReference = memo(
         return response.text();
       },
       enabled: validURL && content?.mediaType && Object.values(EmbeddableMediaType).includes(content.mediaType),
+      retryDelay: 1000,
       retry: 2,
     });
 
@@ -100,7 +101,7 @@ export const MainContentReference = memo(
 
     if (isLoading) {
       return (
-        <Typography loading={true}>
+        <Typography loading>
           Loading data, <br /> Lorem ipsum dolor sit amet <br />
           consectetur adipiscing elit. Curabitur erat.
         </Typography>

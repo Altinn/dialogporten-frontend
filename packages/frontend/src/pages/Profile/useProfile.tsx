@@ -15,6 +15,7 @@ import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 export const useProfile = (disabled?: boolean) => {
   const { data, isLoading, isSuccess } = useAuthenticatedQuery<ProfileQuery>({
     queryKey: [QUERY_KEYS.PROFILE],
+    staleTime: 10 * 1000 * 30,
     queryFn: () => profile(),
     refetchOnWindowFocus: false,
     enabled: !disabled,
