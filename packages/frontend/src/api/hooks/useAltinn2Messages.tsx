@@ -5,7 +5,7 @@ import { useFeatureFlag } from '../../featureFlags/useFeatureFlag.ts';
 import { fetchAltinn2Messages } from '../queries.ts';
 
 export const useAltinn2Messages = (selectedAccountIdentifier?: string) => {
-  const isAltinn2MessagesEnabled = useFeatureFlag('inbox.enableAltinn2Messages') as boolean;
+  const isAltinn2MessagesEnabled = useFeatureFlag<boolean>('inbox.enableAltinn2Messages');
   const { data, isLoading, isSuccess } = useAuthenticatedQuery<Altinn2messagesQuery>({
     queryKey: [QUERY_KEYS.ALTINN2_MESSAGES, selectedAccountIdentifier],
     queryFn: () => fetchAltinn2Messages(selectedAccountIdentifier ?? ''),

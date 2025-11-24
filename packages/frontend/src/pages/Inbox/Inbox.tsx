@@ -246,7 +246,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
         ) : null}
       </section>
       <Section>
-        {!isAltinn2MessagesEnabled && <Altinn2ActiveSchemasNotification selectedAccount={selectedAccount} />}
+        {isAltinn2MessagesEnabled && <Altinn2ActiveSchemasNotification selectedAccount={selectedAccount} />}
         {dialogsSuccess && !dialogs.length && !isLoading && (
           <EmptyState query={enteredSearchValue} viewType={viewType} searchMode={searchMode} />
         )}
