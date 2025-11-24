@@ -63,6 +63,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const [currentSeenByLogModal, setCurrentSeenByLogModal] = useState<CurrentSeenByLog | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const isGlobalMenuEnabled = useFeatureFlag('globalMenu.enabled') as boolean;
+  const isAltinn2MessagesEnabled = useFeatureFlag('inbox.enableAltinn2Messages') as boolean;
 
   const onFiltersChange = (filters: FilterState) => {
     const currentURL = new URL(window.location.href);
@@ -245,7 +246,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
         ) : null}
       </section>
       <Section>
-        <Altinn2ActiveSchemasNotification selectedAccount={selectedAccount} />
+        {!isAltinn2MessagesEnabled && <Altinn2ActiveSchemasNotification selectedAccount={selectedAccount} />}
         {dialogsSuccess && !dialogs.length && !isLoading && (
           <EmptyState query={enteredSearchValue} viewType={viewType} searchMode={searchMode} />
         )}

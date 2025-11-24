@@ -11,6 +11,7 @@ export const featureFlagDefinitions = [
   { key: 'globalMenu.enableAccessManagementLink', type: 'boolean', default: false },
   { key: 'globalMenu.enabled', type: 'boolean', default: false },
   { key: 'inbox.disableDialogCount', type: 'boolean', default: false },
+  { key: 'inbox.enableAltinn2Messages', type: 'boolean', default: false },
 ] as const satisfies readonly FeatureFlagDefinition[];
 
 export type FeatureFlagKey = (typeof featureFlagDefinitions)[number]['key'];
