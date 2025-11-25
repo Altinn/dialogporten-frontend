@@ -1,10 +1,11 @@
 import { FloatingDropdown as FloatingDropdownAc } from '@altinn/altinn-components';
-import { LeaveIcon, QuestionmarkIcon } from '@navikt/aksel-icons';
+import { ExternalLinkIcon, LeaveIcon, QuestionmarkIcon } from '@navikt/aksel-icons';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useParties } from '../../api/hooks/useParties';
-import { createMessageBoxLink } from '../../auth';
+import { createMessageBoxLink, getNeedHelpLink } from '../../auth';
 import { QUERY_KEYS } from '../../constants/queryKeys';
+import { i18n } from '../../i18n/config';
 import { PageRoutes } from '../../pages/routes';
 import { useGlobalState } from '../../useGlobalState';
 
@@ -37,6 +38,10 @@ export const FloatingDropdown = () => {
     window.location.href = createMessageBoxLink(currentPartyUuid);
   };
 
+  const handleGoToHelp = () => {
+    window.location.href = getNeedHelpLink(currentPartyUuid, i18n.language);
+  };
+
   const items = [
     ...(!isTourBlacklisted
       ? [
@@ -47,6 +52,11 @@ export const FloatingDropdown = () => {
           },
         ]
       : []),
+    {
+      icon: ExternalLinkIcon,
+      title: t('floating_dropdown.help_pages'),
+      onClick: handleGoToHelp,
+    },
     {
       icon: LeaveIcon,
       title: t('altinn.beta.exit'),
