@@ -45,7 +45,7 @@ const extractDateOfBirthFromSSN = (partyId: string): string | undefined => {
   if (+month >= 13) month = (+month - 40).toString().padStart(2, '0');
   if (+day > 31) day = (+day - 40).toString().padStart(2, '0');
 
-  return `${day}.${month}.${fullYear}`;
+  return `${fullYear}.${month}.${day}`;
 };
 
 //@ts-ignore: any type - match expecing from AuthorizedParty
