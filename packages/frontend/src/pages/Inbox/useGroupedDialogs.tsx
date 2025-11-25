@@ -168,7 +168,7 @@ const useGroupedDialogs = ({
       grouped: allOrganizationsSelected,
       attachmentsCount: item.guiAttachmentCount,
       seenByLog: item.seenByLog,
-      unread: item.seenSinceLastContentUpdate.length === 0,
+      unread: item.seenSinceLastContentUpdate.length === 0 && !item.hasUnopenedContent,
       status: getDialogStatus(item.status, t),
       extendedStatusLabel: item.extendedStatus,
       controls: <ContextMenu {...contextMenu} />,
