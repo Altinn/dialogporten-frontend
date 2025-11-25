@@ -32,4 +32,8 @@ param additionalEnvironmentVariables = [
     name: 'ENABLE_NEW_OIDC'
     value: 'true'
   }
+  {
+    name: 'TEST_ENV'
+    value: 'false'
+  }
 ]
