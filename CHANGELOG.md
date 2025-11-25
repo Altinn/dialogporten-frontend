@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.105.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.105.2...v1.105.3) (2025-11-25)
+
+
+### Bug Fixes
+
+* add i18n as language code to root provider ([#3327](https://github.com/Altinn/dialogporten-frontend/issues/3327)) ([3f81f89](https://github.com/Altinn/dialogporten-frontend/commit/3f81f895dc0624c9b2fb91ebc6e1a192ddacd307))
+* Fixing persons birth date bug ([7b07572](https://github.com/Altinn/dialogporten-frontend/commit/7b075722eff2e7dc5bce085ca9e6f0887390217e))
+
 ## [1.105.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.105.1...v1.105.2) (2025-11-25)
 
 
