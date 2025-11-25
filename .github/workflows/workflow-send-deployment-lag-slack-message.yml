@@ -94,22 +94,19 @@ jobs:
             echo "commits_summary=No commit details available" >> $GITHUB_OUTPUT
           else
             # Format commits for Slack (limit to 10 most recent)
+            # Use literal \n in the string for Slack's mrkdwn format
             commits_summary=$(jq -r '
-              .[0:10] | map("• `\(.sha)` \(.message) - \(.author)") | join("\n")
+              .[0:10] | map("• `\(.sha)` \(.message) - \(.author)") | join("\\n")
             ' /tmp/commits.json)
             
             # Add note if there are more commits
             total_commits=$(jq length /tmp/commits.json)
             if [ "$total_commits" -gt 10 ]; then
-              commits_summary="$commits_summary\n\n_... and $((total_commits - 10)) more commits_"
+              commits_summary="$commits_summary\\n\\n_... and $((total_commits - 10)) more commits_"
             fi
             
-            # Use multiline output format to handle newlines properly
-            {
-              echo "commits_summary<<EOF"
-              echo -e "$commits_summary"
-              echo "EOF"
-            } >> $GITHUB_OUTPUT
+            # Output as a single line with escaped newlines for JSON compatibility
+            echo "commits_summary=$commits_summary" >> $GITHUB_OUTPUT
           fi
 
       - name: Format author mentions
