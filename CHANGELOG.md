@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.105.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.104.1...v1.105.0) (2025-11-25)
+
+
+### Features
+
+* **infra:** enable HA for app gateway in production ([#3320](https://github.com/Altinn/dialogporten-frontend/issues/3320)) ([d8e8f26](https://github.com/Altinn/dialogporten-frontend/commit/d8e8f2696b33c9ac2b64773f8f95698ce030846f))
+
+
+### Bug Fixes
+
+* Showing read migrated A2 messages as read ([0c1e519](https://github.com/Altinn/dialogporten-frontend/commit/0c1e519502b19ddbe55d831733f09d4b3b958a31))
+
 ## [1.104.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.104.0...v1.104.1) (2025-11-25)
 
 
