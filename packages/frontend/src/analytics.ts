@@ -175,6 +175,7 @@ if (applicationInsightsEnabled) {
         samplingPercentage: 100,
         appId: 'arbeidsflate-frontend',
         enableDebug: true,
+        maxAjaxCallsPerView: 2000,
       },
     });
     applicationInsights.loadAppInsights();
