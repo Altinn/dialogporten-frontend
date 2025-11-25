@@ -51,6 +51,8 @@ export const mobileTourSteps = [
   },
 ];
 
+const INBOX_ONBOARDING_KEY = 'arbeidsflate:inbox-onboarding-displayed';
+
 export const useInboxOnboarding = ({
   isLoadingParties,
   isLoadingDialogs,
@@ -63,8 +65,19 @@ export const useInboxOnboarding = ({
   const tour = useTour();
   const { setIsOpen, setCurrentStep } = tour;
   const [hasInitialized, setHasInitialized] = useState(false);
+
+  const searchParams = new URLSearchParams(window.location.search);
+  const isMock = searchParams.get('mock') === 'true';
+
+  const hasCompletedOnboarding = localStorage.getItem(INBOX_ONBOARDING_KEY) === 'true';
   const shouldInitializeTour =
-    globalTour && !isLoadingParties && !isLoadingDialogs && dialogsSuccess && viewType === 'inbox' && !hasInitialized;
+    !isMock &&
+    !isLoadingParties &&
+    !isLoadingDialogs &&
+    dialogsSuccess &&
+    viewType === 'inbox' &&
+    !hasInitialized &&
+    (!hasCompletedOnboarding || globalTour);
 
   useEffect(() => {
     if (shouldInitializeTour) {
@@ -108,6 +121,7 @@ export const useInboxOnboarding = ({
 
   useEffect(() => {
     if (!tour.isOpen && hasInitialized) {
+      localStorage.setItem(INBOX_ONBOARDING_KEY, 'true');
       setGlobalTour(false);
       setHasInitialized(false);
     }
