@@ -315,7 +315,11 @@ export const PartiesOverviewPage = () => {
           )}
         </Toolbar>
         {isSearching && hits.length === 0 && <Heading size="lg">{t('profile.settings.no_results')}</Heading>}
-        <AccountList groups={isSearching ? searchGroup : accountGroups} items={isSearching ? hits : accountListItems} />
+        <AccountList
+          isVirtualized={true}
+          groups={isSearching ? searchGroup : accountGroups}
+          items={isSearching ? hits : accountListItems}
+        />
       </Section>
     </PageBase>
   );
