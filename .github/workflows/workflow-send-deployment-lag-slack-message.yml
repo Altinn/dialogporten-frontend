@@ -86,7 +86,7 @@ jobs:
         run: |
           # Write commits_json to a temporary file to avoid shell parsing issues
           # Using env var to prevent command injection
-          cat > /tmp/commits.json << 'EOL'
+          cat > /tmp/commits.json << EOL
           $COMMITS_JSON
           EOL
 
