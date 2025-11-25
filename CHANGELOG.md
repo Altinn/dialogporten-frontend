@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.104.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.103.1...v1.104.0) (2025-11-25)
+
+
+### Features
+
+* Bump AC v0.48 - virtualized profile list ([#3305](https://github.com/Altinn/dialogporten-frontend/issues/3305)) ([cbd9c18](https://github.com/Altinn/dialogporten-frontend/commit/cbd9c18a64d8f98a203cbba85d8742ee24758a92))
+
 ## [1.103.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.103.0...v1.103.1) (2025-11-24)
 
 
