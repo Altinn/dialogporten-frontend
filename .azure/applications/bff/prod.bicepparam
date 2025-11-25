@@ -11,8 +11,8 @@ param altinn2BaseUrl = 'https://altinn.no'
 param minReplicas = 2
 param maxReplicas = 15
 param resources = {
-    cpu: 1
-    memory: '2Gi'
+  cpu: 1
+  memory: '2Gi'
 }
 param graphiQLEnabled = 'false'
 param workloadProfileName = 'Dedicated-D4'
@@ -21,9 +21,15 @@ param platformBaseUrl = 'https://platform.altinn.no'
 param enableInitSessionEndpoint = 'false'
 param logoutRedirectUri = 'https://altinn.no/ui/Authentication/Logout'
 
-
 param ocPApimSubscriptionKey = readEnvironmentVariable('OCP_APIM_SUBSCRIPTION_KEY')
 
 // secrets
 param environmentKeyVaultName = readEnvironmentVariable('ENVIRONMENT_KEY_VAULT_NAME')
 param containerAppEnvironmentName = readEnvironmentVariable('CONTAINER_APP_ENVIRONMENT_NAME')
+
+param additionalEnvironmentVariables = [
+  {
+    name: 'ENABLE_NEW_OIDC'
+    value: 'true'
+  }
+]
