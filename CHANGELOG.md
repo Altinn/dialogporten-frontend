@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.104.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.104.0...v1.104.1) (2025-11-25)
+
+
+### Bug Fixes
+
+* Bump AC v0.48.3 - AccountList virtualized global menu overlap fix ([#3314](https://github.com/Altinn/dialogporten-frontend/issues/3314)) ([9f04fd1](https://github.com/Altinn/dialogporten-frontend/commit/9f04fd1dd1d956fbfacbe5fa69f35a734ee5797e))
+* **ci:** deployment lag monitor ([#3308](https://github.com/Altinn/dialogporten-frontend/issues/3308)) ([d5f0320](https://github.com/Altinn/dialogporten-frontend/commit/d5f032027eeef85825fc482b5ca21735b7cfcf17))
+* **frontend:** ensure enough ajax calls are tracked per session ([#3290](https://github.com/Altinn/dialogporten-frontend/issues/3290)) ([d645a06](https://github.com/Altinn/dialogporten-frontend/commit/d645a0640aba20e72c85504c54066ccf1e4bb0ed))
+* Welcome modal navigation, link to help in floating dropdown ([#3312](https://github.com/Altinn/dialogporten-frontend/issues/3312)) ([2e0d4af](https://github.com/Altinn/dialogporten-frontend/commit/2e0d4afa76df9e07297a92741cc25bed812bea8b))
+
 ## [1.104.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.103.1...v1.104.0) (2025-11-25)
 
 
