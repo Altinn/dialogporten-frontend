@@ -42,8 +42,7 @@ const extractDateOfBirthFromSSN = (partyId: string): string | undefined => {
 
   const fullYear = century + yearNum;
 
-  //fix tenor
-  if (+month >= 13) month = (+month - 80).toString().padStart(2, '0');
+  if (+month >= 13) month = (+month - 40).toString().padStart(2, '0');
   if (+day > 31) day = (+day - 40).toString().padStart(2, '0');
 
   return `${day}.${month}.${fullYear}`;
