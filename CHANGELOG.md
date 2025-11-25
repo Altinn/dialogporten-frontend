@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.105.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.105.0...v1.105.1) (2025-11-25)
+
+
+### Bug Fixes
+
+* Enable OIDC in prod ([6e6e2e1](https://github.com/Altinn/dialogporten-frontend/commit/6e6e2e13e7df1aa9d930e6545ded845bd47f0fa4))
+
 ## [1.105.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.104.1...v1.105.0) (2025-11-25)
 
 
