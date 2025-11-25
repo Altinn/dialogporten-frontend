@@ -2,9 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import './i18n/config.ts';
-
-import { RootProvider } from '@altinn/altinn-components';
+import { RootProvider as AltinnRootProvider, type LanguageCode } from '@altinn/altinn-components';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import App from './App.tsx';
 import { AuthProvider } from './components/Login/AuthContext.tsx';
 import { LoggerContextProvider } from './contexts/LoggerContext.tsx';
@@ -39,6 +39,13 @@ async function loadFeatures() {
   }
 }
 const element = document.getElementById('root');
+
+const RootProvider = ({ children }: { children: React.ReactNode }) => {
+  const { i18n } = useTranslation();
+  const languageCode = i18n.language as LanguageCode;
+
+  return <AltinnRootProvider languageCode={languageCode}>{children}</AltinnRootProvider>;
+};
 
 if (element) {
   const root = ReactDOM.createRoot(element);
