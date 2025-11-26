@@ -9,6 +9,7 @@ fragment partyFields on AuthorizedParty {
   isCurrentEndUser
   isDeleted
   partyUuid
+  dateOfBirth
 }
 
 fragment subPartyFields on AuthorizedSubParty {
@@ -18,4 +19,5 @@ fragment subPartyFields on AuthorizedSubParty {
   isCurrentEndUser
   isDeleted
   partyUuid
+  dateOfBirth
 }
