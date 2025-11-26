@@ -20,7 +20,7 @@
     "@azure/app-configuration": "1.9.0",
     "@azure/app-configuration-provider": "2.2.0",
     "@altinn/dialogporten-node-logger": "workspace:*",
-    "@digdir/dialogporten-schema": "1.88.2-279847c",
+    "@digdir/dialogporten-schema": "1.91.2-abddd6b",
     "@fastify/cookie": "^11.0.2",
     "@fastify/cors": "^10.1.0",
     "@fastify/formbody": "^8.0.2",
