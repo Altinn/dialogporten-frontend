@@ -78,6 +78,7 @@ query getSearchAutocompleteDialogs(
   $status: [DialogStatus!]
   $createdAfter: DateTime
   $createdBefore: DateTime
+  $limit: Int
 ) {
   searchDialogs(
     input: {
@@ -89,6 +90,7 @@ query getSearchAutocompleteDialogs(
       createdAfter: $createdAfter
       createdBefore: $createdBefore
       excludeApiOnly: true
+      limit: $limit
     }
   ) {
     items {

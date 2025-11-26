@@ -364,6 +364,7 @@
   "search.autocomplete.searchForSender.withoutQuery": "Søk etter dialogar frå {sender}",
   "search.autocomplete.searchInInbox": "Søk i innboks etter {query}",
   "search.hits": "{count, plural, =0 {Ingen treff} one {# treff} other {# treff}}",
+  "search.max_reached": "{count}+ treff",
   "search.results.description": "Dei sist oppdaterte resultata blir viste først.",
   "search.searchFor": "Søkjer etter",
   "search.suggestions": "Søkjeforslag",

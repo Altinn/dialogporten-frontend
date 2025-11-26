@@ -358,6 +358,7 @@
   "savedSearches.update_failed": "Kunne ikke oppdatere søket ditt",
   "savedSearches.update_success": "Søket ditt er oppdatert",
   "search.autocomplete.inInbox": "i innboksen",
+  "search.max_reached": "{count}+ treff",
   "search.autocomplete.loadingText": "Søker etter «{query}»",
   "search.autocomplete.recommendedHits": "Anbefalte treff",
   "search.autocomplete.searchForSender.withQuery": "Søk etter avsender {sender} med fritekst {query}",
