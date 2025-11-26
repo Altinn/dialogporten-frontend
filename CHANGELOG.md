@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.106.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.106.0...v1.106.1) (2025-11-26)
+
+
+### Bug Fixes
+
+* use party.dateOfBirth instead of extracting this from party.party ([#3339](https://github.com/Altinn/dialogporten-frontend/issues/3339)) ([8e01c3d](https://github.com/Altinn/dialogporten-frontend/commit/8e01c3d15bc404de737b3b3fba9aef30e7805ba1))
+
 ## [1.106.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.105.5...v1.106.0) (2025-11-26)
 
 
