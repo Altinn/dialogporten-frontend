@@ -111,7 +111,7 @@ interface UseAutocompleteDialogsOutput {
 
 export const useAutocomplete = ({ selectedParties, searchValue }: searchDialogsProps): UseAutocompleteDialogsOutput => {
   const partyURIs = getPartyIds(selectedParties);
-  const debouncedSearchString = useDebounce(searchValue, 300)[0];
+  const debouncedSearchString = useDebounce(searchValue, 500)[0];
   const { dialogCounts: allDialogs } = useDialogsCount();
   const { organizations } = useOrganizations();
   const enabled = !!debouncedSearchString && debouncedSearchString.length > 2 && selectedParties.length > 0;
