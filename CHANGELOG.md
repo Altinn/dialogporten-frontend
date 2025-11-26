@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.106.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.106.1...v1.106.2) (2025-11-26)
+
+
+### Bug Fixes
+
+* **debounce:** increase debounce from 300 to 500 ms for autocomplete ([#3342](https://github.com/Altinn/dialogporten-frontend/issues/3342)) ([4326dbf](https://github.com/Altinn/dialogporten-frontend/commit/4326dbf1ced3514b254aa11622df39b16531758c))
+
 ## [1.106.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.106.0...v1.106.1) (2025-11-26)
 
 
