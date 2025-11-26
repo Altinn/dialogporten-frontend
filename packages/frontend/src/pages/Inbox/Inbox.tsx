@@ -12,7 +12,7 @@ import {
 import type { FilterState } from '@altinn/altinn-components/dist/types/lib/components/Toolbar/Toolbar';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { type InboxViewType, useDialogs } from '../../api/hooks/useDialogs.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { createFiltersURLQuery, createMessageBoxLink } from '../../auth';
@@ -218,6 +218,19 @@ export const Inbox = ({ viewType }: InboxProps) => {
   return (
     <PageBase margin="page">
       <section data-testid="inbox-toolbar" style={isGlobalMenuEnabled ? { marginTop: '-1rem' } : undefined}>
+        <DsAlert data-color="warning" style={{ marginBottom: '1.5rem' }}>
+          <Heading data-size="xs">{t('inbox.unable_to_load_parties.title')}</Heading>
+          <DsParagraph>{t('inbox.historical_messages_date_warning')}</DsParagraph>
+          <Button
+            variant="solid"
+            color="neutral"
+            style={{ marginTop: '1rem' }}
+            size="sm"
+            as={(props) => <Link to={createMessageBoxLink(currentPartyUuid)} {...props} />}
+          >
+            {t('inbox.historical_messages_date_warning_link')}
+          </Button>
+        </DsAlert>
         {selectedAccount ? (
           <>
             <Toolbar
