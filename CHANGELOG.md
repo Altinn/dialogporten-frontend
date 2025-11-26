@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.105.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.105.3...v1.105.4) (2025-11-26)
+
+
+### Bug Fixes
+
+* Date format ([21456ee](https://github.com/Altinn/dialogporten-frontend/commit/21456ee3fb7bceef20361baad2fce2ab25b4c3c1))
+
 ## [1.105.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.105.2...v1.105.3) (2025-11-25)
 
 
