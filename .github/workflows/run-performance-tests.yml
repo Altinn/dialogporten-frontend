@@ -52,13 +52,11 @@ on:
           - at
           - tt
           - yt
-      testSuitePath:
-        description: 'Path to test suite to run'
-        required: true
-        default: 'packages/frontend/tests/performance/k6/tests/testAfBrowserAndBff.js'
-        type: choice
-        options:
-          - 'packages/frontend/tests/performance/k6/tests/testAfBrowserAndBff.js'
+      onlyOpenAf:
+        description: 'Only open the AF do not perform clicking'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   id-token: write
@@ -101,11 +99,11 @@ jobs:
         uses: grafana/setup-k6-action@ffe7d7290dfa715e48c2ccc924d068444c94bde2 # v1.0.0
       - name: Run K6 tests (${{ inputs.testSuitePath }})
         run: |
-            echo "Running k6 test suite ${{ inputs.testSuitePath }} with ${{ inputs.browserVus }}/${{ inputs.bffVus }} BrowserVUs/BffVus for ${{ inputs.duration }} on ${{ inputs.parallelism }} parallelism at ${{ inputs.environment }} environment"
+            echo "Running k6 test suite testAfBrowserAndBff.js with ${{ inputs.browserVus }}/${{ inputs.bffVus }} BrowserVUs/BffVus for ${{ inputs.duration }} on ${{ inputs.parallelism }} parallelism at ${{ inputs.environment }} environment"
             k6configName=$(basename "${{ inputs.testSuitePath }}" .js)
             k6configName="k6-${k6configName}"
             ./packages/frontend/tests/performance/k6/run-test-in-k8s.sh \
-              -f "${{ inputs.testSuitePath }}" \
+              -f "packages/frontend/tests/performance/k6/tests/testAfBrowserAndBff.js" \
               -c "$k6configName" \
               -n "$k6configName" \
               -v "${{ inputs.browserVus }}" \
@@ -115,6 +113,7 @@ jobs:
               -e "${{ inputs.environment }}" \
               -r "${{ inputs.randomizeUser }}" \
               -b "${{ inputs.breakpoint }}" \
-              -a "${{ inputs.abortOnFail }}"
+              -a "${{ inputs.abortOnFail }}" \
+              -o "${{ inputs.onlyOpenAf }}"
 
       

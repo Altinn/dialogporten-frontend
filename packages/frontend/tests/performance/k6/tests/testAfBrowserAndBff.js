@@ -11,33 +11,28 @@
  *   - TOKEN_GENERATOR_USERNAME
  *   - TOKEN_GENERATOR_PASSWORD
  */
+import http from 'k6/http';
 import { check } from 'k6';
 import { browser } from 'k6/browser';
-import { SharedArray } from 'k6/data';
 import { Trend } from 'k6/metrics';
 import { afUrl } from '../helpers/config.js';
 import { getCookie, getCookies } from '../helpers/getCookie.js';
 import { getOptions } from '../helpers/options.js';
 import { isAuthenticatedLabel } from '../helpers/queries.js';
 import { randomItem } from '../helpers/testimports.js';
-import { readCsv } from '../testData/readCsv.js';
+import { parseCsvData } from '../testData/readCsv.js';
 import {
   getDialogsForAllEnterprises,
   getNextpage,
   isAuthenticated,
   openAf,
   selectMenuElements,
+  doSearches
 } from '../tests/bffFunctions.js';
 import { selectAllEnterprises, selectNextPage, selectSideMenuElement, waitForPageLoaded } from './browserFunctions.js';
 
-const env = __ENV.ENVIRONMENT || 'yt';
 const randomize = (__ENV.RANDOMIZE ?? 'false') === 'true';
-
-let endUsers = [];
-if (env !== 'yt') {
-  const filenameEndusers = import.meta.resolve(`../testData/usersWithDialogs-${env}.csv`);
-  endUsers = new SharedArray('endUsers', () => readCsv(filenameEndusers));
-}
+const onlyOpenAf = (__ENV.ONLY_OPEN_AF ?? 'false') === 'true';
 
 export const options = getOptions();
 
@@ -52,23 +47,39 @@ const backToInbox = new Trend('load_inbox_from_menu', true);
 const loadNextPage = new Trend('load_next_page', true);
 const loadAllEnterprises = new Trend('load_all_enterprises', true);
 
+// Bff trends
+const openAFBff = new Trend('open_af_bff', true);
+const pressSentBff = new Trend('press_sent_bff', true);
+const pressDraftsBff = new Trend('press_drafts_bff', true);
+const pressArchiveBff = new Trend('press_archive_bff', true);
+const pressBinBff = new Trend('press_bin_bff', true);
+const pressInboxBff = new Trend('press_inbox_bff', true);
+const selectAllEnterprisesBff = new Trend('select_all_enterprises_bff', true);
+const selectAnotherPartyBff = new Trend('select_another_party_bff', true);
+const totalDialogsBff = new Trend('total_dialogs_bff', true);
+const doSearchesBff = new Trend('do_searches_bff', true);
+
+
 /**
  * The setup function initializes the test data by generating cookies for each end user.
  * It retrieves the token for each end user and creates a cookie object.
  * @returns {Array} - An array of objects containing the PID and cookie for each end user.
  **/
 export async function setup() {
-  if (env === 'yt') {
-    return getCookies(1000);
-  }
+  //const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/auth/orgs-in-yt01-with-party-uuid.csv`);
+  const res = http.get(`https://raw.githubusercontent.com/Altinn/dialogporten-frontend/refs/heads/performance/december-release/packages/frontend/tests/performance/k6/testData/sgy502AF.csv`);
+  const endUsers = parseCsvData(res.body);
   const data = [];
   let cookie;
   for (const endUser of endUsers) {
-    cookie = getCookie(endUser.pid);
+    cookie = getCookie(endUser.ssn, endUser.userId, endUser.userPartyId, endUser.partyUuid);
     data.push({
-      pid: endUser.pid,
+      pid: endUser.ssn,
       cookie: cookie,
     });
+    if (data.length >= 3000) {
+      break;
+    } 
   }
   return data;
 }
@@ -106,6 +117,9 @@ export async function browserTest(data) {
     endTime = new Date();
     openAF.add(endTime - startTime);
 
+    if (onlyOpenAf) {
+      return;
+    }
     // press every menu item, return to inbox
     await selectSideMenuElement(page, 'sidebar-drafts', loadDrafts);
     await selectSideMenuElement(page, 'sidebar-sent', loadSent);
@@ -132,9 +146,19 @@ export function bffTest(data) {
   } else {
     testData = data[__ITER % data.length];
   }
+  const startTime = new Date();
   const [parties, allParties] = openAf(testData.pid, testData.cookie);
-  selectMenuElements(testData.cookie, parties);
+  const endTime = new Date();
+  openAFBff.add(endTime - startTime);
+  if (onlyOpenAf) {
+    return;
+  }
+  selectMenuElements(testData.cookie, [parties], pressSentBff, pressDraftsBff, pressArchiveBff, pressBinBff, pressInboxBff);
   isAuthenticated(testData.cookie, isAuthenticatedLabel);
   getNextpage(testData.cookie, parties);
-  getDialogsForAllEnterprises(testData.cookie, allParties);
+  let startTimeSearch = Date.now();
+  doSearches(testData.cookie, parties);
+  doSearchesBff.add(Date.now() - startTimeSearch);
+  getDialogsForAllEnterprises(testData.cookie, allParties, selectAllEnterprisesBff, selectAnotherPartyBff);
+  totalDialogsBff.add(Date.now() - startTime);
 }

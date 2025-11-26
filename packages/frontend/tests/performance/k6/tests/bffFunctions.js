@@ -7,8 +7,9 @@ import {
   partiesQuery,
   profileQuery,
   savedSearchesQuery,
+  getAltinn2messages,
 } from '../helpers/queries.js';
-import { describe, expect } from '../helpers/testimports.js';
+import { describe, expect, randomItem } from '../helpers/testimports.js';
 const baseUrl = afUrl + 'api';
 
 /**
@@ -18,12 +19,13 @@ const baseUrl = afUrl + 'api';
  */
 export function openAf(pid, cookie) {
   const parties = getParties(cookie, pid);
-  const userParty = parties.filter((el) => el.includes(pid));
+  const userParty = `urn:altinn:person:identifier-no:${pid}`;
   getOrganizations(cookie);
   getSavedSearches(cookie);
   getProfile(cookie);
-  getAllDialogsForParties(cookie, [userParty[0]], 100, true);
-  getAllDialogsForCount(cookie, [userParty[0]]);
+  getAltinn2Messages(cookie, pid);
+  getAllDialogsForParties(cookie, [userParty], 100, true);
+  //getAllDialogsForCount(cookie, [userParty[0]]);
   return [userParty, parties];
 }
 
@@ -32,12 +34,23 @@ export function openAf(pid, cookie) {
  * @param {Object} cookie - The cookie object containing name and value.
  * @param {Array} parties - An array of party URIs.
  */
-export function selectMenuElements(cookie, parties) {
+export function selectMenuElements(cookie, parties, pressSentBff, pressDraftsBff, pressArchiveBff, pressBinBff, pressInboxBff) {
+  let time1 = new Date();
   getMenuElements(cookie, parties[0], 'DRAFT');
+  let time2 = new Date();
+  pressDraftsBff.add(time2 - time1);
   getMenuElements(cookie, parties[0], 'SENT');
+  time1 = new Date(); 
+  pressSentBff.add(time1 - time2);
   getMenuElements(cookie, parties[0], 'ARCHIVE');
+  time2 = new Date();
+  pressArchiveBff.add(time2 - time1);
   getMenuElements(cookie, parties[0], 'BIN');
+  time1 = new Date();
+  pressBinBff.add(time1 - time2);
   getAllDialogsForParties(cookie, [parties[0]], 100, true);
+  time2 = new Date();
+  pressInboxBff.add(time2 - time1);
 }
 
 /**
@@ -46,11 +59,39 @@ export function selectMenuElements(cookie, parties) {
  * @param {Object} cookie - The cookie object containing name and value.
  * @param {Array} parties - An array of party URIs.
  */
-export function getDialogsForAllEnterprises(cookie, parties) {
+export function getDialogsForAllEnterprises(cookie, parties, selectAllEnterprisesBff, selectAnotherPartyBff) {
   const enterprises = parties.filter((el) => el.includes('organization'));
   if (enterprises.length > 1 && enterprises.length <= 20) {
+    const startTime = new Date();
     getAllDialogsForParties(cookie, enterprises, 100, true);
+    const endTime = new Date();
+    selectAllEnterprisesBff.add(endTime - startTime);
   }
+  else if (parties.length > 0) {
+    const party = randomItem(parties);
+    const startTime = new Date();
+    getAllDialogsForParties(cookie, [party], 100, true);
+    const endTime = new Date();
+    selectAnotherPartyBff.add(endTime - startTime);
+  }
+}
+
+export const texts = [ "påkrevd", "rapportering", "sammendrag", "Utvidet Status", "ingen HTML-støtte", "et eller annet", "Skjema", "Skjema for rapportering av et eller annet", "Maks 200 tegn", "liste" ];
+export function doSearches(cookie, party) {
+  const payload = JSON.parse(JSON.stringify(getAllDialogsForPartyQuery));
+  payload.variables.partyURIs.push(party);
+  payload.variables.limit = 100;
+  payload.variables.search = randomItem(texts);
+  //console.log(JSON.stringify(payload, null, 2));
+  
+  // Always single party for menu elements
+  const queryLabel = payload.operationNameSingleParty + ' FTS';
+  const resp = graphql(cookie, payload, queryLabel);
+  if (resp.status !== 200) {
+    console.info('GraphQL request failed: ' + resp.status);
+    return;
+  }
+  return resp.json();
 }
 
 /**
@@ -157,8 +198,10 @@ function getSavedSearches(cookie) {
   }
   const data = resp.json();
   const searches = [];
-  for (const search of data.data.savedSearches) {
-    searches.push(search.id);
+  if (data.data && data.data.savedSearches) {
+    for (const search of data.data.savedSearches) {
+      searches.push(search.id);
+    }
   }
   return searches;
 }
@@ -239,6 +282,23 @@ function getAllDialogsForParties(cookie, parties, count, extraParams = false, co
 }
 
 /**
+ * This function retrieves messages from altinn2.
+ * @param {Object} cookie - The cookie object containing name and value.
+ * @return {Array} - altinn2 messages
+ */
+function getAltinn2Messages(cookie, pid) {
+  const payload = JSON.parse(JSON.stringify(getAltinn2messages));
+  payload.variables.selectedAccountIdentifier = pid;
+
+  const resp = graphql(cookie, payload);
+  if (resp.status !== 200) {
+    console.info('GraphQL request failed: ' + resp.status);
+    return;
+  }
+  return resp.json();
+}
+
+/**
  * This function retrieves menu elements for the user.
  * @param {Object} cookie - The cookie object containing name and value.
  * @param {Array} party - An array of party URIs.
@@ -251,6 +311,8 @@ function getMenuElements(cookie, party, menuElement) {
   payload.variables.limit = 100;
   if (menuElement === 'ARCHIVE' || menuElement === 'BIN') {
     payload.variables.label = [menuElement];
+  } else if (menuElement === 'SENT') {
+    payload.variables.label = ['DEFAULT', 'SENT'];
   } else {
     payload.variables.status = [menuElement];
     payload.variables.label = ['DEFAULT'];
