@@ -12,7 +12,7 @@ import {
 import type { FilterState } from '@altinn/altinn-components/dist/types/lib/components/Toolbar/Toolbar';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { type InboxViewType, useDialogs } from '../../api/hooks/useDialogs.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { createFiltersURLQuery, createMessageBoxLink } from '../../auth';
@@ -64,6 +64,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const isGlobalMenuEnabled = useFeatureFlag('globalMenu.enabled') as boolean;
   const isAltinn2MessagesEnabled = useFeatureFlag('inbox.enableAltinn2Messages') as boolean;
+  const isAlertBannerEnabled = useFeatureFlag('showTechnincalIssuesMessage') as boolean;
 
   const onFiltersChange = (filters: FilterState) => {
     const currentURL = new URL(window.location.href);
@@ -218,6 +219,17 @@ export const Inbox = ({ viewType }: InboxProps) => {
   return (
     <PageBase margin="page">
       <section data-testid="inbox-toolbar" style={isGlobalMenuEnabled ? { marginTop: '-1rem' } : undefined}>
+        {isAlertBannerEnabled && (
+          <DsAlert data-color="warning" style={{ marginBottom: '1.5rem' }}>
+            <Heading data-size="xs">{t('inbox.unable_to_load_parties.title')}</Heading>
+            <DsParagraph>{t('inbox.historical_messages_date_warning')}</DsParagraph>
+            <DsParagraph>
+              <Link style={{ color: 'rgb(60, 40, 7)' }} to={createMessageBoxLink(currentPartyUuid)}>
+                {t('inbox.historical_messages_date_warning_link')}
+              </Link>
+            </DsParagraph>
+          </DsAlert>
+        )}
         {selectedAccount ? (
           <>
             <Toolbar
