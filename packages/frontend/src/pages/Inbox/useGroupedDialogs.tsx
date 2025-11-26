@@ -53,6 +53,7 @@ interface UseGroupedDialogsProps {
 }
 
 const BANKRUPTCY_SERVICE_RESOURCE = 'urn:altinn:resource:app_brg_konkursbehandling';
+const MIGRATED_SERVICE_RESOURCE = 'migratedcorrespondence';
 
 const sortGroupedDialogs = (arr: DialogListItemProps[]) => {
   return arr.sort((a, b) => new Date(b.updatedAt ?? 0).getTime() - new Date(a.updatedAt ?? 0).getTime());
@@ -154,6 +155,14 @@ const useGroupedDialogs = ({
       ariaLabel: t('dialog.context_menu.label', { title: item.title }),
     };
 
+    const getIsUnread = (item: InboxItemInput) => {
+      const isMigrated = item.serviceResource?.includes(MIGRATED_SERVICE_RESOURCE);
+      if (isMigrated && !item.hasUnopenedContent) {
+        return false;
+      }
+      return item.seenSinceLastContentUpdate.length === 0 && !item.hasUnopenedContent;
+    };
+
     return {
       groupId,
       title: item.title,
@@ -168,7 +177,7 @@ const useGroupedDialogs = ({
       grouped: allOrganizationsSelected,
       attachmentsCount: item.guiAttachmentCount,
       seenByLog: item.seenByLog,
-      unread: item.seenSinceLastContentUpdate.length === 0 && !item.hasUnopenedContent,
+      unread: getIsUnread(item),
       status: getDialogStatus(item.status, t),
       extendedStatusLabel: item.extendedStatus,
       controls: <ContextMenu {...contextMenu} />,
