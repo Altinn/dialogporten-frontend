@@ -86,6 +86,7 @@ const createAutocomplete = (
 
   const searchResult = mapSearchResults(searchValue ?? '');
   const suggestions = isLoading ? getSkeletonItems(resultsSize) : searchResult;
+  const maxCount = 5;
 
   return {
     items: [
@@ -93,7 +94,9 @@ const createAutocomplete = (
         <span>
           <mark>{searchValue}</mark> {t('search.autocomplete.inInbox')}
         </span>,
-        t('search.hits', { count: searchResults.length }),
+        searchResults.length > maxCount
+          ? t('search.max_reached', { count: maxCount })
+          : t('search.hits', { count: Math.min(searchResults.length, maxCount) }),
       ),
       ...suggestions,
     ],

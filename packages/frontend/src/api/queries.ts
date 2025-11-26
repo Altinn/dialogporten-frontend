@@ -223,6 +223,7 @@ export const searchAutocompleteDialogs = (
   return graphQLSDK.getSearchAutocompleteDialogs({
     partyURIs,
     search,
+    limit: 6,
   });
 };
 

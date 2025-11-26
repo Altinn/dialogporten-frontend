@@ -357,6 +357,7 @@
   "savedSearches.title": "{count, plural, =0 {You have no saved searches} one {# saved search} other {# saved searches}}",
   "savedSearches.update_failed": "Could not update search",
   "savedSearches.update_success": "Search updated",
+  "search.max_reached": "{count}+ hits",
   "search.autocomplete.inInbox": "in inbox",
   "search.autocomplete.loadingText": "Search for «{query}»",
   "search.autocomplete.recommendedHits": "Recommended hits",
