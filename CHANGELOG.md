@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.105.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.105.4...v1.105.5) (2025-11-26)
+
+
+### Bug Fixes
+
+* Altinn text typo ([c1712f2](https://github.com/Altinn/dialogporten-frontend/commit/c1712f248b20c3123d546b61f7f16d94d954d64b))
+
 ## [1.105.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.105.3...v1.105.4) (2025-11-26)
 
 
