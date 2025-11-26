@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.106.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.105.5...v1.106.0) (2025-11-26)
+
+
+### Features
+
+* Add alert banner informing about old messages ([#3334](https://github.com/Altinn/dialogporten-frontend/issues/3334)) ([f15b9e2](https://github.com/Altinn/dialogporten-frontend/commit/f15b9e2adef2a127e9da383c274ddca5b2ae5aff))
+
 ## [1.105.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.105.4...v1.105.5) (2025-11-26)
 
 
