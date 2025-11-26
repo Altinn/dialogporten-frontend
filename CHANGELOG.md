@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.106.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.106.2...v1.106.3) (2025-11-26)
+
+
+### Bug Fixes
+
+* **performance:** decrease limit for autocomplete for performance gain ([#3347](https://github.com/Altinn/dialogporten-frontend/issues/3347)) ([74fe476](https://github.com/Altinn/dialogporten-frontend/commit/74fe47645bd80fe880d9e83bf3f37291d910ff93))
+
 ## [1.106.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.106.1...v1.106.2) (2025-11-26)
 
 
