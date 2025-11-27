@@ -12,6 +12,7 @@ import i18n from 'i18next';
 import { useTranslation } from 'react-i18next';
 
 export const getIsProdEnvironment = () => location.hostname.includes('af.altinn.no');
+export const getIsStagingEnvironment = () => location.hostname.includes('tt02.altinn.no');
 
 export const ContactProfileDetails = ({
   variant,
