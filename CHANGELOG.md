@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.107.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.106.4...v1.107.0) (2025-11-27)
+
+
+### Features
+
+* Added link to notification settings ([1fca283](https://github.com/Altinn/dialogporten-frontend/commit/1fca2836ad03944e685494e9c398306fdd99b097))
+
+
+### Bug Fixes
+
+* Fix onboarding issues in inbox and profile ([#3356](https://github.com/Altinn/dialogporten-frontend/issues/3356)) ([35ebf03](https://github.com/Altinn/dialogporten-frontend/commit/35ebf034597d121876c707ff28b08582d9afc3b0))
+
 ## [1.106.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.106.3...v1.106.4) (2025-11-27)
 
 
