@@ -1,5 +1,5 @@
 import type { MenuItemProps, MenuItemSize, MenuProps, Theme } from '@altinn/altinn-components';
-import { Badge, formatDisplayName } from '@altinn/altinn-components';
+import { formatDisplayName } from '@altinn/altinn-components';
 import {
   BellIcon,
   Buildings2Icon,
@@ -9,7 +9,7 @@ import {
   InboxFillIcon,
   InformationSquareIcon,
   MenuGridIcon,
-  PadlockLockedIcon,
+  PadlockLockedFillIcon,
   PersonCircleIcon,
 } from '@navikt/aksel-icons';
 import {
@@ -184,16 +184,17 @@ export function buildProfileMenu({
       size: 'lg',
       icon: InboxFillIcon,
       iconTheme: 'tinted',
-      title: (
-        <>
-          {t('sidebar.inbox')} <Badge>{t('word.beta')}</Badge>
-        </>
-      ),
+      title: t('sidebar.inbox'),
       selected: isRouteSelected(pathname, PageRoutes.inbox, fromView),
       expanded: true,
       as: createMenuItemComponent({
         to: PageRoutes.inbox + pruneSearchQueryParams(currentSearchQuery),
       }),
+      badge: {
+        label: t('word.beta'),
+        color: 'neutral',
+        variant: 'base',
+      },
     },
     {
       id: 'am',
@@ -201,15 +202,16 @@ export function buildProfileMenu({
       size: 'lg',
       iconTheme: 'tinted',
       selected: false,
-      icon: PadlockLockedIcon,
+      icon: PadlockLockedFillIcon,
       hidden: !showAmLink,
       as: 'a',
       href: getAccessAMUILink(currentPartyUuid),
-      title: (
-        <>
-          {t('altinn.access_management')} <Badge>{t('word.beta')}</Badge>
-        </>
-      ),
+      title: t('altinn.access_management'),
+      badge: {
+        label: t('word.beta'),
+        color: 'neutral',
+        variant: 'base',
+      },
     },
     {
       id: 'all-forms',
