@@ -1,4 +1,5 @@
 import {
+  Badge,
   type Color,
   type FooterProps,
   Layout,
@@ -91,7 +92,11 @@ export const PageLayout: React.FC = () => {
     },
     header: headerProps,
     footer,
-    sidebar: { menu: sidebarMenu, hidden: isErrorState },
+    sidebar: {
+      menu: sidebarMenu,
+      hidden: isErrorState,
+      footer: <Badge label={t('word.beta')} variant="base" color="neutral" size="sm" />,
+    },
   };
 
   return (
