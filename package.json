@@ -1,6 +1,6 @@
 {
   "name": "dialogporten-frontend",
-  "version": "1.106.3",
+  "version": "1.106.4",
   "private": true,
   "scripts": {
     "hooks:enable": "git config core.hooksPath .hooks",

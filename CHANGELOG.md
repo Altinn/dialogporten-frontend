@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.106.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.106.3...v1.106.4) (2025-11-27)
+
+
+### Bug Fixes
+
+* Bump AC v0.50.0, update badge color and placement ([#3352](https://github.com/Altinn/dialogporten-frontend/issues/3352)) ([d40bdfd](https://github.com/Altinn/dialogporten-frontend/commit/d40bdfd8afcbb972ce758bd42a6d9d2b48cc82af))
+
 ## [1.106.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.106.2...v1.106.3) (2025-11-26)
 
 
