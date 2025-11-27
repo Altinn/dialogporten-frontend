@@ -49,7 +49,6 @@ export const Altinn2ActiveSchemasNotification = ({ selectedAccount }: Altinn2Act
       href={mostRecentMessage?._links?.portalview?.href || ''}
       icon={BellIcon}
       iconBadge={{ label: t('inbox.old_inbox_notification.badge') }}
-      dismissable
       title={t('inbox.old_inbox_notification')}
       description={t('inbox.old_inbox_notification.days_ago', { count: daysSinceMostRecentMessage })}
       variant="tinted"
