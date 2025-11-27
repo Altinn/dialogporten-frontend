@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { useParties } from '../../../api/hooks/useParties.ts';
 import { usePageTitle } from '../../../hooks/usePageTitle';
-import { getIsProdEnvironment } from '../Settings/ContactProfileDetails.tsx';
+import { getIsProdEnvironment, getIsStagingEnvironment } from '../Settings/ContactProfileDetails.tsx';
 import { getBreadcrumbs } from '../Settings/Settings.tsx';
 import { SettingsType, useSettings } from '../Settings/useSettings.tsx';
 import { useProfile } from '../useProfile';
@@ -14,15 +14,24 @@ export interface NotificationAccountsType extends PartyFieldsFragment {
   parentId?: string;
 }
 
+const getNotificationSettingsUrl = () => {
+  const isProdEnvironment = getIsProdEnvironment();
+  const isStagingEnvironment = getIsStagingEnvironment();
+  if (isProdEnvironment) {
+    return 'https://info.altinn.no/hjelp/dette-jobber-vi-fortsatt-med/profil--og-varslingsinnstillinger/';
+  }
+  if (isStagingEnvironment) {
+    return 'https://tt02.altinn.no/hjelp/dette-jobber-vi-fortsatt-med/profil--og-varslingsinnstillinger/';
+  }
+  return 'https://inte.altinn.cloud/hjelp/dette-jobber-vi-fortsatt-med/profil--og-varslingsinnstillinger/';
+};
+
 export const NotificationsPage = () => {
   const { t } = useTranslation();
   const { search } = useLocation();
   const { isLoading: isLoadingUser } = useProfile();
   const { isLoading: isLoadingParties } = useParties();
-  const isProdEnvironment = getIsProdEnvironment();
-  const notificationSettingsUrl = isProdEnvironment
-    ? 'https://info.altinn.no/hjelp/dette-jobber-vi-fortsatt-med/profil--og-varslingsinnstillinger/'
-    : 'https://inte.altinn.cloud/hjelp/dette-jobber-vi-fortsatt-med/profil--og-varslingsinnstillinger/';
+  const notificationSettingsUrl = getNotificationSettingsUrl();
 
   usePageTitle({ baseTitle: t('component.notifications') });
 
