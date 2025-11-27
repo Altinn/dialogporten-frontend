@@ -11,6 +11,8 @@ import { ExternalLinkIcon } from '@navikt/aksel-icons';
 import i18n from 'i18next';
 import { useTranslation } from 'react-i18next';
 
+export const getIsProdEnvironment = () => location.hostname.includes('af.altinn.no');
+
 export const ContactProfileDetails = ({
   variant,
   readOnly = false,
@@ -35,7 +37,7 @@ export const ContactProfileDetails = ({
   usedByItems?: UsedByLogItemProps[];
 }) => {
   const { t } = useTranslation();
-  const isProdEnvironment = location.hostname.includes('af.altinn.no');
+  const isProdEnvironment = getIsProdEnvironment();
   const krrBaseUrl = isProdEnvironment
     ? 'https://minprofil.kontaktregisteret.no'
     : 'https://minprofil.test.kontaktregisteret.no';

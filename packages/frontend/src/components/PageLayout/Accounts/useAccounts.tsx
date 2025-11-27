@@ -8,7 +8,7 @@ import type {
   MenuItemGroups,
 } from '@altinn/altinn-components';
 import type { PartyFieldsFragment } from 'bff-types-generated';
-import { type ChangeEvent, useMemo, useState } from 'react';
+import { type ChangeEvent, type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useParties } from '../../../api/hooks/useParties.ts';
@@ -20,7 +20,7 @@ interface UseAccountOptions {
   showDescription?: boolean;
   showFavorites?: boolean;
   showGroups?: boolean;
-  groups?: Record<string, Record<string, string>>;
+  groups?: Record<string, { title?: string | ReactNode }>;
 }
 
 export interface PartyItemProp extends AccountMenuItemProps {
@@ -242,14 +242,14 @@ export const useAccounts = ({
     };
   }
 
-  const accountGroups: MenuItemGroups = {
+  const accountGroups = {
     ...options.groups,
     ...(organizations.length && options.groups?.companies
       ? {
           [organizations?.[0].party]: options.groups?.companies,
         }
       : {}),
-  };
+  } as MenuItemGroups;
 
   const norwegianId = currentEndUser?.party ? formatNorwegianId(currentEndUser.party, true) : '';
   const description = currentEndUser?.party && norwegianId ? t('word.ssn') + norwegianId : '';
