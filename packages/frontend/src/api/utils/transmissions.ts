@@ -1,9 +1,4 @@
-import type {
-  AvatarProps,
-  TimelineSegmentProps,
-  TransmissionProps,
-  TransmissionTypeValue,
-} from '@altinn/altinn-components';
+import type { TimelineSegmentProps, TransmissionProps, TransmissionTypeValue } from '@altinn/altinn-components';
 import {
   ActivityType,
   type DialogActivityFragment,
@@ -14,6 +9,7 @@ import { t } from 'i18next';
 import { getPreferredPropertyByLocale } from '../../i18n/property.ts';
 import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
 import { getActorProps, getAttachmentLinks } from '../hooks/useDialogById.tsx';
+import type { ProfileType } from '../hooks/useParties.ts';
 import type { OrganizationOutput } from './organizations.ts';
 
 export interface TimelineSegmentWithTransmissions extends TimelineSegmentProps {
@@ -112,12 +108,13 @@ const getClockFormatString = () => {
 const createTransmissionItem = (
   transmission: TransmissionFieldsFragment,
   format: FormatFunction,
+  stopReversingPersonNameOrder: boolean,
   activities?: DialogActivityFragment[],
   serviceOwner?: OrganizationOutput,
-  selectedProfile?: AvatarProps['type'],
+  selectedProfile?: ProfileType,
 ): TransmissionProps => {
   const formatString = getClockFormatString();
-  const sender = getActorProps(transmission.sender, serviceOwner);
+  const sender = getActorProps(transmission.sender, stopReversingPersonNameOrder, serviceOwner);
   const unread = isTransmissionUnread(transmission.id, transmission.type, activities);
 
   return {
@@ -147,19 +144,28 @@ export const getTransmissions = ({
   format,
   activities,
   serviceOwner,
+  stopReversingPersonNameOrder,
   selectedProfile,
 }: {
   transmissions: TransmissionFieldsFragment[];
   format: FormatFunction;
+  stopReversingPersonNameOrder: boolean;
   activities?: DialogActivityFragment[];
   serviceOwner?: OrganizationOutput;
-  selectedProfile?: AvatarProps['type'];
+  selectedProfile?: ProfileType;
 }): TimelineSegmentWithTransmissions[] => {
   return groupTransmissions(transmissions).map((group) => {
     const sortedGroup = [...group].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     const [lastTransmission] = sortedGroup;
     const items: TransmissionProps[] = sortedGroup.map((transmission) =>
-      createTransmissionItem(transmission, format, activities, serviceOwner, selectedProfile),
+      createTransmissionItem(
+        transmission,
+        format,
+        stopReversingPersonNameOrder,
+        activities,
+        serviceOwner,
+        selectedProfile,
+      ),
     );
 
     return {

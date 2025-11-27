@@ -6,6 +6,12 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
+  verify-release-please-branch:
+    if: ${{ !startsWith(github.head_ref, 'release-please-') }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Confirmed not to be a release please branch"
+
   generate-git-short-sha:
     name: Generate git short sha
     uses: ./.github/workflows/workflow-generate-git-short-sha.yml
@@ -64,7 +70,6 @@ jobs:
       AZURE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
       AZURE_ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
       AZURE_CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
-      AZURE_APP_INSIGHTS_CONNECTION_STRING: ${{ secrets.AZURE_APP_INSIGHTS_CONNECTION_STRING }}
       AZURE_APPLICATION_INSIGHTS_INSTRUMENTATION_KEY: ${{ secrets.AZURE_APPLICATION_INSIGHTS_INSTRUMENTATION_KEY }}
       OCP_APIM_SUBSCRIPTION_KEY: ${{ secrets.OCP_APIM_SUBSCRIPTION_KEY }}
     with:

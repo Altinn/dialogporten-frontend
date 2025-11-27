@@ -2,10 +2,154 @@ import { ReactPlugin } from '@microsoft/applicationinsights-react-js';
 import type { ITelemetryItem, ITelemetryPlugin } from '@microsoft/applicationinsights-web';
 import { ApplicationInsights } from '@microsoft/applicationinsights-web';
 import { config } from './config';
+import { PageRoutes } from './pages/routes';
 
 let applicationInsights: ApplicationInsights | null = null;
 
 const applicationInsightsEnabled = config.applicationInsightsInstrumentationKey && import.meta.env.PROD;
+
+const pageMapping: Record<string, string> = {
+  [PageRoutes.inbox]: 'Inbox',
+  [PageRoutes.sent]: 'Sent Items',
+  [PageRoutes.drafts]: 'Drafts',
+  [PageRoutes.archive]: 'Archive',
+  [PageRoutes.bin]: 'Bin',
+  [PageRoutes.savedSearches]: 'Saved Searches',
+  [PageRoutes.about]: 'About',
+  [PageRoutes.profile]: 'Profile Overview',
+  [PageRoutes.partiesOverview]: 'Parties Management',
+  [PageRoutes.notifications]: 'Notification Settings',
+  [PageRoutes.settings]: 'User Settings',
+  [PageRoutes.access]: 'Access Management',
+  [PageRoutes.activities]: 'Activity Log',
+  [PageRoutes.authorize]: 'Authorization',
+  [PageRoutes.error]: 'Error Page',
+};
+
+const dynamicRoutePatterns = [
+  {
+    pattern: /^\/inbox\/[^/]+\/?$/,
+    pageName: 'Dialog Details',
+  },
+  // Add more dynamic route patterns here as needed
+  // {
+  //   pattern: /^\/profile\/[^/]+\/?$/,
+  //   pageName: 'Profile Item'
+  // },
+];
+
+/**
+ * Check if the given pathname is a valid trackable page
+ */
+const isValidTrackablePage = (pathname: string): boolean => {
+  const cleanPath = pathname.split('?')[0].split('#')[0];
+
+  // Check static routes
+  if (pageMapping[cleanPath]) {
+    return true;
+  }
+
+  // Check dynamic routes
+  for (const { pattern } of dynamicRoutePatterns) {
+    if (pattern.test(cleanPath)) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+const getPageNameFromPath = (pathname: string): string => {
+  const cleanPath = pathname.split('?')[0].split('#')[0];
+
+  if (pageMapping[cleanPath]) {
+    return pageMapping[cleanPath];
+  }
+
+  for (const { pattern, pageName } of dynamicRoutePatterns) {
+    if (pattern.test(cleanPath)) {
+      return pageName;
+    }
+  }
+
+  return cleanPath.replace(/^\//, '').replace(/\//g, ' > ') || 'Unknown Page';
+};
+
+export const startPageTracking = (pageInfo: {
+  pathname: string;
+  search: string;
+  hash: string;
+  state: string;
+  url: string;
+}) => {
+  if (!applicationInsights) return;
+
+  const currentPath = pageInfo.pathname;
+
+  const enhancedPageName = getPageNameFromPath(currentPath);
+
+  try {
+    applicationInsights.startTrackPage(enhancedPageName);
+  } catch (error) {
+    console.error('Failed to start page tracking:', error, { pageInfo });
+  }
+};
+
+export const stopPageTracking = (pageInfo: {
+  pathname: string;
+  search: string;
+  hash: string;
+  state: string;
+  url: string;
+}) => {
+  if (!applicationInsights) return;
+
+  const currentPath = pageInfo.pathname;
+
+  const currentUrl = pageInfo.url;
+  const enhancedPageName = getPageNameFromPath(currentPath);
+
+  const enhancedProperties = {
+    'page.path': currentPath,
+    'page.url': currentUrl,
+    'page.referrer': document.referrer,
+    'page.title': document.title,
+    'user.agent': navigator.userAgent,
+    'route.pathname': pageInfo.pathname,
+    'route.search': pageInfo.search,
+    'route.hash': pageInfo.hash,
+    'route.state': pageInfo.state ? JSON.stringify(pageInfo.state) : '',
+    'viewport.width': String(window.innerWidth),
+    'viewport.height': String(window.innerHeight),
+  };
+
+  try {
+    applicationInsights.stopTrackPage(enhancedPageName, currentUrl, enhancedProperties);
+  } catch (error) {
+    console.error('Failed to stop page tracking:', error, { pageInfo });
+  }
+};
+
+export const trackUserAction = (action: string, properties?: Record<string, string>) => {
+  if (!applicationInsights) return;
+
+  applicationInsights.trackEvent({
+    name: `User.${action}`,
+    properties: {
+      'page.current': getPageNameFromPath(window.location.pathname),
+      timestamp: new Date().toISOString(),
+      ...properties,
+    },
+  });
+};
+
+export const trackDialogAction = (action: string, dialogId?: string, properties?: Record<string, string>) => {
+  trackUserAction(`Dialog.${action}`, {
+    'dialog.id': dialogId || '',
+    'dialog.action': action,
+    ...properties,
+  });
+};
 
 if (applicationInsightsEnabled) {
   const reactPlugin = new ReactPlugin();
@@ -14,60 +158,88 @@ if (applicationInsightsEnabled) {
       config: {
         instrumentationKey: config.applicationInsightsInstrumentationKey,
         extensions: [reactPlugin as unknown as ITelemetryPlugin],
-        enableAutoRouteTracking: true,
-        autoTrackPageVisitTime: true,
+        enableAutoRouteTracking: false, // Disable auto tracking, we'll handle it manually
+        autoTrackPageVisitTime: false,
         enableCorsCorrelation: true,
-        enableUnhandledPromiseRejectionTracking: true,
+        enableUnhandledPromiseRejectionTracking: false,
         enableAjaxErrorStatusText: true,
-        // Avoid tracking every ajax/fetch request
         disableAjaxTracking: true,
         disableFetchTracking: true,
-        enableRequestHeaderTracking: true,
-        enableResponseHeaderTracking: true,
-        enableAjaxPerfTracking: true,
-        enablePerfMgr: true,
+        enableRequestHeaderTracking: false,
+        enableResponseHeaderTracking: false,
+        enableAjaxPerfTracking: false,
+        enablePerfMgr: false,
         disableCookiesUsage: false,
-        // TODO: set to a lower value in production
+        // To avoid issue where AI tries to calculate duration of page view, and throws an error
+        overridePageViewDuration: false,
         samplingPercentage: 100,
         appId: 'arbeidsflate-frontend',
-        enableDebug: false,
+        enableDebug: true,
+        maxAjaxCallsPerView: 2000,
       },
     });
     applicationInsights.loadAppInsights();
     console.info('Application Insights initialized successfully');
 
     applicationInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
-      // Only filter exceptions
-      if (envelope.baseType === 'ExceptionData') {
-        const data = envelope.baseData;
-        const message = data?.message || '';
-        const exceptions = data?.exceptions || [];
+      envelope.tags = envelope.tags || {};
+      envelope.tags['ai.cloud.role'] = 'frontend';
+      envelope.tags['ai.cloud.roleInstance'] = 'frontend';
 
-        const extensionUrlPattern = /^(chrome|moz|safari|edge|ms-browser)-extension:\/\//i;
-        // Catch all browser extensions
-        if (extensionUrlPattern.test(message)) {
-          return false;
+      switch (envelope.baseType) {
+        case 'RemoteDependencyData': {
+          const dependencyData = envelope.baseData;
+          const backendTraceId = dependencyData?.properties?.['backend.traceId'];
+
+          if (backendTraceId) {
+            // This only affects THIS specific telemetry item
+            envelope.tags['ai.operation.id'] = backendTraceId;
+            envelope.tags['ai.operation.parentId'] = `|${backendTraceId}.${Date.now()}`;
+          }
+          break;
         }
+        // Only filter exceptions
+        case 'ExceptionData': {
+          const data = envelope.baseData;
+          const message = data?.message || '';
+          const exceptions = data?.exceptions || [];
 
-        // Check all exception details for extension URLs
-        for (const exception of exceptions) {
-          if (exception.stack && extensionUrlPattern.test(exception.stack)) {
+          const extensionUrlPattern = /^(chrome|moz|safari|edge|ms-browser)-extension:\/\//i;
+          // Catch all browser extensions
+          if (extensionUrlPattern.test(message)) {
             return false;
           }
 
-          // Check parsed stack frames
-          if (exception.parsedStack && Array.isArray(exception.parsedStack)) {
-            for (const frame of exception.parsedStack) {
-              if (frame.fileName && extensionUrlPattern.test(frame.fileName)) {
-                return false;
+          // Check all exception details for extension URLs
+          for (const exception of exceptions) {
+            if (exception.stack && extensionUrlPattern.test(exception.stack)) {
+              return false;
+            }
+
+            // Check parsed stack frames
+            if (exception.parsedStack && Array.isArray(exception.parsedStack)) {
+              for (const frame of exception.parsedStack) {
+                if (frame.fileName && extensionUrlPattern.test(frame.fileName)) {
+                  return false;
+                }
               }
             }
           }
-        }
 
-        // Filter cross-origin errors
-        if (message === 'Script error.' || message === 'Script error') {
-          return false;
+          // Filter cross-origin errors
+          if (message === 'Script error.' || message === 'Script error') {
+            return false;
+          }
+
+          // Filter benign ResizeObserver errors
+          if (
+            message.includes('ResizeObserver loop') ||
+            message.includes('ResizeObserver loop completed with undelivered notifications')
+          ) {
+            return false;
+          }
+
+          break;
         }
       }
 
@@ -83,7 +255,38 @@ if (applicationInsightsEnabled) {
 
 const noop = () => {};
 
-// Helper function to track fetch requests as dependencies
+// Mock functions for when analytics is disabled
+const mockStartPageTracking = (_pageInfo: {
+  pathname: string;
+  search: string;
+  hash: string;
+  state: string;
+  url: string;
+}) => {};
+
+const mockStopPageTracking = (_pageInfo: {
+  pathname: string;
+  search: string;
+  hash: string;
+  state: string;
+  url: string;
+}) => {};
+
+const mockTrackUserAction = (_action: string, _properties?: Record<string, string>) => {};
+
+const mockTrackDialogAction = (_action: string, _dialogId?: string, _properties?: Record<string, string>) => {};
+
+const mockTrackFetchDependency = async (
+  _name: string,
+  fetchPromise: Promise<Response>,
+  _startTime: number = Date.now(),
+): Promise<Response> => {
+  return fetchPromise;
+};
+
+const mockIsValidTrackablePage = (_pathname: string): boolean => false;
+
+// Enhanced helper function to track fetch requests with same operation ID
 export const trackFetchDependency = async (
   name: string,
   fetchPromise: Promise<Response>,
@@ -97,12 +300,17 @@ export const trackFetchDependency = async (
   let responseStatus = 200;
   let response: Response | undefined;
   let targetUrl = 'unknown';
+  let backendTraceId = `${name}-${startTime}`;
 
   try {
     response = await fetchPromise;
     responseStatus = response.status;
     success = response.ok;
     targetUrl = response.url ? new URL(response.url).origin : 'unknown';
+
+    // Extract correlation headers from response
+    backendTraceId = response.headers.get('X-Trace-Id') || backendTraceId;
+
     return response;
   } catch (error) {
     success = false;
@@ -112,23 +320,32 @@ export const trackFetchDependency = async (
     throw error;
   } finally {
     const duration = Date.now() - startTime;
-
     Analytics.trackDependency({
-      id: `${name}-${startTime}`,
+      id: backendTraceId,
       target: targetUrl,
       name: name,
       duration: duration,
       success: success,
       responseCode: responseStatus,
+      properties: {
+        'backend.traceId': backendTraceId,
+        'correlation.source': 'backend-response',
+        'request.type': name.includes('GraphQL') ? 'graphql' : 'http',
+      },
+      type: 'HTTP',
     });
   }
 };
 
 export const Analytics = {
   isEnabled: applicationInsightsEnabled,
-  trackPageView: applicationInsights?.trackPageView.bind(applicationInsights) || noop,
+  startPageTracking: applicationInsightsEnabled ? startPageTracking : mockStartPageTracking,
+  stopPageTracking: applicationInsightsEnabled ? stopPageTracking : mockStopPageTracking,
+  trackUserAction: applicationInsightsEnabled ? trackUserAction : mockTrackUserAction,
+  trackDialogAction: applicationInsightsEnabled ? trackDialogAction : mockTrackDialogAction,
   trackEvent: applicationInsights?.trackEvent.bind(applicationInsights) || noop,
   trackException: applicationInsights?.trackException.bind(applicationInsights) || noop,
   trackDependency: applicationInsights?.trackDependencyData.bind(applicationInsights) || noop,
-  trackFetchDependency: trackFetchDependency,
+  trackFetchDependency: applicationInsightsEnabled ? trackFetchDependency : mockTrackFetchDependency,
+  isValidTrackablePage: applicationInsightsEnabled ? isValidTrackablePage : mockIsValidTrackablePage,
 };

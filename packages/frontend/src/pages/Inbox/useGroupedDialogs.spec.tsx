@@ -43,10 +43,9 @@ const mockData: InboxItemInput[] = [
     seenSinceLastContentUpdate: [],
     fromServiceOwnerTransmissionsCount: 0,
     fromPartyTransmissionsCount: 0,
-    contentUpdatedAt: '2024-11-27T15:36:52.131Z',
+    contentUpdatedAt: '2025-02-24T14:00:21.642Z',
     guiAttachmentCount: 0,
     createdAt: '2025-02-24T14:00:21.642Z',
-    updatedAt: '2025-02-24T14:02:58.540Z',
     status: 'NEW' as DialogStatus,
     label: [SystemLabel.Default],
     org: 'digdir',
@@ -82,10 +81,9 @@ const mockData: InboxItemInput[] = [
     },
     seenSinceLastContentUpdate: [],
     hasUnopenedContent: true,
-    contentUpdatedAt: '2024-11-27T15:36:52.131Z',
+    contentUpdatedAt: '2025-02-24T13:55:45.689Z',
     guiAttachmentCount: 1,
     createdAt: '2025-02-24T13:55:45.689Z',
-    updatedAt: '2025-02-24T13:55:45.689Z',
     status: 'NEW' as DialogStatus,
     fromServiceOwnerTransmissionsCount: 0,
     fromPartyTransmissionsCount: 0,
@@ -127,8 +125,7 @@ const mockData: InboxItemInput[] = [
     fromPartyTransmissionsCount: 0,
     contentUpdatedAt: '2024-11-27T15:36:52.131Z',
     guiAttachmentCount: 1,
-    createdAt: '2025-02-24T13:52:50.280Z',
-    updatedAt: '2025-02-24T13:52:50.280Z',
+    createdAt: '2024-11-27T15:36:52.131Z',
     status: 'NEW' as DialogStatus,
     label: [SystemLabel.Default],
     org: 'digdir',
@@ -169,7 +166,6 @@ const mockData: InboxItemInput[] = [
     contentUpdatedAt: '2024-11-27T15:36:52.131Z',
     guiAttachmentCount: 1,
     createdAt: '2024-11-29T10:10:58.980Z',
-    updatedAt: '2024-11-29T10:10:58.980Z',
     status: 'NEW' as DialogStatus,
     label: [SystemLabel.Default],
     org: 'digitaliseringsdirektoratet',
@@ -210,7 +206,6 @@ const mockData: InboxItemInput[] = [
     contentUpdatedAt: '2024-11-27T15:36:52.131Z',
     guiAttachmentCount: 1,
     createdAt: '2024-11-27T15:15:03.934Z',
-    updatedAt: '2024-11-27T15:15:03.934Z',
     status: 'NEW' as DialogStatus,
     label: [SystemLabel.Default],
     org: 'digitaliseringsdirektoratet',
@@ -252,7 +247,6 @@ const mockData: InboxItemInput[] = [
     contentUpdatedAt: '2024-11-27T15:36:52.131Z',
     guiAttachmentCount: 2,
     createdAt: '2024-08-23T06:39:38.321Z',
-    updatedAt: '2024-08-23T06:39:38.321Z',
     status: 'NEW' as DialogStatus,
     label: [SystemLabel.Default],
     org: 'skd',
@@ -294,7 +288,6 @@ const mockData: InboxItemInput[] = [
     contentUpdatedAt: '2024-11-27T15:36:52.131Z',
     guiAttachmentCount: 2,
     createdAt: '2024-08-23T06:38:45.473Z',
-    updatedAt: '2024-08-23T06:38:45.473Z',
     status: 'NEW' as DialogStatus,
     label: [SystemLabel.Default],
     org: 'skd',
@@ -334,6 +327,7 @@ describe('useGroupedDialogs', () => {
           displaySearchResults: false,
           viewType: 'inbox',
           isLoading: true,
+          hasNextPage: false,
           onSeenByLogModalChange: () => {},
         }),
       {
@@ -353,6 +347,7 @@ describe('useGroupedDialogs', () => {
           displaySearchResults: true,
           viewType: 'inbox',
           isLoading: false,
+          hasNextPage: false,
           onSeenByLogModalChange: () => {},
         }),
       {
@@ -362,7 +357,7 @@ describe('useGroupedDialogs', () => {
 
     expect(result.current.groupedDialogs).toHaveLength(7);
     expect(result.current.groups).toEqual({
-      inbox: { title: 'inbox.heading.search_results.inbox', orderIndex: 4 },
+      collapsed: { description: 'search.results.description', orderIndex: null, title: 'inbox.heading.title.inbox' },
     });
   });
 
@@ -371,6 +366,7 @@ describe('useGroupedDialogs', () => {
       () =>
         useGroupedDialogs({
           items: mockData,
+          hasNextPage: false,
           displaySearchResults: false,
           viewType: 'inbox',
           isLoading: false,

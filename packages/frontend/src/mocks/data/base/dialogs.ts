@@ -2,6 +2,7 @@ import { DialogStatus, type SearchDialogFieldsFragment, SystemLabel } from 'bff-
 
 export const dialogs: SearchDialogFieldsFragment[] = [
   {
+    serviceResource: 'default',
     id: '019241f7-6f45-72fd-a574-f19d358aaf4e',
     endUserContext: {
       systemLabels: [SystemLabel.Default],
@@ -12,7 +13,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0, contentUpdatedAt: "2024-01-15T11:34:00.000Z", guiAttachmentCount: 1,
     status: DialogStatus.RequiresAttention,
     createdAt: '2023-12-23T23:00:00.000Z',
-    extendedStatus: null,
     seenSinceLastContentUpdate: [
       {
         id: 'c4f4d846-2fe7-4172-badc-abc48f9af8a5',
@@ -70,10 +70,23 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         ],
       },
       senderName: null,
-      extendedStatus: null,
+      extendedStatus: {
+        mediaType: 'text/plain',
+        value: [
+          {
+            value: 'Extended status',
+            languageCode: 'nb',
+          },
+          {
+            value: 'Extended status',
+            languageCode: 'en',
+          },
+        ],
+      },
     },
   },
   {
+    serviceResource: 'default',
     id: '019241f7-67dc-7562-a56f-1634796039e5',
     endUserContext: {
       systemLabels: [SystemLabel.Default, SystemLabel.Sent],
@@ -84,7 +97,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0, contentUpdatedAt: "2024-02-20T06:33:00.000Z", guiAttachmentCount: 1,
     status: DialogStatus.Awaiting,
     createdAt: '2023-12-15T06:33:00.000Z',
-    extendedStatus: null,
     seenSinceLastContentUpdate: [],
     content: {
       title: {
@@ -110,6 +122,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     },
   },
   {
+    serviceResource: 'default',
     id: '019241f7-8375-75a3-8bdb-2cebee9cb585',
     endUserContext: {
       systemLabels: [SystemLabel.Default],
@@ -120,7 +133,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0, contentUpdatedAt: "2024-03-12T09:15:00.000Z", guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2023-12-12T09:15:00.000Z',
-    extendedStatus: null,
     seenSinceLastContentUpdate: [
       {
         id: '03d5e075-9a8b-48b7-bb0a-99733ee3e572',
@@ -157,6 +169,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     },
   },
   {
+    serviceResource: 'default',
     id: '019241f7-8218-7756-be82-5310042c3d95',
     endUserContext: {
       systemLabels: [SystemLabel.Default],
@@ -167,7 +180,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0, contentUpdatedAt: "2024-04-04T11:45:00.000Z", guiAttachmentCount: 0,
     status: DialogStatus.RequiresAttention,
     createdAt: '2023-12-04T11:45:00.000Z',
-    extendedStatus: null,
     seenSinceLastContentUpdate: [],
     content: {
       title: {
@@ -193,6 +205,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     },
   },
   {
+    serviceResource: 'default',
     id: '019241f7-812c-71c8-8e68-94a0b771fa10',
     endUserContext: {
       systemLabels: [SystemLabel.Default],
@@ -203,7 +216,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0, contentUpdatedAt: "2024-05-17T09:30:00.000Z", guiAttachmentCount: 0,
     status: DialogStatus.RequiresAttention,
     createdAt: '2023-05-17T09:30:00.000Z',
-    extendedStatus: null,
     seenSinceLastContentUpdate: [
       {
         id: '268edfdb-1843-4a18-a8c7-5d45fe7f7fc8',
@@ -241,6 +253,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     },
   },
   {
+    serviceResource: 'default',
     id: '019241f7-78e6-7702-8724-a95e049d491e',
     endUserContext: {
       systemLabels: [SystemLabel.Default],
@@ -252,7 +265,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     status: DialogStatus.NotApplicable,
     createdAt: '2023-04-18T10:55:00.000Z',
     dueAt: '2028-05-04T11:45:00.000Z',
-    extendedStatus: null,
     seenSinceLastContentUpdate: [
       {
         id: 'a06fa273-7aa7-41dc-911c-b0fb60640a6b',
@@ -289,6 +301,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     },
   },
   {
+    serviceResource: 'default',
     id: '019241f7-5fa0-7336-934d-716a8e5bbb49',
     endUserContext: {
       systemLabels: [SystemLabel.Default],
@@ -299,7 +312,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0, contentUpdatedAt: "2024-07-15T08:45:00.000Z", guiAttachmentCount: 1,
     status: DialogStatus.Completed,
     createdAt: '2023-03-11T07:00:00.000Z',
-    extendedStatus: null,
     seenSinceLastContentUpdate: [],
     content: {
       title: {
@@ -325,6 +337,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     },
   },
   {
+    serviceResource: 'default',
     id: '019241f7-7f61-778d-9ef8-f6bae5e80579',
     endUserContext: {
       systemLabels: [SystemLabel.Default],
@@ -335,7 +348,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0, contentUpdatedAt: "2023-08-13T09:25:00.000Z", guiAttachmentCount: 9,
     status: DialogStatus.NotApplicable,
     createdAt: '2022-04-13T09:25:00.000Z',
-    extendedStatus: null,
     seenSinceLastContentUpdate: [
       {
         id: '90801e39-23a4-4086-9e9a-f56811f75ff3',
@@ -372,6 +384,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     },
   },
   {
+    serviceResource: 'default',
     id: '019241f7-8698-7293-90aa-6c65a784c15e',
     endUserContext: {
       systemLabels: [SystemLabel.Default],
@@ -382,7 +395,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0, contentUpdatedAt: "2022-02-20T08:35:00.000Z", guiAttachmentCount: 1,
     status: DialogStatus.Completed,
     createdAt: '2022-01-05T07:00:00.000Z',
-    extendedStatus: null,
     seenSinceLastContentUpdate: [],
     content: {
       title: {
@@ -408,6 +420,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     },
   },
   {
+    serviceResource: 'default',
     id: '019241f7-85ed-72fd-922a-fa784d7e4228',
     endUserContext: {
       systemLabels: [SystemLabel.Default],
@@ -418,7 +431,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0, contentUpdatedAt: "2001-04-05T22:00:00.000Z", guiAttachmentCount: 0,
     status: DialogStatus.Draft,
     createdAt: '2001-04-05T22:00:00.000Z',
-    extendedStatus: null,
     seenSinceLastContentUpdate: [],
     content: {
       title: {

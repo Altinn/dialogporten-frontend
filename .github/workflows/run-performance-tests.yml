@@ -18,11 +18,26 @@ on:
         required: true
         default: 1
         type: number
+      randomizeUser:
+        description: 'Randomize user to use. If false, always run the test in the same order'
+        required: true
+        default: false
+        type: boolean
       duration:
         description: 'Duration of test, ie 30s, 1m, 10m'
         required: true
         default: 1m
         type: string
+      breakpoint:
+        description: 'Gradually raise the load to number of VUs over the duration of the test. If VUs is high, it can break system breaks'
+        required: true
+        default: false
+        type: boolean 
+      abortOnFail:
+          description: 'Abort on fail. Only used for breakpoint tests'
+          required: true
+          default: false
+          type: boolean   
       parallelism:
         description: 'Number of parallel test runs'
         required: true
@@ -97,6 +112,9 @@ jobs:
               -w "${{ inputs.bffVus }}" \
               -d "${{ inputs.duration }}" \
               -p "${{ inputs.parallelism }}" \
-              -e "${{ inputs.environment }}"
+              -e "${{ inputs.environment }}" \
+              -r "${{ inputs.randomizeUser }}" \
+              -b "${{ inputs.breakpoint }}" \
+              -a "${{ inputs.abortOnFail }}"
 
       

@@ -14,7 +14,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
     const token = context!.session.get('token');
     const response = await axios({
       method: 'POST',
-      url: config.dialogportenURL,
+      url: config.dialogporten.graphqlUrl,
       headers: {
         'content-type': 'application/json',
         Authorization: `Bearer ${token.access_token}`,
@@ -36,9 +36,11 @@ const plugin: FastifyPluginAsync = async (fastify) => {
 
   const handler = createHandler({
     schema: stitchedSchema,
-    context(request) {
+    context(request, reply) {
       return {
         session: request.raw.session,
+        request,
+        reply,
       };
     },
   });
@@ -46,8 +48,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
   fastify.post(
     '/api/graphql',
     {
-      preHandler: (request: FastifyRequest, reply, callback) => {
-        /* Allow refresh to keep access token alive if request is from GraphQL IDE */
+      preHandler: (request, reply, callback) => {
         const shouldVerifyToken = request.headers.referer?.includes('/api/graphiql') ?? false;
         return fastify.verifyToken(shouldVerifyToken)(request, reply, callback);
       },

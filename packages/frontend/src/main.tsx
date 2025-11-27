@@ -2,13 +2,13 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import './i18n/config.ts';
-
-import { RootProvider } from '@altinn/altinn-components';
+import { RootProvider as AltinnRootProvider, type LanguageCode } from '@altinn/altinn-components';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import App from './App.tsx';
 import { AuthProvider } from './components/Login/AuthContext.tsx';
 import { LoggerContextProvider } from './contexts/LoggerContext.tsx';
-import { FeatureFlagProvider, featureFlags } from './featureFlags';
+import { FeatureFlagProvider, loadFeatureFlags } from './featureFlags';
 import { OnboardingTourProvider } from './onboardingTour';
 
 declare const __APP_VERSION__: string;
@@ -25,17 +25,38 @@ async function enableMocking() {
   }
 }
 
+async function loadFeatures() {
+  try {
+    if (window.location.pathname === '/logout') {
+      return {
+        'globalMenu.enableAccessManagementLink': false,
+        'party.stopReversingPersonNameOrder': false,
+      };
+    }
+    return await loadFeatureFlags();
+  } catch (error) {
+    return {};
+  }
+}
 const element = document.getElementById('root');
+
+const RootProvider = ({ children }: { children: React.ReactNode }) => {
+  const { i18n } = useTranslation();
+  const languageCode = i18n.language as LanguageCode;
+
+  return <AltinnRootProvider languageCode={languageCode}>{children}</AltinnRootProvider>;
+};
+
 if (element) {
   const root = ReactDOM.createRoot(element);
   const queryClient = new QueryClient();
-  enableMocking().then(() => {
+  Promise.all([enableMocking(), loadFeatures()]).then(([_, initialFlags]) => {
     root.render(
       <React.StrictMode>
         <LoggerContextProvider>
           <QueryClientProvider client={queryClient}>
             <BrowserRouter>
-              <FeatureFlagProvider flags={featureFlags}>
+              <FeatureFlagProvider initialFlags={initialFlags}>
                 <AuthProvider>
                   <RootProvider>
                     <OnboardingTourProvider>

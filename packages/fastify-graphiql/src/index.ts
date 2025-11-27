@@ -10,6 +10,7 @@ const plugin: FastifyPluginAsync<Options> = async (fastify: FastifyInstance, opt
   const { url, graphqlURL } = opts;
   fastify.get(url, (request, reply) => {
     reply.type('text/html');
+    reply.header('Content-Security-Policy', "style-src 'self' https://unpkg.com 'unsafe-inline'");
     reply.send(
       `
 <!--

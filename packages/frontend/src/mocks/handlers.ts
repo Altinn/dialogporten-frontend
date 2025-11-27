@@ -48,6 +48,14 @@ export const streamMock = http.get('/api/graphql/stream', async () => {
 });
 
 
+const mockAltinn2Messages = graphql.query('altinn2messages', () => {
+  return HttpResponse.json({
+    data: {
+      altinn2messages: [],
+    },
+  });
+});
+
 const getAllDialogsforCountMock = graphql.query('getAllDialogsForCount', ({ variables }) => {
   const items = filterDialogs({
     inMemoryStore,
@@ -138,6 +146,11 @@ const getMainContentMarkdownMock = http.get('https://dialogporten-serviceprovide
   return HttpResponse.text(`# Info i markdown
 
 Dette er HTML som er generert fra markdown.
+
+| Syntax      | Description |
+| ----------- | ----------- |
+| Header      | Title       |
+| Paragraph   | Text        |
 
 ## Grunnleggende konsepter fra markdown
 
@@ -311,5 +324,6 @@ export const handlers = [
   getAllDialogsForPartiesMock,
   getAllDialogsforCountMock,
   streamMock,
-  mutateUpdateLanguageMock
+  mutateUpdateLanguageMock,
+  mockAltinn2Messages
 ];

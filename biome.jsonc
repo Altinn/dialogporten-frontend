@@ -73,7 +73,8 @@
       ".docusaurus",
       "mocks",
       "test-results",
-      "mockServiceWorker.js"
+      "mockServiceWorker.js",
+      "./package.json"
     ]
   }
 }

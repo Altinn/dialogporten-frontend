@@ -9,9 +9,9 @@ on:
         default: "test"
         type: choice
         options:
-          - test (af.at.altinn.cloud)
-          - yt01 (af.yt.altinn.cloud)
-          - staging (af.tt.altinn.no)
+          - test (af.at23.altinn.cloud)
+          - yt01 (af.yt01.altinn.cloud)
+          - staging (af.tt02.altinn.no)
           - prod (af.altinn.no)
       version:
         description: "Version to deploy (e.g., `1.23.4`)"
@@ -62,7 +62,6 @@ jobs:
       AZURE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
       AZURE_ENVIRONMENT_KEY_VAULT_NAME: ${{ secrets.AZURE_ENVIRONMENT_KEY_VAULT_NAME }}
       AZURE_CONTAINER_APP_ENVIRONMENT_NAME: ${{ secrets.AZURE_CONTAINER_APP_ENVIRONMENT_NAME }}
-      AZURE_APP_INSIGHTS_CONNECTION_STRING: ${{ secrets.AZURE_APP_INSIGHTS_CONNECTION_STRING }}
       AZURE_APPLICATION_INSIGHTS_INSTRUMENTATION_KEY: ${{ secrets.AZURE_APPLICATION_INSIGHTS_INSTRUMENTATION_KEY }}
       OCP_APIM_SUBSCRIPTION_KEY: ${{ secrets.OCP_APIM_SUBSCRIPTION_KEY }}
     with:

@@ -14,7 +14,7 @@ test.describe('Testing filter bar', () => {
       .locator('a')
       .filter({ hasText: 'Velg avsender' })
       .click();
-    await page.getByTestId('inbox-toolbar').getByRole('group').getByText('Skatteetaten').click();
+    await page.getByRole('menuitemcheckbox', { name: 'Skatteetaten' }).locator('div').first().click();
     await page.keyboard.press('Escape');
   });
 
@@ -22,14 +22,19 @@ test.describe('Testing filter bar', () => {
     expect(new URL(page.url()).searchParams.get('org')).toEqual('skd');
     await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).toBeVisible();
 
-    await page.getByRole('button', { name: 'Fjern filter' }).nth(1).click();
+    await page.getByRole('button', { name: 'Fjern filter' }).click();
 
     expect(new URL(page.url()).searchParams.has('org')).toEqual(false);
 
     await page.getByRole('button', { name: 'add' }).click();
 
     await page.getByTestId('inbox-toolbar').getByRole('group').locator('a').filter({ hasText: 'Velg status' }).click();
-    await page.getByTestId('inbox-toolbar').getByRole('group').getByText('Avsluttet').click();
+    await page
+      .getByTestId('filter-base-toolbar-filter-status')
+      .locator('span')
+      .filter({ hasText: 'Avsluttet' })
+      .nth(1)
+      .click();
     expect(new URL(page.url()).searchParams.get('status')).toEqual('COMPLETED');
 
     await page.keyboard.press('Escape');

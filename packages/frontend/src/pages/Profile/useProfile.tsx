@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import type { GroupObject, ProfileQuery, User } from 'bff-types-generated';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -6,22 +6,26 @@ import {
   addFavoriteParty as addFavoritePartyRaw,
   addFavoritePartyToGroup as addFavoritePartyToGroupRaw,
   deleteFavoriteParty as deleteFavoritePartyRaw,
-  getNotificationsettingsByUuid,
+  getNotificationsettingsForCurrentUser,
   profile,
 } from '../../api/queries.ts';
+import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 
-export const useProfile = () => {
-  const { data, isLoading } = useQuery<ProfileQuery>({
+export const useProfile = (disabled?: boolean) => {
+  const { data, isLoading, isSuccess } = useAuthenticatedQuery<ProfileQuery>({
     queryKey: [QUERY_KEYS.PROFILE],
+    staleTime: 10 * 1000 * 30,
     queryFn: () => profile(),
     refetchOnWindowFocus: false,
+    enabled: !disabled,
   });
 
   const { i18n } = useTranslation();
   const groups = (data?.profile?.groups as GroupObject[]) || ([] as GroupObject[]);
   const language = data?.profile?.language || i18n.language || 'nb';
-  const favoritesGroup = groups.find((group) => group!.isFavorite) as GroupObject;
+  const favoritesGroup = groups.find((group) => group?.isFavorite);
+
   const queryClient = useQueryClient();
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: Full control of what triggers this code is needed
@@ -53,7 +57,8 @@ export const useProfile = () => {
     user: data?.profile?.user as User,
     groups,
     favoritesGroup,
-    getNotificationsettingsByUuid,
+    isSuccess,
+    getNotificationsettingsForCurrentUser,
     deleteFavoriteParty,
     addFavoriteParty,
     addFavoritePartyToGroup,

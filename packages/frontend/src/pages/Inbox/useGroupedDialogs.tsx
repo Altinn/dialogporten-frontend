@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { Trans } from 'react-i18next';
 import { Link, type LinkProps } from 'react-router-dom';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
+import { useParties } from '../../api/hooks/useParties.ts';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { useDialogActions } from '../DialogDetailsPage/useDialogActions.tsx';
 import type { CurrentSeenByLog } from './Inbox.tsx';
@@ -22,7 +23,8 @@ import { getDialogStatus } from './status.ts';
 
 interface GroupedItem {
   id: string | number;
-  label: string;
+  title?: string;
+  description?: string;
   items: InboxItemInput[];
   orderIndex: number | null;
 }
@@ -38,21 +40,21 @@ interface UseGroupedDialogsOutput {
 
 interface UseGroupedDialogsProps {
   items: InboxItemInput[];
-  filters?: FilterState;
   viewType: InboxViewType;
+  /* There are more dialogs */
+  hasNextPage: boolean;
   isLoading: boolean;
+  filters?: FilterState;
   isFetchingNextPage?: boolean;
   /* true if the search results are displayed */
   displaySearchResults?: boolean;
-  /* collapse all groups into one group, default=false 	(Only if displaySearchResults===true) */
-  collapseGroups?: boolean;
-  /* title for the collapsed group, only applicable if collapseGroups=true */
-  getCollapsedGroupTitle?: (count: number) => string;
   /* used to open modal with seen by log */
   onSeenByLogModalChange: (input: CurrentSeenByLog) => void;
 }
 
-const sortByUpdatedAt = (arr: DialogListItemProps[]) => {
+const BANKRUPTCY_SERVICE_RESOURCE = 'urn:altinn:resource:app_brg_konkursbehandling';
+
+const sortGroupedDialogs = (arr: DialogListItemProps[]) => {
   return arr.sort((a, b) => new Date(b.updatedAt ?? 0).getTime() - new Date(a.updatedAt ?? 0).getTime());
 };
 
@@ -111,17 +113,20 @@ const useGroupedDialogs = ({
   viewType,
   isLoading,
   isFetchingNextPage,
-  getCollapsedGroupTitle,
-  collapseGroups = false,
   onSeenByLogModalChange,
+  hasNextPage,
 }: UseGroupedDialogsProps): UseGroupedDialogsOutput => {
   const { t } = useTranslation();
   const format = useFormat();
   const systemLabelActions = useDialogActions();
+  const { allOrganizationsSelected } = useParties();
+  const collapseGroups = displaySearchResults || viewType !== 'inbox';
+  const getCollapsedGroupTitle = (viewType: InboxViewType, count: number, hasNextPage: boolean) =>
+    (hasNextPage ? t('word.moreThan') : '') + t(`inbox.heading.title.${viewType}`, { count });
 
   const clockPrefix = t('word.clock_prefix');
   const formatString = `do MMMM yyyy ${clockPrefix ? `'${clockPrefix}' ` : ''}HH.mm`;
-  const allWithinSameYear = items.every((d) => new Date(d.updatedAt).getFullYear() === new Date().getFullYear());
+  const allWithinSameYear = items.every((d) => new Date(d.contentUpdatedAt).getFullYear() === new Date().getFullYear());
   const isInbox = viewType === 'inbox';
 
   const formatDialogItem = (item: InboxItemInput, groupId: string): DialogListItemProps => {
@@ -159,13 +164,16 @@ const useGroupedDialogs = ({
       summary: item.viewType === 'inbox' ? item.summary : undefined,
       state: getDialogState(item.viewType),
       recipient: item.recipient,
+      color: item.recipient.type?.toLowerCase() as 'person' | 'company',
+      grouped: allOrganizationsSelected,
       attachmentsCount: item.guiAttachmentCount,
       seenByLog: item.seenByLog,
-      unread: item.seenSinceLastContentUpdate.length === 0,
+      unread: item.seenSinceLastContentUpdate.length === 0 && !item.hasUnopenedContent,
       status: getDialogStatus(item.status, t),
+      extendedStatusLabel: item.extendedStatus,
       controls: <ContextMenu {...contextMenu} />,
-      updatedAt: item.updatedAt,
-      updatedAtLabel: format(item.updatedAt, formatString),
+      updatedAt: item.contentUpdatedAt,
+      updatedAtLabel: format(item.contentUpdatedAt, formatString),
       dueAtLabel: item.dueAt ? t('dialog.due_at', { date: format(item.dueAt, formatString) }) : undefined,
       dueAt: item.dueAt,
       sentCount: item.fromPartyTransmissionsCount ?? 0,
@@ -177,7 +185,7 @@ const useGroupedDialogs = ({
     };
   };
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  // biome-ignore lint/correctness/useExhaustiveDependencies: This hook does not specify all of its dependencies
   return useMemo(() => {
     if (isLoading) {
       return {
@@ -189,43 +197,72 @@ const useGroupedDialogs = ({
     }
 
     if (!displaySearchResults && !isInbox && !isLoading) {
-      const groupedDialogs = items.map((item) => formatDialogItem(item, item.viewType));
+      const groups: Record<string, DialogListGroupPropsSort> = {};
+      const allDialogs: DialogListItemProps[] = [];
+
+      // bankruptcy exception
+      const bankruptcyDialogs = items.filter((item) => item.serviceResource === BANKRUPTCY_SERVICE_RESOURCE);
+      const regularItems = items.filter((item) => item.serviceResource !== BANKRUPTCY_SERVICE_RESOURCE);
+
+      // bankruptcy group
+      if (bankruptcyDialogs.length > 0) {
+        groups.bankruptcy = {
+          orderIndex: 9999,
+        };
+        allDialogs.push(...bankruptcyDialogs.map((item) => formatDialogItem(item, 'bankruptcy')));
+      }
+
+      groups[viewType] = {
+        title: getCollapsedGroupTitle(viewType, regularItems.length, hasNextPage),
+        description: <Trans i18nKey={`inbox.heading.description.${viewType}`} components={{ strong: <strong /> }} />,
+        orderIndex: null,
+      };
+      allDialogs.push(...regularItems.map((item) => formatDialogItem(item, item.viewType)));
+
+      const groupedDialogs = sortGroupedDialogs(allDialogs);
       if (isFetchingNextPage) {
         groupedDialogs.push(...renderLoadingItems(1));
       }
       return {
         groupedDialogs,
-        groups: {
-          [viewType]: {
-            title: t(`inbox.heading.title.${viewType}`, { count: items.length }),
-            description: (
-              <Trans i18nKey={`inbox.heading.description.${viewType}`} components={{ strong: <strong /> }} />
-            ),
-          },
-        },
+        groups,
       };
     }
 
     const groupedItems: GroupedItem[] = [];
 
+    const bankruptcyDialogs = items.filter((item) => item.serviceResource === BANKRUPTCY_SERVICE_RESOURCE);
+    const regularDialogs = items.filter((item) => item.serviceResource !== BANKRUPTCY_SERVICE_RESOURCE);
+
+    if (bankruptcyDialogs.length > 0) {
+      groupedItems.push({
+        id: 'bankruptcy',
+        items: bankruptcyDialogs,
+        orderIndex: 9999, //put on top
+      });
+    }
+
     if (collapseGroups) {
       groupedItems.push({
         id: 'collapsed',
-        label: getCollapsedGroupTitle?.(items.length) ?? t('inbox.heading.collapsed_group_default'),
-        items,
+        title: getCollapsedGroupTitle(viewType, regularDialogs.length, hasNextPage),
+        description: t('search.results.description'),
+        items: regularDialogs,
         orderIndex: null,
       });
     } else {
-      items.reduce((acc, item, _, list) => {
-        const updatedAt = new Date(item.updatedAt);
+      regularDialogs.reduce((acc, item, _, list) => {
+        const updatedAt = new Date(item.contentUpdatedAt);
+        const month = format(updatedAt, 'LLLL');
+        const capitalizedMonth = month.charAt(0).toUpperCase() + month.slice(1);
+
         const groupKey = displaySearchResults
           ? item.viewType
           : allWithinSameYear
-            ? format(updatedAt, 'LLLL')
+            ? capitalizedMonth
             : format(updatedAt, 'yyyy');
 
-        const isDateKey = !displaySearchResults;
-
+        const groupByDate = !displaySearchResults;
         const label = displaySearchResults
           ? t(`inbox.heading.search_results.${groupKey}`, {
               count: list.filter((i) => i.viewType === groupKey).length,
@@ -238,12 +275,12 @@ const useGroupedDialogs = ({
           existingGroup.items.push(item);
         } else {
           const viewTypeIndex = ['bin', 'archive', 'sent', 'drafts', 'inbox'].indexOf(item.viewType);
-          const orderIndex = isDateKey
+          const orderIndex = groupByDate
             ? allWithinSameYear
               ? updatedAt.getMonth()
               : updatedAt.getFullYear()
             : viewTypeIndex;
-          acc.push({ id: groupKey, label, items: [item], orderIndex });
+          acc.push({ id: groupKey, title: label, description: '', items: [item], orderIndex });
         }
 
         return acc;
@@ -251,20 +288,21 @@ const useGroupedDialogs = ({
     }
 
     const groups = Object.fromEntries(
-      groupedItems.map(({ id, label, orderIndex }) => [id, { title: label, orderIndex }]),
+      groupedItems.map(({ id, title, description, orderIndex }) => [id, { title, orderIndex, description }]),
     );
 
-    const mappedGroupedDialogs = groupedItems.flatMap(({ id, items }) =>
-      items.map((item) => formatDialogItem(item, id.toString())),
+    const mappedGroupedDialogs = groupedItems.flatMap(({ id, items: groupItems }) =>
+      groupItems.map((item) => formatDialogItem(item, id.toString())),
     );
 
-    const groupedDialogs = sortByUpdatedAt(mappedGroupedDialogs);
+    const groupedDialogs = sortGroupedDialogs(mappedGroupedDialogs);
 
     if (isFetchingNextPage) {
       groupedDialogs.push(...renderLoadingItems(1));
     }
+
     return { groupedDialogs, groups };
-  }, [items, displaySearchResults, t, format, viewType, allWithinSameYear, isLoading]);
+  }, [items, displaySearchResults, t, format, viewType, allWithinSameYear, isLoading, isFetchingNextPage]);
 };
 
 export default useGroupedDialogs;

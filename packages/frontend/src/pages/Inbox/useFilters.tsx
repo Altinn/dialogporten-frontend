@@ -63,6 +63,9 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
     }
 
     if (name === FilterCategory.STATUS) {
+      if (value?.length > 2) {
+        return t('inbox.filter.multiple.status', { count: value?.length });
+      }
       return value.map((v) => t(`status.${v.toString().toLowerCase()}`)).join(', ');
     }
 
@@ -72,7 +75,7 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
 
     if (name === FilterCategory.ORG) {
       if (value?.length === 1) {
-        const serviceOwner = getOrganization(organizations, String(value[0]), 'nb');
+        const serviceOwner = getOrganization(organizations, String(value[0]));
         return serviceOwner?.name || '';
       }
       return t('inbox.filter.multiple.sender', { count: value?.length });

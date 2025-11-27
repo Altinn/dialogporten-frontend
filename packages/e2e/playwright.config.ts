@@ -3,7 +3,7 @@ import { defineConfig, devices } from '@playwright/test';
 // Test credentials
 export const testCredentials = {
   pid: '15915299854',
-  expectedName: 'Konditor Ustabil',
+  expectedName: 'Ustabil Konditor',
 };
 
 /**
@@ -22,7 +22,7 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
   use: {
-    baseURL: process.env.E2E_BASE_URL || 'https://af.tt.altinn.no',
+    baseURL: process.env.E2E_BASE_URL || 'https://af.tt02.altinn.no',
     trace: 'on-first-retry',
   },
 

@@ -1,33 +1,30 @@
 import {
+  Badge,
   type Color,
   type FooterProps,
-  type HeaderProps,
   Layout,
+  type LayoutColor,
   type LayoutProps,
-  type MenuItemProps,
+  type LayoutTheme,
   type Size,
+  Snackbar,
 } from '@altinn/altinn-components';
-import { Snackbar } from '@altinn/altinn-components';
 import { useQueryClient } from '@tanstack/react-query';
-import { type ChangeEvent, useEffect, useLayoutEffect } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, Outlet, useLocation, useSearchParams } from 'react-router-dom';
+import { Outlet, useLocation, useSearchParams } from 'react-router-dom';
 import { useParties } from '../../api/hooks/useParties.ts';
-import { updateLanguage } from '../../api/queries.ts';
-import { createHomeLink } from '../../auth';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
-import { i18n } from '../../i18n/config.ts';
 import { getSearchStringFromQueryParams } from '../../pages/Inbox/queryParams.ts';
 import { useProfile } from '../../pages/Profile';
 import { PageRoutes } from '../../pages/routes.ts';
 import { useGlobalState } from '../../useGlobalState.ts';
 import { BetaModal } from '../BetaModal';
+import { FloatingDropdown } from '../FloatingDropdown';
 import { useAuth } from '../Login/AuthContext.tsx';
-import { useAccounts } from './Accounts/useAccounts.tsx';
 import { useFooter } from './Footer';
 import { useGlobalMenu } from './GlobalMenu';
-import { useAutocomplete, useSearchString } from './Search';
-import { useWindowSize } from './useWindowSize.tsx';
+import { useHeaderConfig } from './useHeaderConfig.tsx';
 
 export const ProtectedPageLayout = () => {
   const { isAuthenticated } = useAuth();
@@ -41,18 +38,12 @@ export const PageLayout: React.FC = () => {
   const [searchParams] = useSearchParams();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const { searchValue, setSearchValue, onClear } = useSearchString();
-  const { selectedProfile, selectedParties, parties, allOrganizationsSelected, currentEndUser } = useParties();
-  const { autocomplete } = useAutocomplete({ selectedParties: selectedParties, searchValue });
-
-  const { accounts, selectedAccount, accountSearch, accountGroups, onSelectAccount } = useAccounts({
-    parties,
-    selectedParties,
-    allOrganizationsSelected,
-  });
+  const { selectedProfile, selectedParties, allOrganizationsSelected, currentEndUser } = useParties();
+  const [isErrorState] = useGlobalState<boolean>(QUERY_KEYS.ERROR_STATE, false);
+  const { isGlobalMenuEnabled, headerProps } = useHeaderConfig();
 
   const footer: FooterProps = useFooter();
-  const { mobileMenu, desktopMenu, sidebarMenu } = useGlobalMenu();
+  const { sidebarMenu } = useGlobalMenu();
 
   useProfile();
 
@@ -70,108 +61,51 @@ export const PageLayout: React.FC = () => {
     queryClient.setQueryData(['search'], () => searchString || '');
   }, [searchParams]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: Not all dependencies are needed
-  useEffect(() => {
-    if (!searchValue) {
-      onClear();
-    }
-  }, [searchValue]);
+  let color: LayoutColor = 'neutral';
+  let theme: LayoutTheme = 'default';
 
-  const handleUpdateLanguage = async (language: string) => {
-    try {
-      await updateLanguage(language);
-    } catch (error) {
-      console.error('Failed to delete saved search:', error);
-    } finally {
-      void i18n.changeLanguage(language);
-    }
-  };
+  const isSinglePartyMatchingCurrentUser =
+    selectedProfile === 'person' && selectedParties.length === 1 && selectedParties[0].party === currentEndUser?.party;
 
-  const windowSize = useWindowSize();
-
-  const [isErrorState] = useGlobalState<boolean>(QUERY_KEYS.ERROR_STATE, false);
-
-  const headerProps: HeaderProps = {
-    currentAccount: selectedAccount,
-    logo: {
-      as: (props: MenuItemProps) => {
-        // @ts-ignore
-        return <Link to={createHomeLink()} {...props} />;
-      },
-    },
-    search: {
-      expanded: false,
-      name: t('word.search'),
-      placeholder: t('word.search'),
-      value: searchValue,
-      onClear: () => onClear(),
-      onChange: (event: ChangeEvent<HTMLInputElement>) => setSearchValue(event.target.value),
-      autocomplete: {
-        ...autocomplete,
-        items: autocomplete.items,
-      },
-    },
-    mobileMenu,
-    globalMenu: {
-      menuLabel: t('word.menu'),
-      menu: desktopMenu,
-      onSelectAccount: (account: string) => onSelectAccount(account, PageRoutes.inbox),
-      backLabel: t('word.back'),
-      currentEndUserLabel: t('parties.current_end_user', { name: currentEndUser?.name ?? 'n/a' }),
-      accountMenu: {
-        items: accounts,
-        groups: accountGroups,
-        ...(accountSearch && {
-          search: accountSearch,
-        }),
-        menuItemsVirtual: {
-          isVirtualized: true,
-          scrollRefStyles: {
-            maxHeight: windowSize.isTabletOrSmaller ? 'calc(100vh - 14rem)' : 'calc(80vh - 10rem)',
-            paddingBottom: '0.5rem',
-          },
-        },
-      },
-      logoutButton: {
-        label: t('word.log_out'),
-        onClick: () => {
-          (window as Window).location = `/api/logout`;
-        },
-      },
-    },
-    locale: {
-      title: 'Språk/language',
-      options: [
-        { label: t('word.locale.nb'), value: 'nb', checked: i18n.language === 'nb' },
-        { label: t('word.locale.nn'), value: 'nn', checked: i18n.language === 'nn' },
-        { label: t('word.locale.en'), value: 'en', checked: i18n.language === 'en' },
-      ],
-      onSelect: (lang) => handleUpdateLanguage(lang),
-    },
-  };
-
-  const color = isProfile ? 'neutral' : selectedProfile;
+  if (isSinglePartyMatchingCurrentUser) {
+    color = 'person';
+    theme = 'subtle';
+  } else if (isProfile || allOrganizationsSelected) {
+    color = 'person';
+    theme = 'neutral';
+  } else {
+    color = selectedProfile === 'company' ? 'company' : 'person';
+    theme = 'subtle';
+  }
 
   const layoutProps: LayoutProps = {
-    theme: isErrorState ? 'default' : 'subtle',
+    theme,
+    color,
+    content: {
+      color: isProfile ? 'person' : undefined,
+    },
     skipLink: {
       href: '#main-content',
       color: 'inherit' as Color,
       size: 'xs' as Size,
       children: t('skip_link.jumpto'),
     },
-    color,
     header: headerProps,
     footer,
-    sidebar: { menu: sidebarMenu, hidden: isErrorState },
+    sidebar: {
+      menu: sidebarMenu,
+      hidden: isErrorState,
+      footer: <Badge label={t('word.beta')} variant="base" color="neutral" size="sm" />,
+    },
   };
 
   return (
     <>
-      <Layout {...layoutProps}>
+      <Layout {...layoutProps} useGlobalHeader={isGlobalMenuEnabled}>
         <Outlet />
         <Snackbar />
         <BetaModal />
+        <FloatingDropdown />
       </Layout>
     </>
   );

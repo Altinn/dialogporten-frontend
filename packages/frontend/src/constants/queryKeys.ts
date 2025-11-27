@@ -1,4 +1,5 @@
 export const QUERY_KEYS = {
+  ALTINN2_MESSAGES: 'altinn2Messages',
   DIALOG_BY_ID: 'dialogById',
   PARTIES: 'parties',
   PARTIES_EMPTY_LIST: 'partiesEmptyList',
@@ -10,9 +11,9 @@ export const QUERY_KEYS = {
   COUNT_DIALOGS: 'countDialogs',
   MAIN_CONTENT_REFERENCE: 'mainContentReference',
   SAVED_SEARCHES: 'savedSearches',
-  AUTOCOMPLETE: 'autocomplete',
   PROFILE: 'profile',
-  NOTIFICATIONSETTINGS: 'notificationsettings',
+  NOTIFICATION_SETTINGS_FOR_CURRENT_USER: 'notificationSettingsForCurrentUser',
+  PROFILE_PARTIES_WITH_NOTIFICATION_SETTINGS: 'profilePartiesWithNotificationSettings',
   ORGANIZATIONS: 'organizations',
   SEARCH_VALUE: 'searchValue',
   ENTERED_SEARCH_VALUE: 'enteredSearchValue',
@@ -21,4 +22,7 @@ export const QUERY_KEYS = {
   SET_UNDO_LABEL_LOADING: 'setUndoLabelLoading',
   ERROR_STATE: 'errorState',
   SHOW_TOUR: 'showTour',
+  SHOW_PROFILE_TOUR: 'showProfileTour',
+  IS_SELF_IDENTIFIED_USER: 'isSelfIdentifiedUser',
+  HAS_LOADED_DIALOGS_INITIALLY: 'hasLoadedDialogsInitially',
 };

@@ -18,4 +18,11 @@ export const allowedTags = [
   'h6',
   'br',
   'span',
+  /* extended */
+  'table',
+  'thead',
+  'tbody',
+  'tr',
+  'td',
+  'th',
 ];

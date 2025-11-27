@@ -1,13 +1,28 @@
-import { BookmarksSection, PageBase, Toolbar } from '@altinn/altinn-components';
+import { BookmarksSettingsList, PageBase, Toolbar } from '@altinn/altinn-components';
+import { t } from 'i18next';
 import { useParties } from '../../api/hooks/useParties.ts';
+import { createMessageBoxLink } from '../../auth';
+import { Notice } from '../../components/Notice';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
+import { useFeatureFlag } from '../../featureFlags/index.ts';
+import { usePageTitle } from '../../hooks/usePageTitle.tsx';
 import { PageRoutes } from '../routes.ts';
 import styles from './savedSearchesPage.module.css';
 import { useSavedSearches } from './useSavedSearches.tsx';
 
 export const SavedSearchesPage = () => {
-  const { selectedPartyIds, parties, selectedParties, allOrganizationsSelected } = useParties();
+  const {
+    selectedPartyIds,
+    parties,
+    selectedParties,
+    allOrganizationsSelected,
+    isSelfIdentifiedUser,
+    currentPartyUuid,
+  } = useParties();
   const { bookmarkSectionProps } = useSavedSearches(selectedPartyIds);
+
+  usePageTitle({ baseTitle: t('sidebar.saved_searches') });
+  const isGlobalMenuEnabled = useFeatureFlag('globalMenu.enabled') as boolean;
 
   const { accounts, selectedAccount, accountSearch, accountGroups, onSelectAccount } = useAccounts({
     parties,
@@ -15,24 +30,37 @@ export const SavedSearchesPage = () => {
     allOrganizationsSelected,
   });
 
+  if (isSelfIdentifiedUser) {
+    return (
+      <Notice
+        title={t('notice.self_identified_warning.title')}
+        description={t('notice.self_identified_warning.description')}
+        link={{
+          href: createMessageBoxLink(currentPartyUuid),
+          label: t('notice.self_identified_warning.button_link'),
+        }}
+      />
+    );
+  }
+
   return (
-    <>
-      <PageBase margin="page">
-        <div className={styles.gridContainer}>
-          {selectedAccount ? (
-            <Toolbar
-              accountMenu={{
-                items: accounts,
-                search: accountSearch,
-                groups: accountGroups,
-                currentAccount: selectedAccount,
-                onSelectAccount: (account: string) => onSelectAccount(account, PageRoutes.savedSearches),
-              }}
-            />
-          ) : null}
-        </div>
-      </PageBase>
-      {bookmarkSectionProps && <BookmarksSection {...bookmarkSectionProps} />}
-    </>
+    <PageBase margin="page">
+      <div className={styles.gridContainer} style={isGlobalMenuEnabled ? { marginTop: '-1rem' } : undefined}>
+        {selectedAccount ? (
+          <Toolbar
+            accountMenu={{
+              items: accounts,
+              search: accountSearch,
+              groups: accountGroups,
+              currentAccount: selectedAccount,
+              onSelectAccount: (account: string) => onSelectAccount(account, PageRoutes.savedSearches),
+              isVirtualized: true,
+              title: t('parties.change_label'),
+            }}
+          />
+        ) : null}
+      </div>
+      {bookmarkSectionProps && <BookmarksSettingsList {...bookmarkSectionProps} />}
+    </PageBase>
   );
 };

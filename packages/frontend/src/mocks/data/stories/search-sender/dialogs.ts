@@ -1,6 +1,7 @@
 import { DialogStatus, type SearchDialogFieldsFragment, SystemLabel } from 'bff-types-generated';
 export const dialogs: SearchDialogFieldsFragment[] = [
     {
+        serviceResource: 'default',
         seenSinceLastContentUpdate: [],
         id: '1',
         endUserContext: {
@@ -12,7 +13,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0,  contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-05-23T23:00:00.000Z',
-        extendedStatus: null,
         content: {
             title: {
                 mediaType: 'text/plain',
@@ -38,6 +38,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         },
     },
     {
+        serviceResource: 'default',
         seenSinceLastContentUpdate: [],
         id: '2',
         endUserContext: {
@@ -49,7 +50,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0,  contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-05-23T23:00:00.000Z',
-        extendedStatus: null,
         content: {
             title: {
                 mediaType: 'text/plain',
@@ -75,6 +75,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         },
     },
     {
+        serviceResource: 'default',
         seenSinceLastContentUpdate: [],
         id: '3',
         endUserContext: {
@@ -86,7 +87,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0,  contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-05-23T23:00:00.000Z',
-        extendedStatus: null,
         content: {
             title: {
                 mediaType: 'text/plain',

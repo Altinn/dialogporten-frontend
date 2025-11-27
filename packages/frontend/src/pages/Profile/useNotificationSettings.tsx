@@ -1,25 +1,17 @@
-import { useQuery } from '@tanstack/react-query';
-import type { NotificationSettingsResponse, NotificationsettingsByUuidQuery } from 'bff-types-generated';
-import { getNotificationsettingsByUuid, updateNotificationsetting } from '../../api/queries.ts';
+import type { NotificationsettingsForCurrentUserQuery } from 'bff-types-generated';
+import { getNotificationsettingsForCurrentUser, updateNotificationsetting } from '../../api/queries.ts';
+import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 
-export const useNotificationSettings = (partyUuid?: string) => {
-  if (!partyUuid) {
-    return {
-      notificationSettings: null,
-      isLoading: false,
-      updateNotificationsetting,
-    };
-  }
-
-  const { data, isLoading } = useQuery<NotificationsettingsByUuidQuery>({
-    queryKey: [QUERY_KEYS.NOTIFICATIONSETTINGS, partyUuid],
-    queryFn: () => getNotificationsettingsByUuid(partyUuid),
+export const useNotificationSettingsForCurrentUser = () => {
+  const { data, isLoading } = useAuthenticatedQuery<NotificationsettingsForCurrentUserQuery>({
+    queryKey: [QUERY_KEYS.NOTIFICATION_SETTINGS_FOR_CURRENT_USER],
+    queryFn: () => getNotificationsettingsForCurrentUser(),
     refetchOnWindowFocus: false,
   });
 
   return {
-    notificationSettings: (data?.notificationsettingsByUuid as NotificationSettingsResponse) || null,
+    notificationSettingsForCurrentUser: data?.notificationsettingsForCurrentUser || [],
     isLoading,
     updateNotificationsetting,
   };

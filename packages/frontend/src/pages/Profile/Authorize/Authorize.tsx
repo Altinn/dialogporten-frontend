@@ -2,6 +2,7 @@ import { Heading, List, ListItem, type ListItemProps, PageBase, PageNav, Toolbar
 import { PlusIcon } from '@navikt/aksel-icons';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { usePageTitle } from '../../../hooks/usePageTitle';
 import { PageRoutes } from '../../routes';
 
 const dummyUsers: ListItemProps[] = [
@@ -29,6 +30,7 @@ const dummyUsers: ListItemProps[] = [
 export const Authorize = () => {
   const { t } = useTranslation();
   const [search, setSearch] = useState('');
+  usePageTitle({ baseTitle: t('sidebar.profile.authorize') });
 
   const filteredUsers = dummyUsers.filter(
     (user) => user.title?.toString().toLowerCase().includes(search.toLowerCase()) ?? false,

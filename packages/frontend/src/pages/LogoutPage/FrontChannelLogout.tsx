@@ -7,9 +7,7 @@ export const FrontChannelLogout = () => {
     const iss = params.get('iss');
 
     if (sid && iss) {
-      void fetch(`/api/frontchannel-logout?sid=${sid}&iss=${encodeURIComponent(iss)}`).catch((error) => {
-        console.error('Error during front channel logout:', error);
-      });
+      void fetch(`/api/frontchannel-logout?sid=${sid}&iss=${encodeURIComponent(iss)}`);
     }
   }, []);
   return null;

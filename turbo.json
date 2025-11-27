@@ -6,14 +6,18 @@
       "outputs": ["generated/**"],
       "cache": false
     },
-    "build:@digdir/dialogporten-node-logger": {
+    "build:@altinn/dialogporten-node-logger": {
       "dependsOn": ["^build"],
+      "outputs": ["packages/node-logger/dist/**"],
+      "cache": false
+    },
+    "prepare:@altinn/dialogporten-node-logger": {
       "outputs": ["packages/node-logger/dist/**"],
       "cache": false
     },
     "build": {
       "env": ["BASEURL", "URL", "BUILD_VERSION"],
-      "dependsOn": ["build:bff-types-generated", "build:@digdir/dialogporten-node-logger"],
+      "dependsOn": ["build:bff-types-generated", "prepare:@altinn/dialogporten-node-logger"],
       "cache": false
     },
     "dev": {

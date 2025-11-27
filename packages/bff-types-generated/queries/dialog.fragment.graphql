@@ -9,7 +9,7 @@ fragment SearchDialogFields on SearchDialog {
   dueAt
   contentUpdatedAt
   hasUnopenedContent
-  extendedStatus
+  serviceResource
   seenSinceLastContentUpdate {
     ...SeenLogFields
   }
@@ -55,6 +55,7 @@ fragment DialogByIdFields on Dialog {
   party
   org
   progress
+  serviceResourceType
   fromServiceOwnerTransmissionsCount
   fromPartyTransmissionsCount
   attachments {
@@ -76,7 +77,6 @@ fragment DialogByIdFields on Dialog {
   dueAt
   createdAt
   contentUpdatedAt
-  extendedStatus
   endUserContext {
     systemLabels
   }

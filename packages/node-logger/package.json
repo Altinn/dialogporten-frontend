@@ -1,17 +1,21 @@
 {
-  "name": "@digdir/dialogporten-node-logger",
+  "name": "@altinn/dialogporten-node-logger",
   "version": "1.0.0",
   "description": "A logger for nodejs",
   "main": "dist/index.js",
   "scripts": {
+    "prepare": "tsc",
     "build": "tsc",
     "test": "npm run build && TEST_LOGGING=true node dist/index.js"
   },
-  "keywords": ["logging"],
+  "keywords": [
+    "logging"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "pino": "9.3.2",
+    "pino-opentelemetry-transport": "1.1.0",
     "pino-pretty": "11.2.2"
   },
   "devDependencies": {

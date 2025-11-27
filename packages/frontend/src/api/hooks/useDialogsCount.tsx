@@ -1,11 +1,13 @@
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { keepPreviousData } from '@tanstack/react-query';
 import type {
   CountableDialogFieldsFragment,
   GetAllDialogsForCountQuery,
   PartyFieldsFragment,
 } from 'bff-types-generated';
 import { useMemo } from 'react';
+import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
+import { useFeatureFlag } from '../../featureFlags';
 import { graphQLSDK } from '../queries.ts';
 import { getPartyIds, getQueryVariables } from '../utils/dialog.ts';
 import { getViewTypes } from '../utils/viewType.ts';
@@ -20,13 +22,13 @@ interface UseDialogsOutput {
 }
 
 export const useDialogsCount = (parties?: PartyFieldsFragment[], viewType?: InboxViewType): UseDialogsOutput => {
-  const { selectedParties } = useParties();
+  const { selectedParties, isSelfIdentifiedUser } = useParties();
   const partiesToUse = parties ? parties : selectedParties;
   const partyIds = getPartyIds(partiesToUse);
-
-  const { data } = useQuery<GetAllDialogsForCountQuery>({
-    queryKey: [QUERY_KEYS.COUNT_DIALOGS, partyIds, viewType],
-    staleTime: 1000 * 60 * 10,
+  const disableDialogCount = useFeatureFlag<boolean>('inbox.disableDialogCount');
+  const { data } = useAuthenticatedQuery<GetAllDialogsForCountQuery>({
+    queryKey: [QUERY_KEYS.COUNT_DIALOGS],
+    staleTime: Number.POSITIVE_INFINITY,
     retry: 3,
     queryFn: () =>
       graphQLSDK.getAllDialogsForCount(
@@ -38,9 +40,12 @@ export const useDialogsCount = (parties?: PartyFieldsFragment[], viewType?: Inbo
           },
         }),
       ),
-    enabled: partyIds.length > 0 && partyIds.length <= 20,
-    gcTime: 10 * 1000,
+    enabled: !disableDialogCount && partyIds.length > 0 && partyIds.length <= 20 && !isSelfIdentifiedUser,
+    gcTime: 0,
     placeholderData: keepPreviousData,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
   });
 
   const dialogCountsByViewType = useMemo(() => {

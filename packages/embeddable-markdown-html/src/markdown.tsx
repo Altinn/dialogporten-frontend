@@ -4,6 +4,7 @@ import * as prod from 'react/jsx-runtime';
 import addClasses from 'rehype-class-names';
 import rehypeReact from 'rehype-react';
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
+import remarkGfm from 'remark-gfm';
 import remarkParse, { type Options as RemarkParseOptions } from 'remark-parse';
 import remarkToRehype from 'remark-rehype';
 import { unified } from 'unified';
@@ -19,6 +20,12 @@ const customSchema = {
   tagNames: allowedTags,
   attributes: {
     a: ['href'],
+    th: ['align', 'className', 'style'],
+    td: ['align', 'className', 'style'],
+    table: ['className', 'style'],
+    thead: ['className', 'style'],
+    tbody: ['className', 'style'],
+    tr: ['className', 'style'],
   },
 };
 
@@ -33,13 +40,14 @@ const customSchema = {
 export const Markdown: ({
   children,
   onError,
-}: { children: string; onError: (error: unknown) => void }) => ReactElement | null = ({ children, onError }) => {
+}: { children: string; onError: (error: ErrorEvent) => void }) => ReactElement | null = ({ children, onError }) => {
   const [reactContent, setReactContent] = useState<ReactElement | null>(null);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: Full control of what triggers this code is needed
   useEffect(() => {
     unified()
       .use(remarkParse, {} as RemarkParseOptions)
+      .use(remarkGfm)
       .use(remarkToRehype, {} as RemarkRehypeOptions)
       .use(rehypeSanitize, customSchema)
       .use(addClasses, defaultClassMap)

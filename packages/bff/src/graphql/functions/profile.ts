@@ -1,11 +1,16 @@
+import { logger } from '@altinn/dialogporten-node-logger';
 import axios from 'axios';
 import config from '../../config.ts';
 import { GroupRepository, PartyRepository, ProfileRepository } from '../../db.ts';
 import { Group, Party, ProfileTable } from '../../entities.ts';
 import type { NotificationSettingsInputData } from '../types/profile.ts';
-const { platformProfileAPI_url, platformExchangeTokenEndpointURL } = config;
 
-type TokenType = {
+const { platformBaseURL } = config;
+
+const platformExchangeTokenEndpointURL = platformBaseURL + '/authentication/api/v1/exchange/id-porten';
+const platformProfileAPI_url = platformBaseURL + '/profile/api/v1/';
+
+export type TokenType = {
   access_token: string;
   access_token_expires_at?: number;
   id_token?: string;
@@ -14,19 +19,26 @@ type TokenType = {
   scope: string;
   tokenUpdatedAt?: number;
 };
-interface Context {
+
+export interface Context {
   session: {
     get: (key: string) => TokenType | string | undefined;
   };
 }
 
 export const exchangeToken = async (context: Context): Promise<string> => {
+  const { enableNewOIDC } = config;
   const token = typeof context.session.get('token') === 'object' ? (context.session.get('token') as TokenType) : null;
 
   if (!token) {
-    console.error('exchangeToken No token found in session');
+    logger.error('exchangeToken: Unable to find token');
     return '';
   }
+
+  if (enableNewOIDC) {
+    return token.access_token;
+  }
+
   try {
     const { data: newToken } = await axios.get(platformExchangeTokenEndpointURL, {
       headers: {
@@ -37,24 +49,24 @@ export const exchangeToken = async (context: Context): Promise<string> => {
     });
     return newToken;
   } catch (error) {
-    console.error('exchangeToken: Error fetching new token:', error);
+    logger.error(error, 'exchangeToken: Error fetching new token:');
   }
   return '';
 };
 
 export const getOrCreateProfile = async (context: Context): Promise<ProfileTable> => {
-  const { disableProfile } = config;
   const pid = typeof context.session.get('pid') === 'string' ? (context.session.get('pid') as string) : '';
   const sessionLocale =
     typeof context.session.get('locale') === 'string' ? (context.session.get('locale') as string) : '';
 
   if (!pid) {
-    console.error('No pid provided');
+    logger.error('No pid provided');
     throw new Error('PID is required to get or create a profile');
   }
+
   const profile = await ProfileRepository!.createQueryBuilder('profile').where('profile.pid = :pid', { pid }).getOne();
   const exchangedToken = await exchangeToken(context);
-  const groups = disableProfile ? [] : await getFavoritesFromCore(exchangedToken);
+  const groups = await getFavoritesFromCore(exchangedToken);
 
   if (!profile) {
     const newProfile = new ProfileTable();
@@ -80,7 +92,7 @@ export const getOrCreateProfile = async (context: Context): Promise<ProfileTable
 export const addFavoriteParty = async (context: Context, partyUuid: string) => {
   const token = context.session.get('token');
   if (!token) {
-    console.error('No token found in session');
+    logger.error('No token found in session');
     return [];
   }
   const newToken = await exchangeToken(context);
@@ -99,7 +111,7 @@ export const addFavoriteParty = async (context: Context, partyUuid: string) => {
     );
     return [response.data as Group];
   } catch (error) {
-    console.error('Error adding favorite:', error);
+    logger.error(error, 'Error adding favorite:');
     throw new Error('Failed to add favorite');
   }
 };
@@ -137,7 +149,7 @@ export const addFavoritePartyToGroup = async (pid: string, partyId: string, cate
     if (!alreadyInGroup) {
       party.groups = [...party.groups, group];
     } else {
-      console.info(`Party ${partyId} already exists in group ${categoryName}, skipping addition`);
+      logger.info(`Party ${partyId} already exists in group ${categoryName}, skipping addition`);
       return currentProfile;
     }
   }
@@ -155,12 +167,12 @@ export const addFavoritePartyToGroup = async (pid: string, partyId: string, cate
 export const deleteFavoriteParty = async (context: Context, partyUuid: string) => {
   const token = context.session.get('token');
   if (!token) {
-    console.error('No token found in session');
+    logger.error('No token found in session');
     return [];
   }
   const newToken = await exchangeToken(context);
 
-  const response = await axios
+  return await axios
     .delete(`${platformProfileAPI_url}users/current/party-groups/favorites/${partyUuid}`, {
       headers: {
         Authorization: `Bearer ${newToken}`,
@@ -169,10 +181,9 @@ export const deleteFavoriteParty = async (context: Context, partyUuid: string) =
       },
     })
     .catch((error) => {
-      console.error('Error deleting favorite party:', error?.status, error?.message);
+      logger.error({ status: error?.status, message: error?.message }, 'Error deleting favorite party:');
       return;
     });
-  return response;
 };
 
 export const getUserFromCore = async (context: Context) => {
@@ -186,12 +197,12 @@ export const getUserFromCore = async (context: Context) => {
       },
     });
     if (!data) {
-      console.error('No core profile data found');
+      logger.error('No core profile data found');
       return;
     }
     return data;
   } catch (error) {
-    console.error('Error fetching user from core:', error);
+    logger.error(error, 'Error fetching user from core:');
   }
   return;
 };
@@ -207,39 +218,33 @@ export const getFavoritesFromCore = async (token: string) => {
     });
     return [data as Group];
   } catch {
-    console.error('getFavoritesFromCore: Error fetching core profile favorite data, returning empty array');
+    logger.error('getFavoritesFromCore: Error fetching core profile favorite data, returning empty array');
     return [];
   }
 };
 
-export const getNotificationsSettings = async (partyUuid: string, context: Context) => {
-  if (!partyUuid) {
-    console.error('No uuid found in session');
-    return;
-  }
+export const getNotificationsettingsForCurrentUser = async (context: Context) => {
   const newToken = await exchangeToken(context);
   if (!newToken) {
-    console.error('No new token received');
+    logger.error('No new token received');
     return;
   }
 
   let data = [] as unknown[];
   try {
-    const response = await axios.get(
-      `${platformProfileAPI_url}users/current/notificationsettings/parties/${partyUuid}`,
-      {
-        headers: {
-          Authorization: `Bearer ${newToken}`,
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
+    const response = await axios.get(`${platformProfileAPI_url}users/current/notificationsettings/parties`, {
+      headers: {
+        Authorization: `Bearer ${newToken}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
       },
-    );
+    });
     data = response.data;
     if (!data) {
-      console.error('No core profile data found');
+      logger.error('No core profile data found');
       return;
     }
+
     return data;
   } catch (error) {
     if (typeof error === 'object' && error !== null) {
@@ -250,31 +255,31 @@ export const getNotificationsSettings = async (partyUuid: string, context: Conte
         return;
       }
     } else {
-      console.error('Error fetching core notificationsSettings for user:', partyUuid, error);
+      logger.error(error, 'Error fetching core notificationsSettings for user:');
     }
   }
   return;
 };
 
 export const updateNotificationsSetting = async (
-  notificationSettinInput: NotificationSettingsInputData,
+  notificationSettingsInput: NotificationSettingsInputData,
   context: Context,
 ) => {
-  const { partyUuid } = notificationSettinInput;
+  const { partyUuid } = notificationSettingsInput;
   try {
     if (!partyUuid) {
-      console.error('No uuid found in data');
-      return [];
+      logger.error('No uuid found in data');
+      return;
     }
     const newToken = await exchangeToken(context);
 
     if (!newToken) {
-      console.error('No new token received');
+      logger.error('No new token received');
       return;
     }
     const response = await axios.put(
       `${platformProfileAPI_url}users/current/notificationsettings/parties/${partyUuid}`,
-      notificationSettinInput,
+      notificationSettingsInput,
       {
         headers: {
           Authorization: `Bearer ${newToken}`,
@@ -287,7 +292,7 @@ export const updateNotificationsSetting = async (
   } catch (error) {
     if (typeof error === 'object' && error !== null) {
       const err = error as { status?: number; message?: string };
-      console.error(
+      logger.error(
         `Failed to update notificationsSettings for partyUuid ${partyUuid}: ${err.status ?? ''} ${err.message ?? ''}`,
       );
     }
@@ -298,13 +303,13 @@ export const updateNotificationsSetting = async (
 export const deleteNotificationsSetting = async (partyUuid: string, context: Context) => {
   try {
     if (!partyUuid) {
-      console.error('No uuid found in data');
+      logger.error('No uuid found in data');
       return;
     }
     const newToken = await exchangeToken(context);
 
     if (!newToken) {
-      console.error('No new token received');
+      logger.error('No new token received');
       return;
     }
     const response = await axios.delete(
@@ -321,7 +326,7 @@ export const deleteNotificationsSetting = async (partyUuid: string, context: Con
   } catch (error) {
     if (typeof error === 'object' && error !== null) {
       const err = error as { status?: number; message?: string };
-      console.error(`Failed to delete notificationsSettings: ${err.status ?? ''} ${err.message ?? ''}`);
+      logger.error(`Failed to delete notificationsSettings: ${err.status ?? ''} ${err.message ?? ''}`);
     }
     return;
   }
@@ -330,16 +335,16 @@ export const deleteNotificationsSetting = async (partyUuid: string, context: Con
 export const getNotificationAddressByOrgNumber = async (orgnr: string, context: Context) => {
   const token = context.session.get('token');
   if (!token) {
-    console.error('No token found in session');
+    logger.error('No token found in session');
     return;
   }
   if (!orgnr) {
-    console.error('No orgnr provided');
+    logger.error('No orgnr provided');
     return;
   }
   const newToken = await exchangeToken(context);
   if (!newToken) {
-    console.error('No new token received');
+    logger.error('No new token received');
     return;
   }
   const { data, status, statusText } = await axios

@@ -1,7 +1,7 @@
 import { defaultAppURL } from '../';
 import { PageRoutes } from '../../src/pages/routes';
 import { expect, test } from '../fixtures';
-import { expectIsCompanyPage, getSidebarMenuItem, getSidebarMenuItemBadge, performSearch } from './common';
+import { expectIsCompanyPage, getSidebarMenuItem, performSearch } from './common';
 
 test.describe('Saved search', () => {
   test('Create and delete saved search', async ({ page, isMobile }) => {
@@ -10,7 +10,12 @@ test.describe('Saved search', () => {
     await toolbarArea.getByRole('button', { name: 'add' }).click();
 
     await toolbarArea.getByText('Velg avsender').locator('visible=true').click();
-    await toolbarArea.getByLabel('Oslo kommune').locator('visible=true').check();
+    await page
+      .getByTestId('filter-base-toolbar-filter-org')
+      .locator('span')
+      .filter({ hasText: 'Oslo kommune' })
+      .nth(1)
+      .click();
 
     if (isMobile) {
       await page.getByRole('button', { name: 'Vis alle resultater' }).click();
@@ -102,7 +107,12 @@ test.describe('Saved search', () => {
 
     await toolbarArea.getByRole('button', { name: 'add' }).click();
     await toolbarArea.getByText('Velg avsender').locator('visible=true').click();
-    await toolbarArea.getByLabel('Oslo kommune').locator('visible=true').check();
+    await page
+      .getByTestId('filter-base-toolbar-filter-org')
+      .locator('span')
+      .filter({ hasText: 'Oslo kommune' })
+      .nth(1)
+      .click();
 
     if (isMobile) {
       await page.getByRole('button', { name: 'Vis alle resultater' }).click();
@@ -112,7 +122,12 @@ test.describe('Saved search', () => {
 
     await toolbarArea.getByRole('button', { name: 'add' }).click();
     await toolbarArea.getByText('Velg status').locator('visible=true').click();
-    await toolbarArea.getByLabel('Sendt').locator('visible=true').check();
+    await page
+      .getByTestId('filter-base-toolbar-filter-status')
+      .locator('span')
+      .filter({ hasText: 'Sendt' })
+      .nth(1)
+      .click();
 
     if (isMobile) {
       await page.getByRole('button', { name: 'Vis alle resultater' }).click();
@@ -128,7 +143,12 @@ test.describe('Saved search', () => {
     await getSidebarMenuItem(page, PageRoutes.sent).click();
     await toolbarArea.getByRole('button', { name: 'add' }).click();
     await toolbarArea.getByText('Velg avsender').locator('visible=true').click();
-    await toolbarArea.getByLabel('Oslo kommune').locator('visible=true').check();
+    await page
+      .getByTestId('filter-base-toolbar-filter-org')
+      .locator('span')
+      .filter({ hasText: 'Oslo kommune' })
+      .nth(1)
+      .click();
 
     if (isMobile) {
       await page.getByRole('button', { name: 'Vis alle resultater' }).click();

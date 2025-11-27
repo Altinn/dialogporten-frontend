@@ -211,7 +211,6 @@ const createSenderOrgFilter = (
 ): ToolbarFilterProps => {
   const filteredDialogs = getFilteredDialogs(allDialogs, currentFilters, FilterCategory.ORG);
   const orgCount = countOccurrences(filteredDialogs.map((d) => d.org));
-
   const uniqueOrgs = Array.from(new Set([...allDialogs.map((d) => d.org), ...orgsFromSearchState]));
 
   return {
@@ -221,12 +220,16 @@ const createSenderOrgFilter = (
     optionType: 'checkbox',
     options: uniqueOrgs
       .map((org) => ({
-        label: getOrganization(allOrganizations, org, 'nb')?.name || org,
+        label: getOrganization(allOrganizations, org)?.name || org,
         value: org,
-        badge: getFilterBadgeProps(orgCount[org] || 0),
         count: orgCount[org] || 0,
       }))
-      .filter((option) => option.count > 0)
+      .filter((option) => {
+        if (orgsFromSearchState.includes(option.value)) {
+          return true;
+        }
+        return option.count > 0;
+      })
       .sort((a, b) => a.label?.localeCompare(b.label)),
   };
 };
@@ -263,55 +266,55 @@ const createStatusFilter = (
         label: t('status.not_applicable'),
         groupId: 'status-group-0',
         value: DialogStatus.NotApplicable,
-        badge: getFilterBadgeProps(statusCount[DialogStatus.NotApplicable] || 0),
+        count: statusCount[DialogStatus.NotApplicable] || 0,
       },
       {
         label: t('status.requires_attention'),
         groupId: 'status-group-1',
         value: DialogStatus.RequiresAttention,
-        badge: getFilterBadgeProps(statusCount[DialogStatus.RequiresAttention] || 0),
+        count: statusCount[DialogStatus.RequiresAttention] || 0,
       },
       {
         label: t('status.awaiting'),
         groupId: 'status-group-1',
         value: DialogStatus.Awaiting,
-        badge: getFilterBadgeProps(statusCount[DialogStatus.Awaiting] || 0),
+        count: statusCount[DialogStatus.Awaiting] || 0,
       },
       {
         label: t('status.in_progress'),
         groupId: 'status-group-1',
         value: DialogStatus.InProgress,
-        badge: getFilterBadgeProps(statusCount[DialogStatus.InProgress] || 0),
+        count: statusCount[DialogStatus.InProgress] || 0,
       },
       {
         label: t('status.completed'),
         groupId: 'status-group-1',
         value: DialogStatus.Completed,
-        badge: getFilterBadgeProps(statusCount[DialogStatus.Completed] || 0),
+        count: statusCount[DialogStatus.Completed] || 0,
       },
       {
         label: t('status.draft'),
         groupId: 'status-group-2',
         value: DialogStatus.Draft,
-        badge: getFilterBadgeProps(statusCount[DialogStatus.Draft] || 0),
+        count: statusCount[DialogStatus.Draft] || 0,
       },
       {
         label: t('status.sent'),
         groupId: 'status-group-2',
         value: SystemLabel.Sent,
-        badge: getFilterBadgeProps(labelCounts[SystemLabel.Sent] || 0),
+        count: labelCounts[SystemLabel.Sent] || 0,
       },
       {
         label: t('status.archive'),
         groupId: 'status-group-3',
         value: SystemLabel.Archive,
-        badge: getFilterBadgeProps(labelCounts[SystemLabel.Archive] || 0),
+        count: labelCounts[SystemLabel.Archive] || 0,
       },
       {
         label: t('status.bin'),
         groupId: 'status-group-3',
         value: SystemLabel.Bin,
-        badge: getFilterBadgeProps(labelCounts[SystemLabel.Bin] || 0),
+        count: labelCounts[SystemLabel.Bin] || 0,
       },
     ],
   };

@@ -1,6 +1,7 @@
 import React, { type ReactNode, type ErrorInfo, useEffect, useRef } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { QUERY_KEYS } from '../../constants/queryKeys';
+import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { PageRoutes } from '../../pages/routes';
 import { useGlobalState } from '../../useGlobalState';
 
@@ -9,24 +10,27 @@ interface ErrorBoundaryProps {
   fallbackUI?: ReactNode;
   componentName?: string;
   setIsErrorState: (isError: boolean) => void;
+  logError: (error: Error, context?: Record<string, unknown>, errorMessage?: string) => void;
 }
 
 interface ErrorBoundaryState {
   hasError: boolean;
+  error?: Error;
+  errorInfo?: ErrorInfo;
 }
 
 class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, error: undefined, errorInfo: undefined };
   }
 
-  static getDerivedStateFromError(_: Error): ErrorBoundaryState {
-    return { hasError: true };
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    return { hasError: true, error };
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Caught by ErrorBoundary:', error, errorInfo);
+    this.setState({ errorInfo, error });
     this.props.setIsErrorState(true);
   }
 
@@ -35,6 +39,18 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
     const isMock = params.get('mock') === 'true' && params.get('simulateError') === 'true';
 
     if (isMock || (this.state.hasError && import.meta.env.PROD)) {
+      const errorToReport = this.state.error || new Error('ErrorBoundary caught an error');
+      const errorInfoToReport = this.state.errorInfo || {};
+      this.props.logError(
+        errorToReport,
+        {
+          ...errorInfoToReport,
+          context: 'ErrorBoundary.render',
+          componentName: this.props.componentName || 'Unknown Component',
+        },
+        'ErrorBoundary caught an error',
+      );
+
       return (
         <Navigate
           to={PageRoutes.error}
@@ -63,9 +79,10 @@ function ErrorBoundaryWrapper({
   componentName: string;
 }) {
   const [, setIsErrorState] = useGlobalState<boolean>(QUERY_KEYS.ERROR_STATE, false);
+  const { logError } = useErrorLogger();
 
   return (
-    <ErrorBoundary setIsErrorState={setIsErrorState} componentName={componentName}>
+    <ErrorBoundary setIsErrorState={setIsErrorState} componentName={componentName} logError={logError}>
       {children}
     </ErrorBoundary>
   );

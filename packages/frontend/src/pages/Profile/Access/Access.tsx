@@ -13,6 +13,7 @@ import { ExclamationmarkTriangleIcon, PackageIcon } from '@navikt/aksel-icons';
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { usePageTitle } from '../../../hooks/usePageTitle';
 import { PageRoutes } from '../../routes';
 
 const dummyGroups = [
@@ -52,6 +53,8 @@ export const Access = () => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [filterState, setFilterState] = useState<{ type?: string[] }>({});
   const { t } = useTranslation();
+
+  usePageTitle({ baseTitle: t('sidebar.profile.access') });
 
   const onToggle = (id: string) => {
     setExpandedId((prevState) => (prevState === id ? null : id));

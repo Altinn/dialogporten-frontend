@@ -123,27 +123,40 @@ module appInsights '../modules/applicationInsights/create.bicep' = {
   }
 }
 
-module bffAvailabilityTest '../modules/applicationInsights/availabilityTest.bicep' = {
-  scope: resourceGroup
-  name: 'bffAvailabilityTest'
-  params: {
-    name: 'BFF - ${environment}'
-    location: location
-    tags: tags
-    appInsightsId: appInsights.outputs.appInsightsId
-    url: 'https://${applicationGatewayConfiguration.hostName}/api/health'
-  }
-}
+// Get hostnames with availability test enabled
+var availabilityTestHostNames = filter(applicationGatewayConfiguration.hostNames, h => h.enableAvailabilityTest)
 
-module frontendAvailabilityTest '../modules/applicationInsights/availabilityTest.bicep' = {
+module bffAvailabilityTests '../modules/applicationInsights/availabilityTest.bicep' = [for (hostname, i) in availabilityTestHostNames: {
   scope: resourceGroup
-  name: 'frontendAvailabilityTest'
+  name: 'bffAvailabilityTest-${replace(hostname.name, '.', '-')}'
   params: {
-    name: 'Frontend - ${environment}'
+    name: 'BFF - ${environment} - ${hostname.name}'
     location: location
     tags: tags
     appInsightsId: appInsights.outputs.appInsightsId
-    url: 'https://${applicationGatewayConfiguration.hostName}'
+    url: 'https://${hostname.name}/api/health'
+  }
+}]
+
+module frontendAvailabilityTests '../modules/applicationInsights/availabilityTest.bicep' = [for (hostname, i) in availabilityTestHostNames: {
+  scope: resourceGroup
+  name: 'frontendAvailabilityTest-${replace(hostname.name, '.', '-')}'
+  params: {
+    name: 'Frontend - ${environment} - ${hostname.name}'
+    location: location
+    tags: tags
+    appInsightsId: appInsights.outputs.appInsightsId
+    url: 'https://${hostname.name}'
+  }
+}]
+
+module appConfiguration '../modules/appConfiguration/main.bicep' = {
+  scope: resourceGroup
+  name: 'appConfiguration'
+  params: {
+    namePrefix: namePrefix
+    location: location
+    tags: tags
   }
 }
 
@@ -157,6 +170,7 @@ module containerAppEnv '../modules/containerAppEnv/main.bicep' = {
     subnetId: vnet.outputs.containerAppEnvironmentSubnetId
     zoneRedundancyEnabled: containerAppEnvZoneRedundancyEnabled
     workloadProfiles: containerAppEnvWorkloadProfiles
+    appInsightsConnectionString: appInsights.outputs.connectionString
     tags: tags
   }
 }
@@ -287,3 +301,5 @@ output resourceGroupName string = resourceGroup.name
 output postgreServerName string = postgresql.outputs.serverName
 output appInsightsSourceMapStorageAccountName string = appInsights.outputs.sourceMapStorageAccountName
 output appInsightsSourceMapContainerName string = appInsights.outputs.sourceMapContainerName
+output appConfigurationName string = appConfiguration.outputs.name
+output appConfigurationEndpoint string = appConfiguration.outputs.endpoint

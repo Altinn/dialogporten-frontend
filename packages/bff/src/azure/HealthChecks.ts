@@ -1,5 +1,5 @@
 import { setTimeout } from 'node:timers/promises';
-import { logger } from '@digdir/dialogporten-node-logger';
+import { logger } from '@altinn/dialogporten-node-logger';
 import axios from 'axios';
 import type { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
@@ -79,6 +79,18 @@ const healthCheckList: HealthCheck[] = [
       } catch (error) {
         logger.error(error, 'OIDC health check failed');
         return { status: 'error', detail: 'OIDC URL unreachable' };
+      }
+    },
+  },
+  {
+    name: 'dialogporten',
+    checkFn: async () => {
+      try {
+        await axios.get(config.dialogporten.healthUrl);
+        return { status: 'ok' };
+      } catch (error) {
+        logger.error(error, 'Dialogporten health check failed');
+        return { status: 'error', detail: 'Dialogporten URL unreachable' };
       }
     },
   },

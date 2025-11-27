@@ -1,5 +1,6 @@
 import type { SavedSearchesFieldsFragment } from 'bff-types-generated';
 import type { FormatDistanceFunction } from '../../i18n/useDateFnsLocale.tsx';
+import { logError } from '../../utils/errorLogger';
 
 export const autoFormatRelativeTime = (date: Date, formatDistance: FormatDistanceFunction): string => {
   try {
@@ -7,7 +8,14 @@ export const autoFormatRelativeTime = (date: Date, formatDistance: FormatDistanc
       addSuffix: true,
     });
   } catch (error) {
-    console.error('autoFormatRelativeTime Error: ', error);
+    logError(
+      error as Error,
+      {
+        context: 'searchUtils.autoFormatRelativeTime',
+        date: date.toISOString(),
+      },
+      'Error formatting relative time',
+    );
     return '';
   }
 };
@@ -22,7 +30,14 @@ export const getMostRecentSearchDate = (data: SavedSearchesFieldsFragment[]): Da
     })!.updatedAt;
     return new Date(Number.parseInt(timestamp, 10));
   } catch (error) {
-    console.error('getMostRecentSearchDate Error: ', error);
+    logError(
+      error as Error,
+      {
+        context: 'searchUtils.getMostRecentSearchDate',
+        dataLength: data?.length || 0,
+      },
+      'Error getting most recent search date',
+    );
     return null;
   }
 };

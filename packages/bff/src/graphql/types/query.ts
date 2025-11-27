@@ -1,12 +1,15 @@
+import { logger } from '@altinn/dialogporten-node-logger';
 import { list, objectType, stringArg } from 'nexus';
-import config from '../../config.ts';
+import config from '../../config.js';
 import { SavedSearchRepository } from '../../db.ts';
+import { getAltinn2messages } from '../functions/altinn2messages.ts';
 import {
   getNotificationAddressByOrgNumber,
-  getNotificationsSettings,
+  getNotificationsettingsForCurrentUser,
   getOrCreateProfile,
   getUserFromCore,
 } from '../functions/profile.ts';
+import { getLanguageFromAltinnContext, languageCodes, updateAltinnPersistentContextValue } from './cookie.js';
 import { getOrganizationsFromRedis } from './organization.ts';
 import { OrganizationResponse } from './profile.ts';
 
@@ -16,16 +19,45 @@ export const Query = objectType({
     t.field('profile', {
       type: 'Profile',
       resolve: async (_source, _args, ctx) => {
-        const { disableProfile } = config;
         const profile = await getOrCreateProfile(ctx);
-        const user = disableProfile ? [] : await getUserFromCore(ctx);
+        const user = await getUserFromCore(ctx);
         const { language, groups, updatedAt } = profile;
+        const languageFromAltinnContext = getLanguageFromAltinnContext(
+          ctx.request.raw.cookies?.altinnPersistentContext,
+        );
+
+        // ensure the cookie uses the preferred language
+        if (!languageFromAltinnContext) {
+          const ul = languageCodes[language];
+          if (ul) {
+            const current = ctx.request.raw.cookies?.altinnPersistentContext;
+            const value = updateAltinnPersistentContextValue(current, ul);
+            ctx.request.context.reply.setCookie('altinnPersistentContext', value, {
+              path: '/',
+              expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+              httpOnly: true,
+              secure: true,
+              domain: config.authContextCookieDomain,
+              encode: (v: string) => v,
+            });
+          }
+        }
+
         return {
-          language,
+          language: languageFromAltinnContext || language,
           updatedAt,
           groups,
           user,
         };
+      },
+    });
+    t.field('altinn2messages', {
+      type: list('Altinn2Message'),
+      args: {
+        selectedAccountIdentifier: stringArg(),
+      },
+      resolve: async (_source, { selectedAccountIdentifier }, ctx) => {
+        return await getAltinn2messages(ctx, selectedAccountIdentifier);
       },
     });
     t.field('organizations', {
@@ -34,7 +66,7 @@ export const Query = objectType({
         try {
           return await getOrganizationsFromRedis();
         } catch (error) {
-          console.error('Failed to fetch organizations from Redis:', error);
+          logger.error(error, 'Failed to fetch organizations from Redis:');
           throw new Error('Failed to fetch organizations');
         }
       },
@@ -54,18 +86,10 @@ export const Query = objectType({
       },
     });
 
-    t.field('notificationsettingsByUuid', {
-      type: 'NotificationSettingsResponse',
-      args: {
-        uuid: stringArg(),
-      },
-      resolve: async (_source, { uuid }, ctx) => {
-        const { disableProfile } = config;
-        if (!disableProfile && uuid) {
-          const result = await getNotificationsSettings(uuid, ctx);
-          return result || null;
-        }
-        return null;
+    t.field('notificationsettingsForCurrentUser', {
+      type: list('NotificationSettingsResponse'),
+      resolve: async (_source, _args, ctx) => {
+        return (await getNotificationsettingsForCurrentUser(ctx)) ?? null;
       },
     });
 
@@ -75,10 +99,8 @@ export const Query = objectType({
         orgnr: stringArg(),
       },
       resolve: async (_source, { orgnr }, ctx) => {
-        const { disableProfile } = config;
-        if (!disableProfile && orgnr) {
-          const result = await getNotificationAddressByOrgNumber(orgnr, ctx);
-          return result || null;
+        if (orgnr) {
+          return (await getNotificationAddressByOrgNumber(orgnr, ctx)) ?? null;
         }
         return null;
       },

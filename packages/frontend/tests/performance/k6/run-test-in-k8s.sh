@@ -1,8 +1,6 @@
 #!/bin/bash
 
 failed=0
-API_VERSION=${API_VERSION:-v1}
-API_ENVIRONMENT=${API_ENVIRONMENT:-yt01}
 namespace="dialogporten"
 kubectl config set-context --current --namespace=$namespace
 
@@ -16,6 +14,7 @@ help() {
     echo "  -v, --vus            Specify the number of virtual browser users"
     echo "  -w, --wus            Specify the number of virtual bff users"
     echo "  -d, --duration       Specify the duration of the test"
+    echo "  -r, --randomize      Flag to specify whether to randomize the test data or not"
     echo "  -p, --parallelism    Specify the level of parallelism"
     echo "  -b, --breakpoint     Flag to set breakpoint test or not"
     echo "  -a, --abort          Flag to specify whether to abort on fail or not, only used in breakpoint tests"
@@ -52,6 +51,7 @@ print_logs() {
 breakpoint=false
 abort_on_fail=false
 environment="yt"
+randomize=true
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -98,6 +98,10 @@ while [[ $# -gt 0 ]]; do
             abort_on_fail="$2"
             shift 2
             ;;
+        -r|--randomize)
+            randomize="$2"
+            shift 2
+            ;;
         *)
             echo "Invalid option: $1"
             help
@@ -125,14 +129,9 @@ configmapname=$(echo "$configmapname" | tr '[:upper:]' '[:lower:]')
 # Set testid to name + timestamp
 testid="${name}_$(date '+%Y%m%dT%H%M%S')"
 
-archive_args="-e BROWSER_VUS=$browserVus -e BFF_VUS=$bffVus -e DURATION=$duration -e ENVIRONMENT=$environment"
-if $breakpoint; then
-    archive_args="-e breakpoint=true -e stages_target=$vus -e stages_duration=$duration -e abort_on_fail=$abort_on_fail"
-fi
+archive_args="-e BROWSER_VUS=$browserVus -e BFF_VUS=$bffVus -e DURATION=$duration -e ENVIRONMENT=$environment -e BREAKPOINT=$breakpoint -e ABORT_ON_FAIL=$abort_on_fail -e RANDOMIZE=$randomize"
 # Create the k6 archive
 if ! k6 archive $filename \
-     -e API_VERSION="$API_VERSION" \
-     -e API_ENVIRONMENT="$API_ENVIRONMENT" \
      -e TESTID="$testid" $archive_args \
      --tag namespace=$namespace; then
     echo "Error: Failed to create k6 archive"
@@ -146,10 +145,12 @@ if [ ! -f "archive.tar" ]; then
 fi
 
 # Create the configmap from the archive
-if ! kubectl create configmap $configmapname --from-file=archive.tar; then
+if ! kubectl get configmap $configmapname &>/dev/null; then
+  if ! kubectl create configmap $configmapname --from-file=archive.tar; then
     echo "Error: Failed to create configmap"
     rm archive.tar
     exit 1
+  fi
 fi
 
 # Create the config.yml file from a string

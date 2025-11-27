@@ -1,27 +1,13 @@
 import type { FooterProps } from '@altinn/altinn-components';
 import { useTranslation } from 'react-i18next';
-
-const footerLinks = [
-  {
-    href: 'https://info.altinn.no/om-altinn/',
-    resourceId: 'footer.nav.about_altinn',
-  },
-  {
-    href: 'https://info.altinn.no/om-altinn/driftsmeldinger/',
-    resourceId: 'footer.nav.service_messages',
-  },
-  {
-    href: 'https://info.altinn.no/om-altinn/personvern/',
-    resourceId: 'footer.nav.privacy_policy',
-  },
-  {
-    href: 'https://info.altinn.no/om-altinn/tilgjengelighet/',
-    resourceId: 'footer.nav.accessibility',
-  },
-];
+import { useParties } from '../../../api/hooks/useParties';
+import { getFooterLinks } from '../../../auth/url';
 
 export const useFooter = (): FooterProps => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const { currentPartyUuid } = useParties();
+  const footerLinks = getFooterLinks(currentPartyUuid || '', i18n.language);
+
   return {
     address: 'Postboks 1382 Vika, 0114 Oslo.',
     address2: 'Org.nr. 991 825 827',

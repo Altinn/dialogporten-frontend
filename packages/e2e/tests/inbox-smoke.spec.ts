@@ -16,13 +16,13 @@ test.describe('Inbox smoke tests', () => {
 
   test('should fetch dialogs and open correctly', async ({ page, baseURL }) => {
     await page.getByRole('button', { name: 'Prøv ny innboks' }).click();
-    await page.getByRole('button', { name: 'Close tour' }).click();
+    await page.getByRole('button', { name: 'Lukk' }).click();
 
     await expect(page.getByRole('link', { name: 'BACK OFF! Dette er en' })).toBeVisible();
     await page.getByRole('link', { name: 'BACK OFF! Dette er en' }).click();
 
     await expect(page).toHaveURL(`${baseURL}/inbox/0198cc16-d75d-75ad-b6bc-2337d64363dd/`);
-    await expect(page.getByText('Digitaliseringsdirektoratettil Konditor Ustabil')).toBeVisible();
+    await expect(page.getByText(/Digitaliseringsdirektoratet\s*til Ustabil Konditor/)).toBeVisible();
 
     await expect(page.getByRole('button', { name: 'Flytt til arkivet' })).toBeVisible();
   });

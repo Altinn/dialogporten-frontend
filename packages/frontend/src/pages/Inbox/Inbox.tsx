@@ -1,7 +1,7 @@
 import {
+  Button,
   DialogList,
   DsAlert,
-  DsButton,
   DsParagraph,
   Heading,
   PageBase,
@@ -12,22 +12,24 @@ import {
 import type { FilterState } from '@altinn/altinn-components/dist/types/lib/components/Toolbar/Toolbar';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { type InboxViewType, useDialogs } from '../../api/hooks/useDialogs.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
-import { createFiltersURLQuery } from '../../auth';
+import { createFiltersURLQuery, createMessageBoxLink } from '../../auth';
 import { EmptyState } from '../../components/EmptyState/EmptyState.tsx';
+import { Notice } from '../../components/Notice';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
 import { useSearchString } from '../../components/PageLayout/Search/';
-import { useWindowSize } from '../../components/PageLayout/useWindowSize.tsx';
 import { SaveSearchButton } from '../../components/SavedSearchButton/SaveSearchButton.tsx';
 import { isSavedSearchDisabled } from '../../components/SavedSearchButton/savedSearchEnabled.ts';
 import { SeenByModal } from '../../components/SeenByModal/SeenByModal.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
-import { useDynamicTour } from '../../onboardingTour';
+import { useFeatureFlag } from '../../featureFlags';
+import { usePageTitle } from '../../hooks/usePageTitle.tsx';
+import { useInboxOnboarding } from '../../onboardingTour';
 import { PageRoutes } from '../routes.ts';
+import { Altinn2ActiveSchemasNotification } from './Altinn2ActiveSchemasNotification.tsx';
 import { FilterCategory, readFiltersFromURLQuery } from './filters.ts';
-import styles from './inbox.module.css';
 import { useFilters } from './useFilters.tsx';
 import useGroupedDialogs from './useGroupedDialogs.tsx';
 import { useMockError } from './useMockError.tsx';
@@ -44,21 +46,25 @@ export interface CurrentSeenByLog {
 
 export const Inbox = ({ viewType }: InboxProps) => {
   const { t } = useTranslation();
-
   const {
     selectedParties,
     allOrganizationsSelected,
     parties,
     partiesEmptyList,
+    isSelfIdentifiedUser,
+    currentPartyUuid,
     isError: unableToLoadParties,
     isLoading: isLoadingParties,
+    organizationLimitReached,
   } = useParties();
-
   useMockError();
   const location = useLocation();
   const [filterState, setFilterState] = useState<FilterState>(readFiltersFromURLQuery(location.search));
   const [currentSeenByLogModal, setCurrentSeenByLogModal] = useState<CurrentSeenByLog | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
+  const isGlobalMenuEnabled = useFeatureFlag('globalMenu.enabled') as boolean;
+  const isAltinn2MessagesEnabled = useFeatureFlag('inbox.enableAltinn2Messages') as boolean;
+  const isAlertBannerEnabled = useFeatureFlag('showTechnincalIssuesMessage') as boolean;
 
   const onFiltersChange = (filters: FilterState) => {
     const currentURL = new URL(window.location.href);
@@ -97,13 +103,23 @@ export const Inbox = ({ viewType }: InboxProps) => {
     }
   }, [searchParams.toString()]);
 
-  const { accounts, selectedAccount, accountSearch, accountGroups, onSelectAccount } = useAccounts({
+  const { accounts, selectedAccount, accountSearch, accountGroups, onSelectAccount, filterAccount } = useAccounts({
     parties,
     selectedParties,
     allOrganizationsSelected,
+    options: {
+      showGroups: true,
+    },
   });
 
   const { filters, getFilterLabel } = useFilters({ viewType });
+
+  usePageTitle({
+    baseTitle: viewType,
+    searchValue: enteredSearchValue,
+    filterState,
+    getFilterLabel,
+  });
 
   const isLoading = isLoadingParties || isLoadingDialogs;
 
@@ -118,7 +134,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     }
   }, [isLoading]);
 
-  useDynamicTour({
+  useInboxOnboarding({
     isLoadingParties,
     isLoadingDialogs,
     dialogsSuccess,
@@ -129,16 +145,13 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const { groupedDialogs, groups } = useGroupedDialogs({
     onSeenByLogModalChange: setCurrentSeenByLogModal,
     items: dialogs,
+    hasNextPage,
     displaySearchResults: searchMode,
     filters: filterState,
     viewType,
     isLoading,
     isFetchingNextPage,
-    getCollapsedGroupTitle: (count) => t(`inbox.heading.title.${viewType}`, { count }),
-    collapseGroups: viewType !== 'inbox',
   });
-
-  const windowSize = useWindowSize();
 
   if (unableToLoadParties) {
     return (
@@ -154,17 +167,69 @@ export const Inbox = ({ viewType }: InboxProps) => {
     );
   }
 
+  if (isSelfIdentifiedUser) {
+    return (
+      <PageBase margin="page">
+        <Notice
+          title={t('notice.self_identified_warning.title')}
+          description={t('notice.self_identified_warning.description')}
+          link={{
+            href: createMessageBoxLink(currentPartyUuid),
+            label: t('notice.self_identified_warning.button_link'),
+          }}
+        />
+      </PageBase>
+    );
+  }
+
   if (partiesEmptyList) {
     return (
       <PageBase margin="page">
-        <h1 className={styles.noPartiesText}>{t('inbox.no_parties_found')}</h1>
+        <Notice title={t('inbox.no_parties_found')} />
+      </PageBase>
+    );
+  }
+
+  if (organizationLimitReached) {
+    return (
+      <PageBase margin="page">
+        <Section data-testid="inbox-toolbar" style={isGlobalMenuEnabled ? { marginTop: '-1rem' } : undefined}>
+          <Toolbar
+            data-testid="inbox-toolbar"
+            accountMenu={{
+              items: accounts,
+              search: accountSearch,
+              groups: accountGroups,
+              currentAccount: selectedAccount,
+              onSelectAccount: (account: string) => onSelectAccount(account, PageRoutes[viewType]),
+              filterAccount,
+              isVirtualized: true,
+              title: t('parties.change_label'),
+            }}
+          />
+          <Notice
+            title={t('organizationLimitReached.title')}
+            description={t('organizationLimitReached.description', { count: selectedParties.length })}
+          />
+        </Section>
       </PageBase>
     );
   }
 
   return (
     <PageBase margin="page">
-      <section data-testid="inbox-toolbar">
+      <section data-testid="inbox-toolbar" style={isGlobalMenuEnabled ? { marginTop: '-1rem' } : undefined}>
+        {isAlertBannerEnabled && (
+          <DsAlert data-color="warning" style={{ marginBottom: '1.5rem' }}>
+            <Heading data-size="xs">{t('inbox.unable_to_load_parties.title')}</Heading>
+            <DsParagraph>{t('inbox.historical_messages_date_warning')}</DsParagraph>
+            <DsParagraph>
+              <Link style={{ color: 'rgb(60, 40, 7)' }} to={createMessageBoxLink(currentPartyUuid)}>
+                {t('inbox.historical_messages_date_warning_link')}
+              </Link>
+            </DsParagraph>
+          </DsAlert>
+        )}
         {selectedAccount ? (
           <>
             <Toolbar
@@ -175,13 +240,9 @@ export const Inbox = ({ viewType }: InboxProps) => {
                 groups: accountGroups,
                 currentAccount: selectedAccount,
                 onSelectAccount: (account: string) => onSelectAccount(account, PageRoutes[viewType]),
-                menuItemsVirtual: {
-                  isVirtualized: true,
-                  scrollRefStyles: {
-                    maxHeight: windowSize.isTabletOrSmaller ? 'calc(100vh - 14rem)' : 'calc(80vh - 10rem)',
-                    paddingBottom: '0.5rem',
-                  },
-                },
+                filterAccount,
+                isVirtualized: true,
+                title: t('parties.change_label'),
               }}
               filterState={filterState}
               getFilterLabel={getFilterLabel}
@@ -197,6 +258,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
         ) : null}
       </section>
       <Section>
+        {isAltinn2MessagesEnabled && <Altinn2ActiveSchemasNotification selectedAccount={selectedAccount} />}
         {dialogsSuccess && !dialogs.length && !isLoading && (
           <EmptyState query={enteredSearchValue} viewType={viewType} searchMode={searchMode} />
         )}
@@ -208,9 +270,15 @@ export const Inbox = ({ viewType }: InboxProps) => {
           highlightWords={searchMode ? [enteredSearchValue] : undefined}
         />
         {hasNextPage && (
-          <DsButton aria-label={t('dialog.aria.fetch_more')} onClick={fetchNextPage} variant="tertiary">
+          <Button
+            aria-label={t('dialog.aria.fetch_more')}
+            onClick={fetchNextPage}
+            variant="outline"
+            size="lg"
+            labelSize="md"
+          >
             {t('dialog.fetch_more')}
-          </DsButton>
+          </Button>
         )}
       </Section>
       <SeenByModal

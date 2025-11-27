@@ -1,5 +1,24 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
 import type { QUERY_KEYS } from './constants/queryKeys.ts';
+
+export function useGlobalStringState(queryKey: string, defaultValue: string): [string, (newValue: string) => void] {
+  const queryClient = useQueryClient();
+
+  // seed from cache if present, else from default
+  const cached = queryClient.getQueryData<string>([queryKey]);
+  const [local, setLocal] = useState<string>(cached ?? defaultValue);
+
+  useEffect(() => {
+    setValue(local);
+  }, [local]);
+
+  const setValue = (newValue: string) => {
+    setLocal(newValue);
+    queryClient.setQueryData([queryKey], newValue);
+  };
+  return [local, setValue];
+}
 
 type UseGlobalStateReturn<T> = [T, (newValue: T) => void];
 

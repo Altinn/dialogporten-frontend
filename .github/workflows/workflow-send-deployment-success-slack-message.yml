@@ -1,0 +1,145 @@
+name: Send Deployment Success Slack Message
+
+permissions:
+  contents: read
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+        description: "Environment that was deployed (staging, yt01, prod)"
+      version:
+        required: true
+        type: string
+        description: "Version that was deployed"
+      previous_version:
+        required: false
+        type: string
+        description: "Previous version that was deployed"
+        default: ""
+    secrets:
+      SLACK_BOT_TOKEN:
+        required: true
+      SLACK_CHANNEL_ID:
+        required: true
+
+jobs:
+  send-slack-message:
+    name: Send Deployment Success Slack Message
+    runs-on: ubuntu-latest
+    steps:
+      - uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Determine environment URL and color
+        id: determine-env-config
+        env:
+          ENVIRONMENT: ${{ inputs.environment }}
+        run: |
+          case "$ENVIRONMENT" in
+            "staging")
+              url="https://af.tt02.altinn.no"
+              color="#FFB347"
+              display_name="Staging (TT02)"
+              ;;
+            "yt01")
+              url="https://af.yt01.altinn.cloud"
+              color="#87CEEB"
+              display_name="YT01"
+              ;;
+            "prod")
+              url="https://af.altinn.no"
+              color="#36a64f"
+              display_name="Production"
+              ;;
+            *)
+              url="https://af.at23.altinn.cloud"
+              color="#808080"
+              display_name="$ENVIRONMENT"
+              ;;
+          esac
+
+          echo "url=$url" >> $GITHUB_OUTPUT
+          echo "color=$color" >> $GITHUB_OUTPUT
+          echo "display_name=$display_name" >> $GITHUB_OUTPUT
+
+      - name: Get release notes
+        id: get-release-notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ inputs.version }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          # Fetch release information from GitHub
+          release_info=$(gh api "repos/$REPOSITORY/releases/tags/v$VERSION" 2>/dev/null || echo "")
+
+          if [ -z "$release_info" ] || [ "$release_info" = "null" ]; then
+            echo "release_body=No release notes available for version $VERSION" >> $GITHUB_OUTPUT
+            echo "release_url=https://github.com/$REPOSITORY/releases/tag/v$VERSION" >> $GITHUB_OUTPUT
+          else
+            # Extract release body and URL
+            release_body=$(echo "$release_info" | jq -r '.body // "No release notes available"')
+            release_url=$(echo "$release_info" | jq -r '.html_url')
+            
+            # Escape newlines for GitHub output
+            release_body_escaped=$(echo "$release_body" | sed ':a;N;$!ba;s/\n/\\n/g')
+            
+            echo "release_body=$release_body_escaped" >> $GITHUB_OUTPUT
+            echo "release_url=$release_url" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Format release changes
+        id: format-changes
+        env:
+          RELEASE_BODY: ${{ steps.get-release-notes.outputs.release_body }}
+        run: |
+          # Parse the release body and extract key changes (limit to first 10 lines of actual content)
+          changes_summary=$(echo "$RELEASE_BODY" | head -n 20 | sed 's/^//')
+
+          # If release body is too long, truncate and add note
+          line_count=$(echo "$RELEASE_BODY" | wc -l)
+          if [ "$line_count" -gt 20 ]; then
+            changes_summary="$changes_summary\n\n_... see full release notes for more details_"
+          fi
+
+          # Escape for GitHub output
+          changes_summary_escaped=$(echo "$changes_summary" | sed ':a;N;$!ba;s/\n/\\n/g')
+          echo "changes_summary=$changes_summary_escaped" >> $GITHUB_OUTPUT
+
+      - name: Format version info
+        id: format-version-info
+        env:
+          PREVIOUS_VERSION: ${{ inputs.previous_version }}
+          CURRENT_VERSION: ${{ inputs.version }}
+        run: |
+          if [ -n "$PREVIOUS_VERSION" ] && [ "$PREVIOUS_VERSION" != "$CURRENT_VERSION" ]; then
+            version_info="Upgraded from \`v$PREVIOUS_VERSION\` to \`v$CURRENT_VERSION\`"
+          else
+            version_info="Deployed version \`v$CURRENT_VERSION\`"
+          fi
+
+          echo "version_info=$version_info" >> $GITHUB_OUTPUT
+
+      - name: Send Slack notification
+        env:
+          CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+          ENVIRONMENT: ${{ steps.determine-env-config.outputs.display_name }}
+          VERSION: ${{ inputs.version }}
+          PREVIOUS_VERSION: ${{ inputs.previous_version }}
+          ENVIRONMENT_URL: ${{ steps.determine-env-config.outputs.url }}
+          COLOR: ${{ steps.determine-env-config.outputs.color }}
+          RELEASE_URL: ${{ steps.get-release-notes.outputs.release_url }}
+          CHANGES_SUMMARY: ${{ steps.format-changes.outputs.changes_summary }}
+          VERSION_INFO: ${{ steps.format-version-info.outputs.version_info }}
+        uses: slackapi/slack-github-action@485a9d42d3a73031f12ec201c457e2162c45d02d # v2.0.0
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          payload-templated: true
+          payload-file-path: "./.github/slack-templates/deployment-success-notification.json"

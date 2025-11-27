@@ -3,6 +3,7 @@ import { dialogs as baseDialogs } from '../../base/dialogs'
 
 const customDialogs: SearchDialogFieldsFragment[] = [
     {
+        serviceResource: 'default',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-today83j1ks2',
         endUserContext: {
@@ -14,7 +15,6 @@ const customDialogs: SearchDialogFieldsFragment[] = [
         hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0,  contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-05-23T23:00:00.000Z',
-        extendedStatus: null,
         content: {
             title: {
                 mediaType: 'text/plain',
@@ -40,6 +40,7 @@ const customDialogs: SearchDialogFieldsFragment[] = [
         },
     },
     {
+        serviceResource: 'default',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-today11111',
         endUserContext: {
@@ -51,7 +52,6 @@ const customDialogs: SearchDialogFieldsFragment[] = [
         hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0,  contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-01-23T23:00:00.000Z',
-        extendedStatus: null,
         content: {
             title: {
                 mediaType: 'text/plain',
@@ -77,6 +77,7 @@ const customDialogs: SearchDialogFieldsFragment[] = [
         },
     },
     {
+        serviceResource: 'default',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-today22222',
         endUserContext: {
@@ -88,7 +89,6 @@ const customDialogs: SearchDialogFieldsFragment[] = [
         hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0,  contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-02-23T23:00:00.000Z',
-        extendedStatus: null,
         content: {
             title: {
                 mediaType: 'text/plain',
@@ -114,6 +114,7 @@ const customDialogs: SearchDialogFieldsFragment[] = [
         },
     },
     {
+        serviceResource: 'default',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-today33333',
         endUserContext: {
@@ -125,7 +126,6 @@ const customDialogs: SearchDialogFieldsFragment[] = [
         hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0,  contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-03-23T23:00:00.000Z',
-        extendedStatus: null,
         content: {
             title: {
                 mediaType: 'text/plain',
@@ -151,6 +151,7 @@ const customDialogs: SearchDialogFieldsFragment[] = [
         },
     },
     {
+        serviceResource: 'default',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-today55555',
         endUserContext: {
@@ -162,7 +163,6 @@ const customDialogs: SearchDialogFieldsFragment[] = [
         hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0,  contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-05-23T23:00:00.000Z',
-        extendedStatus: null,
         content: {
             title: {
                 mediaType: 'text/plain',
@@ -188,6 +188,7 @@ const customDialogs: SearchDialogFieldsFragment[] = [
         },
     },
     {
+        serviceResource: 'default',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-today66666',
         endUserContext: {
@@ -199,7 +200,6 @@ const customDialogs: SearchDialogFieldsFragment[] = [
         hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0,  contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-05-23T23:00:00.000Z',
-        extendedStatus: null,
         content: {
             title: {
                 mediaType: 'text/plain',

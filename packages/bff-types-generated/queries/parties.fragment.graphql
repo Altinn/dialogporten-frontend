@@ -5,21 +5,19 @@ fragment partyFields on AuthorizedParty {
   subParties {
     ...subPartyFields
   }
-  isAccessManager
-  isMainAdministrator
   name
   isCurrentEndUser
   isDeleted
   partyUuid
+  dateOfBirth
 }
 
 fragment subPartyFields on AuthorizedSubParty {
   party
   partyType
-  isAccessManager
-  isMainAdministrator
   name
   isCurrentEndUser
   isDeleted
   partyUuid
+  dateOfBirth
 }

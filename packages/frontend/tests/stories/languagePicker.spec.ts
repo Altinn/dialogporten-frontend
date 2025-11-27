@@ -6,12 +6,9 @@ test.describe('Language picker', () => {
     await page.goto(defaultAppURL);
 
     const listItem = page.getByRole('listitem').filter({ hasText: 'Melding om bortkjøring av snø' });
-    const timeElement = listItem.locator('time').filter({
-      hasText: 'Oslo kommune',
-    });
-    await expect(timeElement).toHaveText('Oslo kommune til Test Testesen');
+    await expect(listItem).toContainText('Oslo kommune til Test Testesen');
 
-    await expect(page.getByTestId('searchbar-input')).toHaveAttribute('placeholder', 'Søk');
+    await expect(page.getByTestId('searchbar-input')).toHaveAttribute('placeholder', 'Søk i innboksen');
     await expect(page.getByRole('button', { name: 'add' })).toHaveText('Legg til filter');
 
     if (isMobile) {
@@ -23,7 +20,7 @@ test.describe('Language picker', () => {
     }
 
     await page.getByRole('button', { name: 'Open language-switcher' }).click();
-    await expect(page.getByRole('heading', { name: 'Språk/language' })).toBeVisible();
+    await expect(page.getByText('Språk/language')).toBeVisible();
     await expect(page.getByRole('banner').getByRole('group').getByText('Bokmål')).toBeVisible();
     await expect(page.getByRole('banner').getByRole('group').getByText('Nynorsk')).toBeVisible();
     await expect(page.getByRole('banner').getByRole('group').getByText('English')).toBeVisible();
@@ -38,10 +35,9 @@ test.describe('Language picker', () => {
     const body = await response.json();
     expect(body.data?.profile?.language).toBe('en');
 
-    await expect(page.getByTestId('searchbar-input')).toHaveAttribute('placeholder', 'Search');
+    await expect(page.getByTestId('searchbar-input')).toHaveAttribute('placeholder', 'Search in inbox');
     await expect(page.getByRole('button', { name: 'add' })).toHaveText('Add filter');
-
-    await expect(timeElement).toHaveText('Oslo kommune to Test Testesen');
+    await expect(listItem).toContainText('City of Oslo to Test Testesen');
 
     if (isMobile) {
       await page.getByRole('button', { name: 'Menu' }).click();

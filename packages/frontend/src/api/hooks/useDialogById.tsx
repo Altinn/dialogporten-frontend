@@ -1,5 +1,5 @@
 import type { AttachmentLinkProps, AvatarProps, SeenByLogProps } from '@altinn/altinn-components';
-import { useQuery } from '@tanstack/react-query';
+import { formatDisplayName } from '@altinn/altinn-components';
 import {
   type Actor,
   ActorType,
@@ -13,13 +13,14 @@ import {
   SystemLabel,
 } from 'bff-types-generated';
 import { t } from 'i18next';
+import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import type { DialogActionProps } from '../../components';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
+import { useFeatureFlag } from '../../featureFlags';
 import { type ValueType, getPreferredPropertyByLocale } from '../../i18n/property.ts';
 import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
-import { toTitleCase } from '../../pages/Profile/index.ts';
 import { graphQLSDK } from '../queries.ts';
 import { type ActivityLogEntry, getActivityHistory } from '../utils/activities.tsx';
 import { getSeenByLabel } from '../utils/dialog.ts';
@@ -27,7 +28,7 @@ import { type OrganizationOutput, getOrganization } from '../utils/organizations
 import { type TimelineSegmentWithTransmissions, getTransmissions } from '../utils/transmissions.ts';
 import { getViewTypes } from '../utils/viewType.ts';
 import type { InboxViewType } from './useDialogs.tsx';
-import { type SelectedPartyType, useParties } from './useParties.ts';
+import { type ProfileType, useParties } from './useParties.ts';
 
 export enum EmbeddableMediaType {
   markdown = 'application/vnd.dialogporten.frontchannelembed-url;type=text/markdown',
@@ -44,6 +45,8 @@ export interface EmbeddedContent {
 export interface DialogByIdDetails {
   /* id of dialog */
   id: string;
+  /* serviceResourceType (source) */
+  serviceResourceType: string;
   /* summary of dialog by locale,sorted by preference */
   summary: string;
   /* sender of dialog, fallbacks to dialog's service owner */
@@ -77,6 +80,8 @@ export interface DialogByIdDetails {
 
   /* dialog status */
   status: DialogStatus;
+  /* extended dialog status */
+  extendedStatusLabel?: string;
   /* all actions (including end-user) that have seen the dialog since last update */
   seenByLog: SeenByLogProps;
   /* due date for dialog: This is the last date when the dialog is expected to be completed. */
@@ -93,6 +98,7 @@ interface UseDialogByIdOutput {
   isSuccess: boolean;
   isError: boolean;
   isLoading: boolean;
+  dataUpdatedAt: number;
   dialog?: DialogByIdDetails;
   isAuthLevelTooLow?: boolean;
 }
@@ -107,6 +113,7 @@ export const getAttachmentLinks = (attachments: AttachmentFieldsFragment[]): Att
     .flatMap((attachment) =>
       attachment.urls
         .filter((url) => url.url !== 'urn:dialogporten:unauthorized')
+        .filter((url) => url.consumerType === AttachmentUrlConsumer.Gui)
         .map((url) => ({
           label: getPreferredPropertyByLocale(attachment.displayName)?.value || url.url,
           href: url.url,
@@ -155,14 +162,25 @@ const getMainContentReference = (
  *   but is generally expected to be set for transmissions.
  *
  * @param actor        The actor object describing who performed or sent the action.
+ * @param stopReversingPersonNameOrder
  * @param serviceOwner Optional service owner metadata used for name/logo fallback.
  * @returns Normalized avatar props (`name`, `type`, `imageUrl`, `imageUrlAlt`).
  */
-export const getActorProps = (actor: Actor, serviceOwner?: OrganizationOutput): AvatarProps => {
+
+export const getActorProps = (
+  actor: Actor,
+  stopReversingPersonNameOrder: boolean,
+  serviceOwner?: OrganizationOutput,
+): AvatarProps => {
   const isServiceOwner = actor.actorType === ActorType.ServiceOwner;
   const isCompany = isServiceOwner || (actor.actorId ?? '').includes('urn:altinn:organization:');
   const type: AvatarProps['type'] = isCompany ? 'company' : 'person';
-  const senderName = actor.actorName ? toTitleCase(actor.actorName) : isServiceOwner ? serviceOwner?.name || '' : '';
+  const actorName = formatDisplayName({
+    fullName: actor.actorName ?? '',
+    type,
+    reverseNameOrder: stopReversingPersonNameOrder ? false : !isCompany,
+  });
+  const senderName = actor.actorName ? actorName : isServiceOwner ? serviceOwner?.name || '' : '';
   const senderLogo = isServiceOwner ? serviceOwner?.logo : undefined;
   const senderLogoAlt = senderLogo ? t('dialog.imageAltURL', { companyName: senderName }) : undefined;
 
@@ -179,7 +197,8 @@ export function mapDialogToToInboxItem(
   parties: PartyFieldsFragment[],
   organizations: OrganizationFieldsFragment[],
   format: FormatFunction,
-  selectedProfile: SelectedPartyType,
+  stopReversingPersonNameOrder: boolean,
+  selectedProfile: ProfileType,
 ): DialogByIdDetails | undefined {
   if (!item) {
     return undefined;
@@ -193,21 +212,25 @@ export function mapDialogToToInboxItem(
   const endUserParty = parties?.find((party) => party.isCurrentEndUser);
   const dialogRecipientParty = parties?.find((party) => party.party === item.party);
   const actualRecipientParty = dialogRecipientParty ?? endUserParty;
-  const serviceOwner = getOrganization(organizations || [], item.org, 'nb');
+  const serviceOwner = getOrganization(organizations || [], item.org);
   const senderName = item.content.senderName?.value;
+  const extendedStatusObj = item.content.extendedStatus?.value;
   const { seenByLabel } = getSeenByLabel(item.seenSinceLastContentUpdate, t);
   const transmissions = getTransmissions({
     transmissions: item.transmissions,
     format,
     activities: item.activities,
+    stopReversingPersonNameOrder,
     serviceOwner,
     selectedProfile,
   });
 
   return {
     id: item.id,
+    serviceResourceType: item.serviceResourceType,
     title: getPreferredPropertyByLocale(titleObj)?.value ?? '',
     status: item.status,
+    extendedStatusLabel: getPreferredPropertyByLocale(extendedStatusObj)?.value || undefined,
     summary: getPreferredPropertyByLocale(summaryObj)?.value ?? '',
     sentCount: item.fromPartyTransmissionsCount ?? 0,
     receivedCount: item.fromServiceOwnerTransmissionsCount ?? 0,
@@ -258,13 +281,20 @@ export function mapDialogToToInboxItem(
       items: item.seenSinceLastContentUpdate.map((seen) => ({
         id: seen.id,
         isEndUser: seen.isCurrentEndUser,
-        name: (seen?.isCurrentEndUser ? (endUserParty?.name ?? '') : toTitleCase(seen.seenBy?.actorName ?? '')) || '',
+        name: seen?.isCurrentEndUser
+          ? (endUserParty?.name ?? '')
+          : formatDisplayName({
+              fullName: seen?.seenBy?.actorName ?? '',
+              type: 'person',
+              reverseNameOrder: !stopReversingPersonNameOrder,
+            }),
         seenAt: seen.seenAt,
         seenAtLabel: format(seen.seenAt, formatString),
         type: 'person',
       })),
     },
     activityHistory: getActivityHistory({
+      stopReversingPersonNameOrder,
       activities: item.activities,
       transmissions: item.transmissions,
       format,
@@ -283,29 +313,44 @@ export function mapDialogToToInboxItem(
 export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseDialogByIdOutput => {
   const format = useFormat();
   const { organizations, isLoading: isOrganizationsLoading } = useOrganizations();
+  const stopReversingPersonNameOrder = useFeatureFlag<boolean>('party.stopReversingPersonNameOrder');
   const { selectedProfile } = useParties();
   const partyURIs = parties.map((party) => party.party);
-  const { data, isSuccess, isLoading, isError } = useQuery<GetDialogByIdQuery>({
+  const { data, isSuccess, isLoading, isError, dataUpdatedAt } = useAuthenticatedQuery<GetDialogByIdQuery>({
     queryKey: [QUERY_KEYS.DIALOG_BY_ID, id, organizations],
-    staleTime: 1000 * 60 * 30,
-    refetchInterval: 1000 * 60 * 10,
-    refetchOnWindowFocus: false,
+    staleTime: 0,
+    refetchInterval: 1000 * 60 * 9,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: (query) => {
+      if (!query.state.dataUpdatedAt) return true;
+      const NINE_MIN = 9 * 60 * 1000;
+      return Date.now() - query.state.dataUpdatedAt > NINE_MIN;
+    },
     retry: 3,
-    queryFn: () =>
-      getDialogsById(id!).then((data) => {
+    queryFn: () => {
+      return getDialogsById(id!).then((data) => {
         return data;
-      }),
+      });
+    },
     enabled: typeof id !== 'undefined' && partyURIs.length > 0,
   });
 
   if (isOrganizationsLoading) {
-    return { isLoading: true, isError: false, isSuccess: false };
+    return { isLoading: true, isError: false, isSuccess: false, dataUpdatedAt: Date.now() };
   }
 
   return {
     isLoading,
     isSuccess,
-    dialog: mapDialogToToInboxItem(data?.dialogById.dialog, parties, organizations, format, selectedProfile),
+    dialog: mapDialogToToInboxItem(
+      data?.dialogById.dialog,
+      parties,
+      organizations,
+      format,
+      stopReversingPersonNameOrder,
+      selectedProfile,
+    ),
+    dataUpdatedAt,
     isError,
     isAuthLevelTooLow:
       data?.dialogById?.errors?.some((error) => error.__typename === 'DialogByIdForbiddenAuthLevelTooLow') ?? false,

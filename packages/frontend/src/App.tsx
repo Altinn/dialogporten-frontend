@@ -1,7 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { ErrorResetHandler, withErrorBoundary } from './components/ErrorBoundary/ErrorBoundary.tsx';
 import { ProtectedPageLayout } from './components/PageLayout/PageLayout.tsx';
-import { FeatureFlagKeys, useFeatureFlag } from './featureFlags';
 import { DialogDetailsPage } from './pages/DialogDetailsPage';
 import { ErrorPage } from './pages/Error/Error.tsx';
 import { Inbox } from './pages/Inbox';
@@ -16,10 +15,47 @@ import { Settings } from './pages/Profile/Settings/Settings.tsx';
 import { SavedSearchesPage } from './pages/SavedSearches';
 import { PageRoutes } from './pages/routes.ts';
 import './app.css';
+import { useEffect } from 'react';
+import { getCookieDomain } from './auth';
+import { usePageTracking } from './hooks/usePageTracking.ts';
 import { AboutPage } from './pages/About/About.tsx';
+import { useGlobalStringState } from './useGlobalState.ts';
+
+const getPartyUuidFromCookie = (): string | undefined => {
+  if (typeof document === 'undefined') return undefined;
+
+  const cookies = document.cookie.split(';');
+  let partyUuid: string | undefined;
+
+  for (const cookie of cookies) {
+    const [rawKey, ...rawValParts] = cookie.split('=');
+    const key = rawKey.trim();
+    const value = rawValParts.join('=').trim();
+
+    if (key === 'AltinnPartyUuid') {
+      partyUuid = value;
+      break;
+    }
+  }
+
+  return partyUuid;
+};
 
 function App() {
-  const EnableProfilePages = useFeatureFlag(FeatureFlagKeys.EnableProfilePages);
+  // Add page tracking
+  usePageTracking();
+  const [_, setCookiePartyUuid] = useGlobalStringState('altinnCookie', '');
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    const partyUuidFromCookie = getPartyUuidFromCookie();
+    if (partyUuidFromCookie) {
+      setCookiePartyUuid(getPartyUuidFromCookie() ?? '');
+      // Ensure this is only done once per reload, and after that, selected account, should be handled internally
+      document.cookie =
+        'AltinnPartyUuid' + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; domain=' + getCookieDomain();
+    }
+  }, []);
 
   return (
     <div className="app">
@@ -29,23 +65,17 @@ function App() {
             path={PageRoutes.inbox}
             element={withErrorBoundary(<Inbox key="inbox" viewType={'inbox'} />, 'Inbox')}
           />
-          {!!EnableProfilePages && (
-            <>
-              <Route path={PageRoutes.profile} element={withErrorBoundary(<Profile />, 'Profile')} />
-              <Route
-                path={PageRoutes.partiesOverview}
-                element={withErrorBoundary(<PartiesOverviewPage key="partys" />, 'Parties Overview')}
-              />
-              <Route
-                path={PageRoutes.notifications}
-                element={withErrorBoundary(<NotificationsPage />, 'Notifications')}
-              />
-              <Route path={PageRoutes.settings} element={withErrorBoundary(<Settings />, 'Settings')} />
-              <Route path={PageRoutes.access} element={withErrorBoundary(<Access />, 'Access')} />
-              <Route path={PageRoutes.activities} element={withErrorBoundary(<Activities />, 'Activities')} />
-              <Route path={PageRoutes.authorize} element={withErrorBoundary(<Authorize />, 'Authorize')} />
-            </>
-          )}
+          <Route path={PageRoutes.profile} element={withErrorBoundary(<Profile />, 'Profile')} />
+          <Route
+            path={PageRoutes.partiesOverview}
+            element={withErrorBoundary(<PartiesOverviewPage key="partys" />, 'Parties Overview')}
+          />
+          <Route path={PageRoutes.notifications} element={withErrorBoundary(<NotificationsPage />, 'Notifications')} />
+          <Route path={PageRoutes.settings} element={withErrorBoundary(<Settings />, 'Settings')} />
+          <Route path={PageRoutes.access} element={withErrorBoundary(<Access />, 'Access')} />
+          <Route path={PageRoutes.activities} element={withErrorBoundary(<Activities />, 'Activities')} />
+          <Route path={PageRoutes.authorize} element={withErrorBoundary(<Authorize />, 'Authorize')} />
+
           <Route
             path={PageRoutes.drafts}
             element={withErrorBoundary(<Inbox key="draft" viewType={'drafts'} />, 'Drafts')}

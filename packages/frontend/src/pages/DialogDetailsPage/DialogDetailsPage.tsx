@@ -1,12 +1,13 @@
 import { type ContextMenuProps, DialogLayout } from '@altinn/altinn-components';
 import { ClockDashedIcon } from '@navikt/aksel-icons';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps, useLocation, useParams } from 'react-router-dom';
 import { useDialogById } from '../../api/hooks/useDialogById.tsx';
 import { useDialogByIdSubscription } from '../../api/hooks/useDialogByIdSubscription.ts';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { DialogDetails } from '../../components';
+import { usePageTitle } from '../../hooks/usePageTitle.tsx';
 import { useDialogActions } from './useDialogActions.tsx';
 
 export const DialogDetailsPage = () => {
@@ -21,9 +22,12 @@ export const DialogDetailsPage = () => {
     isSuccess,
     isError,
     isAuthLevelTooLow,
+    dataUpdatedAt,
   } = useDialogById(parties, dialogId);
   const isLoading = isLoadingDialog || (!isSuccess && !isError);
   const displayDialogActions = !!(dialogId && dialog && !isLoading);
+
+  usePageTitle({ baseTitle: dialog?.title || '' });
   const systemLabelActions = useDialogActions();
   const contextMenu: ContextMenuProps = {
     id: 'dialog-context-menu',
@@ -42,8 +46,14 @@ export const DialogDetailsPage = () => {
     ],
   };
 
-  useDialogByIdSubscription(dialog?.id, dialog?.dialogToken);
+  const mountAtRef = useRef<number>(Date.now());
 
+  useEffect(() => {
+    mountAtRef.current = Date.now();
+  }, []);
+
+  const dialogTokenIsFreshAfterMount = dataUpdatedAt > mountAtRef.current ? dialog?.dialogToken : undefined;
+  const { hasBeenOpened } = useDialogByIdSubscription(dialog?.id, dialogTokenIsFreshAfterMount);
   const previousPath = (location?.state?.fromView ?? '/') + location.search;
 
   return (
@@ -56,8 +66,10 @@ export const DialogDetailsPage = () => {
       contextMenu={displayDialogActions ? contextMenu : undefined}
     >
       <DialogDetails
+        dialogToken={dialogTokenIsFreshAfterMount}
         dialog={dialog}
         isLoading={isLoading}
+        subscriptionOpened={hasBeenOpened}
         isAuthLevelTooLow={isAuthLevelTooLow}
         activityModalProps={{
           isOpen: isActivityLogOpen,

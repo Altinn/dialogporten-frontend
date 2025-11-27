@@ -5,12 +5,12 @@
 export const afUrl = (() => {
   switch (__ENV.ENVIRONMENT) {
     case 'yt':
-      return 'https://af.yt.altinn.cloud/';
+      return 'https://af.yt01.altinn.cloud/';
     case 'tt':
-      return 'https://af.tt.altinn.no/';
+      return 'https://af.tt02.altinn.no/';
     case 'at':
-      return 'https://af.at.altinn.cloud/';
+      return 'https://af.at23.altinn.cloud/';
     default:
-      return 'https://af.yt.altinn.cloud/';
+      return 'https://af.yt01.altinn.cloud/';
   }
 })();

@@ -3,6 +3,7 @@ import { DialogStatus, type SearchDialogFieldsFragment, SystemLabel } from 'bff-
 
 export const dialogs: SearchDialogFieldsFragment[] = [
     {
+        serviceResource: 'default',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-whydoesitnot',
         endUserContext: {
@@ -14,7 +15,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0,  contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-05-23T23:00:00.000Z',
-        extendedStatus: null,
         content: {
             title: {
                 mediaType: 'text/plain',
@@ -40,6 +40,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         },
     },
     {
+        serviceResource: 'default',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-whydoesitnot',
         endUserContext: {
@@ -51,7 +52,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0,  contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-05-23T23:00:00.000Z',
-        extendedStatus: null,
         content: {
             title: {
                 mediaType: 'text/plain',
@@ -77,6 +77,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         },
     },
     {
+        serviceResource: 'default',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-asddsaqwe123',
         endUserContext: {
@@ -88,7 +89,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0,  contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-05-23T23:00:00.000Z',
-        extendedStatus: null,
         content: {
             title: {
                 mediaType: 'text/plain',
@@ -114,6 +114,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         },
     },
     {
+        serviceResource: 'default',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-nowitworksfi',
         endUserContext: {
@@ -125,7 +126,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0,  contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-05-23T23:00:00.000Z',
-        extendedStatus: null,
         content: {
             title: {
                 mediaType: 'text/plain',
@@ -151,6 +151,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         },
     },
     {
+        serviceResource: 'default',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-nowdsada',
         endUserContext: {
@@ -162,7 +163,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0,  contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-05-23T23:00:00.000Z',
-        extendedStatus: null,
         content: {
             title: {
                 mediaType: 'text/plain',
@@ -188,6 +188,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         },
     },
     {
+        serviceResource: 'default',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-mycompanyas1',
         endUserContext: {
@@ -199,7 +200,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0,  contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-01-01T23:00:00.000Z',
-        extendedStatus: null,
         content: {
             title: {
                 mediaType: 'text/plain',
@@ -225,6 +225,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         },
     },
     {
+        serviceResource: 'default',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-mycompanyas-sub1',
         endUserContext: {
@@ -236,7 +237,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0,  contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-01-01T23:00:00.000Z',
-        extendedStatus: null,
         content: {
             title: {
                 mediaType: 'text/plain',
@@ -262,6 +262,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         },
     },
     {
+        serviceResource: 'default',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-mycompanyas-sub2',
         endUserContext: {
@@ -273,7 +274,6 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0,  contentUpdatedAt: "2024-11-27T15:36:52.131Z", guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-02-01T23:00:00.000Z',
-        extendedStatus: null,
         content: {
             title: {
                 mediaType: 'text/plain',

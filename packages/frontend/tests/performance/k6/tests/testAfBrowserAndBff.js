@@ -16,7 +16,7 @@ import { browser } from 'k6/browser';
 import { SharedArray } from 'k6/data';
 import { Trend } from 'k6/metrics';
 import { afUrl } from '../helpers/config.js';
-import { getCookie } from '../helpers/getCookie.js';
+import { getCookie, getCookies } from '../helpers/getCookie.js';
 import { getOptions } from '../helpers/options.js';
 import { isAuthenticatedLabel } from '../helpers/queries.js';
 import { randomItem } from '../helpers/testimports.js';
@@ -28,12 +28,16 @@ import {
   openAf,
   selectMenuElements,
 } from '../tests/bffFunctions.js';
-import { selectAllEnterprises, selectNextPage, selectSideMenuElement } from './browserFunctions.js';
+import { selectAllEnterprises, selectNextPage, selectSideMenuElement, waitForPageLoaded } from './browserFunctions.js';
 
 const env = __ENV.ENVIRONMENT || 'yt';
+const randomize = (__ENV.RANDOMIZE ?? 'false') === 'true';
 
-const filenameEndusers = import.meta.resolve(`../testData/usersWithDialogs-${env}.csv`);
-export const endUsers = new SharedArray('endUsers', () => readCsv(filenameEndusers));
+let endUsers = [];
+if (env !== 'yt') {
+  const filenameEndusers = import.meta.resolve(`../testData/usersWithDialogs-${env}.csv`);
+  endUsers = new SharedArray('endUsers', () => readCsv(filenameEndusers));
+}
 
 export const options = getOptions();
 
@@ -54,6 +58,9 @@ const loadAllEnterprises = new Trend('load_all_enterprises', true);
  * @returns {Array} - An array of objects containing the PID and cookie for each end user.
  **/
 export async function setup() {
+  if (env === 'yt') {
+    return getCookies(1000);
+  }
   const data = [];
   let cookie;
   for (const endUser of endUsers) {
@@ -72,7 +79,12 @@ export async function setup() {
  * @param {object} data - Test data for the scenario.
  */
 export async function browserTest(data) {
-  const testData = randomItem(data);
+  let testData;
+  if (randomize) {
+    testData = randomItem(data);
+  } else {
+    testData = data[__ITER % data.length];
+  }
   const context = await browser.newContext();
   const page = await context.newPage();
   let startTime;
@@ -81,24 +93,26 @@ export async function browserTest(data) {
   try {
     await context.addCookies([testData.cookie]);
     startTime = new Date();
-    await page.goto(afUrl + '?mock=true', { waitUntil: 'networkidle' });
+    await page.goto(afUrl + '?mock=true');
 
     // Check if we are on the right page
     const currentUrl = page.url();
     check(currentUrl, {
       currentUrl: (h) => h.includes(afUrl),
     });
-
+    // Wait for the page to load
+    await waitForPageLoaded(page);
+    //console.log(`Opened arbeidsflate for pid ${testData.pid}`);
     endTime = new Date();
     openAF.add(endTime - startTime);
 
     // press every menu item, return to inbox
-    await selectSideMenuElement(page, 'Utkast', loadDrafts);
-    await selectSideMenuElement(page, 'Sendt', loadSent);
-    await selectSideMenuElement(page, 'Lagrede søk', loadSavedSearches);
-    await selectSideMenuElement(page, 'Arkiv', loadArchive);
-    await selectSideMenuElement(page, 'Papirkurv', loadBin);
-    await selectSideMenuElement(page, 'Innboks', backToInbox);
+    await selectSideMenuElement(page, 'sidebar-drafts', loadDrafts);
+    await selectSideMenuElement(page, 'sidebar-sent', loadSent);
+    await selectSideMenuElement(page, 'sidebar-saved-searches', loadSavedSearches);
+    await selectSideMenuElement(page, 'sidebar-archive', loadArchive);
+    await selectSideMenuElement(page, 'sidebar-bin', loadBin);
+    await selectSideMenuElement(page, 'sidebar-inbox', backToInbox);
     await selectNextPage(page, loadNextPage);
     await selectAllEnterprises(page, loadAllEnterprises);
   } finally {
@@ -112,7 +126,12 @@ export async function browserTest(data) {
  * @returns {Array} - An array containing user party information.
  */
 export function bffTest(data) {
-  const testData = randomItem(data);
+  let testData;
+  if (randomize) {
+    testData = randomItem(data);
+  } else {
+    testData = data[__ITER % data.length];
+  }
   const [parties, allParties] = openAf(testData.pid, testData.cookie);
   selectMenuElements(testData.cookie, parties);
   isAuthenticated(testData.cookie, isAuthenticatedLabel);

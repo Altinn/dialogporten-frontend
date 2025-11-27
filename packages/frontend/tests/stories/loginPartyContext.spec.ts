@@ -27,7 +27,7 @@ test.describe('LoginPartyContext', () => {
     expect(firmaAs.found).toEqual(true);
 
     const toolbar = page.getByTestId('inbox-toolbar');
-    await expect(toolbar.getByText('Alle virksomheter').locator('visible=true')).toBeVisible();
+    await expect(toolbar.locator('a').filter({ hasText: 'Alle virksomheter' })).toBeVisible();
 
     const TestBedriftAS = await getToolbarAccountInfo(page, 'Testbedrift AS');
     expect(TestBedriftAS.found).toEqual(true);
@@ -42,13 +42,13 @@ test.describe('LoginPartyContext', () => {
     expect(AlleVirksomheter.found).toEqual(true);
 
     await toolbar.locator('li').locator('visible=true').filter({ hasText: 'Firma AS' }).click();
-    await expect(page.getByRole('button', { name: 'Firma AS' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Firma AS', exact: true })).toBeVisible();
     await expect(page.getByRole('link', { name: 'This is a message 1 for Firma AS' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).not.toBeVisible();
     expect(new URL(page.url()).searchParams.has('party')).toBe(true);
     expect(new URL(page.url()).searchParams.has('allParties')).toBe(false);
 
-    await page.getByRole('button', { name: 'Firma AS' }).first().click();
+    await page.getByRole('button', { name: 'Firma AS', exact: true }).click();
     await TestBedriftASAvdSub.item.click();
 
     await expect(page.getByRole('button', { name: 'Testbedrift AS Avd Sub' })).toBeVisible();
@@ -61,7 +61,7 @@ test.describe('LoginPartyContext', () => {
     ).toBeVisible();
 
     await page.getByRole('button', { name: 'Testbedrift AS Avd Sub' }).click();
-    await AlleVirksomheter.item.click();
+    await page.locator('a').filter({ hasText: 'TTT5Alle virksomheter' }).click();
 
     await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).not.toBeVisible();
     await expect(page.getByRole('link', { name: 'This is a message 1 for Firma AS' })).toBeVisible();
@@ -92,16 +92,16 @@ test.describe('LoginPartyContext', () => {
     await page.getByRole('button', { name: 'Test Testesen' }).click();
     await page.locator('a').filter({ hasText: 'Firma' }).click();
 
-    await expect(page.getByRole('button', { name: 'Firma AS' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Firma AS', exact: true })).toBeVisible();
     await expect(page.getByRole('link', { name: 'This is a message 1 for Firma AS' })).toBeVisible();
 
     await expectIsCompanyPage(page);
-    await expect(page.getByRole('button', { name: 'Firma AS' }).first()).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Firma AS', exact: true })).toBeVisible();
     await expect(page.getByRole('link', { name: 'This is a message 1 for Firma AS' })).toBeVisible();
 
     await page.reload();
     await expectIsCompanyPage(page);
-    await expect(page.getByRole('button', { name: 'Firma AS' }).first()).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Firma AS', exact: true })).toBeVisible();
     await expect(page.getByRole('link', { name: 'This is a message 1 for Firma AS' })).toBeVisible();
   });
 

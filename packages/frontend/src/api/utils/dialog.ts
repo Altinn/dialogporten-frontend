@@ -1,3 +1,4 @@
+import { type AvatarType, formatDisplayName } from '@altinn/altinn-components';
 import {
   DialogStatus,
   type GetAllDialogsForPartiesQueryVariables,
@@ -10,7 +11,6 @@ import { type TFunction, t } from 'i18next';
 import { getPreferredPropertyByLocale } from '../../i18n/property.ts';
 import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
 import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
-import { toTitleCase } from '../../pages/Profile/index.ts';
 import type { InboxViewType } from '../hooks/useDialogs.tsx';
 import { getOrganization } from './organizations.ts';
 import { getViewTypes } from './viewType.ts';
@@ -19,10 +19,16 @@ interface SeenByItem {
   isCurrentEndUser: boolean;
 }
 
-export const getPartyIds = (partiesToUse: PartyFieldsFragment[]) => {
+export const getPartyIds = (partiesToUse: PartyFieldsFragment[], includeOnlySubPartiesWithSameName?: boolean) => {
   const partyURIs = partiesToUse.filter((party) => !party.hasOnlyAccessToSubParties).map((party) => party.party);
-  const subPartyURIs = partiesToUse.flatMap((party) => (party.subParties ?? []).map((subParty) => subParty.party));
-  return [...partyURIs, ...subPartyURIs] as string[];
+  const subPartyURIs = partiesToUse.flatMap(
+    (party) =>
+      party.subParties
+        ?.filter((subParty) => (includeOnlySubPartiesWithSameName ? subParty.name === party.name : true))
+        .map((subParty) => subParty.party) ?? [],
+  );
+
+  return Array.from(new Set([...partyURIs, ...subPartyURIs]));
 };
 
 export const getSeenAtLabel = (seenAt: string, format: FormatFunction): string => {
@@ -54,20 +60,22 @@ export function mapDialogToToInboxItems(
   parties: PartyFieldsFragment[],
   organizations: OrganizationFieldsFragment[],
   format: FormatFunction,
+  stopReversingPersonNameOrder: boolean,
 ): InboxItemInput[] {
   return input.map((item) => {
     const titleObj = item.content.title.value;
     const summaryObj = item.content.summary?.value;
     const endUserParty = parties?.find((party) => party.isCurrentEndUser);
     const senderName = item.content.senderName?.value;
+    const extendedStatusObj = item.content.extendedStatus?.value;
 
     const dialogReceiverParty = parties?.find((party) => party.party === item.party);
-    const dialogReceiverSubParty = parties?.find((party) =>
-      (party.subParties ?? []).some((subParty) => subParty.party === item.party),
-    );
+    const dialogReceiverSubParty = parties
+      ?.flatMap((party) => party.subParties ?? [])
+      .find((subParty) => subParty.party === item.party);
 
     const actualReceiverParty = dialogReceiverParty ?? dialogReceiverSubParty ?? endUserParty;
-    const serviceOwner = getOrganization(organizations || [], item.org, 'nb');
+    const serviceOwner = getOrganization(organizations || [], item.org);
     const { isSeenByEndUser, seenByOthersCount, seenByLabel } = getSeenByLabel(item.seenSinceLastContentUpdate, t);
 
     return {
@@ -85,13 +93,18 @@ export function mapDialogToToInboxItems(
       },
       recipient: {
         name: actualReceiverParty?.name ?? dialogReceiverSubParty?.name ?? '',
-        type: 'person',
+        type: actualReceiverParty?.partyType as AvatarType,
+        variant:
+          dialogReceiverParty && !dialogReceiverParty.subParties && actualReceiverParty?.partyType === 'Organization'
+            ? 'outline'
+            : 'solid',
       },
+      color: actualReceiverParty?.partyType === 'Organization' ? 'company' : 'person',
       contentUpdatedAt: item.contentUpdatedAt,
       guiAttachmentCount: item.guiAttachmentCount ?? 0,
       createdAt: item.createdAt,
-      updatedAt: item.contentUpdatedAt,
       status: item.status ?? 'UnknownStatus',
+      extendedStatus: getPreferredPropertyByLocale(extendedStatusObj)?.value || undefined,
       isSeenByEndUser,
       label: item.endUserContext?.systemLabels,
       org: item.org,
@@ -102,7 +115,11 @@ export function mapDialogToToInboxItems(
         collapsible: true,
         endUserLabel: t('word.you'),
         items: item.seenSinceLastContentUpdate.map((seenBy) => {
-          const actorName = toTitleCase(seenBy.seenBy?.actorName ?? '');
+          const actorName = formatDisplayName({
+            fullName: seenBy?.seenBy?.actorName ?? '',
+            type: 'person',
+            reverseNameOrder: !stopReversingPersonNameOrder,
+          });
           return {
             id: seenBy.id,
             name: actorName,
@@ -115,6 +132,7 @@ export function mapDialogToToInboxItems(
       viewType: getViewTypes({ status: item.status, systemLabel: item.endUserContext?.systemLabels }, true)?.[0],
       fromServiceOwnerTransmissionsCount: item.fromServiceOwnerTransmissionsCount ?? 0,
       fromPartyTransmissionsCount: item.fromPartyTransmissionsCount ?? 0,
+      serviceResource: item.serviceResource,
     };
   });
 }
