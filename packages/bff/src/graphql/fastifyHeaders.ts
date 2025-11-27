@@ -1,5 +1,6 @@
-import { logger } from '@digdir/dialogporten-node-logger';
+import { logger } from '@altinn/dialogporten-node-logger';
 import helmet from '@fastify/helmet';
+import { trace } from '@opentelemetry/api';
 import type { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 
@@ -70,16 +71,32 @@ const plugin: FastifyPluginAsync = async (fastify) => {
     // Add the custom headers that helmet doesn't cover
     fastify.addHook('onRequest', (request, reply, done) => {
       // Custom headers not covered by helmet
-      reply.headers({
+      const additionalSecurityHeaders = {
+        'X-Permitted-Cross-Domain-Policies': 'none',
         'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
         'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      };
+      // Instrumentation headers
+      const instrumentationHeaders = {
+        'X-GraphQL-Operation': request.headers['x-graphql-operation'],
+        'X-GraphQL-Start-Time': request.headers['x-graphql-start-time'],
+      };
+
+      const currentSpan = trace.getActiveSpan();
+      if (currentSpan?.spanContext().traceId) {
+        const traceId = currentSpan.spanContext().traceId;
+        reply.header('X-Trace-Id', traceId);
+      }
+
+      reply.headers({
+        ...additionalSecurityHeaders,
+        ...instrumentationHeaders,
       });
 
       // Set secure cookie if HTTPS
-      if (request.headers['x-forwarded-proto'] === 'https') {
+      if (request.headers['x-forwarded-proto'] === 'https' && request.session) {
         request.session.cookie.secure = true;
       }
-
       done();
     });
   } catch (error) {
