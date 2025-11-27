@@ -242,6 +242,8 @@
   "onboarding.tour.profile.parties.filter.title": "Utvida filter",
   "onboarding.tour.search.description": "Vi bygger ein forbedra søkefunksjon som skal gjere det lettare å finne det du treng.",
   "onboarding.tour.search.title": "Søk",
+  "onboarding.tour.drafts.description": "Her finn du skjema du arbeider med.",
+  "onboarding.tour.sent.description": "Her finn du skjema du har sendt.",
   "parties.change_label": "Endre aktør",
   "parties.current_end_user": "Logga inn som {name}",
   "parties.filter.all_parties": "Alle aktørar",

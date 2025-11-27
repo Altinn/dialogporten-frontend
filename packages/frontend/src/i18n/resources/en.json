@@ -240,6 +240,8 @@
   "onboarding.tour.profile.parties.filter.title": "Extended filter",
   "onboarding.tour.search.description": "We are building an improved search function to make it easier to find what you need.",
   "onboarding.tour.search.title": "Search",
+  "onboarding.tour.drafts.description": "Here you'll find forms you're working on.",
+  "onboarding.tour.sent.description": "Here you'll find forms you've submitted.",
   "parties.change_label": "Change party",
   "parties.current_end_user": "Logged in as {name}",
   "parties.filter.all_parties": "All parties",

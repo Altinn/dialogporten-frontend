@@ -33,6 +33,14 @@ export const desktopTourSteps = [
       <OnboardingPopover titleKey="onboarding.tour.inbox.title" infoTextKey="onboarding.tour.inbox.description" />
     ),
   },
+  {
+    selector: 'aside nav a[href*="drafts"]',
+    content: <OnboardingPopover titleKey="component.drafts" infoTextKey="onboarding.tour.drafts.description" />,
+  },
+  {
+    selector: 'aside nav a[href*="sent"]',
+    content: <OnboardingPopover titleKey="component.sent" infoTextKey="onboarding.tour.sent.description" />,
+  },
 ];
 
 //for static elements - mobile and tablet
