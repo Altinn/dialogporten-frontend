@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.108.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.108.0...v1.108.1) (2025-11-27)
+
+
+### Bug Fixes
+
+* e2e tests ([#3363](https://github.com/Altinn/dialogporten-frontend/issues/3363)) ([38259f7](https://github.com/Altinn/dialogporten-frontend/commit/38259f7709e20771ab489073fff6eeb29ce0e520))
+
 ## [1.108.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.107.0...v1.108.0) (2025-11-27)
 
 
