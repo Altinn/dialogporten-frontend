@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.108.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.107.0...v1.108.0) (2025-11-27)
+
+
+### Features
+
+* Add extra Inbox onboarding steps ([#3362](https://github.com/Altinn/dialogporten-frontend/issues/3362)) ([bdcf533](https://github.com/Altinn/dialogporten-frontend/commit/bdcf533b8c76ab474903c15229bc7d7cd01de37a))
+
+
+### Bug Fixes
+
+* Removed 'x' from notifiation box ([6b054bc](https://github.com/Altinn/dialogporten-frontend/commit/6b054bc06ed8e2a693b02b7a15d93ab08dd5b128))
+* Update footer links and translations for address ([#3361](https://github.com/Altinn/dialogporten-frontend/issues/3361)) ([0657c5b](https://github.com/Altinn/dialogporten-frontend/commit/0657c5be174954b23dcdec83bf7e1e504c198e9e))
+
 ## [1.107.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.106.4...v1.107.0) (2025-11-27)
 
 
