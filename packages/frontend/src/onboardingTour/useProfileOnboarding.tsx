@@ -58,7 +58,7 @@ const getDesktopTourSteps = () => ({
       highlightedSelectors: ['#main-content header div[class*="_toolbar_"]'],
     },
     {
-      selector: '#main-content ul li[data-selected="true"]:first-of-type',
+      selector: '#main-content ul li[data-index="1"]',
       content: (
         <OnboardingPopover
           titleKey="onboarding.tour.profile.parties.administration.title"
@@ -66,16 +66,16 @@ const getDesktopTourSteps = () => ({
         />
       ),
       action: () => {
-        const closedLi = document.querySelector('#main-content ul li[data-interactive="true"]:first-of-type');
-        if (closedLi && closedLi.getAttribute('data-selected') !== 'true') {
-          const button = closedLi.querySelector('button');
+        const firstDiv = document.querySelector('#main-content header section ul li div[data-interactive="true"]');
+        if (firstDiv && firstDiv.getAttribute('data-selected') !== 'true') {
+          const button = firstDiv.querySelector('button');
           if (button instanceof HTMLElement) {
             button.click();
           }
         }
       },
-      mutationObservables: ['#main-content ul li:first-of-type'],
-      resizeObservables: ['#main-content ul li:first-of-type'],
+      mutationObservables: ['#main-content'],
+      resizeObservables: ['#main-content'],
     },
   ],
 });
@@ -105,7 +105,7 @@ const getMobileTourSteps = () => ({
       highlightedSelectors: ['#main-content header div[class*="_toolbar_"]'],
     },
     {
-      selector: '#main-content ul li[data-selected="true"]:first-of-type',
+      selector: '#main-content ul li[data-index="1"]',
       content: (
         <OnboardingPopover
           titleKey="onboarding.tour.profile.parties.administration.title"
@@ -113,16 +113,16 @@ const getMobileTourSteps = () => ({
         />
       ),
       action: () => {
-        const closedLi = document.querySelector('#main-content ul li[data-interactive="true"]:first-of-type');
-        if (closedLi && closedLi.getAttribute('data-selected') !== 'true') {
-          const button = closedLi.querySelector('button');
+        const firstDiv = document.querySelector('#main-content header section ul li div[data-interactive="true"]');
+        if (firstDiv && firstDiv.getAttribute('data-selected') !== 'true') {
+          const button = firstDiv.querySelector('button');
           if (button instanceof HTMLElement) {
             button.click();
           }
         }
       },
-      mutationObservables: ['#main-content ul li:first-of-type'],
-      resizeObservables: ['#main-content ul li:first-of-type'],
+      mutationObservables: ['#main-content'],
+      resizeObservables: ['#main-content'],
     },
   ],
 });
