@@ -189,7 +189,7 @@ export const getNeedHelpLink = (currentPartyUuid?: string, language?: string) =>
 export const getCookieDomain = () => {
   const hostMap: Record<hostEnv, string> = {
     local: 'app.localhost',
-    at23: '.a23.altinn.cloud',
+    at23: '.at23.altinn.cloud',
     tt02: '.tt02.altinn.no',
     yt: '.yt.altinn.cloud',
     prod: '.altinn.no',

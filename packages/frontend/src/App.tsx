@@ -51,9 +51,6 @@ function App() {
     const partyUuidFromCookie = getPartyUuidFromCookie();
     if (partyUuidFromCookie) {
       setCookiePartyUuid(getPartyUuidFromCookie() ?? '');
-      // Ensure this is only done once per reload, and after that, selected account, should be handled internally
-      document.cookie =
-        'AltinnPartyUuid' + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; domain=' + getCookieDomain();
     }
   }, []);
 
