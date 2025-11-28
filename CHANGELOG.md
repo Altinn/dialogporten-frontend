@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.109.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.109.2...v1.109.3) (2025-11-28)
+
+
+### Bug Fixes
+
+* notificatoin urls ([30864f6](https://github.com/Altinn/dialogporten-frontend/commit/30864f6a83f20228cc02127892dc1318e582632f))
+* save party to cookie on change ([#3381](https://github.com/Altinn/dialogporten-frontend/issues/3381)) ([7fec6e2](https://github.com/Altinn/dialogporten-frontend/commit/7fec6e27a3eb657a1294587c7f156db8d77549b3))
+
 ## [1.109.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.109.1...v1.109.2) (2025-11-28)
 
 
