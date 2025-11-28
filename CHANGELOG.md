@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.109.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.109.1...v1.109.2) (2025-11-28)
+
+
+### Bug Fixes
+
+* Fixing issue where read A2 messages is showing as unread in AF ([e00ab43](https://github.com/Altinn/dialogporten-frontend/commit/e00ab43d78933bab3e2ab5521e1030ac77381794))
+* Move AlertBox below toolbar ([#3376](https://github.com/Altinn/dialogporten-frontend/issues/3376)) ([d40b4e2](https://github.com/Altinn/dialogporten-frontend/commit/d40b4e257e20033cf7cf5733d4e77e28dfb3c589))
+
 ## [1.109.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.109.0...v1.109.1) (2025-11-28)
 
 
