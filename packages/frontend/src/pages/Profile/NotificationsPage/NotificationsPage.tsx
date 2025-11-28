@@ -3,8 +3,8 @@ import type { NotificationSettingsResponse, PartyFieldsFragment } from 'bff-type
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { useParties } from '../../../api/hooks/useParties.ts';
+import { getNotificationSettingsLink } from '../../../auth/url.ts';
 import { usePageTitle } from '../../../hooks/usePageTitle';
-import { getIsProdEnvironment, getIsStagingEnvironment } from '../Settings/ContactProfileDetails.tsx';
 import { getBreadcrumbs } from '../Settings/Settings.tsx';
 import { SettingsType, useSettings } from '../Settings/useSettings.tsx';
 import { useProfile } from '../useProfile';
@@ -14,24 +14,12 @@ export interface NotificationAccountsType extends PartyFieldsFragment {
   parentId?: string;
 }
 
-const getNotificationSettingsUrl = () => {
-  const isProdEnvironment = getIsProdEnvironment();
-  const isStagingEnvironment = getIsStagingEnvironment();
-  if (isProdEnvironment) {
-    return 'https://info.altinn.no/hjelp/dette-jobber-vi-fortsatt-med/profil--og-varslingsinnstillinger/';
-  }
-  if (isStagingEnvironment) {
-    return 'https://tt02.altinn.no/hjelp/dette-jobber-vi-fortsatt-med/profil--og-varslingsinnstillinger/';
-  }
-  return 'https://inte.altinn.cloud/hjelp/dette-jobber-vi-fortsatt-med/profil--og-varslingsinnstillinger/';
-};
-
 export const NotificationsPage = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { search } = useLocation();
   const { isLoading: isLoadingUser } = useProfile();
   const { isLoading: isLoadingParties } = useParties();
-  const notificationSettingsUrl = getNotificationSettingsUrl();
+  const notificationSettingsUrl = getNotificationSettingsLink(i18n.language);
 
   usePageTitle({ baseTitle: t('component.notifications') });
 
