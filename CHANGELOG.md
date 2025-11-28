@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.109.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.108.1...v1.109.0) (2025-11-28)
+
+
+### Features
+
+* Add onboarding steps for sidebar, fix texts ([#3374](https://github.com/Altinn/dialogporten-frontend/issues/3374)) ([7d57ab1](https://github.com/Altinn/dialogporten-frontend/commit/7d57ab10b6d848b307b044e4d57fd99d3e8b7b28))
+
+
+### Bug Fixes
+
+* do not delete altinn cookie on rehydrate ([#3375](https://github.com/Altinn/dialogporten-frontend/issues/3375)) ([70d2393](https://github.com/Altinn/dialogporten-frontend/commit/70d2393cf938afc70ccf75c62bc33c64481e1267))
+* **frontend:** apply security headers for nginx ([#3365](https://github.com/Altinn/dialogporten-frontend/issues/3365)) ([d7199a3](https://github.com/Altinn/dialogporten-frontend/commit/d7199a32e6da9917b12927c0ab0af4bb80ba26bf))
+* **frontend:** hide server info in nginx ([#3368](https://github.com/Altinn/dialogporten-frontend/issues/3368)) ([b9ed06e](https://github.com/Altinn/dialogporten-frontend/commit/b9ed06e95e9a9cea415ab846cc9b76950e28b9d2))
+* **header:** bump ac to have correct title for header logo ([#3366](https://github.com/Altinn/dialogporten-frontend/issues/3366)) ([e387aa7](https://github.com/Altinn/dialogporten-frontend/commit/e387aa74f7896cd57a7060d2624826bfff472887))
+
 ## [1.108.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.108.0...v1.108.1) (2025-11-27)
 
 
