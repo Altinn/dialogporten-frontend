@@ -113,6 +113,14 @@ const INFO_PORTAL_HOST_MAP: Record<hostEnv, string> = {
   prod: 'https://info.altinn.no',
 };
 
+const INFO_PORTAL_HELP_LINK_MAP: Record<hostEnv, string> = {
+  local: 'https://inte.info.altinn.no',
+  at23: 'https://inte.info.altinn.no',
+  tt02: 'https://prep.info.altinn.no',
+  yt: 'https://prep.info.altinn.no',
+  prod: 'https://info.altinn.no',
+};
+
 type LinkPathConfig = {
   nb: string;
   en: string;
@@ -132,6 +140,21 @@ const createInfoPortalLink = (pathConfig: LinkPathConfig, currentPartyUuid?: str
   }
 
   return createChangeReporteeAndRedirect(currentPartyUuid, baseHost + path);
+};
+
+const createInfoPortalHelpLink = (pathConfig: LinkPathConfig, language?: string) => {
+  const baseHost = INFO_PORTAL_HELP_LINK_MAP[getEnvByHost()];
+
+  let path: string;
+  if (language === 'en') {
+    path = pathConfig.en;
+  } else if (language === 'nn') {
+    path = pathConfig.nn;
+  } else {
+    path = pathConfig.nb;
+  }
+
+  return `${baseHost}${path}`;
 };
 
 export const getNewFormLink = (currentPartyUuid?: string, language?: string) => {
@@ -158,6 +181,17 @@ export const getAboutNewAltinnLink = (currentPartyUuid?: string, language?: stri
       nn: '/nn/nyheiter/om-nye-altinn/',
     },
     currentPartyUuid,
+    language,
+  );
+};
+
+export const getNotificationSettingsLink = (language?: string) => {
+  return createInfoPortalHelpLink(
+    {
+      nb: '/hjelp/dette-jobber-vi-fortsatt-med/profil--og-varslingsinnstillinger/',
+      en: '/en/help/dette-jobber-vi-fortsatt-med/profil--og-varslingsinnstillinger/',
+      nn: '/nn/hjelp/dette-jobber-vi-fortsatt-med/profil--og-varslingsinnstillinger/',
+    },
     language,
   );
 };
