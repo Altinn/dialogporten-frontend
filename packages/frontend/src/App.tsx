@@ -16,7 +16,6 @@ import { SavedSearchesPage } from './pages/SavedSearches';
 import { PageRoutes } from './pages/routes.ts';
 import './app.css';
 import { useEffect } from 'react';
-import { getCookieDomain } from './auth';
 import { usePageTracking } from './hooks/usePageTracking.ts';
 import { AboutPage } from './pages/About/About.tsx';
 import { useGlobalStringState } from './useGlobalState.ts';
