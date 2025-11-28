@@ -1,6 +1,7 @@
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import { useEffect, useMemo } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
+import { getCookieDomain } from '../../auth';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useFeatureFlag } from '../../featureFlags';
@@ -146,17 +147,16 @@ export const useParties = (): UsePartiesOutput => {
       return;
     }
 
+    const partyFromCookie = data?.find((party) => party.partyUuid === cookiePartyUuid);
+
     // Cookie override – applied only once
     if (!hasInitializedFromCookie && cookiePartyUuid && data?.length) {
-      const partyFromCookie = data.find((party) => party.partyUuid === cookiePartyUuid);
-
       if (partyFromCookie) {
         const partyFromQuery = getSelectedPartyFromQueryParams(searchParams);
         if (!partyFromQuery) {
           setSelectedPartyIds([partyFromCookie.party], false);
         }
       }
-
       setHasInitializedFromCookie(true);
     }
 
@@ -172,7 +172,11 @@ export const useParties = (): UsePartiesOutput => {
         false,
       );
     } else if (currentEndUser) {
-      setSelectedPartyIds([currentEndUser.party], false);
+      if (cookiePartyUuid && partyFromCookie?.party && currentEndUser?.partyUuid !== cookiePartyUuid) {
+        setSelectedPartyIds([partyFromCookie.party], false);
+      } else {
+        setSelectedPartyIds([currentEndUser.party], false);
+      }
     } else {
       console.warn('No current end user found, unable to select default parties.');
     }
@@ -224,6 +228,10 @@ export const useParties = (): UsePartiesOutput => {
   const currentPartyUuid = useMemo(() => {
     return allOrganizationsSelected ? currentEndUser?.partyUuid : selectedParties[0]?.partyUuid;
   }, [selectedParties, currentEndUser, allOrganizationsSelected]);
+
+  useEffect(() => {
+    document.cookie = `AltinnPartyUuid=${currentPartyUuid}; Path=/; Domain=${getCookieDomain()}`;
+  }, [currentPartyUuid]);
 
   return {
     isLoading,
