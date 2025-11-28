@@ -218,17 +218,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
 
   return (
     <PageBase margin="page">
-      {isAlertBannerEnabled && (
-        <DsAlert data-color="warning" style={{ marginBottom: '1.5rem', marginTop: '-1rem' }}>
-          <Heading data-size="xs">{t('inbox.unable_to_load_parties.title')}</Heading>
-          <DsParagraph>{t('inbox.historical_messages_date_warning')}</DsParagraph>
-          <DsParagraph>
-            <Link style={{ color: 'rgb(60, 40, 7)' }} to={createMessageBoxLink(currentPartyUuid)}>
-              {t('inbox.historical_messages_date_warning_link')}
-            </Link>
-          </DsParagraph>
-        </DsAlert>
-      )}
       <section data-testid="inbox-toolbar" style={isGlobalMenuEnabled ? { marginTop: '-1rem' } : undefined}>
         {selectedAccount ? (
           <>
@@ -257,6 +246,17 @@ export const Inbox = ({ viewType }: InboxProps) => {
           </>
         ) : null}
       </section>
+      {isAlertBannerEnabled && (
+        <DsAlert data-color="warning">
+          <Heading data-size="xs">{t('inbox.unable_to_load_parties.title')}</Heading>
+          <DsParagraph>{t('inbox.historical_messages_date_warning')}</DsParagraph>
+          <DsParagraph>
+            <Link style={{ color: 'rgb(60, 40, 7)' }} to={createMessageBoxLink(currentPartyUuid)}>
+              {t('inbox.historical_messages_date_warning_link')}
+            </Link>
+          </DsParagraph>
+        </DsAlert>
+      )}
       <Section>
         {isAltinn2MessagesEnabled && <Altinn2ActiveSchemasNotification selectedAccount={selectedAccount} />}
         {dialogsSuccess && !dialogs.length && !isLoading && (
