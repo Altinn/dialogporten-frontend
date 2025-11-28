@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.109.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.109.0...v1.109.1) (2025-11-28)
+
+
+### Bug Fixes
+
+* **frontend:** revert apply security headers for nginx ([#3365](https://github.com/Altinn/dialogporten-frontend/issues/3365)) ([fe3b67c](https://github.com/Altinn/dialogporten-frontend/commit/fe3b67cfb4b2569d8bf4ba193e7b3f403196d6fd))
+
 ## [1.109.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.108.1...v1.109.0) (2025-11-28)
 
 
