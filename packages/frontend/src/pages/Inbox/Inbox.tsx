@@ -62,9 +62,9 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const [filterState, setFilterState] = useState<FilterState>(readFiltersFromURLQuery(location.search));
   const [currentSeenByLogModal, setCurrentSeenByLogModal] = useState<CurrentSeenByLog | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
-  const isGlobalMenuEnabled = useFeatureFlag('globalMenu.enabled') as boolean;
-  const isAltinn2MessagesEnabled = useFeatureFlag('inbox.enableAltinn2Messages') as boolean;
-  const isAlertBannerEnabled = useFeatureFlag('showTechnincalIssuesMessage') as boolean;
+  const isGlobalMenuEnabled = useFeatureFlag<boolean>('globalMenu.enabled');
+  const isAltinn2MessagesEnabled = useFeatureFlag<boolean>('inbox.enableAltinn2Messages');
+  const isAlertBannerEnabled = useFeatureFlag<boolean>('showTechnincalIssuesMessage');
 
   const onFiltersChange = (filters: FilterState) => {
     const currentURL = new URL(window.location.href);
