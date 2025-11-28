@@ -28,7 +28,7 @@ export const desktopTourSteps = [
     ),
   },
   {
-    selector: 'aside nav',
+    selector: 'aside nav > ul > li:nth-child(1)',
     content: (
       <OnboardingPopover titleKey="onboarding.tour.inbox.title" infoTextKey="onboarding.tour.inbox.description" />
     ),
@@ -40,6 +40,20 @@ export const desktopTourSteps = [
   {
     selector: 'aside nav a[href*="sent"]',
     content: <OnboardingPopover titleKey="component.sent" infoTextKey="onboarding.tour.sent.description" />,
+  },
+  {
+    selector: 'aside nav > ul > li:nth-child(2)',
+    content: (
+      <OnboardingPopover
+        titleKey="onboarding.tour.shortcuts.title"
+        infoTextKey="onboarding.tour.shortcuts.description"
+      />
+    ),
+    highlightedSelectors: [
+      'aside nav > ul > li:nth-child(2)',
+      'aside nav > ul > li:nth-child(3)',
+      'aside nav > ul > li:nth-child(4)',
+    ],
   },
 ];
 
