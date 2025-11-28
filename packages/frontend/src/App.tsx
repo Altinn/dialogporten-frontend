@@ -16,7 +16,6 @@ import { SavedSearchesPage } from './pages/SavedSearches';
 import { PageRoutes } from './pages/routes.ts';
 import './app.css';
 import { useEffect } from 'react';
-import { getCookieDomain } from './auth';
 import { usePageTracking } from './hooks/usePageTracking.ts';
 import { AboutPage } from './pages/About/About.tsx';
 import { useGlobalStringState } from './useGlobalState.ts';
@@ -51,9 +50,6 @@ function App() {
     const partyUuidFromCookie = getPartyUuidFromCookie();
     if (partyUuidFromCookie) {
       setCookiePartyUuid(getPartyUuidFromCookie() ?? '');
-      // Ensure this is only done once per reload, and after that, selected account, should be handled internally
-      document.cookie =
-        'AltinnPartyUuid' + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; domain=' + getCookieDomain();
     }
   }, []);
 
