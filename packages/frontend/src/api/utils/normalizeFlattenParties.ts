@@ -5,24 +5,19 @@ type PartyField = PartyFieldsFragment | SubPartyFieldsFragment;
 /* normalizes the parties and sub parties to title case and returns a flatten lists of PartyFieldsFragment
  where name of parent differs from sub parties
  */
-export const normalizeFlattenParties = (
-  parties: PartyFieldsFragment[],
-  stopReversingPersonNameOrder: boolean,
-): PartyFieldsFragment[] => {
+export const normalizeFlattenParties = (parties: PartyFieldsFragment[]): PartyFieldsFragment[] => {
   const partiesInTitleCase =
     parties.map((party) => ({
       ...party,
       name: formatDisplayName({
         fullName: party.name,
         type: party.partyType === 'Person' ? 'person' : 'company',
-        reverseNameOrder: stopReversingPersonNameOrder ? false : party.partyType === 'Person',
       }),
       subParties: party.subParties?.map((subParty) => ({
         ...subParty,
         name: formatDisplayName({
           fullName: subParty.name,
           type: subParty.partyType === 'Person' ? 'person' : 'company',
-          reverseNameOrder: stopReversingPersonNameOrder ? false : subParty.partyType === 'Person',
         }),
       })),
     })) ?? [];

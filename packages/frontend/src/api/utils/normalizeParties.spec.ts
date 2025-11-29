@@ -36,16 +36,16 @@ describe('normalizeParties', () => {
   ];
 
   it('should return sub-parties where name differs from parent', () => {
-    const result = normalizeFlattenParties(parties, false);
+    const result = normalizeFlattenParties(parties);
 
     expect(result.length).toBe(3);
-    expect(result[0].name).toBe('Reiersen Edel');
+    expect(result[0].name).toBe('Edel Reiersen');
     expect(result[1].name).toBe('Mysusæter Og Østre Gausdal');
     expect(result[2].name).toBe('Steinkjer Og Flateby');
   });
 
   it('should copy parent properties to sub-parties correctly', () => {
-    const result = normalizeFlattenParties(parties, false);
+    const result = normalizeFlattenParties(parties);
     expect(result[2].isDeleted).toBe(false);
     expect(result[2].isCurrentEndUser).toBe(false);
   });

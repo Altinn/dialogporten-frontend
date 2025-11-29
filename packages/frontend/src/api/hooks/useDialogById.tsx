@@ -313,7 +313,7 @@ export function mapDialogToToInboxItem(
 export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseDialogByIdOutput => {
   const format = useFormat();
   const { organizations, isLoading: isOrganizationsLoading } = useOrganizations();
-  const stopReversingPersonNameOrder = useFeatureFlag<boolean>('party.stopReversingPersonNameOrder');
+  const disableFlipNamesPatch = useFeatureFlag<boolean>('dialogporten.disableFlipNamesPatch');
   const { selectedProfile } = useParties();
   const partyURIs = parties.map((party) => party.party);
   const { data, isSuccess, isLoading, isError, dataUpdatedAt } = useAuthenticatedQuery<GetDialogByIdQuery>({
@@ -347,7 +347,7 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
       parties,
       organizations,
       format,
-      stopReversingPersonNameOrder,
+      disableFlipNamesPatch,
       selectedProfile,
     ),
     dataUpdatedAt,

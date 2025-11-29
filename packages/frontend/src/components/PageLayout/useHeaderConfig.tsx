@@ -26,10 +26,9 @@ interface UseHeaderConfigReturn {
 }
 
 export const useHeaderConfig = (): UseHeaderConfigReturn => {
-  const isGlobalMenuEnabled = useFeatureFlag('globalMenu.enabled') as boolean;
+  const isGlobalMenuEnabled = useFeatureFlag<boolean>('globalMenu.enabled');
   const { currentEndUser, parties, selectedParties, isLoading, allOrganizationsSelected, currentPartyUuid } =
     useParties();
-
   const { t, i18n } = useTranslation();
   const { logError } = useErrorLogger();
   const location = useLocation();
@@ -153,7 +152,7 @@ export const useHeaderConfig = (): UseHeaderConfigReturn => {
           name: t('word.search'),
           placeholder: t('inbox.search.placeholder'),
           value: searchValue,
-          onClear: () => onClear(),
+          onClear,
           onChange: (event: ChangeEvent<HTMLInputElement>) => setSearchValue(event.target.value),
           autocomplete: {
             ...autocomplete,

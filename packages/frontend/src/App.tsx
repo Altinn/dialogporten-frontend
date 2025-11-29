@@ -16,6 +16,7 @@ import { SavedSearchesPage } from './pages/SavedSearches';
 import { PageRoutes } from './pages/routes.ts';
 import './app.css';
 import { useEffect } from 'react';
+import { QUERY_KEYS } from './constants/queryKeys.ts';
 import { usePageTracking } from './hooks/usePageTracking.ts';
 import { AboutPage } from './pages/About/About.tsx';
 import { useGlobalStringState } from './useGlobalState.ts';
@@ -43,7 +44,7 @@ const getPartyUuidFromCookie = (): string | undefined => {
 function App() {
   // Add page tracking
   usePageTracking();
-  const [_, setCookiePartyUuid] = useGlobalStringState('altinnCookie', '');
+  const [_, setCookiePartyUuid] = useGlobalStringState(QUERY_KEYS.ALTINN_COOKIE, '');
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
@@ -84,7 +85,6 @@ function App() {
           <Route path={PageRoutes.bin} element={withErrorBoundary(<Inbox key="bin" viewType={'bin'} />, 'Bin')} />
           <Route path={PageRoutes.inboxItem} element={withErrorBoundary(<DialogDetailsPage />, 'Inbox Item')} />
           <Route path={PageRoutes.savedSearches} element={withErrorBoundary(<SavedSearchesPage />, 'Saved Searches')} />
-
           <Route path={PageRoutes.about} element={withErrorBoundary(<AboutPage />, 'About')} />
           <Route path={PageRoutes.error} element={<ErrorPage />} />
           <Route path="*" element={<Navigate to="/" />} />

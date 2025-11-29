@@ -9,7 +9,6 @@ import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
 import { normalizeFilterDefaults } from '../../pages/Inbox/filters.ts';
 import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
-import { useGlobalState } from '../../useGlobalState.ts';
 import { graphQLSDK } from '../queries.ts';
 import { getPartyIds, mapDialogToToInboxItems } from '../utils/dialog.ts';
 import { useParties } from './useParties.ts';
@@ -39,11 +38,8 @@ interface UseDialogsOutput {
 
 export const useDialogs = ({ parties, viewType, filterState, search, queryKey }: UseDialogsProps): UseDialogsOutput => {
   const { organizations } = useOrganizations();
-  const stopReversingPersonNameOrder = useFeatureFlag<boolean>('party.stopReversingPersonNameOrder');
-  const [hasLoadedDialogsInitially, setHasLoadedDialogsInitially] = useGlobalState<boolean>(
-    QUERY_KEYS.HAS_LOADED_DIALOGS_INITIALLY,
-    false,
-  );
+  const disableFlipNamesPatch = useFeatureFlag<boolean>('dialogporten.disableFlipNamesPatch');
+
   const disableDialogCount = useFeatureFlag<boolean>('inbox.disableDialogCount');
   const { selectedParties, isSelfIdentifiedUser } = useParties();
   const format = useFormat();
@@ -100,7 +96,7 @@ export const useDialogs = ({ parties, viewType, filterState, search, queryKey }:
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    if (!hasLoadedDialogsInitially && disableDialogCount && data) {
+    if (disableDialogCount && data) {
       const allItems = data.pages.flatMap((page) => page.searchDialogs?.items ?? []) ?? [];
       const hasNextPage = data.pages[data.pages.length - 1]?.searchDialogs?.hasNextPage ?? false;
       queryClient.setQueryData([QUERY_KEYS.COUNT_DIALOGS], {
@@ -109,16 +105,15 @@ export const useDialogs = ({ parties, viewType, filterState, search, queryKey }:
           hasNextPage,
         },
       });
-      setHasLoadedDialogsInitially(true);
     }
-  }, [hasLoadedDialogsInitially, disableDialogCount, data]);
+  }, [disableDialogCount, data, selectedParties]);
 
   const content = data?.pages.flatMap((page) => page.searchDialogs?.items ?? []) || [];
   const dialogCountInconclusive =
     data?.pages?.[data?.pages.length - 1]?.searchDialogs?.hasNextPage === true ||
     data?.pages?.[data?.pages.length - 1]?.searchDialogs?.items === null ||
     partyIds.length >= 20;
-  const dialogs = mapDialogToToInboxItems(content, parties ?? [], organizations, format, stopReversingPersonNameOrder);
+  const dialogs = mapDialogToToInboxItems(content, parties ?? [], organizations, format, disableFlipNamesPatch);
   /*  isFetching && isPlaceholderData is used to determine if we are fetching the initial data for the query key */
   const isActuallyLoading = isLoading || (isFetching && isPlaceholderData);
 
