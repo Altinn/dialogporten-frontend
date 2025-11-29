@@ -60,7 +60,7 @@ export const NotificationsPage = () => {
   return (
     <PageBase>
       <Breadcrumbs items={getBreadcrumbs(t('sidebar.profile'), t('sidebar.profile.notifications'), search)} />
-      <Heading size="xl">Varslingsinnstillinger</Heading>
+      <Heading size="xl">{t('profile.settings.notification_settings')}</Heading>
       <Toolbar
         search={{
           ...settingsSearch,
