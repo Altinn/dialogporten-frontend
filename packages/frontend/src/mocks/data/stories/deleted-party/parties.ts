@@ -5,7 +5,7 @@ export const parties: PartyFieldsFragment[] = [
     "party": "urn:altinn:person:identifier-no:12907499179",
     "partyType": "Person",
     "subParties": [],
-    "name": "ASK UGLESETT",
+    "name": "UGLESETT ASK",
     "isCurrentEndUser": true,
     "isDeleted": false,
     "hasOnlyAccessToSubParties": false,

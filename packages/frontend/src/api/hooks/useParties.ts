@@ -4,7 +4,6 @@ import { useLocation, useSearchParams } from 'react-router-dom';
 import { getCookieDomain } from '../../auth';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
-import { useFeatureFlag } from '../../featureFlags';
 import {
   getSelectedAllPartiesFromQueryParams,
   getSelectedPartyFromQueryParams,
@@ -55,12 +54,11 @@ const createPartyParams = (searchParamString: string, key: string, value: string
 
 export const useParties = (): UsePartiesOutput => {
   const location = useLocation();
-  const [cookiePartyUuid] = useGlobalStringState('altinnCookie', '');
+  const [cookiePartyUuid] = useGlobalStringState(QUERY_KEYS.ALTINN_COOKIE, '');
   const [hasInitializedFromCookie, setHasInitializedFromCookie] = useGlobalState<boolean>(
     'hasInitializedFromCookie',
     false,
   );
-  const stopReversingPersonNameOrder = useFeatureFlag<boolean>('party.stopReversingPersonNameOrder');
   const [searchParams, setSearchParams] = useSearchParams();
   const [allOrganizationsSelected, setAllOrganizationsSelected] = useGlobalState<boolean>(
     QUERY_KEYS.ALL_ORGANIZATIONS_SELECTED,
@@ -84,7 +82,7 @@ export const useParties = (): UsePartiesOutput => {
     queryKey: [QUERY_KEYS.PARTIES],
     queryFn: async () => {
       const response = await graphQLSDK.parties();
-      return normalizeFlattenParties(response.parties, stopReversingPersonNameOrder);
+      return normalizeFlattenParties(response.parties);
     },
     staleTime: Number.POSITIVE_INFINITY,
     gcTime: Number.POSITIVE_INFINITY,
