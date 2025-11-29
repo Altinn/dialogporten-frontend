@@ -1,6 +1,9 @@
 import { Heading, Section, Typography } from '@altinn/altinn-components';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
+import { useParties } from '../../api/hooks/useParties.ts';
+import { createMessageBoxLink } from '../../auth/url.ts';
 
 interface EmptyStateProps {
   query?: string;
@@ -10,6 +13,7 @@ interface EmptyStateProps {
 
 export const EmptyState = ({ query, viewType, searchMode }: EmptyStateProps) => {
   const { t } = useTranslation();
+  const { currentPartyUuid } = useParties();
 
   if (searchMode) {
     return (
@@ -53,6 +57,7 @@ export const EmptyState = ({ query, viewType, searchMode }: EmptyStateProps) => 
         <Heading size="lg">{t('emptyState.inbox.title')}</Heading>
         <Typography size="sm">
           <p>{t('emptyState.inbox.description', { br: <br key={'inbox-p-br'} /> })}</p>
+          <Link to={createMessageBoxLink(currentPartyUuid)}>{t('inbox.historical_messages_date_warning_link')}</Link>
         </Typography>
       </Section>
     );
