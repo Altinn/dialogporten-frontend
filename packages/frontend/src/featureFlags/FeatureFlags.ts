@@ -12,7 +12,7 @@ export const featureFlagDefinitions = [
   { key: 'dialogporten.disableFlipNamesPatch', type: 'boolean', default: false },
   { key: 'inbox.disableDialogCount', type: 'boolean', default: false },
   { key: 'inbox.enableAltinn2Messages', type: 'boolean', default: false },
-  { key: 'showTechnincalIssuesMessage', type: 'boolean', default: false },
+  { key: 'inbox.enableAlertBanner', type: 'boolean', default: false },
 ] as const satisfies readonly FeatureFlagDefinition[];
 
 export type FeatureFlagKey = (typeof featureFlagDefinitions)[number]['key'];

@@ -66,7 +66,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const isGlobalMenuEnabled = useFeatureFlag<boolean>('globalMenu.enabled');
   const isAltinn2MessagesEnabled = useFeatureFlag<boolean>('inbox.enableAltinn2Messages');
-  const isAlertBannerEnabled = useFeatureFlag<boolean>('showTechnincalIssuesMessage');
+  const isAlertBannerEnabled = useFeatureFlag<boolean>('inbox.enableAlertBanner');
   const alertBannerContent = useAlertBanner();
 
   const onFiltersChange = (filters: FilterState) => {
