@@ -25,4 +25,5 @@ export const QUERY_KEYS = {
   SHOW_PROFILE_TOUR: 'showProfileTour',
   IS_SELF_IDENTIFIED_USER: 'isSelfIdentifiedUser',
   HAS_LOADED_DIALOGS_INITIALLY: 'hasLoadedDialogsInitially',
+  ALERT_BANNER: 'alertBanner',
 };

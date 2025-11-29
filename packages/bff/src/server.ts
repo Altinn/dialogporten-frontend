@@ -15,6 +15,7 @@ import healthChecks from './azure/HealthChecks.ts';
 import healthProbes from './azure/HealthProbes.ts';
 import config from './config.ts';
 import { connectToDB } from './db.ts';
+import alertBannerApi from './features/alertBannerApi.ts';
 import featureApi from './features/featureApi.js';
 import graphqlApi from './graphql/api.ts';
 import { fastifyHeaders } from './graphql/fastifyHeaders.ts';
@@ -102,6 +103,9 @@ const startServer = async (): Promise<void> => {
   server.register(oidc);
   server.register(userApi);
   server.register(featureApi, {
+    appConfigConnectionString,
+  });
+  server.register(alertBannerApi, {
     appConfigConnectionString,
   });
   server.register(graphqlApi);
