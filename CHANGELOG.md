@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.110.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.109.3...v1.110.0) (2025-11-29)
+
+
+### Features
+
+* Alert Banner can be updated with Azure App Config ([a949bc9](https://github.com/Altinn/dialogporten-frontend/commit/a949bc989772dfbb06525c1b19079b0ecc231280))
+
+
+### Bug Fixes
+
+* Added link to A2 in inbox empty state ([23be0f3](https://github.com/Altinn/dialogporten-frontend/commit/23be0f38f8e41f969a3d5c8170799c72548e0bf7))
+* patch lastname and firstname order with feature flag entries of actors in dialog meta data with unti this is fixed in dialogporten ([#3387](https://github.com/Altinn/dialogporten-frontend/issues/3387)) ([fc519fd](https://github.com/Altinn/dialogporten-frontend/commit/fc519fde8747db216debb98b855b1660e04d6229))
+* rename feature flag for alert banner ([#3389](https://github.com/Altinn/dialogporten-frontend/issues/3389)) ([da9c3de](https://github.com/Altinn/dialogporten-frontend/commit/da9c3dec819c0ae74a8bd656ba4962c6b5edb382))
+* Translations on notifications page ([450387b](https://github.com/Altinn/dialogporten-frontend/commit/450387b0054e4f865eadf42715940c61314628d7))
+
 ## [1.109.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.109.2...v1.109.3) (2025-11-28)
 
 
