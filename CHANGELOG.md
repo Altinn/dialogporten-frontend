@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.110.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.110.1...v1.110.2) (2025-11-30)
+
+
+### Bug Fixes
+
+* **cookie:** ensure altinnPartyId is updated when updating party ([#3394](https://github.com/Altinn/dialogporten-frontend/issues/3394)) ([adc2613](https://github.com/Altinn/dialogporten-frontend/commit/adc26132441c500f61702fe69840e9442116ef50))
+
 ## [1.110.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.110.0...v1.110.1) (2025-11-30)
 
 
