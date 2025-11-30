@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.110.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.110.0...v1.110.1) (2025-11-30)
+
+
+### Bug Fixes
+
+* patch unread logic for migrated a2 messages ([#3391](https://github.com/Altinn/dialogporten-frontend/issues/3391)) ([d838525](https://github.com/Altinn/dialogporten-frontend/commit/d838525d95504693dae3c8288d7b7bacd59b3fc0))
+
 ## [1.110.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.109.3...v1.110.0) (2025-11-29)
 
 
