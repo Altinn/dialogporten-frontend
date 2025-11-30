@@ -10,6 +10,7 @@ export const parties: PartyFieldsFragment[] = [
     isDeleted: false,
     partyUuid: 'urn:altinn:person:uuid:test-testesen',
     hasOnlyAccessToSubParties: false,
+    partyId: 1,
   },
 ];
 

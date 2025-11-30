@@ -4,6 +4,7 @@ import { useLocation, useSearchParams } from 'react-router-dom';
 import { getCookieDomain } from '../../auth';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
+import { type PartyCookieName, getPartyFromCookie } from '../../cookie.ts';
 import {
   getSelectedAllPartiesFromQueryParams,
   getSelectedPartyFromQueryParams,
@@ -227,9 +228,25 @@ export const useParties = (): UsePartiesOutput => {
     return allOrganizationsSelected ? currentEndUser?.partyUuid : selectedParties[0]?.partyUuid;
   }, [selectedParties, currentEndUser, allOrganizationsSelected]);
 
+  const currentA2PartyId = useMemo(() => {
+    return allOrganizationsSelected ? currentEndUser?.partyId : selectedParties[0]?.partyId;
+  }, [selectedParties, currentEndUser, allOrganizationsSelected]);
+
   useEffect(() => {
-    document.cookie = `AltinnPartyUuid=${currentPartyUuid}; Path=/; Domain=${getCookieDomain()}`;
-  }, [currentPartyUuid]);
+    if (!currentPartyUuid || currentA2PartyId == null) return;
+
+    const domain = getCookieDomain();
+
+    const ensureCookie = (key: PartyCookieName, value: string) => {
+      const existing = getPartyFromCookie(key);
+      if (existing !== value) {
+        document.cookie = `${key}=${value}; Path=/; Domain=${domain}`;
+      }
+    };
+
+    ensureCookie('AltinnPartyUuid', currentPartyUuid);
+    ensureCookie('AltinnPartyId', String(currentA2PartyId));
+  }, [currentPartyUuid, currentA2PartyId]);
 
   return {
     isLoading,
