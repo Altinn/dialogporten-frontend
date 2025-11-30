@@ -157,8 +157,8 @@ const useGroupedDialogs = ({
 
     const getIsUnread = (item: InboxItemInput) => {
       const isMigrated = item.serviceResource?.includes(MIGRATED_SERVICE_RESOURCE);
-      if (isMigrated && !item.hasUnopenedContent) {
-        return false;
+      if (isMigrated) {
+        return item.hasUnopenedContent;
       }
       return item.seenSinceLastContentUpdate.length === 0 && !item.hasUnopenedContent;
     };
