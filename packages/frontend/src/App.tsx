@@ -17,29 +17,10 @@ import { PageRoutes } from './pages/routes.ts';
 import './app.css';
 import { useEffect } from 'react';
 import { QUERY_KEYS } from './constants/queryKeys.ts';
+import { getPartyFromCookie } from './cookie.ts';
 import { usePageTracking } from './hooks/usePageTracking.ts';
 import { AboutPage } from './pages/About/About.tsx';
 import { useGlobalStringState } from './useGlobalState.ts';
-
-const getPartyUuidFromCookie = (): string | undefined => {
-  if (typeof document === 'undefined') return undefined;
-
-  const cookies = document.cookie.split(';');
-  let partyUuid: string | undefined;
-
-  for (const cookie of cookies) {
-    const [rawKey, ...rawValParts] = cookie.split('=');
-    const key = rawKey.trim();
-    const value = rawValParts.join('=').trim();
-
-    if (key === 'AltinnPartyUuid') {
-      partyUuid = value;
-      break;
-    }
-  }
-
-  return partyUuid;
-};
 
 function App() {
   // Add page tracking
@@ -48,9 +29,9 @@ function App() {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    const partyUuidFromCookie = getPartyUuidFromCookie();
+    const partyUuidFromCookie = getPartyFromCookie('AltinnPartyUuid');
     if (partyUuidFromCookie) {
-      setCookiePartyUuid(getPartyUuidFromCookie() ?? '');
+      setCookiePartyUuid(getPartyFromCookie('AltinnPartyUuid') ?? '');
     }
   }, []);
 

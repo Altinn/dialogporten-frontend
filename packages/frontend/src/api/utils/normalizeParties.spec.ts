@@ -13,6 +13,7 @@ describe('normalizeParties', () => {
       isCurrentEndUser: true,
       isDeleted: false,
       partyUuid: 'urn:altinn:person:identifier-no:1337',
+      partyId: 1,
     },
     {
       party: 'urn:altinn:organization:identifier-no:1',
@@ -26,12 +27,14 @@ describe('normalizeParties', () => {
           isCurrentEndUser: false,
           partyUuid: 'urn:altinn:person:identifier-no:1337',
           isDeleted: false,
+          partyId: 2,
         },
       ],
       name: 'MYSUSÆTER OG ØSTRE GAUSDAL',
       isCurrentEndUser: false,
       isDeleted: false,
       partyUuid: 'urn:altinn:person:identifier-no:1338',
+      partyId: 3,
     },
   ];
 
