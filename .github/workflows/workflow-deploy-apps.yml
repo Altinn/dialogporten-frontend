@@ -148,6 +148,7 @@ jobs:
       matrix:
         include:
           - name: bff
+          - name: bff-stream
           - name: frontend
     environment: ${{ inputs.environment }}
     permissions:
