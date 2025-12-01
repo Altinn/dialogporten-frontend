@@ -1,4 +1,4 @@
-import type { BadgeProps, FilterState, ToolbarFilterProps } from '@altinn/altinn-components';
+import type { FilterState, ToolbarFilterProps } from '@altinn/altinn-components';
 import {
   type CountableDialogFieldsFragment,
   DialogStatus,
@@ -71,13 +71,6 @@ export enum FilterCategory {
   STATUS = 'status',
   UPDATED = 'updated',
 }
-
-const getFilterBadgeProps = (filterCount: number | undefined): BadgeProps => {
-  if (typeof filterCount === 'number' && filterCount > 0) {
-    return { label: String(filterCount), size: 'sm' };
-  }
-  return { size: 'xs', label: '' };
-};
 
 const getFilteredDialogs = (
   dialogs: CountableDialogFieldsFragment[],
@@ -198,7 +191,7 @@ const createDateOptions = (dates: string[]): ToolbarFilterProps['options'] => {
   return options.map((option) => ({
     label: t(`filter.date.${option.value.toLowerCase()}`),
     value: option.value,
-    badge: getFilterBadgeProps(dateCounts[option.value]),
+    count: dateCounts[option.value] || 0,
     groupId: option.groupId,
   }));
 };
