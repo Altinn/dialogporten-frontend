@@ -143,6 +143,7 @@ jobs:
     # Should run even though the migration job was skipped
     if: ${{ always() && !cancelled() && !failure() }}
     needs: deploy-migration-job
+    timeout-minutes: 6
     strategy:
       fail-fast: true
       matrix:
