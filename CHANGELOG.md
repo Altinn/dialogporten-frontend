@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.110.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.110.3...v1.110.4) (2025-12-01)
+
+
+### Bug Fixes
+
+* add optional search language for search dialogs ([#3404](https://github.com/Altinn/dialogporten-frontend/issues/3404)) ([9bc670d](https://github.com/Altinn/dialogporten-frontend/commit/9bc670dadfd5cfed631cae02f5076fb580811ba3))
+
 ## [1.110.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.110.2...v1.110.3) (2025-12-01)
 
 
