@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.110.7](https://github.com/Altinn/dialogporten-frontend/compare/v1.110.6...v1.110.7) (2025-12-01)
+
+
+### Bug Fixes
+
+* feature toggle disable subscriptions ([#3414](https://github.com/Altinn/dialogporten-frontend/issues/3414)) ([638b69f](https://github.com/Altinn/dialogporten-frontend/commit/638b69f534513840914bcbb31b0f00d1e6f73463))
+
 ## [1.110.6](https://github.com/Altinn/dialogporten-frontend/compare/v1.110.5...v1.110.6) (2025-12-01)
 
 
