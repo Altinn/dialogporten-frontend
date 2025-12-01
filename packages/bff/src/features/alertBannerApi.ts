@@ -4,7 +4,7 @@ import type { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 
 interface AlertBannerLink {
-  url: string;
+  url?: string;
   text: string;
 }
 
@@ -55,12 +55,18 @@ function parseAlertBannerContent(jsonString: string | undefined): AlertBannerCon
       if (
         typeof parsed.link !== 'object' ||
         parsed.link === null ||
-        !('url' in parsed.link) ||
         !('text' in parsed.link) ||
-        typeof parsed.link.url !== 'string' ||
         typeof parsed.link.text !== 'string'
       ) {
-        missingFields.push('link.url (string) and link.text (string)');
+        missingFields.push('link.text (string)');
+      }
+      if (
+        typeof parsed.link === 'object' &&
+        parsed.link !== null &&
+        'url' in parsed.link &&
+        typeof parsed.link.url !== 'string'
+      ) {
+        missingFields.push('link.url (string, optional)');
       }
     }
 
