@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.110.6](https://github.com/Altinn/dialogporten-frontend/compare/v1.110.5...v1.110.6) (2025-12-01)
+
+
+### Bug Fixes
+
+* **bff:** add timeouts for all axios requests ([#3412](https://github.com/Altinn/dialogporten-frontend/issues/3412)) ([ca73998](https://github.com/Altinn/dialogporten-frontend/commit/ca73998b92b2ae437d00eccf31a3ae38ceab04a7))
+
 ## [1.110.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.110.4...v1.110.5) (2025-12-01)
 
 
