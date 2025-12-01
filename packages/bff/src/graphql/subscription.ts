@@ -24,6 +24,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
           method: 'POST',
           responseType: 'stream',
           url: config.dialogporten.graphqlSubscriptionUrl,
+          timeout: 10000,
           headers: {
             'Content-Type': 'application/json; charset=utf-8',
             Authorization: `Bearer ${token!.access_token}`,
