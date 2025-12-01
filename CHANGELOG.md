@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.110.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.110.4...v1.110.5) (2025-12-01)
+
+
+### Bug Fixes
+
+* set max timeout 30_000 for bff against dialogporten ([#3408](https://github.com/Altinn/dialogporten-frontend/issues/3408)) ([9c8d2a0](https://github.com/Altinn/dialogporten-frontend/commit/9c8d2a0861cd8111fbec546933f77b7802fc2feb))
+
 ## [1.110.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.110.3...v1.110.4) (2025-12-01)
 
 
