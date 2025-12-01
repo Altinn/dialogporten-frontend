@@ -75,6 +75,7 @@ export function buildProfileMenu({
         name: formatDisplayName({
           fullName: userName ?? '',
           type: 'person',
+          reverseNameOrder: true,
         }),
       },
       title: t('sidebar.profile'),
