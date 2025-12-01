@@ -14,6 +14,7 @@ const defaultFeatureFlags: Record<string, boolean | number | string> = {
   'inbox.enableAltinn2Messages': false,
   'debug.test': false, // only used for debugging,
   'inbox.enableAlertBanner': false,
+  'dialogporten.disableSubscriptions': false,
 };
 
 /* Fore more details, cf. https://learn.microsoft.com/en-us/azure/azure-app-configuration/quickstart-feature-flag-javascript?tabs=entra-id */

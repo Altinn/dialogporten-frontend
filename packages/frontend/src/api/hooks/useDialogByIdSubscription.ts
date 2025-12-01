@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { SSE } from 'sse.js';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
+import { useFeatureFlag } from '../../featureFlags';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { pruneSearchQueryParams } from '../../pages/Inbox/queryParams.ts';
 import { PageRoutes } from '../../pages/routes.ts';
@@ -20,6 +21,7 @@ export type DialogEventData = {
 
 export const useDialogByIdSubscription = (dialogId: string | undefined, dialogToken: string | undefined) => {
   const [hasBeenOpened, setHasBeenOpened] = useState<boolean>(false);
+  const disableSubscriptions = useFeatureFlag<boolean>('dialogporten.disableSubscriptions');
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const searchParams = new URLSearchParams(window.location.search);
@@ -36,6 +38,10 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
+      return;
+    }
+
+    if (disableSubscriptions) {
       return;
     }
 
@@ -118,14 +124,14 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
         eventSourceRef.current = null;
       }
     };
-  }, [dialogId, dialogToken, search, isMock]);
+  }, [dialogId, dialogToken, search, isMock, disableSubscriptions]);
 
   const onMessageEvent = useCallback((handler: (eventData: DialogEventData, rawEvent: MessageEvent) => void) => {
     onMessageRef.current = handler;
   }, []);
 
   return {
-    hasBeenOpened: isMock || hasBeenOpened,
+    hasBeenOpened: isMock || hasBeenOpened || disableSubscriptions,
     onMessageEvent,
   };
 };
