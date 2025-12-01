@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.110.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.110.2...v1.110.3) (2025-12-01)
+
+
+### Bug Fixes
+
+* **ui:** new favicon, remove colored badges and fix name in sidebar for profile ([b27fb4b](https://github.com/Altinn/dialogporten-frontend/commit/b27fb4b9174a30f0a6ad27794b28ebbcf7c51429))
+
 ## [1.110.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.110.1...v1.110.2) (2025-11-30)
 
 
