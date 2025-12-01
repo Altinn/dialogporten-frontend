@@ -35,6 +35,7 @@ export const getAltinn2messages = async (
     const altinn2messagesAPI_url = `${altinn2BaseURL}/api/${isCurrentUser ? 'my' : selectedAccountIdentifier}/messages?language=${languageCode}`;
 
     const response = await axios.get<Altinn2MessagesResponse>(altinn2messagesAPI_url, {
+      timeout: 30000,
       headers: {
         Authorization: `Bearer ${token.access_token}`,
         Accept: 'application/hal+json',
