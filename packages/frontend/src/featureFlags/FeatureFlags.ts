@@ -10,6 +10,7 @@ export const featureFlagDefinitions = [
   { key: 'globalMenu.enableAccessManagementLink', type: 'boolean', default: false },
   { key: 'globalMenu.enabled', type: 'boolean', default: false },
   { key: 'dialogporten.disableFlipNamesPatch', type: 'boolean', default: false },
+  { key: 'dialogporten.enableSearchLanguageCode', type: 'boolean', default: false },
   { key: 'inbox.disableDialogCount', type: 'boolean', default: false },
   { key: 'inbox.enableAltinn2Messages', type: 'boolean', default: false },
   { key: 'inbox.enableAlertBanner', type: 'boolean', default: false },
