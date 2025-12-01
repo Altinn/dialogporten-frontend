@@ -41,6 +41,7 @@ export const exchangeToken = async (context: Context): Promise<string> => {
 
   try {
     const { data: newToken } = await axios.get(platformExchangeTokenEndpointURL, {
+      timeout: 30000,
       headers: {
         Authorization: `Bearer ${token?.access_token}`,
         'Content-Type': 'application/json',
@@ -102,6 +103,7 @@ export const addFavoriteParty = async (context: Context, partyUuid: string) => {
       `${platformProfileAPI_url}users/current/party-groups/favorites/${partyUuid}`,
       null,
       {
+        timeout: 30000,
         headers: {
           Authorization: `Bearer ${newToken}`,
           'Content-Type': 'application/json',
@@ -174,6 +176,7 @@ export const deleteFavoriteParty = async (context: Context, partyUuid: string) =
 
   return await axios
     .delete(`${platformProfileAPI_url}users/current/party-groups/favorites/${partyUuid}`, {
+      timeout: 30000,
       headers: {
         Authorization: `Bearer ${newToken}`,
         'Content-Type': 'application/json',
@@ -190,6 +193,7 @@ export const getUserFromCore = async (context: Context) => {
   try {
     const token = await exchangeToken(context);
     const { data } = await axios.get(`${platformProfileAPI_url}users/current`, {
+      timeout: 30000,
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
@@ -210,6 +214,7 @@ export const getUserFromCore = async (context: Context) => {
 export const getFavoritesFromCore = async (token: string) => {
   try {
     const { data } = await axios.get(`${platformProfileAPI_url}users/current/party-groups/favorites`, {
+      timeout: 30000,
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
@@ -233,6 +238,7 @@ export const getNotificationsettingsForCurrentUser = async (context: Context) =>
   let data = [] as unknown[];
   try {
     const response = await axios.get(`${platformProfileAPI_url}users/current/notificationsettings/parties`, {
+      timeout: 30000,
       headers: {
         Authorization: `Bearer ${newToken}`,
         'Content-Type': 'application/json',
@@ -281,6 +287,7 @@ export const updateNotificationsSetting = async (
       `${platformProfileAPI_url}users/current/notificationsettings/parties/${partyUuid}`,
       notificationSettingsInput,
       {
+        timeout: 30000,
         headers: {
           Authorization: `Bearer ${newToken}`,
           'Content-Type': 'application/json',
@@ -315,6 +322,7 @@ export const deleteNotificationsSetting = async (partyUuid: string, context: Con
     const response = await axios.delete(
       `${platformProfileAPI_url}users/current/notificationsettings/parties/${partyUuid}`,
       {
+        timeout: 30000,
         headers: {
           Authorization: `Bearer ${newToken}`,
           'Content-Type': 'application/json',
@@ -349,6 +357,7 @@ export const getNotificationAddressByOrgNumber = async (orgnr: string, context: 
   }
   const { data, status, statusText } = await axios
     .get(`${platformProfileAPI_url}organizations/${orgnr}/notificationaddresses/mandatory`, {
+      timeout: 30000,
       headers: {
         Authorization: `Bearer ${newToken}`,
         'Content-Type': 'application/json',

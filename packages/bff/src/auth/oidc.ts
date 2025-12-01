@@ -101,7 +101,9 @@ export const generateSessionId = () => {
 };
 
 export const fetchOpenIDConfig = async (issuerURL: string): Promise<ProviderConfig> => {
-  const response = await axios.get(issuerURL);
+  const response = await axios.get(issuerURL, {
+    timeout: 30000,
+  });
   return response.data;
 };
 
@@ -253,6 +255,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
       body.append('redirect_uri', `${hostname}/api/cb`);
 
       const { data: token } = await axios.post(tokenEndpoint, body, {
+        timeout: 30000,
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
           Authorization: authEncoded,
