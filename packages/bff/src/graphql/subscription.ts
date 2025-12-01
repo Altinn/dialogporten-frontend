@@ -1,7 +1,34 @@
+import http from 'node:http';
+import https from 'node:https';
+import type { Readable } from 'node:stream';
+import { logger } from '@altinn/dialogporten-node-logger';
 import axios from 'axios';
 import type { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 import config from '../config.js';
+
+// Create dedicated HTTP agents for subscriptions with higher connection limits
+// This isolates subscription connections from regular request connections
+const httpAgent = new http.Agent({
+  keepAlive: true,
+  keepAliveMsecs: 1000,
+  maxSockets: Number.POSITIVE_INFINITY, // Allow unlimited connections for subscriptions
+  maxFreeSockets: 256,
+});
+
+const httpsAgent = new https.Agent({
+  keepAlive: true,
+  keepAliveMsecs: 1000,
+  maxSockets: Number.POSITIVE_INFINITY, // Allow unlimited connections for subscriptions
+  maxFreeSockets: 256,
+});
+
+// Create a dedicated axios instance for subscriptions with custom agents
+const subscriptionAxios = axios.create({
+  httpAgent,
+  httpsAgent,
+  timeout: 10000,
+});
 
 const plugin: FastifyPluginAsync = async (fastify) => {
   fastify.route({
@@ -19,12 +46,25 @@ const plugin: FastifyPluginAsync = async (fastify) => {
       const token = request.session.get('token');
       const { dialogId } = request.query as { dialogId: string };
 
+      let upstreamStream: Readable | null = null;
+
+      const cleanup = () => {
+        if (upstreamStream) {
+          try {
+            upstreamStream.destroy();
+            upstreamStream = null;
+            logger.debug('Cleaned up upstream subscription stream', { dialogId });
+          } catch (error) {
+            logger.error(error, 'Error cleaning up upstream stream', { dialogId });
+          }
+        }
+      };
+
       try {
-        const response = await axios({
+        const response = await subscriptionAxios({
           method: 'POST',
           responseType: 'stream',
           url: config.dialogporten.graphqlSubscriptionUrl,
-          timeout: 10000,
           headers: {
             'Content-Type': 'application/json; charset=utf-8',
             Authorization: `Bearer ${token!.access_token}`,
@@ -43,14 +83,46 @@ const plugin: FastifyPluginAsync = async (fastify) => {
           }),
         });
 
-        response.data.pipe(reply.raw);
+        upstreamStream = response.data as Readable;
 
+        // Handle upstream stream errors
+        if (upstreamStream) {
+          upstreamStream.on('error', (error) => {
+            logger.error(error, 'Upstream subscription stream error', { dialogId });
+            if (!reply.raw.destroyed) {
+              reply.raw.write(`event: error\ndata: ${JSON.stringify({ message: 'Upstream stream error' })}\n\n`);
+              reply.raw.end();
+            }
+            cleanup();
+          });
+
+          // Handle upstream stream end
+          upstreamStream.on('end', () => {
+            logger.debug('Upstream subscription stream ended', { dialogId });
+            if (!reply.raw.destroyed) {
+              reply.raw.end();
+            }
+            cleanup();
+          });
+
+          // Pipe upstream stream to client
+          upstreamStream.pipe(reply.raw);
+        }
+
+        // Handle client disconnect
         request.raw.on('close', () => {
-          response.data.destroy();
+          logger.debug('Client disconnected from subscription', { dialogId });
+          cleanup();
         });
-      } catch (e) {
-        reply.raw.write(`event: error\ndata: ${JSON.stringify({ message: 'Upstream error' })}\n\n`);
-        reply.raw.end();
+
+        logger.debug('Subscription stream established', { dialogId });
+      } catch (error) {
+        logger.error(error, 'Failed to establish subscription stream', { dialogId });
+        if (!reply.raw.destroyed) {
+          reply.raw.write(`event: error\ndata: ${JSON.stringify({ message: 'Upstream error' })}\n\n`);
+          reply.raw.end();
+        }
+        cleanup();
       }
     },
   });
