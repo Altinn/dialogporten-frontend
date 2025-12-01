@@ -25,12 +25,12 @@ import { type ReactElement, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Analytics } from '../../analytics';
 import type { DialogByIdDetails } from '../../api/hooks/useDialogById.tsx';
-import { type DialogEventData, useDialogByIdSubscription } from '../../api/hooks/useDialogByIdSubscription.ts';
+import type { DialogEventData } from '../../api/hooks/useDialogByIdSubscription.ts';
 import { useParties } from '../../api/hooks/useParties.ts';
 import type { TimelineSegmentWithTransmissions } from '../../api/utils/transmissions.ts';
 import { createChangeReporteeAndRedirect } from '../../auth';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
-import { useFeatureFlag } from '../../featureFlags/useFeatureFlag.ts';
+import { useFeatureFlag } from '../../featureFlags';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { getDialogStatus } from '../../pages/Inbox/status.ts';
@@ -46,8 +46,8 @@ interface DialogDetailsProps {
   };
   isAuthLevelTooLow?: boolean;
   isLoading?: boolean;
-  subscriptionOpened?: boolean;
   dialogToken?: string;
+  onMessageEvent: (handler: (eventData: DialogEventData, rawEvent: MessageEvent) => void) => void;
 }
 
 /**
@@ -176,7 +176,7 @@ export const DialogDetails = ({
   isAuthLevelTooLow,
   activityModalProps,
   dialogToken,
-  subscriptionOpened,
+  onMessageEvent,
 }: DialogDetailsProps): ReactElement => {
   const queryClient = useQueryClient();
   const enableManualSubscriptionRefresh = useFeatureFlag<boolean>('dialogporten.enableManualSubscriptionRefresh');
@@ -186,7 +186,6 @@ export const DialogDetails = ({
   const [actionIdLoading, setActionIdLoading] = useState<string>('');
   const [actionIdUpdating, setActionIdUpdating] = useState<string>('');
   const [showAllTransmissions, setShowAllTransmissions] = useState<boolean>(false);
-  const { onMessageEvent } = useDialogByIdSubscription(dialog?.id, dialog?.dialogToken);
   const format = useFormat();
 
   onMessageEvent((eventData: DialogEventData) => {
@@ -373,7 +372,7 @@ export const DialogDetails = ({
         seenByLog={dialog.seenByLog}
       >
         <p>{dialog.summary}</p>
-        {subscriptionOpened && dialogToken && (
+        {dialogToken && (
           <MainContentReference content={dialog.mainContentReference} dialogToken={dialogToken} id={dialog.id} />
         )}
         {dialog.attachments.length > 0 && (
