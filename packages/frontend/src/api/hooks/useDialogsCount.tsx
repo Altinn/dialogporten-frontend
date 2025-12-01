@@ -4,6 +4,7 @@ import type {
   GetAllDialogsForCountQuery,
   PartyFieldsFragment,
 } from 'bff-types-generated';
+import i18n from 'i18next';
 import { useMemo } from 'react';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
@@ -23,6 +24,7 @@ interface UseDialogsOutput {
 
 export const useDialogsCount = (parties?: PartyFieldsFragment[], viewType?: InboxViewType): UseDialogsOutput => {
   const { selectedParties, isSelfIdentifiedUser } = useParties();
+  const enableSearchLanguageCode = useFeatureFlag<boolean>('dialogporten.enableSearchLanguageCode');
   const partiesToUse = parties ? parties : selectedParties;
   const partyIds = getPartyIds(partiesToUse);
   const disableDialogCount = useFeatureFlag<boolean>('inbox.disableDialogCount');
@@ -37,6 +39,9 @@ export const useDialogsCount = (parties?: PartyFieldsFragment[], viewType?: Inbo
           variables: {
             partyURIs: partyIds,
             limit: 1000,
+            ...(enableSearchLanguageCode && {
+              searchLanguageCode: i18n.language,
+            }),
           },
         }),
       ),

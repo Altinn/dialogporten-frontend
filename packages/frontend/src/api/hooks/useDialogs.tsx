@@ -1,6 +1,7 @@
 import type { FilterState } from '@altinn/altinn-components/dist/types/lib/components/Toolbar/Toolbar';
 import { keepPreviousData, useQueryClient } from '@tanstack/react-query';
 import type { DialogStatus, GetAllDialogsForPartiesQuery, PartyFieldsFragment, SystemLabel } from 'bff-types-generated';
+import i18n from 'i18next';
 import { useEffect, useRef } from 'react';
 import { useAuthenticatedInfiniteQuery } from '../../auth/useAuthenticatedInfiniteQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
@@ -39,8 +40,8 @@ interface UseDialogsOutput {
 export const useDialogs = ({ parties, viewType, filterState, search, queryKey }: UseDialogsProps): UseDialogsOutput => {
   const { organizations } = useOrganizations();
   const disableFlipNamesPatch = useFeatureFlag<boolean>('dialogporten.disableFlipNamesPatch');
-
   const disableDialogCount = useFeatureFlag<boolean>('inbox.disableDialogCount');
+  const enableSearchLanguageCode = useFeatureFlag<boolean>('dialogporten.enableSearchLanguageCode');
   const { selectedParties, isSelfIdentifiedUser } = useParties();
   const format = useFormat();
   const partiesToUse = parties ? parties : selectedParties;
@@ -72,6 +73,9 @@ export const useDialogs = ({ parties, viewType, filterState, search, queryKey }:
           continuationToken,
           limit: 100,
           search: searchString,
+          ...(enableSearchLanguageCode && {
+            searchLanguageCode: i18n.language,
+          }),
         });
       },
       enabled: partyIds.length > 0 && partyIds.length <= 20 && !isSelfIdentifiedUser,

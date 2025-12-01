@@ -10,6 +10,7 @@ query getAllDialogsForParties(
   $createdBefore: DateTime
   $updatedAfter: DateTime
   $updatedBefore: DateTime
+  $searchLanguageCode: String
 ) {
   searchDialogs(
     input: {
@@ -26,6 +27,7 @@ query getAllDialogsForParties(
       contentUpdatedBefore: $updatedBefore
       limit: $limit
       excludeApiOnly: true
+      searchLanguageCode: $searchLanguageCode
     }
   ) {
     items {
@@ -47,6 +49,7 @@ query getAllDialogsForCount(
   $updatedAfter: DateTime
   $updatedBefore: DateTime
   $limit: Int
+  $searchLanguageCode: String
 ) {
   searchDialogs(
     input: {
@@ -62,6 +65,7 @@ query getAllDialogsForCount(
       updatedBefore: $updatedBefore
       limit: $limit
       excludeApiOnly: true
+      searchLanguageCode: $searchLanguageCode
     }
   ) {
     items {
@@ -79,6 +83,7 @@ query getSearchAutocompleteDialogs(
   $createdAfter: DateTime
   $createdBefore: DateTime
   $limit: Int
+  $searchLanguageCode: String
 ) {
   searchDialogs(
     input: {
@@ -91,6 +96,7 @@ query getSearchAutocompleteDialogs(
       createdBefore: $createdBefore
       excludeApiOnly: true
       limit: $limit
+      searchLanguageCode: $searchLanguageCode
     }
   ) {
     items {
