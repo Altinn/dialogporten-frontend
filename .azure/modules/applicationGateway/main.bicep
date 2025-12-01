@@ -578,7 +578,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2024-01-01' =
               name: bffStreamGatewayBackend.pool.name
               properties: {
                 paths: [
-                  '/api/graphql/stream'
+                  '/api/graphql/stream*'
                 ]
                 backendAddressPool: {
                   id: resourceId(
