@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.111.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.110.7...v1.111.0) (2025-12-02)
+
+
+### Features
+
+* **bff:** separate GraphQL subscription as a separate app ([#3419](https://github.com/Altinn/dialogporten-frontend/issues/3419)) ([7c247a9](https://github.com/Altinn/dialogporten-frontend/commit/7c247a97468964cd61e56fff0b8da0c0176003e4))
+
+
+### Bug Fixes
+
+* Force refresh of dialog details after gui action ([13cd468](https://github.com/Altinn/dialogporten-frontend/commit/13cd468f2298b97a9eabd1375ddad5cafeaa040a))
+
 ## [1.110.7](https://github.com/Altinn/dialogporten-frontend/compare/v1.110.6...v1.110.7) (2025-12-01)
 
 
