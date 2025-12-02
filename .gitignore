@@ -378,3 +378,6 @@ certs/*
 
 # Cursor IDE
 .cursor
+
+# Homepage
+data/homepage/config/proxmox.yaml
