@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.111.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.111.0...v1.111.1) (2025-12-02)
+
+
+### Bug Fixes
+
+* clean up dead aborted or cancelled connections for upstream subscriptions ([#3425](https://github.com/Altinn/dialogporten-frontend/issues/3425)) ([cd5f560](https://github.com/Altinn/dialogporten-frontend/commit/cd5f56011ec33bbd4a42c9897638fd8c451ca89b))
+
 ## [1.111.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.110.7...v1.111.0) (2025-12-02)
 
 
