@@ -69,6 +69,12 @@ resource environmentKeyVaultResource 'Microsoft.KeyVault/vaults@2023-07-01' exis
   name: environmentKeyVaultName
 }
 
+resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2024-11-30' = {
+  name: '${namePrefix}-bff-stream-identity'
+  location: location
+  tags: tags
+}
+
 // https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-deployment#example-1
 var keyVaultUrl = 'https://${environmentKeyVaultName}${az.environment().suffixes.keyvaultDns}/secrets'
 
@@ -240,6 +246,14 @@ var containerAppEnvVars = concat(
   additionalEnvironmentVariables
 )
 
+module keyVaultReaderAccessPolicy '../../modules/keyvault/addReaderRoles.bicep' = {
+  name: 'keyVaultReaderAccessPolicy-${containerAppName}'
+  params: {
+    keyvaultName: environmentKeyVaultResource.name
+    principalIds: [managedIdentity.properties.principalId]
+  }
+}
+
 module containerApp '../../modules/containerApp/main.bicep' = {
   name: containerAppName
   params: {
@@ -255,15 +269,11 @@ module containerApp '../../modules/containerApp/main.bicep' = {
     resources: resources
     tags: tags
     workloadProfileName: workloadProfileName
+    userAssignedIdentityId: managedIdentity.id
   }
-}
-
-module keyVaultReaderAccessPolicy '../../modules/keyvault/addReaderRoles.bicep' = {
-  name: 'keyVaultReaderAccessPolicy-${containerAppName}'
-  params: {
-    keyvaultName: environmentKeyVaultResource.name
-    principalIds: [containerApp.outputs.identityPrincipalId]
-  }
+  dependsOn: [
+    keyVaultReaderAccessPolicy
+  ]
 }
 
 output name string = containerApp.outputs.name

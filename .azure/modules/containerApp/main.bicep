@@ -15,6 +15,9 @@ param workloadProfileName string = 'Consumption'
 @description('CPU and memory resources for the container app')
 param resources object?
 
+@description('The ID of the user-assigned managed identity (optional). If provided, uses UserAssigned identity; otherwise uses SystemAssigned.')
+param userAssignedIdentityId string?
+
 var healthProbes = empty(probes)
   ? [
       {
@@ -42,6 +45,10 @@ var ingress = {
   targetPort: port
   external: true
   allowInsecure: false
+}
+
+resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2024-11-30' existing = if (!empty(userAssignedIdentityId)) {
+  name: last(split(userAssignedIdentityId!, '/'))
 }
 
 resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
@@ -72,11 +79,20 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
     }
   }
   tags: tags
-  identity: {
-    type: 'SystemAssigned'
-  }
+  identity: !empty(userAssignedIdentityId)
+    ? {
+        type: 'UserAssigned'
+        userAssignedIdentities: {
+          '${userAssignedIdentityId}': {}
+        }
+      }
+    : {
+        type: 'SystemAssigned'
+      }
 }
 
-output identityPrincipalId string = containerApp.identity.principalId
+output identityPrincipalId string = !empty(userAssignedIdentityId)
+  ? managedIdentity.properties.principalId
+  : containerApp.identity.principalId
 output name string = containerApp.name
 output revisionName string = containerApp.properties.latestRevisionName
