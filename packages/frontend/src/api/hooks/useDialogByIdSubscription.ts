@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { type DialogEventPayload, DialogEventType } from 'bff-types-generated';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { SSE } from 'sse.js';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
@@ -20,7 +20,6 @@ export type DialogEventData = {
 };
 
 export const useDialogByIdSubscription = (dialogId: string | undefined, dialogToken: string | undefined) => {
-  const [hasBeenOpened, setHasBeenOpened] = useState<boolean>(false);
   const disableSubscriptions = useFeatureFlag<boolean>('dialogporten.disableSubscriptions');
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -67,7 +66,6 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
 
       eventSource.addEventListener('open', () => {
         if (cancelled) return;
-        setHasBeenOpened(true);
       });
 
       eventSource.addEventListener('next', (event: MessageEvent) => {
@@ -131,7 +129,6 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
   }, []);
 
   return {
-    hasBeenOpened: isMock || hasBeenOpened || disableSubscriptions,
     onMessageEvent,
   };
 };

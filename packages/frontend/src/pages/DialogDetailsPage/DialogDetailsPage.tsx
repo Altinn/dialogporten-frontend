@@ -53,7 +53,7 @@ export const DialogDetailsPage = () => {
   }, []);
 
   const dialogTokenIsFreshAfterMount = dataUpdatedAt > mountAtRef.current ? dialog?.dialogToken : undefined;
-  const { hasBeenOpened } = useDialogByIdSubscription(dialog?.id, dialogTokenIsFreshAfterMount);
+  const { onMessageEvent } = useDialogByIdSubscription(dialog?.id, dialogTokenIsFreshAfterMount);
   const previousPath = (location?.state?.fromView ?? '/') + location.search;
 
   return (
@@ -69,7 +69,7 @@ export const DialogDetailsPage = () => {
         dialogToken={dialogTokenIsFreshAfterMount}
         dialog={dialog}
         isLoading={isLoading}
-        subscriptionOpened={hasBeenOpened}
+        onMessageEvent={onMessageEvent}
         isAuthLevelTooLow={isAuthLevelTooLow}
         activityModalProps={{
           isOpen: isActivityLogOpen,
