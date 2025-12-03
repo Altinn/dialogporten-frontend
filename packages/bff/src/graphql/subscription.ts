@@ -6,8 +6,7 @@ import axios from 'axios';
 import type { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 import config from '../config.js';
-
-const activeConnections = new Set<number>();
+import { decrementActiveConnections, getActiveConnections, incrementActiveConnections } from './activeConnections.ts';
 
 const httpAgent = new http.Agent({
   keepAlive: true,
@@ -31,7 +30,7 @@ const subscriptionAxios = axios.create({
 
 const plugin: FastifyPluginAsync = async (fastify) => {
   fastify.get('/api/debug/connections', async () => {
-    return { active: activeConnections.size };
+    return { active: await getActiveConnections() };
   });
 
   fastify.route({
@@ -62,12 +61,12 @@ const plugin: FastifyPluginAsync = async (fastify) => {
       let upstream: Readable | null = null;
       let connectionName: number | null = null;
 
-      const cleanup = () => {
+      const cleanup = async () => {
         if (closed) return;
         closed = true;
 
         if (connectionName !== null) {
-          activeConnections.delete(connectionName);
+          await decrementActiveConnections();
         }
 
         if (upstream && !upstream.destroyed) {
@@ -114,13 +113,13 @@ const plugin: FastifyPluginAsync = async (fastify) => {
         }
 
         connectionName = Math.random();
-        activeConnections.add(connectionName);
+        await incrementActiveConnections();
 
         upstream = stream;
 
         const cleanupAndLogError = (err: Error) => {
           logger.warn({ err }, `Error on SSE reply stream for dialogId=${dialogId}`);
-          cleanup();
+          void cleanup();
         };
 
         stream.pipe(reply.raw);
@@ -134,7 +133,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
           try {
             reply.raw.write('event: error\ndata: "upstream-error"\n\n');
           } catch {}
-          cleanup();
+          void cleanup();
           try {
             reply.raw.end();
           } catch {}
