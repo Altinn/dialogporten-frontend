@@ -3,6 +3,7 @@ import {
   AccountListItemDetails,
   type AccountListItemProps,
   type AvatarType,
+  type AvatarVariant,
   Heading,
   PageBase,
   PageNav,
@@ -118,7 +119,7 @@ export const PartiesOverviewPage = () => {
   };
 
   const createSubPartyItem = (
-    subParty: { party: string; name: string },
+    subParty: { party: string; name: string; isDeleted: boolean },
     parentItem: { party: string; name: string; parentId?: string },
     currentParty: { party: string } | undefined,
     groupId: string | undefined,
@@ -126,7 +127,8 @@ export const PartiesOverviewPage = () => {
     avatar: {
       type: 'company' as AvatarType,
       name: subParty.name,
-      variant: 'outline' as const,
+      variant: 'outline',
+      isDeleted: subParty.isDeleted,
     },
     title: subParty.name,
     parentId: parentItem.parentId,
@@ -134,15 +136,16 @@ export const PartiesOverviewPage = () => {
     description: `${formatNorwegianId(subParty.party, false)} `,
     selected: subParty.party === currentParty?.party,
     onClick: () => setExpandedItem(subParty.party + groupId),
-    as: 'a' as const,
+    as: 'a',
   });
 
   const createOrganizationItem = (
     item: {
       party: string;
       name: string;
+      isDeleted: boolean;
       parentId?: string;
-      subParties?: Array<{ party: string; name: string }>;
+      subParties?: Array<{ party: string; name: string; isDeleted: boolean }>;
     },
     currentParty: { party: string } | undefined,
     groupId: string | undefined,
@@ -150,14 +153,15 @@ export const PartiesOverviewPage = () => {
     avatar: {
       type: 'company' as AvatarType,
       name: item.name,
-      variant: item.parentId ? ('outline' as const) : undefined,
+      variant: item.parentId ? ('outline' as AvatarVariant) : undefined,
+      isDeleted: item.isDeleted,
     },
     onClick: () => setExpandedItem(item.party + groupId),
     items: item.subParties?.map((subParty) => createSubPartyItem(subParty, item, currentParty, groupId)),
     title: item.name,
     description: formatNorwegianId(item.party, false),
     selected: item.party === currentParty?.party,
-    as: 'a' as const,
+    as: 'a',
   });
 
   const getOrganizationAccounts = (
@@ -167,7 +171,7 @@ export const PartiesOverviewPage = () => {
       party: string;
       name: string;
       parentId?: string;
-      subParties?: Array<{ party: string; name: string }>;
+      subParties?: Array<{ party: string; name: string; isDeleted: boolean }>;
     }>,
     groupId: string | undefined,
   ) => {
@@ -196,7 +200,7 @@ export const PartiesOverviewPage = () => {
           party: string;
           name: string;
           parentId?: string;
-          subParties?: Array<{ party: string; name: string }>;
+          subParties?: Array<{ party: string; name: string; isDeleted: boolean }>;
         }>,
         groupId,
       );
