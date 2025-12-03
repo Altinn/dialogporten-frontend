@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.111.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.111.1...v1.111.2) (2025-12-03)
+
+
+### Bug Fixes
+
+* Storing active connections in Redis ([1aa0d8f](https://github.com/Altinn/dialogporten-frontend/commit/1aa0d8fc45fc791a10cc50eaf53795616fe334b7))
+
 ## [1.111.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.111.0...v1.111.1) (2025-12-02)
 
 
