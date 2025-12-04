@@ -8,7 +8,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
   logger.info('Setting up fastify security headers with helmet');
 
   try {
-    // Register helmet
+    // Register helmet with enhanced security configuration
     fastify.register(helmet, {
       // HTTP Strict Transport Security
       hsts: {
@@ -18,23 +18,29 @@ const plugin: FastifyPluginAsync = async (fastify) => {
       },
       // X-Frame-Options
       frameguard: {
-        action: 'deny',
+        action: 'sameorigin',
       },
       // X-Content-Type-Options
       noSniff: true,
-      // Content Security Policy
+      // Content Security Policy (enhanced)
       contentSecurityPolicy: {
         directives: {
           defaultSrc: ["'self'"],
           scriptSrc: ["'self'"],
+          styleSrc: ["'self'", "'unsafe-inline'"], // Allow inline styles for UI components
           objectSrc: ["'none'"],
-          imgSrc: ["'self'"],
-          frameAncestors: ["'none'"],
+          imgSrc: ["'self'", 'data:', 'https:'], // Allow data URIs and HTTPS images
+          fontSrc: ["'self'", 'https:', 'data:'], // Allow web fonts
+          connectSrc: ["'self'"], // Allow same-origin connections
+          frameSrc: ["'none'"], // Block all frames
+          baseUri: ["'self'"], // Restrict base tag URLs
+          formAction: ["'self'"], // Restrict form submissions
+          upgradeInsecureRequests: [], // Force HTTPS
         },
       },
       // Referrer Policy
       referrerPolicy: {
-        policy: 'no-referrer',
+        policy: 'strict-origin-when-cross-origin',
       },
       // Cross-Origin Embedder Policy
       crossOriginEmbedderPolicy: {
@@ -48,8 +54,18 @@ const plugin: FastifyPluginAsync = async (fastify) => {
       crossOriginResourcePolicy: {
         policy: 'same-origin',
       },
-      // X-XSS-Protection
-      xssFilter: true,
+      // X-DNS-Prefetch-Control (privacy improvement)
+      dnsPrefetchControl: {
+        allow: false,
+      },
+      // X-Download-Options (IE security)
+      ieNoOpen: true,
+      // X-XSS-Protection (disabled per helmet recommendation)
+      xssFilter: false,
+      // Origin-Agent-Cluster (process isolation)
+      originAgentCluster: true,
+      // Remove X-Powered-By header
+      hidePoweredBy: true,
     });
 
     // Add the custom headers that helmet doesn't cover
@@ -57,7 +73,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
       // Custom headers not covered by helmet
       const additionalSecurityHeaders = {
         'X-Permitted-Cross-Domain-Policies': 'none',
-        'Permissions-Policy': 'none',
+        'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
         'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
       };
       // Instrumentation headers
@@ -81,7 +97,6 @@ const plugin: FastifyPluginAsync = async (fastify) => {
       if (request.headers['x-forwarded-proto'] === 'https' && request.session) {
         request.session.cookie.secure = true;
       }
-
       done();
     });
   } catch (error) {
