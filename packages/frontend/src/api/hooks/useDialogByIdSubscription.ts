@@ -3,12 +3,13 @@ import { type DialogEventPayload, DialogEventType } from 'bff-types-generated';
 import { useCallback, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { SSE } from 'sse.js';
+import { config } from '../../config.ts';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useFeatureFlag } from '../../featureFlags';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { pruneSearchQueryParams } from '../../pages/Inbox/queryParams.ts';
 import { PageRoutes } from '../../pages/routes.ts';
-import { getGqlStreamEndpoint, getSubscriptionQuery } from '../subscription.ts';
+import { getSubscriptionQuery } from '../subscription.ts';
 
 type EventSourceEvent = Error & {
   responseCode: number;
@@ -59,7 +60,7 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
         eventSourceRef.current = null;
       }
 
-      const eventSource = new SSE(getGqlStreamEndpoint(), {
+      const eventSource = new SSE(config.dialogportenStreamUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json; charset=utf-8',
