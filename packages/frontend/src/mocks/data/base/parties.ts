@@ -33,7 +33,7 @@ export const parties: PartyFieldsFragment[] = [
         name: 'TESTBEDRIFT AS AVD SUB',
         isCurrentEndUser: false,
         partyUuid: 'urn:altinn:organization:uuid:testbedrift-avd-sub',
-        isDeleted: false,
+        isDeleted: true,
         partyId: 3,
       },
       {
@@ -57,7 +57,7 @@ export const parties: PartyFieldsFragment[] = [
     ],
     name: 'TESTBEDRIFT AS',
     isCurrentEndUser: false,
-    isDeleted: false,
+    isDeleted: true,
     partyUuid: 'urn:altinn:organization:uuid:testbedrift-main',
     hasOnlyAccessToSubParties: false,
     partyId: 6,

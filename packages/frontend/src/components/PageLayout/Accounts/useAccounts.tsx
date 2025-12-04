@@ -129,7 +129,7 @@ export const useAccounts = ({
   const { groupId: _, ...loadingAccount } = loadingAccountMenuItem;
 
   const currentEndUser = useMemo(() => {
-    return parties.find((party) => party.partyType === 'Person' && party.isCurrentEndUser) || parties?.[0];
+    return parties.find((party) => party.partyType === 'Person' && party.isCurrentEndUser);
   }, [parties]);
 
   const otherPeople = useMemo(
