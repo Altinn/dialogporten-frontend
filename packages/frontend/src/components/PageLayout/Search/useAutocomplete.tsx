@@ -119,7 +119,11 @@ export const useAutocomplete = ({ selectedParties, searchValue }: searchDialogsP
   const debouncedSearchString = useDebounce(searchValue, 500)[0];
   const { dialogCounts: allDialogs } = useDialogsCount();
   const { organizations } = useOrganizations();
-  const enabled = !!debouncedSearchString && debouncedSearchString.length > 2 && selectedParties.length > 0;
+  const enabled =
+    !!debouncedSearchString &&
+    debouncedSearchString.length > 2 &&
+    selectedParties.length > 0 &&
+    selectedParties.length <= 20;
   const {
     data: hits,
     isSuccess,
