@@ -3,11 +3,13 @@ import { type DialogEventPayload, DialogEventType } from 'bff-types-generated';
 import { useCallback, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { SSE } from 'sse.js';
+import { config } from '../../config.ts';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useFeatureFlag } from '../../featureFlags';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { pruneSearchQueryParams } from '../../pages/Inbox/queryParams.ts';
 import { PageRoutes } from '../../pages/routes.ts';
+import { getSubscriptionQuery } from '../subscription.ts';
 
 type EventSourceEvent = Error & {
   responseCode: number;
@@ -58,15 +60,21 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
         eventSourceRef.current = null;
       }
 
-      const eventSource = new SSE(`/api/graphql/stream?dialogId=${dialogId}`, {
-        headers: { 'digdir-dialog-token': dialogToken },
-        withCredentials: true,
+      const eventSource = new SSE(config.dialogportenStreamUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          Accept: 'text/event-stream',
+          Authorization: `Bearer ${dialogToken}`,
+        },
+        payload: JSON.stringify({
+          query: getSubscriptionQuery(dialogId),
+          variables: {},
+          operationName: 'sub',
+        }),
       });
-      eventSourceRef.current = eventSource;
 
-      eventSource.addEventListener('open', () => {
-        if (cancelled) return;
-      });
+      eventSourceRef.current = eventSource;
 
       eventSource.addEventListener('next', (event: MessageEvent) => {
         if (cancelled) return;
@@ -79,7 +87,6 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
           lastInvalidatedDate.current = now;
 
           onMessageRef.current?.(jsonPayload, event);
-
           if (updatedType === DialogEventType.DialogDeleted) {
             navigate(PageRoutes.inbox + pruneSearchQueryParams(search.toString()));
           } else if (updatedType === DialogEventType.DialogUpdated) {
