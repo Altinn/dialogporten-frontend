@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.112.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.111.2...v1.112.0) (2025-12-05)
+
+
+### Features
+
+* enable sse subscriptions without bff as proxy ([#3440](https://github.com/Altinn/dialogporten-frontend/issues/3440)) ([29c8c4f](https://github.com/Altinn/dialogporten-frontend/commit/29c8c4ffb7d86533e6ae956e763f422ff5a13d5a))
+* **frontend:** add environment variable for dialogporten stream url ([#3437](https://github.com/Altinn/dialogporten-frontend/issues/3437)) ([8bfe048](https://github.com/Altinn/dialogporten-frontend/commit/8bfe048ad6f1bca5931c7dfe9c6281721ab2fa0b))
+
+
+### Bug Fixes
+
+* bump altinn-components to 0.50.5 ([#3451](https://github.com/Altinn/dialogporten-frontend/issues/3451)) ([f2e72ac](https://github.com/Altinn/dialogporten-frontend/commit/f2e72ac317c9b314d0bb744d9d218d2c1c3d37da))
+* disable autocomplete querying for allParties=true and selected parties &gt; 20 ([#3448](https://github.com/Altinn/dialogporten-frontend/issues/3448)) ([bf8b012](https://github.com/Altinn/dialogporten-frontend/commit/bf8b012e497e97bab44b3897e662f541a85e1bd9))
+* parties overview bugs ([#3442](https://github.com/Altinn/dialogporten-frontend/issues/3442)) ([4f53254](https://github.com/Altinn/dialogporten-frontend/commit/4f53254b8903dc5ae7cc79012832355e82bc5123))
+
 ## [1.111.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.111.1...v1.111.2) (2025-12-03)
 
 
