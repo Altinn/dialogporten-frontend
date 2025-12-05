@@ -34,10 +34,20 @@ choco install -y fnm pnpm fzf docker-desktop
 First you'll need to setup an `.env` file:
 
 ### env
-Ensure that `./.env` (in root) is created with following keys and appropriate values (**Note**: replace the examples)
+Ensure that `./.env` (in root) is created with following keys and appropriate values (**Note**: replace the examples needed for local development)
 ```
-CLIENT_ID=<my_example_service>
-CLIENT_SECRET=<secret_password_keep_this_private>
+OIDC_CLIENT_ID=<my_example_service>
+OIDC_CLIENT_SECRET=<secret_password_keep_this_private>
+ENABLE_NEW_OIDC='true'
+OCP_APIM_SUBSCRIPTION_KEY=<key>
+APP_CONFIG_CONNECTION_STRING=<endpoint_url>
+ALTINN2_API_KEY=<key>
+ALTINN2_BASE_URL=<URL>
+DIALOGPORTEN_URL=<URL>
+PLATFORM_BASEURL=<URL>
+LOGOUT_REDIRECT_URI==<URL>
+OIDC_PLATFORM_URL==<URL>
+AUTH_CONTEXT_COOKIE_DOMAIN='localhost'
 ```
 
 ## Docker
