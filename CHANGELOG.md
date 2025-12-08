@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.112.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.112.2...v1.112.3) (2025-12-08)
+
+
+### Bug Fixes
+
+* **filters:** remove unreliable count from filters ([#3459](https://github.com/Altinn/dialogporten-frontend/issues/3459)) ([be2dbde](https://github.com/Altinn/dialogporten-frontend/commit/be2dbde5c9048ff2c53aae4c313b094bfa2ca8cd))
+* Migration read status ([c5a22d4](https://github.com/Altinn/dialogporten-frontend/commit/c5a22d49982fc2c4b4bf619ef44452c45dbf7239))
+* Updated exit beta texts ([590325d](https://github.com/Altinn/dialogporten-frontend/commit/590325d4babddf51847515de0f97929417878400))
+
 ## [1.112.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.112.1...v1.112.2) (2025-12-08)
 
 
