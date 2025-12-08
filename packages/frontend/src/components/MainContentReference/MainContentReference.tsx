@@ -56,6 +56,10 @@ const getContent = (mediaType: EmbeddableMediaType, data: string) => {
   }
 };
 
+type MainContentError = Error & {
+  status: number;
+};
+
 export const MainContentReference = memo(
   ({
     content,
@@ -65,7 +69,7 @@ export const MainContentReference = memo(
     const { t } = useTranslation();
 
     const validURL = content?.url ? isValidURL(content.url) : false;
-    const { data, isSuccess, isError, isLoading, refetch } = useAuthenticatedQuery({
+    const { data, isSuccess, isError, isLoading, refetch, error } = useAuthenticatedQuery<string, MainContentError>({
       queryKey: [QUERY_KEYS.MAIN_CONTENT_REFERENCE, id, dialogToken],
       staleTime: 0,
       queryFn: async () => {
@@ -76,7 +80,11 @@ export const MainContentReference = memo(
           },
         });
         if (!response.ok) {
-          const error = new Error(`Failed to fetch content: ${response.status} ${response.statusText}`);
+          const error: MainContentError = Object.assign(
+            new Error(`Failed to fetch content: ${response.status} ${response.statusText}`),
+            { status: response.status },
+          );
+
           Analytics.trackException({
             exception: error,
             properties: {
@@ -94,6 +102,7 @@ export const MainContentReference = memo(
       retryDelay: 1000,
       retry: 2,
     });
+    const isForbidden = isError && error?.status === 403;
 
     if (!content) {
       return null;
@@ -105,6 +114,16 @@ export const MainContentReference = memo(
           Loading data, <br /> Lorem ipsum dolor sit amet <br />
           consectetur adipiscing elit. Curabitur erat.
         </Typography>
+      );
+    }
+
+    if (isForbidden) {
+      return (
+        <Alert
+          variant="info"
+          heading={t('main_content_reference.unauthorized_heading')}
+          message={t('main_content_reference.unauthorized_message')}
+        />
       );
     }
 

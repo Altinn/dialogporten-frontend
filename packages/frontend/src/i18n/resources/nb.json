@@ -214,6 +214,8 @@
   "main_content_reference.error": "Ops! Noe gikk galt med innlastingen",
   "main_content_reference.error_message": "Velg «oppdater» for å hente innholdet på nytt. Hvis problemet fortsetter, kontakt brukerstøtte.",
   "main_content_reference.refetch": "Oppdater",
+  "main_content_reference.unauthorized_heading": "Ingen tilgang",
+  "main_content_reference.unauthorized_message": "Du har ikke tilgang til å se dette innholdet.",
   "notice.self_identified_warning.title": "Ikke tilgjengelig",
   "notice.self_identified_warning.description": "Den nye innboksen fungerer ikke for alle enda, men vi jobber med saken.",
   "notice.self_identified_warning.button_link": "Bruk den gamle innboksen",
