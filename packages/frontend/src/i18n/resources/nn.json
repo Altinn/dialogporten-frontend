@@ -210,7 +210,7 @@
   "inbox.unable_to_load_parties.link": "logg ut",
   "inbox.unable_to_load_parties.title": "Teknisk feil",
   "inbox.historical_messages_date_warning": "Pga ein teknisk feil blir ein del historiske meldingar viste med feil dato i den nye innboksen. Vi jobbar med å rette dette. Inntil vidare kan den gamle innboksen nyttast.",
-  "inbox.historical_messages_date_warning_link": "Gå til gammal innboks",
+  "inbox.historical_messages_date_warning_link": "Gå til gamle Altinn",
   "main_content_reference.error": "Ops! Noko gjekk gale med innlastinga",
   "main_content_reference.error_message": "Vel «oppdater» for å hente innhaldet på nytt. Viss problemet fortset, kontakt brukarstøtte.",
   "main_content_reference.refetch": "Oppdater",
