@@ -99,6 +99,7 @@ export function mapDialogToToInboxItems(
             ? 'outline'
             : 'solid',
       },
+      serviceResourceType: item.serviceResourceType,
       color: actualReceiverParty?.partyType === 'Organization' ? 'company' : 'person',
       contentUpdatedAt: item.contentUpdatedAt,
       guiAttachmentCount: item.guiAttachmentCount ?? 0,
