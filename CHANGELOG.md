@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.112.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.112.1...v1.112.2) (2025-12-08)
+
+
+### Bug Fixes
+
+* Migration read status ([66074a4](https://github.com/Altinn/dialogporten-frontend/commit/66074a49d811593fc54c3887c31f9a3304f78a20))
+
 ## [1.112.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.112.0...v1.112.1) (2025-12-08)
 
 
