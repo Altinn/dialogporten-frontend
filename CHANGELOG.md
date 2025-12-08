@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.112.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.112.0...v1.112.1) (2025-12-08)
+
+
+### Bug Fixes
+
+* **searchbar:** icon was misplaced on Safari desktop ([#3456](https://github.com/Altinn/dialogporten-frontend/issues/3456)) ([6fb0c5b](https://github.com/Altinn/dialogporten-frontend/commit/6fb0c5bfb1cc69e6e293846c702460b1ab813cc9))
+
 ## [1.112.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.111.2...v1.112.0) (2025-12-05)
 
 
