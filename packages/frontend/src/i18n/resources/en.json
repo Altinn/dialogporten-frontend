@@ -210,7 +210,7 @@
   "inbox.unable_to_load_parties.link": "log out",
   "inbox.unable_to_load_parties.title": "Technical Error",
   "inbox.historical_messages_date_warning": "Due to a technical issue, some historical messages are displayed with incorrect dates in the new inbox. We are working to fix this. In the meantime, the old inbox can be used.",
-  "inbox.historical_messages_date_warning_link": "Go to old inbox",
+  "inbox.historical_messages_date_warning_link": "Go to old Altinn",
   "main_content_reference.error": "Oops! Something went wrong with the loading",
   "main_content_reference.error_message": "Select \"refresh\" to reload the content. If the problem persists, contact user support.",
   "main_content_reference.refetch": "Refresh",
