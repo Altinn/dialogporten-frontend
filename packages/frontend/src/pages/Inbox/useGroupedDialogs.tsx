@@ -15,6 +15,7 @@ import { Trans } from 'react-i18next';
 import { Link, type LinkProps } from 'react-router-dom';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
+import { ServiceResourceType } from '../../constants/serviceResourceType.ts';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { useDialogActions } from '../DialogDetailsPage/useDialogActions.tsx';
 import type { CurrentSeenByLog } from './Inbox.tsx';
@@ -155,7 +156,10 @@ const useGroupedDialogs = ({
     };
 
     const getIsUnread = (item: InboxItemInput) => {
-      return item.seenSinceLastContentUpdate.length === 0 && item.hasUnopenedContent;
+      if (item.serviceResourceType === ServiceResourceType.Correspondence) {
+        return item.seenSinceLastContentUpdate.length === 0 && item.hasUnopenedContent;
+      }
+      return item.seenSinceLastContentUpdate.length === 0;
     };
 
     return {

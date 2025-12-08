@@ -9,6 +9,7 @@ fragment SearchDialogFields on SearchDialog {
   dueAt
   contentUpdatedAt
   hasUnopenedContent
+  serviceResourceType
   serviceResource
   seenSinceLastContentUpdate {
     ...SeenLogFields

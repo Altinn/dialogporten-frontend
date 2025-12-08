@@ -4,6 +4,7 @@ import { DialogStatus, type SearchDialogFieldsFragment, SystemLabel } from 'bff-
 export const dialogs: SearchDialogFieldsFragment[] = [
     {
         serviceResource: 'default',
+        serviceResourceType: 'correspondenceservice',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-whydoesitnot',
         endUserContext: {
@@ -41,6 +42,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     },
     {
         serviceResource: 'default',
+        serviceResourceType: 'correspondenceservice',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-whydoesitnot',
         endUserContext: {
@@ -78,6 +80,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     },
     {
         serviceResource: 'default',
+        serviceResourceType: 'correspondenceservice',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-asddsaqwe123',
         endUserContext: {
@@ -115,6 +118,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     },
     {
         serviceResource: 'default',
+        serviceResourceType: 'correspondenceservice',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-nowitworksfi',
         endUserContext: {
@@ -152,6 +156,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     },
     {
         serviceResource: 'default',
+        serviceResourceType: 'correspondenceservice',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-nowdsada',
         endUserContext: {
@@ -189,6 +194,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     },
     {
         serviceResource: 'default',
+        serviceResourceType: 'correspondenceservice',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-mycompanyas1',
         endUserContext: {
@@ -226,6 +232,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     },
     {
         serviceResource: 'default',
+        serviceResourceType: 'correspondenceservice',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-mycompanyas-sub1',
         endUserContext: {
@@ -263,6 +270,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     },
     {
         serviceResource: 'default',
+        serviceResourceType: 'correspondenceservice',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-mycompanyas-sub2',
         endUserContext: {

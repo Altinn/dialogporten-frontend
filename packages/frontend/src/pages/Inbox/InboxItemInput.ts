@@ -26,4 +26,5 @@ export interface InboxItemInput {
   dueAt?: string;
   seenSinceLastContentUpdate: SeenLogFieldsFragment[];
   serviceResource?: string;
+  serviceResourceType?: string;
 }
