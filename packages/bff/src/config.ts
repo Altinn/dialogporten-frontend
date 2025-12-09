@@ -19,6 +19,7 @@ const envVariables = z.object({
     .enum(['http/protobuf', 'http/json', 'grpc'])
     .default('http/protobuf')
     .or(z.literal('').transform(() => 'http/protobuf')),
+  OTEL_TRACES_SAMPLER_ARG: z.coerce.number().min(0).max(1).default(1),
   APP_CONFIG_CONNECTION_STRING: z.string().default(''),
   PORT: z.coerce.number().default(3000),
   OIDC_URL: z.string().default('test.idporten.no'),
@@ -68,6 +69,7 @@ const config = {
     enabled: !!env.OTEL_EXPORTER_OTLP_ENDPOINT,
     endpoint: env.OTEL_EXPORTER_OTLP_ENDPOINT,
     protocol: env.OTEL_EXPORTER_OTLP_PROTOCOL,
+    sampleRate: env.OTEL_TRACES_SAMPLER_ARG,
   },
   postgresql: {
     connectionString: env.DB_CONNECTION_STRING,

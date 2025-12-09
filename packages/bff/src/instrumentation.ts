@@ -10,6 +10,7 @@ import { PgInstrumentation } from '@opentelemetry/instrumentation-pg';
 import { resourceFromAttributes } from '@opentelemetry/resources';
 import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
 import { NodeSDK } from '@opentelemetry/sdk-node';
+import { ParentBasedSampler, TraceIdRatioBasedSampler } from '@opentelemetry/sdk-trace-base';
 import { ATTR_SERVICE_NAME, SEMRESATTRS_SERVICE_INSTANCE_ID } from '@opentelemetry/semantic-conventions';
 import config from './config.ts';
 
@@ -66,12 +67,17 @@ const initializeOpenTelemetry = () => {
       exportIntervalMillis: 30000,
     });
 
+    const sampler = new ParentBasedSampler({
+      root: new TraceIdRatioBasedSampler(openTelemetry.sampleRate),
+    });
+
     logger.info(
       {
         endpoint: openTelemetry.endpoint,
         protocol: openTelemetry.protocol,
         serviceName: config.info.name,
         instanceId: config.info.instanceId,
+        sampleRate: openTelemetry.sampleRate,
       },
       'Initializing OpenTelemetry with OTLP exporter',
     );
@@ -82,6 +88,7 @@ const initializeOpenTelemetry = () => {
       traceExporter,
       metricReaders: [metricReader],
       instrumentations,
+      sampler,
     });
 
     sdk.start();
