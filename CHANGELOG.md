@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.112.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.112.3...v1.112.4) (2025-12-09)
+
+
+### Bug Fixes
+
+* **fce:** show proper info message to user instead of error message when user is forbidden to view front channel embeds ([#3465](https://github.com/Altinn/dialogporten-frontend/issues/3465)) ([13522da](https://github.com/Altinn/dialogporten-frontend/commit/13522da342726a5418384689c04a0b3c86d43633))
+
 ## [1.112.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.112.2...v1.112.3) (2025-12-08)
 
 
