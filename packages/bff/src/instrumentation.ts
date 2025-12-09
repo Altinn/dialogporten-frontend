@@ -67,7 +67,6 @@ const initializeOpenTelemetry = () => {
       exportIntervalMillis: 30000,
     });
 
-    // Configure sampler based on sample rate
     const sampler = new ParentBasedSampler({
       root: new TraceIdRatioBasedSampler(openTelemetry.sampleRate),
     });
