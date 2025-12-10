@@ -181,3 +181,24 @@ export const getQueryVariables = ({
     ...variables,
   };
 };
+
+export const mergeDialogItems = (
+  existingItems: SearchDialogFieldsFragment[] = [],
+  newItems: SearchDialogFieldsFragment[] = [],
+): SearchDialogFieldsFragment[] => {
+  const byId = new Map<string, SearchDialogFieldsFragment>();
+
+  for (const item of existingItems) {
+    if (item?.id) {
+      byId.set(item.id, item);
+    }
+  }
+
+  for (const item of newItems) {
+    if (item?.id) {
+      byId.set(item.id, item);
+    }
+  }
+
+  return Array.from(byId.values());
+};

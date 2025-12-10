@@ -18,7 +18,7 @@ import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
 import { normalizeFilterDefaults } from '../../pages/Inbox/filters.ts';
 import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
 import { graphQLSDK } from '../queries.ts';
-import { getPartyIds, mapDialogToToInboxItems } from '../utils/dialog.ts';
+import { getPartyIds, mapDialogToToInboxItems, mergeDialogItems } from '../utils/dialog.ts';
 import { useParties } from './useParties.ts';
 
 export type InboxViewType = 'inbox' | 'drafts' | 'sent' | 'archive' | 'bin';
@@ -132,21 +132,7 @@ export const useDialogs = ({ parties, viewType, filterState, search, queryKey }:
           ? (currentData.searchDialogs.items as SearchDialogFieldsFragment[])
           : [];
 
-      const byId = new Map<string, SearchDialogFieldsFragment>();
-
-      for (const item of existingItems) {
-        if (item?.id) {
-          byId.set(item.id, item);
-        }
-      }
-
-      for (const item of allNewItems) {
-        if (item?.id) {
-          byId.set(item.id, item);
-        }
-      }
-
-      const mergedItems = Array.from(byId.values());
+      const mergedItems = mergeDialogItems(existingItems, allNewItems);
       const hasNextPage = data.pages[data.pages.length - 1]?.searchDialogs?.hasNextPage ?? false;
 
       queryClient.setQueryData<GetAllDialogsForCountQuery>([QUERY_KEYS.COUNT_DIALOGS], {
@@ -156,7 +142,6 @@ export const useDialogs = ({ parties, viewType, filterState, search, queryKey }:
         },
       });
     }
-
     previousPartyIdsRef.current = partyIds;
   }, [disableDialogCount, data, selectedParties]);
 
