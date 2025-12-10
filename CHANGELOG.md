@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.113.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.112.4...v1.113.0) (2025-12-10)
+
+
+### Features
+
+* **bff:** enable sampling ([#3469](https://github.com/Altinn/dialogporten-frontend/issues/3469)) ([d52661c](https://github.com/Altinn/dialogporten-frontend/commit/d52661c439998fb5fe168a2bbb02b361abcadaa3))
+
+
+### Bug Fixes
+
+* prevent infinite render loop in useWindowSize by using functional updates and debounced resize handling ([#3475](https://github.com/Altinn/dialogporten-frontend/issues/3475)) ([93868d1](https://github.com/Altinn/dialogporten-frontend/commit/93868d199ddb919bbd6777d3ebff1538daf043ae))
+* update altinn-components to 0.50.8 for more keyboard accessible FloatingDropdown ([#3472](https://github.com/Altinn/dialogporten-frontend/issues/3472)) ([420ac8a](https://github.com/Altinn/dialogporten-frontend/commit/420ac8a151357a4e14ffcd91abf761aafb3b47fe))
+
 ## [1.112.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.112.3...v1.112.4) (2025-12-09)
 
 
