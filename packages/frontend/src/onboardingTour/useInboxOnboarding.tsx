@@ -86,7 +86,7 @@ export const useInboxOnboarding = ({
   const windowSize = useWindowSize();
   const tour = useTour();
   const { setIsOpen, setCurrentStep } = tour;
-  const [hasInitialized, setHasInitialized] = useState(false);
+  const [hasInitialized, setHasInitialized] = useState<boolean>(false);
 
   const searchParams = new URLSearchParams(window.location.search);
   const isMock = searchParams.get('mock') === 'true';
@@ -130,9 +130,7 @@ export const useInboxOnboarding = ({
         });
       }
 
-      if ('setSteps' in tour && typeof tour.setSteps === 'function') {
-        tour.setSteps(dynamicSteps);
-      }
+      tour?.setSteps?.(dynamicSteps);
 
       setCurrentStep(0);
       setIsOpen(true);
