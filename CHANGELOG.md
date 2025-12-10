@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.113.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.113.0...v1.113.1) (2025-12-10)
+
+
+### Bug Fixes
+
+* improved scope for filters with inbox.disableDialogCount ([#3481](https://github.com/Altinn/dialogporten-frontend/issues/3481)) ([093fed1](https://github.com/Altinn/dialogporten-frontend/commit/093fed18721dc8a59d0a89766d20de77dc9cc0ab))
+* improved scope for filters with inbox.disableDialogCount ([#3483](https://github.com/Altinn/dialogporten-frontend/issues/3483)) ([91869e2](https://github.com/Altinn/dialogporten-frontend/commit/91869e2fd06032815c079740919d31d0d822fd01))
+
 ## [1.113.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.112.4...v1.113.0) (2025-12-10)
 
 
