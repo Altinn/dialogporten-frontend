@@ -99,8 +99,13 @@ export const MainContentReference = memo(
         return response.text();
       },
       enabled: validURL && content?.mediaType && Object.values(EmbeddableMediaType).includes(content.mediaType),
+      retry: (failureCount, error) => {
+        if (error?.status === 403) {
+          return false;
+        }
+        return failureCount < 2;
+      },
       retryDelay: 1000,
-      retry: 2,
     });
     const isForbidden = isError && error?.status === 403;
 
