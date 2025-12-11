@@ -229,7 +229,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
 
       reply.status(200).send({ cookie, expires: expiresIn });
     } catch (error) {
-      logger.error('Error initializing session:', error);
+      logger.error(error, 'Error initializing session:');
       reply.status(500).send({ error: 'Failed to initialize session' });
     }
   };
