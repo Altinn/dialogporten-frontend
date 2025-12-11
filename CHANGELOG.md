@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.113.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.113.2...v1.113.3) (2025-12-11)
+
+
+### Bug Fixes
+
+* prevent retries for FCE on 404 ([#3487](https://github.com/Altinn/dialogporten-frontend/issues/3487)) ([ddeeeb4](https://github.com/Altinn/dialogporten-frontend/commit/ddeeeb40874b40466adf7520b2fd1201020a8a87))
+
 ## [1.113.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.113.1...v1.113.2) (2025-12-10)
 
 
