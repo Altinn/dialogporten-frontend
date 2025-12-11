@@ -15,7 +15,6 @@ import { Trans } from 'react-i18next';
 import { Link, type LinkProps } from 'react-router-dom';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
-import { ServiceResourceType } from '../../constants/serviceResourceType.ts';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { useDialogActions } from '../DialogDetailsPage/useDialogActions.tsx';
 import type { CurrentSeenByLog } from './Inbox.tsx';
@@ -135,7 +134,7 @@ const useGroupedDialogs = ({
       id: 'dialog-context-menu-' + item.id,
       placement: 'right',
       items: [
-        ...systemLabelActions(item.id, item.label),
+        ...(item ? systemLabelActions(item.id, item.label, item.unread) : []),
         {
           id: 'seenby-log',
           groupId: 'logs',
@@ -155,13 +154,6 @@ const useGroupedDialogs = ({
       ariaLabel: t('dialog.context_menu.label', { title: item.title }),
     };
 
-    const getIsUnread = (item: InboxItemInput) => {
-      if (item.serviceResourceType === ServiceResourceType.Correspondence) {
-        return item.seenSinceLastContentUpdate.length === 0 && item.hasUnopenedContent;
-      }
-      return item.seenSinceLastContentUpdate.length === 0;
-    };
-
     return {
       groupId,
       title: item.title,
@@ -176,7 +168,7 @@ const useGroupedDialogs = ({
       grouped: allOrganizationsSelected,
       attachmentsCount: item.guiAttachmentCount,
       seenByLog: item.seenByLog,
-      unread: getIsUnread(item),
+      unread: item.unread,
       status: getDialogStatus(item.status, t),
       extendedStatusLabel: item.extendedStatus,
       controls: <ContextMenu {...contextMenu} />,
