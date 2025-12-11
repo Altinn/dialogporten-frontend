@@ -100,7 +100,7 @@ export const MainContentReference = memo(
       },
       enabled: validURL && content?.mediaType && Object.values(EmbeddableMediaType).includes(content.mediaType),
       retry: (failureCount, error) => {
-        if (error?.status === 403) {
+        if (error?.status === 403 || error?.status === 404) {
           return false;
         }
         return failureCount < 2;
