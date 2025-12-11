@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.113.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.113.3...v1.113.4) (2025-12-11)
+
+
+### Bug Fixes
+
+* Beta texts ([eb22493](https://github.com/Altinn/dialogporten-frontend/commit/eb224938bbb94dcb39730d3352ac4a516bfd66cf))
+* **bff:** ensure logs end up in exceptions table ([#3470](https://github.com/Altinn/dialogporten-frontend/issues/3470)) ([d762c7f](https://github.com/Altinn/dialogporten-frontend/commit/d762c7f0c4494ff4b9b5d0cfd15f4ba84a3a2c94))
+
 ## [1.113.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.113.2...v1.113.3) (2025-12-11)
 
 
