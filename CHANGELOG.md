@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.114.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.113.4...v1.114.0) (2025-12-12)
+
+
+### Features
+
+* mark as unread ([#3492](https://github.com/Altinn/dialogporten-frontend/issues/3492)) ([b8b5813](https://github.com/Altinn/dialogporten-frontend/commit/b8b581315b05f51ae8fbf8abd0506507a4bb4a04))
+
+
+### Bug Fixes
+
+* E2E tests ([dce23ef](https://github.com/Altinn/dialogporten-frontend/commit/dce23ef3fb0f3d00dcf5a11f75eab0321a56e14e))
+* E2E tests ([b8c88be](https://github.com/Altinn/dialogporten-frontend/commit/b8c88be21a79be2330f92fd28e4caf867e197ab3))
+* PW tests ([33b517c](https://github.com/Altinn/dialogporten-frontend/commit/33b517ce3e98329cd54c68bc76cad9385fe19942))
+* Saved search design update ([fe308a9](https://github.com/Altinn/dialogporten-frontend/commit/fe308a96ffed38ce89505f2e4df8f0744984acba))
+
 ## [1.113.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.113.3...v1.113.4) (2025-12-11)
 
 
