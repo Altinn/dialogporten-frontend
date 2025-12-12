@@ -193,6 +193,7 @@ fragment AttachmentFields on Attachment {
     value
     languageCode
   }
+  expiresAt
   urls {
     ...AttachmentUrlFields
   }
