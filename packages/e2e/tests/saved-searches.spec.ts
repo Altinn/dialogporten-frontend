@@ -29,18 +29,28 @@ test.describe('Saved Searches', () => {
     await page.goto(`${baseURL}/saved-searches`);
     await expect(page.getByRole('heading', { name: '1 lagret søk' })).toBeVisible();
 
-    await page.getByRole('button', { name: 'Edit' }).click();
+    // Find and click the context menu trigger button (usually a three-dot or menu icon button)
+    // The button should be near the saved search item
+    const menuTrigger = page.locator('button[aria-haspopup="menu"], button[aria-expanded]').first();
+    await menuTrigger.click();
 
+    // Click "Rediger tittel" from the context menu
+    await page.getByRole('menuitem', { name: 'Rediger tittel' }).click();
+
+    // Fill in the title field
     await page.getByRole('textbox', { name: 'Tittel' }).fill('test saved search');
 
+    // Save the changes
     await page.getByRole('button', { name: 'Lagre søk' }).click();
-    await page.getByRole('button', { name: 'Close' }).click();
+
+    // Wait for the update to complete
+    await expect(page.getByText('Søket ditt er oppdatert')).toBeVisible();
 
     await expect(page.getByRole('link', { name: 'test saved search' })).toBeVisible();
 
-    await page.getByRole('button', { name: 'Edit' }).click();
-
-    await page.getByRole('button', { name: 'Slett' }).click();
+    // Open context menu again and click "Slett søk"
+    await menuTrigger.click();
+    await page.getByRole('menuitem', { name: 'Slett søk' }).click();
 
     await expect(page.getByText('Søket ditt ble slettet')).toBeVisible();
 
