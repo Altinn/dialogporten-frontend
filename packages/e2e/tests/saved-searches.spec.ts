@@ -23,27 +23,28 @@ test.describe('Saved Searches', () => {
 
     await page.keyboard.press('Escape');
 
-    await page.getByRole('button', { name: 'Lagre søk' }).click();
+    const saveButton = page.getByRole('button', { name: 'Lagre søk' });
+    await expect(saveButton).toBeVisible({ timeout: 15000 });
+    await expect(saveButton).toBeEnabled();
+    await saveButton.click();
     await expect(page.getByText('Søket ditt er lagret')).toBeVisible();
 
     await page.goto(`${baseURL}/saved-searches`);
     await expect(page.getByRole('heading', { name: '1 lagret søk' })).toBeVisible();
 
-    // Find and click the context menu trigger button (usually a three-dot or menu icon button)
-    // The button should be near the saved search item
     const menuTrigger = page.locator('button[aria-haspopup="menu"], button[aria-expanded]').first();
     await menuTrigger.click();
 
-    // Click "Rediger tittel" from the context menu
     await page.getByRole('menuitem', { name: 'Rediger tittel' }).click();
 
-    // Fill in the title field
     await page.getByRole('textbox', { name: 'Tittel' }).fill('test saved search');
 
-    // Save the changes
-    await page.getByRole('button', { name: 'Lagre søk' }).click();
+    // Wait for the save button to be visible and enabled
+    const saveButtonInModal = page.getByRole('button', { name: 'Lagre søk' });
+    await expect(saveButtonInModal).toBeVisible();
+    await expect(saveButtonInModal).toBeEnabled();
+    await saveButtonInModal.click();
 
-    // Wait for the update to complete
     await expect(page.getByText('Søket ditt er oppdatert')).toBeVisible();
 
     await expect(page.getByRole('link', { name: 'test saved search' })).toBeVisible();
