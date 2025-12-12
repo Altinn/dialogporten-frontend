@@ -12,18 +12,19 @@ import {
   type PartyFieldsFragment,
   SystemLabel,
 } from 'bff-types-generated';
-import { t } from 'i18next';
+import { type TFunction, t } from 'i18next';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import type { DialogActionProps } from '../../components';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useFeatureFlag } from '../../featureFlags';
 import { type ValueType, getPreferredPropertyByLocale } from '../../i18n/property.ts';
 import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
-import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
+import { type Locale, useDateFnsLocale, useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { getIsUnread } from '../../pages/Inbox/status.ts';
 import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
 import { graphQLSDK } from '../queries.ts';
 import { type ActivityLogEntry, getActivityHistory } from '../utils/activities.tsx';
+import { createExpiryBadge, mediaTypeToExt } from '../utils/attachments.ts';
 import { getSeenByLabel } from '../utils/dialog.ts';
 import { type OrganizationOutput, getOrganization } from '../utils/organizations.ts';
 import { type TimelineSegmentWithTransmissions, getTransmissions } from '../utils/transmissions.ts';
@@ -110,7 +111,11 @@ export const getDialogsById = (id: string): Promise<GetDialogByIdQuery> =>
     id,
   });
 
-export const getAttachmentLinks = (attachments: AttachmentFieldsFragment[]): AttachmentLinkProps[] => {
+export const getAttachmentLinks = (
+  attachments: AttachmentFieldsFragment[],
+  locale: Locale,
+  t: TFunction<'translation', undefined>,
+): AttachmentLinkProps[] => {
   return attachments
     .filter((a) => a.urls.filter((url) => url.consumerType === AttachmentUrlConsumer.Gui).length > 0)
     .flatMap((attachment) =>
@@ -118,8 +123,11 @@ export const getAttachmentLinks = (attachments: AttachmentFieldsFragment[]): Att
         .filter((url) => url.url !== 'urn:dialogporten:unauthorized')
         .filter((url) => url.consumerType === AttachmentUrlConsumer.Gui)
         .map((url) => ({
+          disabled: attachment.expiresAt ? new Date(attachment.expiresAt) <= new Date() : false,
           label: getPreferredPropertyByLocale(attachment.displayName)?.value || url.url,
           href: url.url,
+          metadata: mediaTypeToExt(url.mediaType),
+          badge: createExpiryBadge(attachment.expiresAt, locale, t),
         })),
     );
 };
@@ -202,6 +210,7 @@ export function mapDialogToToInboxItem(
   format: FormatFunction,
   stopReversingPersonNameOrder: boolean,
   selectedProfile: ProfileType,
+  locale: Locale,
 ): DialogByIdDetails | undefined {
   if (!item) {
     return undefined;
@@ -226,6 +235,7 @@ export function mapDialogToToInboxItem(
     stopReversingPersonNameOrder,
     serviceOwner,
     selectedProfile,
+    locale,
   });
 
   return {
@@ -264,7 +274,7 @@ export function mapDialogToToInboxItem(
       isDeleteAction: guiAction.isDeleteDialogAction,
       disabled: !guiAction.isAuthorized,
     })),
-    attachments: getAttachmentLinks(item.attachments),
+    attachments: getAttachmentLinks(item.attachments, locale, t),
     mainContentReference: getMainContentReference(mainContentReference, true),
     contentReferenceForTransmissions: item.transmissions.reduce(
       (acc, transmission) => {
@@ -303,6 +313,7 @@ export function mapDialogToToInboxItem(
       format,
       serviceOwner,
       selectedProfile,
+      locale,
     }),
     transmissions,
     createdAt: item.createdAt,
@@ -316,6 +327,7 @@ export function mapDialogToToInboxItem(
 
 export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseDialogByIdOutput => {
   const format = useFormat();
+  const { locale } = useDateFnsLocale();
   const { organizations, isLoading: isOrganizationsLoading } = useOrganizations();
   const disableFlipNamesPatch = useFeatureFlag<boolean>('dialogporten.disableFlipNamesPatch');
   const { selectedProfile } = useParties();
@@ -331,10 +343,8 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
       return Date.now() - query.state.dataUpdatedAt > NINE_MIN;
     },
     retry: 3,
-    queryFn: () => {
-      return getDialogsById(id!).then((data) => {
-        return data;
-      });
+    queryFn: async () => {
+      return await getDialogsById(id!);
     },
     enabled: typeof id !== 'undefined' && partyURIs.length > 0,
   });
@@ -353,6 +363,7 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
       format,
       disableFlipNamesPatch,
       selectedProfile,
+      locale,
     ),
     dataUpdatedAt,
     isError,

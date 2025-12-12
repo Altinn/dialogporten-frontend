@@ -2,7 +2,7 @@ import type { ActivityLogItemProps, AvatarProps, TransmissionProps } from '@alti
 import { ActivityType, type DialogActivityFragment, type TransmissionFieldsFragment } from 'bff-types-generated';
 import { t } from 'i18next';
 import { getPreferredPropertyByLocale } from '../../i18n/property.ts';
-import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
+import type { FormatFunction, Locale } from '../../i18n/useDateFnsLocale.tsx';
 import { getActorProps } from '../hooks/useDialogById.tsx';
 import type { ProfileType } from '../hooks/useParties.ts';
 import type { OrganizationOutput } from './organizations.ts';
@@ -111,6 +111,7 @@ export type ActivityLogEntry =
  * @param serviceOwner - Optional service owner organization details.
  * @param selectedProfile - Optional selected party profile.
  * @param stopReversingPersonNameOrder
+ * @param locale
  * @returns An array of activity and transmission log entries, sorted by date (descending).
  */
 export const getActivityHistory = ({
@@ -120,6 +121,7 @@ export const getActivityHistory = ({
   serviceOwner,
   selectedProfile,
   stopReversingPersonNameOrder,
+  locale,
 }: {
   activities: DialogActivityFragment[];
   transmissions: TransmissionFieldsFragment[];
@@ -127,6 +129,7 @@ export const getActivityHistory = ({
   stopReversingPersonNameOrder: boolean;
   serviceOwner?: OrganizationOutput;
   selectedProfile?: ProfileType;
+  locale: Locale;
 }): ActivityLogEntry[] => {
   const dialogHistoryActivities: ActivityLogEntry[] = getDialogHistoryForActivities(
     activities,
@@ -148,6 +151,7 @@ export const getActivityHistory = ({
     stopReversingPersonNameOrder,
     serviceOwner,
     selectedProfile,
+    locale,
   }).map((transmission) => ({
     id: transmission.id ?? '',
     type: 'transmission',

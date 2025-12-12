@@ -7,7 +7,7 @@ import {
 } from 'bff-types-generated';
 import { t } from 'i18next';
 import { getPreferredPropertyByLocale } from '../../i18n/property.ts';
-import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
+import type { FormatFunction, Locale } from '../../i18n/useDateFnsLocale.tsx';
 import { getActorProps, getAttachmentLinks } from '../hooks/useDialogById.tsx';
 import type { ProfileType } from '../hooks/useParties.ts';
 import type { OrganizationOutput } from './organizations.ts';
@@ -109,6 +109,7 @@ const createTransmissionItem = (
   transmission: TransmissionFieldsFragment,
   format: FormatFunction,
   stopReversingPersonNameOrder: boolean,
+  locale: Locale,
   activities?: DialogActivityFragment[],
   serviceOwner?: OrganizationOutput,
   selectedProfile?: ProfileType,
@@ -134,7 +135,7 @@ const createTransmissionItem = (
     }),
     sender,
     attachments: {
-      items: getAttachmentLinks(transmission.attachments),
+      items: getAttachmentLinks(transmission.attachments, locale, t),
     },
   };
 };
@@ -146,6 +147,7 @@ export const getTransmissions = ({
   serviceOwner,
   stopReversingPersonNameOrder,
   selectedProfile,
+  locale,
 }: {
   transmissions: TransmissionFieldsFragment[];
   format: FormatFunction;
@@ -153,6 +155,7 @@ export const getTransmissions = ({
   activities?: DialogActivityFragment[];
   serviceOwner?: OrganizationOutput;
   selectedProfile?: ProfileType;
+  locale: Locale;
 }): TimelineSegmentWithTransmissions[] => {
   return groupTransmissions(transmissions).map((group) => {
     const sortedGroup = [...group].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
@@ -162,6 +165,7 @@ export const getTransmissions = ({
         transmission,
         format,
         stopReversingPersonNameOrder,
+        locale,
         activities,
         serviceOwner,
         selectedProfile,

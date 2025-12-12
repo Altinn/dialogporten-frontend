@@ -371,6 +371,7 @@ export const convertToDialogByIdTemplate = (input: SearchDialogFieldsFragment): 
     attachments: [
       {
         id: input.id,
+        expiresAt: new Date(new Date().getTime() + 60_000*1000).toISOString(),
         displayName: [
           {
             value: 'kvittering.pdf',
