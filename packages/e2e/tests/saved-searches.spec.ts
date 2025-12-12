@@ -23,8 +23,9 @@ test.describe('Saved Searches', () => {
 
     await page.keyboard.press('Escape');
 
-    const saveButton = page.getByRole('button', { name: 'Lagre søk' });
-    await expect(saveButton).toBeVisible({ timeout: 15000 });
+    await expect(toolbarArea.getByText('Digitaliseringsdirektoratet')).toBeVisible({ timeout: 5000 });
+    const saveButton = toolbarArea.getByRole('button', { name: 'Lagre søk' });
+    await expect(saveButton).toBeVisible({ timeout: 20000 });
     await expect(saveButton).toBeEnabled();
     await saveButton.click();
     await expect(page.getByText('Søket ditt er lagret')).toBeVisible();
