@@ -42,7 +42,6 @@ export const SavedSearchesPage = () => {
       />
     );
   }
-
   return (
     <PageBase margin="page">
       <div className={styles.gridContainer} style={isGlobalMenuEnabled ? { marginTop: '-1rem' } : undefined}>

@@ -6,6 +6,7 @@ import {
   useSnackbar,
 } from '@altinn/altinn-components';
 import type { QueryItemProps } from '@altinn/altinn-components';
+import { MagnifyingGlassIcon, PencilIcon, TrashIcon } from '@navikt/aksel-icons';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   DialogStatus,
@@ -17,7 +18,7 @@ import {
 } from 'bff-types-generated';
 import { type ChangeEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, type LinkProps } from 'react-router-dom';
+import { Link, type LinkProps, useNavigate } from 'react-router-dom';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { createSavedSearch, deleteSavedSearch, fetchSavedSearches, updateSavedSearch } from '../../api/queries.ts';
 import { getOrganization } from '../../api/utils/organizations.ts';
@@ -28,7 +29,7 @@ import { useFormatDistance } from '../../i18n/useDateFnsLocale.tsx';
 import { DateFilterOption } from '../Inbox/filters.ts';
 import { useOrganizations } from '../Inbox/useOrganizations.ts';
 import { PageRoutes } from '../routes.ts';
-import { buildSavedSearchURL } from './bookmarkURL.ts';
+import { buildCurrentStateURL, buildSavedSearchURL } from './bookmarkURL.ts';
 import { autoFormatRelativeTime, getMostRecentSearchDate } from './searchUtils.ts';
 
 interface UseSavedSearchesOutput {
@@ -135,8 +136,10 @@ export const filterSavedSearches = (
 
 export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesOutput => {
   const [isCTALoading, setIsCTALoading] = useState<boolean>(false);
+  const [showModalItemId, setShowModalItemId] = useState<string | null>(null);
   const [inputValues, setInputValues] = useState<Record<string, string>>({});
   const { organizations } = useOrganizations();
+  const navigate = useNavigate();
 
   const formatDistance = useFormatDistance();
   const { t } = useTranslation();
@@ -246,6 +249,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
         id: i.toString(),
         title: t('savedSearches.loading_saved_searches') + randomString(),
         expandIconAltText: t('savedSearches.expand_icon_alt_text'),
+        onClose: () => setShowModalItemId(null),
       })),
       loading: true,
     };
@@ -290,7 +294,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
 
       return {
         id: searchId,
-        title: savedSearch.name ?? '',
+        title: savedSearch.name || t('filter_bar.saved_search'),
         as: (props: LinkProps) => <Link {...props} to={bookmarkLink} />,
         onChange: (e: ChangeEvent<HTMLInputElement>) => {
           setInputValues((prev) => ({ ...prev, [searchId]: e.target.value }));
@@ -303,10 +307,46 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
         },
         saveButton: {
           label: t('savedSearches.save_search'),
+          disabled: currentInputValue === savedSearch.name,
           onClick: () => {
             void handleSaveTitle(savedSearch.id, currentInputValue);
           },
         },
+        onClose: () => setShowModalItemId(null),
+        open: showModalItemId === savedSearch.id.toString(),
+        contextMenu: {
+          id: `menu-saved-search-${savedSearch.id}`,
+          items: [
+            {
+              id: 'search-inbox',
+              title: t('inbox.search.placeholder'),
+              icon: MagnifyingGlassIcon,
+              onClick: () => {
+                navigate(
+                  `${PageRoutes.inbox}?${buildCurrentStateURL(convertFiltersToFilterState(savedSearch.data?.filters ?? []), savedSearch.data?.searchString ?? '', fromPathToViewType(savedSearch.data?.fromView ?? '') ?? 'inbox')}`,
+                );
+              },
+            },
+            {
+              id: 'edit-saved-search',
+              title: t('savedSearches.edit_title'),
+              icon: PencilIcon,
+              onClick: () => {
+                setShowModalItemId(savedSearch.id.toString());
+              },
+            },
+            {
+              id: 'delete-saved-search',
+              title: t('savedSearches.delete_search_menu'),
+              icon: TrashIcon,
+              onClick: () => {
+                void deleteSearch(savedSearch.id);
+              },
+            },
+          ],
+          onClose: () => console.info('close'),
+        },
+
         removeButton: {
           label: t('savedSearches.delete_search'),
           onClick: () => {
