@@ -28,13 +28,13 @@ export const DialogDetailsPage = () => {
   const displayDialogActions = !!(dialogId && dialog && !isLoading);
 
   usePageTitle({ baseTitle: dialog?.title || '' });
-  const systemLabelActions = useDialogActions();
+  const createLabelUpdateActions = useDialogActions();
   const contextMenu: ContextMenuProps = {
     id: 'dialog-context-menu',
     placement: 'right',
     ariaLabel: t('dialog.context_menu.label', { title: dialog?.title }),
     items: [
-      ...systemLabelActions(dialogId, dialog?.label),
+      ...(dialogId && dialog ? createLabelUpdateActions(dialogId, dialog?.label ?? [], dialog?.unread) : []),
       {
         id: 'activity-log',
         groupId: 'logs',
@@ -55,6 +55,7 @@ export const DialogDetailsPage = () => {
   const dialogTokenIsFreshAfterMount = dataUpdatedAt > mountAtRef.current ? dialog?.dialogToken : undefined;
   const { onMessageEvent } = useDialogByIdSubscription(dialog?.id, dialogTokenIsFreshAfterMount);
   const previousPath = (location?.state?.fromView ?? '/') + location.search;
+  const labelActions = dialogId && dialog ? createLabelUpdateActions(dialogId, dialog.label, dialog.unread) : [];
 
   return (
     <DialogLayout
@@ -62,7 +63,7 @@ export const DialogDetailsPage = () => {
         label: t('word.back'),
         as: (props: LinkProps) => <Link {...props} to={previousPath} state={{ scrollToId: dialogId }} />,
       }}
-      pageMenu={displayDialogActions ? { items: systemLabelActions(dialogId, dialog?.label) } : undefined}
+      pageMenu={displayDialogActions ? { items: labelActions } : undefined}
       contextMenu={displayDialogActions ? contextMenu : undefined}
     >
       <DialogDetails

@@ -78,6 +78,7 @@ fragment DialogByIdFields on Dialog {
   dueAt
   createdAt
   contentUpdatedAt
+  hasUnopenedContent
   endUserContext {
     systemLabels
   }

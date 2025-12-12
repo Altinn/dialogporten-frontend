@@ -20,6 +20,7 @@ import { useFeatureFlag } from '../../featureFlags';
 import { type ValueType, getPreferredPropertyByLocale } from '../../i18n/property.ts';
 import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
+import { getIsUnread } from '../../pages/Inbox/status.ts';
 import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
 import { graphQLSDK } from '../queries.ts';
 import { type ActivityLogEntry, getActivityHistory } from '../utils/activities.tsx';
@@ -92,6 +93,8 @@ export interface DialogByIdDetails {
   sentCount?: number;
   /* Number of incoming transmissions */
   receivedCount?: number;
+  /* Unread or not, determined by label, logs and/or hasUnOpenedContent */
+  unread: boolean;
 }
 
 interface UseDialogByIdOutput {
@@ -307,6 +310,7 @@ export function mapDialogToToInboxItem(
     label: item.endUserContext?.systemLabels,
     viewType: getViewTypes({ status: item.status, systemLabel: item.endUserContext?.systemLabels }, true)?.[0],
     dueAt: item.dueAt,
+    unread: getIsUnread(item),
   };
 }
 

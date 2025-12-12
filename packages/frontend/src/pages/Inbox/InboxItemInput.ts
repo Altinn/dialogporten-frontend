@@ -20,6 +20,7 @@ export interface InboxItemInput {
   seenByOthersCount: number;
   fromServiceOwnerTransmissionsCount: number;
   fromPartyTransmissionsCount: number;
+  unread: boolean;
   seenByLabel?: string;
   viewType: InboxViewType;
   seenByLog: SeenByLogProps;
