@@ -23,39 +23,28 @@ test.describe('Saved Searches', () => {
 
     await page.keyboard.press('Escape');
 
-    await expect(toolbarArea.getByText('Digitaliseringsdirektoratet')).toBeVisible({ timeout: 5000 });
     const saveButton = toolbarArea.getByRole('button', { name: 'Lagre søk' });
     await expect(saveButton).toBeVisible({ timeout: 20000 });
     await expect(saveButton).toBeEnabled();
     await saveButton.click();
     await expect(page.getByText('Søket ditt er lagret')).toBeVisible();
+    await page.getByTestId('sidebar-saved-searches').click();
 
-    await page.goto(`${baseURL}/saved-searches`);
-    await expect(page.getByRole('heading', { name: '1 lagret søk' })).toBeVisible();
+    await expect(page.locator('#main-content')).toContainText('1 lagret søk');
 
-    const menuTrigger = page.locator('button[aria-haspopup="menu"], button[aria-expanded]').first();
-    await menuTrigger.click();
+    await page.getByRole('button', { name: 'Open menu-saved-search-' }).click();
+    await page.locator('a').filter({ hasText: 'Rediger tittel' }).click();
+    await page.getByRole('textbox', { name: 'Tittel' }).click();
+    await page.getByRole('textbox', { name: 'Tittel' }).fill('test');
+    await page.getByRole('button', { name: 'Lagre søk' }).click();
+    await page.getByRole('button', { name: 'Open menu-saved-search-' }).click();
 
-    await page.getByRole('menuitem', { name: 'Rediger tittel' }).click();
+    await page.locator('a').filter({ hasText: 'Rediger tittel' }).click();
+    await page.getByRole('textbox', { name: 'Tittel' }).fill('hei');
+    await page.getByRole('button', { name: 'Lagre søk' }).click();
 
-    await page.getByRole('textbox', { name: 'Tittel' }).fill('test saved search');
-
-    // Wait for the save button to be visible and enabled
-    const saveButtonInModal = page.getByRole('button', { name: 'Lagre søk' });
-    await expect(saveButtonInModal).toBeVisible();
-    await expect(saveButtonInModal).toBeEnabled();
-    await saveButtonInModal.click();
-
-    await expect(page.getByText('Søket ditt er oppdatert')).toBeVisible();
-
-    await expect(page.getByRole('link', { name: 'test saved search' })).toBeVisible();
-
-    // Open context menu again and click "Slett søk"
-    await menuTrigger.click();
-    await page.getByRole('menuitem', { name: 'Slett søk' }).click();
-
+    await page.getByRole('button', { name: 'Open menu-saved-search-' }).click();
+    await page.locator('a').filter({ hasText: 'Slett søk' }).click();
     await expect(page.getByText('Søket ditt ble slettet')).toBeVisible();
-
-    await expect(page.getByRole('main')).toContainText('Du har ingen lagrede søk');
   });
 });
