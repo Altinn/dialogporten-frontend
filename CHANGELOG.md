@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.115.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.115.0...v1.115.1) (2025-12-15)
+
+
+### Bug Fixes
+
+* **bff-stream:** remove bff-stream ([#3504](https://github.com/Altinn/dialogporten-frontend/issues/3504)) ([0483af7](https://github.com/Altinn/dialogporten-frontend/commit/0483af74dfe11723b684944cb2afec854485fc14))
+* **frontend:** apply security configuration ([#3380](https://github.com/Altinn/dialogporten-frontend/issues/3380)) ([00bfbe5](https://github.com/Altinn/dialogporten-frontend/commit/00bfbe55f8b2216311b943f7487cdca0cb89b665))
+
 ## [1.115.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.114.0...v1.115.0) (2025-12-15)
 
 
