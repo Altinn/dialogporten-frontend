@@ -150,51 +150,6 @@ var bffGatewayBackend = {
   probe: bffProbe
 }
 
-var bffStreamPool = {
-  name: '${gatewayName}-bffStreamBackendPool'
-  properties: {
-    backendAddresses: [
-      {
-        fqdn: '${namePrefix}-bff-stream.${containerAppEnvironment.properties.defaultDomain}'
-      }
-    ]
-  }
-}
-
-var bffStreamHttpSettings = {
-  name: '${gatewayName}-bffStreamBackendPool-backendHttpSettings'
-  properties: {
-    port: 443
-    protocol: 'Https'
-    cookieBasedAffinity: 'Disabled'
-    pickHostNameFromBackendAddress: false
-    hostName: bffStreamPool.properties.backendAddresses[0].fqdn
-    requestTimeout: 120
-    probe: {
-      id: resourceId('Microsoft.Network/applicationGateways/probes', gatewayName, bffStreamProbe.name)
-    }
-  }
-}
-
-var bffStreamProbe = {
-  name: '${gatewayName}-bffStreamBackendPool-probe'
-  properties: {
-    host: bffStreamPool.properties.backendAddresses[0].fqdn
-    protocol: 'Https'
-    path: '/api/liveness'
-    interval: 30
-    timeout: 30
-    unhealthyThreshold: 3
-    pickHostNameFromBackendSettings: false
-  }
-}
-
-var bffStreamGatewayBackend = {
-  pool: bffStreamPool
-  httpSettings: bffStreamHttpSettings
-  probe: bffStreamProbe
-}
-
 var frontendPool = {
   name: '${gatewayName}-frontendPool'
   properties: {
@@ -539,19 +494,16 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2024-01-01' =
     }]
     backendAddressPools: [
       bffGatewayBackend.pool
-      bffStreamGatewayBackend.pool
       frontendGatewayBackend.pool
       maintenanceGatewayBackend.pool
     ]
     backendHttpSettingsCollection: [
       bffGatewayBackend.httpSettings
-      bffStreamGatewayBackend.httpSettings
       frontendGatewayBackend.httpSettings
       maintenanceGatewayBackend.httpSettings
     ]
     probes: [
       bffGatewayBackend.probe
-      bffStreamGatewayBackend.probe
       frontendGatewayBackend.probe
       maintenanceGatewayBackend.probe
     ]
@@ -574,28 +526,6 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2024-01-01' =
             )
           }
           pathRules: enableMaintenancePage ? [] : [
-            {
-              name: bffStreamGatewayBackend.pool.name
-              properties: {
-                paths: [
-                  '/api/graphql/stream*'
-                ]
-                backendAddressPool: {
-                  id: resourceId(
-                    'Microsoft.Network/applicationGateways/backendAddressPools',
-                    gatewayName,
-                    bffStreamGatewayBackend.pool.name
-                  )
-                }
-                backendHttpSettings: {
-                  id: resourceId(
-                    'Microsoft.Network/applicationGateways/backendHttpSettingsCollection',
-                    gatewayName,
-                    bffStreamGatewayBackend.httpSettings.name
-                  )
-                }
-              }
-            }
             {
               name: bffGatewayBackend.pool.name
               properties: {

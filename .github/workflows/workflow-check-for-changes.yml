@@ -74,7 +74,6 @@ jobs:
               - '.azure/applications/**/*'
               - '.azure/modules/**/*'
               - 'packages/bff/**/*'
-              - 'packages/bff-stream/**/*'
               - 'packages/frontend/**/*'
               - 'packages/embeddable-markdown-html/**/*'
               - 'packages/fastify-graphiql/**/*'
