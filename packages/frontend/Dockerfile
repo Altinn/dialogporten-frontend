@@ -20,7 +20,7 @@ CMD ["pnpm", "--filter", "frontend", "run", "dev", "--host", "0.0.0.0"]
 
 # ---
 
-FROM nginx:1.25-alpine
+FROM nginx:1.25-alpine AS nginx
 
 # Install envsubst for environment variable substitution
 RUN apk add --no-cache gettext
