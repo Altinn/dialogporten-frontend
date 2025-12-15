@@ -38,6 +38,7 @@ const instrumentations = [
   new IORedisInstrumentation(),
   new FastifyOtelInstrumentation(),
   new GraphQLInstrumentation({
+    ignoreResolveSpans: true,
     ignoreTrivialResolveSpans: true,
     mergeItems: true,
   }),
