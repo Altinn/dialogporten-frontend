@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.115.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.114.0...v1.115.0) (2025-12-15)
+
+
+### Features
+
+* display expiration for attachments ([#3497](https://github.com/Altinn/dialogporten-frontend/issues/3497)) ([79d9557](https://github.com/Altinn/dialogporten-frontend/commit/79d95570a19a67b7aff89a854bcb2531ede2d157))
+
 ## [1.114.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.113.4...v1.114.0) (2025-12-12)
 
 
