@@ -64,5 +64,5 @@ export const FloatingDropdown = () => {
     },
   ];
 
-  return <FloatingDropdownAc icon={QuestionmarkIcon} iconAltText={'?'} items={items} />;
+  return <FloatingDropdownAc icon={QuestionmarkIcon} iconAltText={t('floatingdropdown.open_alt_text')} items={items} />;
 };
