@@ -215,7 +215,7 @@ jobs:
         uses: azure/CLI@089eac9d8cc39f5d003e94f8b65efc51076c9cbd # v2.1.0
         if: ${{!inputs.dryRun}}
         id: verify-deployment
-        timeout-minutes: 3
+        timeout-minutes: 6
         with:
           inlineScript: |
             ./.github/tools/revisionVerifier.sh ${{ steps.deploy.outputs.revisionName }} ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
