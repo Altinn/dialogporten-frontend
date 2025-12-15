@@ -6,10 +6,10 @@
   },
   "dependencies": {
     "fastify": "5.3.3",
-    "fastify-plugin": "^5.0.1"
+    "fastify-plugin": "5.0.1"
   },
   "type": "module",
   "devDependencies": {
-    "vitest": "^3.2.4"
+    "vitest": "3.2.4"
   }
 }
