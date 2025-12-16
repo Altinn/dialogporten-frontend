@@ -16,7 +16,6 @@ export interface UseGlobalMenuProps {
 
 export const useGlobalMenu = (): UseGlobalMenuProps => {
   const { pathname, search: currentSearchQuery, state } = useLocation();
-  const stopReversingPersonNameOrder = useFeatureFlag<boolean>('party.stopReversingPersonNameOrder');
   const isProfile = pathname.includes(PageRoutes.profile);
   const fromView = (state as { fromView?: string })?.fromView;
   const { t } = useTranslation();
@@ -39,7 +38,6 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
     currentEndUserName: currentEndUser?.name,
     pathname,
     currentSearchQuery,
-    stopReversingPersonNameOrder,
     fromView,
     userName: user?.party?.name ?? '',
     showAmLink,

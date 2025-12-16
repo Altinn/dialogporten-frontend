@@ -11,6 +11,7 @@ import { type TFunction, t } from 'i18next';
 import { getPreferredPropertyByLocale } from '../../i18n/property.ts';
 import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
 import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
+import { getIsUnread } from '../../pages/Inbox/status.ts';
 import type { InboxViewType } from '../hooks/useDialogs.tsx';
 import { getOrganization } from './organizations.ts';
 import { getViewTypes } from './viewType.ts';
@@ -99,6 +100,7 @@ export function mapDialogToToInboxItems(
             ? 'outline'
             : 'solid',
       },
+      serviceResourceType: item.serviceResourceType,
       color: actualReceiverParty?.partyType === 'Organization' ? 'company' : 'person',
       contentUpdatedAt: item.contentUpdatedAt,
       guiAttachmentCount: item.guiAttachmentCount ?? 0,
@@ -133,6 +135,7 @@ export function mapDialogToToInboxItems(
       fromServiceOwnerTransmissionsCount: item.fromServiceOwnerTransmissionsCount ?? 0,
       fromPartyTransmissionsCount: item.fromPartyTransmissionsCount ?? 0,
       serviceResource: item.serviceResource,
+      unread: getIsUnread(item),
     };
   });
 }
@@ -179,4 +182,25 @@ export const getQueryVariables = ({
     continuationToken,
     ...variables,
   };
+};
+
+export const mergeDialogItems = (
+  existingItems: SearchDialogFieldsFragment[] = [],
+  newItems: SearchDialogFieldsFragment[] = [],
+): SearchDialogFieldsFragment[] => {
+  const byId = new Map<string, SearchDialogFieldsFragment>();
+
+  for (const item of existingItems) {
+    if (item?.id) {
+      byId.set(item.id, item);
+    }
+  }
+
+  for (const item of newItems) {
+    if (item?.id) {
+      byId.set(item.id, item);
+    }
+  }
+
+  return Array.from(byId.values());
 };

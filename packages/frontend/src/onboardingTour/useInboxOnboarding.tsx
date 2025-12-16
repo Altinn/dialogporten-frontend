@@ -28,10 +28,32 @@ export const desktopTourSteps = [
     ),
   },
   {
-    selector: 'aside nav',
+    selector: 'aside nav > ul > li:nth-child(1)',
     content: (
       <OnboardingPopover titleKey="onboarding.tour.inbox.title" infoTextKey="onboarding.tour.inbox.description" />
     ),
+  },
+  {
+    selector: 'aside nav a[href*="drafts"]',
+    content: <OnboardingPopover titleKey="component.drafts" infoTextKey="onboarding.tour.drafts.description" />,
+  },
+  {
+    selector: 'aside nav a[href*="sent"]',
+    content: <OnboardingPopover titleKey="component.sent" infoTextKey="onboarding.tour.sent.description" />,
+  },
+  {
+    selector: 'aside nav > ul > li:nth-child(2)',
+    content: (
+      <OnboardingPopover
+        titleKey="onboarding.tour.shortcuts.title"
+        infoTextKey="onboarding.tour.shortcuts.description"
+      />
+    ),
+    highlightedSelectors: [
+      'aside nav > ul > li:nth-child(2)',
+      'aside nav > ul > li:nth-child(3)',
+      'aside nav > ul > li:nth-child(4)',
+    ],
   },
 ];
 
@@ -64,7 +86,7 @@ export const useInboxOnboarding = ({
   const windowSize = useWindowSize();
   const tour = useTour();
   const { setIsOpen, setCurrentStep } = tour;
-  const [hasInitialized, setHasInitialized] = useState(false);
+  const [hasInitialized, setHasInitialized] = useState<boolean>(false);
 
   const searchParams = new URLSearchParams(window.location.search);
   const isMock = searchParams.get('mock') === 'true';
@@ -108,9 +130,7 @@ export const useInboxOnboarding = ({
         });
       }
 
-      if ('setSteps' in tour && typeof tour.setSteps === 'function') {
-        tour.setSteps(dynamicSteps);
-      }
+      tour?.setSteps?.(dynamicSteps);
 
       setCurrentStep(0);
       setIsOpen(true);

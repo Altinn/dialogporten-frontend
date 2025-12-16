@@ -4,6 +4,7 @@ import { dialogs as baseDialogs } from '../../base/dialogs'
 const customDialogs: SearchDialogFieldsFragment[] = [
     {
         serviceResource: 'default',
+        serviceResourceType: 'correspondenceservice',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-today83j1ks2',
         endUserContext: {
@@ -41,6 +42,7 @@ const customDialogs: SearchDialogFieldsFragment[] = [
     },
     {
         serviceResource: 'default',
+        serviceResourceType: 'correspondenceservice',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-today11111',
         endUserContext: {
@@ -78,6 +80,7 @@ const customDialogs: SearchDialogFieldsFragment[] = [
     },
     {
         serviceResource: 'default',
+        serviceResourceType: 'correspondenceservice',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-today22222',
         endUserContext: {
@@ -115,6 +118,7 @@ const customDialogs: SearchDialogFieldsFragment[] = [
     },
     {
         serviceResource: 'default',
+        serviceResourceType: 'correspondenceservice',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-today33333',
         endUserContext: {
@@ -152,6 +156,7 @@ const customDialogs: SearchDialogFieldsFragment[] = [
     },
     {
         serviceResource: 'default',
+        serviceResourceType: 'correspondenceservice',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-today55555',
         endUserContext: {
@@ -189,6 +194,7 @@ const customDialogs: SearchDialogFieldsFragment[] = [
     },
     {
         serviceResource: 'default',
+        serviceResourceType: 'correspondenceservice',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-today66666',
         endUserContext: {

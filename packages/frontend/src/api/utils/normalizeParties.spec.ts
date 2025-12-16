@@ -13,6 +13,7 @@ describe('normalizeParties', () => {
       isCurrentEndUser: true,
       isDeleted: false,
       partyUuid: 'urn:altinn:person:identifier-no:1337',
+      partyId: 1,
     },
     {
       party: 'urn:altinn:organization:identifier-no:1',
@@ -26,26 +27,28 @@ describe('normalizeParties', () => {
           isCurrentEndUser: false,
           partyUuid: 'urn:altinn:person:identifier-no:1337',
           isDeleted: false,
+          partyId: 2,
         },
       ],
       name: 'MYSUSÆTER OG ØSTRE GAUSDAL',
       isCurrentEndUser: false,
       isDeleted: false,
       partyUuid: 'urn:altinn:person:identifier-no:1338',
+      partyId: 3,
     },
   ];
 
   it('should return sub-parties where name differs from parent', () => {
-    const result = normalizeFlattenParties(parties, false);
+    const result = normalizeFlattenParties(parties);
 
     expect(result.length).toBe(3);
-    expect(result[0].name).toBe('Reiersen Edel');
+    expect(result[0].name).toBe('Edel Reiersen');
     expect(result[1].name).toBe('Mysusæter Og Østre Gausdal');
     expect(result[2].name).toBe('Steinkjer Og Flateby');
   });
 
   it('should copy parent properties to sub-parties correctly', () => {
-    const result = normalizeFlattenParties(parties, false);
+    const result = normalizeFlattenParties(parties);
     expect(result[2].isDeleted).toBe(false);
     expect(result[2].isCurrentEndUser).toBe(false);
   });

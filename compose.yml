@@ -128,9 +128,14 @@ services:
     environment:
       DB_CONNECTION_STRING: postgres://postgres:mysecretpassword@db:5432/dialogporten
       HOSTNAME: https://app.localhost
+      DIALOGPORTEN_URL: ${DIALOGPORTEN_URL}
+      PLATFORM_BASEURL: ${PLATFORM_BASEURL}
+      LOGOUT_REDIRECT_URI: ${LOGOUT_REDIRECT_URI}
       ENABLE_NEW_OIDC: ${ENABLE_NEW_OIDC}
       CLIENT_ID: ${CLIENT_ID}
       CLIENT_SECRET: ${CLIENT_SECRET}
+      OIDC_PLATFORM_URL: ${OIDC_PLATFORM_URL}
+      OIDC_URL: ${OIDC_URL}
       OIDC_CLIENT_ID: ${OIDC_CLIENT_ID}
       OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET}
       ENABLE_GRAPHIQL: true
@@ -139,6 +144,7 @@ services:
       PORT: 80
       NODE_ENV: production
       COOKIE_SECURE: false
+      AUTH_CONTEXT_COOKIE_DOMAIN: ${AUTH_CONTEXT_COOKIE_DOMAIN}
       # OpenTelemetry configuration (connect to Jaeger on host machine)
       OTEL_NAMESPACE: ${OTEL_NAMESPACE}
       OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT}

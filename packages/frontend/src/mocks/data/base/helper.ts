@@ -362,7 +362,7 @@ export const getMockedTransmissions = (dialogId: string) => {
 export const convertToDialogByIdTemplate = (input: SearchDialogFieldsFragment): DialogByIdFieldsFragment => {
   return {
     id: input.id,
-    serviceResourceType: 'example',
+    serviceResourceType: 'correspondenceservice',
     dialogToken: 'MOCKED_DIALOG_TOKEN',
     party: input.party,
     org: input.org,
@@ -371,6 +371,7 @@ export const convertToDialogByIdTemplate = (input: SearchDialogFieldsFragment): 
     attachments: [
       {
         id: input.id,
+        expiresAt: new Date(new Date().getTime() + 60_000*1000).toISOString(),
         displayName: [
           {
             value: 'kvittering.pdf',
@@ -413,6 +414,7 @@ export const convertToDialogByIdTemplate = (input: SearchDialogFieldsFragment): 
     status: input.status,
     createdAt: input.createdAt,
     contentUpdatedAt: input.contentUpdatedAt,
+    hasUnopenedContent: false,
     content: {
       title: input.content.title,
       summary: input.content.summary,

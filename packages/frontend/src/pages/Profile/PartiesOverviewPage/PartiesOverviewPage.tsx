@@ -2,7 +2,9 @@ import {
   AccountList,
   AccountListItemDetails,
   type AccountListItemProps,
+  type AccountOrganizationItemProps,
   type AvatarType,
+  type AvatarVariant,
   Heading,
   PageBase,
   PageNav,
@@ -13,7 +15,7 @@ import {
 } from '@altinn/altinn-components';
 import type { AccountListItemType } from '@altinn/altinn-components/dist/types/lib/components/Account/AccountListItem';
 import { BellIcon, HashtagIcon, InboxIcon } from '@navikt/aksel-icons';
-import { useMemo, useState } from 'react';
+import { type ElementType, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps, useLocation } from 'react-router-dom';
 import { useProfile } from '..';
@@ -118,46 +120,42 @@ export const PartiesOverviewPage = () => {
   };
 
   const createSubPartyItem = (
-    subParty: { party: string; name: string },
-    parentItem: { party: string; name: string; parentId?: string },
+    subParty: { party: string; name: string; isDeleted: boolean },
     currentParty: { party: string } | undefined,
-    groupId: string | undefined,
-  ) => ({
+  ): AccountOrganizationItemProps => ({
     avatar: {
       type: 'company' as AvatarType,
       name: subParty.name,
-      variant: 'outline' as const,
+      variant: 'outline' as AvatarVariant,
+      isDeleted: subParty.isDeleted,
     },
     title: subParty.name,
-    parentId: parentItem.parentId,
-    parentAccount: parentItem,
     description: `${formatNorwegianId(subParty.party, false)} `,
     selected: subParty.party === currentParty?.party,
-    onClick: () => setExpandedItem(subParty.party + groupId),
-    as: 'a' as const,
+    as: 'span' as ElementType,
   });
 
   const createOrganizationItem = (
     item: {
       party: string;
       name: string;
+      isDeleted: boolean;
       parentId?: string;
-      subParties?: Array<{ party: string; name: string }>;
+      subParties?: Array<{ party: string; name: string; isDeleted: boolean }>;
     },
     currentParty: { party: string } | undefined,
-    groupId: string | undefined,
-  ) => ({
+  ): AccountOrganizationItemProps => ({
     avatar: {
       type: 'company' as AvatarType,
       name: item.name,
-      variant: item.parentId ? ('outline' as const) : undefined,
+      variant: item.parentId ? ('outline' as AvatarVariant) : undefined,
+      isDeleted: item.isDeleted,
     },
-    onClick: () => setExpandedItem(item.party + groupId),
-    items: item.subParties?.map((subParty) => createSubPartyItem(subParty, item, currentParty, groupId)),
+    items: item.subParties?.map((subParty) => createSubPartyItem(subParty, item)),
     title: item.name,
     description: formatNorwegianId(item.party, false),
     selected: item.party === currentParty?.party,
-    as: 'a' as const,
+    as: 'span' as ElementType,
   });
 
   const getOrganizationAccounts = (
@@ -166,16 +164,16 @@ export const PartiesOverviewPage = () => {
     flattenedParties: Array<{
       party: string;
       name: string;
+      isDeleted: boolean;
       parentId?: string;
-      subParties?: Array<{ party: string; name: string }>;
+      subParties?: Array<{ party: string; name: string; isDeleted: boolean }>;
     }>,
-    groupId: string | undefined,
   ) => {
     const organizationAccounts = parentParty
       ? flattenedParties?.filter((item) => item.party.includes(parentParty.party)) || []
       : flattenedParties?.filter((item) => item.party.includes(currentParty?.party ?? '')) || [];
 
-    return organizationAccounts?.map((item) => createOrganizationItem(item, currentParty, groupId));
+    return organizationAccounts?.map((item) => createOrganizationItem(item, currentParty));
   };
 
   const PartyDetails = ({
@@ -185,7 +183,6 @@ export const PartiesOverviewPage = () => {
   }: { type: AccountListItemType; isCurrentEndUser: boolean; id: string }) => {
     const currentParty = flattenedParties?.find((item) => item.party === id);
     const parentParty = flattenedParties?.find((item) => item.partyUuid === currentParty?.parentId);
-    const groupId = settings.find((item) => item.id === id)?.groupId;
 
     const organizationAccounts = useMemo(() => {
       if (type !== 'company') return undefined;
@@ -194,13 +191,13 @@ export const PartiesOverviewPage = () => {
         parentParty,
         flattenedParties as Array<{
           party: string;
+          isDeleted: boolean;
           name: string;
           parentId?: string;
-          subParties?: Array<{ party: string; name: string }>;
+          subParties?: Array<{ party: string; name: string; isDeleted: boolean }>;
         }>,
-        groupId,
       );
-    }, [type, currentParty, parentParty, groupId]);
+    }, [type, currentParty, parentParty]);
 
     if (isCurrentEndUser) {
       const contactSettings = settings.filter((s) => s.groupId === 'contact');
@@ -316,7 +313,7 @@ export const PartiesOverviewPage = () => {
         </Toolbar>
         {isSearching && hits.length === 0 && <Heading size="lg">{t('profile.settings.no_results')}</Heading>}
         <AccountList
-          isVirtualized={true}
+          isVirtualized
           groups={isSearching ? searchGroup : accountGroups}
           items={isSearching ? hits : accountListItems}
         />

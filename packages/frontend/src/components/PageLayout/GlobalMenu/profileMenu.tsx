@@ -30,7 +30,6 @@ export function buildProfileMenu({
   currentEndUserName,
   pathname,
   currentSearchQuery,
-  stopReversingPersonNameOrder,
   fromView,
   userName,
   showAmLink = false,
@@ -40,7 +39,6 @@ export function buildProfileMenu({
   currentEndUserName?: string;
   pathname: string;
   currentSearchQuery: string;
-  stopReversingPersonNameOrder: boolean;
   fromView?: string;
   userName?: string;
   showAmLink?: boolean;
@@ -77,7 +75,7 @@ export function buildProfileMenu({
         name: formatDisplayName({
           fullName: userName ?? '',
           type: 'person',
-          reverseNameOrder: !stopReversingPersonNameOrder,
+          reverseNameOrder: true,
         }),
       },
       title: t('sidebar.profile'),

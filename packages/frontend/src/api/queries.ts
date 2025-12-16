@@ -21,6 +21,7 @@ import {
   getSdk,
 } from 'bff-types-generated';
 import { ClientError, GraphQLClient, type RequestMiddleware, type ResponseMiddleware } from 'graphql-request';
+import i18n from 'i18next';
 import { Analytics } from '../analytics';
 import { logError } from '../utils/errorLogger';
 
@@ -219,11 +220,16 @@ export const searchDialogs = (
 export const searchAutocompleteDialogs = (
   partyURIs: string[],
   search: string | undefined,
+  enableSearchLanguageCode: boolean,
 ): Promise<GetSearchAutocompleteDialogsQuery> => {
   return graphQLSDK.getSearchAutocompleteDialogs({
     partyURIs,
     search,
     limit: 6,
+    ...(enableSearchLanguageCode && {
+      searchLanguageCode: i18n.language,
+    }),
+    searchLanguageCode: i18n.language,
   });
 };
 

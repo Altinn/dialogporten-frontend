@@ -9,6 +9,7 @@ fragment SearchDialogFields on SearchDialog {
   dueAt
   contentUpdatedAt
   hasUnopenedContent
+  serviceResourceType
   serviceResource
   seenSinceLastContentUpdate {
     ...SeenLogFields
@@ -77,6 +78,7 @@ fragment DialogByIdFields on Dialog {
   dueAt
   createdAt
   contentUpdatedAt
+  hasUnopenedContent
   endUserContext {
     systemLabels
   }
@@ -191,6 +193,7 @@ fragment AttachmentFields on Attachment {
     value
     languageCode
   }
+  expiresAt
   urls {
     ...AttachmentUrlFields
   }

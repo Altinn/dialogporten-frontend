@@ -16,44 +16,22 @@ import { SavedSearchesPage } from './pages/SavedSearches';
 import { PageRoutes } from './pages/routes.ts';
 import './app.css';
 import { useEffect } from 'react';
-import { getCookieDomain } from './auth';
+import { QUERY_KEYS } from './constants/queryKeys.ts';
+import { getPartyFromCookie } from './cookie.ts';
 import { usePageTracking } from './hooks/usePageTracking.ts';
 import { AboutPage } from './pages/About/About.tsx';
 import { useGlobalStringState } from './useGlobalState.ts';
 
-const getPartyUuidFromCookie = (): string | undefined => {
-  if (typeof document === 'undefined') return undefined;
-
-  const cookies = document.cookie.split(';');
-  let partyUuid: string | undefined;
-
-  for (const cookie of cookies) {
-    const [rawKey, ...rawValParts] = cookie.split('=');
-    const key = rawKey.trim();
-    const value = rawValParts.join('=').trim();
-
-    if (key === 'AltinnPartyUuid') {
-      partyUuid = value;
-      break;
-    }
-  }
-
-  return partyUuid;
-};
-
 function App() {
   // Add page tracking
   usePageTracking();
-  const [_, setCookiePartyUuid] = useGlobalStringState('altinnCookie', '');
+  const [_, setCookiePartyUuid] = useGlobalStringState(QUERY_KEYS.ALTINN_COOKIE, '');
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    const partyUuidFromCookie = getPartyUuidFromCookie();
+    const partyUuidFromCookie = getPartyFromCookie('AltinnPartyUuid');
     if (partyUuidFromCookie) {
-      setCookiePartyUuid(getPartyUuidFromCookie() ?? '');
-      // Ensure this is only done once per reload, and after that, selected account, should be handled internally
-      document.cookie =
-        'AltinnPartyUuid' + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; domain=' + getCookieDomain();
+      setCookiePartyUuid(getPartyFromCookie('AltinnPartyUuid') ?? '');
     }
   }, []);
 
@@ -88,7 +66,6 @@ function App() {
           <Route path={PageRoutes.bin} element={withErrorBoundary(<Inbox key="bin" viewType={'bin'} />, 'Bin')} />
           <Route path={PageRoutes.inboxItem} element={withErrorBoundary(<DialogDetailsPage />, 'Inbox Item')} />
           <Route path={PageRoutes.savedSearches} element={withErrorBoundary(<SavedSearchesPage />, 'Saved Searches')} />
-
           <Route path={PageRoutes.about} element={withErrorBoundary(<AboutPage />, 'About')} />
           <Route path={PageRoutes.error} element={<ErrorPage />} />
           <Route path="*" element={<Navigate to="/" />} />

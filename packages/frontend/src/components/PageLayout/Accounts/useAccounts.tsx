@@ -8,7 +8,8 @@ import type {
   MenuItemGroups,
 } from '@altinn/altinn-components';
 import type { PartyFieldsFragment } from 'bff-types-generated';
-import { type ChangeEvent, useMemo, useState } from 'react';
+import i18n from 'i18next';
+import { type ChangeEvent, type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useParties } from '../../../api/hooks/useParties.ts';
@@ -20,7 +21,7 @@ interface UseAccountOptions {
   showDescription?: boolean;
   showFavorites?: boolean;
   showGroups?: boolean;
-  groups?: Record<string, Record<string, string>>;
+  groups?: Record<string, { title?: string | ReactNode }>;
 }
 
 export interface PartyItemProp extends AccountMenuItemProps {
@@ -98,6 +99,12 @@ const filterAccount = (item: AccountMenuItemProps, search: string) => {
   return false;
 };
 
+const compareFn = (a: PartyFieldsFragment, b: PartyFieldsFragment) =>
+  a.name.localeCompare(b.name, i18n.language, {
+    sensitivity: 'base',
+    ignorePunctuation: true,
+  });
+
 export const useAccounts = ({
   parties,
   selectedParties,
@@ -129,7 +136,7 @@ export const useAccounts = ({
   const { groupId: _, ...loadingAccount } = loadingAccountMenuItem;
 
   const currentEndUser = useMemo(() => {
-    return parties.find((party) => party.partyType === 'Person' && party.isCurrentEndUser) || parties?.[0];
+    return parties.find((party) => party.partyType === 'Person' && party.isCurrentEndUser);
   }, [parties]);
 
   const otherPeople = useMemo(
@@ -162,64 +169,69 @@ export const useAccounts = ({
   const options = { ...defaultOptions, ...inputOptions };
 
   const otherPeopleAccounts = useMemo<PartyItemProp[]>(() => {
-    return otherPeople.map((person) => {
-      const description = t('word.ssn') + formatNorwegianId(person.party, false);
-
-      return {
-        id: person.party,
-        name: person.name,
-        type: 'person' as AccountMenuItemProps['type'],
-        icon: { name: person.name, type: 'person' as AvatarType },
-        isDeleted: person.isDeleted,
-        isFavorite: favoritesGroup?.parties?.includes(person.partyUuid),
-        isCurrentEndUser: false,
-        uuid: person.partyUuid,
-        description: options.showDescription ? description : undefined,
-        badge: person.isDeleted ? { color: 'danger', label: t('badge.deleted'), variant: 'base' } : undefined,
-        groupId: 'persons',
-      };
-    });
+    return otherPeople
+      .slice()
+      .sort(compareFn)
+      .map((person) => {
+        const description = t('word.ssn') + formatNorwegianId(person.party, false);
+        return {
+          id: person.party,
+          name: person.name,
+          type: 'person' as AccountMenuItemProps['type'],
+          icon: { name: person.name, type: 'person' as AvatarType },
+          isDeleted: person.isDeleted,
+          isFavorite: favoritesGroup?.parties?.includes(person.partyUuid),
+          isCurrentEndUser: false,
+          uuid: person.partyUuid,
+          description: options.showDescription ? description : undefined,
+          badge: person.isDeleted ? { color: 'danger', label: t('badge.deleted'), variant: 'base' } : undefined,
+          groupId: 'persons',
+        };
+      });
   }, [otherPeople, favoritesGroup, options.showDescription, t]);
 
   const organizationAccounts = useMemo<PartyItemProp[]>(() => {
-    return organizations.map((party) => {
-      const isParent = Array.isArray(availableParties.find((p) => p.party === party.party)?.subParties);
+    return organizations
+      .slice()
+      .sort(compareFn)
+      .map((party) => {
+        const isParent = Array.isArray(availableParties.find((p) => p.party === party.party)?.subParties);
 
-      const parent = isParent
-        ? undefined
-        : availableParties.find((org) => org?.subParties?.some((sub) => sub.party === party.party));
+        const parent = isParent
+          ? undefined
+          : availableParties.find((org) => org?.subParties?.some((sub) => sub.party === party.party));
 
-      const description =
-        parent?.name && party?.party
-          ? `↳ ${t('word.orgNo')} ${formatNorwegianId(
-              party.party,
-              false,
-            )}, ${t('profile.account.partOf')} ${parent.name}`
-          : `${t('word.orgNo')} ${formatNorwegianId(party.party, false)}`;
+        const description =
+          parent?.name && party?.party
+            ? `↳ ${t('word.orgNo')} ${formatNorwegianId(
+                party.party,
+                false,
+              )}, ${t('profile.account.partOf')} ${parent.name}`
+            : `${t('word.orgNo')} ${formatNorwegianId(party.party, false)}`;
 
-      return {
-        id: party.party,
-        name: party.name,
-        type: 'company' as AccountMenuItemProps['type'],
-        icon: {
+        return {
+          id: party.party,
           name: party.name,
-          type: 'company' as AvatarType,
-          isParent,
+          type: 'company' as AccountMenuItemProps['type'],
+          icon: {
+            name: party.name,
+            type: 'company' as AvatarType,
+            isParent,
+            isDeleted: party.isDeleted,
+          },
           isDeleted: party.isDeleted,
-        },
-        isDeleted: party.isDeleted,
-        isFavorite: favoritesGroup?.parties?.includes(party.partyUuid),
-        isCurrentEndUser: false,
-        uuid: party.partyUuid,
-        disabled: party.hasOnlyAccessToSubParties,
-        isParent,
-        parentId: parent?.party,
-        parentName: parent?.name,
-        description: options.showDescription ? description : undefined,
-        badge: party.isDeleted ? { color: 'danger', label: t('badge.deleted'), variant: 'base' } : undefined,
-        groupId: parent?.party ?? party.party,
-      };
-    });
+          isFavorite: favoritesGroup?.parties?.includes(party.partyUuid),
+          isCurrentEndUser: false,
+          uuid: party.partyUuid,
+          disabled: party.hasOnlyAccessToSubParties,
+          isParent,
+          parentId: parent?.party,
+          parentName: parent?.name,
+          description: options.showDescription ? description : undefined,
+          badge: party.isDeleted ? { color: 'danger', label: t('badge.deleted'), variant: 'base' } : undefined,
+          groupId: parent?.party ?? party.party,
+        };
+      });
   }, [organizations, availableParties, favoritesGroup, options.showDescription, t]);
 
   if (isLoading) {
@@ -242,14 +254,14 @@ export const useAccounts = ({
     };
   }
 
-  const accountGroups: MenuItemGroups = {
+  const accountGroups = {
     ...options.groups,
-    ...(organizations.length && options.groups?.companies
+    ...(organizationAccounts.length && options.groups?.companies
       ? {
-          [organizations?.[0].party]: options.groups?.companies,
+          [organizationAccounts?.[0].id]: options.groups?.companies,
         }
       : {}),
-  };
+  } as MenuItemGroups;
 
   const norwegianId = currentEndUser?.party ? formatNorwegianId(currentEndUser.party, true) : '';
   const description = currentEndUser?.party && norwegianId ? t('word.ssn') + norwegianId : '';

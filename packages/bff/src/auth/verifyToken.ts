@@ -22,6 +22,7 @@ export const refreshToken = async (request: FastifyRequest, providerconfig: Prov
   body.append('refresh_token', token.refresh_token);
 
   const refreshResponse = await axios.post(tokenEndpoint, body, {
+    timeout: 30000,
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
       Authorization: authEncoded,

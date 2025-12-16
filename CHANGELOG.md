@@ -1,5 +1,296 @@
 # Changelog
 
+## [1.115.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.115.1...v1.115.2) (2025-12-16)
+
+
+### Bug Fixes
+
+* **bff:** filter trace requests to app configuration ([#3509](https://github.com/Altinn/dialogporten-frontend/issues/3509)) ([51355d6](https://github.com/Altinn/dialogporten-frontend/commit/51355d6723d4a111dcc2de5569559fa6c55f10cd))
+* **deps:** update dependency @fastify/otel to v0.16.0 ([#2838](https://github.com/Altinn/dialogporten-frontend/issues/2838)) ([a131201](https://github.com/Altinn/dialogporten-frontend/commit/a1312017f91aae06f0a72212ec3c569d7ca4df4f))
+* **deps:** update dependency @opentelemetry/exporter-metrics-otlp-grpc to v0.208.0 ([#3181](https://github.com/Altinn/dialogporten-frontend/issues/3181)) ([aa0a4d7](https://github.com/Altinn/dialogporten-frontend/commit/aa0a4d79868315d6f1f605965bc90c0a231abdcb))
+* **deps:** update dependency @opentelemetry/instrumentation-graphql to v0.56.0 ([#2839](https://github.com/Altinn/dialogporten-frontend/issues/2839)) ([0483e11](https://github.com/Altinn/dialogporten-frontend/commit/0483e1113136ba787fc12112198c71107247adb3))
+* disable key access for storage accounts ([#3163](https://github.com/Altinn/dialogporten-frontend/issues/3163)) ([43e4d07](https://github.com/Altinn/dialogporten-frontend/commit/43e4d0739cc199bcbfefdfc79b0a414a4d9fde03))
+* **e2e:** update saved search test ([#3507](https://github.com/Altinn/dialogporten-frontend/issues/3507)) ([5c1722f](https://github.com/Altinn/dialogporten-frontend/commit/5c1722f08cd28d65cd9c00e26c6e30a2cec4dd63))
+* sort accounts ([#3510](https://github.com/Altinn/dialogporten-frontend/issues/3510)) ([c57ab22](https://github.com/Altinn/dialogporten-frontend/commit/c57ab22330eba5fe8859e7c818ea8564a9a85204))
+
+## [1.115.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.115.0...v1.115.1) (2025-12-15)
+
+
+### Bug Fixes
+
+* **bff-stream:** remove bff-stream ([#3504](https://github.com/Altinn/dialogporten-frontend/issues/3504)) ([0483af7](https://github.com/Altinn/dialogporten-frontend/commit/0483af74dfe11723b684944cb2afec854485fc14))
+* **frontend:** apply security configuration ([#3380](https://github.com/Altinn/dialogporten-frontend/issues/3380)) ([00bfbe5](https://github.com/Altinn/dialogporten-frontend/commit/00bfbe55f8b2216311b943f7487cdca0cb89b665))
+
+## [1.115.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.114.0...v1.115.0) (2025-12-15)
+
+
+### Features
+
+* display expiration for attachments ([#3497](https://github.com/Altinn/dialogporten-frontend/issues/3497)) ([79d9557](https://github.com/Altinn/dialogporten-frontend/commit/79d95570a19a67b7aff89a854bcb2531ede2d157))
+
+## [1.114.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.113.4...v1.114.0) (2025-12-12)
+
+
+### Features
+
+* mark as unread ([#3492](https://github.com/Altinn/dialogporten-frontend/issues/3492)) ([b8b5813](https://github.com/Altinn/dialogporten-frontend/commit/b8b581315b05f51ae8fbf8abd0506507a4bb4a04))
+
+
+### Bug Fixes
+
+* E2E tests ([dce23ef](https://github.com/Altinn/dialogporten-frontend/commit/dce23ef3fb0f3d00dcf5a11f75eab0321a56e14e))
+* E2E tests ([b8c88be](https://github.com/Altinn/dialogporten-frontend/commit/b8c88be21a79be2330f92fd28e4caf867e197ab3))
+* PW tests ([33b517c](https://github.com/Altinn/dialogporten-frontend/commit/33b517ce3e98329cd54c68bc76cad9385fe19942))
+* Saved search design update ([fe308a9](https://github.com/Altinn/dialogporten-frontend/commit/fe308a96ffed38ce89505f2e4df8f0744984acba))
+
+## [1.113.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.113.3...v1.113.4) (2025-12-11)
+
+
+### Bug Fixes
+
+* Beta texts ([eb22493](https://github.com/Altinn/dialogporten-frontend/commit/eb224938bbb94dcb39730d3352ac4a516bfd66cf))
+* **bff:** ensure logs end up in exceptions table ([#3470](https://github.com/Altinn/dialogporten-frontend/issues/3470)) ([d762c7f](https://github.com/Altinn/dialogporten-frontend/commit/d762c7f0c4494ff4b9b5d0cfd15f4ba84a3a2c94))
+
+## [1.113.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.113.2...v1.113.3) (2025-12-11)
+
+
+### Bug Fixes
+
+* prevent retries for FCE on 404 ([#3487](https://github.com/Altinn/dialogporten-frontend/issues/3487)) ([ddeeeb4](https://github.com/Altinn/dialogporten-frontend/commit/ddeeeb40874b40466adf7520b2fd1201020a8a87))
+
+## [1.113.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.113.1...v1.113.2) (2025-12-10)
+
+
+### Bug Fixes
+
+* prevent retries for fce if user runs into 403 ([#3484](https://github.com/Altinn/dialogporten-frontend/issues/3484)) ([159fa4e](https://github.com/Altinn/dialogporten-frontend/commit/159fa4edd9aa5435430d0417d1d7cdbe1fd308f0))
+
+## [1.113.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.113.0...v1.113.1) (2025-12-10)
+
+
+### Bug Fixes
+
+* improved scope for filters with inbox.disableDialogCount ([#3481](https://github.com/Altinn/dialogporten-frontend/issues/3481)) ([093fed1](https://github.com/Altinn/dialogporten-frontend/commit/093fed18721dc8a59d0a89766d20de77dc9cc0ab))
+* improved scope for filters with inbox.disableDialogCount ([#3483](https://github.com/Altinn/dialogporten-frontend/issues/3483)) ([91869e2](https://github.com/Altinn/dialogporten-frontend/commit/91869e2fd06032815c079740919d31d0d822fd01))
+
+## [1.113.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.112.4...v1.113.0) (2025-12-10)
+
+
+### Features
+
+* **bff:** enable sampling ([#3469](https://github.com/Altinn/dialogporten-frontend/issues/3469)) ([d52661c](https://github.com/Altinn/dialogporten-frontend/commit/d52661c439998fb5fe168a2bbb02b361abcadaa3))
+
+
+### Bug Fixes
+
+* prevent infinite render loop in useWindowSize by using functional updates and debounced resize handling ([#3475](https://github.com/Altinn/dialogporten-frontend/issues/3475)) ([93868d1](https://github.com/Altinn/dialogporten-frontend/commit/93868d199ddb919bbd6777d3ebff1538daf043ae))
+* update altinn-components to 0.50.8 for more keyboard accessible FloatingDropdown ([#3472](https://github.com/Altinn/dialogporten-frontend/issues/3472)) ([420ac8a](https://github.com/Altinn/dialogporten-frontend/commit/420ac8a151357a4e14ffcd91abf761aafb3b47fe))
+
+## [1.112.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.112.3...v1.112.4) (2025-12-09)
+
+
+### Bug Fixes
+
+* **fce:** show proper info message to user instead of error message when user is forbidden to view front channel embeds ([#3465](https://github.com/Altinn/dialogporten-frontend/issues/3465)) ([13522da](https://github.com/Altinn/dialogporten-frontend/commit/13522da342726a5418384689c04a0b3c86d43633))
+
+## [1.112.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.112.2...v1.112.3) (2025-12-08)
+
+
+### Bug Fixes
+
+* **filters:** remove unreliable count from filters ([#3459](https://github.com/Altinn/dialogporten-frontend/issues/3459)) ([be2dbde](https://github.com/Altinn/dialogporten-frontend/commit/be2dbde5c9048ff2c53aae4c313b094bfa2ca8cd))
+* Migration read status ([c5a22d4](https://github.com/Altinn/dialogporten-frontend/commit/c5a22d49982fc2c4b4bf619ef44452c45dbf7239))
+* Updated exit beta texts ([590325d](https://github.com/Altinn/dialogporten-frontend/commit/590325d4babddf51847515de0f97929417878400))
+
+## [1.112.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.112.1...v1.112.2) (2025-12-08)
+
+
+### Bug Fixes
+
+* Migration read status ([66074a4](https://github.com/Altinn/dialogporten-frontend/commit/66074a49d811593fc54c3887c31f9a3304f78a20))
+
+## [1.112.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.112.0...v1.112.1) (2025-12-08)
+
+
+### Bug Fixes
+
+* **searchbar:** icon was misplaced on Safari desktop ([#3456](https://github.com/Altinn/dialogporten-frontend/issues/3456)) ([6fb0c5b](https://github.com/Altinn/dialogporten-frontend/commit/6fb0c5bfb1cc69e6e293846c702460b1ab813cc9))
+
+## [1.112.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.111.2...v1.112.0) (2025-12-05)
+
+
+### Features
+
+* enable sse subscriptions without bff as proxy ([#3440](https://github.com/Altinn/dialogporten-frontend/issues/3440)) ([29c8c4f](https://github.com/Altinn/dialogporten-frontend/commit/29c8c4ffb7d86533e6ae956e763f422ff5a13d5a))
+* **frontend:** add environment variable for dialogporten stream url ([#3437](https://github.com/Altinn/dialogporten-frontend/issues/3437)) ([8bfe048](https://github.com/Altinn/dialogporten-frontend/commit/8bfe048ad6f1bca5931c7dfe9c6281721ab2fa0b))
+
+
+### Bug Fixes
+
+* bump altinn-components to 0.50.5 ([#3451](https://github.com/Altinn/dialogporten-frontend/issues/3451)) ([f2e72ac](https://github.com/Altinn/dialogporten-frontend/commit/f2e72ac317c9b314d0bb744d9d218d2c1c3d37da))
+* disable autocomplete querying for allParties=true and selected parties &gt; 20 ([#3448](https://github.com/Altinn/dialogporten-frontend/issues/3448)) ([bf8b012](https://github.com/Altinn/dialogporten-frontend/commit/bf8b012e497e97bab44b3897e662f541a85e1bd9))
+* parties overview bugs ([#3442](https://github.com/Altinn/dialogporten-frontend/issues/3442)) ([4f53254](https://github.com/Altinn/dialogporten-frontend/commit/4f53254b8903dc5ae7cc79012832355e82bc5123))
+
+## [1.111.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.111.1...v1.111.2) (2025-12-03)
+
+
+### Bug Fixes
+
+* Storing active connections in Redis ([1aa0d8f](https://github.com/Altinn/dialogporten-frontend/commit/1aa0d8fc45fc791a10cc50eaf53795616fe334b7))
+
+## [1.111.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.111.0...v1.111.1) (2025-12-02)
+
+
+### Bug Fixes
+
+* clean up dead aborted or cancelled connections for upstream subscriptions ([#3425](https://github.com/Altinn/dialogporten-frontend/issues/3425)) ([cd5f560](https://github.com/Altinn/dialogporten-frontend/commit/cd5f56011ec33bbd4a42c9897638fd8c451ca89b))
+
+## [1.111.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.110.7...v1.111.0) (2025-12-02)
+
+
+### Features
+
+* **bff:** separate GraphQL subscription as a separate app ([#3419](https://github.com/Altinn/dialogporten-frontend/issues/3419)) ([7c247a9](https://github.com/Altinn/dialogporten-frontend/commit/7c247a97468964cd61e56fff0b8da0c0176003e4))
+
+
+### Bug Fixes
+
+* Force refresh of dialog details after gui action ([13cd468](https://github.com/Altinn/dialogporten-frontend/commit/13cd468f2298b97a9eabd1375ddad5cafeaa040a))
+
+## [1.110.7](https://github.com/Altinn/dialogporten-frontend/compare/v1.110.6...v1.110.7) (2025-12-01)
+
+
+### Bug Fixes
+
+* feature toggle disable subscriptions ([#3414](https://github.com/Altinn/dialogporten-frontend/issues/3414)) ([638b69f](https://github.com/Altinn/dialogporten-frontend/commit/638b69f534513840914bcbb31b0f00d1e6f73463))
+
+## [1.110.6](https://github.com/Altinn/dialogporten-frontend/compare/v1.110.5...v1.110.6) (2025-12-01)
+
+
+### Bug Fixes
+
+* **bff:** add timeouts for all axios requests ([#3412](https://github.com/Altinn/dialogporten-frontend/issues/3412)) ([ca73998](https://github.com/Altinn/dialogporten-frontend/commit/ca73998b92b2ae437d00eccf31a3ae38ceab04a7))
+
+## [1.110.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.110.4...v1.110.5) (2025-12-01)
+
+
+### Bug Fixes
+
+* set max timeout 30_000 for bff against dialogporten ([#3408](https://github.com/Altinn/dialogporten-frontend/issues/3408)) ([9c8d2a0](https://github.com/Altinn/dialogporten-frontend/commit/9c8d2a0861cd8111fbec546933f77b7802fc2feb))
+
+## [1.110.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.110.3...v1.110.4) (2025-12-01)
+
+
+### Bug Fixes
+
+* add optional search language for search dialogs ([#3404](https://github.com/Altinn/dialogporten-frontend/issues/3404)) ([9bc670d](https://github.com/Altinn/dialogporten-frontend/commit/9bc670dadfd5cfed631cae02f5076fb580811ba3))
+
+## [1.110.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.110.2...v1.110.3) (2025-12-01)
+
+
+### Bug Fixes
+
+* **ui:** new favicon, remove colored badges and fix name in sidebar for profile ([b27fb4b](https://github.com/Altinn/dialogporten-frontend/commit/b27fb4b9174a30f0a6ad27794b28ebbcf7c51429))
+
+## [1.110.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.110.1...v1.110.2) (2025-11-30)
+
+
+### Bug Fixes
+
+* **cookie:** ensure altinnPartyId is updated when updating party ([#3394](https://github.com/Altinn/dialogporten-frontend/issues/3394)) ([adc2613](https://github.com/Altinn/dialogporten-frontend/commit/adc26132441c500f61702fe69840e9442116ef50))
+
+## [1.110.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.110.0...v1.110.1) (2025-11-30)
+
+
+### Bug Fixes
+
+* patch unread logic for migrated a2 messages ([#3391](https://github.com/Altinn/dialogporten-frontend/issues/3391)) ([d838525](https://github.com/Altinn/dialogporten-frontend/commit/d838525d95504693dae3c8288d7b7bacd59b3fc0))
+
+## [1.110.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.109.3...v1.110.0) (2025-11-29)
+
+
+### Features
+
+* Alert Banner can be updated with Azure App Config ([a949bc9](https://github.com/Altinn/dialogporten-frontend/commit/a949bc989772dfbb06525c1b19079b0ecc231280))
+
+
+### Bug Fixes
+
+* Added link to A2 in inbox empty state ([23be0f3](https://github.com/Altinn/dialogporten-frontend/commit/23be0f38f8e41f969a3d5c8170799c72548e0bf7))
+* patch lastname and firstname order with feature flag entries of actors in dialog meta data with unti this is fixed in dialogporten ([#3387](https://github.com/Altinn/dialogporten-frontend/issues/3387)) ([fc519fd](https://github.com/Altinn/dialogporten-frontend/commit/fc519fde8747db216debb98b855b1660e04d6229))
+* rename feature flag for alert banner ([#3389](https://github.com/Altinn/dialogporten-frontend/issues/3389)) ([da9c3de](https://github.com/Altinn/dialogporten-frontend/commit/da9c3dec819c0ae74a8bd656ba4962c6b5edb382))
+* Translations on notifications page ([450387b](https://github.com/Altinn/dialogporten-frontend/commit/450387b0054e4f865eadf42715940c61314628d7))
+
+## [1.109.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.109.2...v1.109.3) (2025-11-28)
+
+
+### Bug Fixes
+
+* notificatoin urls ([30864f6](https://github.com/Altinn/dialogporten-frontend/commit/30864f6a83f20228cc02127892dc1318e582632f))
+* save party to cookie on change ([#3381](https://github.com/Altinn/dialogporten-frontend/issues/3381)) ([7fec6e2](https://github.com/Altinn/dialogporten-frontend/commit/7fec6e27a3eb657a1294587c7f156db8d77549b3))
+
+## [1.109.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.109.1...v1.109.2) (2025-11-28)
+
+
+### Bug Fixes
+
+* Fixing issue where read A2 messages is showing as unread in AF ([e00ab43](https://github.com/Altinn/dialogporten-frontend/commit/e00ab43d78933bab3e2ab5521e1030ac77381794))
+* Move AlertBox below toolbar ([#3376](https://github.com/Altinn/dialogporten-frontend/issues/3376)) ([d40b4e2](https://github.com/Altinn/dialogporten-frontend/commit/d40b4e257e20033cf7cf5733d4e77e28dfb3c589))
+
+## [1.109.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.109.0...v1.109.1) (2025-11-28)
+
+
+### Bug Fixes
+
+* **frontend:** revert apply security headers for nginx ([#3365](https://github.com/Altinn/dialogporten-frontend/issues/3365)) ([fe3b67c](https://github.com/Altinn/dialogporten-frontend/commit/fe3b67cfb4b2569d8bf4ba193e7b3f403196d6fd))
+
+## [1.109.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.108.1...v1.109.0) (2025-11-28)
+
+
+### Features
+
+* Add onboarding steps for sidebar, fix texts ([#3374](https://github.com/Altinn/dialogporten-frontend/issues/3374)) ([7d57ab1](https://github.com/Altinn/dialogporten-frontend/commit/7d57ab10b6d848b307b044e4d57fd99d3e8b7b28))
+
+
+### Bug Fixes
+
+* do not delete altinn cookie on rehydrate ([#3375](https://github.com/Altinn/dialogporten-frontend/issues/3375)) ([70d2393](https://github.com/Altinn/dialogporten-frontend/commit/70d2393cf938afc70ccf75c62bc33c64481e1267))
+* **frontend:** apply security headers for nginx ([#3365](https://github.com/Altinn/dialogporten-frontend/issues/3365)) ([d7199a3](https://github.com/Altinn/dialogporten-frontend/commit/d7199a32e6da9917b12927c0ab0af4bb80ba26bf))
+* **frontend:** hide server info in nginx ([#3368](https://github.com/Altinn/dialogporten-frontend/issues/3368)) ([b9ed06e](https://github.com/Altinn/dialogporten-frontend/commit/b9ed06e95e9a9cea415ab846cc9b76950e28b9d2))
+* **header:** bump ac to have correct title for header logo ([#3366](https://github.com/Altinn/dialogporten-frontend/issues/3366)) ([e387aa7](https://github.com/Altinn/dialogporten-frontend/commit/e387aa74f7896cd57a7060d2624826bfff472887))
+
+## [1.108.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.108.0...v1.108.1) (2025-11-27)
+
+
+### Bug Fixes
+
+* e2e tests ([#3363](https://github.com/Altinn/dialogporten-frontend/issues/3363)) ([38259f7](https://github.com/Altinn/dialogporten-frontend/commit/38259f7709e20771ab489073fff6eeb29ce0e520))
+
+## [1.108.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.107.0...v1.108.0) (2025-11-27)
+
+
+### Features
+
+* Add extra Inbox onboarding steps ([#3362](https://github.com/Altinn/dialogporten-frontend/issues/3362)) ([bdcf533](https://github.com/Altinn/dialogporten-frontend/commit/bdcf533b8c76ab474903c15229bc7d7cd01de37a))
+
+
+### Bug Fixes
+
+* Removed 'x' from notifiation box ([6b054bc](https://github.com/Altinn/dialogporten-frontend/commit/6b054bc06ed8e2a693b02b7a15d93ab08dd5b128))
+* Update footer links and translations for address ([#3361](https://github.com/Altinn/dialogporten-frontend/issues/3361)) ([0657c5b](https://github.com/Altinn/dialogporten-frontend/commit/0657c5be174954b23dcdec83bf7e1e504c198e9e))
+
+## [1.107.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.106.4...v1.107.0) (2025-11-27)
+
+
+### Features
+
+* Added link to notification settings ([1fca283](https://github.com/Altinn/dialogporten-frontend/commit/1fca2836ad03944e685494e9c398306fdd99b097))
+
+
+### Bug Fixes
+
+* Fix onboarding issues in inbox and profile ([#3356](https://github.com/Altinn/dialogporten-frontend/issues/3356)) ([35ebf03](https://github.com/Altinn/dialogporten-frontend/commit/35ebf034597d121876c707ff28b08582d9afc3b0))
+
 ## [1.106.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.106.3...v1.106.4) (2025-11-27)
 
 

@@ -113,6 +113,14 @@ const INFO_PORTAL_HOST_MAP: Record<hostEnv, string> = {
   prod: 'https://info.altinn.no',
 };
 
+const INFO_PORTAL_HELP_LINK_MAP: Record<hostEnv, string> = {
+  local: 'https://inte.info.altinn.no',
+  at23: 'https://inte.info.altinn.no',
+  tt02: 'https://prep.info.altinn.no',
+  yt: 'https://prep.info.altinn.no',
+  prod: 'https://info.altinn.no',
+};
+
 type LinkPathConfig = {
   nb: string;
   en: string;
@@ -132,6 +140,21 @@ const createInfoPortalLink = (pathConfig: LinkPathConfig, currentPartyUuid?: str
   }
 
   return createChangeReporteeAndRedirect(currentPartyUuid, baseHost + path);
+};
+
+const createInfoPortalHelpLink = (pathConfig: LinkPathConfig, language?: string) => {
+  const baseHost = INFO_PORTAL_HELP_LINK_MAP[getEnvByHost()];
+
+  let path: string;
+  if (language === 'en') {
+    path = pathConfig.en;
+  } else if (language === 'nn') {
+    path = pathConfig.nn;
+  } else {
+    path = pathConfig.nb;
+  }
+
+  return `${baseHost}${path}`;
 };
 
 export const getNewFormLink = (currentPartyUuid?: string, language?: string) => {
@@ -158,6 +181,17 @@ export const getAboutNewAltinnLink = (currentPartyUuid?: string, language?: stri
       nn: '/nn/nyheiter/om-nye-altinn/',
     },
     currentPartyUuid,
+    language,
+  );
+};
+
+export const getNotificationSettingsLink = (language?: string) => {
+  return createInfoPortalHelpLink(
+    {
+      nb: '/hjelp/dette-jobber-vi-fortsatt-med/profil--og-varslingsinnstillinger/',
+      en: '/en/help/dette-jobber-vi-fortsatt-med/profil--og-varslingsinnstillinger/',
+      nn: '/nn/hjelp/dette-jobber-vi-fortsatt-med/profil--og-varslingsinnstillinger/',
+    },
     language,
   );
 };
@@ -189,7 +223,7 @@ export const getNeedHelpLink = (currentPartyUuid?: string, language?: string) =>
 export const getCookieDomain = () => {
   const hostMap: Record<hostEnv, string> = {
     local: 'app.localhost',
-    at23: '.a23.altinn.cloud',
+    at23: '.at23.altinn.cloud',
     tt02: '.tt02.altinn.no',
     yt: '.yt.altinn.cloud',
     prod: '.altinn.no',
@@ -214,7 +248,7 @@ const getFooterPathForLanguage = (path: string, language?: string): string => {
   if (language === 'en') {
     const pathMap: Record<string, string> = {
       '/om-altinn/': '/about-altinn/',
-      '/om-altinn/driftsmeldinger/': '/about-altinn/service-announcements/',
+      '/hjelp/': '/help/',
       '/om-altinn/personvern/': '/about-altinn/privacy/',
       '/om-altinn/tilgjengelighet/': '/about-altinn/tilgjengelighet/',
     };
@@ -224,7 +258,7 @@ const getFooterPathForLanguage = (path: string, language?: string): string => {
   if (language === 'nn') {
     const pathMap: Record<string, string> = {
       '/om-altinn/': '/om-altinn/',
-      '/om-altinn/driftsmeldinger/': '/om-altinn/driftsmeldingar/',
+      '/hjelp/': '/hjelp/',
       '/om-altinn/personvern/': '/om-altinn/personvern/',
       '/om-altinn/tilgjengelighet/': '/om-altinn/tilgjengelighet/',
     };
@@ -242,12 +276,12 @@ export const getFooterLink = (currentPartyUuid: string, path: string, language?:
 export const getFooterLinks = (currentPartyUuid: string, language?: string) => {
   return [
     {
-      href: `${getFooterLink(currentPartyUuid, '/om-altinn/', language)}`,
-      resourceId: 'footer.nav.about_altinn',
+      href: `${getFooterLink(currentPartyUuid, '/hjelp/', language)}`,
+      resourceId: 'footer.nav.help_contact',
     },
     {
-      href: `${getFooterLink(currentPartyUuid, '/om-altinn/driftsmeldinger/', language)}`,
-      resourceId: 'footer.nav.service_messages',
+      href: `${getFooterLink(currentPartyUuid, '/om-altinn/', language)}`,
+      resourceId: 'footer.nav.about_altinn',
     },
     {
       href: `${getFooterLink(currentPartyUuid, '/om-altinn/personvern/', language)}`,

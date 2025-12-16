@@ -56,6 +56,7 @@ async function fetchOrganizations() {
     throw error;
   }
 }
+
 async function storeOrganizationsInRedis(): Promise<TransformedOrganization[]> {
   try {
     const { default: redisClient } = await import('../../redisClient.ts');

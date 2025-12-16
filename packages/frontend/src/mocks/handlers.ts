@@ -4,7 +4,11 @@ import {
   SavedSearchesFieldsFragment,
   DialogByIdFieldsFragment,
   Profile,
-  SearchAutocompleteDialogFieldsFragment, SearchDialogFieldsFragment, PartyFieldsFragment, OrganizationFieldsFragment,
+  SearchAutocompleteDialogFieldsFragment,
+  SearchDialogFieldsFragment,
+  PartyFieldsFragment,
+  OrganizationFieldsFragment,
+  SystemLabel,
 } from 'bff-types-generated';
 import { convertToDialogByIdTemplate, filterDialogs } from './data/base/helper.ts';
 import { getMockedData } from './data.ts';
@@ -234,18 +238,35 @@ const mutateSavedSearchMock = graphql.mutation('CreateSavedSearch', (req) => {
 });
 
 const mutateUpdateSystemLabelMock = graphql.mutation('updateSystemLabel', (req) => {
-  // const { dialogId, labels } = req.variables;
   const { dialogId, addLabels, removeLabels } = req.variables;
-  /* Note: When other system labels that NOT are mutually exclusive will be introduced by Dialogporten, this handler needs to return existing labels as well, but make sure only one system label is included */
+  /* Updated to handle non-mutually exclusive labels while ensuring only one exclusive system label is present */
   inMemoryStore.dialogs = inMemoryStore.dialogs?.map((dialog) => {
     if (dialog.id === dialogId) {
+      const existingLabels = dialog.endUserContext?.systemLabels || [];
+      const EXCLUSIVE_LABELS = [SystemLabel.Archive, SystemLabel.Bin, SystemLabel.Default];
+
+      let updatedLabels = existingLabels.filter(label =>
+        !Array.isArray(removeLabels) || !removeLabels.includes(label)
+      );
+
+      const labelsToAdd = [addLabels].flat();
+
+      const exclusiveLabelsToAdd = labelsToAdd.filter(label => EXCLUSIVE_LABELS.includes(label));
+      const nonExclusiveLabelsToAdd = labelsToAdd.filter(label => !EXCLUSIVE_LABELS.includes(label));
+
+      if (exclusiveLabelsToAdd.length > 0) {
+        updatedLabels = updatedLabels.filter(label => !EXCLUSIVE_LABELS.includes(label));
+        updatedLabels.push(exclusiveLabelsToAdd[exclusiveLabelsToAdd.length - 1]);
+      }
+
+      for (const label of nonExclusiveLabelsToAdd) {
+        if (!updatedLabels.includes(label)) {
+          updatedLabels.push(label);
+        }
+      }
+
       dialog.endUserContext = {
-        systemLabels: [addLabels].flat().filter((label) => {
-          if (Array.isArray(removeLabels) && removeLabels.length > 0) {
-            return !removeLabels.includes(label);
-          }
-          return true;
-        }) 
+        systemLabels: updatedLabels
       }
     }
     return dialog;

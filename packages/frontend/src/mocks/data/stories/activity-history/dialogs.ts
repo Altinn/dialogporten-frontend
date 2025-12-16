@@ -3,6 +3,7 @@ import { DialogStatus, type SearchDialogFieldsFragment, SystemLabel } from 'bff-
 export const dialogs: SearchDialogFieldsFragment[] = [
     {
         serviceResource: 'default',
+        serviceResourceType: 'correspondenceservice',
         id: '019241f7-8218-7756-be82-123qwe456rtA',
         endUserContext: {
             systemLabels: [SystemLabel.Default]

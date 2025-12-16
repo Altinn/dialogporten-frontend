@@ -89,9 +89,13 @@ test.describe('Saved search', () => {
       await getSidebarMenuItem(page, PageRoutes.savedSearches).click();
     }
 
-    await expect(page.getByRole('link', { name: 'Gi søket et navn' })).toBeVisible();
+    // Wait for saved search to appear, then find the link
+    await expect(page.getByRole('main')).toContainText('1 lagret søk');
+    // The component may use "Lagret søk" as the title when there's no name
+    const savedSearchLink = page.getByRole('main').getByRole('link', { name: 'Lagret søk' });
+    await expect(savedSearchLink).toBeVisible();
 
-    await page.getByRole('link', { name: 'Gi søket et navn' }).click();
+    await savedSearchLink.click();
     await expect(page.getByRole('link', { name: 'Innkalling til sesjon' })).toBeVisible();
     await expectIsCompanyPage(page);
   });

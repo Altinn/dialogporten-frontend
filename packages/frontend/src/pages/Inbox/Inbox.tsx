@@ -12,7 +12,7 @@ import {
 import type { FilterState } from '@altinn/altinn-components/dist/types/lib/components/Toolbar/Toolbar';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useLocation, useSearchParams } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { type InboxViewType, useDialogs } from '../../api/hooks/useDialogs.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { createFiltersURLQuery, createMessageBoxLink } from '../../auth';
@@ -25,9 +25,11 @@ import { isSavedSearchDisabled } from '../../components/SavedSearchButton/savedS
 import { SeenByModal } from '../../components/SeenByModal/SeenByModal.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useFeatureFlag } from '../../featureFlags';
+import { useAlertBanner } from '../../hooks/useAlertBanner.ts';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
 import { useInboxOnboarding } from '../../onboardingTour';
 import { PageRoutes } from '../routes.ts';
+import { AlertBanner } from './AlertBanner.tsx';
 import { Altinn2ActiveSchemasNotification } from './Altinn2ActiveSchemasNotification.tsx';
 import { FilterCategory, readFiltersFromURLQuery } from './filters.ts';
 import { useFilters } from './useFilters.tsx';
@@ -62,9 +64,10 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const [filterState, setFilterState] = useState<FilterState>(readFiltersFromURLQuery(location.search));
   const [currentSeenByLogModal, setCurrentSeenByLogModal] = useState<CurrentSeenByLog | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
-  const isGlobalMenuEnabled = useFeatureFlag('globalMenu.enabled') as boolean;
-  const isAltinn2MessagesEnabled = useFeatureFlag('inbox.enableAltinn2Messages') as boolean;
-  const isAlertBannerEnabled = useFeatureFlag('showTechnincalIssuesMessage') as boolean;
+  const isGlobalMenuEnabled = useFeatureFlag<boolean>('globalMenu.enabled');
+  const isAltinn2MessagesEnabled = useFeatureFlag<boolean>('inbox.enableAltinn2Messages');
+  const isAlertBannerEnabled = useFeatureFlag<boolean>('inbox.enableAlertBanner');
+  const alertBannerContent = useAlertBanner();
 
   const onFiltersChange = (filters: FilterState) => {
     const currentURL = new URL(window.location.href);
@@ -219,17 +222,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
   return (
     <PageBase margin="page">
       <section data-testid="inbox-toolbar" style={isGlobalMenuEnabled ? { marginTop: '-1rem' } : undefined}>
-        {isAlertBannerEnabled && (
-          <DsAlert data-color="warning" style={{ marginBottom: '1.5rem' }}>
-            <Heading data-size="xs">{t('inbox.unable_to_load_parties.title')}</Heading>
-            <DsParagraph>{t('inbox.historical_messages_date_warning')}</DsParagraph>
-            <DsParagraph>
-              <Link style={{ color: 'rgb(60, 40, 7)' }} to={createMessageBoxLink(currentPartyUuid)}>
-                {t('inbox.historical_messages_date_warning_link')}
-              </Link>
-            </DsParagraph>
-          </DsAlert>
-        )}
         {selectedAccount ? (
           <>
             <Toolbar
@@ -257,6 +249,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
           </>
         ) : null}
       </section>
+      <AlertBanner showAlertBanner={isAlertBannerEnabled && !!alertBannerContent} />
       <Section>
         {isAltinn2MessagesEnabled && <Altinn2ActiveSchemasNotification selectedAccount={selectedAccount} />}
         {dialogsSuccess && !dialogs.length && !isLoading && (
