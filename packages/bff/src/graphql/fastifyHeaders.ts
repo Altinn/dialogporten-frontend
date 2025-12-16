@@ -12,30 +12,32 @@ const plugin: FastifyPluginAsync = async (fastify) => {
     fastify.register(helmet, {
       // HTTP Strict Transport Security
       hsts: {
-        maxAge: 31536000,
+        maxAge: 31536000, // 1 year
         includeSubDomains: true,
         preload: true,
       },
       // X-Frame-Options
       frameguard: {
-        action: 'sameorigin',
+        action: 'deny', // Changed from 'sameorigin' to 'deny' for API-first approach
       },
       // X-Content-Type-Options
       noSniff: true,
-      // Content Security Policy (enhanced)
+      // Content Security Policy - disabled for API endpoints, strict for others
       contentSecurityPolicy: {
+        useDefaults: false,
         directives: {
           defaultSrc: ["'self'"],
           scriptSrc: ["'self'"],
-          styleSrc: ["'self'", "'unsafe-inline'"], // Allow inline styles for UI components
+          styleSrc: ["'self'"],
           objectSrc: ["'none'"],
-          imgSrc: ["'self'", 'data:', 'https:'], // Allow data URIs and HTTPS images
-          fontSrc: ["'self'", 'https:', 'data:'], // Allow web fonts
-          connectSrc: ["'self'"], // Allow same-origin connections
-          frameSrc: ["'none'"], // Block all frames
-          baseUri: ["'self'"], // Restrict base tag URLs
-          formAction: ["'self'"], // Restrict form submissions
-          upgradeInsecureRequests: [], // Force HTTPS
+          imgSrc: ["'self'", 'data:'],
+          fontSrc: ["'self'", 'data:'],
+          connectSrc: ["'self'"],
+          frameSrc: ["'none'"],
+          baseUri: ["'self'"],
+          formAction: ["'self'"],
+          upgradeInsecureRequests: [],
+          blockAllMixedContent: [],
         },
       },
       // Referrer Policy
@@ -54,15 +56,15 @@ const plugin: FastifyPluginAsync = async (fastify) => {
       crossOriginResourcePolicy: {
         policy: 'same-origin',
       },
-      // X-DNS-Prefetch-Control (privacy improvement)
+      // X-DNS-Prefetch-Control
       dnsPrefetchControl: {
         allow: false,
       },
       // X-Download-Options (IE security)
       ieNoOpen: true,
-      // X-XSS-Protection (disabled per helmet recommendation)
+      // X-XSS-Protection
       xssFilter: false,
-      // Origin-Agent-Cluster (process isolation)
+      // Origin-Agent-Cluster
       originAgentCluster: true,
       // Remove X-Powered-By header
       hidePoweredBy: true,
