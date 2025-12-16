@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.115.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.115.1...v1.115.2) (2025-12-16)
+
+
+### Bug Fixes
+
+* **bff:** filter trace requests to app configuration ([#3509](https://github.com/Altinn/dialogporten-frontend/issues/3509)) ([51355d6](https://github.com/Altinn/dialogporten-frontend/commit/51355d6723d4a111dcc2de5569559fa6c55f10cd))
+* **deps:** update dependency @fastify/otel to v0.16.0 ([#2838](https://github.com/Altinn/dialogporten-frontend/issues/2838)) ([a131201](https://github.com/Altinn/dialogporten-frontend/commit/a1312017f91aae06f0a72212ec3c569d7ca4df4f))
+* **deps:** update dependency @opentelemetry/exporter-metrics-otlp-grpc to v0.208.0 ([#3181](https://github.com/Altinn/dialogporten-frontend/issues/3181)) ([aa0a4d7](https://github.com/Altinn/dialogporten-frontend/commit/aa0a4d79868315d6f1f605965bc90c0a231abdcb))
+* **deps:** update dependency @opentelemetry/instrumentation-graphql to v0.56.0 ([#2839](https://github.com/Altinn/dialogporten-frontend/issues/2839)) ([0483e11](https://github.com/Altinn/dialogporten-frontend/commit/0483e1113136ba787fc12112198c71107247adb3))
+* disable key access for storage accounts ([#3163](https://github.com/Altinn/dialogporten-frontend/issues/3163)) ([43e4d07](https://github.com/Altinn/dialogporten-frontend/commit/43e4d0739cc199bcbfefdfc79b0a414a4d9fde03))
+* **e2e:** update saved search test ([#3507](https://github.com/Altinn/dialogporten-frontend/issues/3507)) ([5c1722f](https://github.com/Altinn/dialogporten-frontend/commit/5c1722f08cd28d65cd9c00e26c6e30a2cec4dd63))
+* sort accounts ([#3510](https://github.com/Altinn/dialogporten-frontend/issues/3510)) ([c57ab22](https://github.com/Altinn/dialogporten-frontend/commit/c57ab22330eba5fe8859e7c818ea8564a9a85204))
+
 ## [1.115.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.115.0...v1.115.1) (2025-12-15)
 
 
