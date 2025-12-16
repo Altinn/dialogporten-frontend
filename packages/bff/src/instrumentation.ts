@@ -30,6 +30,13 @@ const httpInstrumentationConfig: HttpInstrumentationConfig = {
     }
     return false;
   },
+  ignoreOutgoingRequestHook: (request) => {
+    // Ignore outgoing requests to Azure App Configuration
+    if ((request.hostname ?? request.host)?.includes('appconfiguration.azconfig.io')) {
+      return true;
+    }
+    return false;
+  },
 };
 
 // Configure instrumentations
