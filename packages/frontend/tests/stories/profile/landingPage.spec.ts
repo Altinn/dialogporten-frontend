@@ -11,7 +11,7 @@ test.describe('Profile Landing Page', () => {
     await expect(userNameHeading).toBeVisible();
     await expect(userNameHeading).not.toHaveText('');
 
-    await expect(page.getByText(/Fødselsnr:/)).toBeVisible();
+    await expect(page.getByText(/Fødselsnr.:/)).toBeVisible();
 
     await expect(page.getByText('Mobiltelefon')).toBeVisible();
     await expect(page.getByText('E-postadresse')).toBeVisible();
@@ -46,7 +46,7 @@ test.describe('Profile Landing Page', () => {
 
     await expect(page.getByRole('heading').first()).toBeVisible({ timeout: 10000 });
 
-    await expect(page.getByText(/Fødselsnr:/)).toBeVisible({ timeout: 5000 });
+    await expect(page.getByText(/Fødselsnr.:/)).toBeVisible({ timeout: 5000 });
 
     const hasContactSettings = await Promise.race([
       page
