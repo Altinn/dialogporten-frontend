@@ -60,6 +60,15 @@ const mockAltinn2Messages = graphql.query('altinn2messages', () => {
   });
 });
 
+const mockNotificationsettingsForCurrentUser = graphql.query('notificationsettingsForCurrentUser', () => {
+  return HttpResponse.json({
+    data: {
+      notificationsettingsForCurrentUser: [],
+    },
+  });
+});
+
+
 const getAllDialogsforCountMock = graphql.query('getAllDialogsForCount', ({ variables }) => {
   const items = filterDialogs({
     inMemoryStore,
@@ -346,5 +355,6 @@ export const handlers = [
   getAllDialogsforCountMock,
   streamMock,
   mutateUpdateLanguageMock,
-  mockAltinn2Messages
+  mockAltinn2Messages,
+  mockNotificationsettingsForCurrentUser
 ];
