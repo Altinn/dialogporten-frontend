@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.115.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.115.2...v1.115.3) (2025-12-16)
+
+
+### Bug Fixes
+
+* **frontend:** apply security configuration ([#3380](https://github.com/Altinn/dialogporten-frontend/issues/3380)) ([80521a8](https://github.com/Altinn/dialogporten-frontend/commit/80521a851892a824b914010a58ff47afc7259c96))
+* **frontend:** revert apply security configuration ([#3380](https://github.com/Altinn/dialogporten-frontend/issues/3380)) ([df9f650](https://github.com/Altinn/dialogporten-frontend/commit/df9f650877a493cb1218460db8942a0309c088ec))
+
 ## [1.115.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.115.1...v1.115.2) (2025-12-16)
 
 
