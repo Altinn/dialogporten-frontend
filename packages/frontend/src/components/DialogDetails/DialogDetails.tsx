@@ -37,6 +37,7 @@ import { getDialogStatus } from '../../pages/Inbox/status.ts';
 import { ActivityLogModal } from '../ActivityLog/activityLogModal.tsx';
 import { AdditionalInfoContent } from '../AdditonalInfoContent';
 import { MainContentReference } from '../MainContentReference';
+import PdfViewer from './PdfTest.tsx';
 
 interface DialogDetailsProps {
   dialog: DialogByIdDetails | undefined | null;
@@ -371,6 +372,7 @@ export const DialogDetails = ({
         recipientLabel={t('word.to')}
         seenByLog={dialog.seenByLog}
       >
+        {dialogToken && <PdfViewer dialogToken={dialogToken} />}
         <p>{dialog.summary}</p>
         {dialogToken && (
           <MainContentReference content={dialog.mainContentReference} dialogToken={dialogToken} id={dialog.id} />
