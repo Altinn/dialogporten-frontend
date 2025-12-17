@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.115.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.115.3...v1.115.4) (2025-12-17)
+
+
+### Bug Fixes
+
+* email validation of contact info for organization ([#3515](https://github.com/Altinn/dialogporten-frontend/issues/3515)) ([43b07ad](https://github.com/Altinn/dialogporten-frontend/commit/43b07ade67d38c492cef31429e36216e913c6e87))
+* hover state on dialog details page ([c21c589](https://github.com/Altinn/dialogporten-frontend/commit/c21c5895de0f4b9092745dd7efd76fc9a2e98c79))
+* **i81n:** corrections to nynorsk translation after proof reading ([#3523](https://github.com/Altinn/dialogporten-frontend/issues/3523)) ([4c9d2fd](https://github.com/Altinn/dialogporten-frontend/commit/4c9d2fdecb663b9a04cee8fce7f01d8a2cf1d3e6))
+* **profile:** add missing middlename to displayname under landing page for profile ([#3521](https://github.com/Altinn/dialogporten-frontend/issues/3521)) ([2fb7110](https://github.com/Altinn/dialogporten-frontend/commit/2fb711081bf2eeac72c997859b423585efe9ba5e))
+* **useAccounts:** ensure parent parties are sorted before their subunits are sorted among themselves ([#3519](https://github.com/Altinn/dialogporten-frontend/issues/3519)) ([7693da8](https://github.com/Altinn/dialogporten-frontend/commit/7693da8ab37d22c74d5b88c19cc2b2726748f6db))
+
 ## [1.115.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.115.2...v1.115.3) (2025-12-16)
 
 
