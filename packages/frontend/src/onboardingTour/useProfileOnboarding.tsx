@@ -133,11 +133,13 @@ export const useProfileOnboarding = ({ isLoading, pageType }: UseProfileOnboardi
   const [hasInitialized, setHasInitialized] = useState(false);
   const [showProfileTour, setShowProfileTour] = useGlobalState<boolean>(QUERY_KEYS.SHOW_PROFILE_TOUR, false);
   const windowSize = useWindowSize();
+  const searchParams = new URLSearchParams(window.location.search);
+  const isMock = searchParams.get('mock') === 'true';
 
   const storageKey = STORAGE_KEYS[pageType];
 
   const hasCompletedOnboarding = localStorage.getItem(storageKey) === 'true';
-  const shouldInitializeTour = !isLoading && !hasInitialized && (!hasCompletedOnboarding || showProfileTour);
+  const shouldInitializeTour = !isMock && !isLoading && !hasInitialized && (!hasCompletedOnboarding || showProfileTour);
 
   useEffect(() => {
     if (shouldInitializeTour) {
