@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.115.6](https://github.com/Altinn/dialogporten-frontend/compare/v1.115.5...v1.115.6) (2025-12-17)
+
+
+### Bug Fixes
+
+* **e2e:** after a dot was introduced in an abbreviation ([#3529](https://github.com/Altinn/dialogporten-frontend/issues/3529)) ([45a6d50](https://github.com/Altinn/dialogporten-frontend/commit/45a6d50d23c2e36096785f350cf59bd965797c4f))
+
 ## [1.115.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.115.4...v1.115.5) (2025-12-17)
 
 
