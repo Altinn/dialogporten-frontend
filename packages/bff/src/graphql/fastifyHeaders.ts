@@ -34,6 +34,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
           fontSrc: ["'self'", 'data:'],
           connectSrc: ["'self'"],
           frameSrc: ["'none'"],
+          frameAncestors: ["'none'"],
           baseUri: ["'self'"],
           formAction: ["'self'"],
           upgradeInsecureRequests: [],
