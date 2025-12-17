@@ -51,8 +51,8 @@ This is a pragmatic solution until the dialog exposes an onClose prop or ref we 
     document.activeElement?.closest('dialog')?.close();
   };
 
-  const emailRegex =
-    /^[a-zA-Z0-9._-]+@(([a-zA-Z0-9æøåÆØÅ]([a-zA-Z0-9æøåÆØÅ-]{0,61}[a-zA-Z0-9æøåÆØÅ])?\.){1,9})[a-zA-Z]{2,14}$/;
+  const organizationContactEmailPattern =
+    /^(?:(?:"[^"]+")|(?:[a-zA-Z0-9!#$%&'*+\-=?^_`{|}~]+(?:\.[a-zA-Z0-9!#$%&'*+\-=?^_`{|}~]+)*))@(?:(?:[a-zA-Z0-9æøåÆØÅ](?:[a-zA-Z0-9\-æøåÆØÅ]{0,61}[a-zA-Z0-9æøåÆØÅ])?\.){1,9}[a-zA-Z]{2,14}|\d{1,3}(?:\.\d{1,3}){3})$/;
 
   const isDirty =
     (enablePhoneNotifications && alertPhoneNumberState !== alertPhoneNumber) ||
@@ -168,29 +168,17 @@ This is a pragmatic solution until the dialog exposes an onClose prop or ref we 
             <TextField
               name="email"
               type="email"
-              pattern={emailRegex.source}
               required
-              onInvalid={(e) => {
-                if (e.currentTarget.validity.valueMissing) {
-                  e.currentTarget.setCustomValidity(t('profile.account_alerts.email_required'));
-                } else if (e.currentTarget.validity.patternMismatch) {
-                  e.currentTarget.setCustomValidity(t('profile.account_alerts.email_invalid'));
-                } else {
-                  e.currentTarget.setCustomValidity('');
-                }
-              }}
-              onChange={(e) => {
-                setAlertEmailAddressState(e.target.value);
-                if (e.currentTarget.validity.valueMissing) {
-                  e.currentTarget.setCustomValidity(t('profile.account_alerts.email_required'));
-                } else if (e.currentTarget.validity.patternMismatch) {
-                  e.currentTarget.setCustomValidity(t('profile.account_alerts.email_invalid'));
-                } else {
-                  e.currentTarget.setCustomValidity('');
-                }
-              }}
-              placeholder={t('profile.account_alerts.email_placeholder')}
+              pattern={organizationContactEmailPattern.source}
               value={alertEmailAddressState}
+              onChange={(e) => {
+                setAlertEmailAddressState(e.currentTarget.value);
+                if (!organizationContactEmailPattern.test(e.currentTarget.value)) {
+                  e.currentTarget.setCustomValidity(t('profile.account_alerts.email_invalid'));
+                } else {
+                  e.currentTarget.setCustomValidity('');
+                }
+              }}
             />
           )}
         </Fieldset>
