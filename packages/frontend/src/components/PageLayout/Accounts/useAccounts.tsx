@@ -99,8 +99,8 @@ const filterAccount = (item: AccountMenuItemProps, search: string) => {
   return false;
 };
 
-const compareFn = (a: PartyFieldsFragment, b: PartyFieldsFragment) =>
-  a.name.localeCompare(b.name, i18n.language, {
+const compareName = (a: string, b: string) =>
+  a.localeCompare(b, i18n.language, {
     sensitivity: 'base',
     ignorePunctuation: true,
   });
@@ -170,8 +170,6 @@ export const useAccounts = ({
 
   const otherPeopleAccounts = useMemo<PartyItemProp[]>(() => {
     return otherPeople
-      .slice()
-      .sort(compareFn)
       .map((person) => {
         const description = t('word.ssn') + formatNorwegianId(person.party, false);
         return {
@@ -186,52 +184,75 @@ export const useAccounts = ({
           description: options.showDescription ? description : undefined,
           badge: person.isDeleted ? { color: 'danger', label: t('badge.deleted'), variant: 'base' } : undefined,
           groupId: 'persons',
-        };
-      });
+        } as PartyItemProp;
+      })
+      .sort((a, b) => compareName(a.name, b.name));
   }, [otherPeople, favoritesGroup, options.showDescription, t]);
 
   const organizationAccounts = useMemo<PartyItemProp[]>(() => {
-    return organizations
-      .slice()
-      .sort(compareFn)
-      .map((party) => {
-        const isParent = Array.isArray(availableParties.find((p) => p.party === party.party)?.subParties);
+    const mapped = organizations.map((party) => {
+      const isParent = Array.isArray(availableParties.find((p) => p.party === party.party)?.subParties);
 
-        const parent = isParent
-          ? undefined
-          : availableParties.find((org) => org?.subParties?.some((sub) => sub.party === party.party));
+      const parent = isParent
+        ? undefined
+        : availableParties.find((org) => org?.subParties?.some((sub) => sub.party === party.party));
 
-        const description =
-          parent?.name && party?.party
-            ? `↳ ${t('word.orgNo')} ${formatNorwegianId(
-                party.party,
-                false,
-              )}, ${t('profile.account.partOf')} ${parent.name}`
-            : `${t('word.orgNo')} ${formatNorwegianId(party.party, false)}`;
+      const description =
+        parent?.name && party?.party
+          ? `↳ ${t('word.orgNo')} ${formatNorwegianId(
+              party.party,
+              false,
+            )}, ${t('profile.account.partOf')} ${parent.name}`
+          : `${t('word.orgNo')} ${formatNorwegianId(party.party, false)}`;
 
-        return {
-          id: party.party,
+      return {
+        id: party.party,
+        name: party.name,
+        type: 'company' as AccountMenuItemProps['type'],
+        icon: {
           name: party.name,
-          type: 'company' as AccountMenuItemProps['type'],
-          icon: {
-            name: party.name,
-            type: 'company' as AvatarType,
-            isParent,
-            isDeleted: party.isDeleted,
-          },
-          isDeleted: party.isDeleted,
-          isFavorite: favoritesGroup?.parties?.includes(party.partyUuid),
-          isCurrentEndUser: false,
-          uuid: party.partyUuid,
-          disabled: party.hasOnlyAccessToSubParties,
+          type: 'company' as AvatarType,
           isParent,
-          parentId: parent?.party,
-          parentName: parent?.name,
-          description: options.showDescription ? description : undefined,
-          badge: party.isDeleted ? { color: 'danger', label: t('badge.deleted'), variant: 'base' } : undefined,
-          groupId: parent?.party ?? party.party,
-        };
-      });
+          isDeleted: party.isDeleted,
+        },
+        isDeleted: party.isDeleted,
+        isFavorite: favoritesGroup?.parties?.includes(party.partyUuid),
+        isCurrentEndUser: false,
+        uuid: party.partyUuid,
+        disabled: party.hasOnlyAccessToSubParties,
+        isParent,
+        parentId: parent?.party,
+        parentName: parent?.name,
+        description: options.showDescription ? description : undefined,
+        badge: party.isDeleted ? { color: 'danger', label: t('badge.deleted'), variant: 'base' } : undefined,
+        groupId: parent?.party ?? party.party,
+      } as PartyItemProp;
+    });
+
+    const parents = mapped.filter((x) => x.isParent).sort((a, b) => compareName(a.name, b.name));
+    const childrenByParentId = new Map<string, PartyItemProp[]>();
+    const children: PartyItemProp[] = [];
+
+    for (const item of mapped) {
+      if (item.isParent) continue;
+
+      if (item.parentId) {
+        const arr = childrenByParentId.get(item.parentId) ?? [];
+        arr.push(item);
+        childrenByParentId.set(item.parentId, arr);
+      } else {
+        children.push(item);
+      }
+    }
+
+    for (const arr of childrenByParentId.values()) {
+      arr.sort((a, b) => compareName(a.name, b.name));
+    }
+    children.sort((a, b) => compareName(a.name, b.name));
+
+    const grouped = parents.flatMap((p) => [p, ...(childrenByParentId.get(p.id) ?? [])]);
+
+    return [...grouped, ...children];
   }, [organizations, availableParties, favoritesGroup, options.showDescription, t]);
 
   if (isLoading) {
