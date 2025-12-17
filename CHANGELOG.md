@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.115.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.115.4...v1.115.5) (2025-12-17)
+
+
+### Bug Fixes
+
+* **bff:** improve security headers ([#2652](https://github.com/Altinn/dialogporten-frontend/issues/2652)) ([255cc86](https://github.com/Altinn/dialogporten-frontend/commit/255cc866f48063ea0a068607babe8cb282ebeff6))
+* **i18n:** revert overriden translation of altinn.beta.exit ([#3527](https://github.com/Altinn/dialogporten-frontend/issues/3527)) ([d760988](https://github.com/Altinn/dialogporten-frontend/commit/d76098846354d4a84b97bf47fd93dcc3be6a38ec))
+* remove goto url for receipt standalone apps ([#3516](https://github.com/Altinn/dialogporten-frontend/issues/3516)) ([44f207d](https://github.com/Altinn/dialogporten-frontend/commit/44f207d7ecf1596297923ad987cb316cfcab6c83))
+
 ## [1.115.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.115.3...v1.115.4) (2025-12-17)
 
 
