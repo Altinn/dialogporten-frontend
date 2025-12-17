@@ -18,7 +18,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
       },
       // X-Frame-Options
       frameguard: {
-        action: 'deny', // Changed from 'sameorigin' to 'deny' for API-first approach
+        action: 'deny',
       },
       // X-Content-Type-Options
       noSniff: true,
