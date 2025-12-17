@@ -86,25 +86,6 @@ export interface DialogActionProps {
   hidden?: boolean;
 }
 
-const addReceiptReturnUrl = (url: string, param = 'returnUrl') => {
-  const receiptURL = new URL(url);
-  const gotoParam = receiptURL.searchParams.get('goto');
-
-  if (!gotoParam) {
-    // more future-safe when redirect with goto no longer is necessary
-    receiptURL.searchParams.set(param, encodeURIComponent(location.href));
-    return receiptURL.toString();
-  }
-
-  const innerUrl = new URL(decodeURIComponent(gotoParam));
-  innerUrl.searchParams.set(param, location.href);
-
-  const encodedInner = encodeURIComponent(innerUrl.toString());
-  receiptURL.search = receiptURL.search.replace(/(goto=)[^&]+/, `$1${encodedInner}`);
-
-  return receiptURL.toString();
-};
-
 const handleDialogActionClick = async (
   props: DialogActionProps,
   dialogToken: string,
@@ -122,7 +103,7 @@ const handleDialogActionClick = async (
 
   if (httpMethod === 'GET') {
     responseFinished();
-    window.location.href = isApp ? createChangeReporteeAndRedirect(currentPartyUuid, addReceiptReturnUrl(url)) : url;
+    window.location.href = isApp ? createChangeReporteeAndRedirect(currentPartyUuid, url) : url;
   } else {
     try {
       const response = await Analytics.trackFetchDependency(
