@@ -38,7 +38,7 @@ export const useHeaderConfig = (): UseHeaderConfigReturn => {
   const { searchValue, setSearchValue, onClear } = useSearchString();
   const { autocomplete } = useAutocomplete({ selectedParties, searchValue });
 
-  const { favoritesGroup, addFavoriteParty, deleteFavoriteParty } = useProfile();
+  const { favoritesGroup, addFavoriteParty, deleteFavoriteParty, updateProfileLanguage } = useProfile();
 
   const handleToggleFavorite = useCallback(
     async (accountUuid: string) => {
@@ -125,6 +125,8 @@ export const useHeaderConfig = (): UseHeaderConfigReturn => {
         'Error updating language',
       );
     } finally {
+      /* Keep this optimistically to avoid refetching profile in order update state */
+      updateProfileLanguage(language);
       void i18n.changeLanguage(language);
     }
   };

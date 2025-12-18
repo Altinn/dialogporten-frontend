@@ -26,4 +26,5 @@ export const QUERY_KEYS = {
   IS_SELF_IDENTIFIED_USER: 'isSelfIdentifiedUser',
   ALERT_BANNER: 'alertBanner',
   ALTINN_COOKIE: 'altinnCookie',
+  UPDATED_LANGUAGE: 'updatedLanguage',
 };
