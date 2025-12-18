@@ -6,7 +6,7 @@ import { PageRoutes } from './pages/routes';
 
 let applicationInsights: ApplicationInsights | null = null;
 
-const applicationInsightsEnabled = config.applicationInsightsInstrumentationKey && import.meta.env.PROD;
+const applicationInsightsEnabled = config.applicationInsightsInstrumentationKey || import.meta.env.DEV;
 
 const pageMapping: Record<string, string> = {
   [PageRoutes.inbox]: 'Inbox',
@@ -157,6 +157,7 @@ if (applicationInsightsEnabled) {
     applicationInsights = new ApplicationInsights({
       config: {
         instrumentationKey: config.applicationInsightsInstrumentationKey,
+        endpointUrl: config.applicationInsightsEndpointUrl,
         extensions: [reactPlugin as unknown as ITelemetryPlugin],
         enableAutoRouteTracking: false, // Disable auto tracking, we'll handle it manually
         autoTrackPageVisitTime: false,
@@ -178,8 +179,6 @@ if (applicationInsightsEnabled) {
         maxAjaxCallsPerView: 2000,
       },
     });
-    applicationInsights.loadAppInsights();
-    console.info('Application Insights initialized successfully');
 
     applicationInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
       envelope.tags = envelope.tags || {};
@@ -199,23 +198,21 @@ if (applicationInsightsEnabled) {
           break;
         }
         // Only filter exceptions
+
         case 'ExceptionData': {
-          const data = envelope.baseData;
-          const message = data?.message || '';
-          const exceptions = data?.exceptions || [];
+          const baseData = envelope.baseData;
+          const baseDataMessage = baseData?.message || '';
+          const propertyMessage = baseData?.properties?.message || '';
+          const exceptions = baseData?.exceptions || [];
 
           const extensionUrlPattern = /^(chrome|moz|safari|edge|ms-browser)-extension:\/\//i;
           // Catch all browser extensions
-          if (extensionUrlPattern.test(message)) {
+          if (extensionUrlPattern.test(propertyMessage) || extensionUrlPattern.test(baseDataMessage)) {
             return false;
           }
 
           // Check all exception details for extension URLs
           for (const exception of exceptions) {
-            if (exception.stack && extensionUrlPattern.test(exception.stack)) {
-              return false;
-            }
-
             // Check parsed stack frames
             if (exception.parsedStack && Array.isArray(exception.parsedStack)) {
               for (const frame of exception.parsedStack) {
@@ -226,17 +223,24 @@ if (applicationInsightsEnabled) {
             }
           }
 
-          // Filter cross-origin errors
-          if (message === 'Script error.' || message === 'Script error') {
+          const ignoreMessages = [
+            'Script Error.',
+            'Script Error',
+            'ErrorEvent: Script error.',
+            'EventSource connection error',
+          ];
+          if (ignoreMessages.some((text) => propertyMessage === text)) {
             return false;
           }
-
           break;
         }
       }
 
       return true;
     });
+
+    applicationInsights.loadAppInsights();
+    console.info('Application Insights initialized successfully');
   } catch (error) {
     console.error('Failed to initialize Application Insights:', error);
     applicationInsights = null;
