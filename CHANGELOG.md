@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.115.7](https://github.com/Altinn/dialogporten-frontend/compare/v1.115.6...v1.115.7) (2025-12-18)
+
+
+### Bug Fixes
+
+* **ai:** improvements to filtering unwanted exceptions ([#3535](https://github.com/Altinn/dialogporten-frontend/issues/3535)) ([bcef12b](https://github.com/Altinn/dialogporten-frontend/commit/bcef12bd82af6b907d25bc96854fce4fdf33e373))
+* **language:** getting lost in route change because profile no longer was loaded on every route change ([#3538](https://github.com/Altinn/dialogporten-frontend/issues/3538)) ([9591199](https://github.com/Altinn/dialogporten-frontend/commit/95911993bc1f9abb3bcc20608c06c319f5b99b1e))
+
 ## [1.115.6](https://github.com/Altinn/dialogporten-frontend/compare/v1.115.5...v1.115.6) (2025-12-17)
 
 
