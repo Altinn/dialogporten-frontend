@@ -4,6 +4,7 @@ import axios from 'axios';
 import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import fp from 'fastify-plugin';
 import { print } from 'graphql';
+import depthLimit from 'graphql-depth-limit';
 import { createHandler } from 'graphql-http/lib/use/fastify';
 import config from '../config.ts';
 import { bffSchema, dialogportenSchema } from './schema.ts';
@@ -44,6 +45,9 @@ const plugin: FastifyPluginAsync = async (fastify) => {
         reply,
       };
     },
+    validationRules: [
+      depthLimit(10), // Maximum query depth of 10 levels
+    ],
   });
 
   fastify.post(
