@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.115.8](https://github.com/Altinn/dialogporten-frontend/compare/v1.115.7...v1.115.8) (2025-12-19)
+
+
+### Bug Fixes
+
+* map application/octet-stream to empty string instead of BIN ([#3541](https://github.com/Altinn/dialogporten-frontend/issues/3541)) ([4705287](https://github.com/Altinn/dialogporten-frontend/commit/470528703cce39b0806c6b6025132f0aee31f0ab))
+
 ## [1.115.7](https://github.com/Altinn/dialogporten-frontend/compare/v1.115.6...v1.115.7) (2025-12-18)
 
 
