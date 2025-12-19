@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.115.9](https://github.com/Altinn/dialogporten-frontend/compare/v1.115.8...v1.115.9) (2025-12-19)
+
+
+### Bug Fixes
+
+* Overflow issue ([44e977d](https://github.com/Altinn/dialogporten-frontend/commit/44e977d7d7c57100a210f7c775b563ae62543a94))
+
 ## [1.115.8](https://github.com/Altinn/dialogporten-frontend/compare/v1.115.7...v1.115.8) (2025-12-19)
 
 
