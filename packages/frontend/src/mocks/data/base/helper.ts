@@ -382,6 +382,7 @@ export const convertToDialogByIdTemplate = (input: SearchDialogFieldsFragment): 
           {
             id: 'hello-attachment-id',
             url: 'https://info.altinn.no/om-altinn/',
+            mediaType: 'application/pdf',
             consumerType: AttachmentUrlConsumer.Gui,
           },
         ],
