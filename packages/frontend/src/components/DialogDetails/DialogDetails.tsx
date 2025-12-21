@@ -26,9 +26,7 @@ import { useTranslation } from 'react-i18next';
 import { Analytics } from '../../analytics';
 import type { DialogByIdDetails } from '../../api/hooks/useDialogById.tsx';
 import type { DialogEventData } from '../../api/hooks/useDialogByIdSubscription.ts';
-import { useParties } from '../../api/hooks/useParties.ts';
 import type { TimelineSegmentWithTransmissions } from '../../api/utils/transmissions.ts';
-import { createChangeReporteeAndRedirect } from '../../auth';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useFeatureFlag } from '../../featureFlags';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
@@ -91,8 +89,6 @@ const handleDialogActionClick = async (
   dialogToken: string,
   responseFinished: () => void,
   logError: (error: Error, context?: Record<string, unknown>, errorMessage?: string) => void,
-  isApp: boolean,
-  currentPartyUuid: string | undefined,
 ): Promise<void> => {
   const { url, httpMethod, prompt } = props;
 
@@ -103,7 +99,7 @@ const handleDialogActionClick = async (
 
   if (httpMethod === 'GET') {
     responseFinished();
-    window.location.href = isApp ? createChangeReporteeAndRedirect(currentPartyUuid, url) : url;
+    window.location.href = url;
   } else {
     try {
       const response = await Analytics.trackFetchDependency(
@@ -162,7 +158,6 @@ export const DialogDetails = ({
   const queryClient = useQueryClient();
   const enableManualSubscriptionRefresh = useFeatureFlag<boolean>('dialogporten.enableManualSubscriptionRefresh');
   const { t } = useTranslation();
-  const { currentPartyUuid } = useParties();
   const { logError } = useErrorLogger();
   const [actionIdLoading, setActionIdLoading] = useState<string>('');
   const [actionIdUpdating, setActionIdUpdating] = useState<string>('');
@@ -291,7 +286,6 @@ export const DialogDetails = ({
   const formatString = clockPrefix ? `do MMMM yyyy '${clockPrefix}' HH.mm` : `do MMMM yyyy HH.mm`;
   const dueAtLabel = dialog.dueAt ? t('dialog.due_at', { date: format(dialog.dueAt, formatString) }) : '';
   const numberOfTransmissionGroups = 3;
-  const isApp = dialog.serviceResourceType === 'altinnapp';
   const dialogActions: DialogActionButtonProps[] = dialog.guiActions.map((action) => ({
     id: action.id,
     label: action.title,
@@ -302,15 +296,7 @@ export const DialogDetails = ({
     onClick: () => {
       setActionIdLoading(action.id);
       setActionIdUpdating(action.id);
-      dialogToken &&
-        void handleDialogActionClick(
-          action,
-          dialogToken,
-          () => setActionIdLoading(''),
-          logError,
-          isApp,
-          currentPartyUuid,
-        );
+      dialogToken && void handleDialogActionClick(action, dialogToken, () => setActionIdLoading(''), logError);
       enableManualSubscriptionRefresh && handleManualSubscriptionRefresh();
     },
   }));
