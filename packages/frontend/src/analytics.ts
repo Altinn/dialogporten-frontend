@@ -15,7 +15,6 @@ const pageMapping: Record<string, string> = {
   [PageRoutes.archive]: 'Archive',
   [PageRoutes.bin]: 'Bin',
   [PageRoutes.savedSearches]: 'Saved Searches',
-  [PageRoutes.about]: 'About',
   [PageRoutes.profile]: 'Profile Overview',
   [PageRoutes.partiesOverview]: 'Parties Management',
   [PageRoutes.notifications]: 'Notification Settings',

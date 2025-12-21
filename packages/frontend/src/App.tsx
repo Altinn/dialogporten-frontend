@@ -19,7 +19,6 @@ import { useEffect } from 'react';
 import { QUERY_KEYS } from './constants/queryKeys.ts';
 import { getPartyFromCookie } from './cookie.ts';
 import { usePageTracking } from './hooks/usePageTracking.ts';
-import { AboutPage } from './pages/About/About.tsx';
 import { useGlobalStringState } from './useGlobalState.ts';
 
 function App() {
@@ -66,7 +65,6 @@ function App() {
           <Route path={PageRoutes.bin} element={withErrorBoundary(<Inbox key="bin" viewType={'bin'} />, 'Bin')} />
           <Route path={PageRoutes.inboxItem} element={withErrorBoundary(<DialogDetailsPage />, 'Inbox Item')} />
           <Route path={PageRoutes.savedSearches} element={withErrorBoundary(<SavedSearchesPage />, 'Saved Searches')} />
-          <Route path={PageRoutes.about} element={withErrorBoundary(<AboutPage />, 'About')} />
           <Route path={PageRoutes.error} element={<ErrorPage />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Route>
