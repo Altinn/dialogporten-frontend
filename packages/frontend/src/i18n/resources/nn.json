@@ -1,6 +1,6 @@
 {
-  "activity.status.correspondence_confirmed": "Korrespondansen vart stadfesta av {actor}.",
-  "activity.status.correspondence_opened": "Korrespondansen vart opna av {actor}.",
+  "activity.status.correspondence_confirmed": "Meldingen vart stadfesta av {actor}.",
+  "activity.status.correspondence_opened": "Meldingen vart opna av {actor}.",
   "activity.status.dialog_closed": "Dialogen vart lukka av {actor}.",
   "activity.status.dialog_created": "Dialogen vart oppretta av {actor}.",
   "activity.status.dialog_deleted": "Dialogen vart sletta av {actor}.",

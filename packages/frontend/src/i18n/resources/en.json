@@ -1,6 +1,6 @@
 {
-  "activity.status.correspondence_confirmed": "Correspondence confirmed by {actor}.",
-  "activity.status.correspondence_opened": "Correspondence opened by {actor}.",
+  "activity.status.correspondence_confirmed": "Message confirmed by {actor}.",
+  "activity.status.correspondence_opened": "Message opened by {actor}.",
   "activity.status.dialog_closed": "Dialog closed by {actor}.",
   "activity.status.dialog_created": "Dialog created by {actor}.",
   "activity.status.dialog_deleted": "Dialog deleted by {actor}.",

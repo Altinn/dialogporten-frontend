@@ -1,6 +1,6 @@
 {
-  "activity.status.correspondence_confirmed": "Korrespondansen ble bekreftet av {actor}.",
-  "activity.status.correspondence_opened": "Korrespondansen ble åpnet av {actor}.",
+  "activity.status.correspondence_confirmed": "Meldingen ble bekreftet av {actor}.",
+  "activity.status.correspondence_opened": "Meldingen ble åpnet av {actor}.",
   "activity.status.dialog_closed": "Dialogen ble lukket av {actor}.",
   "activity.status.dialog_created": "Dialogen ble opprettet av {actor}.",
   "activity.status.dialog_deleted": "Dialogen ble slettet av {actor}.",
