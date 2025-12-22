@@ -71,7 +71,7 @@ test.describe('Saved search', () => {
   test('Saved search link shows correct result', async ({ page, isMobile }) => {
     await page.goto(defaultAppURL);
 
-    await page.getByRole('button', { name: 'Test Testesen' }).click();
+    await page.getByTestId('account-menu-button').click();
     const toolbarArea = page.getByTestId('inbox-toolbar');
     await toolbarArea.getByText('Testbedrift AS Avd Oslo').locator('visible=true').click();
     await expectIsCompanyPage(page);
