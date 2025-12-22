@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
@@ -15,18 +15,48 @@ interface PdfViewerProps {
 
 function PdfViewer({ dialogToken }: PdfViewerProps) {
   const [numPages, setNumPages] = useState<number | null>(null);
+  const [blobUrl, setBlobUrl] = useState<string>('');
 
-  // Use BFF proxy URL with dialogToken - react-pdf will fetch it directly
-  const proxyUrl = dialogToken
-    ? `/api/attachment?url=${encodeURIComponent(pdfUrl)}&dialogToken=${encodeURIComponent(dialogToken)}`
-    : `/api/attachment?url=${encodeURIComponent(pdfUrl)}`;
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchPdf = async () => {
+      try {
+        const res = await fetch('/api/attachment', {
+          method: 'GET',
+          credentials: 'include',
+          headers: new Headers({
+            'x-dialog-token': dialogToken || '',
+            'x-pdf-url': pdfUrl,
+          }),
+        });
+        const blob = await res.blob();
+
+        if (!cancelled && blob) {
+          setBlobUrl(URL.createObjectURL(blob));
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchPdf();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [dialogToken]);
 
   function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
     setNumPages(numPages);
   }
 
+  if (!blobUrl) {
+    return null;
+  }
+
   return (
-    <Document file={proxyUrl} onLoadSuccess={onDocumentLoadSuccess}>
+    <Document file={blobUrl} onLoadSuccess={onDocumentLoadSuccess}>
       {Array.from(new Array(numPages || 0), (_, index) => (
         <Page key={`page_${index + 1}`} pageNumber={index + 1} width={600} />
       ))}
