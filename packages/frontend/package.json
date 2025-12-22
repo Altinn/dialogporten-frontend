@@ -39,6 +39,8 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-i18next": "^15.5.2",
+    "react-pdf": "^9.1.2",
+    "pdfjs-dist": "^4.8.69",
     "react-router-dom": "^7.6.0",
     "sse.js": "^2.6.0",
     "use-debounce": "^10.0.4"
@@ -50,6 +52,7 @@
     "@types/node": "^22.15.21",
     "@types/react": "^19.1.5",
     "@types/react-dom": "^19.1.5",
+    "@types/react-pdf": "^6.0.0",
     "@types/reactour": "^1.18.5",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
