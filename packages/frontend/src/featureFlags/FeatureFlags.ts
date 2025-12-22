@@ -7,7 +7,6 @@ export interface FeatureFlagDefinition {
 }
 
 export const featureFlagDefinitions = [
-  { key: 'globalMenu.enableAccessManagementLink', type: 'boolean', default: false },
   { key: 'dialogporten.disableFlipNamesPatch', type: 'boolean', default: false },
   { key: 'dialogporten.enableSearchLanguageCode', type: 'boolean', default: false },
   { key: 'inbox.disableDialogCount', type: 'boolean', default: false },

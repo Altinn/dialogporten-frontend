@@ -20,6 +20,7 @@ export type InMemoryStore = {
   dialogs?: SearchDialogFieldsFragment[] | null;
   parties?: PartyFieldsFragment[];
   organizations?: OrganizationFieldsFragment[];
+  features?: Record<string, boolean>
 };
 
 let inMemoryStore: InMemoryStore = {
@@ -28,11 +29,36 @@ let inMemoryStore: InMemoryStore = {
   dialogs: data.dialogs,
   parties: data.parties,
   organizations: data.organizations,
+  features: data.features,
 };
 
 const isAuthenticatedMock = http.get('/api/isAuthenticated', () => {
   return HttpResponse.json({ authenticated: true });
 });
+
+const featuresMock = http.get('/api/features', () => {
+  return HttpResponse.json(data.features);
+});
+
+const alertBannerMock = http.get('/api/alert-banner', () => {
+  return HttpResponse.json({
+    "nb": {
+      "title": "Ustabilitet",
+      "description": "Vi opplever noe ustabilitet og jobber på saken.",
+      "link": {
+        "text": "Du kan fortsatt bruke den gamle innboksen."
+      }
+    },
+    "nn": {
+      "title": "Teknisk feil",
+      "description": "Pga ein teknisk feil blir ein del historiske meldingar viste med feil dato i den nye innboksen. Vi jobbar med å rette dette. Inntil vidare kan den gamle innboksen nyttast."
+    },
+    "en": {
+      "title": "Test Technical Error",
+      "description": "Due to a technical issue, some historical messages are displayed with incorrect dates in the new inbox. We are working to fix this. In the meantime, the old inbox can be used."
+    }
+  })
+})
 
 export const streamMock = http.get('/api/graphql/stream', async () => {
   const stream = new ReadableStream({
@@ -356,5 +382,7 @@ export const handlers = [
   streamMock,
   mutateUpdateLanguageMock,
   mockAltinn2Messages,
-  mockNotificationsettingsForCurrentUser
+  mockNotificationsettingsForCurrentUser,
+  featuresMock,
+  alertBannerMock
 ];

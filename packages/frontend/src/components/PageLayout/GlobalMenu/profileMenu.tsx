@@ -31,8 +31,6 @@ export function buildProfileMenu({
   pathname,
   currentSearchQuery,
   fromView,
-  userName,
-  showAmLink = false,
   currentPartyUuid,
 }: {
   t: (key: string, vars?: Record<string, string>) => string;
@@ -40,8 +38,6 @@ export function buildProfileMenu({
   pathname: string;
   currentSearchQuery: string;
   fromView?: string;
-  userName?: string;
-  showAmLink?: boolean;
   currentPartyUuid?: string;
 }): UseGlobalMenuProps {
   const menuGroups = {
@@ -73,9 +69,8 @@ export function buildProfileMenu({
       iconTheme: 'base',
       icon: {
         name: formatDisplayName({
-          fullName: userName ?? '',
+          fullName: currentEndUserName ?? '',
           type: 'person',
-          reverseNameOrder: true,
         }),
       },
       title: t('sidebar.profile'),
@@ -201,7 +196,6 @@ export function buildProfileMenu({
       iconTheme: 'tinted',
       selected: false,
       icon: PadlockLockedFillIcon,
-      hidden: !showAmLink,
       as: 'a',
       href: getAccessAMUILink(currentPartyUuid),
       title: t('altinn.access_management'),
