@@ -40,7 +40,7 @@ export const PageLayout: React.FC = () => {
   const queryClient = useQueryClient();
   const { selectedProfile, selectedParties, allOrganizationsSelected, currentEndUser } = useParties();
   const [isErrorState] = useGlobalState<boolean>(QUERY_KEYS.ERROR_STATE, false);
-  const { isGlobalMenuEnabled, headerProps } = useHeaderConfig();
+  const { headerProps } = useHeaderConfig();
 
   const footer: FooterProps = useFooter();
   const { sidebarMenu } = useGlobalMenu();
@@ -101,7 +101,7 @@ export const PageLayout: React.FC = () => {
 
   return (
     <>
-      <Layout {...layoutProps} useGlobalHeader={isGlobalMenuEnabled}>
+      <Layout {...layoutProps} useGlobalHeader>
         <Outlet />
         <Snackbar />
         <BetaModal />

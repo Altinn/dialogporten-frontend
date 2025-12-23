@@ -19,21 +19,17 @@ test.describe('Language picker', () => {
       await expect(page.getByRole('link', { name: 'Lagrede søk' })).toBeVisible();
     }
 
-    await page.getByRole('button', { name: 'Open language-switcher' }).click();
-    await expect(page.getByText('Språk/language')).toBeVisible();
-    await expect(page.getByRole('banner').getByRole('group').getByText('Bokmål')).toBeVisible();
-    await expect(page.getByRole('banner').getByRole('group').getByText('Nynorsk')).toBeVisible();
-    await expect(page.getByRole('banner').getByRole('group').getByText('English')).toBeVisible();
+    await page.getByRole('button', { name: 'Meny', exact: true }).click();
+    await page.locator('a').filter({ hasText: 'Språk/language' }).first().click();
+    await expect(
+      page.getByTestId('locale-switcher').locator('div').filter({ hasText: 'Språk/language' }),
+    ).toBeVisible();
 
-    const [response] = await Promise.all([
-      page.waitForResponse(
-        (res) => res.url().includes('/graphql') && res.request().method() === 'POST' && res.status() === 200,
-      ),
-      page.getByRole('banner').getByRole('group').getByText('English').click(),
-    ]);
-    expect(response.status()).toBe(200);
-    const body = await response.json();
-    expect(body.data?.profile?.language).toBe('en');
+    await expect(page.locator('a').filter({ hasText: 'Bokmål' })).toBeVisible();
+    await expect(page.locator('a').filter({ hasText: 'Nynorsk' })).toBeVisible();
+    await expect(page.locator('a').filter({ hasText: 'English' })).toBeVisible();
+
+    await page.locator('a').filter({ hasText: 'English' }).click();
 
     await expect(page.getByTestId('searchbar-input')).toHaveAttribute('placeholder', 'Search in inbox');
     await expect(page.getByRole('button', { name: 'add' })).toHaveText('Add filter');

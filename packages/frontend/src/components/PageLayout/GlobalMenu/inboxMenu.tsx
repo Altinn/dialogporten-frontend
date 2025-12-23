@@ -35,7 +35,6 @@ export function buildInboxMenu({
   pathname,
   currentSearchQuery,
   fromView,
-  showAmLink,
   currentPartyUuid,
 }: {
   t: (key: string, vars?: Record<string, string>) => string;
@@ -43,12 +42,11 @@ export function buildInboxMenu({
   pathname: string;
   currentSearchQuery: string;
   fromView?: string;
-  showAmLink?: boolean;
   currentPartyUuid?: string;
 }): UseGlobalMenuProps {
   const menuGroups = {
     shortcuts: {
-      divider: showAmLink,
+      divider: true,
       defaultIconTheme: 'transparent' as Theme,
       defaultItemSize: 'sm' as MenuItemSize,
       title: t('word.shortcuts'),
@@ -238,7 +236,6 @@ export function buildInboxMenu({
         size: 'lg',
         icon: PadlockLockedFillIcon,
         iconTheme: 'tinted',
-        hidden: !showAmLink,
         as: 'a',
         href: getAccessAMUILink(currentPartyUuid),
         title: t('altinn.access_management'),

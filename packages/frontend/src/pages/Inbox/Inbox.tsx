@@ -64,7 +64,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const [filterState, setFilterState] = useState<FilterState>(readFiltersFromURLQuery(location.search));
   const [currentSeenByLogModal, setCurrentSeenByLogModal] = useState<CurrentSeenByLog | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
-  const isGlobalMenuEnabled = useFeatureFlag<boolean>('globalMenu.enabled');
   const isAltinn2MessagesEnabled = useFeatureFlag<boolean>('inbox.enableAltinn2Messages');
   const isAlertBannerEnabled = useFeatureFlag<boolean>('inbox.enableAlertBanner');
   const alertBannerContent = useAlertBanner();
@@ -196,7 +195,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
   if (organizationLimitReached) {
     return (
       <PageBase margin="page">
-        <Section data-testid="inbox-toolbar" style={isGlobalMenuEnabled ? { marginTop: '-1rem' } : undefined}>
+        <Section data-testid="inbox-toolbar" style={{ marginTop: '-1rem' }}>
           <Toolbar
             data-testid="inbox-toolbar"
             accountMenu={{
@@ -221,7 +220,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
 
   return (
     <PageBase margin="page">
-      <section data-testid="inbox-toolbar" style={isGlobalMenuEnabled ? { marginTop: '-1rem' } : undefined}>
+      <section data-testid="inbox-toolbar" style={{ marginTop: '-1rem' }}>
         {selectedAccount ? (
           <>
             <Toolbar
