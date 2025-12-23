@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.115.10](https://github.com/Altinn/dialogporten-frontend/compare/v1.115.9...v1.115.10) (2025-12-23)
+
+
+### Bug Fixes
+
+* Correspondance texts ([812e358](https://github.com/Altinn/dialogporten-frontend/commit/812e3589df0df4c32434d2ec3a995f1c327f1eed))
+* **tour:** keep selected party on starting tour ([#3545](https://github.com/Altinn/dialogporten-frontend/issues/3545)) ([45305e8](https://github.com/Altinn/dialogporten-frontend/commit/45305e85295af59976d19883a3b7a55ed2c18339))
+
 ## [1.115.9](https://github.com/Altinn/dialogporten-frontend/compare/v1.115.8...v1.115.9) (2025-12-19)
 
 
