@@ -26,5 +26,10 @@
     "workerDirectory": [
       "dist"
     ]
+  },
+  "pnpm": {
+    "overrides": {
+      "mdast-util-gfm-autolink-literal": "2.0.0"
+    }
   }
 }
