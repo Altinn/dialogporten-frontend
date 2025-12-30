@@ -13,6 +13,7 @@ import fastifyGraphiql from 'fastify-graphiql';
 import { oidc, userApi, verifyToken } from './auth/index.ts';
 import healthChecks from './azure/HealthChecks.ts';
 import healthProbes from './azure/HealthProbes.ts';
+import attachmentProxy from './attachmentProxy.ts';
 import config from './config.ts';
 import { connectToDB } from './db.ts';
 import alertBannerApi from './features/alertBannerApi.ts';
@@ -101,6 +102,7 @@ const startServer = async (): Promise<void> => {
   server.register(healthChecks, { version });
   server.register(oidc);
   server.register(userApi);
+  server.register(attachmentProxy);
   server.register(featureApi, {
     appConfigConnectionString,
   });
