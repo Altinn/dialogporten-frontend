@@ -10,16 +10,18 @@ export interface ActivityLogModalProps {
 
 export const SeenByModal = ({ title, items, isOpen, onClose }: ActivityLogModalProps) => {
   const { t } = useTranslation();
-  if (!isOpen || !items || items.length === 0) {
-    return null;
-  }
+  const hasItems = !!items && items.length > 0;
 
   return (
-    <Modal padding={0} spacing={0} open={isOpen} onClose={() => onClose()} variant="content">
-      <ModalHeader title={title} onClose={() => onClose()} closeTitle={t('word.close')} />
-      <ModalBody>
-        <SeenByLog items={items} endUserLabel={t('word.you')} />
-      </ModalBody>
+    <Modal padding={0} spacing={0} open={isOpen && hasItems} onClose={onClose} variant="content">
+      {isOpen && hasItems ? (
+        <>
+          <ModalHeader title={title} onClose={onClose} closeTitle={t('word.close')} />
+          <ModalBody>
+            <SeenByLog items={items!} endUserLabel={t('word.you')} />
+          </ModalBody>
+        </>
+      ) : null}
     </Modal>
   );
 };
