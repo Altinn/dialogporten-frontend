@@ -1,4 +1,4 @@
-import { type AvatarType, formatDisplayName } from '@altinn/altinn-components';
+import { formatDisplayName } from '@altinn/altinn-components';
 import {
   DialogStatus,
   type GetAllDialogsForPartiesQueryVariables,
