@@ -18,8 +18,8 @@ importers:
         specifier: ^16.0.0
         version: 16.0.0
       mprocs:
-        specifier: ^0.7.3
-        version: 0.7.3
+        specifier: ^0.8.0
+        version: 0.8.2
       turbo:
         specifier: 2.5.3
         version: 2.5.3
@@ -193,8 +193,8 @@ importers:
         specifier: ^8.2.2
         version: 8.2.2
       mprocs:
-        specifier: ^0.6.4
-        version: 0.6.4
+        specifier: ^0.8.0
+        version: 0.8.2
       nodemon:
         specifier: ^3.1.10
         version: 3.1.10
@@ -7635,13 +7635,8 @@ packages:
   module-details-from-path@1.0.4:
     resolution: {integrity: sha512-EGWKgxALGMgzvxYF1UyGTy0HXX/2vHLkw6+NvDKW2jypWbHpjQuj4UMcqQWXHERJhVGKikolT06G3bcKe4fi7w==}
 
-  mprocs@0.6.4:
-    resolution: {integrity: sha512-Y4eqnAjp3mjy0eT+zPoMQ+P/ISOzjgRG/4kh4I5cRA4Tv0rPxTCBRadn3+j+boMF5id7IoLhrVq9NFWFPuzD9A==}
-    engines: {node: '>=0.10.0'}
-    hasBin: true
-
-  mprocs@0.7.3:
-    resolution: {integrity: sha512-I1Ptja/UnNVVSV5QEnBdiiwW70HMWJlmnMq6nvw4J7fwZ3s8UZGuf/FG+FTAUr6CLfat8kriHj+mWLx7xsLKSw==}
+  mprocs@0.8.2:
+    resolution: {integrity: sha512-0JM89at3JospulWOWsAoaFfkYE30E/nD24VyK3W4pWODO1FS7/X00NN3mfQvAzQn0npNlPChIouJGxizYsz+bw==}
     engines: {node: '>=0.10.0'}
     hasBin: true
 
@@ -10185,6 +10180,7 @@ packages:
   whatwg-encoding@3.1.1:
     resolution: {integrity: sha512-6qN4hJdMwfYBtE3YBTTHhoeuUrDBPZmbQaxWAqSALV/MeEnR5z1xd8UKud2RAkFoPkmB+hli1TZSnyi84xz1vQ==}
     engines: {node: '>=18'}
+    deprecated: Use @exodus/bytes instead for a more spec-conformant and faster implementation
 
   whatwg-mimetype@4.0.0:
     resolution: {integrity: sha512-QaKxh0eNIi2mE9p2vEdzfagOKHCcj1pJ56EEHGQOVxp8r9/iszLUUV7v89x9O1p/T+NlTM5W7jW6+cz4Fq1YVg==}
@@ -19592,9 +19588,7 @@ snapshots:
 
   module-details-from-path@1.0.4: {}
 
-  mprocs@0.6.4: {}
-
-  mprocs@0.7.3: {}
+  mprocs@0.8.2: {}
 
   mrmime@2.0.0: {}
 
