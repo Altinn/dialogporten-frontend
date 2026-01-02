@@ -1,4 +1,4 @@
-import { type AvatarType, formatDisplayName } from '@altinn/altinn-components';
+import { formatDisplayName } from '@altinn/altinn-components';
 import {
   DialogStatus,
   type GetAllDialogsForPartiesQueryVariables,
@@ -78,7 +78,6 @@ export function mapDialogToToInboxItems(
     const actualReceiverParty = dialogReceiverParty ?? dialogReceiverSubParty ?? endUserParty;
     const serviceOwner = getOrganization(organizations || [], item.org);
     const { isSeenByEndUser, seenByOthersCount, seenByLabel } = getSeenByLabel(item.seenSinceLastContentUpdate, t);
-
     return {
       id: item.id,
       party: item.party,
@@ -94,7 +93,7 @@ export function mapDialogToToInboxItems(
       },
       recipient: {
         name: actualReceiverParty?.name ?? dialogReceiverSubParty?.name ?? '',
-        type: actualReceiverParty?.partyType as AvatarType,
+        type: actualReceiverParty?.partyType === 'Organization' ? 'company' : 'person',
         variant:
           dialogReceiverParty && !dialogReceiverParty.subParties && actualReceiverParty?.partyType === 'Organization'
             ? 'outline'
