@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.115.10](https://github.com/Altinn/dialogporten-frontend/compare/v1.115.9...v1.115.10) (2026-01-02)
+
+
+### Bug Fixes
+
+* Correspondance texts ([812e358](https://github.com/Altinn/dialogporten-frontend/commit/812e3589df0df4c32434d2ec3a995f1c327f1eed))
+* **markdown:** lock version of mdast-util-gfm-autolink-literal to 2.0.0 for support for markdown for versions prior to ES2022 ([#3553](https://github.com/Altinn/dialogporten-frontend/issues/3553)) ([ef4ff92](https://github.com/Altinn/dialogporten-frontend/commit/ef4ff92cb01e51a7eae83c319970097003e6445f))
+* regain focus on context trigger button on modal close in list view ([#3557](https://github.com/Altinn/dialogporten-frontend/issues/3557)) ([7882961](https://github.com/Altinn/dialogporten-frontend/commit/78829617978b3b95d2fe2ad0c48b5728c1eff72b))
+* **tour:** keep selected party on starting tour ([#3545](https://github.com/Altinn/dialogporten-frontend/issues/3545)) ([45305e8](https://github.com/Altinn/dialogporten-frontend/commit/45305e85295af59976d19883a3b7a55ed2c18339))
+* use correct color based on person or company for dialog items in list ([#3558](https://github.com/Altinn/dialogporten-frontend/issues/3558)) ([bc34ab1](https://github.com/Altinn/dialogporten-frontend/commit/bc34ab16d4eb949196edff714315f28cd91d95fb))
+
 ## [1.115.9](https://github.com/Altinn/dialogporten-frontend/compare/v1.115.8...v1.115.9) (2025-12-19)
 
 
