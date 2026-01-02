@@ -196,10 +196,11 @@ The documentation will be available at:
    - Include a frontmatter section in MDX files with title and sidebar position
 
 2. **Diagrams**:
-   - Create diagrams using tldraw
-   - Save both `.tldr` and `.svg` versions
+   - Create diagrams using https://excalidraw.com/
+   - Save both `.excalidraw` and `.svg` versions
    - Place diagrams in the same directory as the documentation they support
-
+   - Note: It used to be .tldr files before, but because of lack of support for maintaining these files.
+   
 3. **Content Structure**:
    - Use clear headings and subheadings
    - Include code examples where relevant
