@@ -20,6 +20,9 @@ param privateDnsZoneArmResourceId string
 @description('Tags to apply to resources')
 param tags object
 
+@description('Whether to provision a storage account + container for PostgreSQL restore backups')
+param enableBackupVault bool = false
+
 @export()
 type Sku = {
   name: 'Standard_B1ms' | 'Standard_B2s' | 'Standard_B4ms' | 'Standard_B8ms' | 'Standard_B12ms' | 'Standard_B16ms' | 'Standard_B20ms' | 'Standard_D2ads_v5' | 'Standard_D4ads_v5' | 'Standard_D8ads_v5'
@@ -115,6 +118,31 @@ resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2024-08-01' = {
     name: databaseName
   }
   tags: tags
+}
+
+// Backup vault (storage account + container) for PostgreSQL restore backups. The backup vault itself is clickopsed for now. 
+// Note: storage account names cannot contain hyphens, so we sanitize the prefix before passing it to the storage account module.
+var backupVaultStorageAccountNamePrefix = toLower(replace('${namePrefix}-vault-backup', '-', ''))
+
+module backupVaultStorageAccount '../storageAccount/main.bicep' = if (enableBackupVault) {
+  name: 'backupVaultStorageAccount'
+  params: {
+    namePrefix: backupVaultStorageAccountNamePrefix
+    location: location
+    tags: tags
+    allowBlobPublicAccess: false
+    enableHierarchicalNamespace: false
+  }
+}
+
+module backupVaultStorageContainer '../storageContainer/main.bicep' = if (enableBackupVault) {
+  name: 'backupVaultStorageContainer'
+  params: {
+    // Safe-access avoids BCP318 on conditional module outputs.
+    storageAccountName: backupVaultStorageAccount.?outputs.storageAccountName ?? ''
+    containerName: '${namePrefix}-postgresql-restore'
+    publicAccess: 'None'
+  }
 }
 
 var secretName = 'databaseConnectionString'
