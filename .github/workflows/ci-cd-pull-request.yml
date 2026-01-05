@@ -35,6 +35,9 @@ jobs:
   translations-check:
     uses: ./.github/workflows/workflow-check-translations.yml
 
+  i18n-sort-check:
+    uses: ./.github/workflows/workflow-check-i18n-sort.yml
+
   playwright-test:
     uses: ./.github/workflows/workflow-playwright-test.yml
 
