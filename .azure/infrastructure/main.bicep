@@ -50,7 +50,7 @@ param applicationGatewayWhitelistedIps array = []
 @description('Enable maintenance mode to redirect all traffic to maintenance page')
 param enableMaintenancePage bool = false
 
-@description('Whether to provision the backup vault storage account + container (env-specific, controlled via bicepparam)')
+@description('Whether to provision the backup vault storage account + container for PostgreSQL restore backups')
 param enableBackupVault bool = false
 
 // PostgreSQL configuration parameters
