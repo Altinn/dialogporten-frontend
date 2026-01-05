@@ -381,3 +381,6 @@ certs/*
 
 # Homepage
 data/homepage/config/proxmox.yaml
+
+# built bicep modules
+.azure/infrastructure/main.json
