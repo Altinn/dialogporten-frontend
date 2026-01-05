@@ -6,7 +6,6 @@ import type { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 
 const defaultFeatureFlags: Record<string, boolean | number | string> = {
-  'globalMenu.enableAccessManagementLink': false,
   'globalMenu.enabled': false,
   'dialogporten.disableFlipNamesPatch': false,
   'dialogporten.enableSearchLanguageCode': false,

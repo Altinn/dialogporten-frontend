@@ -1,5 +1,46 @@
 # Changelog
 
+## [1.115.10](https://github.com/Altinn/dialogporten-frontend/compare/v1.115.9...v1.115.10) (2026-01-05)
+
+
+### Bug Fixes
+
+* background color for dialog actions ([#3563](https://github.com/Altinn/dialogporten-frontend/issues/3563)) ([dbb2cbe](https://github.com/Altinn/dialogporten-frontend/commit/dbb2cbe93213f4b84c160d0ab3140d0540b9491a))
+* Correspondance texts ([812e358](https://github.com/Altinn/dialogporten-frontend/commit/812e3589df0df4c32434d2ec3a995f1c327f1eed))
+* **markdown:** lock version of mdast-util-gfm-autolink-literal to 2.0.0 for support for markdown for versions prior to ES2022 ([#3553](https://github.com/Altinn/dialogporten-frontend/issues/3553)) ([ef4ff92](https://github.com/Altinn/dialogporten-frontend/commit/ef4ff92cb01e51a7eae83c319970097003e6445f))
+* regain focus on context trigger button on modal close in list view ([#3557](https://github.com/Altinn/dialogporten-frontend/issues/3557)) ([7882961](https://github.com/Altinn/dialogporten-frontend/commit/78829617978b3b95d2fe2ad0c48b5728c1eff72b))
+* **tour:** keep selected party on starting tour ([#3545](https://github.com/Altinn/dialogporten-frontend/issues/3545)) ([45305e8](https://github.com/Altinn/dialogporten-frontend/commit/45305e85295af59976d19883a3b7a55ed2c18339))
+* use correct color based on person or company for dialog items in list ([#3558](https://github.com/Altinn/dialogporten-frontend/issues/3558)) ([bc34ab1](https://github.com/Altinn/dialogporten-frontend/commit/bc34ab16d4eb949196edff714315f28cd91d95fb))
+
+## [1.115.9](https://github.com/Altinn/dialogporten-frontend/compare/v1.115.8...v1.115.9) (2025-12-19)
+
+
+### Bug Fixes
+
+* Overflow issue ([44e977d](https://github.com/Altinn/dialogporten-frontend/commit/44e977d7d7c57100a210f7c775b563ae62543a94))
+
+## [1.115.8](https://github.com/Altinn/dialogporten-frontend/compare/v1.115.7...v1.115.8) (2025-12-19)
+
+
+### Bug Fixes
+
+* map application/octet-stream to empty string instead of BIN ([#3541](https://github.com/Altinn/dialogporten-frontend/issues/3541)) ([4705287](https://github.com/Altinn/dialogporten-frontend/commit/470528703cce39b0806c6b6025132f0aee31f0ab))
+
+## [1.115.7](https://github.com/Altinn/dialogporten-frontend/compare/v1.115.6...v1.115.7) (2025-12-18)
+
+
+### Bug Fixes
+
+* **ai:** improvements to filtering unwanted exceptions ([#3535](https://github.com/Altinn/dialogporten-frontend/issues/3535)) ([bcef12b](https://github.com/Altinn/dialogporten-frontend/commit/bcef12bd82af6b907d25bc96854fce4fdf33e373))
+* **language:** getting lost in route change because profile no longer was loaded on every route change ([#3538](https://github.com/Altinn/dialogporten-frontend/issues/3538)) ([9591199](https://github.com/Altinn/dialogporten-frontend/commit/95911993bc1f9abb3bcc20608c06c319f5b99b1e))
+
+## [1.115.6](https://github.com/Altinn/dialogporten-frontend/compare/v1.115.5...v1.115.6) (2025-12-17)
+
+
+### Bug Fixes
+
+* **e2e:** after a dot was introduced in an abbreviation ([#3529](https://github.com/Altinn/dialogporten-frontend/issues/3529)) ([45a6d50](https://github.com/Altinn/dialogporten-frontend/commit/45a6d50d23c2e36096785f350cf59bd965797c4f))
+
 ## [1.115.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.115.4...v1.115.5) (2025-12-17)
 
 

@@ -1,4 +1,4 @@
-import { type ContextMenuProps, DialogLayout } from '@altinn/altinn-components';
+import { type Color, type ContextMenuProps, DialogLayout } from '@altinn/altinn-components';
 import { ClockDashedIcon } from '@navikt/aksel-icons';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -59,6 +59,7 @@ export const DialogDetailsPage = () => {
 
   return (
     <DialogLayout
+      color={dialog?.receiver?.type as Color}
       backButton={{
         label: t('word.back'),
         as: (props: LinkProps) => <Link {...props} to={previousPath} state={{ scrollToId: dialogId }} />,

@@ -5,7 +5,7 @@ import type { TFunction } from 'i18next';
 import { logError } from '../../utils/errorLogger.ts';
 
 const MEDIA_TYPE_TO_EXT: Record<string, string> = {
-  'application/octet-stream': 'BIN',
+  'application/octet-stream': '',
   'application/pdf': 'PDF',
   'text/xml': 'XML',
   'application/xml': 'XML',

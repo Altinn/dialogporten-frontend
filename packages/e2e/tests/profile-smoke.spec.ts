@@ -18,7 +18,7 @@ test.describe('Profile smoke tests', () => {
     await expect(page).toHaveURL(`${baseURL}/profile`);
     await page.getByRole('button', { name: 'Lukk' }).click();
     await expect(page.getByRole('heading', { name: 'Ustabil Konditor' })).toBeVisible();
-    await expect(page.getByText('Fødselsnr: 159152')).toBeVisible();
+    await expect(page.getByText('Fødselsnr.: 159152')).toBeVisible();
   });
 
   test('should enable notifications', async ({ page, baseURL }) => {

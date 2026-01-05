@@ -8,35 +8,33 @@ test.describe('Message navigation', () => {
 
   test('Back button navigates correctly and saves party', async ({ page }) => {
     await page.goto(pageWithMockOrganizations);
-    const toolbarArea = page.getByTestId('inbox-toolbar');
-    await expect(toolbarArea.getByRole('button', { name: 'Test Testesen' })).toBeVisible();
     await expectIsPersonPage(page);
 
+    await expect(page.getByTestId('account-menu-button')).toContainText('Test Testesen');
     await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).toBeVisible();
     await page.getByRole('link', { name: 'Skatten din for 2022' }).click();
     await page.getByRole('link', { name: 'Tilbake', exact: true }).click();
-    await expect(page.getByRole('button', { name: 'Test Testesen' })).toBeVisible();
+    await expect(page.getByTestId('account-menu-button')).toContainText('Test Testesen');
 
-    await page.getByRole('button', { name: 'Test Testesen' }).click();
-    await toolbarArea.locator('li').filter({ hasText: 'Firma AS' }).locator('visible=true').click();
+    await page.getByTestId('account-menu-button').click();
 
-    await expect(page.getByTestId('inbox-toolbar').getByRole('button', { name: 'Firma AS' })).toBeVisible();
+    await page.locator('a').filter({ hasText: 'FFirma ASOrg. nr. :' }).click();
+    await expect(page.getByTestId('account-menu-button')).toContainText('Firma AS');
     await expect(page.getByRole('link', { name: 'This is a message 1 for Firma AS' })).toBeVisible();
-    await page.getByRole('link', { name: 'This is a message 1 for Firma AS' }).click();
+    await page.getByRole('link', { name: 'This is a message 1 for Firma' }).click();
     await page.getByRole('link', { name: 'Tilbake', exact: true }).click();
-    await expect(page.getByRole('button', { name: 'Firma AS' }).first()).toBeVisible();
+    await expect(page.getByTestId('account-menu-button')).toContainText('Firma AS');
     await expectIsCompanyPage(page);
     expect(new URL(page.url()).searchParams.has('party')).toBe(true);
 
-    await page.getByRole('button', { name: 'Firma AS' }).first().click();
-
-    await toolbarArea.locator('a').filter({ hasText: 'Alle virksomheter' }).locator('visible=true').click();
-    await expect(page.getByRole('button', { name: 'Alle virksomheter' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'This is a message 1 for Firma AS' })).toBeVisible();
-    await page.getByRole('link', { name: 'This is a message 1 for Firma AS' }).click();
-    await page.getByRole('link', { name: 'Tilbake', exact: true }).click();
-    await expect(page.getByRole('button', { name: 'Alle virksomheter' })).toBeVisible();
+    await page.getByTestId('account-menu-button').click();
+    await page.locator('a').filter({ hasText: 'TTT5Alle virksomheter' }).click();
+    await expect(page.getByTestId('account-menu-button')).toContainText('Alle virksomheter');
+    await page.getByRole('link', { name: 'This is a message 1 for Firma' }).click();
+    await page.getByRole('link', { name: 'Tilbake' }).click();
+    await expect(page.getByTestId('account-menu-button')).toContainText('Alle virksomheter');
     await expectIsPersonPage(page);
+    expect(new URL(page.url()).searchParams.has('allParties')).toBe(true);
   });
 
   test('Back button navigates to previous page the message has been opened from', async ({ page, isMobile }) => {

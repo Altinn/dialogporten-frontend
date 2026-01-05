@@ -15,7 +15,6 @@ const pageMapping: Record<string, string> = {
   [PageRoutes.archive]: 'Archive',
   [PageRoutes.bin]: 'Bin',
   [PageRoutes.savedSearches]: 'Saved Searches',
-  [PageRoutes.about]: 'About',
   [PageRoutes.profile]: 'Profile Overview',
   [PageRoutes.partiesOverview]: 'Parties Management',
   [PageRoutes.notifications]: 'Notification Settings',
@@ -178,8 +177,6 @@ if (applicationInsightsEnabled) {
         maxAjaxCallsPerView: 2000,
       },
     });
-    applicationInsights.loadAppInsights();
-    console.info('Application Insights initialized successfully');
 
     applicationInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
       envelope.tags = envelope.tags || {};
@@ -199,23 +196,21 @@ if (applicationInsightsEnabled) {
           break;
         }
         // Only filter exceptions
+
         case 'ExceptionData': {
-          const data = envelope.baseData;
-          const message = data?.message || '';
-          const exceptions = data?.exceptions || [];
+          const baseData = envelope.baseData;
+          const baseDataMessage = baseData?.message || '';
+          const propertyMessage = baseData?.properties?.message || '';
+          const exceptions = baseData?.exceptions || [];
 
           const extensionUrlPattern = /^(chrome|moz|safari|edge|ms-browser)-extension:\/\//i;
           // Catch all browser extensions
-          if (extensionUrlPattern.test(message)) {
+          if (extensionUrlPattern.test(propertyMessage) || extensionUrlPattern.test(baseDataMessage)) {
             return false;
           }
 
           // Check all exception details for extension URLs
           for (const exception of exceptions) {
-            if (exception.stack && extensionUrlPattern.test(exception.stack)) {
-              return false;
-            }
-
             // Check parsed stack frames
             if (exception.parsedStack && Array.isArray(exception.parsedStack)) {
               for (const frame of exception.parsedStack) {
@@ -226,17 +221,24 @@ if (applicationInsightsEnabled) {
             }
           }
 
-          // Filter cross-origin errors
-          if (message === 'Script error.' || message === 'Script error') {
+          const ignoreMessages = [
+            'Script Error.',
+            'Script Error',
+            'ErrorEvent: Script error.',
+            'EventSource connection error',
+          ];
+          if (ignoreMessages.some((text) => propertyMessage === text)) {
             return false;
           }
-
           break;
         }
       }
 
       return true;
     });
+
+    applicationInsights.loadAppInsights();
+    console.info('Application Insights initialized successfully');
   } catch (error) {
     console.error('Failed to initialize Application Insights:', error);
     applicationInsights = null;
