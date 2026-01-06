@@ -1,29 +1,135 @@
 <!DOCTYPE html>
 <html lang="no">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Noe gikk galt</title>
+  <title>Error - Altinn</title>
+  <link rel="stylesheet" href="https://altinncdn.no/fonts/inter/v4.1/inter.css"
+    integrity="sha384-OcHzc/By/OPw9uJREawUCjP2inbOGKtKb4A/I2iXxmknUfog2H8Adx71tWVZRscD" crossorigin="anonymous">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      color: #000000;
+      min-height: 100vh;
+    }
+
+    .logo-container {
+      margin: 1rem 1rem;
+    }
+
+    .logo {
+      width: 120px;
+      height: 48px;
+    }
+
+    main {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 2rem 2rem 2rem;
+      text-align: left;
+    }
+
+    h2 {
+      font-size: 1.875rem;
+      color: #1F2C3D;
+      font-weight: 500;
+    }
+
+    .description {
+      margin-top: 0.5rem;
+      font-size: 1.125rem;
+      font-weight: 400;
+      color: #1F2C3D;
+      margin-bottom: 1rem;
+      line-height: 1.5rem;
+    }
+
+    .link-list {
+      margin-top: 1.5rem;
+      list-style: none;
+    }
+
+    .link-list li {
+      position: relative;
+      padding-left: 1.5rem;
+    }
+
+    .link-list li::before {
+      content: "\2022";
+      position: absolute;
+      left: 0;
+      color: #111D46;
+      font-weight: bold;
+    }
+
+    .link-list a {
+      color: #111D46;
+      text-decoration: underline;
+      font-size: 1.125rem;
+    }
+
+    section {
+      margin-bottom: 2.5rem;
+    }
+  </style>
 </head>
+
 <body>
-  <div>
-    <h1>Noe gikk galt</h1>
-    <div>Feilkode: {{statusCode}}</div>
-    <p>Vi beklager, men det oppsto en feil under behandlingen av forespørselen din. Vennligst prøv igjen senere.</p>
-    <div>
-      <a href="https://info.altinn.no/om-altinn/driftsmeldinger/">Altinn driftsmeldinger</a>
-    </div>
+  <div class="logo-container">
+    <a href="https://info.altinn.no">
+      <svg class="logo" width="121" height="48" viewBox="0 0 121 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g clip-path="url(#clip0_3592_35010)">
+          <path
+            d="M23.4223 8H7.64808C7.4762 8 7.31136 8.06814 7.18982 8.18942C7.06828 8.31071 7 8.4752 7 8.64673V39.3533C7 39.5248 7.06828 39.6893 7.18982 39.8105C7.31136 39.9319 7.4762 40 7.64808 40H23.4223C27.594 39.8816 31.5551 38.1447 34.4639 35.1581C37.3727 32.1717 39 28.1712 39 24.0065C39 19.8418 37.3727 15.8412 34.4639 12.8547C31.5551 9.86829 27.594 8.13134 23.4223 8.01293V8ZM24.9647 35.1753C22.578 35.5853 20.1227 35.2265 17.9539 34.1509C15.7852 33.0755 14.0158 31.3389 12.902 29.1931C11.7882 27.0471 11.3877 24.6031 11.7586 22.2148C12.1294 19.8267 13.2524 17.6183 14.9648 15.9094C16.6773 14.2005 18.8903 13.0799 21.2835 12.7098C23.6767 12.3397 26.1259 12.7394 28.2763 13.8509C30.4267 14.9624 32.1667 16.7281 33.2445 18.8922C34.3224 21.0564 34.6819 23.5068 34.2712 25.8884C33.8713 28.2063 32.7621 30.3435 31.0956 32.0065C29.4291 33.6695 27.2873 34.7765 24.9647 35.1753Z"
+            fill="#1F2C3D" />
+        </g>
+        <path
+          d="M52.392 32.5H49.5966L55.8778 15.0455H58.9205L65.2017 32.5H62.4062L60.8125 27.8807H53.9943L52.392 32.5ZM54.7614 25.6648H60.0455L57.4716 18.2159H57.3352L54.7614 25.6648ZM70.0661 15.0455V32.5H67.5178V15.0455H70.0661ZM79.6051 19.4091V21.4545H76.9205V28.6562C76.9205 30.1307 77.6619 30.4034 78.4886 30.4034C78.8977 30.4034 79.2131 30.3267 79.3835 30.2926L79.8438 32.3977C79.5455 32.5085 79 32.6619 78.1903 32.6705C76.179 32.7131 74.3636 31.5625 74.3722 29.1847V21.4545H72.4545V19.4091H74.3722V16.2727H76.9205V19.4091H79.6051ZM82.424 32.5V19.4091H84.9723V32.5H82.424ZM83.7109 17.3892C82.8246 17.3892 82.1001 16.7074 82.1001 15.8722C82.1001 15.0369 82.8246 14.3466 83.7109 14.3466C84.5888 14.3466 85.3217 15.0369 85.3217 15.8722C85.3217 16.7074 84.5888 17.3892 83.7109 17.3892ZM90.9489 24.7273V32.5H88.4006V19.4091H90.8466V21.5398H91.0085C91.6136 20.1506 92.9006 19.2386 94.8693 19.2386C97.5455 19.2386 99.3267 20.9347 99.3267 24.1733V32.5H96.7784V24.4801C96.7784 22.5795 95.7301 21.446 94 21.446C92.2273 21.446 90.9489 22.6392 90.9489 24.7273ZM105.293 24.7273V32.5H102.744V19.4091H105.19V21.5398H105.352C105.957 20.1506 107.244 19.2386 109.213 19.2386C111.889 19.2386 113.67 20.9347 113.67 24.1733V32.5H111.122V24.4801C111.122 22.5795 110.074 21.446 108.344 21.446C106.571 21.446 105.293 22.6392 105.293 24.7273Z"
+          fill="#1F2C3D" />
+        <defs>
+          <clipPath id="clip0_3592_35010">
+            <rect width="32" height="32" fill="white" transform="translate(7 8)" />
+          </clipPath>
+        </defs>
+      </svg>
+    </a>
   </div>
-
-  <hr style="margin: 2rem 0; border: 1px solid #ccc;">
-
-  <div>
-    <h1>Something went wrong</h1>
-    <div>Error code: {{statusCode}}</div>
-    <p>We apologize, but an error occurred while processing your request. Please try again later.</p>
-    <div>
-      <a href="https://info.altinn.no/om-altinn/driftsmeldinger/">Altinn service announcements</a>
-    </div>
-  </div>
+  <main>
+    <section>
+      <h2>Noe gikk galt</h2>
+      <p class="description">Det oppsto en teknisk feil. Prøv igjen senere.</p>
+      <ul class="link-list">
+        <li>
+          <a href="https://www.altinndigital.no/driftsmeldinger/">Altinn driftsmeldinger</a>
+        </li>
+      </ul>
+    </section>
+    <section>
+      <h2>Something went wrong</h2>
+      <p class="description">A technical error occurred. Please try again later.</p>
+      <ul class="link-list">
+        <li>
+          <a href="https://www.altinndigital.no/driftsmeldinger/">Altinn service messages</a>
+        </li>
+      </ul>
+    </section>
+    <section>
+      <h2>Noko gjekk gale</h2>
+      <p class="description">Det oppsto ein teknisk feil. Prøv igjen seinare.</p>
+      <ul class="link-list">
+        <li>
+          <a href="https://www.altinndigital.no/driftsmeldinger/">Altinn driftsmeldingar</a>
+        </li>
+      </ul>
+    </section>
+  </main>
 </body>
+
 </html>
