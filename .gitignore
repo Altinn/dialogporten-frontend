@@ -384,3 +384,6 @@ data/homepage/config/proxmox.yaml
 
 # built bicep modules
 .azure/infrastructure/main.json
+
+# Claude config
+.claude
