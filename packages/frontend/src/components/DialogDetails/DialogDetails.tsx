@@ -157,7 +157,6 @@ const handleDialogActionClick = async (
         );
       }
     } catch (error) {
-      console.error('Error performing action:', error);
       logError(
         error as Error,
         {

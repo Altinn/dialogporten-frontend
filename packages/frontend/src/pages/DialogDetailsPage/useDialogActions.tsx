@@ -51,7 +51,7 @@ export const useDialogActions = () => {
         } else {
           showSnackbar(failureKey, 'danger');
         }
-      } catch (error) {
+      } catch {
         showSnackbar(failureKey, 'danger');
       } finally {
         setLoading(false);
