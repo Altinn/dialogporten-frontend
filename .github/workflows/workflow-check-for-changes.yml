@@ -26,6 +26,9 @@ on:
       hasNodeLoggerChanges:
         description: "Node Logger related files changed"
         value: ${{ jobs.check-for-changes.outputs.hasNodeLoggerChanges }}
+      hasTranslationsChanges:
+        description: "Translations related files changed"
+        value: ${{ jobs.check-for-changes.outputs.hasTranslationsChanges }}
 
 jobs:
   check-for-changes:
@@ -36,6 +39,7 @@ jobs:
       hasApplicationChanges: ${{ steps.filter-apps.outputs.applications_any_modified == 'true' || steps.filter-infra.outputs.github_workflows_any_modified == 'true' }}
       hasMigrationChanges: ${{ steps.filter-apps.outputs.migrations_any_modified == 'true' }}
       hasNodeLoggerChanges: ${{ steps.filter-apps.outputs.nodeLogger_any_modified == 'true' || steps.filter-infra.outputs.github_workflows_any_modified == 'true' }}
+      hasTranslationsChanges: ${{ steps.filter-apps.outputs.translations_any_modified == 'true' }}
     steps:
       - name: Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
@@ -83,15 +87,20 @@ jobs:
               - '.azure/modules/containerAppJob/**/*'
             nodeLogger:
               - 'packages/node-logger/**/*'
+            translations:
+              - 'packages/frontend/src/i18n/resources/**/*'
 
       - name: Log application changes
         run: |
           echo "Application changes detected: ${{ steps.filter-apps.outputs.applications_any_modified }}"
           echo "Migration changes detected: ${{ steps.filter-apps.outputs.migrations_any_modified }}"
           echo "Node Logger changes detected: ${{ steps.filter-apps.outputs.nodeLogger_any_modified }}"
+          echo "Translations changes detected: ${{ steps.filter-apps.outputs.translations_any_modified }}"
           echo "Changed application files:"
           echo "${{ steps.filter-apps.outputs.applications_modified_files }}"
           echo "Changed migration files:"
           echo "${{ steps.filter-apps.outputs.migrations_modified_files }}"
           echo "Changed node logger files:"
           echo "${{ steps.filter-apps.outputs.nodeLogger_modified_files }}"
+          echo "Changed translations files:"
+          echo "${{ steps.filter-apps.outputs.translations_modified_files }}"
