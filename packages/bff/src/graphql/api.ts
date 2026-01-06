@@ -1,7 +1,7 @@
 import { stitchSchemas } from '@graphql-tools/stitch';
 import type { AsyncExecutor } from '@graphql-tools/utils';
 import axios from 'axios';
-import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
+import type { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 import { print } from 'graphql';
 import depthLimit from 'graphql-depth-limit';
