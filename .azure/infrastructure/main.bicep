@@ -50,6 +50,9 @@ param applicationGatewayWhitelistedIps array = []
 @description('Enable maintenance mode to redirect all traffic to maintenance page')
 param enableMaintenancePage bool = false
 
+@description('Whether to provision the backup vault storage account + container for PostgreSQL restore backups')
+param enableBackupVault bool = false
+
 // PostgreSQL configuration parameters
 import { Sku as PostgreSQLSku } from '../modules/postgreSql/create.bicep'
 import { StorageConfiguration as PostgreSQLStorageConfiguration } from '../modules/postgreSql/create.bicep'
@@ -267,6 +270,7 @@ module postgresql '../modules/postgreSql/create.bicep' = {
     backupRetentionDays: postgresConfiguration.backupRetentionDays
     postgresVersion: postgresConfiguration.version
     tags: tags
+    enableBackupVault: enableBackupVault
   }
 }
 
