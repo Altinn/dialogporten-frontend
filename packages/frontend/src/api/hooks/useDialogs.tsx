@@ -1,14 +1,24 @@
 import type { FilterState } from '@altinn/altinn-components/dist/types/lib/components/Toolbar/Toolbar';
-import { keepPreviousData } from '@tanstack/react-query';
-import type { DialogStatus, GetAllDialogsForPartiesQuery, PartyFieldsFragment, SystemLabel } from 'bff-types-generated';
-import { useRef } from 'react';
+import { keepPreviousData, useQueryClient } from '@tanstack/react-query';
+import type {
+  DialogStatus,
+  GetAllDialogsForCountQuery,
+  GetAllDialogsForPartiesQuery,
+  PartyFieldsFragment,
+  SearchDialogFieldsFragment,
+  SystemLabel,
+} from 'bff-types-generated';
+import i18n from 'i18next';
+import { useEffect, useRef } from 'react';
 import { useAuthenticatedInfiniteQuery } from '../../auth/useAuthenticatedInfiniteQuery.tsx';
+import { QUERY_KEYS } from '../../constants/queryKeys.ts';
+import { useFeatureFlag } from '../../featureFlags';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
 import { normalizeFilterDefaults } from '../../pages/Inbox/filters.ts';
 import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
 import { graphQLSDK } from '../queries.ts';
-import { getPartyIds, mapDialogToToInboxItems } from '../utils/dialog.ts';
+import { getPartyIds, mapDialogToToInboxItems, mergeDialogItems } from '../utils/dialog.ts';
 import { useParties } from './useParties.ts';
 
 export type InboxViewType = 'inbox' | 'drafts' | 'sent' | 'archive' | 'bin';
@@ -36,10 +46,13 @@ interface UseDialogsOutput {
 
 export const useDialogs = ({ parties, viewType, filterState, search, queryKey }: UseDialogsProps): UseDialogsOutput => {
   const { organizations } = useOrganizations();
-  const { selectedParties } = useParties();
+  const disableFlipNamesPatch = useFeatureFlag<boolean>('dialogporten.disableFlipNamesPatch');
+  const disableDialogCount = useFeatureFlag<boolean>('inbox.disableDialogCount');
+  const enableSearchLanguageCode = useFeatureFlag<boolean>('dialogporten.enableSearchLanguageCode');
+  const { selectedParties, isSelfIdentifiedUser } = useParties();
   const format = useFormat();
   const partiesToUse = parties ? parties : selectedParties;
-  const partyIds = getPartyIds(partiesToUse);
+  const partyIds = getPartyIds(partiesToUse, true);
   const previousTokensRef = useRef<string>('');
   const viewTypeKey = viewType ?? 'global';
   const queryVariables = normalizeFilterDefaults({
@@ -54,47 +67,90 @@ export const useDialogs = ({ parties, viewType, filterState, search, queryKey }:
     searchQuery: search,
   });
 
-  const query = useAuthenticatedInfiniteQuery<GetAllDialogsForPartiesQuery>({
-    queryKey: [queryKey, partyIds, viewTypeKey, queryVariables, search],
-    staleTime: 1000 * 60 * 10,
-    retry: 3,
-    queryFn: (args) => {
-      const continuationToken = args.pageParam as string | undefined;
-      const searchString = (search ?? '').length >= 3 ? search : undefined;
-      return graphQLSDK.getAllDialogsForParties({
-        ...queryVariables,
-        continuationToken,
-        limit: 100,
-        search: searchString,
-      });
-    },
-    enabled: partyIds.length > 0 && partyIds.length <= 20,
-    gcTime: 0,
-    getNextPageParam(lastPage: GetAllDialogsForPartiesQuery): unknown | undefined | null {
-      const hasNextPage = lastPage?.searchDialogs?.hasNextPage;
-      const continuationToken = lastPage?.searchDialogs?.continuationToken;
-      if (hasNextPage && typeof continuationToken === 'string') {
-        previousTokensRef.current = continuationToken;
-        return continuationToken;
-      }
-    },
-    getPreviousPageParam(): unknown | undefined | null {
-      return previousTokensRef;
-    },
-    initialData: undefined,
-    initialPageParam: undefined,
-    placeholderData: keepPreviousData,
-  });
-
   const { data, isSuccess, isLoading, isFetching, isError, fetchNextPage, isFetchingNextPage, isPlaceholderData } =
-    query;
+    useAuthenticatedInfiniteQuery<GetAllDialogsForPartiesQuery>({
+      queryKey: [queryKey, partyIds, viewTypeKey, queryVariables, search],
+      staleTime: 1000 * 60 * 10,
+      retry: 3,
+      queryFn: (args) => {
+        const continuationToken = args.pageParam as string | undefined;
+        const searchString = (search ?? '').length >= 3 ? search : undefined;
+        return graphQLSDK.getAllDialogsForParties({
+          ...queryVariables,
+          continuationToken,
+          limit: 100,
+          search: searchString,
+          ...(enableSearchLanguageCode && {
+            searchLanguageCode: i18n.language,
+          }),
+        });
+      },
+      enabled: partyIds.length > 0 && partyIds.length <= 20 && !isSelfIdentifiedUser,
+      gcTime: 0,
+      getNextPageParam(lastPage: GetAllDialogsForPartiesQuery): unknown | undefined | null {
+        const hasNextPage = lastPage?.searchDialogs?.hasNextPage;
+        const continuationToken = lastPage?.searchDialogs?.continuationToken;
+        if (hasNextPage && typeof continuationToken === 'string') {
+          previousTokensRef.current = continuationToken;
+          return continuationToken;
+        }
+      },
+      getPreviousPageParam(): unknown | undefined | null {
+        return previousTokensRef;
+      },
+      initialData: undefined,
+      initialPageParam: undefined,
+      placeholderData: keepPreviousData,
+    });
+
+  const queryClient = useQueryClient();
+  const previousPartyIdsRef = useRef<string[]>([]);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    if (!disableDialogCount || !data) return;
+
+    const partyIds = selectedParties.map((party) => party.party);
+    const selectedPartiesChanged =
+      !previousPartyIdsRef.current.length || partyIds.join(',') !== previousPartyIdsRef.current.join(',');
+    const currentData = queryClient.getQueryData<GetAllDialogsForCountQuery>([QUERY_KEYS.COUNT_DIALOGS]);
+    const allNewItems: SearchDialogFieldsFragment[] =
+      data.pages.flatMap((page) => page.searchDialogs?.items ?? []) ?? [];
+
+    if (selectedPartiesChanged) {
+      queryClient.setQueryData<GetAllDialogsForCountQuery>([QUERY_KEYS.COUNT_DIALOGS], {
+        searchDialogs: {
+          items: allNewItems,
+          hasNextPage: false,
+        },
+      });
+    } else if (allNewItems.length === 0) {
+      return;
+    } else {
+      const existingItems: SearchDialogFieldsFragment[] =
+        !selectedPartiesChanged && currentData?.searchDialogs?.items
+          ? (currentData.searchDialogs.items as SearchDialogFieldsFragment[])
+          : [];
+
+      const mergedItems = mergeDialogItems(existingItems, allNewItems);
+      const hasNextPage = data.pages[data.pages.length - 1]?.searchDialogs?.hasNextPage ?? false;
+
+      queryClient.setQueryData<GetAllDialogsForCountQuery>([QUERY_KEYS.COUNT_DIALOGS], {
+        searchDialogs: {
+          items: mergedItems,
+          hasNextPage,
+        },
+      });
+    }
+    previousPartyIdsRef.current = partyIds;
+  }, [disableDialogCount, data, selectedParties]);
 
   const content = data?.pages.flatMap((page) => page.searchDialogs?.items ?? []) || [];
   const dialogCountInconclusive =
     data?.pages?.[data?.pages.length - 1]?.searchDialogs?.hasNextPage === true ||
     data?.pages?.[data?.pages.length - 1]?.searchDialogs?.items === null ||
     partyIds.length >= 20;
-  const dialogs = mapDialogToToInboxItems(content, parties ?? [], organizations, format);
+  const dialogs = mapDialogToToInboxItems(content, parties ?? [], organizations, format, disableFlipNamesPatch);
   /*  isFetching && isPlaceholderData is used to determine if we are fetching the initial data for the query key */
   const isActuallyLoading = isLoading || (isFetching && isPlaceholderData);
 

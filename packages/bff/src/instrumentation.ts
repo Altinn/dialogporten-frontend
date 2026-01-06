@@ -1,5 +1,5 @@
 import type { IncomingMessage } from 'node:http';
-import { logger } from '@digdir/dialogporten-node-logger';
+import { logger } from '@altinn/dialogporten-node-logger';
 import { FastifyOtelInstrumentation } from '@fastify/otel';
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-grpc';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
@@ -10,6 +10,7 @@ import { PgInstrumentation } from '@opentelemetry/instrumentation-pg';
 import { resourceFromAttributes } from '@opentelemetry/resources';
 import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
 import { NodeSDK } from '@opentelemetry/sdk-node';
+import { ParentBasedSampler, TraceIdRatioBasedSampler } from '@opentelemetry/sdk-trace-base';
 import { ATTR_SERVICE_NAME, SEMRESATTRS_SERVICE_INSTANCE_ID } from '@opentelemetry/semantic-conventions';
 import config from './config.ts';
 
@@ -29,6 +30,13 @@ const httpInstrumentationConfig: HttpInstrumentationConfig = {
     }
     return false;
   },
+  ignoreOutgoingRequestHook: (request) => {
+    // Ignore outgoing requests to Azure App Configuration
+    if ((request.hostname ?? request.host)?.includes('appconfiguration.azconfig.io')) {
+      return true;
+    }
+    return false;
+  },
 };
 
 // Configure instrumentations
@@ -37,6 +45,7 @@ const instrumentations = [
   new IORedisInstrumentation(),
   new FastifyOtelInstrumentation(),
   new GraphQLInstrumentation({
+    ignoreResolveSpans: true,
     ignoreTrivialResolveSpans: true,
     mergeItems: true,
   }),
@@ -66,12 +75,17 @@ const initializeOpenTelemetry = () => {
       exportIntervalMillis: 30000,
     });
 
+    const sampler = new ParentBasedSampler({
+      root: new TraceIdRatioBasedSampler(openTelemetry.sampleRate),
+    });
+
     logger.info(
       {
         endpoint: openTelemetry.endpoint,
         protocol: openTelemetry.protocol,
         serviceName: config.info.name,
         instanceId: config.info.instanceId,
+        sampleRate: openTelemetry.sampleRate,
       },
       'Initializing OpenTelemetry with OTLP exporter',
     );
@@ -82,6 +96,7 @@ const initializeOpenTelemetry = () => {
       traceExporter,
       metricReaders: [metricReader],
       instrumentations,
+      sampler,
     });
 
     sdk.start();

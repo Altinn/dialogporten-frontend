@@ -13,9 +13,6 @@ on:
         required: false
         type: string
         default: ${{ github.ref }}
-    secrets:
-      NPM_TOKEN:
-        required: true
 
 env:
   WORKING_DIRECTORY: ${{ inputs.pathToPackage }}
@@ -30,14 +27,19 @@ jobs:
       version-exists: ${{ steps.check-published-version.outputs.version-exists }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           ref: ${{ inputs.ref }}
 
-      - name: 'Setting up Node'
-        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
+      - name: "Setting up Node"
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version-file: .node-version
+
+      # Ensure npm 11.5.1 or later for trusted publishing
+      # https://github.com/orgs/community/discussions/173102
+      - name: Install npm@latest
+        run: npm install -g npm@latest
 
       - name: Fetch package name
         id: fetch-package-name
@@ -54,8 +56,6 @@ jobs:
             echo "version-exists=false" >> $GITHUB_OUTPUT
             echo "Version ${{ inputs.version }} does not exist"
           fi
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   publish-to-npm:
     runs-on: ubuntu-latest
@@ -63,12 +63,17 @@ jobs:
     if: needs.check-published-version.outputs.version-exists == 'false'
     steps:
       - name: Checkout code
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           ref: ${{ inputs.ref }}
 
-      - name: 'Installing Dependencies'
+      - name: "Installing Dependencies"
         uses: ./.github/actions/install
+
+      # Ensure npm 11.5.1 or later for trusted publishing
+      # https://github.com/orgs/community/discussions/173102
+      - name: Install npm@latest
+        run: npm install -g npm@latest
 
       - name: Update package version
         run: |
@@ -78,6 +83,4 @@ jobs:
 
       - name: Publish package
         run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         working-directory: ${{ env.WORKING_DIRECTORY }}

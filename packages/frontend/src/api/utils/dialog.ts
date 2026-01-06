@@ -1,4 +1,4 @@
-import { type AvatarType, formatDisplayName } from '@altinn/altinn-components';
+import { formatDisplayName } from '@altinn/altinn-components';
 import {
   DialogStatus,
   type GetAllDialogsForPartiesQueryVariables,
@@ -11,6 +11,7 @@ import { type TFunction, t } from 'i18next';
 import { getPreferredPropertyByLocale } from '../../i18n/property.ts';
 import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
 import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
+import { getIsUnread } from '../../pages/Inbox/status.ts';
 import type { InboxViewType } from '../hooks/useDialogs.tsx';
 import { getOrganization } from './organizations.ts';
 import { getViewTypes } from './viewType.ts';
@@ -19,10 +20,16 @@ interface SeenByItem {
   isCurrentEndUser: boolean;
 }
 
-export const getPartyIds = (partiesToUse: PartyFieldsFragment[]) => {
+export const getPartyIds = (partiesToUse: PartyFieldsFragment[], includeOnlySubPartiesWithSameName?: boolean) => {
   const partyURIs = partiesToUse.filter((party) => !party.hasOnlyAccessToSubParties).map((party) => party.party);
-  const subPartyURIs = partiesToUse.flatMap((party) => (party.subParties ?? []).map((subParty) => subParty.party));
-  return [...partyURIs, ...subPartyURIs] as string[];
+  const subPartyURIs = partiesToUse.flatMap(
+    (party) =>
+      party.subParties
+        ?.filter((subParty) => (includeOnlySubPartiesWithSameName ? subParty.name === party.name : true))
+        .map((subParty) => subParty.party) ?? [],
+  );
+
+  return Array.from(new Set([...partyURIs, ...subPartyURIs]));
 };
 
 export const getSeenAtLabel = (seenAt: string, format: FormatFunction): string => {
@@ -54,22 +61,23 @@ export function mapDialogToToInboxItems(
   parties: PartyFieldsFragment[],
   organizations: OrganizationFieldsFragment[],
   format: FormatFunction,
+  stopReversingPersonNameOrder: boolean,
 ): InboxItemInput[] {
   return input.map((item) => {
     const titleObj = item.content.title.value;
     const summaryObj = item.content.summary?.value;
     const endUserParty = parties?.find((party) => party.isCurrentEndUser);
     const senderName = item.content.senderName?.value;
+    const extendedStatusObj = item.content.extendedStatus?.value;
 
     const dialogReceiverParty = parties?.find((party) => party.party === item.party);
-    const dialogReceiverSubParty = parties?.find((party) =>
-      (party.subParties ?? []).some((subParty) => subParty.party === item.party),
-    );
+    const dialogReceiverSubParty = parties
+      ?.flatMap((party) => party.subParties ?? [])
+      .find((subParty) => subParty.party === item.party);
 
     const actualReceiverParty = dialogReceiverParty ?? dialogReceiverSubParty ?? endUserParty;
     const serviceOwner = getOrganization(organizations || [], item.org);
     const { isSeenByEndUser, seenByOthersCount, seenByLabel } = getSeenByLabel(item.seenSinceLastContentUpdate, t);
-
     return {
       id: item.id,
       party: item.party,
@@ -85,16 +93,19 @@ export function mapDialogToToInboxItems(
       },
       recipient: {
         name: actualReceiverParty?.name ?? dialogReceiverSubParty?.name ?? '',
-        type: actualReceiverParty?.partyType as AvatarType,
+        type: actualReceiverParty?.partyType === 'Organization' ? 'company' : 'person',
         variant:
-          !actualReceiverParty?.subParties && actualReceiverParty?.partyType === 'Organization' ? 'outline' : 'solid',
+          dialogReceiverParty && !dialogReceiverParty.subParties && actualReceiverParty?.partyType === 'Organization'
+            ? 'outline'
+            : 'solid',
       },
+      serviceResourceType: item.serviceResourceType,
       color: actualReceiverParty?.partyType === 'Organization' ? 'company' : 'person',
       contentUpdatedAt: item.contentUpdatedAt,
       guiAttachmentCount: item.guiAttachmentCount ?? 0,
       createdAt: item.createdAt,
       status: item.status ?? 'UnknownStatus',
-      extendedStatus: item.extendedStatus || undefined,
+      extendedStatus: getPreferredPropertyByLocale(extendedStatusObj)?.value || undefined,
       isSeenByEndUser,
       label: item.endUserContext?.systemLabels,
       org: item.org,
@@ -108,7 +119,7 @@ export function mapDialogToToInboxItems(
           const actorName = formatDisplayName({
             fullName: seenBy?.seenBy?.actorName ?? '',
             type: 'person',
-            reverseNameOrder: true,
+            reverseNameOrder: !stopReversingPersonNameOrder,
           });
           return {
             id: seenBy.id,
@@ -123,6 +134,7 @@ export function mapDialogToToInboxItems(
       fromServiceOwnerTransmissionsCount: item.fromServiceOwnerTransmissionsCount ?? 0,
       fromPartyTransmissionsCount: item.fromPartyTransmissionsCount ?? 0,
       serviceResource: item.serviceResource,
+      unread: getIsUnread(item),
     };
   });
 }
@@ -169,4 +181,25 @@ export const getQueryVariables = ({
     continuationToken,
     ...variables,
   };
+};
+
+export const mergeDialogItems = (
+  existingItems: SearchDialogFieldsFragment[] = [],
+  newItems: SearchDialogFieldsFragment[] = [],
+): SearchDialogFieldsFragment[] => {
+  const byId = new Map<string, SearchDialogFieldsFragment>();
+
+  for (const item of existingItems) {
+    if (item?.id) {
+      byId.set(item.id, item);
+    }
+  }
+
+  for (const item of newItems) {
+    if (item?.id) {
+      byId.set(item.id, item);
+    }
+  }
+
+  return Array.from(byId.values());
 };

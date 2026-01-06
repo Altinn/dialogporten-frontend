@@ -47,19 +47,19 @@ jobs:
     name: Send Deployment Lag Slack Message
     runs-on: ubuntu-latest
     steps:
-      - uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
+      - uses: step-security/harden-runner@20cf305ff2072d973412fa9b1e3a4f227bda3c76 # v2.14.0
         with:
           egress-policy: audit
 
       - name: Checkout repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
 
       - name: Determine severity and styling
         id: determine-severity
         run: |
           days=${{ inputs.days_since_prod_deploy }}
           releases=${{ inputs.release_count_diff }}
-          
+
           # Simplified severity determination
           if [ "$days" -gt 7 ] || [ "$releases" -gt 5 ]; then
             severity="Attention needed"
@@ -74,45 +74,51 @@ jobs:
             color="#87CEEB"
             emoji="ℹ️"
           fi
-          
+
           echo "severity=$severity" >> $GITHUB_OUTPUT
           echo "color=$color" >> $GITHUB_OUTPUT
           echo "emoji=$emoji" >> $GITHUB_OUTPUT
 
       - name: Format commit summary
         id: format-commits
+        env:
+          COMMITS_JSON: ${{ inputs.commits_json }}
         run: |
-          commits_json='${{ inputs.commits_json }}'
-          
-          if [ "$commits_json" = "[]" ] || [ -z "$commits_json" ]; then
+          # Write commits_json to a temporary file to avoid shell parsing issues
+          # Using env var to prevent command injection
+          cat > /tmp/commits.json << EOL
+          $COMMITS_JSON
+          EOL
+
+          if [ ! -s /tmp/commits.json ] || [ "$(cat /tmp/commits.json)" = "[]" ]; then
             echo "commits_summary=No commit details available" >> $GITHUB_OUTPUT
           else
             # Format commits for Slack (limit to 10 most recent)
-            commits_summary=$(echo "$commits_json" | jq -r '
-              .[0:10] | map("• `\(.sha)` \(.message) - \(.author)") | join("\n")
-            ')
+            # Use literal \n in the string for Slack's mrkdwn format
+            commits_summary=$(jq -r '
+              .[0:10] | map("• `\(.sha)` \(.message) - \(.author)") | join("\\n")
+            ' /tmp/commits.json)
             
             # Add note if there are more commits
-            total_commits=$(echo "$commits_json" | jq length)
+            total_commits=$(jq length /tmp/commits.json)
             if [ "$total_commits" -gt 10 ]; then
-              commits_summary="$commits_summary\n\n_... and $((total_commits - 10)) more commits_"
+              commits_summary="$commits_summary\\n\\n_... and $((total_commits - 10)) more commits_"
             fi
             
-            # Escape for GitHub output
-            commits_summary_escaped=$(echo "$commits_summary" | sed ':a;N;$!ba;s/\n/\\n/g')
-            echo "commits_summary=$commits_summary_escaped" >> $GITHUB_OUTPUT
+            # Output as a single line with escaped newlines for JSON compatibility
+            echo "commits_summary=$commits_summary" >> $GITHUB_OUTPUT
           fi
 
       - name: Format author mentions
         id: format-authors
+        env:
+          COMMIT_AUTHORS: ${{ inputs.commit_authors }}
         run: |
-          authors="${{ inputs.commit_authors }}"
-          
-          if [ -z "$authors" ]; then
+          if [ -z "$COMMIT_AUTHORS" ]; then
             echo "commit_authors_mentions=No authors available" >> $GITHUB_OUTPUT
           else
             # Convert comma-separated authors to Slack mentions
-            mentions=$(echo "$authors" | tr ',' '\n' | sed 's/^/@/' | tr '\n' ' ' | sed 's/ $//')
+            mentions=$(echo "$COMMIT_AUTHORS" | tr ',' '\n' | sed 's/^/@/' | tr '\n' ' ' | sed 's/ $//')
             echo "commit_authors_mentions=$mentions" >> $GITHUB_OUTPUT
           fi
 
@@ -136,10 +142,9 @@ jobs:
           EMOJI: ${{ steps.determine-severity.outputs.emoji }}
           COMMITS_SUMMARY: ${{ steps.format-commits.outputs.commits_summary }}
           COMMIT_AUTHORS_MENTIONS: ${{ steps.format-authors.outputs.commit_authors_mentions }}
-        uses: slackapi/slack-github-action@485a9d42d3a73031f12ec201c457e2162c45d02d # v2.0.0
+        uses: slackapi/slack-github-action@91efab103c0de0a537f72a35f6b8cda0ee76bf0a # v2.1.1
         with:
           method: chat.postMessage
           token: ${{ secrets.SLACK_BOT_TOKEN }}
           payload-templated: true
           payload-file-path: "./.github/slack-templates/deployment-lag-notification.json"
-

@@ -4,6 +4,7 @@ import { dialogs as baseDialogs } from '../../base/dialogs'
 const dialogsWithServiceResourceBankruptcy: SearchDialogFieldsFragment[] = [
     {
         serviceResource: 'urn:altinn:resource:app_brg_konkursbehandling',
+        serviceResourceType: 'correspondenceservice',
         id: '019241f7-6f45-72fd-abcd-today83j1ks2',
         endUserContext: {
             systemLabels: [SystemLabel.Default],
@@ -14,7 +15,6 @@ const dialogsWithServiceResourceBankruptcy: SearchDialogFieldsFragment[] = [
         hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0, contentUpdatedAt: '2024-05-23T23:00:00.000Z', guiAttachmentCount: 1,
         status: DialogStatus.Awaiting,
         createdAt: '2024-05-23T23:00:00.000Z',
-        extendedStatus: null,
         seenSinceLastContentUpdate: [],
         content: {
             title: {
@@ -42,6 +42,7 @@ const dialogsWithServiceResourceBankruptcy: SearchDialogFieldsFragment[] = [
     },
     {
         serviceResource: 'urn:altinn:resource:app_brg_konkursbehandling',
+        serviceResourceType: 'correspondenceservice',
         id: '019241f7-6f45-72fd-a574-jksit83j1ks2',
         endUserContext: {
             systemLabels: [SystemLabel.Default],
@@ -53,7 +54,6 @@ const dialogsWithServiceResourceBankruptcy: SearchDialogFieldsFragment[] = [
         hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0, contentUpdatedAt: '2024-05-23T23:00:00.000Z', guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-05-23T23:00:00.000Z',
-        extendedStatus: null,
         content: {
             title: {
                 mediaType: 'text/plain',

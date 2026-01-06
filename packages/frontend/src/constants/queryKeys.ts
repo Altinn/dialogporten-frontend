@@ -1,4 +1,5 @@
 export const QUERY_KEYS = {
+  ALTINN2_MESSAGES: 'altinn2Messages',
   DIALOG_BY_ID: 'dialogById',
   PARTIES: 'parties',
   PARTIES_EMPTY_LIST: 'partiesEmptyList',
@@ -22,4 +23,8 @@ export const QUERY_KEYS = {
   ERROR_STATE: 'errorState',
   SHOW_TOUR: 'showTour',
   SHOW_PROFILE_TOUR: 'showProfileTour',
+  IS_SELF_IDENTIFIED_USER: 'isSelfIdentifiedUser',
+  ALERT_BANNER: 'alertBanner',
+  ALTINN_COOKIE: 'altinnCookie',
+  UPDATED_LANGUAGE: 'updatedLanguage',
 };

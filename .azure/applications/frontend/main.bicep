@@ -17,6 +17,9 @@ param containerAppEnvironmentName string
 @secure()
 param applicationInsightsInstrumentationKey string
 
+@minLength(3)
+param dialogportenStreamUrl string
+
 @description('The workload profile name to use, defaults to "Consumption"')
 param workloadProfileName string = 'Consumption'
 
@@ -41,6 +44,10 @@ var environmentVariables = [
   {
     name: 'APPLICATION_INSIGHTS_INSTRUMENTATION_KEY'
     value: applicationInsightsInstrumentationKey
+  }
+  {
+    name: 'DIALOGPORTEN_STREAM_URL'
+    value: dialogportenStreamUrl
   }
 ]
 

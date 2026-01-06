@@ -1,36 +1,30 @@
 import {
+  Badge,
   type Color,
   type FooterProps,
-  type HeaderProps,
   Layout,
+  type LayoutColor,
   type LayoutProps,
-  type MenuItemProps,
+  type LayoutTheme,
   type Size,
   Snackbar,
 } from '@altinn/altinn-components';
 import { useQueryClient } from '@tanstack/react-query';
-import { type ChangeEvent, useEffect, useLayoutEffect } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, Outlet, useLocation, useSearchParams } from 'react-router-dom';
-import { Analytics } from '../../analytics';
-import { ANALYTICS_EVENTS } from '../../analyticsEvents';
+import { Outlet, useLocation, useSearchParams } from 'react-router-dom';
 import { useParties } from '../../api/hooks/useParties.ts';
-import { updateLanguage } from '../../api/queries.ts';
-import { createHomeLink } from '../../auth';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
-import { useErrorLogger } from '../../hooks/useErrorLogger';
-import { i18n } from '../../i18n/config.ts';
 import { getSearchStringFromQueryParams } from '../../pages/Inbox/queryParams.ts';
 import { useProfile } from '../../pages/Profile';
 import { PageRoutes } from '../../pages/routes.ts';
 import { useGlobalState } from '../../useGlobalState.ts';
 import { BetaModal } from '../BetaModal';
-import { FloatingDropdown } from '../FloatingDropdown/FloatingDropdown.tsx';
+import { FloatingDropdown } from '../FloatingDropdown';
 import { useAuth } from '../Login/AuthContext.tsx';
-import { useAccounts } from './Accounts/useAccounts.tsx';
 import { useFooter } from './Footer';
 import { useGlobalMenu } from './GlobalMenu';
-import { useAutocomplete, useSearchString } from './Search';
+import { useHeaderConfig } from './useHeaderConfig.tsx';
 
 export const ProtectedPageLayout = () => {
   const { isAuthenticated } = useAuth();
@@ -44,21 +38,12 @@ export const PageLayout: React.FC = () => {
   const [searchParams] = useSearchParams();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const { searchValue, setSearchValue, onClear } = useSearchString();
-  const { selectedProfile, selectedParties, parties, allOrganizationsSelected, isLoading } = useParties();
-  const { autocomplete } = useAutocomplete({ selectedParties: selectedParties, searchValue });
+  const { selectedProfile, selectedParties, allOrganizationsSelected, currentEndUser } = useParties();
   const [isErrorState] = useGlobalState<boolean>(QUERY_KEYS.ERROR_STATE, false);
-  const { logError } = useErrorLogger();
-
-  const { accounts, accountSearch, accountGroups, onSelectAccount, currentAccount, filterAccount } = useAccounts({
-    parties,
-    selectedParties,
-    allOrganizationsSelected,
-    isLoading,
-  });
+  const { headerProps } = useHeaderConfig();
 
   const footer: FooterProps = useFooter();
-  const { mobileMenu, desktopMenu, sidebarMenu } = useGlobalMenu();
+  const { sidebarMenu } = useGlobalMenu();
 
   useProfile();
 
@@ -76,106 +61,26 @@ export const PageLayout: React.FC = () => {
     queryClient.setQueryData(['search'], () => searchString || '');
   }, [searchParams]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: Not all dependencies are needed
-  useEffect(() => {
-    if (!searchValue) {
-      onClear();
-    }
-  }, [searchValue]);
+  let color: LayoutColor = 'neutral';
+  let theme: LayoutTheme = 'default';
 
-  const handleUpdateLanguage = async (language: string) => {
-    const previousLanguage = i18n.language;
+  const isSinglePartyMatchingCurrentUser =
+    selectedProfile === 'person' && selectedParties.length === 1 && selectedParties[0].party === currentEndUser?.party;
 
-    try {
-      await updateLanguage(language);
-
-      Analytics.trackEvent(ANALYTICS_EVENTS.USER_LANGUAGE_CHANGE_SUCCESS, {
-        'language.from': previousLanguage,
-        'language.to': language,
-        'language.source': 'header_picker',
-        'user.currentPage': window.location.pathname,
-      });
-    } catch (error) {
-      console.error('Failed to update language:', error);
-      logError(
-        error as Error,
-        {
-          context: 'PageLayout.handleUpdateLanguage',
-          language,
-        },
-        'Error updating language',
-      );
-    } finally {
-      void i18n.changeLanguage(language);
-    }
-  };
-
-  const headerProps: HeaderProps = {
-    currentAccount,
-    logo: {
-      as: (props: MenuItemProps) => {
-        // @ts-ignore
-        return <Link to={createHomeLink()} {...props} />;
-      },
-    },
-    badge: {
-      label: t('word.beta'),
-      color: 'person',
-    },
-    search: {
-      expanded: false,
-      name: t('word.search'),
-      placeholder: t('word.search'),
-      value: searchValue,
-      onClear: () => onClear(),
-      onChange: (event: ChangeEvent<HTMLInputElement>) => setSearchValue(event.target.value),
-      autocomplete: {
-        ...autocomplete,
-        items: autocomplete.items,
-      },
-    },
-    mobileMenu,
-    globalMenu: {
-      menuLabel: t('word.menu'),
-      menu: desktopMenu,
-      onSelectAccount: (account: string) => onSelectAccount(account, isProfile ? PageRoutes.profile : PageRoutes.inbox),
-      backLabel: t('word.back'),
-      accountMenu: {
-        filterAccount,
-        items: accounts,
-        groups: accountGroups,
-        ...(accountSearch && {
-          search: accountSearch,
-        }),
-        isVirtualized: true,
-      },
-      logoutButton: {
-        label: t('word.log_out'),
-        onClick: () => {
-          Analytics.trackEvent(ANALYTICS_EVENTS.USER_LOGOUT, {
-            'logout.source': 'header_button',
-            'user.currentPage': window.location.pathname,
-            'session.duration': Date.now() - (window.performance?.timing?.navigationStart || 0),
-          });
-          (window as Window).location = `/api/logout`;
-        },
-      },
-    },
-    locale: {
-      title: 'Språk/language',
-      options: [
-        { label: t('word.locale.nb'), value: 'nb', checked: i18n.language === 'nb' },
-        { label: t('word.locale.nn'), value: 'nn', checked: i18n.language === 'nn' },
-        { label: t('word.locale.en'), value: 'en', checked: i18n.language === 'en' },
-      ],
-      onSelect: (lang) => handleUpdateLanguage(lang),
-    },
-  };
-
-  const color = isProfile ? 'neutral' : selectedProfile;
+  if (isSinglePartyMatchingCurrentUser) {
+    color = 'person';
+    theme = 'subtle';
+  } else if (isProfile || allOrganizationsSelected) {
+    color = 'person';
+    theme = 'neutral';
+  } else {
+    color = selectedProfile === 'company' ? 'company' : 'person';
+    theme = 'subtle';
+  }
 
   const layoutProps: LayoutProps = {
-    theme: isErrorState ? 'default' : 'subtle',
+    theme,
+    color,
     content: {
       color: isProfile ? 'person' : undefined,
     },
@@ -185,15 +90,18 @@ export const PageLayout: React.FC = () => {
       size: 'xs' as Size,
       children: t('skip_link.jumpto'),
     },
-    color,
     header: headerProps,
     footer,
-    sidebar: { menu: sidebarMenu, hidden: isErrorState },
+    sidebar: {
+      menu: sidebarMenu,
+      hidden: isErrorState,
+      footer: <Badge label={t('word.beta')} variant="base" color="neutral" size="sm" />,
+    },
   };
 
   return (
     <>
-      <Layout {...layoutProps}>
+      <Layout {...layoutProps} useGlobalHeader>
         <Outlet />
         <Snackbar />
         <BetaModal />

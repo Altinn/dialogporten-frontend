@@ -1,5 +1,6 @@
-import { logger } from '@digdir/dialogporten-node-logger';
+import { logger } from '@altinn/dialogporten-node-logger';
 import { extendType, intArg, nonNull, stringArg } from 'nexus';
+import config from '../../config.js';
 import {
   addFavoriteParty,
   addFavoritePartyToGroup,
@@ -10,6 +11,7 @@ import {
   updateNotificationsSetting,
 } from '../functions/profile.ts';
 import { createSavedSearch, deleteSavedSearch, updateSavedSearch } from '../functions/savedsearch.ts';
+import { languageCodes, updateAltinnPersistentContextValue } from './cookie.js';
 import { NotificationSettingsInput, Response, SavedSearchInput, SavedSearches } from './index.ts';
 
 export const Mutation = extendType({
@@ -206,6 +208,21 @@ export const UpdateLanguage = extendType({
         try {
           const pid = ctx.session.get('pid');
           await updateLanguage(pid, language);
+          const ul = languageCodes[language];
+
+          if (ul) {
+            const current = ctx.request.raw.cookies?.altinnPersistentContext;
+            const value = updateAltinnPersistentContextValue(current, ul);
+            ctx.request.context.reply.setCookie('altinnPersistentContext', value, {
+              path: '/',
+              expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+              httpOnly: true,
+              secure: true,
+              domain: config.authContextCookieDomain,
+              encode: (v: string) => v,
+            });
+          }
+
           return { success: true };
         } catch (error) {
           logger.error(error, 'Failed to update language:');

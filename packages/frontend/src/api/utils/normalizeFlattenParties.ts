@@ -12,14 +12,12 @@ export const normalizeFlattenParties = (parties: PartyFieldsFragment[]): PartyFi
       name: formatDisplayName({
         fullName: party.name,
         type: party.partyType === 'Person' ? 'person' : 'company',
-        reverseNameOrder: party.partyType === 'Person',
       }),
       subParties: party.subParties?.map((subParty) => ({
         ...subParty,
         name: formatDisplayName({
           fullName: subParty.name,
           type: subParty.partyType === 'Person' ? 'person' : 'company',
-          reverseNameOrder: subParty.partyType === 'Person',
         }),
       })),
     })) ?? [];

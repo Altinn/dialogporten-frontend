@@ -4,7 +4,7 @@ export const getSidebar = (page: Page) => page.locator('aside');
 export const getSidebarMenuItem = (page: Page, route: string) => getSidebar(page).locator(`a[href*="${route}?"]`);
 export const getSearchbarInput = (page: Page) => page.locator("[name='Søk']");
 
-export async function performSearch(page, query: string, action?: 'clear' | 'click' | 'enter') {
+export async function performSearch(page: Page, query: string, action?: 'clear' | 'click' | 'enter') {
   const endGameAction = action || 'click';
   const searchbarInput = page.locator("[name='Søk']");
   await searchbarInput.click();
@@ -16,21 +16,6 @@ export async function performSearch(page, query: string, action?: 'clear' | 'cli
     await page.getByTestId('search-button-clear').click();
   } else if (endGameAction === 'click') {
     await searchLink.click();
-  } else if (endGameAction === 'enter') {
-    await page.keyboard.press('Enter');
-  }
-}
-
-export async function selectDialogBySearch(page, query: string, action?: 'click' | 'enter' | 'nothing') {
-  const endGameAction = action || 'click';
-  const searchbarInput = page.locator("[name='Søk']");
-
-  await searchbarInput.click();
-  await expect(searchbarInput).toBeVisible();
-  await searchbarInput.fill(query);
-
-  if (endGameAction === 'click') {
-    await page.getByRole('banner').getByRole('menuitem', { name: 'Sixth test message' }).click();
   } else if (endGameAction === 'enter') {
     await page.keyboard.press('Enter');
   }
@@ -59,4 +44,9 @@ export async function getToolbarAccountInfo(page: Page, name: string): Promise<{
   }
 
   return { found: true, item: matchingItem };
+}
+
+export async function selectPartyFromToolbar(page: Page, partyName: string) {
+  const toolbar = page.getByTestId('inbox-toolbar');
+  await toolbar.locator('li').filter({ hasText: partyName }).first().click();
 }

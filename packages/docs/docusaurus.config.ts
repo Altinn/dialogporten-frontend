@@ -19,7 +19,6 @@ const config: Config = {
   projectName: 'dialogporten-frontend', // Usually your repo name.
 
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
 
   i18n: {
     defaultLocale: 'en',
@@ -28,6 +27,9 @@ const config: Config = {
 
   markdown: {
     mermaid: true,
+    hooks: {
+      onBrokenMarkdownLinks: 'warn',
+    },
   },
 
   themes: [
@@ -65,6 +67,9 @@ const config: Config = {
 
   /* https://github.com/facebook/docusaurus/issues/10556 */
   future: {
+    v4: {
+      removeLegacyPostBuildHeadAttribute: true,
+    },
     experimental_faster: true,
   },
 

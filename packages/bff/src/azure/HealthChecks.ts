@@ -1,5 +1,5 @@
 import { setTimeout } from 'node:timers/promises';
-import { logger } from '@digdir/dialogporten-node-logger';
+import { logger } from '@altinn/dialogporten-node-logger';
 import axios from 'axios';
 import type { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
@@ -74,7 +74,9 @@ const healthCheckList: HealthCheck[] = [
     checkFn: async () => {
       try {
         // todo: change to a URL we can use to check secret id and secret key
-        await axios.get(`https://${config.oidc_url}/.well-known/openid-configuration`);
+        await axios.get(`https://${config.oidc_url}/.well-known/openid-configuration`, {
+          timeout: 30000,
+        });
         return { status: 'ok' };
       } catch (error) {
         logger.error(error, 'OIDC health check failed');
@@ -86,7 +88,9 @@ const healthCheckList: HealthCheck[] = [
     name: 'dialogporten',
     checkFn: async () => {
       try {
-        await axios.get(config.dialogporten.healthUrl);
+        await axios.get(config.dialogporten.healthUrl, {
+          timeout: 30000,
+        });
         return { status: 'ok' };
       } catch (error) {
         logger.error(error, 'Dialogporten health check failed');

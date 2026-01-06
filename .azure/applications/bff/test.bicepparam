@@ -3,7 +3,7 @@ using './main.bicep'
 param environment = 'test'
 param location = 'norwayeast'
 param imageTag = readEnvironmentVariable('IMAGE_TAG')
-param hostName = 'https://af.at.altinn.cloud'
+param hostName = 'https://af.at23.altinn.cloud'
 param dialogportenURL = 'https://altinn-dev-api.azure-api.net/dialogporten'
 param oicdUrl = 'test.idporten.no'
 param minReplicas = 2
@@ -14,7 +14,6 @@ param logoutRedirectUri = 'https://at23.altinn.cloud/ui/Authentication/Logout'
 param platformBaseUrl = 'https://platform.at23.altinn.cloud'
 
 param ocPApimSubscriptionKey = readEnvironmentVariable('OCP_APIM_SUBSCRIPTION_KEY')
-param disableProfile = 'false'
 
 // secrets
 param environmentKeyVaultName = readEnvironmentVariable('ENVIRONMENT_KEY_VAULT_NAME')
@@ -32,5 +31,13 @@ param additionalEnvironmentVariables = [
   {
     name: 'APPLICATIONINSIGHTS_ENABLED'
     value: 'false'
+  }
+  {
+    name: 'ENABLE_NEW_OIDC'
+    value: 'true'
+  }
+  {
+    name: 'OTEL_TRACES_SAMPLER_ARG'
+    value: '1'
   }
 ]

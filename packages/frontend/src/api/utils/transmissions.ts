@@ -7,7 +7,7 @@ import {
 } from 'bff-types-generated';
 import { t } from 'i18next';
 import { getPreferredPropertyByLocale } from '../../i18n/property.ts';
-import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
+import type { FormatFunction, Locale } from '../../i18n/useDateFnsLocale.tsx';
 import { getActorProps, getAttachmentLinks } from '../hooks/useDialogById.tsx';
 import type { ProfileType } from '../hooks/useParties.ts';
 import type { OrganizationOutput } from './organizations.ts';
@@ -108,12 +108,14 @@ const getClockFormatString = () => {
 const createTransmissionItem = (
   transmission: TransmissionFieldsFragment,
   format: FormatFunction,
+  stopReversingPersonNameOrder: boolean,
+  locale: Locale,
   activities?: DialogActivityFragment[],
   serviceOwner?: OrganizationOutput,
   selectedProfile?: ProfileType,
 ): TransmissionProps => {
   const formatString = getClockFormatString();
-  const sender = getActorProps(transmission.sender, serviceOwner);
+  const sender = getActorProps(transmission.sender, stopReversingPersonNameOrder, serviceOwner);
   const unread = isTransmissionUnread(transmission.id, transmission.type, activities);
 
   return {
@@ -133,7 +135,7 @@ const createTransmissionItem = (
     }),
     sender,
     attachments: {
-      items: getAttachmentLinks(transmission.attachments),
+      items: getAttachmentLinks(transmission.attachments, locale, t),
     },
   };
 };
@@ -143,19 +145,31 @@ export const getTransmissions = ({
   format,
   activities,
   serviceOwner,
+  stopReversingPersonNameOrder,
   selectedProfile,
+  locale,
 }: {
   transmissions: TransmissionFieldsFragment[];
   format: FormatFunction;
+  stopReversingPersonNameOrder: boolean;
   activities?: DialogActivityFragment[];
   serviceOwner?: OrganizationOutput;
   selectedProfile?: ProfileType;
+  locale: Locale;
 }): TimelineSegmentWithTransmissions[] => {
   return groupTransmissions(transmissions).map((group) => {
     const sortedGroup = [...group].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     const [lastTransmission] = sortedGroup;
     const items: TransmissionProps[] = sortedGroup.map((transmission) =>
-      createTransmissionItem(transmission, format, activities, serviceOwner, selectedProfile),
+      createTransmissionItem(
+        transmission,
+        format,
+        stopReversingPersonNameOrder,
+        locale,
+        activities,
+        serviceOwner,
+        selectedProfile,
+      ),
     );
 
     return {

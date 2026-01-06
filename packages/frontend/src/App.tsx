@@ -1,7 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { ErrorResetHandler, withErrorBoundary } from './components/ErrorBoundary/ErrorBoundary.tsx';
 import { ProtectedPageLayout } from './components/PageLayout/PageLayout.tsx';
-import { useFeatureFlag } from './featureFlags';
 import { DialogDetailsPage } from './pages/DialogDetailsPage';
 import { ErrorPage } from './pages/Error/Error.tsx';
 import { Inbox } from './pages/Inbox';
@@ -16,14 +15,24 @@ import { Settings } from './pages/Profile/Settings/Settings.tsx';
 import { SavedSearchesPage } from './pages/SavedSearches';
 import { PageRoutes } from './pages/routes.ts';
 import './app.css';
+import { useEffect } from 'react';
+import { QUERY_KEYS } from './constants/queryKeys.ts';
+import { getPartyFromCookie } from './cookie.ts';
 import { usePageTracking } from './hooks/usePageTracking.ts';
-import { AboutPage } from './pages/About/About.tsx';
+import { useGlobalStringState } from './useGlobalState.ts';
 
 function App() {
-  const enableProfilePages = useFeatureFlag<boolean>('profile.enableRoutes', true);
-
   // Add page tracking
   usePageTracking();
+  const [_, setCookiePartyUuid] = useGlobalStringState(QUERY_KEYS.ALTINN_COOKIE, '');
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    const partyUuidFromCookie = getPartyFromCookie('AltinnPartyUuid');
+    if (partyUuidFromCookie) {
+      setCookiePartyUuid(getPartyFromCookie('AltinnPartyUuid') ?? '');
+    }
+  }, []);
 
   return (
     <div className="app">
@@ -33,23 +42,17 @@ function App() {
             path={PageRoutes.inbox}
             element={withErrorBoundary(<Inbox key="inbox" viewType={'inbox'} />, 'Inbox')}
           />
-          {enableProfilePages && (
-            <>
-              <Route path={PageRoutes.profile} element={withErrorBoundary(<Profile />, 'Profile')} />
-              <Route
-                path={PageRoutes.partiesOverview}
-                element={withErrorBoundary(<PartiesOverviewPage key="partys" />, 'Parties Overview')}
-              />
-              <Route
-                path={PageRoutes.notifications}
-                element={withErrorBoundary(<NotificationsPage />, 'Notifications')}
-              />
-              <Route path={PageRoutes.settings} element={withErrorBoundary(<Settings />, 'Settings')} />
-              <Route path={PageRoutes.access} element={withErrorBoundary(<Access />, 'Access')} />
-              <Route path={PageRoutes.activities} element={withErrorBoundary(<Activities />, 'Activities')} />
-              <Route path={PageRoutes.authorize} element={withErrorBoundary(<Authorize />, 'Authorize')} />
-            </>
-          )}
+          <Route path={PageRoutes.profile} element={withErrorBoundary(<Profile />, 'Profile')} />
+          <Route
+            path={PageRoutes.partiesOverview}
+            element={withErrorBoundary(<PartiesOverviewPage key="partys" />, 'Parties Overview')}
+          />
+          <Route path={PageRoutes.notifications} element={withErrorBoundary(<NotificationsPage />, 'Notifications')} />
+          <Route path={PageRoutes.settings} element={withErrorBoundary(<Settings />, 'Settings')} />
+          <Route path={PageRoutes.access} element={withErrorBoundary(<Access />, 'Access')} />
+          <Route path={PageRoutes.activities} element={withErrorBoundary(<Activities />, 'Activities')} />
+          <Route path={PageRoutes.authorize} element={withErrorBoundary(<Authorize />, 'Authorize')} />
+
           <Route
             path={PageRoutes.drafts}
             element={withErrorBoundary(<Inbox key="draft" viewType={'drafts'} />, 'Drafts')}
@@ -62,8 +65,6 @@ function App() {
           <Route path={PageRoutes.bin} element={withErrorBoundary(<Inbox key="bin" viewType={'bin'} />, 'Bin')} />
           <Route path={PageRoutes.inboxItem} element={withErrorBoundary(<DialogDetailsPage />, 'Inbox Item')} />
           <Route path={PageRoutes.savedSearches} element={withErrorBoundary(<SavedSearchesPage />, 'Saved Searches')} />
-
-          <Route path={PageRoutes.about} element={withErrorBoundary(<AboutPage />, 'About')} />
           <Route path={PageRoutes.error} element={<ErrorPage />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Route>

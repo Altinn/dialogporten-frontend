@@ -5,13 +5,12 @@ export const parties: PartyFieldsFragment[] = [
     "party": "urn:altinn:person:identifier-no:12907499179",
     "partyType": "Person",
     "subParties": [],
-    "isAccessManager": true,
-    "isMainAdministrator": false,
-    "name": "ASK UGLESETT",
+    "name": "UGLESETT ASK",
     "isCurrentEndUser": true,
     "isDeleted": false,
     "hasOnlyAccessToSubParties": false,
-"partyUuid": "party:uuid:here",
+    "partyUuid": "party:uuid:here",
+    "partyId": 1,
   },
   {
     "party": "urn:altinn:organization:identifier-no:213294342",
@@ -21,20 +20,18 @@ export const parties: PartyFieldsFragment[] = [
       {
         "party": "urn:altinn:organization:identifier-no:215421902",
         "partyType": "Organization",
-        "isAccessManager": true,
-        "isMainAdministrator": true,
         "name": "LATTERMILD ORIENTAL TIGER AS",
         "isCurrentEndUser": false,
         "partyUuid": "urn:altinn:person:identifier-no:1337",
-        "isDeleted": true
+        "isDeleted": true,
+        "partyId": 2,
       }
     ],
-    "isAccessManager": true,
-    "isMainAdministrator": true,
     "name": "LATTERMILD ORIENTAL TIGER AS",
     "isCurrentEndUser": false,
     "isDeleted": false,
-"partyUuid": "party:uuid:here"
+    "partyUuid": "party:uuid:here",
+    "partyId": 3,
   },
   {
     "party": "urn:altinn:organization:identifier-no:313549461",
@@ -44,30 +41,27 @@ export const parties: PartyFieldsFragment[] = [
       {
         "party": "urn:altinn:organization:identifier-no:311615696",
         "partyType": "Organization",
-        "isAccessManager": true,
-        "isMainAdministrator": true,
         "name": "DYPSINDIG FUNKSJONELL FJELLREV",
         "isCurrentEndUser": false,
         "partyUuid": "urn:altinn:person:identifier-no:1337",
-        "isDeleted": true
+        "isDeleted": true,
+        "partyId": 4,
       },
       {
         "party": "urn:altinn:organization:identifier-no:311615688",
         "partyType": "Organization",
-        "isAccessManager": true,
-        "isMainAdministrator": true,
         "name": "UPRESIS KONSENTRISK FJELLREV",
         "isCurrentEndUser": false,
         "partyUuid": "urn:altinn:person:identifier-no:1337",
-        "isDeleted": false
+        "isDeleted": false,
+        "partyId": 5,
       }
     ],
-    "isAccessManager": true,
-    "isMainAdministrator": true,
     "name": "ORDENTLIG VIRTUELL TIGER AS",
     "isCurrentEndUser": false,
     "isDeleted": false,
-"partyUuid": "party:uuid:here"
+    "partyUuid": "party:uuid:here",
+    "partyId": 6,
   },
   {
     "party": "urn:altinn:organization:identifier-no:313776816",
@@ -77,20 +71,18 @@ export const parties: PartyFieldsFragment[] = [
       {
         "party": "urn:altinn:organization:identifier-no:315073693",
         "partyType": "Organization",
-        "isAccessManager": false,
-        "isMainAdministrator": false,
         "name": "PLUTSELIG NYBAKT TIGER AS",
         "isCurrentEndUser": false,
         "partyUuid": "urn:altinn:person:identifier-no:1337",
-        "isDeleted": false
+        "isDeleted": false,
+        "partyId": 7,
       }
     ],
-    "isAccessManager": false,
-    "isMainAdministrator": false,
     "name": "PLUTSELIG NYBAKT TIGER AS",
     "isCurrentEndUser": false,
     "isDeleted": false,
-"partyUuid": "party:uuid:here"
+    "partyUuid": "party:uuid:here",
+    "partyId": 8,
   },
   {
     "party": "urn:altinn:organization:identifier-no:312409216",
@@ -100,19 +92,17 @@ export const parties: PartyFieldsFragment[] = [
       {
         "party": "urn:altinn:organization:identifier-no:314518748",
         "partyType": "Organization",
-        "isAccessManager": false,
-        "isMainAdministrator": false,
         "name": "STYRBAR UTTRYKKSFULL TIGER AS",
         "isCurrentEndUser": false,
         "partyUuid": "urn:altinn:person:identifier-no:1337",
-        "isDeleted": false
+        "isDeleted": false,
+        "partyId": 9,
       }
     ],
-    "isAccessManager": false,
-    "isMainAdministrator": false,
     "name": "STYRBAR UTTRYKKSFULL TIGER AS",
     "isCurrentEndUser": false,
     "isDeleted": false,
-"partyUuid": "party:uuid:here"
+    "partyUuid": "party:uuid:here",
+    "partyId": 10
   }
 ]

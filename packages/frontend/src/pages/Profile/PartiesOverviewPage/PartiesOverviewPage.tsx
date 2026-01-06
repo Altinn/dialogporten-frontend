@@ -2,16 +2,20 @@ import {
   AccountList,
   AccountListItemDetails,
   type AccountListItemProps,
+  type AccountOrganizationItemProps,
+  type AvatarType,
+  type AvatarVariant,
   Heading,
   PageBase,
   PageNav,
   Section,
   type SettingsItemProps,
+  Switch,
   Toolbar,
 } from '@altinn/altinn-components';
 import type { AccountListItemType } from '@altinn/altinn-components/dist/types/lib/components/Account/AccountListItem';
 import { BellIcon, HashtagIcon, InboxIcon } from '@navikt/aksel-icons';
-import { useMemo, useState } from 'react';
+import { type ElementType, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps, useLocation } from 'react-router-dom';
 import { useProfile } from '..';
@@ -27,19 +31,22 @@ import { PageRoutes } from '../../routes.ts';
 import { getBreadcrumbs } from '../Settings/Settings.tsx';
 import { useSettings } from '../Settings/useSettings.tsx';
 import { useAccountFilters } from '../useAccountFilters.tsx';
+import styles from './partiesOverviewPage.module.css';
 
 export const PartiesOverviewPage = () => {
   const { t } = useTranslation();
   const { search } = useLocation();
   const { getAccountAlertSettings, settings } = useSettings();
   const { addFavoriteParty, deleteFavoriteParty } = useProfile();
-  const { parties, selectedParties, allOrganizationsSelected, isLoading } = useParties();
+  const { parties, selectedParties, allOrganizationsSelected, isLoading, flattenedParties } = useParties();
   const [searchValue, setSearchValue] = useState<string>('');
   const [expandedItem, setExpandedItem] = useState<string>('');
+  const [includeDeletedParties, setIncludeDeletedParties] = useState<boolean>(false);
 
   const { filters, getFilterLabel, filterState, setFilterState, filteredParties, isSearching } = useAccountFilters({
     searchValue,
     parties,
+    includeDeletedParties,
   });
 
   const { accounts, accountGroups } = useAccounts({
@@ -112,11 +119,86 @@ export const PartiesOverviewPage = () => {
     ];
   };
 
+  const createSubPartyItem = (
+    subParty: { party: string; name: string; isDeleted: boolean },
+    currentParty: { party: string } | undefined,
+  ): AccountOrganizationItemProps => ({
+    avatar: {
+      type: 'company' as AvatarType,
+      name: subParty.name,
+      variant: 'outline' as AvatarVariant,
+      isDeleted: subParty.isDeleted,
+    },
+    title: subParty.name,
+    description: `${formatNorwegianId(subParty.party, false)} `,
+    selected: subParty.party === currentParty?.party,
+    as: 'span' as ElementType,
+  });
+
+  const createOrganizationItem = (
+    item: {
+      party: string;
+      name: string;
+      isDeleted: boolean;
+      parentId?: string;
+      subParties?: Array<{ party: string; name: string; isDeleted: boolean }>;
+    },
+    currentParty: { party: string } | undefined,
+  ): AccountOrganizationItemProps => ({
+    avatar: {
+      type: 'company' as AvatarType,
+      name: item.name,
+      variant: item.parentId ? ('outline' as AvatarVariant) : undefined,
+      isDeleted: item.isDeleted,
+    },
+    items: item.subParties?.map((subParty) => createSubPartyItem(subParty, item)),
+    title: item.name,
+    description: formatNorwegianId(item.party, false),
+    selected: item.party === currentParty?.party,
+    as: 'span' as ElementType,
+  });
+
+  const getOrganizationAccounts = (
+    currentParty: { party: string } | undefined,
+    parentParty: { party: string } | undefined,
+    flattenedParties: Array<{
+      party: string;
+      name: string;
+      isDeleted: boolean;
+      parentId?: string;
+      subParties?: Array<{ party: string; name: string; isDeleted: boolean }>;
+    }>,
+  ) => {
+    const organizationAccounts = parentParty
+      ? flattenedParties?.filter((item) => item.party.includes(parentParty.party)) || []
+      : flattenedParties?.filter((item) => item.party.includes(currentParty?.party ?? '')) || [];
+
+    return organizationAccounts?.map((item) => createOrganizationItem(item, currentParty));
+  };
+
   const PartyDetails = ({
     type,
     isCurrentEndUser,
     id,
   }: { type: AccountListItemType; isCurrentEndUser: boolean; id: string }) => {
+    const currentParty = flattenedParties?.find((item) => item.party === id);
+    const parentParty = flattenedParties?.find((item) => item.partyUuid === currentParty?.parentId);
+
+    const organizationAccounts = useMemo(() => {
+      if (type !== 'company') return undefined;
+      return getOrganizationAccounts(
+        currentParty,
+        parentParty,
+        flattenedParties as Array<{
+          party: string;
+          isDeleted: boolean;
+          name: string;
+          parentId?: string;
+          subParties?: Array<{ party: string; name: string; isDeleted: boolean }>;
+        }>,
+      );
+    }, [type, currentParty, parentParty]);
+
     if (isCurrentEndUser) {
       const contactSettings = settings.filter((s) => s.groupId === 'contact');
       return (
@@ -129,11 +211,13 @@ export const PartiesOverviewPage = () => {
     }
 
     if (type === 'company') {
+      const companySettings = getCompanySettings(id);
       return (
         <AccountListItemDetails
           color="company"
-          settings={getCompanySettings(id)}
+          settings={companySettings}
           buttons={getPartyButtons(isCurrentEndUser, id)}
+          organization={organizationAccounts}
         />
       );
     }
@@ -154,8 +238,10 @@ export const PartiesOverviewPage = () => {
   const mapAccountToPartyListItem = (account: PartyItemProp): AccountListItemProps => {
     const { label: _, variant: __, ...party } = account;
     const itemId = account.id + account.groupId;
+    const accountType = party.type === 'subunit' ? 'company' : party.type;
     return {
       ...party,
+      type: accountType as AccountListItemType,
       groupId: String(party.groupId),
       favourite: party.isFavorite,
       isCurrentEndUser: party.isCurrentEndUser,
@@ -167,7 +253,13 @@ export const PartiesOverviewPage = () => {
       as: 'button',
       title: party.name,
       onToggleFavourite: () => onToggleFavourite(party.uuid, party.isFavorite),
-      children: <PartyDetails type={party.type} isCurrentEndUser={party.isCurrentEndUser ?? false} id={party.id} />,
+      children: (
+        <PartyDetails
+          type={accountType as AccountListItemType}
+          isCurrentEndUser={party.isCurrentEndUser ?? false}
+          id={party.id}
+        />
+      ),
       contextMenu: {
         id: party.groupId + party.id + '-menu',
         items: [
@@ -207,9 +299,24 @@ export const PartiesOverviewPage = () => {
           filterState={filterState}
           onFilterStateChange={setFilterState}
           filters={filters}
-        />
+        >
+          {filterState?.partyScope?.[0] !== 'PERSONS' && (
+            <Switch
+              size="xs"
+              checked={includeDeletedParties}
+              onChange={(e) => setIncludeDeletedParties(e.target.checked)}
+              aria-checked={includeDeletedParties}
+              label={t('parties.filter.show_deleted')}
+              className={styles.deletedFilter}
+            />
+          )}
+        </Toolbar>
         {isSearching && hits.length === 0 && <Heading size="lg">{t('profile.settings.no_results')}</Heading>}
-        <AccountList groups={isSearching ? searchGroup : accountGroups} items={isSearching ? hits : accountListItems} />
+        <AccountList
+          isVirtualized
+          groups={isSearching ? searchGroup : accountGroups}
+          items={isSearching ? hits : accountListItems}
+        />
       </Section>
     </PageBase>
   );

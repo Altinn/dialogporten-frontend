@@ -29,11 +29,20 @@ param applicationGatewayConfiguration = {
     minCapacity: 1
     maxCapacity: 2
   }
-  hostName: 'af.yt.altinn.cloud'
-  sslCertificate: {
-    keyVaultName: readEnvironmentVariable('CERTIFICATE_KEY_VAULT_NAME')
-    secretKey: 'af-yt-altinn-cloud'
-  }
+  hostNames: [
+    {
+      name: 'af.yt01.altinn.cloud'
+      sslCertificateSecretKey: 'af-yt01-altinn-cloud'
+      enableAvailabilityTest: true
+    }
+    {
+      name: 'af.yt.altinn.cloud'
+      sslCertificateSecretKey: 'af-yt-altinn-cloud'
+      redirectTo: 'af.yt01.altinn.cloud'
+      enableAvailabilityTest: false
+    }
+  ]
+  sslCertificateKeyVaultName: readEnvironmentVariable('CERTIFICATE_KEY_VAULT_NAME')
 } 
 
 // PostgreSQL Configuration
@@ -54,6 +63,19 @@ param postgresConfiguration = {
   availabilityZone: '1'
   version: '15'
 }
+
+param containerAppEnvWorkloadProfiles = [
+  {
+    name: 'Consumption'
+    workloadProfileType: 'Consumption'
+  }
+  {
+    name: 'Dedicated-D4'
+    workloadProfileType: 'D4'
+    minimumCount: 2
+    maximumCount: 10
+  }
+]
 
 // Altinn Product Dialogporten: Developers Dev
 param entraDevelopersGroupId = 'c12e51e3-5cbd-4229-8a31-5394c423fb5f'

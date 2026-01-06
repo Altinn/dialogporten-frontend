@@ -1,6 +1,7 @@
 import {
   type AddFavoritePartyMutation,
   type AddFavoritePartyToGroupMutation,
+  type Altinn2messagesQuery,
   type CreateSavedSearchMutation,
   type DeleteFavoritePartyMutation,
   type DeleteNotificationSettingMutation,
@@ -20,6 +21,7 @@ import {
   getSdk,
 } from 'bff-types-generated';
 import { ClientError, GraphQLClient, type RequestMiddleware, type ResponseMiddleware } from 'graphql-request';
+import i18n from 'i18next';
 import { Analytics } from '../analytics';
 import { logError } from '../utils/errorLogger';
 
@@ -78,6 +80,10 @@ const responseMiddleware: ResponseMiddleware = (response) => {
       const error: Error = response as Error;
       error.name = 'GraphQLClientError';
       error.message = errorMessage;
+
+      if (errorMessage.includes('Request failed with status code 401')) {
+        return;
+      }
 
       logError(
         error,
@@ -167,6 +173,8 @@ export const graphQLSDK = getSdk(
 
 export const profile = graphQLSDK.profile;
 export const fetchSavedSearches = (): Promise<SavedSearchesQuery> => graphQLSDK.savedSearches();
+export const fetchAltinn2Messages = (selectedAccountIdentifier: string): Promise<Altinn2messagesQuery> =>
+  graphQLSDK.altinn2messages({ selectedAccountIdentifier });
 export const fetchOrganizations = (): Promise<OrganizationsQuery> => graphQLSDK.organizations();
 export const deleteSavedSearch = (id: number): Promise<DeleteSavedSearchMutation> =>
   graphQLSDK.DeleteSavedSearch({ id });
@@ -212,10 +220,16 @@ export const searchDialogs = (
 export const searchAutocompleteDialogs = (
   partyURIs: string[],
   search: string | undefined,
+  enableSearchLanguageCode: boolean,
 ): Promise<GetSearchAutocompleteDialogsQuery> => {
   return graphQLSDK.getSearchAutocompleteDialogs({
     partyURIs,
     search,
+    limit: 6,
+    ...(enableSearchLanguageCode && {
+      searchLanguageCode: i18n.language,
+    }),
+    searchLanguageCode: i18n.language,
   });
 };
 

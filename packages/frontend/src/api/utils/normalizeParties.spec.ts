@@ -9,12 +9,11 @@ describe('normalizeParties', () => {
       partyType: 'Person',
       subParties: [],
       hasOnlyAccessToSubParties: false,
-      isAccessManager: true,
-      isMainAdministrator: false,
       name: 'EDEL REIERSEN',
       isCurrentEndUser: true,
       isDeleted: false,
       partyUuid: 'urn:altinn:person:identifier-no:1337',
+      partyId: 1,
     },
     {
       party: 'urn:altinn:organization:identifier-no:1',
@@ -24,20 +23,18 @@ describe('normalizeParties', () => {
         {
           party: 'urn:altinn:organization:identifier-no:2',
           partyType: 'Organization',
-          isAccessManager: true,
-          isMainAdministrator: true,
           name: 'STEINKJER OG FLATEBY',
           isCurrentEndUser: false,
           partyUuid: 'urn:altinn:person:identifier-no:1337',
           isDeleted: false,
+          partyId: 2,
         },
       ],
-      isAccessManager: true,
-      isMainAdministrator: true,
       name: 'MYSUSÆTER OG ØSTRE GAUSDAL',
       isCurrentEndUser: false,
       isDeleted: false,
       partyUuid: 'urn:altinn:person:identifier-no:1338',
+      partyId: 3,
     },
   ];
 
@@ -45,7 +42,7 @@ describe('normalizeParties', () => {
     const result = normalizeFlattenParties(parties);
 
     expect(result.length).toBe(3);
-    expect(result[0].name).toBe('Reiersen Edel');
+    expect(result[0].name).toBe('Edel Reiersen');
     expect(result[1].name).toBe('Mysusæter Og Østre Gausdal');
     expect(result[2].name).toBe('Steinkjer Og Flateby');
   });

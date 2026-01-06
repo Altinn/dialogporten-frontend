@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       environment_input:
-        description: "Environment input that may contain descriptive text (e.g., 'test (af.at.altinn.cloud)')"
+        description: "Environment input that may contain descriptive text (e.g., 'test (af.at23.altinn.cloud)')"
         required: true
         type: string
     outputs:
@@ -27,4 +27,4 @@ jobs:
           CLEAN_ENV=$(echo "$ENVIRONMENT" | cut -d' ' -f1)
           echo "Original input: $ENVIRONMENT"
           echo "Parsed environment: $CLEAN_ENV"
-          echo "environment=$CLEAN_ENV" >> $GITHUB_OUTPUT 
+          echo "environment=$CLEAN_ENV" >> $GITHUB_OUTPUT

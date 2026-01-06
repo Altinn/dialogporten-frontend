@@ -1,11 +1,12 @@
 import {
-  type BookmarksSectionProps,
+  type BookmarksSettingsItemProps,
+  type BookmarksSettingsListProps,
   type FilterState,
   type QueryItemType,
   useSnackbar,
 } from '@altinn/altinn-components';
 import type { QueryItemProps } from '@altinn/altinn-components';
-import type { EditableBookmarkProps } from '@altinn/altinn-components/dist/types/lib/components';
+import { MagnifyingGlassIcon, PencilIcon, TrashIcon } from '@navikt/aksel-icons';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   DialogStatus,
@@ -15,9 +16,9 @@ import {
   type SearchDataValueFilter,
   SystemLabel,
 } from 'bff-types-generated';
-import { type ChangeEvent, useMemo, useState } from 'react';
+import { type ChangeEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, type LinkProps } from 'react-router-dom';
+import { Link, type LinkProps, useNavigate } from 'react-router-dom';
 import { Analytics } from '../../analytics';
 import { ANALYTICS_EVENTS } from '../../analyticsEvents';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
@@ -30,7 +31,7 @@ import { useFormatDistance } from '../../i18n/useDateFnsLocale.tsx';
 import { DateFilterOption } from '../Inbox/filters.ts';
 import { useOrganizations } from '../Inbox/useOrganizations.ts';
 import { PageRoutes } from '../routes.ts';
-import { buildSavedSearchURL } from './bookmarkURL.ts';
+import { buildCurrentStateURL, buildSavedSearchURL } from './bookmarkURL.ts';
 import { autoFormatRelativeTime, getMostRecentSearchDate } from './searchUtils.ts';
 
 interface UseSavedSearchesOutput {
@@ -41,7 +42,7 @@ interface UseSavedSearchesOutput {
   currentPartySavedSearches: SavedSearchesFieldsFragment[] | undefined;
   saveSearch: (props: HandleSaveSearchProps) => Promise<void>;
   deleteSearch: (savedSearchId: number) => Promise<void>;
-  bookmarkSectionProps: BookmarksSectionProps | undefined;
+  bookmarkSectionProps: BookmarksSettingsListProps | undefined;
 }
 
 interface HandleSaveSearchProps {
@@ -137,10 +138,11 @@ export const filterSavedSearches = (
 
 export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesOutput => {
   const [isCTALoading, setIsCTALoading] = useState<boolean>(false);
-  const [savedSearchInputValue, setSavedSearchInputValue] = useState<string>('');
+  const [showModalItemId, setShowModalItemId] = useState<string | null>(null);
+  const [inputValues, setInputValues] = useState<Record<string, string>>({});
   const { organizations } = useOrganizations();
+  const navigate = useNavigate();
 
-  const [expandedId, setExpandedId] = useState<string>('');
   const formatDistance = useFormatDistance();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -158,14 +160,6 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
   const endUsersSavedSearches = (data?.savedSearches ?? []) as SavedSearchesFieldsFragment[];
   const lastUpdated = getMostRecentSearchDate(endUsersSavedSearches);
   const currentPartySavedSearches = filterSavedSearches(endUsersSavedSearches, selectedPartyIds || []);
-
-  const handleOnToggle = (itemId: string) => {
-    const nextExpandedId = itemId === expandedId ? '' : itemId;
-    if (nextExpandedId && endUsersSavedSearches.length) {
-      setSavedSearchInputValue(endUsersSavedSearches.find((item) => item.id.toString() === nextExpandedId)?.name ?? '');
-    }
-    setExpandedId(nextExpandedId);
-  };
 
   const saveSearch = async ({
     filters,
@@ -247,14 +241,14 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
     }
   };
 
-  const handleSaveTitle = async (id: number) => {
+  const handleSaveTitle = async (id: number, name: string) => {
     try {
-      await updateSavedSearch(id, savedSearchInputValue ?? '');
+      await updateSavedSearch(id, name ?? '');
 
-      if (savedSearchInputValue) {
+      if (name) {
         Analytics.trackEvent(ANALYTICS_EVENTS.SAVED_SEARCH_TITLE_UPDATE_SUCCESS, {
           'search.id': id,
-          'search.newTitleLength': savedSearchInputValue?.length || 0,
+          'search.newTitleLength': name?.length || 0,
         });
       }
 
@@ -263,8 +257,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
         color: 'accent',
       });
       void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.SAVED_SEARCHES] });
-      setExpandedId('');
-    } catch (error) {
+    } catch {
       openSnackbar({
         message: t('savedSearches.update_failed'),
         color: 'danger',
@@ -272,30 +265,31 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
     }
   };
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  const bookmarkSectionProps = useMemo(() => {
-    if (isLoading) {
-      return {
-        title: t('savedSearches.loading_saved_searches'),
-        items: Array.from({ length: 3 }, (_, i) => ({
-          id: i.toString(),
-          title: t('savedSearches.loading_saved_searches') + randomString(),
-          expandIconAltText: t('savedSearches.expand_icon_alt_text'),
-        })),
-        loading: true,
-      };
-    }
+  let bookmarkSectionProps: BookmarksSettingsListProps | undefined;
 
-    if (isSuccess && !currentPartySavedSearches?.length) {
-      return {
-        title: t('savedSearches.no_saved_searches'),
-        items: [],
-        description: t('savedSearches.noSearchesFound'),
-      };
-    }
-
-    const items: EditableBookmarkProps[] = currentPartySavedSearches.map((savedSearch) => {
+  if (isLoading) {
+    bookmarkSectionProps = {
+      title: t('savedSearches.loading_saved_searches'),
+      items: Array.from({ length: 3 }, (_, i) => ({
+        id: i.toString(),
+        title: t('savedSearches.loading_saved_searches') + randomString(),
+        expandIconAltText: t('savedSearches.expand_icon_alt_text'),
+        onClose: () => setShowModalItemId(null),
+      })),
+      loading: true,
+    };
+  } else if (isSuccess && !currentPartySavedSearches?.length) {
+    bookmarkSectionProps = {
+      title: t('savedSearches.no_saved_searches'),
+      items: [],
+      description: t('savedSearches.noSearchesFound'),
+    };
+  } else {
+    const items: BookmarksSettingsItemProps[] = currentPartySavedSearches.map((savedSearch) => {
       const bookmarkLink = buildSavedSearchURL(savedSearch);
+      const searchId = savedSearch.id.toString();
+      const currentInputValue = inputValues[searchId] ?? savedSearch.name ?? '';
+
       const params: QueryItemProps[] = (savedSearch.data?.filters ?? []).map((filter) => {
         if (filter?.id === 'org') {
           const org = getOrganization(organizations, filter.value ?? '')?.name || filter.value;
@@ -324,20 +318,60 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
       }
 
       return {
-        id: savedSearch.id.toString(),
-        expandIconAltText: t('savedSearches.expand_icon_alt_text'),
-        title: savedSearch.name ?? '',
+        id: searchId,
+        title: savedSearch.name || t('filter_bar.saved_search'),
         as: (props: LinkProps) => <Link {...props} to={bookmarkLink} />,
         onChange: (e: ChangeEvent<HTMLInputElement>) => {
-          setSavedSearchInputValue(e.target.value);
+          setInputValues((prev) => ({ ...prev, [searchId]: e.target.value }));
         },
-        inputValue: savedSearchInputValue,
+        inputValue: currentInputValue,
+        titleField: {
+          label: t('savedSearches.bookmark.item_input_label'),
+          placeholder: t('savedSearches.bookmark.item_input_placeholder'),
+          helperText: t('savedSearches.bookmark.item_input_helper'),
+        },
         saveButton: {
           label: t('savedSearches.save_search'),
+          disabled: currentInputValue === savedSearch.name,
           onClick: () => {
-            void handleSaveTitle(savedSearch.id);
+            void handleSaveTitle(savedSearch.id, currentInputValue);
           },
         },
+        onClose: () => setShowModalItemId(null),
+        open: showModalItemId === savedSearch.id.toString(),
+        contextMenu: {
+          id: `menu-saved-search-${savedSearch.id}`,
+          items: [
+            {
+              id: 'search-inbox',
+              title: t('inbox.search.placeholder'),
+              icon: MagnifyingGlassIcon,
+              onClick: () => {
+                navigate(
+                  `${PageRoutes.inbox}?${buildCurrentStateURL(convertFiltersToFilterState(savedSearch.data?.filters ?? []), savedSearch.data?.searchString ?? '', fromPathToViewType(savedSearch.data?.fromView ?? '') ?? 'inbox')}`,
+                );
+              },
+            },
+            {
+              id: 'edit-saved-search',
+              title: t('savedSearches.edit_title'),
+              icon: PencilIcon,
+              onClick: () => {
+                setShowModalItemId(savedSearch.id.toString());
+              },
+            },
+            {
+              id: 'delete-saved-search',
+              title: t('savedSearches.delete_search_menu'),
+              icon: TrashIcon,
+              onClick: () => {
+                void deleteSearch(savedSearch.id);
+              },
+            },
+          ],
+          onClose: () => console.info('close'),
+        },
+
         removeButton: {
           label: t('savedSearches.delete_search'),
           onClick: () => {
@@ -348,22 +382,15 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
       };
     });
 
-    return {
+    bookmarkSectionProps = {
       title: t('savedSearches.title', { count: currentPartySavedSearches?.length }),
       items,
       description: lastUpdated
         ? `${t('savedSearches.lastUpdated')}${autoFormatRelativeTime(lastUpdated, formatDistance)}`
         : '',
-      expandedId,
-      onToggle: handleOnToggle,
-      titleField: {
-        label: t('savedSearches.bookmark.item_input_label'),
-        placeholder: t('savedSearches.bookmark.item_input_placeholder'),
-        helperText: t('savedSearches.bookmark.item_input_helper'),
-      },
       untitled: t('savedSearches.bookmark.untitled'),
     };
-  }, [isLoading, isSuccess, currentPartySavedSearches, expandedId]);
+  }
 
   return {
     savedSearches: endUsersSavedSearches,

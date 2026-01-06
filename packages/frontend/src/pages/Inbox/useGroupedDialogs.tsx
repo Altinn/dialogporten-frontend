@@ -134,7 +134,7 @@ const useGroupedDialogs = ({
       id: 'dialog-context-menu-' + item.id,
       placement: 'right',
       items: [
-        ...systemLabelActions(item.id, item.label),
+        ...(item ? systemLabelActions(item.id, item.label, item.unread) : []),
         {
           id: 'seenby-log',
           groupId: 'logs',
@@ -164,11 +164,11 @@ const useGroupedDialogs = ({
       summary: item.viewType === 'inbox' ? item.summary : undefined,
       state: getDialogState(item.viewType),
       recipient: item.recipient,
-      color: allOrganizationsSelected ? 'company' : undefined,
+      color: item.recipient.type?.toLowerCase() as 'person' | 'company',
       grouped: allOrganizationsSelected,
       attachmentsCount: item.guiAttachmentCount,
       seenByLog: item.seenByLog,
-      unread: item.seenSinceLastContentUpdate.length === 0,
+      unread: item.unread,
       status: getDialogStatus(item.status, t),
       extendedStatusLabel: item.extendedStatus,
       controls: <ContextMenu {...contextMenu} />,

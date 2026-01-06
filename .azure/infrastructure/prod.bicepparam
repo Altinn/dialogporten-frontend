@@ -31,11 +31,14 @@ param applicationGatewayConfiguration = {
     minCapacity: 1
     maxCapacity: 4
   }
-  hostName: 'af.altinn.no'
-  sslCertificate: {
-    keyVaultName: readEnvironmentVariable('CERTIFICATE_KEY_VAULT_NAME')
-    secretKey: 'af-altinn-no'
-  }
+  hostNames: [
+    {
+      name: 'af.altinn.no'
+      sslCertificateSecretKey: 'af-altinn-no'
+      enableAvailabilityTest: true
+    }
+  ]
+  sslCertificateKeyVaultName: readEnvironmentVariable('CERTIFICATE_KEY_VAULT_NAME')
   zones: ['1', '2']
 }
 
@@ -65,5 +68,17 @@ param entraDevelopersGroupId = 'a94de4bf-0a83-4d30-baba-0c6a7365571c'
 // Container App Environment
 param containerAppEnvZoneRedundancyEnabled = true
 
+param containerAppEnvWorkloadProfiles = [
+  {
+    name: 'Consumption'
+    workloadProfileType: 'Consumption'
+  }
+  {
+    name: 'Dedicated-D4'
+    workloadProfileType: 'D4'
+    minimumCount: 3
+    maximumCount: 10
+  }
+]
 // Maintenance Mode
 param enableMaintenancePage = false

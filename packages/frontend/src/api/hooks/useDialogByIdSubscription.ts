@@ -1,18 +1,28 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { DialogEventType } from 'bff-types-generated';
-import { useEffect, useRef, useState } from 'react';
+import { type DialogEventPayload, DialogEventType } from 'bff-types-generated';
+import { useCallback, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { SSE } from 'sse.js';
+import { config } from '../../config.ts';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
+import { useFeatureFlag } from '../../featureFlags';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { pruneSearchQueryParams } from '../../pages/Inbox/queryParams.ts';
 import { PageRoutes } from '../../pages/routes.ts';
+import { getSubscriptionQuery } from '../subscription.ts';
 
 type EventSourceEvent = Error & {
   responseCode: number;
 };
-export const useDialogByIdSubscription = (dialogId: string | undefined, dialogToken: string | undefined): boolean => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+
+export type DialogEventData = {
+  data?: {
+    dialogEvents?: DialogEventPayload;
+  };
+};
+
+export const useDialogByIdSubscription = (dialogId: string | undefined, dialogToken: string | undefined) => {
+  const disableSubscriptions = useFeatureFlag<boolean>('dialogporten.disableSubscriptions');
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const searchParams = new URLSearchParams(window.location.search);
@@ -23,11 +33,16 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
   const eventSourceRef = useRef<SSE | null>(null);
   const lastInvalidatedDate = useRef(new Date().toISOString());
   const isFirstRender = useRef(true);
+  const onMessageRef = useRef<((eventData: DialogEventData, rawEvent: MessageEvent) => void) | undefined>(undefined);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
+      return;
+    }
+
+    if (disableSubscriptions) {
       return;
     }
 
@@ -45,16 +60,21 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
         eventSourceRef.current = null;
       }
 
-      const eventSource = new SSE(`/api/graphql/stream?dialogId=${dialogId}`, {
-        headers: { 'digdir-dialog-token': dialogToken },
-        withCredentials: true,
+      const eventSource = new SSE(config.dialogportenStreamUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          Accept: 'text/event-stream',
+          Authorization: `Bearer ${dialogToken}`,
+        },
+        payload: JSON.stringify({
+          query: getSubscriptionQuery(dialogId),
+          variables: {},
+          operationName: 'sub',
+        }),
       });
-      eventSourceRef.current = eventSource;
 
-      eventSource.addEventListener('open', () => {
-        if (cancelled) return;
-        setIsOpen(true);
-      });
+      eventSourceRef.current = eventSource;
 
       eventSource.addEventListener('next', (event: MessageEvent) => {
         if (cancelled) return;
@@ -66,6 +86,7 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
           if (diff <= 500) return;
           lastInvalidatedDate.current = now;
 
+          onMessageRef.current?.(jsonPayload, event);
           if (updatedType === DialogEventType.DialogDeleted) {
             navigate(PageRoutes.inbox + pruneSearchQueryParams(search.toString()));
           } else if (updatedType === DialogEventType.DialogUpdated) {
@@ -89,12 +110,10 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
         if (cancelled) return;
         if (err.responseCode === 0) {
           eventSource.close();
-          setIsOpen(false);
           return;
         }
         logError(err, { context: 'useDialogByIdSubscription.onError', dialogId }, 'EventSource connection error');
         eventSource.close();
-        setIsOpen(false);
         setTimeout(connect, 500);
       });
     };
@@ -110,7 +129,13 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
         eventSourceRef.current = null;
       }
     };
-  }, [dialogId, dialogToken, search, isMock]);
+  }, [dialogId, dialogToken, search, isMock, disableSubscriptions]);
 
-  return isMock || isOpen;
+  const onMessageEvent = useCallback((handler: (eventData: DialogEventData, rawEvent: MessageEvent) => void) => {
+    onMessageRef.current = handler;
+  }, []);
+
+  return {
+    onMessageEvent,
+  };
 };

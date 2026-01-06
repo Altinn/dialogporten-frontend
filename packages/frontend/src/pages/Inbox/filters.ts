@@ -1,4 +1,4 @@
-import type { BadgeProps, FilterState, ToolbarFilterProps } from '@altinn/altinn-components';
+import type { FilterState, ToolbarFilterProps } from '@altinn/altinn-components';
 import {
   type CountableDialogFieldsFragment,
   DialogStatus,
@@ -72,13 +72,6 @@ export enum FilterCategory {
   UPDATED = 'updated',
 }
 
-const getFilterBadgeProps = (filterCount: number | undefined): BadgeProps => {
-  if (typeof filterCount === 'number' && filterCount > 0) {
-    return { label: String(filterCount), size: 'sm' };
-  }
-  return { size: 'xs', label: '' };
-};
-
 const getFilteredDialogs = (
   dialogs: CountableDialogFieldsFragment[],
   currentFilters: FilterState,
@@ -120,54 +113,7 @@ const getFilteredDialogs = (
   });
 };
 
-const createDateOptions = (dates: string[]): ToolbarFilterProps['options'] => {
-  const now = new Date();
-  const startOfSixMonthsAgo = subMonths(now, 6);
-  const sameDateLastYear = subYears(now, 1);
-
-  const dateCounts: Record<DateFilterOption, number> = {
-    [DateFilterOption.TODAY]: 0,
-    [DateFilterOption.THIS_WEEK]: 0,
-    [DateFilterOption.THIS_MONTH]: 0,
-    [DateFilterOption.LAST_SIX_MONTHS]: 0,
-    [DateFilterOption.LAST_TWELVE_MONTHS]: 0,
-    [DateFilterOption.OLDER_THAN_ONE_YEAR]: 0,
-  };
-
-  for (const dateStr of dates) {
-    const date = new Date(dateStr);
-
-    // TODAY
-    if (startOfDay(date).toISOString() === startOfDay(now).toISOString()) {
-      dateCounts[DateFilterOption.TODAY]++;
-    }
-
-    // THIS_WEEK
-    if (startOfWeek(date, { weekStartsOn: 0 }).toISOString() === startOfWeek(now, { weekStartsOn: 0 }).toISOString()) {
-      dateCounts[DateFilterOption.THIS_WEEK]++;
-    }
-
-    // THIS_MONTH
-    if (startOfMonth(date).toISOString() === startOfMonth(now).toISOString()) {
-      dateCounts[DateFilterOption.THIS_MONTH]++;
-    }
-
-    // LAST_SIX_MONTHS
-    if (date >= startOfSixMonthsAgo && date <= endOfDay(now)) {
-      dateCounts[DateFilterOption.LAST_SIX_MONTHS]++;
-    }
-
-    // LAST_TWELVE_MONTHS
-    if (date >= sameDateLastYear && date <= endOfDay(now)) {
-      dateCounts[DateFilterOption.LAST_TWELVE_MONTHS]++;
-    }
-
-    // OLDER_THAN_ONE_YEAR
-    if (date < sameDateLastYear) {
-      dateCounts[DateFilterOption.OLDER_THAN_ONE_YEAR]++;
-    }
-  }
-
+const createDateOptions = (): ToolbarFilterProps['options'] => {
   const options = [
     {
       value: DateFilterOption.TODAY,
@@ -198,7 +144,6 @@ const createDateOptions = (dates: string[]): ToolbarFilterProps['options'] => {
   return options.map((option) => ({
     label: t(`filter.date.${option.value.toLowerCase()}`),
     value: option.value,
-    badge: getFilterBadgeProps(dateCounts[option.value]),
     groupId: option.groupId,
   }));
 };
@@ -222,30 +167,18 @@ const createSenderOrgFilter = (
       .map((org) => ({
         label: getOrganization(allOrganizations, org)?.name || org,
         value: org,
-        count: orgCount[org] || 0,
       }))
       .filter((option) => {
         if (orgsFromSearchState.includes(option.value)) {
           return true;
         }
-        return option.count > 0;
+        return (orgCount[option.value] || 0) > 0;
       })
       .sort((a, b) => a.label?.localeCompare(b.label)),
   };
 };
 
-const createStatusFilter = (
-  allDialogs: CountableDialogFieldsFragment[],
-  currentFilters: FilterState = {},
-): ToolbarFilterProps => {
-  const filteredDialogs = getFilteredDialogs(allDialogs, currentFilters, FilterCategory.STATUS);
-  const statusCount = countOccurrences(filteredDialogs.map((d) => d.status));
-
-  const systemLabels = filteredDialogs
-    .map((d) => d.endUserContext?.systemLabels || [])
-    .map((labels) => getExclusiveLabel(labels));
-  const labelCounts = countOccurrences(systemLabels);
-
+const createStatusFilter = (): ToolbarFilterProps => {
   return {
     label: t('filter_bar.label.choose_status'),
     name: FilterCategory.STATUS,
@@ -266,73 +199,59 @@ const createStatusFilter = (
         label: t('status.not_applicable'),
         groupId: 'status-group-0',
         value: DialogStatus.NotApplicable,
-        count: statusCount[DialogStatus.NotApplicable] || 0,
       },
       {
         label: t('status.requires_attention'),
         groupId: 'status-group-1',
         value: DialogStatus.RequiresAttention,
-        count: statusCount[DialogStatus.RequiresAttention] || 0,
       },
       {
         label: t('status.awaiting'),
         groupId: 'status-group-1',
         value: DialogStatus.Awaiting,
-        count: statusCount[DialogStatus.Awaiting] || 0,
       },
       {
         label: t('status.in_progress'),
         groupId: 'status-group-1',
         value: DialogStatus.InProgress,
-        count: statusCount[DialogStatus.InProgress] || 0,
       },
       {
         label: t('status.completed'),
         groupId: 'status-group-1',
         value: DialogStatus.Completed,
-        count: statusCount[DialogStatus.Completed] || 0,
       },
       {
         label: t('status.draft'),
         groupId: 'status-group-2',
         value: DialogStatus.Draft,
-        count: statusCount[DialogStatus.Draft] || 0,
       },
       {
         label: t('status.sent'),
         groupId: 'status-group-2',
         value: SystemLabel.Sent,
-        count: labelCounts[SystemLabel.Sent] || 0,
       },
       {
         label: t('status.archive'),
         groupId: 'status-group-3',
         value: SystemLabel.Archive,
-        count: labelCounts[SystemLabel.Archive] || 0,
       },
       {
         label: t('status.bin'),
         groupId: 'status-group-3',
         value: SystemLabel.Bin,
-        count: labelCounts[SystemLabel.Bin] || 0,
       },
     ],
   };
 };
 
-const createUpdatedAtFilter = (
-  allDialogs: CountableDialogFieldsFragment[],
-  currentFilters: FilterState = {},
-): ToolbarFilterProps => {
-  const filteredDialogs = getFilteredDialogs(allDialogs, currentFilters, FilterCategory.UPDATED);
-
+const createUpdatedAtFilter = (): ToolbarFilterProps => {
   return {
     id: FilterCategory.UPDATED,
     name: FilterCategory.UPDATED,
     label: t('filter_bar.label.updated'),
     optionType: 'radio',
     removable: true,
-    options: createDateOptions(filteredDialogs.map((d) => d.contentUpdatedAt)),
+    options: createDateOptions(),
   };
 };
 
@@ -353,7 +272,6 @@ export const getFilters = ({
   allOrganizations,
   viewType,
   orgsFromSearchState = [],
-  currentFilters = {},
 }: {
   allDialogs: CountableDialogFieldsFragment[];
   allOrganizations: OrganizationFieldsFragment[];
@@ -361,9 +279,9 @@ export const getFilters = ({
   orgsFromSearchState?: string[];
   currentFilters?: FilterState;
 }): ToolbarFilterProps[] => {
-  const senderOrgFilter = createSenderOrgFilter(allDialogs, allOrganizations, orgsFromSearchState, currentFilters);
-  const statusFilter = createStatusFilter(allDialogs, currentFilters);
-  const updatedAtFilter = createUpdatedAtFilter(allDialogs, currentFilters);
+  const senderOrgFilter = createSenderOrgFilter(allDialogs, allOrganizations, orgsFromSearchState);
+  const statusFilter = createStatusFilter();
+  const updatedAtFilter = createUpdatedAtFilter();
 
   const filters = [senderOrgFilter, updatedAtFilter];
   if (viewType === 'inbox') {

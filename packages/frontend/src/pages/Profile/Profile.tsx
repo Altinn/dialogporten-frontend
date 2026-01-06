@@ -19,9 +19,10 @@ export const Profile = () => {
   useProfileOnboarding({ isLoading, pageType: 'main' });
 
   const userDisplayName = formatDisplayName({
-    fullName: user?.party?.name ?? '',
+    fullName: [user?.party?.person?.firstName, user?.party?.person?.middleName, user?.party?.person?.lastName]
+      .filter(Boolean)
+      .join(' '),
     type: 'person',
-    reverseNameOrder: true,
   });
 
   return (

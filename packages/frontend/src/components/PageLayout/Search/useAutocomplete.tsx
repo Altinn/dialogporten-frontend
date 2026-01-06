@@ -13,6 +13,7 @@ import {
 import { getPartyIds } from '../../../api/utils/dialog.ts';
 import { useAuthenticatedQuery } from '../../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../../constants/queryKeys.ts';
+import { useFeatureFlag } from '../../../featureFlags';
 import { pruneSearchQueryParams } from '../../../pages/Inbox/queryParams.ts';
 import { useOrganizations } from '../../../pages/Inbox/useOrganizations.ts';
 import { createSendersForAutocomplete } from './senderSuggestions.tsx';
@@ -86,6 +87,7 @@ const createAutocomplete = (
 
   const searchResult = mapSearchResults(searchValue ?? '');
   const suggestions = isLoading ? getSkeletonItems(resultsSize) : searchResult;
+  const maxCount = 5;
 
   return {
     items: [
@@ -93,7 +95,9 @@ const createAutocomplete = (
         <span>
           <mark>{searchValue}</mark> {t('search.autocomplete.inInbox')}
         </span>,
-        t('search.hits', { count: searchResults.length }),
+        searchResults.length > maxCount
+          ? t('search.max_reached', { count: maxCount })
+          : t('search.hits', { count: Math.min(searchResults.length, maxCount) }),
       ),
       ...suggestions,
     ],
@@ -111,10 +115,15 @@ interface UseAutocompleteDialogsOutput {
 
 export const useAutocomplete = ({ selectedParties, searchValue }: searchDialogsProps): UseAutocompleteDialogsOutput => {
   const partyURIs = getPartyIds(selectedParties);
-  const debouncedSearchString = useDebounce(searchValue, 300)[0];
+  const enableSearchLanguageCode = useFeatureFlag<boolean>('dialogporten.enableSearchLanguageCode');
+  const debouncedSearchString = useDebounce(searchValue, 500)[0];
   const { dialogCounts: allDialogs } = useDialogsCount();
   const { organizations } = useOrganizations();
-  const enabled = !!debouncedSearchString && debouncedSearchString.length > 2 && selectedParties.length > 0;
+  const enabled =
+    !!debouncedSearchString &&
+    debouncedSearchString.length > 2 &&
+    selectedParties.length > 0 &&
+    selectedParties.length <= 20;
   const {
     data: hits,
     isSuccess,
@@ -122,7 +131,7 @@ export const useAutocomplete = ({ selectedParties, searchValue }: searchDialogsP
     isFetching,
   } = useAuthenticatedQuery<GetSearchAutocompleteDialogsQuery>({
     queryKey: [QUERY_KEYS.SEARCH_AUTOCOMPLETE_DIALOGS, partyURIs, debouncedSearchString],
-    queryFn: () => searchAutocompleteDialogs(partyURIs, debouncedSearchString),
+    queryFn: () => searchAutocompleteDialogs(partyURIs, debouncedSearchString, enableSearchLanguageCode),
     staleTime: 1000 * 60 * 10,
     enabled,
     gcTime: 0,

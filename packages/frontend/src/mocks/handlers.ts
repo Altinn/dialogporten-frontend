@@ -4,7 +4,11 @@ import {
   SavedSearchesFieldsFragment,
   DialogByIdFieldsFragment,
   Profile,
-  SearchAutocompleteDialogFieldsFragment, SearchDialogFieldsFragment, PartyFieldsFragment, OrganizationFieldsFragment,
+  SearchAutocompleteDialogFieldsFragment,
+  SearchDialogFieldsFragment,
+  PartyFieldsFragment,
+  OrganizationFieldsFragment,
+  SystemLabel,
 } from 'bff-types-generated';
 import { convertToDialogByIdTemplate, filterDialogs } from './data/base/helper.ts';
 import { getMockedData } from './data.ts';
@@ -16,6 +20,7 @@ export type InMemoryStore = {
   dialogs?: SearchDialogFieldsFragment[] | null;
   parties?: PartyFieldsFragment[];
   organizations?: OrganizationFieldsFragment[];
+  features?: Record<string, boolean>
 };
 
 let inMemoryStore: InMemoryStore = {
@@ -24,11 +29,36 @@ let inMemoryStore: InMemoryStore = {
   dialogs: data.dialogs,
   parties: data.parties,
   organizations: data.organizations,
+  features: data.features,
 };
 
 const isAuthenticatedMock = http.get('/api/isAuthenticated', () => {
   return HttpResponse.json({ authenticated: true });
 });
+
+const featuresMock = http.get('/api/features', () => {
+  return HttpResponse.json(data.features);
+});
+
+const alertBannerMock = http.get('/api/alert-banner', () => {
+  return HttpResponse.json({
+    "nb": {
+      "title": "Ustabilitet",
+      "description": "Vi opplever noe ustabilitet og jobber på saken.",
+      "link": {
+        "text": "Du kan fortsatt bruke den gamle innboksen."
+      }
+    },
+    "nn": {
+      "title": "Teknisk feil",
+      "description": "Pga ein teknisk feil blir ein del historiske meldingar viste med feil dato i den nye innboksen. Vi jobbar med å rette dette. Inntil vidare kan den gamle innboksen nyttast."
+    },
+    "en": {
+      "title": "Test Technical Error",
+      "description": "Due to a technical issue, some historical messages are displayed with incorrect dates in the new inbox. We are working to fix this. In the meantime, the old inbox can be used."
+    }
+  })
+})
 
 export const streamMock = http.get('/api/graphql/stream', async () => {
   const stream = new ReadableStream({
@@ -43,6 +73,23 @@ export const streamMock = http.get('/api/graphql/stream', async () => {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',
       Connection: 'keep-alive',
+    },
+  });
+});
+
+
+const mockAltinn2Messages = graphql.query('altinn2messages', () => {
+  return HttpResponse.json({
+    data: {
+      altinn2messages: [],
+    },
+  });
+});
+
+const mockNotificationsettingsForCurrentUser = graphql.query('notificationsettingsForCurrentUser', () => {
+  return HttpResponse.json({
+    data: {
+      notificationsettingsForCurrentUser: [],
     },
   });
 });
@@ -226,18 +273,35 @@ const mutateSavedSearchMock = graphql.mutation('CreateSavedSearch', (req) => {
 });
 
 const mutateUpdateSystemLabelMock = graphql.mutation('updateSystemLabel', (req) => {
-  // const { dialogId, labels } = req.variables;
   const { dialogId, addLabels, removeLabels } = req.variables;
-  /* Note: When other system labels that NOT are mutually exclusive will be introduced by Dialogporten, this handler needs to return existing labels as well, but make sure only one system label is included */
+  /* Updated to handle non-mutually exclusive labels while ensuring only one exclusive system label is present */
   inMemoryStore.dialogs = inMemoryStore.dialogs?.map((dialog) => {
     if (dialog.id === dialogId) {
+      const existingLabels = dialog.endUserContext?.systemLabels || [];
+      const EXCLUSIVE_LABELS = [SystemLabel.Archive, SystemLabel.Bin, SystemLabel.Default];
+
+      let updatedLabels = existingLabels.filter(label =>
+        !Array.isArray(removeLabels) || !removeLabels.includes(label)
+      );
+
+      const labelsToAdd = [addLabels].flat();
+
+      const exclusiveLabelsToAdd = labelsToAdd.filter(label => EXCLUSIVE_LABELS.includes(label));
+      const nonExclusiveLabelsToAdd = labelsToAdd.filter(label => !EXCLUSIVE_LABELS.includes(label));
+
+      if (exclusiveLabelsToAdd.length > 0) {
+        updatedLabels = updatedLabels.filter(label => !EXCLUSIVE_LABELS.includes(label));
+        updatedLabels.push(exclusiveLabelsToAdd[exclusiveLabelsToAdd.length - 1]);
+      }
+
+      for (const label of nonExclusiveLabelsToAdd) {
+        if (!updatedLabels.includes(label)) {
+          updatedLabels.push(label);
+        }
+      }
+
       dialog.endUserContext = {
-        systemLabels: [addLabels].flat().filter((label) => {
-          if (Array.isArray(removeLabels) && removeLabels.length > 0) {
-            return !removeLabels.includes(label);
-          }
-          return true;
-        }) 
+        systemLabels: updatedLabels
       }
     }
     return dialog;
@@ -316,5 +380,9 @@ export const handlers = [
   getAllDialogsForPartiesMock,
   getAllDialogsforCountMock,
   streamMock,
-  mutateUpdateLanguageMock
+  mutateUpdateLanguageMock,
+  mockAltinn2Messages,
+  mockNotificationsettingsForCurrentUser,
+  featuresMock,
+  alertBannerMock
 ];

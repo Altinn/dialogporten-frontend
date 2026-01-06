@@ -1,16 +1,20 @@
 import { setInterval } from 'node:timers';
+import { logger } from '@altinn/dialogporten-node-logger';
 import { load } from '@azure/app-configuration-provider';
-import { logger } from '@digdir/dialogporten-node-logger';
 import { ConfigurationMapFeatureFlagProvider, FeatureManager } from '@microsoft/feature-management';
 import type { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 
 const defaultFeatureFlags: Record<string, boolean | number | string> = {
-  'profile.enableRoutes': false,
-  'globalMenu.enableProfileLink': false,
-  'globalMenu.enableAccessManagementLink': false,
-  'profile.enableNotificationsPage': false,
-  'debug.test': false, // only used for debugging
+  'globalMenu.enabled': false,
+  'dialogporten.disableFlipNamesPatch': false,
+  'dialogporten.enableSearchLanguageCode': false,
+  'inbox.disableDialogCount': false,
+  'inbox.enableAltinn2Messages': false,
+  'debug.test': false, // only used for debugging,
+  'inbox.enableAlertBanner': false,
+  'dialogporten.disableSubscriptions': false,
+  'dialogporten.enableManualSubscriptionRefresh': false,
 };
 
 /* Fore more details, cf. https://learn.microsoft.com/en-us/azure/azure-app-configuration/quickstart-feature-flag-javascript?tabs=entra-id */

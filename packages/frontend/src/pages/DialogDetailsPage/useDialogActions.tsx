@@ -1,27 +1,31 @@
 import { type MenuItemProps, type SnackbarColor, SnackbarDuration, useSnackbar } from '@altinn/altinn-components';
-import { ArchiveIcon, InboxFillIcon, TrashIcon } from '@navikt/aksel-icons';
+import { ArchiveIcon, EyeClosedIcon, InboxFillIcon, TrashIcon } from '@navikt/aksel-icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { SystemLabel } from 'bff-types-generated';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Analytics } from '../../analytics';
 import { getDialogMoveEvent } from '../../analyticsEvents';
 import { updateSystemLabel } from '../../api/queries';
 import { QUERY_KEYS } from '../../constants/queryKeys';
 import { useGlobalState } from '../../useGlobalState.ts';
+import { pruneSearchQueryParams } from '../Inbox/queryParams.ts';
+import { PageRoutes } from '../routes.ts';
 
 export const useDialogActions = () => {
   const { t } = useTranslation();
   const { openSnackbar } = useSnackbar();
+  const { search } = useLocation();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
-
   const [archiveLoading, setArchiveLoading] = useGlobalState<boolean>(QUERY_KEYS.SET_ARCHIVE_LABEL_LOADING, false);
   const [deleteLoading, setDeleteLoading] = useGlobalState<boolean>(QUERY_KEYS.SET_DELETE_LABEL_LOADING, false);
   const [undoLoading, setUndoLoading] = useGlobalState<boolean>(QUERY_KEYS.SET_UNDO_LABEL_LOADING, false);
 
   const EXCLUSIVE_LABELS = [SystemLabel.Default, SystemLabel.Archive, SystemLabel.Bin];
 
-  const handleMoveDialog = useCallback(
+  const handleUpdateLabel = useCallback(
     async (
       dialogId: string,
       toLabel: SystemLabel,
@@ -56,9 +60,33 @@ export const useDialogActions = () => {
     [openSnackbar, t, queryClient],
   );
 
-  return (dialogId?: string, currentLabels?: SystemLabel[]): MenuItemProps[] => {
+  return (dialogId: string, currentLabels: SystemLabel[], isUnread: boolean): MenuItemProps[] => {
     const currentLabel = (currentLabels || []).find((label) => EXCLUSIVE_LABELS.includes(label)) || SystemLabel.Default;
     const items: MenuItemProps[] = [];
+
+    if (dialogId && !isUnread) {
+      items.push({
+        id: 'delete',
+        groupId: 'mark-as-unread',
+        icon: EyeClosedIcon,
+        label: t('dialog.toolbar.mark_as_unread'),
+        as: 'button',
+        onClick: () => {
+          if (location.pathname !== PageRoutes.inbox) {
+            // Escape before a subscription of dialog cases a refetch and removes the label
+            navigate(PageRoutes.inbox + pruneSearchQueryParams(search.toString()));
+          }
+          void handleUpdateLabel(
+            dialogId,
+            SystemLabel.MarkedAsUnopened,
+            'dialog.toolbar.toast.mark_as_unread_success',
+            'dialog.toolbar.toast.mark_as_unread_failed',
+            setDeleteLoading,
+          );
+        },
+        disabled: undoLoading,
+      });
+    }
 
     if ([SystemLabel.Archive, SystemLabel.Bin].includes(currentLabel) && dialogId) {
       items.push({
@@ -68,7 +96,7 @@ export const useDialogActions = () => {
         label: t('dialog.toolbar.move_undo'),
         as: 'button',
         onClick: () =>
-          handleMoveDialog(
+          handleUpdateLabel(
             dialogId,
             SystemLabel.Default,
             'dialog.toolbar.toast.move_to_inbox_success',
@@ -87,7 +115,7 @@ export const useDialogActions = () => {
         label: t('dialog.toolbar.move_to_archive'),
         as: 'button',
         onClick: () =>
-          handleMoveDialog(
+          handleUpdateLabel(
             dialogId,
             SystemLabel.Archive,
             'dialog.toolbar.toast.move_to_archive_success',
@@ -106,7 +134,7 @@ export const useDialogActions = () => {
         label: t('dialog.toolbar.move_to_bin'),
         as: 'button',
         onClick: () =>
-          handleMoveDialog(
+          handleUpdateLabel(
             dialogId,
             SystemLabel.Bin,
             'dialog.toolbar.toast.move_to_bin_success',

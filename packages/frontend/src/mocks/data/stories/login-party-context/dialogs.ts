@@ -4,6 +4,7 @@ import { dialogs as baseDialogs } from '../../base/dialogs'
 const organizationsDialogs: SearchDialogFieldsFragment[] = [
     {
         serviceResource: 'default',
+        serviceResourceType: 'correspondenceservice',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-whydoesitnot',
         endUserContext: {
@@ -19,7 +20,6 @@ const organizationsDialogs: SearchDialogFieldsFragment[] = [
         guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-05-23T23:00:00.000Z',
-        extendedStatus: null,
         content: {
             title: {
                 mediaType: 'text/plain',
@@ -46,6 +46,7 @@ const organizationsDialogs: SearchDialogFieldsFragment[] = [
     },
     {
         serviceResource: 'default',
+        serviceResourceType: 'correspondenceservice',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-nowitworksfi',
         endUserContext: {
@@ -61,7 +62,6 @@ const organizationsDialogs: SearchDialogFieldsFragment[] = [
         guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-05-23T23:00:00.000Z',
-        extendedStatus: null,
         content: {
             title: {
                 mediaType: 'text/plain',
@@ -88,6 +88,7 @@ const organizationsDialogs: SearchDialogFieldsFragment[] = [
     },
     {
         serviceResource: 'default',
+        serviceResourceType: 'correspondenceservice',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-nowitworksfi',
         endUserContext: {
@@ -103,7 +104,6 @@ const organizationsDialogs: SearchDialogFieldsFragment[] = [
         guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-05-23T23:00:00.000Z',
-        extendedStatus: null,
         content: {
             title: {
                 mediaType: 'text/plain',
@@ -130,6 +130,7 @@ const organizationsDialogs: SearchDialogFieldsFragment[] = [
     },
     {
         serviceResource: 'default',
+        serviceResourceType: 'correspondenceservice',
         seenSinceLastContentUpdate: [],
         id: '019241f7-6f45-72fd-abcd-nowitworksfi',
         endUserContext: {
@@ -145,7 +146,6 @@ const organizationsDialogs: SearchDialogFieldsFragment[] = [
         guiAttachmentCount: 1,
         status: DialogStatus.RequiresAttention,
         createdAt: '2024-05-23T23:00:00.000Z',
-        extendedStatus: null,
         content: {
             title: {
                 mediaType: 'text/plain',

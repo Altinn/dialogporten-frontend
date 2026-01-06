@@ -40,6 +40,7 @@ const mockData: InboxItemInput[] = [
       type: 'company',
     },
     hasUnopenedContent: true,
+    unread: true,
     seenSinceLastContentUpdate: [],
     fromServiceOwnerTransmissionsCount: 0,
     fromPartyTransmissionsCount: 0,
@@ -81,6 +82,7 @@ const mockData: InboxItemInput[] = [
     },
     seenSinceLastContentUpdate: [],
     hasUnopenedContent: true,
+    unread: true,
     contentUpdatedAt: '2025-02-24T13:55:45.689Z',
     guiAttachmentCount: 1,
     createdAt: '2025-02-24T13:55:45.689Z',
@@ -121,6 +123,7 @@ const mockData: InboxItemInput[] = [
     },
     seenSinceLastContentUpdate: [],
     hasUnopenedContent: false,
+    unread: false,
     fromServiceOwnerTransmissionsCount: 0,
     fromPartyTransmissionsCount: 0,
     contentUpdatedAt: '2024-11-27T15:36:52.131Z',
@@ -161,6 +164,7 @@ const mockData: InboxItemInput[] = [
     },
     seenSinceLastContentUpdate: [],
     hasUnopenedContent: false,
+    unread: false,
     fromServiceOwnerTransmissionsCount: 0,
     fromPartyTransmissionsCount: 0,
     contentUpdatedAt: '2024-11-27T15:36:52.131Z',
@@ -201,6 +205,7 @@ const mockData: InboxItemInput[] = [
     },
     seenSinceLastContentUpdate: [],
     hasUnopenedContent: false,
+    unread: false,
     fromServiceOwnerTransmissionsCount: 0,
     fromPartyTransmissionsCount: 0,
     contentUpdatedAt: '2024-11-27T15:36:52.131Z',
@@ -242,6 +247,7 @@ const mockData: InboxItemInput[] = [
     },
     seenSinceLastContentUpdate: [],
     hasUnopenedContent: false,
+    unread: false,
     fromServiceOwnerTransmissionsCount: 0,
     fromPartyTransmissionsCount: 0,
     contentUpdatedAt: '2024-11-27T15:36:52.131Z',
@@ -283,6 +289,7 @@ const mockData: InboxItemInput[] = [
     },
     seenSinceLastContentUpdate: [],
     hasUnopenedContent: false,
+    unread: false,
     fromServiceOwnerTransmissionsCount: 0,
     fromPartyTransmissionsCount: 0,
     contentUpdatedAt: '2024-11-27T15:36:52.131Z',
@@ -377,7 +384,6 @@ describe('useGroupedDialogs', () => {
       },
     );
 
-    console.info(mockData);
     const groups = result.current.groups;
     const uniqueOrderIndexes = [...new Set(Object.values(groups).map((item) => item.orderIndex?.toString()))];
 

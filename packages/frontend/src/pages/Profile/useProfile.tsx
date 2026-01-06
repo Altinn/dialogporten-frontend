@@ -11,10 +11,12 @@ import {
 } from '../../api/queries.ts';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
+import { useGlobalStringState } from '../../useGlobalState.ts';
 
 export const useProfile = (disabled?: boolean) => {
   const { data, isLoading, isSuccess } = useAuthenticatedQuery<ProfileQuery>({
     queryKey: [QUERY_KEYS.PROFILE],
+    staleTime: 10 * 1000 * 30,
     queryFn: () => profile(),
     refetchOnWindowFocus: false,
     enabled: !disabled,
@@ -22,7 +24,8 @@ export const useProfile = (disabled?: boolean) => {
 
   const { i18n } = useTranslation();
   const groups = (data?.profile?.groups as GroupObject[]) || ([] as GroupObject[]);
-  const language = data?.profile?.language || i18n.language || 'nb';
+  const [updatedLanguage, updateProfileLanguage] = useGlobalStringState(QUERY_KEYS.UPDATED_LANGUAGE, '');
+  const language = updatedLanguage || data?.profile?.language || i18n.language || 'nb';
   const favoritesGroup = groups.find((group) => group?.isFavorite);
 
   const queryClient = useQueryClient();
@@ -61,5 +64,6 @@ export const useProfile = (disabled?: boolean) => {
     deleteFavoriteParty,
     addFavoriteParty,
     addFavoritePartyToGroup,
+    updateProfileLanguage,
   };
 };

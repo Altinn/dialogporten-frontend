@@ -2,16 +2,28 @@ import type { MenuItemProps, MenuItemSize, MenuProps, Theme } from '@altinn/alti
 import {
   ArchiveIcon,
   BookmarkIcon,
+  Buildings2Icon,
+  ChatExclamationmarkIcon,
   DocPencilIcon,
   FileCheckmarkIcon,
-  HandshakeFillIcon,
   InboxFillIcon,
   InformationSquareIcon,
   LeaveIcon,
+  MenuGridIcon,
+  PadlockLockedFillIcon,
   PersonCircleIcon,
+  PlusIcon,
   TrashIcon,
 } from '@navikt/aksel-icons';
-import { createMessageBoxLink } from '../../../auth';
+import {
+  createMessageBoxLink,
+  getAboutNewAltinnLink,
+  getAccessAMUILink,
+  getNeedHelpLink,
+  getNewFormLink,
+  getStartNewBusinessLink,
+} from '../../../auth';
+import { i18n } from '../../../i18n/config.ts';
 import { pruneSearchQueryParams } from '../../../pages/Inbox/queryParams.ts';
 import { PageRoutes } from '../../../pages/routes.ts';
 import { createMenuItemComponent, isRouteSelected } from './shared.tsx';
@@ -23,20 +35,18 @@ export function buildInboxMenu({
   pathname,
   currentSearchQuery,
   fromView,
-  showProfileLink,
-  showAmLink,
+  currentPartyUuid,
 }: {
   t: (key: string, vars?: Record<string, string>) => string;
   currentEndUserName?: string;
   pathname: string;
   currentSearchQuery: string;
   fromView?: string;
-  showProfileLink: boolean;
-  showAmLink?: boolean;
+  currentPartyUuid?: string;
 }): UseGlobalMenuProps {
   const menuGroups = {
     shortcuts: {
-      divider: showAmLink,
+      divider: true,
       defaultIconTheme: 'transparent' as Theme,
       defaultItemSize: 'sm' as MenuItemSize,
       title: t('word.shortcuts'),
@@ -44,24 +54,18 @@ export function buildInboxMenu({
     global: {
       divider: false,
     },
+    help: {
+      divider: true,
+      defaultIconTheme: 'transparent' as Theme,
+      defaultItemSize: 'sm' as MenuItemSize,
+    },
     'profile-shortcut': {
       divider: true,
       title: t('parties.current_end_user', { name: currentEndUserName ?? 'n/a' }),
     },
   };
 
-  const betaShortcuts: MenuItemProps[] = [
-    {
-      id: 'beta-about',
-      dataTestId: 'sidebar-about',
-      groupId: 'shortcuts',
-      icon: InformationSquareIcon,
-      title: t('altinn.beta.about'),
-      as: createMenuItemComponent({
-        to: PageRoutes.about + pruneSearchQueryParams(currentSearchQuery),
-      }),
-      selected: isRouteSelected(pathname, PageRoutes.about, fromView),
-    },
+  const shortcuts: MenuItemProps[] = [
     {
       id: 'beta-exit',
       dataTestId: 'sidebar-exit',
@@ -69,7 +73,50 @@ export function buildInboxMenu({
       icon: LeaveIcon,
       title: t('altinn.beta.exit'),
       as: createMenuItemComponent({
-        to: createMessageBoxLink(),
+        to: createMessageBoxLink(currentPartyUuid),
+      }),
+    },
+    {
+      id: 'new-schema',
+      dataTestId: 'sidebar-new-schema',
+      groupId: 'shortcuts',
+      icon: PlusIcon,
+      title: t('altinn.new_schema'),
+      as: createMenuItemComponent({
+        to: getNewFormLink(currentPartyUuid, i18n.language),
+      }),
+    },
+  ];
+
+  const helpItems: MenuItemProps[] = [
+    {
+      id: 'about-altinn',
+      dataTestId: 'about-altinn',
+      groupId: 'help',
+      icon: InformationSquareIcon,
+      title: t('global_menu.about_altinn'),
+      as: createMenuItemComponent({
+        to: getAboutNewAltinnLink(currentPartyUuid, i18n.language),
+      }),
+    },
+    {
+      id: 'start-business',
+      dataTestId: 'start-business',
+      groupId: 'help',
+      icon: Buildings2Icon,
+      title: t('global_menu.start_business'),
+      as: createMenuItemComponent({
+        to: getStartNewBusinessLink(currentPartyUuid, i18n.language),
+      }),
+    },
+    {
+      id: 'need-help',
+      dataTestId: 'need-help',
+      groupId: 'help',
+      icon: ChatExclamationmarkIcon,
+      title: t('global_menu.need_help'),
+      as: createMenuItemComponent({
+        to: getNeedHelpLink(currentPartyUuid, i18n.language),
       }),
     },
   ];
@@ -87,6 +134,11 @@ export function buildInboxMenu({
       as: createMenuItemComponent({
         to: PageRoutes.inbox + pruneSearchQueryParams(currentSearchQuery),
       }),
+      badge: {
+        label: t('word.beta'),
+        color: 'neutral',
+        variant: 'base',
+      },
       items: [
         {
           id: '2',
@@ -161,8 +213,9 @@ export function buildInboxMenu({
       ...inboxItems.map((item, idx) => ({
         ...item,
         iconTheme: idx === 0 ? 'base' : item.iconTheme,
+        badge: idx === 0 ? undefined : item.badge,
       })),
-      ...betaShortcuts,
+      ...shortcuts,
     ],
   };
 
@@ -181,24 +234,40 @@ export function buildInboxMenu({
         id: 'am',
         groupId: 'global',
         size: 'lg',
-        icon: HandshakeFillIcon,
-        hidden: !showAmLink,
+        icon: PadlockLockedFillIcon,
+        iconTheme: 'tinted',
         as: 'a',
-        href: 'https://am.ui.at23.altinn.cloud/accessmanagement/ui/users',
+        href: getAccessAMUILink(currentPartyUuid),
         title: t('altinn.access_management'),
         selected: false,
+        badge: {
+          label: t('word.beta'),
+          color: 'neutral',
+          variant: 'base',
+        },
       },
-      ...betaShortcuts,
+      {
+        id: 'all-forms',
+        groupId: 'global',
+        size: 'lg',
+        icon: MenuGridIcon,
+        iconTheme: 'tinted',
+        title: t('global_menu.all_forms_services'),
+        as: createMenuItemComponent({
+          to: getNewFormLink(currentPartyUuid, i18n.language),
+        }),
+        selected: false,
+      },
+      ...helpItems,
       {
         groupId: 'profile-shortcut',
         id: 'profile',
-        size: 'md',
+        size: 'sm',
         as: createMenuItemComponent({
           to: PageRoutes.profile + pruneSearchQueryParams(currentSearchQuery),
         }),
         icon: PersonCircleIcon,
         iconTheme: 'transparent',
-        hidden: !showProfileLink,
         title: t('sidebar.profile'),
         selected: false,
         expanded: true,
@@ -207,18 +276,14 @@ export function buildInboxMenu({
     ],
     defaultIconTheme: 'tinted',
   };
-
   const desktopMenu: MenuProps = {
     ...mobileMenu,
     items: [{ ...mobileMenu.items[0], expanded: false, items: [] }, ...mobileMenu.items.slice(1)],
     groups: {
       ...mobileMenu.groups,
-      shortcuts: {
-        ...mobileMenu.groups?.shortcuts,
-        divider: true,
-      },
     },
   };
+  mobileMenu.items.push(...shortcuts);
 
   return { sidebarMenu, mobileMenu, desktopMenu };
 }

@@ -9,9 +9,9 @@ on:
         default: "test"
         type: choice
         options:
-          - test (af.at.altinn.cloud)
-          - yt01 (af.yt.altinn.cloud)
-          - staging (af.tt.altinn.no)
+          - test (af.at23.altinn.cloud)
+          - yt01 (af.yt01.altinn.cloud)
+          - staging (af.tt02.altinn.no)
           - prod (af.altinn.no)
       version:
         description: "Version to deploy. Needs to be a git tag (exclude the v prefix)"

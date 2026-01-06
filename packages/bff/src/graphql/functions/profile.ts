@@ -1,15 +1,16 @@
-import { logger } from '@digdir/dialogporten-node-logger';
+import { logger } from '@altinn/dialogporten-node-logger';
 import axios from 'axios';
 import config from '../../config.ts';
 import { GroupRepository, PartyRepository, ProfileRepository } from '../../db.ts';
 import { Group, Party, ProfileTable } from '../../entities.ts';
 import type { NotificationSettingsInputData } from '../types/profile.ts';
+
 const { platformBaseURL } = config;
 
-const platformExchangeTokenEndpointURL = platformBaseURL + '/authentication/api/v1/exchange/id-porten?test=true';
+const platformExchangeTokenEndpointURL = platformBaseURL + '/authentication/api/v1/exchange/id-porten';
 const platformProfileAPI_url = platformBaseURL + '/profile/api/v1/';
 
-type TokenType = {
+export type TokenType = {
   access_token: string;
   access_token_expires_at?: number;
   id_token?: string;
@@ -18,21 +19,29 @@ type TokenType = {
   scope: string;
   tokenUpdatedAt?: number;
 };
-interface Context {
+
+export interface Context {
   session: {
     get: (key: string) => TokenType | string | undefined;
   };
 }
 
 export const exchangeToken = async (context: Context): Promise<string> => {
+  const { enableNewOIDC } = config;
   const token = typeof context.session.get('token') === 'object' ? (context.session.get('token') as TokenType) : null;
 
   if (!token) {
-    logger.error('exchangeToken No token found in session');
+    logger.error('exchangeToken: Unable to find token');
     return '';
   }
+
+  if (enableNewOIDC) {
+    return token.access_token;
+  }
+
   try {
     const { data: newToken } = await axios.get(platformExchangeTokenEndpointURL, {
+      timeout: 30000,
       headers: {
         Authorization: `Bearer ${token?.access_token}`,
         'Content-Type': 'application/json',
@@ -47,7 +56,6 @@ export const exchangeToken = async (context: Context): Promise<string> => {
 };
 
 export const getOrCreateProfile = async (context: Context): Promise<ProfileTable> => {
-  const { disableProfile } = config;
   const pid = typeof context.session.get('pid') === 'string' ? (context.session.get('pid') as string) : '';
   const sessionLocale =
     typeof context.session.get('locale') === 'string' ? (context.session.get('locale') as string) : '';
@@ -56,9 +64,10 @@ export const getOrCreateProfile = async (context: Context): Promise<ProfileTable
     logger.error('No pid provided');
     throw new Error('PID is required to get or create a profile');
   }
+
   const profile = await ProfileRepository!.createQueryBuilder('profile').where('profile.pid = :pid', { pid }).getOne();
   const exchangedToken = await exchangeToken(context);
-  const groups = disableProfile ? [] : await getFavoritesFromCore(exchangedToken);
+  const groups = await getFavoritesFromCore(exchangedToken);
 
   if (!profile) {
     const newProfile = new ProfileTable();
@@ -94,6 +103,7 @@ export const addFavoriteParty = async (context: Context, partyUuid: string) => {
       `${platformProfileAPI_url}users/current/party-groups/favorites/${partyUuid}`,
       null,
       {
+        timeout: 30000,
         headers: {
           Authorization: `Bearer ${newToken}`,
           'Content-Type': 'application/json',
@@ -164,8 +174,9 @@ export const deleteFavoriteParty = async (context: Context, partyUuid: string) =
   }
   const newToken = await exchangeToken(context);
 
-  const response = await axios
+  return await axios
     .delete(`${platformProfileAPI_url}users/current/party-groups/favorites/${partyUuid}`, {
+      timeout: 30000,
       headers: {
         Authorization: `Bearer ${newToken}`,
         'Content-Type': 'application/json',
@@ -176,13 +187,13 @@ export const deleteFavoriteParty = async (context: Context, partyUuid: string) =
       logger.error({ status: error?.status, message: error?.message }, 'Error deleting favorite party:');
       return;
     });
-  return response;
 };
 
 export const getUserFromCore = async (context: Context) => {
   try {
     const token = await exchangeToken(context);
     const { data } = await axios.get(`${platformProfileAPI_url}users/current`, {
+      timeout: 30000,
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
@@ -203,6 +214,7 @@ export const getUserFromCore = async (context: Context) => {
 export const getFavoritesFromCore = async (token: string) => {
   try {
     const { data } = await axios.get(`${platformProfileAPI_url}users/current/party-groups/favorites`, {
+      timeout: 30000,
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
@@ -226,6 +238,7 @@ export const getNotificationsettingsForCurrentUser = async (context: Context) =>
   let data = [] as unknown[];
   try {
     const response = await axios.get(`${platformProfileAPI_url}users/current/notificationsettings/parties`, {
+      timeout: 30000,
       headers: {
         Authorization: `Bearer ${newToken}`,
         'Content-Type': 'application/json',
@@ -274,6 +287,7 @@ export const updateNotificationsSetting = async (
       `${platformProfileAPI_url}users/current/notificationsettings/parties/${partyUuid}`,
       notificationSettingsInput,
       {
+        timeout: 30000,
         headers: {
           Authorization: `Bearer ${newToken}`,
           'Content-Type': 'application/json',
@@ -308,6 +322,7 @@ export const deleteNotificationsSetting = async (partyUuid: string, context: Con
     const response = await axios.delete(
       `${platformProfileAPI_url}users/current/notificationsettings/parties/${partyUuid}`,
       {
+        timeout: 30000,
         headers: {
           Authorization: `Bearer ${newToken}`,
           'Content-Type': 'application/json',
@@ -342,6 +357,7 @@ export const getNotificationAddressByOrgNumber = async (orgnr: string, context: 
   }
   const { data, status, statusText } = await axios
     .get(`${platformProfileAPI_url}organizations/${orgnr}/notificationaddresses/mandatory`, {
+      timeout: 30000,
       headers: {
         Authorization: `Bearer ${newToken}`,
         'Content-Type': 'application/json',

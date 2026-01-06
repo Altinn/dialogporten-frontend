@@ -19,13 +19,19 @@ import {
   Typography,
 } from '@altinn/altinn-components';
 import type { ActivityLogSegmentProps } from '@altinn/altinn-components/dist/types/lib/components';
-import { DialogStatus } from 'bff-types-generated';
+import { useQueryClient } from '@tanstack/react-query';
+import { DialogEventType, DialogStatus } from 'bff-types-generated';
 import { type ReactElement, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Analytics } from '../../analytics';
 import { ANALYTICS_EVENTS } from '../../analyticsEvents';
 import type { DialogByIdDetails } from '../../api/hooks/useDialogById.tsx';
+import type { DialogEventData } from '../../api/hooks/useDialogByIdSubscription.ts';
+import { useParties } from '../../api/hooks/useParties.ts';
 import type { TimelineSegmentWithTransmissions } from '../../api/utils/transmissions.ts';
+import { createChangeReporteeAndRedirect } from '../../auth';
+import { QUERY_KEYS } from '../../constants/queryKeys.ts';
+import { useFeatureFlag } from '../../featureFlags';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { getDialogStatus } from '../../pages/Inbox/status.ts';
@@ -41,7 +47,8 @@ interface DialogDetailsProps {
   };
   isAuthLevelTooLow?: boolean;
   isLoading?: boolean;
-  subscriptionOpened?: boolean;
+  dialogToken?: string;
+  onMessageEvent: (handler: (eventData: DialogEventData, rawEvent: MessageEvent) => void) => void;
 }
 
 /**
@@ -85,6 +92,8 @@ const handleDialogActionClick = async (
   dialogToken: string,
   responseFinished: () => void,
   logError: (error: Error, context?: Record<string, unknown>, errorMessage?: string) => void,
+  isApp: boolean,
+  currentPartyUuid: string | undefined,
 ): Promise<void> => {
   const { id, title, url, httpMethod, prompt } = props;
 
@@ -115,7 +124,7 @@ const handleDialogActionClick = async (
       'action.type': 'external_link',
     });
     responseFinished();
-    window.open(url, '_blank');
+    window.location.href = isApp ? createChangeReporteeAndRedirect(currentPartyUuid, url) : url;
   } else {
     try {
       const response = await Analytics.trackFetchDependency(
@@ -124,18 +133,16 @@ const handleDialogActionClick = async (
           method: httpMethod,
           headers: {
             Authorization: `Bearer ${dialogToken}`,
+            Accept: 'application/json',
           },
         }),
       );
 
       if (!response.ok) {
-        Analytics.trackEvent(ANALYTICS_EVENTS.GUI_ACTION_SUCCESS, {
-          'action.id': id,
-          'action.title': title,
-          'action.httpMethod': httpMethod,
-          'action.type': 'api_call',
-          'response.status': response.status,
-        });
+        let responseBody = '';
+        try {
+          responseBody = await response.text();
+        } catch {}
         logError(
           new Error(`HTTP ${response.status}: ${response.statusText}`),
           {
@@ -144,6 +151,7 @@ const handleDialogActionClick = async (
             httpMethod,
             status: response.status,
             statusText: response.statusText,
+            responseBody,
           },
           `Dialog action failed: ${response.statusText}`,
         );
@@ -170,14 +178,27 @@ export const DialogDetails = ({
   isLoading,
   isAuthLevelTooLow,
   activityModalProps,
-  subscriptionOpened,
+  dialogToken,
+  onMessageEvent,
 }: DialogDetailsProps): ReactElement => {
+  const queryClient = useQueryClient();
+  const enableManualSubscriptionRefresh = useFeatureFlag<boolean>('dialogporten.enableManualSubscriptionRefresh');
   const { t } = useTranslation();
+  const { currentPartyUuid } = useParties();
   const { logError } = useErrorLogger();
   const [actionIdLoading, setActionIdLoading] = useState<string>('');
+  const [actionIdUpdating, setActionIdUpdating] = useState<string>('');
   const [showAllTransmissions, setShowAllTransmissions] = useState<boolean>(false);
-
   const format = useFormat();
+
+  onMessageEvent((eventData: DialogEventData) => {
+    if (
+      eventData.data?.dialogEvents?.type === DialogEventType.DialogUpdated &&
+      eventData.data.dialogEvents.id === dialog?.id
+    ) {
+      setActionIdUpdating('');
+    }
+  });
 
   const transmissions: TimelineSegmentWithTransmissions[] = useMemo(() => {
     if (!dialog?.transmissions) {
@@ -190,17 +211,19 @@ export const DialogDetails = ({
       items: transmission.items?.map((item, index) => {
         return {
           ...item,
-          children: dialog.contentReferenceForTransmissions[item.id as string] ? (
-            <MainContentReference
-              id={item.id ?? `${transmission.id}-${index}`}
-              content={dialog.contentReferenceForTransmissions[item.id as string]}
-              dialogToken={dialog.dialogToken}
-            />
-          ) : null,
+          children: dialog.contentReferenceForTransmissions[item.id as string]
+            ? dialogToken && (
+                <MainContentReference
+                  id={item.id ?? `${transmission.id}-${index}`}
+                  content={dialog.contentReferenceForTransmissions[item.id as string]}
+                  dialogToken={dialogToken}
+                />
+              )
+            : null,
         };
       }),
     }));
-  }, [dialog]);
+  }, [dialog, dialogToken]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: no need with format
   const activityHistoryItems: ActivityLogSegmentProps[] = useMemo(() => {
@@ -223,19 +246,21 @@ export const DialogDetails = ({
             <TransmissionList
               items={dialogHistoryItem.items.map((item) => ({
                 ...item,
-                children: dialog.contentReferenceForTransmissions[item.id as string] ? (
-                  <MainContentReference
-                    id={item.id}
-                    content={dialog.contentReferenceForTransmissions[item.id as string]}
-                    dialogToken={dialog.dialogToken}
-                  />
-                ) : null,
+                children: dialog.contentReferenceForTransmissions[item.id as string]
+                  ? dialogToken && (
+                      <MainContentReference
+                        id={item.id}
+                        content={dialog.contentReferenceForTransmissions[item.id as string]}
+                        dialogToken={dialogToken}
+                      />
+                    )
+                  : null,
               }))}
             />
           ) : null,
       };
     });
-  }, [dialog]);
+  }, [dialog, dialogToken]);
 
   if (isLoading) {
     return (
@@ -276,21 +301,39 @@ export const DialogDetails = ({
     );
   }
 
+  const handleManualSubscriptionRefresh = async () => {
+    setTimeout(async () => {
+      await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.DIALOG_BY_ID, dialog.id] });
+      setActionIdLoading('');
+      setActionIdUpdating('');
+    }, 2_000);
+  };
+
   const clockPrefix = t('word.clock_prefix');
   const formatString = clockPrefix ? `do MMMM yyyy '${clockPrefix}' HH.mm` : `do MMMM yyyy HH.mm`;
   const dueAtLabel = dialog.dueAt ? t('dialog.due_at', { date: format(dialog.dueAt, formatString) }) : '';
   const numberOfTransmissionGroups = 3;
-
+  const isApp = dialog.serviceResourceType === 'altinnapp';
   const dialogActions: DialogActionButtonProps[] = dialog.guiActions.map((action) => ({
     id: action.id,
     label: action.title,
-    disabled: !!isLoading || action.disabled,
+    disabled: !!isLoading || !!action.disabled || actionIdLoading === action.id || actionIdUpdating === action.id,
     priority: action.priority.toLocaleLowerCase() as DialogButtonPriority,
-    loading: actionIdLoading === action.id,
+    loading: actionIdLoading === action.id || actionIdUpdating === action.id,
     hidden: action.hidden,
     onClick: () => {
       setActionIdLoading(action.id);
-      void handleDialogActionClick(action, dialog.dialogToken, () => setActionIdLoading(''), logError);
+      setActionIdUpdating(action.id);
+      dialogToken &&
+        void handleDialogActionClick(
+          action,
+          dialogToken,
+          () => setActionIdLoading(''),
+          logError,
+          isApp,
+          currentPartyUuid,
+        );
+      enableManualSubscriptionRefresh && handleManualSubscriptionRefresh();
     },
   }));
 
@@ -323,6 +366,7 @@ export const DialogDetails = ({
           label: t('dialog.activity_log.title'),
         }}
         attachmentsCount={dialog.attachments?.length}
+        extendedStatusLabel={dialog.extendedStatusLabel}
       />
       <DialogBody
         sender={dialog.sender}
@@ -331,13 +375,8 @@ export const DialogDetails = ({
         seenByLog={dialog.seenByLog}
       >
         <p>{dialog.summary}</p>
-        {subscriptionOpened && (
-          <MainContentReference
-            sender={dialog.sender.name}
-            content={dialog.mainContentReference}
-            dialogToken={dialog.dialogToken}
-            id={dialog.id}
-          />
+        {dialogToken && (
+          <MainContentReference content={dialog.mainContentReference} dialogToken={dialogToken} id={dialog.id} />
         )}
         {dialog.attachments.length > 0 && (
           <DialogAttachments
