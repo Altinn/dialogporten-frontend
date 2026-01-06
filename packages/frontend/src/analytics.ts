@@ -138,19 +138,9 @@ const stopPageTracking = (pageInfo: {
 const trackEvent = (eventName: AnalyticsEventName, properties?: Record<string, string | number | boolean>) => {
   if (!applicationInsights) return;
 
-  const enhancedProperties = {
-    'page.current': getPageNameFromPath(window.location.pathname),
-    'page.url': window.location.href,
-    timestamp: new Date().toISOString(),
-    'user.agent': navigator.userAgent,
-    'viewport.width': window.innerWidth,
-    'viewport.height': window.innerHeight,
-    ...properties,
-  };
-
   applicationInsights.trackEvent({
     name: eventName,
-    properties: enhancedProperties,
+    properties: properties || {},
   });
 };
 

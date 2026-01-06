@@ -223,7 +223,6 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
       });
       await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.SAVED_SEARCHES] });
     } catch (error) {
-      console.error('Failed to delete saved search:', error);
       logError(
         error as Error,
         {
