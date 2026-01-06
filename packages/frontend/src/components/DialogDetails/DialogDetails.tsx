@@ -24,6 +24,7 @@ import { DialogEventType, DialogStatus } from 'bff-types-generated';
 import { type ReactElement, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Analytics } from '../../analytics';
+import { ANALYTICS_EVENTS } from '../../analyticsEvents';
 import type { DialogByIdDetails } from '../../api/hooks/useDialogById.tsx';
 import type { DialogEventData } from '../../api/hooks/useDialogByIdSubscription.ts';
 import type { TimelineSegmentWithTransmissions } from '../../api/utils/transmissions.ts';
@@ -90,14 +91,34 @@ const handleDialogActionClick = async (
   responseFinished: () => void,
   logError: (error: Error, context?: Record<string, unknown>, errorMessage?: string) => void,
 ): Promise<void> => {
-  const { url, httpMethod, prompt } = props;
+  const { id, title, url, httpMethod, prompt } = props;
+
+  // Track the GUI action click event
+  Analytics.trackEvent(ANALYTICS_EVENTS.GUI_ACTION_CLICK, {
+    'action.id': id,
+    'action.title': title,
+    'action.httpMethod': httpMethod,
+    'action.hasPrompt': !!prompt,
+    'action.url': url,
+  });
 
   if (prompt && !window.confirm(prompt)) {
+    Analytics.trackEvent(ANALYTICS_EVENTS.GUI_ACTION_CANCELLED, {
+      'action.id': id,
+      'action.title': title,
+      'cancellation.reason': 'user_declined_prompt',
+    });
     responseFinished();
     return;
   }
 
   if (httpMethod === 'GET') {
+    Analytics.trackEvent(ANALYTICS_EVENTS.GUI_ACTION_SUCCESS, {
+      'action.id': id,
+      'action.title': title,
+      'action.httpMethod': httpMethod,
+      'action.type': 'external_link',
+    });
     responseFinished();
     window.location.href = url;
   } else {
@@ -364,12 +385,32 @@ export const DialogDetails = ({
         </Timeline>
       )}
       {dialog.transmissions.length > numberOfTransmissionGroups && !showAllTransmissions && (
-        <Button variant="outline" onClick={() => setShowAllTransmissions(true)}>
+        <Button
+          variant="outline"
+          onClick={() => {
+            Analytics.trackEvent(ANALYTICS_EVENTS.DIALOG_TRANSMISSIONS_EXPAND, {
+              'dialog.id': dialog.id,
+              'transmissions.totalCount': dialog.transmissions.length,
+              'transmissions.visibleCount': numberOfTransmissionGroups,
+            });
+            setShowAllTransmissions(true);
+          }}
+        >
           {t('dialog.transmission.expandLabel')}
         </Button>
       )}
       {showAllTransmissions && (
-        <Button variant="outline" onClick={() => setShowAllTransmissions(false)}>
+        <Button
+          variant="outline"
+          onClick={() => {
+            Analytics.trackEvent(ANALYTICS_EVENTS.DIALOG_TRANSMISSIONS_COLLAPSE, {
+              'dialog.id': dialog.id,
+              'transmissions.totalCount': dialog.transmissions.length,
+              'transmissions.visibleCount': numberOfTransmissionGroups,
+            });
+            setShowAllTransmissions(false);
+          }}
+        >
           {t('dialog.transmission.collapseLabel')}
         </Button>
       )}

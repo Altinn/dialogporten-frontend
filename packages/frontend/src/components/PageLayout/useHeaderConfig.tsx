@@ -8,6 +8,8 @@ import type { ChangeEvent } from 'react';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Analytics } from '../../analytics.ts';
+import { ANALYTICS_EVENTS } from '../../analyticsEvents.ts';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { updateLanguage } from '../../api/queries.ts';
 import { getFrontPageLink } from '../../auth';
@@ -163,6 +165,9 @@ export const useHeaderConfig = (): UseHeaderConfigReturn => {
       logoutButton: {
         label: t('word.log_out'),
         onClick: () => {
+          Analytics.trackEvent(ANALYTICS_EVENTS.USER_LOGOUT, {
+            'logout.source': 'header',
+          });
           (window as Window).location = `/api/logout`;
         },
       },

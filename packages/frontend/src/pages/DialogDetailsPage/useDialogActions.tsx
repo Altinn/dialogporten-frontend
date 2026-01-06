@@ -5,6 +5,8 @@ import { SystemLabel } from 'bff-types-generated';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { Analytics } from '../../analytics';
+import { getDialogMoveEvent } from '../../analyticsEvents';
 import { updateSystemLabel } from '../../api/queries';
 import { QUERY_KEYS } from '../../constants/queryKeys';
 import { useGlobalState } from '../../useGlobalState.ts';
@@ -38,6 +40,11 @@ export const useDialogActions = () => {
         setLoading(true);
         const res = await updateSystemLabel(dialogId, toLabel);
         if (res.setSystemLabel?.success) {
+          Analytics.trackEvent(getDialogMoveEvent(toLabel), {
+            'dialog.id': dialogId,
+            'move.to': toLabel,
+          });
+
           await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.DIALOGS] });
           await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.DIALOG_BY_ID] });
           showSnackbar(successKey, 'accent');
