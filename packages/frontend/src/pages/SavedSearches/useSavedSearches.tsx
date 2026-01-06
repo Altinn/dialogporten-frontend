@@ -252,7 +252,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
       await updateSavedSearch(id, savedSearchInputValue ?? '');
 
       if (savedSearchInputValue) {
-        Analytics.trackEvent(ANALYTICS_EVENTS.SAVED_SEARCH_UPDATE_SUCCESS, {
+        Analytics.trackEvent(ANALYTICS_EVENTS.SAVED_SEARCH_TITLE_UPDATE_SUCCESS, {
           'search.id': id,
           'search.newTitleLength': savedSearchInputValue?.length || 0,
         });

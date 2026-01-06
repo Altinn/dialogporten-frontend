@@ -34,7 +34,7 @@ export const ANALYTICS_EVENTS = {
   // Saved Search Actions
   SAVED_SEARCH_CREATE_SUCCESS: 'SavedSearch.Create.Success',
   SAVED_SEARCH_DELETE_SUCCESS: 'SavedSearch.Delete.Success',
-  SAVED_SEARCH_UPDATE_SUCCESS: 'SavedSearch.Update.Success',
+  SAVED_SEARCH_TITLE_UPDATE_SUCCESS: 'SavedSearch.Title.Update.Success',
 } as const;
 
 // Type for event names (for TypeScript safety)
