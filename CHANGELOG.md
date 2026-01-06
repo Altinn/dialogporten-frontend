@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.116.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.115.10...v1.116.0) (2026-01-06)
+
+
+### Features
+
+* **frontend:** add event tracking ([#2730](https://github.com/Altinn/dialogporten-frontend/issues/2730)) ([f44e78c](https://github.com/Altinn/dialogporten-frontend/commit/f44e78c4dd8908cd1b4f0656a443a4266af44cb9))
+* **infra:** add storage account backup vault ([#3566](https://github.com/Altinn/dialogporten-frontend/issues/3566)) ([aef9627](https://github.com/Altinn/dialogporten-frontend/commit/aef962780bcfefe2c3fd5fb32ba648a94e19e86b))
+* Update BFF error page with new design ([#3570](https://github.com/Altinn/dialogporten-frontend/issues/3570)) ([6c0ad15](https://github.com/Altinn/dialogporten-frontend/commit/6c0ad15466b0b21748fc68ddb123527ee0b00252))
+
+
+### Bug Fixes
+
+* **bff:** ensure max query depth for graphql ([#3512](https://github.com/Altinn/dialogporten-frontend/issues/3512)) ([d89e601](https://github.com/Altinn/dialogporten-frontend/commit/d89e60145c9175c1a25e1a5a652d8236624cdf8b))
+* **deps:** update dependency typeorm to v0.3.28 ([#3559](https://github.com/Altinn/dialogporten-frontend/issues/3559)) ([7efe382](https://github.com/Altinn/dialogporten-frontend/commit/7efe382959e64f4f1750cda44c3eadee6a0a5de4))
+* **frontend:** avoid duplicate page view tracking ([#3569](https://github.com/Altinn/dialogporten-frontend/issues/3569)) ([878fe36](https://github.com/Altinn/dialogporten-frontend/commit/878fe36098eb698c858e5c8c1f8f110994ff32f5))
+* **guiAction:** remove changeRaporteeAndRedirect for apps entirely from gui actions ([#3528](https://github.com/Altinn/dialogporten-frontend/issues/3528)) ([c4e4a38](https://github.com/Altinn/dialogporten-frontend/commit/c4e4a38c0900b10c2254c87466df4dac6470f82c))
+
 ## [1.115.10](https://github.com/Altinn/dialogporten-frontend/compare/v1.115.9...v1.115.10) (2026-01-05)
 
 
