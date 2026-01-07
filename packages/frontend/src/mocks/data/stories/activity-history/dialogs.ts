@@ -24,7 +24,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
                     actorName: 'SØSTER FANTASIFULL 2024',
                 },
                 isCurrentEndUser: true,
-            },
+            }
         ],
         content: {
             title: {

@@ -49,6 +49,16 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         },
         isCurrentEndUser: false,
       },
+      {
+        id: 'c4f4d846-2fe7-4172-badc-abc48f9af8a1',
+        seenAt: '2024-09-30T11:36:01.572Z',
+        seenBy: {
+          actorType: null,
+          actorId: 'urn:altinn:systemuser:uuid:123',
+          actorName: 'REGNSKAP AS',
+        },
+        isCurrentEndUser: false,
+      },
     ],
     content: {
       title: {
