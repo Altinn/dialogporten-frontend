@@ -26,10 +26,13 @@ const tokenGeneratorEnv = (() => {
  * @param {string} pid - The personal identification number (PID) of the user.
  * @return {string} - The generated personal token.
  **/
-function getToken(pid) {
+function getToken(pid, userId, partyId, partyUuid) {
   const tokenParams = {
     scopes: 'digdir:dialogporten.noconsent openid altinn:portal/enduser',
     pid: pid,
+    userId: userId,
+    partyId: partyId,
+    partyUuid: partyUuid,
     env: tokenGeneratorEnv,
   };
   const token = getPersonalToken(tokenParams);
@@ -77,8 +80,8 @@ function getSessionId(token) {
  * @param {string} pid - The personal identification number (PID) of the user.
  * @return {Object} - The cookie object containing name, value, domain, path, httpOnly, secure, sameSite, and url.
  * **/
-export function getCookie(pid) {
-  const token = getToken(pid);
+export function getCookie(pid, userId = null, partyId = null, partyUuid = null) {
+  const token = getToken(pid, userId, partyId, partyUuid);
   const cookie = {
     name: 'arbeidsflate',
     value: getSessionId(token),

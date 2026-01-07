@@ -12,6 +12,7 @@ export function getOptions(browserTest = 'browserTest', bffTest = 'bffTest') {
 
   // Options placeholder
   const options = {
+    setupTimeout: '5m',
     scenarios: {},
     thresholds: {
       checks: ['rate==1.0'],

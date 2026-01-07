@@ -52,6 +52,7 @@ breakpoint=false
 abort_on_fail=false
 environment="yt"
 randomize=true
+onlyopenaf=false
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -102,6 +103,10 @@ while [[ $# -gt 0 ]]; do
             randomize="$2"
             shift 2
             ;;
+        -o|--onlyopenaf)
+            onlyopenaf="$2"
+            shift 2
+            ;;
         *)
             echo "Invalid option: $1"
             help
@@ -129,7 +134,7 @@ configmapname=$(echo "$configmapname" | tr '[:upper:]' '[:lower:]')
 # Set testid to name + timestamp
 testid="${name}_$(date '+%Y%m%dT%H%M%S')"
 
-archive_args="-e BROWSER_VUS=$browserVus -e BFF_VUS=$bffVus -e DURATION=$duration -e ENVIRONMENT=$environment -e BREAKPOINT=$breakpoint -e ABORT_ON_FAIL=$abort_on_fail -e RANDOMIZE=$randomize"
+archive_args="-e BROWSER_VUS=$browserVus -e BFF_VUS=$bffVus -e DURATION=$duration -e ENVIRONMENT=$environment -e BREAKPOINT=$breakpoint -e ABORT_ON_FAIL=$abort_on_fail -e RANDOMIZE=$randomize -e ONLY_OPEN_AF=$onlyopenaf"
 # Create the k6 archive
 if ! k6 archive $filename \
      -e TESTID="$testid" $archive_args \
@@ -196,7 +201,7 @@ EOF
 kubectl apply -f config.yml
 
 # Wait for the job to finish
-wait_timeout="${duration}200s"
+wait_timeout="${duration}600s"
 kubectl wait --for=jsonpath='{.status.stage}'=finished testrun/$name --timeout=$wait_timeout
 # Print the logs of the pods
 print_logs

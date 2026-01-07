@@ -16,3 +16,7 @@ export function readCsv(filename) {
     return [];
   }
 }
+
+export function parseCsvData(data) {
+  return papaparse.parse(data, { header: true, skipEmptyLines: true }).data;
+}

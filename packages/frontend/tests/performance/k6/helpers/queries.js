@@ -71,6 +71,13 @@ export const getAllDialogsForPartyQuery = {
   limit: 100,
 };
 
+export const getAltinn2messages = {
+  operationName: 'altinn2messages',
+  operationNameMultipleParties: 'getAllDialogsForParties',
+  query: `query altinn2messages($selectedAccountIdentifier: String!) {\n  altinn2messages(selectedAccountIdentifier: $selectedAccountIdentifier) {\n    MessageId\n    MessageLink\n    Subject\n    Status\n    LastChangedDateTime\n    CreatedDate\n    LastChangedBy\n    ServiceOwner\n    Type\n    ServiceCode\n    ServiceEdition\n    ArchiveReference\n    _links {\n      self {\n        href\n      }\n      print {\n        href\n        mimeType\n      }\n      portalview {\n        href\n      }\n      metadata {\n        href\n      }\n    }\n  }\n}`,
+  variables: { selectedAccountIdentifier: '' },
+};
+
 // This label is used to identify the authentication status in the queries
 export const isAuthenticatedLabel = 'isAuthenticated';
 
@@ -80,6 +87,7 @@ export const queryLabels = [
   organizationsQuery.operationName,
   savedSearchesQuery.operationName,
   profileQuery.operationName,
+  getAltinn2messages.operationName,
   getAllDialogsForCountQuery.operationName + ' single party',
   getAllDialogsForCountQuery.operationName + ' all parties',
   getAllDialogsForPartyQuery.operationNameSingleParty,
@@ -91,5 +99,6 @@ export const queryLabels = [
   getAllDialogsForPartyQuery.operationNameSingleParty + ' DRAFT',
   getAllDialogsForPartyQuery.operationNameSingleParty + ' ARCHIVE',
   getAllDialogsForPartyQuery.operationNameSingleParty + ' nextPage with extraParams',
+  getAllDialogsForPartyQuery.operationNameSingleParty + ' FTS',
   isAuthenticatedLabel,
 ];
