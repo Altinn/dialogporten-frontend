@@ -11,23 +11,23 @@
  *   - TOKEN_GENERATOR_USERNAME
  *   - TOKEN_GENERATOR_PASSWORD
  */
-import http from 'k6/http';
 import { check } from 'k6';
 import { browser } from 'k6/browser';
+import http from 'k6/http';
 import { Trend } from 'k6/metrics';
 import { afUrl } from '../helpers/config.js';
-import { getCookie, getCookies } from '../helpers/getCookie.js';
+import { getCookie } from '../helpers/getCookie.js';
 import { getOptions } from '../helpers/options.js';
 import { isAuthenticatedLabel } from '../helpers/queries.js';
 import { randomItem } from '../helpers/testimports.js';
 import { parseCsvData } from '../testData/readCsv.js';
 import {
+  doSearches,
   getDialogsForAllEnterprises,
   getNextpage,
   isAuthenticated,
   openAf,
-  selectMenuElements,
-  doSearches
+  selectMenuElements, 
 } from '../tests/bffFunctions.js';
 import { selectAllEnterprises, selectNextPage, selectSideMenuElement, waitForPageLoaded } from './browserFunctions.js';
 
@@ -66,7 +66,9 @@ const doSearchesBff = new Trend('do_searches_bff', true);
  * @returns {Array} - An array of objects containing the PID and cookie for each end user.
  **/
 export async function setup() {
-  const res = http.get(`https://raw.githubusercontent.com/Altinn/dialogporten-frontend/refs/heads/main/packages/frontend/tests/performance/k6/testData/sgy502AF.csv`);
+  const res = http.get(`
+    https://raw.githubusercontent.com/Altinn/dialogporten-frontend/refs/heads/main/packages/frontend/tests/performance/k6/testData/sgy502AF.csv`
+  );
   const endUsers = parseCsvData(res.body);
   const data = [];
   let cookie;
@@ -152,10 +154,18 @@ export function bffTest(data) {
   if (onlyOpenAf) {
     return;
   }
-  selectMenuElements(testData.cookie, [parties], pressSentBff, pressDraftsBff, pressArchiveBff, pressBinBff, pressInboxBff);
+  selectMenuElements(
+    testData.cookie,
+    [parties],
+    pressSentBff,
+    pressDraftsBff,
+    pressArchiveBff,
+    pressBinBff,
+    pressInboxBff,
+  );
   isAuthenticated(testData.cookie, isAuthenticatedLabel);
   getNextpage(testData.cookie, parties);
-  let startTimeSearch = Date.now();
+  const startTimeSearch = Date.now();
   doSearches(testData.cookie, parties);
   doSearchesBff.add(Date.now() - startTimeSearch);
   getDialogsForAllEnterprises(testData.cookie, allParties, selectAllEnterprisesBff, selectAnotherPartyBff);

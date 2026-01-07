@@ -78,7 +78,6 @@ export const getAltinn2messages = {
   variables: { selectedAccountIdentifier: '' },
 };
 
-
 // This label is used to identify the authentication status in the queries
 export const isAuthenticatedLabel = 'isAuthenticated';
 

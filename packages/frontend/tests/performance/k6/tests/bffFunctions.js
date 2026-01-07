@@ -3,11 +3,11 @@ import { afUrl } from '../helpers/config.js';
 import {
   getAllDialogsForCountQuery,
   getAllDialogsForPartyQuery,
+  getAltinn2messages,
   organizationsQuery,
   partiesQuery,
   profileQuery,
   savedSearchesQuery,
-  getAltinn2messages,
 } from '../helpers/queries.js';
 import { describe, expect, randomItem } from '../helpers/testimports.js';
 const baseUrl = afUrl + 'api';
@@ -34,13 +34,21 @@ export function openAf(pid, cookie) {
  * @param {Object} cookie - The cookie object containing name and value.
  * @param {Array} parties - An array of party URIs.
  */
-export function selectMenuElements(cookie, parties, pressSentBff, pressDraftsBff, pressArchiveBff, pressBinBff, pressInboxBff) {
+export function selectMenuElements(
+  cookie,
+  parties,
+  pressSentBff,
+  pressDraftsBff,
+  pressArchiveBff,
+  pressBinBff,
+  pressInboxBff,
+) {
   let time1 = new Date();
   getMenuElements(cookie, parties[0], 'DRAFT');
   let time2 = new Date();
   pressDraftsBff.add(time2 - time1);
   getMenuElements(cookie, parties[0], 'SENT');
-  time1 = new Date(); 
+  time1 = new Date();
   pressSentBff.add(time1 - time2);
   getMenuElements(cookie, parties[0], 'ARCHIVE');
   time2 = new Date();
@@ -66,8 +74,7 @@ export function getDialogsForAllEnterprises(cookie, parties, selectAllEnterprise
     getAllDialogsForParties(cookie, enterprises, 100, true);
     const endTime = new Date();
     selectAllEnterprisesBff.add(endTime - startTime);
-  }
-  else if (parties.length > 0) {
+  } else if (parties.length > 0) {
     const party = randomItem(parties);
     const startTime = new Date();
     getAllDialogsForParties(cookie, [party], 100, true);
@@ -76,7 +83,18 @@ export function getDialogsForAllEnterprises(cookie, parties, selectAllEnterprise
   }
 }
 
-export const texts = [ "påkrevd", "rapportering", "sammendrag", "Utvidet Status", "ingen HTML-støtte", "et eller annet", "Skjema", "Skjema for rapportering av et eller annet", "Maks 200 tegn", "liste" ];
+export const texts = [
+  'påkrevd',
+  'rapportering',
+  'sammendrag',
+  'Utvidet Status',
+  'ingen HTML-støtte',
+  'et eller annet',
+  'Skjema',
+  'Skjema for rapportering av et eller annet',
+  'Maks 200 tegn',
+  'liste'
+];
 export function doSearches(cookie, party) {
   const payload = JSON.parse(JSON.stringify(getAllDialogsForPartyQuery));
   payload.variables.partyURIs.push(party);
@@ -198,7 +216,7 @@ function getSavedSearches(cookie) {
   }
   const data = resp.json();
   const searches = [];
-  if (data.data && data.data.savedSearches) {
+  if (data.data?.savedSearches) {
     for (const search of data.data.savedSearches) {
       searches.push(search.id);
     }
