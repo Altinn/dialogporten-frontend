@@ -59,7 +59,6 @@ const selectAnotherPartyBff = new Trend('select_another_party_bff', true);
 const totalDialogsBff = new Trend('total_dialogs_bff', true);
 const doSearchesBff = new Trend('do_searches_bff', true);
 
-
 /**
  * The setup function initializes the test data by generating cookies for each end user.
  * It retrieves the token for each end user and creates a cookie object.
@@ -80,7 +79,7 @@ export async function setup() {
     });
     if (data.length >= 3000) {
       break;
-    } 
+    }
   }
   return data;
 }
