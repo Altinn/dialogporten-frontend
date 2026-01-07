@@ -67,7 +67,8 @@ const doSearchesBff = new Trend('do_searches_bff', true);
  **/
 export async function setup() {
   const res = http.get(
-    `https://raw.githubusercontent.com/Altinn/dialogporten-frontend/refs/heads/main/packages/frontend/tests/performance/k6/testData/sgy502AF.csv`);
+    `https://raw.githubusercontent.com/Altinn/dialogporten-frontend/refs/heads/main/packages/frontend/tests/performance/k6/testData/sgy502AF.csv`,
+  );
   const endUsers = parseCsvData(res.body);
   const data = [];
   let cookie;

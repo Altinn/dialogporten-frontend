@@ -93,7 +93,7 @@ export const texts = [
   'Skjema',
   'Skjema for rapportering av et eller annet',
   'Maks 200 tegn',
-  'liste'
+  'liste',
 ];
 export function doSearches(cookie, party) {
   const payload = JSON.parse(JSON.stringify(getAllDialogsForPartyQuery));
