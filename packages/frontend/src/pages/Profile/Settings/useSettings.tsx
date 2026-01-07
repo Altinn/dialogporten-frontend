@@ -10,7 +10,7 @@ import {
 } from '@altinn/altinn-components';
 import type { SettingsItemVariant } from '@altinn/altinn-components/dist/types/lib/components/Settings/SettingsItem';
 import { BellIcon, HouseHeartIcon, MobileIcon, PaperplaneIcon, PersonRectangleIcon } from '@navikt/aksel-icons';
-import { type ChangeEvent, useState } from 'react';
+import { type ChangeEvent, type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParties } from '../../../api/hooks/useParties.ts';
 import { useAccounts } from '../../../components/PageLayout/Accounts/useAccounts.tsx';
@@ -30,7 +30,7 @@ export enum SettingsType {
 }
 
 interface UseSettingsOptions {
-  groups?: Record<string, Record<string, string>>;
+  groups?: Record<SettingsType | string, { title?: string | ReactNode }>;
   excludeGroups?: (keyof typeof SettingsType)[];
   includeGroups?: (keyof typeof SettingsType)[];
 }
@@ -401,7 +401,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
 
   return {
     settings,
-    settingsGroups: accountGroups,
+    settingsGroups: accountGroups as Record<string, SettingsGroupProps>,
     settingsSearch,
     getAccountAlertSettings,
   };

@@ -15,6 +15,9 @@ param sourceKeyVaultSshJumperSshPublicKey = readEnvironmentVariable('SOURCE_KEY_
 
 param applicationGatewayWhitelistedIps = json(readEnvironmentVariable('APPLICATION_GATEWAY_WHITELISTED_IPS', '[]'))
 
+// Backup vault for PostgreSQL (storage account + container for now)
+param enableBackupVault = true
+
 // SKUs
 param redisSku = {
   name: 'Standard'

@@ -1,9 +1,10 @@
 import { stitchSchemas } from '@graphql-tools/stitch';
 import type { AsyncExecutor } from '@graphql-tools/utils';
 import axios from 'axios';
-import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
+import type { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 import { print } from 'graphql';
+import depthLimit from 'graphql-depth-limit';
 import { createHandler } from 'graphql-http/lib/use/fastify';
 import config from '../config.ts';
 import { bffSchema, dialogportenSchema } from './schema.ts';
@@ -15,6 +16,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
     const response = await axios({
       method: 'POST',
       url: config.dialogporten.graphqlUrl,
+      timeout: 30000,
       headers: {
         'content-type': 'application/json',
         Authorization: `Bearer ${token.access_token}`,
@@ -43,6 +45,9 @@ const plugin: FastifyPluginAsync = async (fastify) => {
         reply,
       };
     },
+    validationRules: [
+      depthLimit(10), // Maximum query depth of 10 levels
+    ],
   });
 
   fastify.post(

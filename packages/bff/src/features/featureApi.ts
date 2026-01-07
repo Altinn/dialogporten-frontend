@@ -6,12 +6,15 @@ import type { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 
 const defaultFeatureFlags: Record<string, boolean | number | string> = {
-  'globalMenu.enableAccessManagementLink': false,
   'globalMenu.enabled': false,
-  'party.stopReversingPersonNameOrder': false,
+  'dialogporten.disableFlipNamesPatch': false,
+  'dialogporten.enableSearchLanguageCode': false,
   'inbox.disableDialogCount': false,
   'inbox.enableAltinn2Messages': false,
-  'debug.test': false, // only used for debugging
+  'debug.test': false, // only used for debugging,
+  'inbox.enableAlertBanner': false,
+  'dialogporten.disableSubscriptions': false,
+  'dialogporten.enableManualSubscriptionRefresh': false,
 };
 
 /* Fore more details, cf. https://learn.microsoft.com/en-us/azure/azure-app-configuration/quickstart-feature-flag-javascript?tabs=entra-id */

@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -15,10 +16,10 @@ import healthChecks from './azure/HealthChecks.ts';
 import healthProbes from './azure/HealthProbes.ts';
 import config from './config.ts';
 import { connectToDB } from './db.ts';
+import alertBannerApi from './features/alertBannerApi.ts';
 import featureApi from './features/featureApi.js';
 import graphqlApi from './graphql/api.ts';
 import { fastifyHeaders } from './graphql/fastifyHeaders.ts';
-import graphqlStream from './graphql/subscription.ts';
 import { otelSDK } from './instrumentation.ts';
 import redisClient from './redisClient.ts';
 
@@ -89,10 +90,17 @@ const startServer = async (): Promise<void> => {
   server.setErrorHandler((error, request, reply) => {
     logger.error(error, `Error handling request ${request.method} ${request.url}`);
 
-    const html = errorTemplate.replaceAll('{{statusCode}}', String(error.statusCode || 500));
+    //csp nonce for inline styles
+    const nonce = crypto.randomBytes(16).toString('base64');
+    const html = errorTemplate.replace('<style>', `<style nonce="${nonce}">`);
+
     reply
       .code(error.statusCode || 500)
       .type('text/html')
+      .header(
+        'Content-Security-Policy',
+        `default-src 'self'; style-src 'self' 'nonce-${nonce}' https://altinncdn.no; font-src https://altinncdn.no; img-src 'self' data:; script-src 'self'; object-src 'none'; frame-src 'none'; base-uri 'self'; form-action 'self'`,
+      )
       .send(html);
   });
 
@@ -104,8 +112,10 @@ const startServer = async (): Promise<void> => {
   server.register(featureApi, {
     appConfigConnectionString,
   });
+  server.register(alertBannerApi, {
+    appConfigConnectionString,
+  });
   server.register(graphqlApi);
-  server.register(graphqlStream);
 
   if (enableGraphiql) {
     server.register(fastifyGraphiql, {

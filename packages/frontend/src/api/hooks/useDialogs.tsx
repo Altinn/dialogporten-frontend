@@ -1,6 +1,14 @@
 import type { FilterState } from '@altinn/altinn-components/dist/types/lib/components/Toolbar/Toolbar';
 import { keepPreviousData, useQueryClient } from '@tanstack/react-query';
-import type { DialogStatus, GetAllDialogsForPartiesQuery, PartyFieldsFragment, SystemLabel } from 'bff-types-generated';
+import type {
+  DialogStatus,
+  GetAllDialogsForCountQuery,
+  GetAllDialogsForPartiesQuery,
+  PartyFieldsFragment,
+  SearchDialogFieldsFragment,
+  SystemLabel,
+} from 'bff-types-generated';
+import i18n from 'i18next';
 import { useEffect, useRef } from 'react';
 import { useAuthenticatedInfiniteQuery } from '../../auth/useAuthenticatedInfiniteQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
@@ -9,9 +17,8 @@ import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
 import { normalizeFilterDefaults } from '../../pages/Inbox/filters.ts';
 import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
-import { useGlobalState } from '../../useGlobalState.ts';
 import { graphQLSDK } from '../queries.ts';
-import { getPartyIds, mapDialogToToInboxItems } from '../utils/dialog.ts';
+import { getPartyIds, mapDialogToToInboxItems, mergeDialogItems } from '../utils/dialog.ts';
 import { useParties } from './useParties.ts';
 
 export type InboxViewType = 'inbox' | 'drafts' | 'sent' | 'archive' | 'bin';
@@ -39,12 +46,9 @@ interface UseDialogsOutput {
 
 export const useDialogs = ({ parties, viewType, filterState, search, queryKey }: UseDialogsProps): UseDialogsOutput => {
   const { organizations } = useOrganizations();
-  const stopReversingPersonNameOrder = useFeatureFlag<boolean>('party.stopReversingPersonNameOrder');
-  const [hasLoadedDialogsInitially, setHasLoadedDialogsInitially] = useGlobalState<boolean>(
-    QUERY_KEYS.HAS_LOADED_DIALOGS_INITIALLY,
-    false,
-  );
+  const disableFlipNamesPatch = useFeatureFlag<boolean>('dialogporten.disableFlipNamesPatch');
   const disableDialogCount = useFeatureFlag<boolean>('inbox.disableDialogCount');
+  const enableSearchLanguageCode = useFeatureFlag<boolean>('dialogporten.enableSearchLanguageCode');
   const { selectedParties, isSelfIdentifiedUser } = useParties();
   const format = useFormat();
   const partiesToUse = parties ? parties : selectedParties;
@@ -76,6 +80,9 @@ export const useDialogs = ({ parties, viewType, filterState, search, queryKey }:
           continuationToken,
           limit: 100,
           search: searchString,
+          ...(enableSearchLanguageCode && {
+            searchLanguageCode: i18n.language,
+          }),
         });
       },
       enabled: partyIds.length > 0 && partyIds.length <= 20 && !isSelfIdentifiedUser,
@@ -97,28 +104,53 @@ export const useDialogs = ({ parties, viewType, filterState, search, queryKey }:
     });
 
   const queryClient = useQueryClient();
+  const previousPartyIdsRef = useRef<string[]>([]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    if (!hasLoadedDialogsInitially && disableDialogCount && data) {
-      const allItems = data.pages.flatMap((page) => page.searchDialogs?.items ?? []) ?? [];
-      const hasNextPage = data.pages[data.pages.length - 1]?.searchDialogs?.hasNextPage ?? false;
-      queryClient.setQueryData([QUERY_KEYS.COUNT_DIALOGS], {
+    if (!disableDialogCount || !data) return;
+
+    const partyIds = selectedParties.map((party) => party.party);
+    const selectedPartiesChanged =
+      !previousPartyIdsRef.current.length || partyIds.join(',') !== previousPartyIdsRef.current.join(',');
+    const currentData = queryClient.getQueryData<GetAllDialogsForCountQuery>([QUERY_KEYS.COUNT_DIALOGS]);
+    const allNewItems: SearchDialogFieldsFragment[] =
+      data.pages.flatMap((page) => page.searchDialogs?.items ?? []) ?? [];
+
+    if (selectedPartiesChanged) {
+      queryClient.setQueryData<GetAllDialogsForCountQuery>([QUERY_KEYS.COUNT_DIALOGS], {
         searchDialogs: {
-          items: allItems,
+          items: allNewItems,
+          hasNextPage: false,
+        },
+      });
+    } else if (allNewItems.length === 0) {
+      return;
+    } else {
+      const existingItems: SearchDialogFieldsFragment[] =
+        !selectedPartiesChanged && currentData?.searchDialogs?.items
+          ? (currentData.searchDialogs.items as SearchDialogFieldsFragment[])
+          : [];
+
+      const mergedItems = mergeDialogItems(existingItems, allNewItems);
+      const hasNextPage = data.pages[data.pages.length - 1]?.searchDialogs?.hasNextPage ?? false;
+
+      queryClient.setQueryData<GetAllDialogsForCountQuery>([QUERY_KEYS.COUNT_DIALOGS], {
+        searchDialogs: {
+          items: mergedItems,
           hasNextPage,
         },
       });
-      setHasLoadedDialogsInitially(true);
     }
-  }, [hasLoadedDialogsInitially, disableDialogCount, data]);
+    previousPartyIdsRef.current = partyIds;
+  }, [disableDialogCount, data, selectedParties]);
 
   const content = data?.pages.flatMap((page) => page.searchDialogs?.items ?? []) || [];
   const dialogCountInconclusive =
     data?.pages?.[data?.pages.length - 1]?.searchDialogs?.hasNextPage === true ||
     data?.pages?.[data?.pages.length - 1]?.searchDialogs?.items === null ||
     partyIds.length >= 20;
-  const dialogs = mapDialogToToInboxItems(content, parties ?? [], organizations, format, stopReversingPersonNameOrder);
+  const dialogs = mapDialogToToInboxItems(content, parties ?? [], organizations, format, disableFlipNamesPatch);
   /*  isFetching && isPlaceholderData is used to determine if we are fetching the initial data for the query key */
   const isActuallyLoading = isLoading || (isFetching && isPlaceholderData);
 

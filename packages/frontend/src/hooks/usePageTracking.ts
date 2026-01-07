@@ -5,6 +5,7 @@ import { Analytics } from '../analytics';
 export const usePageTracking = () => {
   const location = useLocation();
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Intentionally track only on pathname changes (avoid duplicate page views caused by query/state churn).
   useEffect(() => {
     if (!Analytics.isValidTrackablePage(location.pathname)) {
       console.debug(`Skipping page tracking for route: ${location.pathname}`);
@@ -26,5 +27,5 @@ export const usePageTracking = () => {
     return () => {
       Analytics.stopPageTracking(pageInfo);
     };
-  }, [location]);
+  }, [location.pathname]);
 };

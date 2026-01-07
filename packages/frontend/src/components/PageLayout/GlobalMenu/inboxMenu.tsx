@@ -1,5 +1,4 @@
 import type { MenuItemProps, MenuItemSize, MenuProps, Theme } from '@altinn/altinn-components';
-import { Badge } from '@altinn/altinn-components';
 import {
   ArchiveIcon,
   BookmarkIcon,
@@ -36,7 +35,6 @@ export function buildInboxMenu({
   pathname,
   currentSearchQuery,
   fromView,
-  showAmLink,
   currentPartyUuid,
 }: {
   t: (key: string, vars?: Record<string, string>) => string;
@@ -44,12 +42,11 @@ export function buildInboxMenu({
   pathname: string;
   currentSearchQuery: string;
   fromView?: string;
-  showAmLink?: boolean;
   currentPartyUuid?: string;
 }): UseGlobalMenuProps {
   const menuGroups = {
     shortcuts: {
-      divider: showAmLink,
+      divider: true,
       defaultIconTheme: 'transparent' as Theme,
       defaultItemSize: 'sm' as MenuItemSize,
       title: t('word.shortcuts'),
@@ -131,16 +128,17 @@ export function buildInboxMenu({
       groupId: 'global',
       size: 'lg',
       icon: InboxFillIcon,
-      title: (
-        <>
-          {t('sidebar.inbox')} <Badge>{t('word.beta')}</Badge>
-        </>
-      ),
+      title: t('sidebar.inbox'),
       selected: isRouteSelected(pathname, PageRoutes.inbox, fromView),
       expanded: true,
       as: createMenuItemComponent({
         to: PageRoutes.inbox + pruneSearchQueryParams(currentSearchQuery),
       }),
+      badge: {
+        label: t('word.beta'),
+        color: 'neutral',
+        variant: 'base',
+      },
       items: [
         {
           id: '2',
@@ -215,6 +213,7 @@ export function buildInboxMenu({
       ...inboxItems.map((item, idx) => ({
         ...item,
         iconTheme: idx === 0 ? 'base' : item.iconTheme,
+        badge: idx === 0 ? undefined : item.badge,
       })),
       ...shortcuts,
     ],
@@ -237,15 +236,15 @@ export function buildInboxMenu({
         size: 'lg',
         icon: PadlockLockedFillIcon,
         iconTheme: 'tinted',
-        hidden: !showAmLink,
         as: 'a',
         href: getAccessAMUILink(currentPartyUuid),
-        title: (
-          <>
-            {t('altinn.access_management')} <Badge>{t('word.beta')}</Badge>
-          </>
-        ),
+        title: t('altinn.access_management'),
         selected: false,
+        badge: {
+          label: t('word.beta'),
+          color: 'neutral',
+          variant: 'base',
+        },
       },
       {
         id: 'all-forms',

@@ -134,7 +134,7 @@ const useGroupedDialogs = ({
       id: 'dialog-context-menu-' + item.id,
       placement: 'right',
       items: [
-        ...systemLabelActions(item.id, item.label),
+        ...(item ? systemLabelActions(item.id, item.label, item.unread) : []),
         {
           id: 'seenby-log',
           groupId: 'logs',
@@ -168,7 +168,7 @@ const useGroupedDialogs = ({
       grouped: allOrganizationsSelected,
       attachmentsCount: item.guiAttachmentCount,
       seenByLog: item.seenByLog,
-      unread: item.seenSinceLastContentUpdate.length === 0 && !item.hasUnopenedContent,
+      unread: item.unread,
       status: getDialogStatus(item.status, t),
       extendedStatusLabel: item.extendedStatus,
       controls: <ContextMenu {...contextMenu} />,

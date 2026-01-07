@@ -3,6 +3,7 @@ import { DialogStatus, type SearchDialogFieldsFragment, SystemLabel } from 'bff-
 export const dialogs: SearchDialogFieldsFragment[] = [
   {
     serviceResource: 'default',
+    serviceResourceType: 'correspondenceservice',
     id: '019241f7-6f45-72fd-a574-f19d358aaf4e',
     endUserContext: {
       systemLabels: [SystemLabel.Default],
@@ -10,7 +11,11 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     party: 'urn:altinn:person:identifier-no:1',
     org: 'ok',
     progress: null,
-    hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0, contentUpdatedAt: "2024-01-15T11:34:00.000Z", guiAttachmentCount: 1,
+    hasUnopenedContent: false,
+    fromServiceOwnerTransmissionsCount: 0,
+    fromPartyTransmissionsCount: 0,
+    contentUpdatedAt: "2024-01-15T11:34:00.000Z",
+    guiAttachmentCount: 1,
     status: DialogStatus.RequiresAttention,
     createdAt: '2023-12-23T23:00:00.000Z',
     seenSinceLastContentUpdate: [
@@ -87,6 +92,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
   },
   {
     serviceResource: 'default',
+    serviceResourceType: 'correspondenceservice',
     id: '019241f7-67dc-7562-a56f-1634796039e5',
     endUserContext: {
       systemLabels: [SystemLabel.Default, SystemLabel.Sent],
@@ -94,7 +100,11 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     party: 'urn:altinn:person:identifier-no:1',
     org: 'ok',
     progress: null,
-    hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0, contentUpdatedAt: "2024-02-20T06:33:00.000Z", guiAttachmentCount: 1,
+    hasUnopenedContent: false,
+    fromServiceOwnerTransmissionsCount: 0,
+    fromPartyTransmissionsCount: 0,
+    contentUpdatedAt: "2024-02-20T06:33:00.000Z",
+    guiAttachmentCount: 1,
     status: DialogStatus.Awaiting,
     createdAt: '2023-12-15T06:33:00.000Z',
     seenSinceLastContentUpdate: [],
@@ -123,6 +133,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
   },
   {
     serviceResource: 'default',
+    serviceResourceType: 'correspondenceservice',
     id: '019241f7-8375-75a3-8bdb-2cebee9cb585',
     endUserContext: {
       systemLabels: [SystemLabel.Default],
@@ -130,7 +141,11 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     party: 'urn:altinn:organization:identifier-sub:2',
     org: 'fors',
     progress: null,
-    hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0, contentUpdatedAt: "2024-03-12T09:15:00.000Z", guiAttachmentCount: 1,
+    hasUnopenedContent: false,
+    fromServiceOwnerTransmissionsCount: 0,
+    fromPartyTransmissionsCount: 0,
+    contentUpdatedAt: "2024-03-12T09:15:00.000Z",
+    guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2023-12-12T09:15:00.000Z',
     seenSinceLastContentUpdate: [
@@ -170,6 +185,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
   },
   {
     serviceResource: 'default',
+    serviceResourceType: 'correspondenceservice',
     id: '019241f7-8218-7756-be82-5310042c3d95',
     endUserContext: {
       systemLabels: [SystemLabel.Default],
@@ -177,7 +193,11 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     party: 'urn:altinn:person:identifier-no:1',
     org: 'nav',
     progress: null,
-    hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0, contentUpdatedAt: "2024-04-04T11:45:00.000Z", guiAttachmentCount: 0,
+    hasUnopenedContent: false,
+    fromServiceOwnerTransmissionsCount: 0,
+    fromPartyTransmissionsCount: 0,
+    contentUpdatedAt: "2024-04-04T11:45:00.000Z",
+    guiAttachmentCount: 0,
     status: DialogStatus.RequiresAttention,
     createdAt: '2023-12-04T11:45:00.000Z',
     seenSinceLastContentUpdate: [],
@@ -206,6 +226,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
   },
   {
     serviceResource: 'default',
+    serviceResourceType: 'correspondenceservice',
     id: '019241f7-812c-71c8-8e68-94a0b771fa10',
     endUserContext: {
       systemLabels: [SystemLabel.Default],
@@ -213,7 +234,11 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     party: 'urn:altinn:person:identifier-no:1',
     org: 'ssb',
     progress: null,
-    hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0, contentUpdatedAt: "2024-05-17T09:30:00.000Z", guiAttachmentCount: 0,
+    hasUnopenedContent: false,
+    fromServiceOwnerTransmissionsCount: 0,
+    fromPartyTransmissionsCount: 0,
+    contentUpdatedAt: "2024-05-17T09:30:00.000Z",
+    guiAttachmentCount: 0,
     status: DialogStatus.RequiresAttention,
     createdAt: '2023-05-17T09:30:00.000Z',
     seenSinceLastContentUpdate: [
@@ -254,6 +279,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
   },
   {
     serviceResource: 'default',
+    serviceResourceType: 'correspondenceservice',
     id: '019241f7-78e6-7702-8724-a95e049d491e',
     endUserContext: {
       systemLabels: [SystemLabel.Default],
@@ -261,7 +287,11 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     party: 'urn:altinn:person:identifier-no:1',
     org: 'dibk',
     progress: null,
-    hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0, contentUpdatedAt: "2024-06-18T10:55:00.000Z", guiAttachmentCount: 8,
+    hasUnopenedContent: false,
+    fromServiceOwnerTransmissionsCount: 0,
+    fromPartyTransmissionsCount: 0,
+    contentUpdatedAt: "2024-06-18T10:55:00.000Z",
+    guiAttachmentCount: 8,
     status: DialogStatus.NotApplicable,
     createdAt: '2023-04-18T10:55:00.000Z',
     dueAt: '2028-05-04T11:45:00.000Z',
@@ -302,6 +332,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
   },
   {
     serviceResource: 'default',
+    serviceResourceType: 'correspondenceservice',
     id: '019241f7-5fa0-7336-934d-716a8e5bbb49',
     endUserContext: {
       systemLabels: [SystemLabel.Default],
@@ -313,6 +344,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     status: DialogStatus.Completed,
     createdAt: '2023-03-11T07:00:00.000Z',
     seenSinceLastContentUpdate: [],
+    dueAt: "2023-03-11T07:00:00.000Z",
     content: {
       title: {
         mediaType: 'text/plain',
@@ -338,6 +370,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
   },
   {
     serviceResource: 'default',
+    serviceResourceType: 'correspondenceservice',
     id: '019241f7-7f61-778d-9ef8-f6bae5e80579',
     endUserContext: {
       systemLabels: [SystemLabel.Default],
@@ -385,6 +418,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
   },
   {
     serviceResource: 'default',
+    serviceResourceType: 'correspondenceservice',
     id: '019241f7-8698-7293-90aa-6c65a784c15e',
     endUserContext: {
       systemLabels: [SystemLabel.Default],
@@ -421,6 +455,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
   },
   {
     serviceResource: 'default',
+    serviceResourceType: 'correspondenceservice',
     id: '019241f7-85ed-72fd-922a-fa784d7e4228',
     endUserContext: {
       systemLabels: [SystemLabel.Default],

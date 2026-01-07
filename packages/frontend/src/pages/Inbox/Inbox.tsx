@@ -25,9 +25,11 @@ import { isSavedSearchDisabled } from '../../components/SavedSearchButton/savedS
 import { SeenByModal } from '../../components/SeenByModal/SeenByModal.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useFeatureFlag } from '../../featureFlags';
+import { useAlertBanner } from '../../hooks/useAlertBanner.ts';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
 import { useInboxOnboarding } from '../../onboardingTour';
 import { PageRoutes } from '../routes.ts';
+import { AlertBanner } from './AlertBanner.tsx';
 import { Altinn2ActiveSchemasNotification } from './Altinn2ActiveSchemasNotification.tsx';
 import { FilterCategory, readFiltersFromURLQuery } from './filters.ts';
 import { useFilters } from './useFilters.tsx';
@@ -62,8 +64,9 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const [filterState, setFilterState] = useState<FilterState>(readFiltersFromURLQuery(location.search));
   const [currentSeenByLogModal, setCurrentSeenByLogModal] = useState<CurrentSeenByLog | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
-  const isGlobalMenuEnabled = useFeatureFlag('globalMenu.enabled') as boolean;
-  const isAltinn2MessagesEnabled = useFeatureFlag('inbox.enableAltinn2Messages') as boolean;
+  const isAltinn2MessagesEnabled = useFeatureFlag<boolean>('inbox.enableAltinn2Messages');
+  const isAlertBannerEnabled = useFeatureFlag<boolean>('inbox.enableAlertBanner');
+  const alertBannerContent = useAlertBanner();
 
   const onFiltersChange = (filters: FilterState) => {
     const currentURL = new URL(window.location.href);
@@ -192,7 +195,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
   if (organizationLimitReached) {
     return (
       <PageBase margin="page">
-        <Section data-testid="inbox-toolbar" style={isGlobalMenuEnabled ? { marginTop: '-1rem' } : undefined}>
+        <Section data-testid="inbox-toolbar" style={{ marginTop: '-1rem' }}>
           <Toolbar
             data-testid="inbox-toolbar"
             accountMenu={{
@@ -217,7 +220,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
 
   return (
     <PageBase margin="page">
-      <section data-testid="inbox-toolbar" style={isGlobalMenuEnabled ? { marginTop: '-1rem' } : undefined}>
+      <section data-testid="inbox-toolbar" style={{ marginTop: '-1rem' }}>
         {selectedAccount ? (
           <>
             <Toolbar
@@ -245,6 +248,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
           </>
         ) : null}
       </section>
+      <AlertBanner showAlertBanner={isAlertBannerEnabled && !!alertBannerContent} />
       <Section>
         {isAltinn2MessagesEnabled && <Altinn2ActiveSchemasNotification selectedAccount={selectedAccount} />}
         {dialogsSuccess && !dialogs.length && !isLoading && (

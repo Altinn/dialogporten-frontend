@@ -6,6 +6,7 @@ import { useParties } from '../../api/hooks/useParties';
 import { createMessageBoxLink, getNeedHelpLink } from '../../auth';
 import { QUERY_KEYS } from '../../constants/queryKeys';
 import { i18n } from '../../i18n/config';
+import { pruneSearchQueryParams } from '../../pages/Inbox/queryParams.ts';
 import { PageRoutes } from '../../pages/routes';
 import { useGlobalState } from '../../useGlobalState';
 
@@ -16,6 +17,7 @@ export const FloatingDropdown = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
+  const { search } = useLocation();
   const [_, setShowTour] = useGlobalState<boolean>(QUERY_KEYS.SHOW_TOUR, false);
   const [__, setShowProfileTour] = useGlobalState<boolean>(QUERY_KEYS.SHOW_PROFILE_TOUR, false);
 
@@ -24,12 +26,16 @@ export const FloatingDropdown = () => {
   const isTourBlacklisted = TOUR_BLACKLISTED_PAGES.includes(location.pathname as PageRoutes);
 
   const handleStartTour = () => {
-    const isProfilePage = location.pathname.startsWith('/profile');
+    const isProfilePage = location.pathname.includes(PageRoutes.profile);
+    const isInboxPage = location.pathname === PageRoutes.inbox;
+
     if (isProfilePage) {
       setShowProfileTour(true);
+    } else if (isInboxPage) {
+      setShowTour(true);
     } else {
-      // For inbox we need to navigate to main view to show the tour properly
-      navigate(PageRoutes.inbox);
+      // I.e. other folders or inbox details. We need to navigate to main view to show the tour properly first
+      navigate(PageRoutes.inbox + pruneSearchQueryParams(search));
       setShowTour(true);
     }
   };
@@ -64,5 +70,5 @@ export const FloatingDropdown = () => {
     },
   ];
 
-  return <FloatingDropdownAc icon={QuestionmarkIcon} iconAltText={'?'} items={items} />;
+  return <FloatingDropdownAc icon={QuestionmarkIcon} iconAltText={t('floatingdropdown.open_alt_text')} items={items} />;
 };

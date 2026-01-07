@@ -9,8 +9,8 @@ export const useFooter = (): FooterProps => {
   const footerLinks = getFooterLinks(currentPartyUuid || '', i18n.language);
 
   return {
-    address: 'Postboks 1382 Vika, 0114 Oslo.',
-    address2: 'Org.nr. 991 825 827',
+    address: t('footer.address'),
+    address2: t('footer.address2'),
     menu: {
       items: footerLinks.map((link) => ({
         id: link.resourceId,

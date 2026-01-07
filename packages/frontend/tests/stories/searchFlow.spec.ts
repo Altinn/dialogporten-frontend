@@ -30,31 +30,37 @@ test.describe('Search flow', () => {
     await searchbarInput.click();
     await searchbarInput.fill('test');
 
-    await expect(page.getByRole('banner').getByRole('menuitem', { name: 'First test message' })).toBeVisible();
-    await expect(page.getByRole('banner').getByRole('menuitem', { name: 'Second test message' })).toBeVisible();
-    await expect(page.getByRole('banner').getByRole('menuitem', { name: 'Third test message' })).toBeVisible();
-    await expect(page.getByRole('banner').getByRole('menuitem', { name: 'Fourth test message' })).toBeVisible();
-    await expect(page.getByRole('banner').getByRole('menuitem', { name: 'Fifth test message' })).toBeVisible();
+    await expect(page.getByRole('menuitem', { name: 'First test message First test' })).toBeVisible();
+    await expect(page.getByRole('menuitem', { name: 'Second test message Second test' })).toBeVisible();
+    await expect(page.getByRole('menuitem', { name: 'Third test message Third test' })).toBeVisible();
+    await expect(page.getByRole('menuitem', { name: 'Fourth test message Fourth test' })).toBeVisible();
+    await expect(page.getByRole('menuitem', { name: 'Fifth test message Fifth test' })).toBeVisible();
   });
 
   test('Search link should open dialog details with enter', async ({ page, isMobile }) => {
     if (!isMobile) {
       await page.goto(appUrlWithPlaywrightId('search-flow'));
-      await selectDialogBySearch(page, 'Sixth', 'nothing');
-      await page.waitForSelector('span:text("1 treff")');
-      await page.getByTestId('searchbar-input').press('ArrowDown');
-      await page.keyboard.press('Enter');
+      await page.getByTestId('searchbar-input').click();
+      await page.getByTestId('searchbar-input').fill('Sixth');
+      await page.getByRole('menuitem', { name: 'Sixth test message Sixth test' }).waitFor({ state: 'visible' });
 
-      await expect(page.getByRole('heading', { name: 'Sixth test message', level: 2 })).toBeVisible();
+      await page.getByTestId('searchbar-input').press('ArrowDown');
+      await page.getByTestId('searchbar-input').press('Enter');
+
+      // Dialog details
+      await expect(page.getByRole('heading', { name: 'Sixth test message' }).locator('span')).toBeVisible();
       await expect(page.getByRole('heading', { name: 'Info i markdown' })).toBeVisible();
     }
   });
 
   test('Search link should open dialog details with click', async ({ page }) => {
     await page.goto(appUrlWithPlaywrightId('search-flow'));
-    await selectDialogBySearch(page, 'Sixth', 'click');
+    await page.getByTestId('searchbar-input').click();
+    await page.getByTestId('searchbar-input').fill('Sixth');
+    await page.getByRole('menuitem', { name: 'Sixth test message Sixth test' }).click();
 
-    await expect(page.getByRole('heading', { name: 'Sixth test message', level: 2 })).toBeVisible();
+    // Dialog details
+    await expect(page.getByRole('heading', { name: 'Sixth test message' }).locator('span')).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Info i markdown' })).toBeVisible();
   });
 

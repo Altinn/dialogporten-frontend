@@ -1,4 +1,4 @@
-import { type ContextMenuProps, DialogLayout } from '@altinn/altinn-components';
+import { type Color, type ContextMenuProps, DialogLayout } from '@altinn/altinn-components';
 import { ClockDashedIcon } from '@navikt/aksel-icons';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -28,13 +28,13 @@ export const DialogDetailsPage = () => {
   const displayDialogActions = !!(dialogId && dialog && !isLoading);
 
   usePageTitle({ baseTitle: dialog?.title || '' });
-  const systemLabelActions = useDialogActions();
+  const createLabelUpdateActions = useDialogActions();
   const contextMenu: ContextMenuProps = {
     id: 'dialog-context-menu',
     placement: 'right',
     ariaLabel: t('dialog.context_menu.label', { title: dialog?.title }),
     items: [
-      ...systemLabelActions(dialogId, dialog?.label),
+      ...(dialogId && dialog ? createLabelUpdateActions(dialogId, dialog?.label ?? [], dialog?.unread) : []),
       {
         id: 'activity-log',
         groupId: 'logs',
@@ -53,23 +53,25 @@ export const DialogDetailsPage = () => {
   }, []);
 
   const dialogTokenIsFreshAfterMount = dataUpdatedAt > mountAtRef.current ? dialog?.dialogToken : undefined;
-  const { hasBeenOpened } = useDialogByIdSubscription(dialog?.id, dialogTokenIsFreshAfterMount);
+  const { onMessageEvent } = useDialogByIdSubscription(dialog?.id, dialogTokenIsFreshAfterMount);
   const previousPath = (location?.state?.fromView ?? '/') + location.search;
+  const labelActions = dialogId && dialog ? createLabelUpdateActions(dialogId, dialog.label, dialog.unread) : [];
 
   return (
     <DialogLayout
+      color={dialog?.receiver?.type as Color}
       backButton={{
         label: t('word.back'),
         as: (props: LinkProps) => <Link {...props} to={previousPath} state={{ scrollToId: dialogId }} />,
       }}
-      pageMenu={displayDialogActions ? { items: systemLabelActions(dialogId, dialog?.label) } : undefined}
+      pageMenu={displayDialogActions ? { items: labelActions } : undefined}
       contextMenu={displayDialogActions ? contextMenu : undefined}
     >
       <DialogDetails
         dialogToken={dialogTokenIsFreshAfterMount}
         dialog={dialog}
         isLoading={isLoading}
-        subscriptionOpened={hasBeenOpened}
+        onMessageEvent={onMessageEvent}
         isAuthLevelTooLow={isAuthLevelTooLow}
         activityModalProps={{
           isOpen: isActivityLogOpen,

@@ -1,9 +1,10 @@
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import { useEffect, useMemo } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
+import { getCookieDomain } from '../../auth';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
-import { useFeatureFlag } from '../../featureFlags';
+import { type PartyCookieName, getPartyFromCookie } from '../../cookie.ts';
 import {
   getSelectedAllPartiesFromQueryParams,
   getSelectedPartyFromQueryParams,
@@ -54,12 +55,11 @@ const createPartyParams = (searchParamString: string, key: string, value: string
 
 export const useParties = (): UsePartiesOutput => {
   const location = useLocation();
-  const [cookiePartyUuid] = useGlobalStringState('altinnCookie', '');
+  const [cookiePartyUuid] = useGlobalStringState(QUERY_KEYS.ALTINN_COOKIE, '');
   const [hasInitializedFromCookie, setHasInitializedFromCookie] = useGlobalState<boolean>(
     'hasInitializedFromCookie',
     false,
   );
-  const stopReversingPersonNameOrder = useFeatureFlag<boolean>('party.stopReversingPersonNameOrder');
   const [searchParams, setSearchParams] = useSearchParams();
   const [allOrganizationsSelected, setAllOrganizationsSelected] = useGlobalState<boolean>(
     QUERY_KEYS.ALL_ORGANIZATIONS_SELECTED,
@@ -83,7 +83,7 @@ export const useParties = (): UsePartiesOutput => {
     queryKey: [QUERY_KEYS.PARTIES],
     queryFn: async () => {
       const response = await graphQLSDK.parties();
-      return normalizeFlattenParties(response.parties, stopReversingPersonNameOrder);
+      return normalizeFlattenParties(response.parties);
     },
     staleTime: Number.POSITIVE_INFINITY,
     gcTime: Number.POSITIVE_INFINITY,
@@ -146,17 +146,16 @@ export const useParties = (): UsePartiesOutput => {
       return;
     }
 
+    const partyFromCookie = data?.find((party) => party.partyUuid === cookiePartyUuid);
+
     // Cookie override – applied only once
     if (!hasInitializedFromCookie && cookiePartyUuid && data?.length) {
-      const partyFromCookie = data.find((party) => party.partyUuid === cookiePartyUuid);
-
       if (partyFromCookie) {
         const partyFromQuery = getSelectedPartyFromQueryParams(searchParams);
         if (!partyFromQuery) {
           setSelectedPartyIds([partyFromCookie.party], false);
         }
       }
-
       setHasInitializedFromCookie(true);
     }
 
@@ -172,7 +171,11 @@ export const useParties = (): UsePartiesOutput => {
         false,
       );
     } else if (currentEndUser) {
-      setSelectedPartyIds([currentEndUser.party], false);
+      if (cookiePartyUuid && partyFromCookie?.party && currentEndUser?.partyUuid !== cookiePartyUuid) {
+        setSelectedPartyIds([partyFromCookie.party], false);
+      } else {
+        setSelectedPartyIds([currentEndUser.party], false);
+      }
     } else {
       console.warn('No current end user found, unable to select default parties.');
     }
@@ -224,6 +227,26 @@ export const useParties = (): UsePartiesOutput => {
   const currentPartyUuid = useMemo(() => {
     return allOrganizationsSelected ? currentEndUser?.partyUuid : selectedParties[0]?.partyUuid;
   }, [selectedParties, currentEndUser, allOrganizationsSelected]);
+
+  const currentA2PartyId = useMemo(() => {
+    return allOrganizationsSelected ? currentEndUser?.partyId : selectedParties[0]?.partyId;
+  }, [selectedParties, currentEndUser, allOrganizationsSelected]);
+
+  useEffect(() => {
+    if (!currentPartyUuid || currentA2PartyId == null) return;
+
+    const domain = getCookieDomain();
+
+    const ensureCookie = (key: PartyCookieName, value: string) => {
+      const existing = getPartyFromCookie(key);
+      if (existing !== value) {
+        document.cookie = `${key}=${value}; Path=/; Domain=${domain}`;
+      }
+    };
+
+    ensureCookie('AltinnPartyUuid', currentPartyUuid);
+    ensureCookie('AltinnPartyId', String(currentA2PartyId));
+  }, [currentPartyUuid, currentA2PartyId]);
 
   return {
     isLoading,

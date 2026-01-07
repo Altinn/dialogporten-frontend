@@ -3,7 +3,7 @@ import { expect, test } from '../fixtures';
 import { appURLDrafts, appURLInbox, defaultAppURL, matchPathName } from '../index';
 import { getSidebarMenuItem } from './common';
 
-test('should navigate to inbox when account is chosen from global menu', async ({ page, isMobile }) => {
+test('should navigate to inbox when changing account from global menu', async ({ page, isMobile }) => {
   await page.goto(defaultAppURL);
   /* click navigate to draft page */
   if (isMobile) {
@@ -16,9 +16,8 @@ test('should navigate to inbox when account is chosen from global menu', async (
 
   expect(page.url()).toEqual(appURLDrafts);
 
-  await page.getByRole('button', { name: 'Meny' }).first().click();
-  await page.getByRole('banner').getByRole('button', { name: 'Test Testesen' }).click();
-  await page.locator('a').filter({ hasText: 'Firma AS' }).click();
+  await page.getByLabel('Test Testesen').click();
+  await page.locator('a').filter({ hasText: 'FFirma ASOrg.nr:' }).click();
 
   expect(new URL(page.url()).searchParams.get('party')).toBe('urn%3Aaltinn%3Aorganization%3Aidentifier-no%3A1');
   expect(matchPathName(page.url(), appURLInbox)).toBe(true);

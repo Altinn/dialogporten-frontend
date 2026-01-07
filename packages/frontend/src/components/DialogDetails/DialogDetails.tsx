@@ -19,15 +19,17 @@ import {
   Typography,
 } from '@altinn/altinn-components';
 import type { ActivityLogSegmentProps } from '@altinn/altinn-components/dist/types/lib/components';
+import { useQueryClient } from '@tanstack/react-query';
 import { DialogEventType, DialogStatus } from 'bff-types-generated';
 import { type ReactElement, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Analytics } from '../../analytics';
+import { ANALYTICS_EVENTS } from '../../analyticsEvents';
 import type { DialogByIdDetails } from '../../api/hooks/useDialogById.tsx';
-import { type DialogEventData, useDialogByIdSubscription } from '../../api/hooks/useDialogByIdSubscription.ts';
-import { useParties } from '../../api/hooks/useParties.ts';
+import type { DialogEventData } from '../../api/hooks/useDialogByIdSubscription.ts';
 import type { TimelineSegmentWithTransmissions } from '../../api/utils/transmissions.ts';
-import { createChangeReporteeAndRedirect } from '../../auth';
+import { QUERY_KEYS } from '../../constants/queryKeys.ts';
+import { useFeatureFlag } from '../../featureFlags';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { getDialogStatus } from '../../pages/Inbox/status.ts';
@@ -43,8 +45,8 @@ interface DialogDetailsProps {
   };
   isAuthLevelTooLow?: boolean;
   isLoading?: boolean;
-  subscriptionOpened?: boolean;
   dialogToken?: string;
+  onMessageEvent: (handler: (eventData: DialogEventData, rawEvent: MessageEvent) => void) => void;
 }
 
 /**
@@ -83,43 +85,42 @@ export interface DialogActionProps {
   hidden?: boolean;
 }
 
-const addReceiptReturnUrl = (url: string, param = 'returnUrl') => {
-  const receiptURL = new URL(url);
-  const gotoParam = receiptURL.searchParams.get('goto');
-
-  if (!gotoParam) {
-    // more future-safe when redirect with goto no longer is necessary
-    receiptURL.searchParams.set(param, encodeURIComponent(location.href));
-    return receiptURL.toString();
-  }
-
-  const innerUrl = new URL(decodeURIComponent(gotoParam));
-  innerUrl.searchParams.set(param, location.href);
-
-  const encodedInner = encodeURIComponent(innerUrl.toString());
-  receiptURL.search = receiptURL.search.replace(/(goto=)[^&]+/, `$1${encodedInner}`);
-
-  return receiptURL.toString();
-};
-
 const handleDialogActionClick = async (
   props: DialogActionProps,
   dialogToken: string,
   responseFinished: () => void,
   logError: (error: Error, context?: Record<string, unknown>, errorMessage?: string) => void,
-  isApp: boolean,
-  currentPartyUuid: string | undefined,
 ): Promise<void> => {
-  const { url, httpMethod, prompt } = props;
+  const { id, title, url, httpMethod, prompt } = props;
+
+  // Track the GUI action click event
+  Analytics.trackEvent(ANALYTICS_EVENTS.GUI_ACTION_CLICK, {
+    'action.id': id,
+    'action.title': title,
+    'action.httpMethod': httpMethod,
+    'action.hasPrompt': !!prompt,
+    'action.url': url,
+  });
 
   if (prompt && !window.confirm(prompt)) {
+    Analytics.trackEvent(ANALYTICS_EVENTS.GUI_ACTION_CANCELLED, {
+      'action.id': id,
+      'action.title': title,
+      'cancellation.reason': 'user_declined_prompt',
+    });
     responseFinished();
     return;
   }
 
   if (httpMethod === 'GET') {
+    Analytics.trackEvent(ANALYTICS_EVENTS.GUI_ACTION_SUCCESS, {
+      'action.id': id,
+      'action.title': title,
+      'action.httpMethod': httpMethod,
+      'action.type': 'external_link',
+    });
     responseFinished();
-    window.location.href = isApp ? createChangeReporteeAndRedirect(currentPartyUuid, addReceiptReturnUrl(url)) : url;
+    window.location.href = url;
   } else {
     try {
       const response = await Analytics.trackFetchDependency(
@@ -173,15 +174,15 @@ export const DialogDetails = ({
   isAuthLevelTooLow,
   activityModalProps,
   dialogToken,
-  subscriptionOpened,
+  onMessageEvent,
 }: DialogDetailsProps): ReactElement => {
+  const queryClient = useQueryClient();
+  const enableManualSubscriptionRefresh = useFeatureFlag<boolean>('dialogporten.enableManualSubscriptionRefresh');
   const { t } = useTranslation();
-  const { currentPartyUuid } = useParties();
   const { logError } = useErrorLogger();
   const [actionIdLoading, setActionIdLoading] = useState<string>('');
   const [actionIdUpdating, setActionIdUpdating] = useState<string>('');
   const [showAllTransmissions, setShowAllTransmissions] = useState<boolean>(false);
-  const { onMessageEvent } = useDialogByIdSubscription(dialog?.id, dialog?.dialogToken);
   const format = useFormat();
 
   onMessageEvent((eventData: DialogEventData) => {
@@ -294,11 +295,18 @@ export const DialogDetails = ({
     );
   }
 
+  const handleManualSubscriptionRefresh = async () => {
+    setTimeout(async () => {
+      await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.DIALOG_BY_ID, dialog.id] });
+      setActionIdLoading('');
+      setActionIdUpdating('');
+    }, 2_000);
+  };
+
   const clockPrefix = t('word.clock_prefix');
   const formatString = clockPrefix ? `do MMMM yyyy '${clockPrefix}' HH.mm` : `do MMMM yyyy HH.mm`;
   const dueAtLabel = dialog.dueAt ? t('dialog.due_at', { date: format(dialog.dueAt, formatString) }) : '';
   const numberOfTransmissionGroups = 3;
-  const isApp = dialog.serviceResourceType === 'altinnapp';
   const dialogActions: DialogActionButtonProps[] = dialog.guiActions.map((action) => ({
     id: action.id,
     label: action.title,
@@ -309,15 +317,8 @@ export const DialogDetails = ({
     onClick: () => {
       setActionIdLoading(action.id);
       setActionIdUpdating(action.id);
-      dialogToken &&
-        void handleDialogActionClick(
-          action,
-          dialogToken,
-          () => setActionIdLoading(''),
-          logError,
-          isApp,
-          currentPartyUuid,
-        );
+      dialogToken && void handleDialogActionClick(action, dialogToken, () => setActionIdLoading(''), logError);
+      enableManualSubscriptionRefresh && handleManualSubscriptionRefresh();
     },
   }));
 
@@ -359,7 +360,7 @@ export const DialogDetails = ({
         seenByLog={dialog.seenByLog}
       >
         <p>{dialog.summary}</p>
-        {subscriptionOpened && dialogToken && (
+        {dialogToken && (
           <MainContentReference content={dialog.mainContentReference} dialogToken={dialogToken} id={dialog.id} />
         )}
         {dialog.attachments.length > 0 && (
@@ -384,12 +385,32 @@ export const DialogDetails = ({
         </Timeline>
       )}
       {dialog.transmissions.length > numberOfTransmissionGroups && !showAllTransmissions && (
-        <Button variant="outline" onClick={() => setShowAllTransmissions(true)}>
+        <Button
+          variant="outline"
+          onClick={() => {
+            Analytics.trackEvent(ANALYTICS_EVENTS.DIALOG_TRANSMISSIONS_EXPAND, {
+              'dialog.id': dialog.id,
+              'transmissions.totalCount': dialog.transmissions.length,
+              'transmissions.visibleCount': numberOfTransmissionGroups,
+            });
+            setShowAllTransmissions(true);
+          }}
+        >
           {t('dialog.transmission.expandLabel')}
         </Button>
       )}
       {showAllTransmissions && (
-        <Button variant="outline" onClick={() => setShowAllTransmissions(false)}>
+        <Button
+          variant="outline"
+          onClick={() => {
+            Analytics.trackEvent(ANALYTICS_EVENTS.DIALOG_TRANSMISSIONS_COLLAPSE, {
+              'dialog.id': dialog.id,
+              'transmissions.totalCount': dialog.transmissions.length,
+              'transmissions.visibleCount': numberOfTransmissionGroups,
+            });
+            setShowAllTransmissions(false);
+          }}
+        >
           {t('dialog.transmission.collapseLabel')}
         </Button>
       )}

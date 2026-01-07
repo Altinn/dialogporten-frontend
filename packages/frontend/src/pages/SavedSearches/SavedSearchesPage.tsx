@@ -4,7 +4,6 @@ import { useParties } from '../../api/hooks/useParties.ts';
 import { createMessageBoxLink } from '../../auth';
 import { Notice } from '../../components/Notice';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
-import { useFeatureFlag } from '../../featureFlags/index.ts';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
 import { PageRoutes } from '../routes.ts';
 import styles from './savedSearchesPage.module.css';
@@ -22,7 +21,6 @@ export const SavedSearchesPage = () => {
   const { bookmarkSectionProps } = useSavedSearches(selectedPartyIds);
 
   usePageTitle({ baseTitle: t('sidebar.saved_searches') });
-  const isGlobalMenuEnabled = useFeatureFlag('globalMenu.enabled') as boolean;
 
   const { accounts, selectedAccount, accountSearch, accountGroups, onSelectAccount } = useAccounts({
     parties,
@@ -42,10 +40,9 @@ export const SavedSearchesPage = () => {
       />
     );
   }
-
   return (
     <PageBase margin="page">
-      <div className={styles.gridContainer} style={isGlobalMenuEnabled ? { marginTop: '-1rem' } : undefined}>
+      <div className={styles.gridContainer} style={{ marginTop: '-1rem' }}>
         {selectedAccount ? (
           <Toolbar
             accountMenu={{

@@ -1,6 +1,7 @@
 import { ReactPlugin } from '@microsoft/applicationinsights-react-js';
 import type { ITelemetryItem, ITelemetryPlugin } from '@microsoft/applicationinsights-web';
 import { ApplicationInsights } from '@microsoft/applicationinsights-web';
+import type { AnalyticsEventName } from './analyticsEvents';
 import { config } from './config';
 import { PageRoutes } from './pages/routes';
 
@@ -15,7 +16,6 @@ const pageMapping: Record<string, string> = {
   [PageRoutes.archive]: 'Archive',
   [PageRoutes.bin]: 'Bin',
   [PageRoutes.savedSearches]: 'Saved Searches',
-  [PageRoutes.about]: 'About',
   [PageRoutes.profile]: 'Profile Overview',
   [PageRoutes.partiesOverview]: 'Parties Management',
   [PageRoutes.notifications]: 'Notification Settings',
@@ -75,7 +75,7 @@ const getPageNameFromPath = (pathname: string): string => {
   return cleanPath.replace(/^\//, '').replace(/\//g, ' > ') || 'Unknown Page';
 };
 
-export const startPageTracking = (pageInfo: {
+const startPageTracking = (pageInfo: {
   pathname: string;
   search: string;
   hash: string;
@@ -95,7 +95,7 @@ export const startPageTracking = (pageInfo: {
   }
 };
 
-export const stopPageTracking = (pageInfo: {
+const stopPageTracking = (pageInfo: {
   pathname: string;
   search: string;
   hash: string;
@@ -130,24 +130,17 @@ export const stopPageTracking = (pageInfo: {
   }
 };
 
-export const trackUserAction = (action: string, properties?: Record<string, string>) => {
+/**
+ * Track custom events with Application Insights
+ * @param eventName - The name of the event to track (use ANALYTICS_EVENTS constants)
+ * @param properties - Additional properties to include with the event
+ */
+const trackEvent = (eventName: AnalyticsEventName, properties?: Record<string, string | number | boolean>) => {
   if (!applicationInsights) return;
 
   applicationInsights.trackEvent({
-    name: `User.${action}`,
-    properties: {
-      'page.current': getPageNameFromPath(window.location.pathname),
-      timestamp: new Date().toISOString(),
-      ...properties,
-    },
-  });
-};
-
-export const trackDialogAction = (action: string, dialogId?: string, properties?: Record<string, string>) => {
-  trackUserAction(`Dialog.${action}`, {
-    'dialog.id': dialogId || '',
-    'dialog.action': action,
-    ...properties,
+    name: eventName,
+    properties: properties || {},
   });
 };
 
@@ -178,8 +171,6 @@ if (applicationInsightsEnabled) {
         maxAjaxCallsPerView: 2000,
       },
     });
-    applicationInsights.loadAppInsights();
-    console.info('Application Insights initialized successfully');
 
     applicationInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
       envelope.tags = envelope.tags || {};
@@ -199,23 +190,21 @@ if (applicationInsightsEnabled) {
           break;
         }
         // Only filter exceptions
+
         case 'ExceptionData': {
-          const data = envelope.baseData;
-          const message = data?.message || '';
-          const exceptions = data?.exceptions || [];
+          const baseData = envelope.baseData;
+          const baseDataMessage = baseData?.message || '';
+          const propertyMessage = baseData?.properties?.message || '';
+          const exceptions = baseData?.exceptions || [];
 
           const extensionUrlPattern = /^(chrome|moz|safari|edge|ms-browser)-extension:\/\//i;
           // Catch all browser extensions
-          if (extensionUrlPattern.test(message)) {
+          if (extensionUrlPattern.test(propertyMessage) || extensionUrlPattern.test(baseDataMessage)) {
             return false;
           }
 
           // Check all exception details for extension URLs
           for (const exception of exceptions) {
-            if (exception.stack && extensionUrlPattern.test(exception.stack)) {
-              return false;
-            }
-
             // Check parsed stack frames
             if (exception.parsedStack && Array.isArray(exception.parsedStack)) {
               for (const frame of exception.parsedStack) {
@@ -226,25 +215,24 @@ if (applicationInsightsEnabled) {
             }
           }
 
-          // Filter cross-origin errors
-          if (message === 'Script error.' || message === 'Script error') {
+          const ignoreMessages = [
+            'Script Error.',
+            'Script Error',
+            'ErrorEvent: Script error.',
+            'EventSource connection error',
+          ];
+          if (ignoreMessages.some((text) => propertyMessage === text)) {
             return false;
           }
-
-          // Filter benign ResizeObserver errors
-          if (
-            message.includes('ResizeObserver loop') ||
-            message.includes('ResizeObserver loop completed with undelivered notifications')
-          ) {
-            return false;
-          }
-
           break;
         }
       }
 
       return true;
     });
+
+    applicationInsights.loadAppInsights();
+    console.info('Application Insights initialized successfully');
   } catch (error) {
     console.error('Failed to initialize Application Insights:', error);
     applicationInsights = null;
@@ -272,9 +260,7 @@ const mockStopPageTracking = (_pageInfo: {
   url: string;
 }) => {};
 
-const mockTrackUserAction = (_action: string, _properties?: Record<string, string>) => {};
-
-const mockTrackDialogAction = (_action: string, _dialogId?: string, _properties?: Record<string, string>) => {};
+const mockTrackEvent = (_action: string, _properties?: Record<string, string | number | boolean>) => {};
 
 const mockTrackFetchDependency = async (
   _name: string,
@@ -287,7 +273,7 @@ const mockTrackFetchDependency = async (
 const mockIsValidTrackablePage = (_pathname: string): boolean => false;
 
 // Enhanced helper function to track fetch requests with same operation ID
-export const trackFetchDependency = async (
+const trackFetchDependency = async (
   name: string,
   fetchPromise: Promise<Response>,
   startTime: number = Date.now(),
@@ -341,9 +327,7 @@ export const Analytics = {
   isEnabled: applicationInsightsEnabled,
   startPageTracking: applicationInsightsEnabled ? startPageTracking : mockStartPageTracking,
   stopPageTracking: applicationInsightsEnabled ? stopPageTracking : mockStopPageTracking,
-  trackUserAction: applicationInsightsEnabled ? trackUserAction : mockTrackUserAction,
-  trackDialogAction: applicationInsightsEnabled ? trackDialogAction : mockTrackDialogAction,
-  trackEvent: applicationInsights?.trackEvent.bind(applicationInsights) || noop,
+  trackEvent: applicationInsightsEnabled ? trackEvent : mockTrackEvent,
   trackException: applicationInsights?.trackException.bind(applicationInsights) || noop,
   trackDependency: applicationInsights?.trackDependencyData.bind(applicationInsights) || noop,
   trackFetchDependency: applicationInsightsEnabled ? trackFetchDependency : mockTrackFetchDependency,

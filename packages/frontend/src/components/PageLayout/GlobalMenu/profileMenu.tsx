@@ -1,5 +1,5 @@
 import type { MenuItemProps, MenuItemSize, MenuProps, Theme } from '@altinn/altinn-components';
-import { Badge, formatDisplayName } from '@altinn/altinn-components';
+import { formatDisplayName } from '@altinn/altinn-components';
 import {
   BellIcon,
   Buildings2Icon,
@@ -9,7 +9,7 @@ import {
   InboxFillIcon,
   InformationSquareIcon,
   MenuGridIcon,
-  PadlockLockedIcon,
+  PadlockLockedFillIcon,
   PersonCircleIcon,
 } from '@navikt/aksel-icons';
 import {
@@ -30,20 +30,14 @@ export function buildProfileMenu({
   currentEndUserName,
   pathname,
   currentSearchQuery,
-  stopReversingPersonNameOrder,
   fromView,
-  userName,
-  showAmLink = false,
   currentPartyUuid,
 }: {
   t: (key: string, vars?: Record<string, string>) => string;
   currentEndUserName?: string;
   pathname: string;
   currentSearchQuery: string;
-  stopReversingPersonNameOrder: boolean;
   fromView?: string;
-  userName?: string;
-  showAmLink?: boolean;
   currentPartyUuid?: string;
 }): UseGlobalMenuProps {
   const menuGroups = {
@@ -75,9 +69,8 @@ export function buildProfileMenu({
       iconTheme: 'base',
       icon: {
         name: formatDisplayName({
-          fullName: userName ?? '',
+          fullName: currentEndUserName ?? '',
           type: 'person',
-          reverseNameOrder: !stopReversingPersonNameOrder,
         }),
       },
       title: t('sidebar.profile'),
@@ -184,16 +177,17 @@ export function buildProfileMenu({
       size: 'lg',
       icon: InboxFillIcon,
       iconTheme: 'tinted',
-      title: (
-        <>
-          {t('sidebar.inbox')} <Badge>{t('word.beta')}</Badge>
-        </>
-      ),
+      title: t('sidebar.inbox'),
       selected: isRouteSelected(pathname, PageRoutes.inbox, fromView),
       expanded: true,
       as: createMenuItemComponent({
         to: PageRoutes.inbox + pruneSearchQueryParams(currentSearchQuery),
       }),
+      badge: {
+        label: t('word.beta'),
+        color: 'neutral',
+        variant: 'base',
+      },
     },
     {
       id: 'am',
@@ -201,15 +195,15 @@ export function buildProfileMenu({
       size: 'lg',
       iconTheme: 'tinted',
       selected: false,
-      icon: PadlockLockedIcon,
-      hidden: !showAmLink,
+      icon: PadlockLockedFillIcon,
       as: 'a',
       href: getAccessAMUILink(currentPartyUuid),
-      title: (
-        <>
-          {t('altinn.access_management')} <Badge>{t('word.beta')}</Badge>
-        </>
-      ),
+      title: t('altinn.access_management'),
+      badge: {
+        label: t('word.beta'),
+        color: 'neutral',
+        variant: 'base',
+      },
     },
     {
       id: 'all-forms',

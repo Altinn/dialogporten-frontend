@@ -20,10 +20,12 @@ export interface InboxItemInput {
   seenByOthersCount: number;
   fromServiceOwnerTransmissionsCount: number;
   fromPartyTransmissionsCount: number;
+  unread: boolean;
   seenByLabel?: string;
   viewType: InboxViewType;
   seenByLog: SeenByLogProps;
   dueAt?: string;
   seenSinceLastContentUpdate: SeenLogFieldsFragment[];
   serviceResource?: string;
+  serviceResourceType?: string;
 }

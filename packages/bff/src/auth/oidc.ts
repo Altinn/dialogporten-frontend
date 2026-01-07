@@ -101,7 +101,9 @@ export const generateSessionId = () => {
 };
 
 export const fetchOpenIDConfig = async (issuerURL: string): Promise<ProviderConfig> => {
-  const response = await axios.get(issuerURL);
+  const response = await axios.get(issuerURL, {
+    timeout: 30000,
+  });
   return response.data;
 };
 
@@ -227,7 +229,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
 
       reply.status(200).send({ cookie, expires: expiresIn });
     } catch (error) {
-      logger.error('Error initializing session:', error);
+      logger.error(error, 'Error initializing session:');
       reply.status(500).send({ error: 'Failed to initialize session' });
     }
   };
@@ -253,6 +255,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
       body.append('redirect_uri', `${hostname}/api/cb`);
 
       const { data: token } = await axios.post(tokenEndpoint, body, {
+        timeout: 30000,
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
           Authorization: authEncoded,

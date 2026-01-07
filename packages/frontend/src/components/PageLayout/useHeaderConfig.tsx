@@ -8,28 +8,24 @@ import type { ChangeEvent } from 'react';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Analytics } from '../../analytics.ts';
+import { ANALYTICS_EVENTS } from '../../analyticsEvents.ts';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { updateLanguage } from '../../api/queries.ts';
 import { getFrontPageLink } from '../../auth';
-import { useFeatureFlag } from '../../featureFlags';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { useProfile } from '../../pages/Profile';
 import { PageRoutes } from '../../pages/routes.ts';
-import { useAccounts } from './Accounts/useAccounts.tsx';
 import { useGlobalMenu } from './GlobalMenu';
 import { useAutocomplete, useSearchString } from './Search';
 import { mapPartiesToAuthorizedParties } from './mapPartyToAuthorizedParty';
 
 interface UseHeaderConfigReturn {
-  isGlobalMenuEnabled: boolean;
   headerProps: HeaderProps;
 }
 
 export const useHeaderConfig = (): UseHeaderConfigReturn => {
-  const isGlobalMenuEnabled = useFeatureFlag('globalMenu.enabled') as boolean;
-  const { currentEndUser, parties, selectedParties, isLoading, allOrganizationsSelected, currentPartyUuid } =
-    useParties();
-
+  const { currentEndUser, parties, selectedParties, isLoading, currentPartyUuid } = useParties();
   const { t, i18n } = useTranslation();
   const { logError } = useErrorLogger();
   const location = useLocation();
@@ -39,7 +35,7 @@ export const useHeaderConfig = (): UseHeaderConfigReturn => {
   const { searchValue, setSearchValue, onClear } = useSearchString();
   const { autocomplete } = useAutocomplete({ selectedParties, searchValue });
 
-  const { favoritesGroup, addFavoriteParty, deleteFavoriteParty } = useProfile();
+  const { favoritesGroup, addFavoriteParty, deleteFavoriteParty, updateProfileLanguage } = useProfile();
 
   const handleToggleFavorite = useCallback(
     async (accountUuid: string) => {
@@ -104,13 +100,6 @@ export const useHeaderConfig = (): UseHeaderConfigReturn => {
     languageCode: i18n.language,
   });
 
-  const { accounts, accountSearch, accountGroups, onSelectAccount, currentAccount, filterAccount } = useAccounts({
-    parties,
-    selectedParties,
-    allOrganizationsSelected,
-    isLoading,
-  });
-
   const { mobileMenu, desktopMenu } = useGlobalMenu();
 
   const handleUpdateLanguage = async (language: string) => {
@@ -126,6 +115,8 @@ export const useHeaderConfig = (): UseHeaderConfigReturn => {
         'Error updating language',
       );
     } finally {
+      /* Keep this optimistically to avoid refetching profile in order update state */
+      updateProfileLanguage(language);
       void i18n.changeLanguage(language);
     }
   };
@@ -153,7 +144,7 @@ export const useHeaderConfig = (): UseHeaderConfigReturn => {
           name: t('word.search'),
           placeholder: t('inbox.search.placeholder'),
           value: searchValue,
-          onClear: () => onClear(),
+          onClear,
           onChange: (event: ChangeEvent<HTMLInputElement>) => setSearchValue(event.target.value),
           autocomplete: {
             ...autocomplete,
@@ -163,72 +154,35 @@ export const useHeaderConfig = (): UseHeaderConfigReturn => {
     mobileMenu,
   };
 
-  // New GlobalHeader props structure
-  if (isGlobalMenuEnabled) {
-    const accountSelector = accountSelectorData;
+  const accountSelector = accountSelectorData;
 
-    const globalHeaderProps: GlobalHeaderProps = {
-      ...commonProps,
-      globalMenu: {
-        menuLabel: t('word.menu'),
-        menu: desktopMenu,
-        backLabel: t('word.back'),
-        logoutButton: {
-          label: t('word.log_out'),
-          onClick: () => {
-            (window as Window).location = `/api/logout`;
-          },
-        },
-      },
-      globalSearch: {
-        onSearch: (value: string) => {
-          const encodedValue = encodeURIComponent(value);
-          window.location.href = `${getFrontPageLink(currentPartyUuid)}/sok?q=${encodedValue}`;
-        },
-      },
-      desktopMenu,
-      accountSelector,
-    };
-
-    return {
-      isGlobalMenuEnabled,
-      headerProps: globalHeaderProps,
-    };
-  }
-
-  // Old Header props structure
-  const headerProps: HeaderProps = {
+  const globalHeaderProps: GlobalHeaderProps = {
     ...commonProps,
-    badge: {
-      label: t('word.beta'),
-      color: 'person' as const,
-    },
-    currentAccount,
     globalMenu: {
       menuLabel: t('word.menu'),
       menu: desktopMenu,
-      onSelectAccount: (account: string) => onSelectAccount(account, isProfile ? PageRoutes.profile : PageRoutes.inbox),
       backLabel: t('word.back'),
-      accountMenu: {
-        filterAccount,
-        items: accounts,
-        groups: accountGroups,
-        ...(accountSearch && {
-          search: accountSearch,
-        }),
-        isVirtualized: true,
-      },
       logoutButton: {
         label: t('word.log_out'),
         onClick: () => {
+          Analytics.trackEvent(ANALYTICS_EVENTS.USER_LOGOUT, {
+            'logout.source': 'header',
+          });
           (window as Window).location = `/api/logout`;
         },
       },
     },
+    globalSearch: {
+      onSearch: (value: string) => {
+        const encodedValue = encodeURIComponent(value);
+        window.location.href = `${getFrontPageLink(currentPartyUuid)}/sok?q=${encodedValue}`;
+      },
+    },
+    desktopMenu,
+    accountSelector,
   };
 
   return {
-    isGlobalMenuEnabled,
-    headerProps,
+    headerProps: globalHeaderProps,
   };
 };

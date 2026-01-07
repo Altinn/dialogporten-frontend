@@ -29,7 +29,6 @@ async function loadFeatures() {
   try {
     if (window.location.pathname === '/logout') {
       return {
-        'globalMenu.enableAccessManagementLink': false,
         'party.stopReversingPersonNameOrder': false,
       };
     }

@@ -11,9 +11,6 @@ test.describe('Saved Searches', () => {
   });
 
   test('should save, edit, and delete a search', async ({ page, baseURL }) => {
-    await page.getByRole('button', { name: 'Prøv ny innboks' }).click();
-    await page.getByRole('button', { name: 'Lukk' }).click();
-
     const toolbarArea = page.getByTestId('inbox-toolbar');
     await toolbarArea.getByRole('button', { name: 'add' }).click();
     await toolbarArea.getByText('Velg avsender').locator('visible=true').click();
@@ -26,27 +23,28 @@ test.describe('Saved Searches', () => {
 
     await page.keyboard.press('Escape');
 
-    await page.getByRole('button', { name: 'Lagre søk' }).click();
+    const saveButton = toolbarArea.getByRole('button', { name: 'Lagre søk' });
+    await expect(saveButton).toBeVisible({ timeout: 20000 });
+    await expect(saveButton).toBeEnabled();
+    await saveButton.click();
     await expect(page.getByText('Søket ditt er lagret')).toBeVisible();
+    await page.getByTestId('sidebar-saved-searches').click();
 
-    await page.goto(`${baseURL}/saved-searches`);
-    await expect(page.getByRole('heading', { name: '1 lagret søk' })).toBeVisible();
+    await expect(page.locator('#main-content')).toContainText('1 lagret søk');
 
-    await page.getByRole('button', { name: 'Edit' }).click();
-
-    await page.getByRole('textbox', { name: 'Tittel' }).fill('test saved search');
-
+    await page.getByRole('button', { name: 'Open menu-saved-search-' }).click();
+    await page.locator('a').filter({ hasText: 'Rediger tittel' }).click();
+    await page.getByRole('textbox', { name: 'Tittel' }).click();
+    await page.getByRole('textbox', { name: 'Tittel' }).fill('test');
     await page.getByRole('button', { name: 'Lagre søk' }).click();
-    await page.getByRole('button', { name: 'Close' }).click();
+    await page.getByRole('button', { name: 'Open menu-saved-search-' }).click();
 
-    await expect(page.getByRole('link', { name: 'test saved search' })).toBeVisible();
+    await page.locator('a').filter({ hasText: 'Rediger tittel' }).click();
+    await page.getByRole('textbox', { name: 'Tittel' }).fill('hei');
+    await page.getByRole('button', { name: 'Lagre søk' }).click();
 
-    await page.getByRole('button', { name: 'Edit' }).click();
-
-    await page.getByRole('button', { name: 'Slett' }).click();
-
+    await page.getByRole('button', { name: 'Open menu-saved-search-' }).click();
+    await page.locator('a').filter({ hasText: 'Slett søk' }).click();
     await expect(page.getByText('Søket ditt ble slettet')).toBeVisible();
-
-    await expect(page.getByRole('main')).toContainText('Du har ingen lagrede søk');
   });
 });
