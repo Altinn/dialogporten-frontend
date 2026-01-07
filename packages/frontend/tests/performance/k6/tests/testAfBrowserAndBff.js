@@ -66,8 +66,7 @@ const doSearchesBff = new Trend('do_searches_bff', true);
  * @returns {Array} - An array of objects containing the PID and cookie for each end user.
  **/
 export async function setup() {
-  //const res = http.get(`https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/main/K6/testdata/auth/orgs-in-yt01-with-party-uuid.csv`);
-  const res = http.get(`https://raw.githubusercontent.com/Altinn/dialogporten-frontend/refs/heads/performance/december-release/packages/frontend/tests/performance/k6/testData/sgy502AF.csv`);
+  const res = http.get(`https://raw.githubusercontent.com/Altinn/dialogporten-frontend/refs/heads/main/packages/frontend/tests/performance/k6/testData/sgy502AF.csv`);
   const endUsers = parseCsvData(res.body);
   const data = [];
   let cookie;

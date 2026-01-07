@@ -54,7 +54,6 @@ export const savedSearchesQuery = {
 export const profileQuery = {
   operationName: 'profile',
   query: `query profile {\n  profile {\n    updatedAt\n    language\n    groups {\n      id\n      name\n      isFavorite\n      parties\n    }\n    user {\n      userId\n      userUuid\n      userName\n      email\n      isReserved\n      phoneNumber\n      externalIdentity\n      partyId\n      party {\n        partyId\n        partyUuid\n        partyTypeName\n        orgNumber\n        ssn\n        unitType\n        name\n        isDeleted\n        onlyHierarchyElementWithNoAccess\n        person {\n          ssn\n          name\n          firstName\n          middleName\n          lastName\n          telephoneNumber\n          mobileNumber\n          mailingAddress\n          mailingPostalCode\n          mailingPostalCity\n          addressMunicipalNumber\n          addressMunicipalName\n          addressStreetName\n          addressHouseNumber\n          addressHouseLetter\n          addressPostalCode\n          addressCity\n          dateOfDeath\n        }\n      }\n    }\n  }\n}`
-  //query: `query profile {\n  profile {\n    updatedAt\n    language\n    groups {\n      id\n      name\n      isFavorite\n      parties\n    }\n    user {\n      userId\n      userUuid\n      userName\n      email\n      isReserved\n      phoneNumber\n      externalIdentity\n      partyId\n      party {\n        partyId\n        partyUuid\n        partyTypeName\n        orgNumber\n        ssn\n        unitType\n        name\n        isDeleted\n        onlyHierarchyElementWithNoAccess\n        person {\n          ssn\n          name\n          firstName\n          middleName\n          lastName\n          telephoneNumber\n          mobileNumber\n          mailingAddress\n          mailingPostalCode\n          mailingPostalCity\n          addressMunicipalNumber\n          addressMunicipalName\n          addressStreetName\n          addressHouseNumber\n          addressHouseLetter\n          addressPostalCode\n          addressCity\n          dateOfDeath\n        }\n      }\n    }\n  }\n}`,
 };
 
 export const getAllDialogsForCountQuery = {
@@ -71,8 +70,6 @@ export const getAllDialogsForPartyQuery = {
   variables: { partyURIs: [] },
   limit: 100,
 };
-
-//"query altinn2messages($selectedAccountIdentifier: String!) {\n  altinn2messages(selectedAccountIdentifier: $selectedAccountIdentifier) {\n    MessageId\n    MessageLink\n    Subject\n    Status\n    LastChangedDateTime\n    CreatedDate\n    LastChangedBy\n    ServiceOwner\n    Type\n    ServiceCode\n    ServiceEdition\n    ArchiveReference\n    _links {\n      self {\n        href\n      }\n      print {\n        href\n        mimeType\n      }\n      portalview {\n        href\n      }\n      metadata {\n        href\n      }\n    }\n  }\n}"
 
 export const getAltinn2messages= {
   operationName: "altinn2messages",
