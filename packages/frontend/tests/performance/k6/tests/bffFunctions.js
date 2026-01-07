@@ -100,8 +100,7 @@ export function doSearches(cookie, party) {
   payload.variables.partyURIs.push(party);
   payload.variables.limit = 100;
   payload.variables.search = randomItem(texts);
-  //console.log(JSON.stringify(payload, null, 2));
-  
+
   // Always single party for menu elements
   const queryLabel = payload.operationNameSingleParty + ' FTS';
   const resp = graphql(cookie, payload, queryLabel);
