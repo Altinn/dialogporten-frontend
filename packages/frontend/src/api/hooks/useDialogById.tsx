@@ -293,11 +293,7 @@ export function mapDialogToToInboxItem(
       title: seenByLabel,
       endUserLabel: t('word.you'),
       items: item.seenSinceLastContentUpdate.map((seen) => {
-        const actorProps = getActorProps(
-          seen.seenBy,
-          seen.isCurrentEndUser || stopReversingPersonNameOrder,
-          serviceOwner,
-        );
+        const actorProps = getActorProps(seen.seenBy, stopReversingPersonNameOrder, serviceOwner);
         return {
           name: actorProps.name,
           type: actorProps.type,
