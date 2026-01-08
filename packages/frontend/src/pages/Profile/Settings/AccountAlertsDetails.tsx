@@ -88,14 +88,14 @@ This is a pragmatic solution until the dialog exposes an onClose prop or ref we 
         } else {
           openSnackbar({
             message: t('profile.account_alerts.snackbar.success'),
-            color: 'accent',
+            color: 'company',
           });
         }
       } else {
         await deleteNotificationsetting(partyUuid);
         openSnackbar({
           message: t('profile.account_alerts.snackbar.success'),
-          color: 'accent',
+          color: 'company',
         });
       }
     } catch (err) {
