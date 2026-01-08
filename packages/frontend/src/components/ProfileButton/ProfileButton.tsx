@@ -17,7 +17,7 @@ export const ProfileButton = (props: ProfileButtonProps) => {
 
   if (isLoading) {
     return (
-      <DsButton className={classes} {...restProps} aria-disabled data-size="sm" variant="tertiary">
+      <DsButton className={classes} {...restProps} aria-disabled data-size="xs" variant="tertiary">
         <DsSpinner aria-label="loading" fontSize="0.875rem" />
         {t('word.loading')}
       </DsButton>
@@ -25,7 +25,7 @@ export const ProfileButton = (props: ProfileButtonProps) => {
   }
 
   return (
-    <DsButton className={classes} {...restProps} variant="tertiary">
+    <DsButton className={classes} {...restProps} variant="tertiary" data-size="xs">
       {children}
     </DsButton>
   );

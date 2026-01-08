@@ -47,7 +47,7 @@ export const useDialogActions = () => {
 
           await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.DIALOGS] });
           await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.DIALOG_BY_ID] });
-          showSnackbar(successKey, 'accent');
+          showSnackbar(successKey, 'company');
         } else {
           showSnackbar(failureKey, 'danger');
         }
