@@ -37,6 +37,7 @@ jobs:
 
   i18n-sort-check:
     uses: ./.github/workflows/workflow-check-i18n-sort.yml
+    if: ${{ needs.check-for-changes.outputs.hasTranslationsChanges == 'true' }}
 
   playwright-test:
     uses: ./.github/workflows/workflow-playwright-test.yml

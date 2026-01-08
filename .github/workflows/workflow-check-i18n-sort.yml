@@ -1,8 +1,6 @@
 name: Check i18n sort
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
   workflow_call:
   workflow_dispatch:
 
@@ -21,39 +19,10 @@ jobs:
       - name: "Installing Dependencies"
         uses: ./.github/actions/install
 
-      - name: Check if i18n files changed
-        id: check-i18n-changes
-        run: |
-          if [ -n "${{ github.event.pull_request.base.ref }}" ]; then
-            # For PRs, fetch the base branch and compare
-            BASE_REF="${{ github.event.pull_request.base.ref }}"
-            git fetch origin "$BASE_REF"
-            BASE_SHA="origin/$BASE_REF"
-            HEAD_SHA="HEAD"
-          else
-            # For workflow_dispatch or other events, compare with main branch
-            BASE_SHA="origin/main"
-            HEAD_SHA="HEAD"
-            git fetch origin main || true
-          fi
-
-          CHANGED_FILES=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA" | grep -E "packages/frontend/src/i18n/resources/.*\.json$" || true)
-
-          if [ -z "$CHANGED_FILES" ]; then
-            echo "changed=false" >> $GITHUB_OUTPUT
-            echo "No i18n files changed, skipping sort check"
-          else
-            echo "changed=true" >> $GITHUB_OUTPUT
-            echo "Changed i18n files:"
-            echo "$CHANGED_FILES"
-          fi
-
       - name: Run i18n:sort
-        if: steps.check-i18n-changes.outputs.changed == 'true'
         run: pnpm --filter frontend i18n:sort
 
       - name: Check for uncommitted changes
-        if: steps.check-i18n-changes.outputs.changed == 'true'
         id: check-changes
         run: |
           if [ -n "$(git status --porcelain packages/frontend/src/i18n/resources/)" ]; then
@@ -71,7 +40,7 @@ jobs:
           fi
 
       - name: Fail if files are not sorted
-        if: steps.check-i18n-changes.outputs.changed == 'true' && steps.check-changes.outputs.has_changes == 'true'
+        if: ${{ steps.check-changes.outputs.has_changes == 'true' }}
         run: |
           echo "i18n files must be sorted before committing. Run 'pnpm --filter frontend i18n:sort' and commit the changes."
           exit 1
