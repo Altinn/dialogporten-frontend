@@ -19,6 +19,21 @@ interface ErrorBoundaryState {
   errorInfo?: ErrorInfo;
 }
 
+const extractComponentInfo = (componentStack: string): { componentName: string; filePath: string } => {
+  // Component stack looks like: "at ComponentName (path/to/file.tsx:line:col)"
+  const firstLine = componentStack.split('\n')[0]?.trim() || '';
+
+  const componentMatch = firstLine.match(/at\s+(\w+)/);
+  const componentName = componentMatch?.[1] || 'Unknown';
+
+  const fileMatch = firstLine.match(/\((.*?):\d+:\d+\)/);
+  const fullPath = fileMatch?.[1] || '';
+
+  const relativePath = fullPath.includes('src/') ? fullPath.substring(fullPath.indexOf('src/')) : fullPath;
+
+  return { componentName, filePath: relativePath || 'Unknown' };
+};
+
 class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
@@ -30,6 +45,11 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    const componentStack = errorInfo?.componentStack || '';
+    const { componentName, filePath } = extractComponentInfo(componentStack);
+
+    console.error(`[ErrorBoundary] Error in ${componentName} (${filePath})\n` + `Message: ${error.message}`);
+
     this.setState({ errorInfo, error });
     this.props.setIsErrorState(true);
   }
@@ -41,12 +61,17 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
     if (isMock || (this.state.hasError && import.meta.env.PROD)) {
       const errorToReport = this.state.error || new Error('ErrorBoundary caught an error');
       const errorInfoToReport = this.state.errorInfo || {};
+      const componentStack = errorInfoToReport?.componentStack || '';
+      const { componentName: errorComponent, filePath } = extractComponentInfo(componentStack);
+
       this.props.logError(
         errorToReport,
         {
           ...errorInfoToReport,
           context: 'ErrorBoundary.render',
           componentName: this.props.componentName || 'Unknown Component',
+          errorComponent,
+          errorFilePath: filePath,
         },
         'ErrorBoundary caught an error',
       );
