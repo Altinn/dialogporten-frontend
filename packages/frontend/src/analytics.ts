@@ -7,7 +7,7 @@ import { PageRoutes } from './pages/routes';
 
 let applicationInsights: ApplicationInsights | null = null;
 
-const applicationInsightsEnabled = config.applicationInsightsInstrumentationKey && import.meta.env.PROD;
+const applicationInsightsEnabled = config.applicationInsightsInstrumentationKey || import.meta.env.DEV;
 
 const pageMapping: Record<string, string> = {
   [PageRoutes.inbox]: 'Inbox',
@@ -150,6 +150,7 @@ if (applicationInsightsEnabled) {
     applicationInsights = new ApplicationInsights({
       config: {
         instrumentationKey: config.applicationInsightsInstrumentationKey,
+        endpointUrl: config.applicationInsightsEndpointUrl,
         extensions: [reactPlugin as unknown as ITelemetryPlugin],
         enableAutoRouteTracking: false, // Disable auto tracking, we'll handle it manually
         autoTrackPageVisitTime: false,
