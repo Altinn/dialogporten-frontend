@@ -245,7 +245,7 @@ export const getMockedTransmissions = (dialogId: string) => {
         "sender": {
           "actorType": ActorType.PartyRepresentative,
           "actorId": null,
-          "actorName": 'Kari Nordmann'
+          "actorName": 'NORDMANN KARI'
         },
         "content": {
           "title": {
@@ -274,7 +274,7 @@ export const getMockedTransmissions = (dialogId: string) => {
         "sender": {
           "actorType": ActorType.PartyRepresentative,
           "actorId": null,
-          "actorName": 'Per Nordmann'
+          "actorName": 'NORDMANN PER'
         },
         "content": {
           "title": {
@@ -303,7 +303,7 @@ export const getMockedTransmissions = (dialogId: string) => {
         "sender": {
           "actorType": ActorType.PartyRepresentative,
           "actorId": null,
-          "actorName": 'Per Nordmann'
+          "actorName": 'NORDMANN PER'
         },
         "content": {
           "title": {
@@ -333,7 +333,7 @@ export const getMockedTransmissions = (dialogId: string) => {
         "sender": {
           "actorType": ActorType.PartyRepresentative,
           "actorId": null,
-          "actorName": 'Per Nordmann'
+          "actorName": 'NORDMANN PER'
         },
         "content": {
           "title": {
@@ -344,6 +344,35 @@ export const getMockedTransmissions = (dialogId: string) => {
             "mediaType": "text/plain"
           },
           "contentReference": getMockedFCEContent('transmission-4'),
+          "summary": {
+            "value": [{
+              value: 'Oppsummering 4',
+              languageCode: 'nb',
+            }],
+            "mediaType": "text/plain"
+          },
+        },
+        "attachments": []
+      },
+      {
+        "id": "transmission-system",
+        isAuthorized: true,
+        "createdAt": "2024-08-13T12:12:54.233Z",
+        "type": TransmissionType.Information,
+        "sender": {
+          "actorType": ActorType.PartyRepresentative,
+          "actorId": 'urn:altinn:systemuser:uuid:321',
+          "actorName": 'SKEPTISK KOMMUNE'
+        },
+        "content": {
+          "title": {
+            "value": [{
+              value: 'Sendt inn av systembruker',
+              languageCode: 'nb',
+            }],
+            "mediaType": "text/plain"
+          },
+          "contentReference": null,
           "summary": {
             "value": [{
               value: 'Oppsummering 4',

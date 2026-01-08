@@ -157,7 +157,7 @@ const getMainContentReference = (
  * Rules:
  * - `actor.actorType === ServiceOwner`: Always treated as a company.
  *   Will use `serviceOwner.name` and `serviceOwner.logo` if available.
- * - `actor.actorId` containing `"urn:altinn:organization:"`: Treated as a company.
+ * - `actor.actorId` containing `"urn:altinn:organization:"`: Treated as a company and `urn:altinn:systemuser`: Treated as a system user
  * - Otherwise: Treated as a person.
  *
  * Name resolution:
@@ -184,12 +184,13 @@ export const getActorProps = (
   serviceOwner?: OrganizationOutput,
 ): AvatarProps => {
   const isServiceOwner = actor.actorType === ActorType.ServiceOwner;
+  const isSystemUser = actor?.actorId?.includes('urn:altinn:systemuser:');
   const isCompany = isServiceOwner || (actor.actorId ?? '').includes('urn:altinn:organization:');
-  const type: AvatarProps['type'] = isCompany ? 'company' : 'person';
+  const type: AvatarProps['type'] = isSystemUser ? 'system' : isCompany ? 'company' : 'person';
   const actorName = formatDisplayName({
     fullName: actor.actorName ?? '',
     type,
-    reverseNameOrder: stopReversingPersonNameOrder ? false : !isCompany,
+    reverseNameOrder: stopReversingPersonNameOrder ? false : !isCompany && !isSystemUser,
   });
   const senderName = actor.actorName ? actorName : isServiceOwner ? serviceOwner?.name || '' : '';
   const senderLogo = isServiceOwner ? serviceOwner?.logo : undefined;
@@ -291,20 +292,21 @@ export function mapDialogToToInboxItem(
       collapsible: true,
       title: seenByLabel,
       endUserLabel: t('word.you'),
-      items: item.seenSinceLastContentUpdate.map((seen) => ({
-        id: seen.id,
-        isEndUser: seen.isCurrentEndUser,
-        name: seen?.isCurrentEndUser
-          ? (endUserParty?.name ?? '')
-          : formatDisplayName({
-              fullName: seen?.seenBy?.actorName ?? '',
-              type: 'person',
-              reverseNameOrder: !stopReversingPersonNameOrder,
-            }),
-        seenAt: seen.seenAt,
-        seenAtLabel: format(seen.seenAt, formatString),
-        type: 'person',
-      })),
+      items: item.seenSinceLastContentUpdate.map((seen) => {
+        const actorProps = getActorProps(
+          seen.seenBy,
+          seen.isCurrentEndUser || stopReversingPersonNameOrder,
+          serviceOwner,
+        );
+        return {
+          name: actorProps.name,
+          type: actorProps.type,
+          id: seen.id,
+          isEndUser: seen.isCurrentEndUser,
+          seenAt: seen.seenAt,
+          seenAtLabel: format(seen.seenAt, formatString),
+        };
+      }),
     },
     activityHistory: getActivityHistory({
       stopReversingPersonNameOrder,
