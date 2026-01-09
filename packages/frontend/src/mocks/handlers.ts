@@ -1,4 +1,5 @@
 import { graphql, http, HttpResponse } from 'msw';
+import { formatDisplayName } from '@altinn/altinn-components';
 import { naiveSearchFilter } from './filters.ts';
 import {
   SavedSearchesFieldsFragment,
@@ -161,7 +162,11 @@ const getDialogByIdMock = graphql.query('getDialogById', (options) => {
         seenBy: {
           actorType: null,
           actorId: party?.party,
-          actorName: party?.name,
+          actorName: formatDisplayName({
+            fullName: party?.name ?? '',
+            type: 'person',
+            reverseNameOrder: true,
+          })
         },
         isCurrentEndUser: true,
       },

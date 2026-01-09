@@ -25,7 +25,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         seenBy: {
           actorType: null,
           actorId: 'urn:altinn:person:identifier-ephemeral:2b34ab491b',
-          actorName: 'TEST TESTESEN',
+          actorName: 'TESTESEN TEST',
         },
         isCurrentEndUser: true,
       },
