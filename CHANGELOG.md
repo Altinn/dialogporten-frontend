@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.116.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.116.0...v1.116.1) (2026-01-09)
+
+
+### Bug Fixes
+
+* **avatar:** treat system users as system instead of person ([#3573](https://github.com/Altinn/dialogporten-frontend/issues/3573)) ([054ace4](https://github.com/Altinn/dialogporten-frontend/commit/054ace417bd94c515914fa9d8b24603904b7e178))
+* format endusername properly after systemusers were introduced ([#3578](https://github.com/Altinn/dialogporten-frontend/issues/3578)) ([51d5053](https://github.com/Altinn/dialogporten-frontend/commit/51d505304d8cd552058e42f6866e246b5e725ae8))
+
 ## [1.116.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.115.10...v1.116.0) (2026-01-06)
 
 
