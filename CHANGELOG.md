@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.116.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.116.1...v1.116.2) (2026-01-09)
+
+
+### Bug Fixes
+
+* **systemuser:** not propertly formatted in list view ([#3580](https://github.com/Altinn/dialogporten-frontend/issues/3580)) ([df6ded3](https://github.com/Altinn/dialogporten-frontend/commit/df6ded33d58ce8c01a232880279af759639ae922))
+
 ## [1.116.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.116.0...v1.116.1) (2026-01-09)
 
 
