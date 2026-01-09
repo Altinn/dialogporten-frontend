@@ -26,15 +26,15 @@ const config: Config = {
   },
 
   markdown: {
-    mermaid: true,
+    mermaid: false, // Temporarily disabled due to React 19 SSR compatibility issue
     hooks: {
       onBrokenMarkdownLinks: 'warn',
     },
   },
 
   themes: [
-    /* mermaid */
-    '@docusaurus/theme-mermaid',
+    /* mermaid - Temporarily disabled due to React 19 SSR compatibility issue */
+    // '@docusaurus/theme-mermaid',
 
     /* search */
     [
