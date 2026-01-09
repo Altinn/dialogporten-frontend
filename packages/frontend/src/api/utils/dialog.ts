@@ -1,4 +1,3 @@
-import { formatDisplayName } from '@altinn/altinn-components';
 import {
   DialogStatus,
   type GetAllDialogsForPartiesQueryVariables,
@@ -12,6 +11,7 @@ import { getPreferredPropertyByLocale } from '../../i18n/property.ts';
 import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
 import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
 import { getIsUnread } from '../../pages/Inbox/status.ts';
+import { getActorProps } from '../hooks/useDialogById.tsx';
 import type { InboxViewType } from '../hooks/useDialogs.tsx';
 import { getOrganization } from './organizations.ts';
 import { getViewTypes } from './viewType.ts';
@@ -116,15 +116,12 @@ export function mapDialogToToInboxItems(
         collapsible: true,
         endUserLabel: t('word.you'),
         items: item.seenSinceLastContentUpdate.map((seenBy) => {
-          const actorName = formatDisplayName({
-            fullName: seenBy?.seenBy?.actorName ?? '',
-            type: 'person',
-            reverseNameOrder: !stopReversingPersonNameOrder,
-          });
+          const { name, type } = getActorProps(seenBy.seenBy, stopReversingPersonNameOrder, serviceOwner);
           return {
             id: seenBy.id,
-            name: actorName,
+            name,
             seenAt: seenBy.seenAt,
+            type,
             seenAtLabel: getSeenAtLabel(seenBy.seenAt, format),
             isEndUser: seenBy.isCurrentEndUser,
           };
