@@ -3,10 +3,12 @@ import { logger } from '@altinn/dialogporten-node-logger';
 import { FastifyOtelInstrumentation } from '@fastify/otel';
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-grpc';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
+import { HostMetrics } from '@opentelemetry/host-metrics';
 import { GraphQLInstrumentation } from '@opentelemetry/instrumentation-graphql';
 import { HttpInstrumentation, type HttpInstrumentationConfig } from '@opentelemetry/instrumentation-http';
 import { IORedisInstrumentation } from '@opentelemetry/instrumentation-ioredis';
 import { PgInstrumentation } from '@opentelemetry/instrumentation-pg';
+import { RuntimeNodeInstrumentation } from '@opentelemetry/instrumentation-runtime-node';
 import { resourceFromAttributes } from '@opentelemetry/resources';
 import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
 import { NodeSDK } from '@opentelemetry/sdk-node';
@@ -39,17 +41,39 @@ const httpInstrumentationConfig: HttpInstrumentationConfig = {
   },
 };
 
+// Configure PostgreSQL instrumentation with connection pool metrics
+const pgInstrumentationConfig = {
+  enabled: true,
+  // Enable connection pool metrics
+  enhancedDatabaseReporting: true,
+  // Track connection pool statistics
+  addSqlCommenterCommentToQueries: false,
+};
+
+// Configure Redis instrumentation with connection metrics
+const redisInstrumentationConfig = {
+  enabled: true,
+  // Enable connection pool metrics
+  dbStatementSerializer: (command: string, args: unknown[]) => {
+    return `${command} ${JSON.stringify(args)}`;
+  },
+};
+
 // Configure instrumentations
 const instrumentations = [
   new HttpInstrumentation(httpInstrumentationConfig),
-  new IORedisInstrumentation(),
+  new IORedisInstrumentation(redisInstrumentationConfig),
   new FastifyOtelInstrumentation(),
   new GraphQLInstrumentation({
     ignoreResolveSpans: true,
     ignoreTrivialResolveSpans: true,
     mergeItems: true,
   }),
-  new PgInstrumentation(),
+  new PgInstrumentation(pgInstrumentationConfig),
+  // Add Node.js runtime metrics (event loop, memory, etc.)
+  new RuntimeNodeInstrumentation({
+    enabled: true,
+  }),
 ];
 
 // Create custom resource with service information
@@ -101,13 +125,25 @@ const initializeOpenTelemetry = () => {
 
     sdk.start();
 
+    // Initialize host metrics (CPU, memory, network, disk)
+    // This must be initialized after SDK.start() to have access to the meter provider
+    const hostMetrics = new HostMetrics({
+      name: config.info.name,
+      // Collect metrics every 5 seconds
+      collectionInterval: 5000,
+    });
+    hostMetrics.start();
+
     logger.info(
       {
         mode: openTelemetry.enabled ? 'production' : 'local-dev',
         serviceName: config.info.name,
         instanceId: config.info.instanceId,
+        runtimeMetrics: true,
+        hostMetrics: true,
+        connectionPoolMetrics: true,
       },
-      'OpenTelemetry initialized successfully',
+      'OpenTelemetry initialized successfully with native metrics',
     );
 
     return sdk;

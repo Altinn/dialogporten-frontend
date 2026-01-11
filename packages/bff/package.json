@@ -41,6 +41,8 @@
     "@opentelemetry/instrumentation-http": "0.206.0",
     "@opentelemetry/instrumentation-ioredis": "0.51.0",
     "@opentelemetry/instrumentation-pg": "0.59.0",
+    "@opentelemetry/instrumentation-runtime-node": "0.51.0",
+    "@opentelemetry/host-metrics": "0.51.0",
     "@opentelemetry/resources": "2.1.0",
     "@opentelemetry/sdk-metrics": "2.1.0",
     "@opentelemetry/sdk-node": "0.206.0",
