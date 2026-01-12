@@ -33,6 +33,7 @@ export interface PartyItemProp extends AccountMenuItemProps {
   isCurrentEndUser?: boolean;
   badge?: BadgeProps;
   isParent?: boolean;
+  ssnOrOrgNo?: string;
 }
 
 interface UseAccountsProps {
@@ -61,11 +62,16 @@ export const formatSSN = (ssn: string, maskIdentifierSuffix: boolean) => {
   return ssn.slice(0, 6) + '\u2009' + ssn.slice(6);
 };
 
-export const formatNorwegianId = (partyId: string, isCurrentEndUser: boolean) => {
+export const getSSNOrOrgNo = (partyId: string) => {
   const parts = partyId.split('identifier-no:');
   if (parts.length < 2) return '';
 
   const ssnOrOrgNo = parts[1];
+  return ssnOrOrgNo ?? '';
+};
+
+export const formatNorwegianId = (partyId: string, isCurrentEndUser: boolean) => {
+  const ssnOrOrgNo = getSSNOrOrgNo(partyId);
   const isPerson = partyId.includes('person');
 
   if (!ssnOrOrgNo) return '';
@@ -88,12 +94,14 @@ const filterAccount = (item: AccountMenuItemProps, search: string) => {
     const parts = normalized.split(/\s+/);
     const title = (partyItem.name ?? '').toString().toLowerCase();
     const parentName = (partyItem.parentName ?? '').toString().toLowerCase();
-    const description = (partyItem.description ?? '').toString().toLowerCase();
-    return (
-      parts.some((part) => title.includes(part) || parentName.includes(part) || description.includes(part)) ||
-      title.includes(normalized) ||
-      parentName.includes(normalized) ||
-      description.includes(normalized)
+    const ssnOrOrgNo = getSSNOrOrgNo(partyItem.id);
+    return parts.some(
+      (part) =>
+        title.includes(part) ||
+        parentName.includes(part) ||
+        title.includes(normalized) ||
+        parentName.includes(normalized) ||
+        ssnOrOrgNo.includes(normalized),
     );
   }
   return false;
@@ -174,6 +182,7 @@ export const useAccounts = ({
         const description = t('word.ssn') + formatNorwegianId(person.party, false);
         return {
           id: person.party,
+          ssnOrOrgNo: getSSNOrOrgNo(person.party),
           name: person.name,
           type: 'person' as AccountMenuItemProps['type'],
           icon: { name: person.name, type: 'person' as AvatarType },
@@ -207,6 +216,7 @@ export const useAccounts = ({
 
       return {
         id: party.party,
+        ssnOrOrgNo: getSSNOrOrgNo(party.party),
         name: party.name,
         type: 'company' as AccountMenuItemProps['type'],
         icon: {
