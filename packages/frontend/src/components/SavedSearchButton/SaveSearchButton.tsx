@@ -1,4 +1,4 @@
-import type { FilterState } from '@altinn/altinn-components';
+import { Button, type FilterState } from '@altinn/altinn-components';
 import { BookmarkFillIcon, BookmarkIcon } from '@navikt/aksel-icons';
 import type { ButtonHTMLAttributes, RefAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +7,6 @@ import { useParties } from '../../api/hooks/useParties.ts';
 import { buildCurrentStateURL, findMatchingSavedSearch } from '../../pages/SavedSearches';
 import { useSavedSearches } from '../../pages/SavedSearches/useSavedSearches.tsx';
 import { useSearchString } from '../PageLayout/Search';
-import { ProfileButton } from '../ProfileButton';
 
 type SaveSearchButtonProps = {
   disabled?: boolean;
@@ -36,29 +35,31 @@ export const SaveSearchButton = ({ disabled, className, filterState, viewType }:
 
   if (matchingSavedSearch) {
     return (
-      <ProfileButton
+      <Button
+        size="xs"
         className={className}
         onClick={() => deleteSearch(matchingSavedSearch.id)}
-        variant="tertiary"
-        isLoading={isCTALoading}
+        loading={isCTALoading}
+        variant="text"
+        icon={BookmarkFillIcon}
       >
-        <BookmarkFillIcon width="1.25rem" height="1.25rem" />
         {t('filter_bar.saved_search')}
-      </ProfileButton>
+      </Button>
     );
   }
 
   return (
-    <ProfileButton
+    <Button
+      size="xs"
       className={className}
       onClick={() =>
         saveSearch({ filters: filterState, selectedParties: selectedPartyIds, enteredSearchValue, viewType })
       }
-      variant="tertiary"
-      isLoading={isCTALoading}
+      variant="text"
+      icon={BookmarkIcon}
+      loading={isCTALoading}
     >
-      <BookmarkIcon width="1.25rem" height="1.25rem" />
       {t('filter_bar.save_search')}
-    </ProfileButton>
+    </Button>
   );
 };
