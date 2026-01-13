@@ -16,8 +16,9 @@ import { SavedSearchesPage } from './pages/SavedSearches';
 import { PageRoutes } from './pages/routes.ts';
 import './app.css';
 import { useEffect } from 'react';
+import { getCookieDomain } from './auth';
 import { QUERY_KEYS } from './constants/queryKeys.ts';
-import { getPartyFromCookie } from './cookie.ts';
+import { clearProductionCookie, getPartyFromCookie } from './cookie.ts';
 import { usePageTracking } from './hooks/usePageTracking.ts';
 import { useGlobalStringState } from './useGlobalState.ts';
 
@@ -28,6 +29,17 @@ function App() {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
+    // Proactive cleanup: In TT02, clear any lingering production cookies on app startup
+    // This prevents interference when users switch between prod and TT02
+    // Note: Only clears non-httpOnly cookies (party cookies). The language cookie
+    // (altinnPersistentContext) is httpOnly and can only be cleared by the BFF.
+    const domain = getCookieDomain();
+    if (domain === '.tt02.altinn.no') {
+      clearProductionCookie('AltinnPartyUuid');
+      clearProductionCookie('AltinnPartyId');
+      // altinnPersistentContext is httpOnly and cannot be cleared here (handled in BFF)
+    }
+
     const partyUuidFromCookie = getPartyFromCookie('AltinnPartyUuid');
     if (partyUuidFromCookie) {
       setCookiePartyUuid(getPartyFromCookie('AltinnPartyUuid') ?? '');

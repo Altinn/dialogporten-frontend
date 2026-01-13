@@ -61,6 +61,35 @@ const startServer = async (): Promise<void> => {
   server.register(cors, corsOptions);
   server.register(fastifyHeaders);
   server.register(formBody);
+
+  // Cookie filtering hook: In TT02, remove production domain cookies to prevent interference
+  // This must run BEFORE @fastify/cookie parses cookies
+  if (config.authContextCookieDomain === '.tt02.altinn.no') {
+    server.addHook('onRequest', async (request, _reply) => {
+      const cookieHeader = request.raw.headers.cookie;
+      if (!cookieHeader) return;
+
+      // Parse cookies and deduplicate by name (keeping first occurrence)
+      // Safari sends more specific domains first, Chrome/Firefox send in creation order
+      // Since we can't reliably determine which cookie is from which domain, we keep
+      // the first one and hope browsers send the more specific (.tt02.altinn.no) first
+      const cookies = cookieHeader.split(';').map((c) => c.trim());
+      const seen = new Map<string, string>();
+
+      for (const cookie of cookies) {
+        const [name] = cookie.split('=');
+        // Only set if not already present (keeps FIRST occurrence)
+        if (!seen.has(name)) {
+          seen.set(name, cookie);
+        }
+      }
+
+      // Reconstruct the cookie header with duplicates removed
+      const filtered = Array.from(seen.values()).join('; ');
+      request.raw.headers.cookie = filtered;
+    });
+  }
+
   server.register(cookie);
 
   // Session setup
