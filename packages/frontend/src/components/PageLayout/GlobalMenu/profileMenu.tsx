@@ -120,7 +120,7 @@ export function buildProfileMenu({
   const helpItems: MenuItemProps[] = [
     {
       id: 'about-altinn',
-      dataTestId: 'sidebar-about-altinn',
+      'data-testid': 'sidebar-about-altinn',
       groupId: 'help',
       icon: InformationSquareIcon,
       iconTheme: 'transparent',
@@ -132,7 +132,7 @@ export function buildProfileMenu({
     },
     {
       id: 'start-business',
-      dataTestId: 'sidebar-start-business',
+      'data-testid': 'sidebar-start-business',
       groupId: 'help',
       icon: Buildings2Icon,
       iconTheme: 'transparent',
@@ -144,7 +144,7 @@ export function buildProfileMenu({
     },
     {
       id: 'need-help',
-      dataTestId: 'sidebar-need-help',
+      'data-testid': 'sidebar-need-help',
       groupId: 'help',
       icon: ChatExclamationmarkIcon,
       iconTheme: 'transparent',
@@ -172,7 +172,7 @@ export function buildProfileMenu({
   const globalMenuItems: MenuItemProps[] = [
     {
       id: '1',
-      dataTestId: 'sidebar-inbox',
+      'data-testid': 'sidebar-inbox',
       groupId: 'global',
       size: 'lg',
       icon: InboxFillIcon,

@@ -89,8 +89,9 @@ export const ContactProfileDetails = ({
             </p>
           </Typography>
           <ButtonGroup size="md">
-            <Button variant="outline" href={folkeRegisteretUrl} icon={{ svgElement: ExternalLinkIcon }} as="a" reverse>
-              {t('profile.notifications.change_address')}
+            <Button variant="outline" href={folkeRegisteretUrl} as="a">
+              <span>{t('profile.notifications.change_address')}</span>
+              <ExternalLinkIcon />
             </Button>
           </ButtonGroup>
         </>
@@ -104,8 +105,9 @@ export const ContactProfileDetails = ({
               </p>
             </Typography>
             <ButtonGroup size="md">
-              <Button variant="outline" href={krrUrl} icon={{ svgElement: ExternalLinkIcon }} as="a" reverse>
-                {t('profile.change_contact_settings')}
+              <Button variant="outline" href={krrUrl} as="a">
+                <span>{t('profile.change_contact_settings')}</span>
+                <ExternalLinkIcon />
               </Button>
             </ButtonGroup>
           </>
