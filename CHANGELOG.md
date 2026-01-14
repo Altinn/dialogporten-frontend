@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.116.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.116.2...v1.116.3) (2026-01-14)
+
+
+### Bug Fixes
+
+* Actor search ([#3195](https://github.com/Altinn/dialogporten-frontend/issues/3195)) ([69a5199](https://github.com/Altinn/dialogporten-frontend/commit/69a5199c84f9cc387c83aefb07a674a0f562339a))
+* **searchbar:** icons misaligned for safari and firefox, bump to ac 0.52.5 ([#3587](https://github.com/Altinn/dialogporten-frontend/issues/3587)) ([f7d90f1](https://github.com/Altinn/dialogporten-frontend/commit/f7d90f17ccca07e0b58b09e789bb0b3162b8dd8e))
+* Update AC v0.52.6, fix button label overflow ([#3597](https://github.com/Altinn/dialogporten-frontend/issues/3597)) ([19eb0ae](https://github.com/Altinn/dialogporten-frontend/commit/19eb0aec9306002ed3946ff47649f54afaddd159))
+
 ## [1.116.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.116.1...v1.116.2) (2026-01-09)
 
 
