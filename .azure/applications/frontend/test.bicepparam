@@ -12,4 +12,4 @@ param containerAppEnvironmentName = readEnvironmentVariable('CONTAINER_APP_ENVIR
 param applicationInsightsInstrumentationKey = readEnvironmentVariable('AZURE_APPLICATION_INSIGHTS_INSTRUMENTATION_KEY')
 
 // environment variables
-param dialogportenStreamUrl = 'https://altinn-dev-api.azure-api.net/dialogporten/graphql/stream'
+param dialogportenStreamUrl = 'https://platform.at23.altinn.cloud/dialogporten/graphql/stream'
