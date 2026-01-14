@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.116.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.116.3...v1.116.4) (2026-01-14)
+
+
+### Bug Fixes
+
+* Bump AC v0.52.7, fix abbreviated company name format ([#3600](https://github.com/Altinn/dialogporten-frontend/issues/3600)) ([fe61b90](https://github.com/Altinn/dialogporten-frontend/commit/fe61b9006796ec569e539b6712b1e0fafe41f9f8))
+
 ## [1.116.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.116.2...v1.116.3) (2026-01-14)
 
 
