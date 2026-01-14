@@ -11,6 +11,7 @@ query getAllDialogsForParties(
   $updatedAfter: DateTime
   $updatedBefore: DateTime
   $searchLanguageCode: String
+  $serviceResource: [String!]
 ) {
   searchDialogs(
     input: {
@@ -28,6 +29,7 @@ query getAllDialogsForParties(
       limit: $limit
       excludeApiOnly: true
       searchLanguageCode: $searchLanguageCode
+      serviceResource: $serviceResource
     }
   ) {
     items {

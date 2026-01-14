@@ -30,6 +30,7 @@ interface UseDialogsProps {
   viewType?: InboxViewType;
   filterState?: FilterState;
   search?: string;
+  serviceResources?: string[];
 }
 
 interface UseDialogsOutput {
@@ -44,12 +45,19 @@ interface UseDialogsOutput {
   isFetchingNextPage: boolean;
 }
 
-export const useDialogs = ({ parties, viewType, filterState, search, queryKey }: UseDialogsProps): UseDialogsOutput => {
+export const useDialogs = ({
+  parties,
+  viewType,
+  filterState,
+  search,
+  queryKey,
+  serviceResources = [],
+}: UseDialogsProps): UseDialogsOutput => {
   const { organizations } = useOrganizations();
   const disableFlipNamesPatch = useFeatureFlag<boolean>('dialogporten.disableFlipNamesPatch');
   const disableDialogCount = useFeatureFlag<boolean>('inbox.disableDialogCount');
   const enableSearchLanguageCode = useFeatureFlag<boolean>('dialogporten.enableSearchLanguageCode');
-  const { selectedParties, isSelfIdentifiedUser } = useParties();
+  const { selectedParties, isSelfIdentifiedUser, parties: allParties } = useParties();
   const format = useFormat();
   const partiesToUse = parties ? parties : selectedParties;
   const partyIds = getPartyIds(partiesToUse, true);
@@ -69,7 +77,7 @@ export const useDialogs = ({ parties, viewType, filterState, search, queryKey }:
 
   const { data, isSuccess, isLoading, isFetching, isError, fetchNextPage, isFetchingNextPage, isPlaceholderData } =
     useAuthenticatedInfiniteQuery<GetAllDialogsForPartiesQuery>({
-      queryKey: [queryKey, partyIds, viewTypeKey, queryVariables, search],
+      queryKey: [queryKey, viewTypeKey, queryVariables, search, partyIds, serviceResources],
       staleTime: 1000 * 60 * 10,
       retry: 3,
       queryFn: (args) => {
@@ -79,13 +87,15 @@ export const useDialogs = ({ parties, viewType, filterState, search, queryKey }:
           ...queryVariables,
           continuationToken,
           limit: 100,
+          serviceResource: serviceResources,
           search: searchString,
           ...(enableSearchLanguageCode && {
             searchLanguageCode: i18n.language,
           }),
         });
       },
-      enabled: partyIds.length > 0 && partyIds.length <= 20 && !isSelfIdentifiedUser,
+      enabled:
+        !isSelfIdentifiedUser && ((serviceResources?.length ?? 0) > 0 || partyIds.length > 0) && partyIds.length <= 20,
       gcTime: 0,
       getNextPageParam(lastPage: GetAllDialogsForPartiesQuery): unknown | undefined | null {
         const hasNextPage = lastPage?.searchDialogs?.hasNextPage;
@@ -150,7 +160,7 @@ export const useDialogs = ({ parties, viewType, filterState, search, queryKey }:
     data?.pages?.[data?.pages.length - 1]?.searchDialogs?.hasNextPage === true ||
     data?.pages?.[data?.pages.length - 1]?.searchDialogs?.items === null ||
     partyIds.length >= 20;
-  const dialogs = mapDialogToToInboxItems(content, parties ?? [], organizations, format, disableFlipNamesPatch);
+  const dialogs = mapDialogToToInboxItems(content, allParties, organizations, format, disableFlipNamesPatch);
   /*  isFetching && isPlaceholderData is used to determine if we are fetching the initial data for the query key */
   const isActuallyLoading = isLoading || (isFetching && isPlaceholderData);
 

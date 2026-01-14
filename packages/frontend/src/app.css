@@ -18,3 +18,8 @@
   width: 100%;
   margin: 0 auto;
 }
+
+._toolbar_17w00_1 {
+  /* hack to make toolbar not take all place, just for demo purposes */
+  width: initial;
+}
