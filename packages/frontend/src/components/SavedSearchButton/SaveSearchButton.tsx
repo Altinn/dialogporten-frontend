@@ -40,10 +40,10 @@ export const SaveSearchButton = ({ disabled, className, filterState, viewType }:
         className={className}
         onClick={() => deleteSearch(matchingSavedSearch.id)}
         loading={isCTALoading}
-        variant="text"
-        icon={BookmarkFillIcon}
+        variant="ghost"
       >
-        {t('filter_bar.saved_search')}
+        <BookmarkFillIcon />
+        <span>{t('filter_bar.saved_search')}</span>
       </Button>
     );
   }
@@ -55,11 +55,11 @@ export const SaveSearchButton = ({ disabled, className, filterState, viewType }:
       onClick={() =>
         saveSearch({ filters: filterState, selectedParties: selectedPartyIds, enteredSearchValue, viewType })
       }
-      variant="text"
-      icon={BookmarkIcon}
+      variant="ghost"
       loading={isCTALoading}
     >
-      {t('filter_bar.save_search')}
+      <BookmarkIcon />
+      <span>{t('filter_bar.save_search')}</span>
     </Button>
   );
 };
