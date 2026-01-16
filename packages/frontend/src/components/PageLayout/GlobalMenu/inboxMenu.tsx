@@ -68,7 +68,7 @@ export function buildInboxMenu({
   const shortcuts: MenuItemProps[] = [
     {
       id: 'beta-exit',
-      dataTestId: 'sidebar-exit',
+      'data-testid': 'sidebar-exit',
       groupId: 'shortcuts',
       icon: LeaveIcon,
       title: t('altinn.beta.exit'),
@@ -78,7 +78,7 @@ export function buildInboxMenu({
     },
     {
       id: 'new-schema',
-      dataTestId: 'sidebar-new-schema',
+      'data-testid': 'sidebar-new-schema',
       groupId: 'shortcuts',
       icon: PlusIcon,
       title: t('altinn.new_schema'),
@@ -91,7 +91,7 @@ export function buildInboxMenu({
   const helpItems: MenuItemProps[] = [
     {
       id: 'about-altinn',
-      dataTestId: 'about-altinn',
+      'data-testid': 'about-altinn',
       groupId: 'help',
       icon: InformationSquareIcon,
       title: t('global_menu.about_altinn'),
@@ -101,7 +101,7 @@ export function buildInboxMenu({
     },
     {
       id: 'start-business',
-      dataTestId: 'start-business',
+      'data-testid': 'start-business',
       groupId: 'help',
       icon: Buildings2Icon,
       title: t('global_menu.start_business'),
@@ -111,7 +111,7 @@ export function buildInboxMenu({
     },
     {
       id: 'need-help',
-      dataTestId: 'need-help',
+      'data-testid': 'need-help',
       groupId: 'help',
       icon: ChatExclamationmarkIcon,
       title: t('global_menu.need_help'),
@@ -124,7 +124,7 @@ export function buildInboxMenu({
   const inboxItems: MenuItemProps[] = [
     {
       id: '1',
-      dataTestId: 'sidebar-inbox',
+      'data-testid': 'sidebar-inbox',
       groupId: 'global',
       size: 'lg',
       icon: InboxFillIcon,
@@ -142,7 +142,7 @@ export function buildInboxMenu({
       items: [
         {
           id: '2',
-          dataTestId: 'sidebar-drafts',
+          'data-testid': 'sidebar-drafts',
           groupId: '2',
           icon: DocPencilIcon,
           title: t('sidebar.drafts'),
@@ -153,7 +153,7 @@ export function buildInboxMenu({
         },
         {
           id: '3',
-          dataTestId: 'sidebar-sent',
+          'data-testid': 'sidebar-sent',
           groupId: '2',
           icon: FileCheckmarkIcon,
           title: t('sidebar.sent'),
@@ -164,7 +164,7 @@ export function buildInboxMenu({
         },
         {
           id: '4',
-          dataTestId: 'sidebar-saved-searches',
+          'data-testid': 'sidebar-saved-searches',
           groupId: '3',
           icon: BookmarkIcon,
           title: t('sidebar.saved_searches'),
@@ -175,7 +175,7 @@ export function buildInboxMenu({
         },
         {
           id: '5',
-          dataTestId: 'sidebar-archive',
+          'data-testid': 'sidebar-archive',
           groupId: '4',
           icon: ArchiveIcon,
           title: t('sidebar.archived'),
@@ -186,7 +186,7 @@ export function buildInboxMenu({
         },
         {
           id: '6',
-          dataTestId: 'sidebar-bin',
+          'data-testid': 'sidebar-bin',
           groupId: '4',
           icon: TrashIcon,
           title: t('sidebar.deleted'),
@@ -226,9 +226,9 @@ export function buildInboxMenu({
         ...item,
         items: (item.items ?? []).map((it) => ({
           ...it,
-          dataTestId: (it.dataTestId ?? '') + '-mobile-menu' + (it.dataTestId ? '' : '-' + idx),
+          dataTestId: (it['data-testid'] ?? '') + '-mobile-menu' + (it['data-testid'] ? '' : '-' + idx),
         })),
-        dataTestId: (item.dataTestId ?? '') + '-mobile-menu' + (item.dataTestId ? '' : '-' + idx),
+        dataTestId: (item['data-testid'] ?? '') + '-mobile-menu' + (item['data-testid'] ? '' : '-' + idx),
       })),
       {
         id: 'am',

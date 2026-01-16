@@ -35,7 +35,7 @@ export const ErrorPage = () => {
               </a>
             </p>
             <p>
-              {t('word.or')} <Button onClick={handleGoBack} label={t('error.go_back')} />
+              {t('word.or')} <Button onClick={handleGoBack}>{t('error.go_back')}</Button>
             </p>
           </Typography>
         </ArticleHeader>

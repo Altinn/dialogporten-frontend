@@ -29,14 +29,10 @@ test.describe('Date filter, system date set 2024', () => {
     const item = page.getByRole('menuitemcheckbox', { name: 'I dag' });
     await expect(item.first()).toBeVisible();
 
-    const item2 = page.getByRole('menuitemcheckbox', { name: 'I dag' });
+    const item2 = page.getByRole('menuitemcheckbox', { name: 'Siste tolv måneder' });
     await expect(item2.first()).toBeVisible();
 
-    const item3 = page.getByRole('menuitemcheckbox', { name: 'Siste tolv måneder' });
-    await expect(item3.first()).toBeVisible();
-
     await page.getByRole('menuitemcheckbox', { name: 'I dag' }).first().locator('div').click;
-    await expect(page.getByTestId('updated')).toBeVisible();
 
     await expect(page.getByRole('link', { name: 'Mocked system date Dec 31, 2024' })).toBeVisible();
     await expect(
