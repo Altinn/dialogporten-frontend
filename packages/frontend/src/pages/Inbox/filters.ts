@@ -328,7 +328,7 @@ export const presetFiltersByView: Record<InboxViewType, Partial<GetAllDialogsFor
     label: [SystemLabel.Default],
   },
   sent: {
-    label: [SystemLabel.Default, SystemLabel.Sent],
+    label: [SystemLabel.Sent],
   },
   archive: {
     label: [SystemLabel.Archive],

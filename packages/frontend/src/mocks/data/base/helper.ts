@@ -59,7 +59,7 @@ export const filterDialogs = ({
     const matchesOrg = !org?.length || org.includes(dialog.org);
 
     const matchesLabels = !labels.length ||
-      labels.every(l => dialog.endUserContext?.systemLabels?.some(label => l.includes(label)));
+      dialog.endUserContext?.systemLabels?.some(dialogLabel => labels.includes(dialogLabel));
     const matchesStatus = !statuses.length || statuses.includes(dialog.status);
     const matchesSearch = naiveSearchFilter(dialog, search);
 
