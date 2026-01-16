@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.117.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.116.4...v1.117.0) (2026-01-16)
+
+
+### Features
+
+* Include bin and archive dialogs in Sent map ([#3612](https://github.com/Altinn/dialogporten-frontend/issues/3612)) ([09ead96](https://github.com/Altinn/dialogporten-frontend/commit/09ead963d017841bd55a513833a677d263c097aa))
+
+
+### Bug Fixes
+
+* Add filter translation nynorsk ([#3614](https://github.com/Altinn/dialogporten-frontend/issues/3614)) ([f07b61d](https://github.com/Altinn/dialogporten-frontend/commit/f07b61dfbd1e64e4b928b4bd4962689b93764ef3))
+* **bff:** change URL to at23 for Dialogporten ([#3595](https://github.com/Altinn/dialogporten-frontend/issues/3595)) ([eebb34a](https://github.com/Altinn/dialogporten-frontend/commit/eebb34aaf68f25fbade02c538cd0484e0de657dd))
+* use ds only buttons ([#3598](https://github.com/Altinn/dialogporten-frontend/issues/3598)) ([06e6b03](https://github.com/Altinn/dialogporten-frontend/commit/06e6b03d6f0658126a6880a1dd5f1ec636ee2722))
+
 ## [1.116.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.116.3...v1.116.4) (2026-01-14)
 
 
