@@ -1,5 +1,6 @@
 import {
   type Account,
+  type AccountMenuItemProps,
   type AvatarProps,
   Button,
   DialogList,
@@ -180,6 +181,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
         imageUrl: getOrganization(organizations, resource.hasCompetentAuthority.orgcode ?? '')?.logo,
       } as AvatarProps,
       name: resource.title.nb || resource.title.en || resource.identifier,
+      description: resource.identifier,
     }));
 
     return [allServicesOption, ...mappedResources];
@@ -218,6 +220,15 @@ export const Inbox = ({ viewType }: InboxProps) => {
     isLoading,
     isFetchingNextPage,
   });
+
+  const serviceFilterAccount = (item: AccountMenuItemProps, search: string) => {
+    const q = search.trim().toLowerCase();
+    if (!q) return true;
+
+    const haystack = [item.title, item.name, item.id].filter(Boolean).map((v) => String(v).toLowerCase());
+
+    return haystack.some((v) => v.includes(q));
+  };
 
   if (unableToLoadParties) {
     return (
@@ -307,6 +318,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
                 },
                 isVirtualized: true,
                 title: 'Endre tjeneste',
+                filterAccount: serviceFilterAccount,
               }}
               filterState={serviceFilterState}
               getFilterLabel={() => ''}
@@ -364,6 +376,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
               },
               isVirtualized: true,
               title: 'Endre tjeneste',
+              filterAccount: serviceFilterAccount,
             }}
             filterState={serviceFilterState}
             getFilterLabel={() => ''}
