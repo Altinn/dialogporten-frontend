@@ -261,7 +261,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
           isLoading={isLoading}
           highlightWords={searchMode ? [enteredSearchValue] : undefined}
         />
-        {!hasNextPage && (
+        {hasNextPage && (
           <Button aria-label={t('dialog.aria.fetch_more')} onClick={fetchNextPage} variant="outline" size="lg">
             <span data-size="md">{t('dialog.fetch_more')}</span>
           </Button>
