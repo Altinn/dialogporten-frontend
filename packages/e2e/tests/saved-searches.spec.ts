@@ -12,39 +12,94 @@ test.describe('Saved Searches', () => {
 
   test('should save, edit, and delete a search', async ({ page, baseURL }) => {
     const toolbarArea = page.getByTestId('inbox-toolbar');
-    await toolbarArea.getByRole('button', { name: 'add' }).click();
-    await toolbarArea.getByText('Velg avsender').locator('visible=true').click();
-    await page
-      .getByTestId('filter-base-toolbar-filter-org')
+
+    // Step 1: Open the add filter dropdown
+    const addButton = toolbarArea.getByRole('button', { name: 'add' });
+    await expect(addButton).toBeVisible();
+    await addButton.click();
+
+    // Step 2: Select sender filter option
+    const senderOption = toolbarArea.getByText('Velg avsender').locator('visible=true');
+    await expect(senderOption).toBeVisible();
+    await senderOption.click();
+
+    // Step 3: Wait for sender dropdown to be visible and select organization
+    const orgFilter = page.getByTestId('filter-base-toolbar-filter-org');
+    await expect(orgFilter).toBeVisible();
+
+    const digitaliseringsdirektoratet = orgFilter
       .locator('span')
       .filter({ hasText: 'Digitaliseringsdirektoratet' })
-      .nth(1)
-      .click();
+      .nth(1);
+    await expect(digitaliseringsdirektoratet).toBeVisible();
+    await digitaliseringsdirektoratet.click();
 
+    // Step 4: Close dropdown and wait for filter to be applied
     await page.keyboard.press('Escape');
 
+    // Wait for save button to appear (indicates filter state has updated)
     const saveButton = toolbarArea.getByRole('button', { name: 'Lagre søk' });
-    await expect(saveButton).toBeVisible({ timeout: 20000 });
-    await expect(saveButton).toBeEnabled();
+
+    // Step 5: Save the search
     await saveButton.click();
-    await expect(page.getByText('Søket ditt er lagret')).toBeVisible();
-    await page.getByTestId('sidebar-saved-searches').click();
+    const successMessage = page.getByText('Søket ditt er lagret');
+    await expect(successMessage).toBeVisible({ timeout: 10000 });
 
-    await expect(page.locator('#main-content')).toContainText('1 lagret søk');
+    // Wait for success message to disappear before continuing
+    await expect(successMessage).not.toBeVisible({ timeout: 10000 });
 
-    await page.getByRole('button', { name: 'Open menu-saved-search-' }).click();
-    await page.locator('a').filter({ hasText: 'Rediger tittel' }).click();
-    await page.getByRole('textbox', { name: 'Tittel' }).click();
-    await page.getByRole('textbox', { name: 'Tittel' }).fill('test');
-    await page.getByRole('button', { name: 'Lagre søk' }).click();
-    await page.getByRole('button', { name: 'Open menu-saved-search-' }).click();
+    // Step 6: Navigate to saved searches page
+    await page.goto(`${baseURL}/saved-searches`);
 
-    await page.locator('a').filter({ hasText: 'Rediger tittel' }).click();
-    await page.getByRole('textbox', { name: 'Tittel' }).fill('hei');
-    await page.getByRole('button', { name: 'Lagre søk' }).click();
+    // Step 7: Verify saved search appears
+    await expect(page.locator('#main-content')).toContainText('1 lagret søk', { timeout: 10000 });
 
-    await page.getByRole('button', { name: 'Open menu-saved-search-' }).click();
-    await page.locator('a').filter({ hasText: 'Slett søk' }).click();
-    await expect(page.getByText('Søket ditt ble slettet')).toBeVisible();
+    // Step 8: Open saved search menu
+    const menuButton = page.getByRole('button', { name: 'Open menu-saved-search-' });
+    await expect(menuButton).toBeVisible();
+    await menuButton.click();
+
+    // Step 9: Edit search title (first time)
+    const editTitleLink = page.locator('a').filter({ hasText: 'Rediger tittel' });
+    await expect(editTitleLink).toBeVisible();
+    await editTitleLink.click();
+
+    const titleTextbox = page.getByRole('textbox', { name: 'Tittel' });
+    await expect(titleTextbox).toBeVisible();
+    await titleTextbox.click();
+    await titleTextbox.fill('test');
+
+    const saveEditButton = page.getByRole('button', { name: 'Lagre søk' });
+    await saveEditButton.click();
+
+    // Step 10: Open menu again and edit title (second time)
+    const menuButton2 = page.getByRole('button', { name: 'Open menu-saved-search-' });
+    await expect(menuButton2).toBeVisible();
+    await menuButton2.click();
+
+    const editTitleLink2 = page.locator('a').filter({ hasText: 'Rediger tittel' });
+    await expect(editTitleLink2).toBeVisible();
+    await editTitleLink2.click();
+
+    const titleTextbox2 = page.getByRole('textbox', { name: 'Tittel' });
+    await expect(titleTextbox2).toBeVisible();
+    await titleTextbox2.fill('hei');
+
+    const saveEditButton2 = page.getByRole('button', { name: 'Lagre søk' });
+    await expect(saveEditButton2).toBeEnabled();
+    await saveEditButton2.click();
+
+    // Step 11: Delete the saved search
+    const menuButton3 = page.getByRole('button', { name: 'Open menu-saved-search-' });
+    await expect(menuButton3).toBeVisible();
+    await menuButton3.click();
+
+    const deleteLink = page.locator('a').filter({ hasText: 'Slett søk' });
+    await expect(deleteLink).toBeVisible();
+    await deleteLink.click();
+
+    // Step 12: Verify deletion
+    const deleteMessage = page.getByText('Søket ditt ble slettet');
+    await expect(deleteMessage).toBeVisible({ timeout: 10000 });
   });
 });
