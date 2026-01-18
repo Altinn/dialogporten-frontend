@@ -330,7 +330,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
           helperText: t('savedSearches.bookmark.item_input_helper'),
         },
         saveButton: {
-          label: t('savedSearches.save_search'),
+          children: t('savedSearches.save_search'),
           disabled: currentInputValue === savedSearch.name,
           onClick: () => {
             void handleSaveTitle(savedSearch.id, currentInputValue);
@@ -372,7 +372,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
         },
 
         removeButton: {
-          label: t('savedSearches.delete_search'),
+          children: t('savedSearches.delete_search'),
           onClick: () => {
             void deleteSearch(savedSearch.id);
           },
