@@ -145,12 +145,15 @@
   "filter_bar.add_filter": "Add filter",
   "filter_bar.label.choose_recipient": "Choose recipient",
   "filter_bar.label.choose_sender": "Choose sender",
+  "filter_bar.label.choose_service": "Choose service",
   "filter_bar.label.choose_status": "Choose status",
   "filter_bar.label.updated": "Updated",
   "filter_bar.remove_filter": "Remove filter",
   "filter_bar.save_search": "Save search",
   "filter_bar.saved_search": "Saved search",
   "filter_bar.undo_saved_search": "Remove saved search",
+  "filter_bar.service.recommendations": "Recommended services",
+  "filter_bar.service.search_hits": "{count, plural, =0 {No hits} one {# hit} other {# hits}}",
   "floating_dropdown.help_pages": "Help pages",
   "floating_dropdown.show_new_functionality": "Show new functionality",
   "floatingdropdown.open_alt_text": "Open help and options menu",
@@ -162,6 +165,7 @@
   "footer.nav.help_contact": "Help and contact",
   "inbox.search.placeholder": "Search in inbox",
   "inbox.filter.multiple.sender": "{count, plural, =0 {Choose sender} one {# sender} other {# senders}}",
+  "inbox.filter.multiple.service": "{count, plural, =0 {Choose service} one {# service} other {# services}}",
   "inbox.filter.multiple.status": "{count, plural, =0 {Choose status} one {# status} other {# status}}",
   "inbox.heading.attachments": "{count, plural, =0 {No attachments} one {# attachment} other {# attachments}}",
   "inbox.heading.choose_all": "Select All",
@@ -431,5 +435,7 @@
   "word.ssn": "SSN: ",
   "word.to": "to",
   "word.unread": "Unread",
-  "word.you": "you"
+  "word.you": "you",
+  "organizationLimitReached.serviceFilter.title": "All organisations - Use service search",
+  "organizationLimitReached.serviceFilter.description": "You have access to {count} organisations, but we currently can't display dialogs for more than 20 at once. Try using the service filter to narrow your search - up to 20 services are supported."
 }

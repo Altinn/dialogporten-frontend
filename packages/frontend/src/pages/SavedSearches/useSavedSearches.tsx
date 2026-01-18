@@ -22,6 +22,7 @@ import { Link, type LinkProps, useNavigate } from 'react-router-dom';
 import { Analytics } from '../../analytics';
 import { ANALYTICS_EVENTS } from '../../analyticsEvents';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
+import { useServiceResource } from '../../api/hooks/useServiceResource.ts';
 import { createSavedSearch, deleteSavedSearch, fetchSavedSearches, updateSavedSearch } from '../../api/queries.ts';
 import { getOrganization } from '../../api/utils/organizations.ts';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
@@ -141,6 +142,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
   const [showModalItemId, setShowModalItemId] = useState<string | null>(null);
   const [inputValues, setInputValues] = useState<Record<string, string>>({});
   const { organizations } = useOrganizations();
+  const { serviceResources } = useServiceResource({});
   const navigate = useNavigate();
 
   const formatDistance = useFormatDistance();
@@ -297,6 +299,17 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
             label: org ?? '',
           };
         }
+
+        if (filter?.id === 'service') {
+          const service = serviceResources.find((sr) => sr.id === filter.value);
+          const serviceTitle =
+            service?.title?.nb || service?.title?.en || service?.title?.nn || service?.id || filter.value;
+          return {
+            type: 'filter' as QueryItemType,
+            label: serviceTitle ?? '',
+          };
+        }
+
         return {
           type: 'filter' as QueryItemType,
           label: isPlaceholderValue(filter?.value)

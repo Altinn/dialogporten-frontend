@@ -1,15 +1,24 @@
-import type { FilterState, ToolbarFilterProps } from '@altinn/altinn-components';
+import type { FilterState, ToolbarFilterProps, ToolbarSearchProps } from '@altinn/altinn-components';
 import {
   type CountableDialogFieldsFragment,
   DialogStatus,
   type GetAllDialogsForPartiesQueryVariables,
   type OrganizationFieldsFragment,
+  type ServiceResource,
   SystemLabel,
 } from 'bff-types-generated';
 import { endOfDay, endOfMonth, endOfWeek, startOfDay, startOfMonth, startOfWeek, subMonths, subYears } from 'date-fns';
 import { t } from 'i18next';
+import type { ChangeEvent } from 'react';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { getOrganization } from '../../api/utils/organizations.ts';
+
+interface ServiceFilterProps extends ToolbarFilterProps {
+  serviceResources: ServiceResource[];
+  currentFilters?: FilterState;
+  serviceResourcesQuery: string;
+  onServiceResourcesQueryChange: (query: string) => void;
+}
 
 export const getExclusiveLabel = (labels: string[]): SystemLabel => {
   const EXCLUSIVE_LABELS = [SystemLabel.Archive, SystemLabel.Bin, SystemLabel.Sent, SystemLabel.Default] as const;
@@ -70,6 +79,7 @@ export enum FilterCategory {
   ORG = 'org',
   STATUS = 'status',
   UPDATED = 'updated',
+  SERVICE = 'service',
 }
 
 const getFilteredDialogs = (
@@ -255,6 +265,54 @@ const createUpdatedAtFilter = (): ToolbarFilterProps => {
   };
 };
 
+const createServiceFilter = (props: ServiceFilterProps): ToolbarFilterProps => {
+  const { serviceResources, currentFilters = {}, serviceResourcesQuery, onServiceResourcesQueryChange, name } = props;
+  const search: ToolbarSearchProps = {
+    name,
+    onClear: () => onServiceResourcesQueryChange(''),
+    value: serviceResourcesQuery,
+    onChange: (e: ChangeEvent<HTMLInputElement>) => {
+      onServiceResourcesQueryChange(e.target.value);
+    },
+  };
+
+  // Calculate the count of serviceResources that have IDs (used for search results)
+  const serviceResourcesCount = serviceResources.filter((serviceResource) => serviceResource.id).length;
+
+  return {
+    label: props.label,
+    name: FilterCategory.SERVICE,
+    removable: true,
+    optionType: props.optionType,
+    search,
+    optionGroups: {
+      recommendations: {
+        title: t('filter_bar.service.recommendations'),
+      },
+      search: {
+        title: t('filter_bar.service.search_hits', { count: serviceResourcesCount }),
+      },
+    },
+    options: serviceResources
+      .filter((serviceResource) => serviceResource.id)
+      .map((serviceResource) => {
+        const title =
+          serviceResource.title?.nb || serviceResource.title?.en || serviceResource.title?.nn || serviceResource.id!;
+        return {
+          groupId: serviceResourcesQuery ? 'search' : 'recommendations',
+          label: title,
+          value: serviceResource.id!,
+          checked: currentFilters.service?.includes(serviceResource.id ?? '') ?? false,
+        };
+      })
+      .sort((a, b) => {
+        const labelA = String(a.label || '');
+        const labelB = String(b.label || '');
+        return labelA.localeCompare(labelB);
+      }),
+  };
+};
+
 /**
  * Generates filters with suggestions, including count of available items.
  * Counts are calculated across ALL views, not just the current view.
@@ -263,7 +321,11 @@ const createUpdatedAtFilter = (): ToolbarFilterProps => {
  * @param allOrganizations
  * @param viewType
  * @param orgsFromSearchState
+ * @param serviceResources
  * @param currentFilters - The current filter state to calculate accurate counts
+ * @param serviceResourcesQuery
+ * @param onServiceResourcesQueryChange
+ * @param enableServiceFilter
  * @returns {Array} - The array of filter settings.
  */
 
@@ -272,23 +334,48 @@ export const getFilters = ({
   allOrganizations,
   viewType,
   orgsFromSearchState = [],
+  serviceResources = [],
+  currentFilters,
+  serviceResourcesQuery,
+  onServiceResourcesQueryChange,
+  enableServiceFilter,
 }: {
   allDialogs: CountableDialogFieldsFragment[];
   allOrganizations: OrganizationFieldsFragment[];
   viewType: InboxViewType;
+  serviceResourcesQuery: string;
+  onServiceResourcesQueryChange: (query: string) => void;
   orgsFromSearchState?: string[];
+  serviceResources?: ServiceResource[];
   currentFilters?: FilterState;
+  enableServiceFilter?: boolean;
 }): ToolbarFilterProps[] => {
   const senderOrgFilter = createSenderOrgFilter(allDialogs, allOrganizations, orgsFromSearchState);
   const statusFilter = createStatusFilter();
   const updatedAtFilter = createUpdatedAtFilter();
+  const serviceFilter = createServiceFilter({
+    label: t('filter_bar.label.choose_service'),
+    name: 'service',
+    optionType: 'checkbox',
+    options: [],
+    serviceResources,
+    currentFilters,
+    serviceResourcesQuery,
+    onServiceResourcesQueryChange,
+  });
 
   const filters = [senderOrgFilter, updatedAtFilter];
   if (viewType === 'inbox') {
     filters.push(statusFilter);
   }
 
-  return filters.filter((filter) => filter.options?.length > 0);
+  if (enableServiceFilter) {
+    filters.push(serviceFilter);
+  }
+
+  return filters.filter((filter) => {
+    return filter.name === FilterCategory.SERVICE ? true : filter.options?.length > 0;
+  });
 };
 
 export const readFiltersFromURLQuery = (query: string): FilterState => {
@@ -363,10 +450,12 @@ export const normalizeFilterDefaults = ({
 }: NormalizeFilterDefaults): GetAllDialogsForPartiesQueryVariables => {
   const SYSTEM_LABEL_STATUSES = [SystemLabel.Bin, SystemLabel.Archive, SystemLabel.Sent] as string[];
   const { updatedAfter, ...baseFilters } = filters;
-  const { status, org, systemLabel } = baseFilters;
+  const { status, org, systemLabel, serviceResources } = baseFilters;
   const normalized: GetAllDialogsForPartiesQueryVariables = { ...baseFilters };
 
-  const hasFilters = [status, org, systemLabel, updatedAfter].some((f) => Array.isArray(f) && f.length > 0);
+  const hasFilters = [status, org, systemLabel, updatedAfter, serviceResources].some(
+    (f) => Array.isArray(f) && f.length > 0,
+  );
 
   if (updatedAfter && filterRanges[updatedAfter as unknown as DateFilterOption]) {
     const { start, end } = filterRanges[updatedAfter as unknown as DateFilterOption];

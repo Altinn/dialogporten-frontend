@@ -4,7 +4,6 @@ import type {
   DialogStatus,
   GetAllDialogsForCountQuery,
   GetAllDialogsForPartiesQuery,
-  PartyFieldsFragment,
   SearchDialogFieldsFragment,
   SystemLabel,
 } from 'bff-types-generated';
@@ -25,11 +24,10 @@ export type InboxViewType = 'inbox' | 'drafts' | 'sent' | 'archive' | 'bin';
 export type DialogsByView = { [key in InboxViewType]: InboxItemInput[] };
 
 interface UseDialogsProps {
-  queryKey: string;
-  parties?: PartyFieldsFragment[];
   viewType?: InboxViewType;
   filterState?: FilterState;
   search?: string;
+  serviceResources?: string[];
 }
 
 interface UseDialogsOutput {
@@ -44,24 +42,30 @@ interface UseDialogsOutput {
   isFetchingNextPage: boolean;
 }
 
-export const useDialogs = ({ parties, viewType, filterState, search, queryKey }: UseDialogsProps): UseDialogsOutput => {
+export const useDialogs = ({
+  viewType,
+  filterState,
+  search,
+  serviceResources = [],
+}: UseDialogsProps): UseDialogsOutput => {
   const { organizations } = useOrganizations();
   const disableFlipNamesPatch = useFeatureFlag<boolean>('dialogporten.disableFlipNamesPatch');
   const disableDialogCount = useFeatureFlag<boolean>('inbox.disableDialogCount');
   const enableSearchLanguageCode = useFeatureFlag<boolean>('dialogporten.enableSearchLanguageCode');
-  const { selectedParties, isSelfIdentifiedUser } = useParties();
+  const { selectedParties, isSelfIdentifiedUser, parties: allParties, allOrganizationsSelected } = useParties();
   const format = useFormat();
-  const partiesToUse = parties ? parties : selectedParties;
-  const partyIds = getPartyIds(partiesToUse, true);
+  const partyIds = getPartyIds(selectedParties, true);
   const previousTokensRef = useRef<string>('');
   const viewTypeKey = viewType ?? 'global';
+  const applicableParties = allOrganizationsSelected && serviceResources?.length ? [] : partyIds;
   const queryVariables = normalizeFilterDefaults({
     filters: {
-      partyURIs: partyIds,
+      partyURIs: applicableParties,
       status: filterState?.status ? (filterState.status as [DialogStatus]) : undefined,
       org: Array.isArray(filterState?.org) && filterState?.org?.length > 0 ? (filterState?.org as string[]) : undefined,
       systemLabel: filterState?.systemLabel as SystemLabel[] | undefined,
       updatedAfter: filterState?.updated,
+      serviceResources,
     },
     viewType,
     searchQuery: search,
@@ -69,8 +73,9 @@ export const useDialogs = ({ parties, viewType, filterState, search, queryKey }:
 
   const { data, isSuccess, isLoading, isFetching, isError, fetchNextPage, isFetchingNextPage, isPlaceholderData } =
     useAuthenticatedInfiniteQuery<GetAllDialogsForPartiesQuery>({
-      queryKey: [queryKey, partyIds, viewTypeKey, queryVariables, search],
+      queryKey: [QUERY_KEYS.DIALOGS, partyIds, viewTypeKey, queryVariables, search, serviceResources],
       staleTime: 1000 * 60 * 10,
+      gcTime: 0,
       retry: 3,
       queryFn: (args) => {
         const continuationToken = args.pageParam as string | undefined;
@@ -85,8 +90,11 @@ export const useDialogs = ({ parties, viewType, filterState, search, queryKey }:
           }),
         });
       },
-      enabled: partyIds.length > 0 && partyIds.length <= 20 && !isSelfIdentifiedUser,
-      gcTime: 0,
+      enabled:
+        !isSelfIdentifiedUser &&
+        partyIds.length > 0 &&
+        (applicableParties.length > 0 || serviceResources.length > 0) &&
+        (applicableParties.length <= 20 || serviceResources.length <= 0),
       getNextPageParam(lastPage: GetAllDialogsForPartiesQuery): unknown | undefined | null {
         const hasNextPage = lastPage?.searchDialogs?.hasNextPage;
         const continuationToken = lastPage?.searchDialogs?.continuationToken;
@@ -150,7 +158,7 @@ export const useDialogs = ({ parties, viewType, filterState, search, queryKey }:
     data?.pages?.[data?.pages.length - 1]?.searchDialogs?.hasNextPage === true ||
     data?.pages?.[data?.pages.length - 1]?.searchDialogs?.items === null ||
     partyIds.length >= 20;
-  const dialogs = mapDialogToToInboxItems(content, parties ?? [], organizations, format, disableFlipNamesPatch);
+  const dialogs = mapDialogToToInboxItems(content, allParties, organizations, format, disableFlipNamesPatch);
   /*  isFetching && isPlaceholderData is used to determine if we are fetching the initial data for the query key */
   const isActuallyLoading = isLoading || (isFetching && isPlaceholderData);
 

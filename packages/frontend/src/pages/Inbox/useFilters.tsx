@@ -1,10 +1,13 @@
 import type { ToolbarFilterProps, ToolbarProps } from '@altinn/altinn-components';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { useDialogsCount } from '../../api/hooks/useDialogsCount.tsx';
+import { useServiceResource } from '../../api/hooks/useServiceResource.ts';
 import { getOrganization } from '../../api/utils/organizations.ts';
+import { getEnvByHost } from '../../auth';
+import { useFeatureFlag } from '../../featureFlags';
 import { FilterCategory, getFilters, readFiltersFromURLQuery } from './filters.ts';
 import { useOrganizations } from './useOrganizations.ts';
 
@@ -18,9 +21,12 @@ interface UseFiltersProps {
 }
 
 export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { dialogCounts: allDialogs } = useDialogsCount();
+  const enableServiceFilter = useFeatureFlag<boolean>('filters.enableServiceFilter');
+  const [serviceResourcesQuery, setServiceResourcesQuery] = useState<string>('');
   const { organizations } = useOrganizations();
+  const { serviceResources } = useServiceResource({});
 
   const [params] = useSearchParams();
   const orgsFromSearchState = params.getAll('org');
@@ -32,8 +38,6 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
     for (const [key, value] of Object.entries(filters)) {
       if (Array.isArray(value)) {
         normalizedFilters[key] = value.map(String);
-      } else if (typeof value === 'string') {
-        normalizedFilters[key] = [value];
       }
     }
 
@@ -44,6 +48,46 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
     return normalizedFilters;
   }, [params]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  const filteredServiceResources = useMemo(() => {
+    const envByHost = getEnvByHost();
+    return serviceResources
+      .filter((option) => {
+        if (!serviceResourcesQuery) {
+          let shortlist = [];
+          if (envByHost === 'at23' || envByHost === 'local') {
+            shortlist = ['se_2933_2015', 'se_3019_202200', 'se_1051_130818', 'se_4417_1'];
+          } else if (envByHost === 'tt02') {
+            shortlist = [
+              'nabovarsel',
+              'ske-soeknad-endring-stans-utleggstrekk',
+              'se_5793_1',
+              'brg-migratedcorrespondence-smnekt-1',
+            ];
+          } else {
+            shortlist = [
+              'se_4655_4',
+              'ske-soeknad-endring-stans-utleggstrekk',
+              'se_5793_1',
+              'brg-migratedcorrespondence-smnekt-1',
+            ];
+          }
+          return shortlist.some(
+            (sr) => option.id?.toLowerCase().includes(sr) || option.title?.nb?.toLowerCase().includes(sr),
+          );
+        }
+
+        const serviceResourcesQueryLowerCase = serviceResourcesQuery.toLowerCase();
+        const optionTitle = option.title?.[i18n.language as 'nb' | 'nn' | 'en']?.toLowerCase();
+        const optionId = option.id?.toLowerCase();
+
+        return (
+          optionTitle?.includes(serviceResourcesQueryLowerCase) || optionId?.includes(serviceResourcesQueryLowerCase)
+        );
+      })
+      .slice(0, 5);
+  }, [serviceResources, serviceResourcesQuery]);
+
   const filters = useMemo(
     () =>
       getFilters({
@@ -51,9 +95,22 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
         allOrganizations: organizations,
         viewType,
         orgsFromSearchState,
+        serviceResources: filteredServiceResources,
         currentFilters,
+        serviceResourcesQuery,
+        onServiceResourcesQueryChange: setServiceResourcesQuery,
+        enableServiceFilter,
       }),
-    [allDialogs, organizations, viewType, orgsFromSearchState, currentFilters],
+    [
+      allDialogs,
+      organizations,
+      viewType,
+      orgsFromSearchState,
+      filteredServiceResources,
+      currentFilters,
+      serviceResourcesQuery,
+      enableServiceFilter,
+    ],
   );
 
   const getFilterLabel = (name: string, value: (string | number)[] | undefined) => {
@@ -80,6 +137,15 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
       }
       return t('inbox.filter.multiple.sender', { count: value?.length });
     }
+
+    if (name === FilterCategory.SERVICE) {
+      if (value?.length === 1) {
+        const service = serviceResources.find((sr) => sr.id === String(value[0]));
+        return service?.title?.nb || service?.title?.en || service?.title?.nn || service?.id || String(value[0]);
+      }
+      return t('inbox.filter.multiple.service', { count: value?.length });
+    }
+
     return '';
   };
 

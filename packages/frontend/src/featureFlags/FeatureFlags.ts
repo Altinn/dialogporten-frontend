@@ -15,6 +15,7 @@ export const featureFlagDefinitions = [
   { key: 'dialogporten.disableSubscriptions', type: 'boolean', default: false },
   { key: 'dialogporten.enableManualSubscriptionRefresh', type: 'boolean', default: false },
   { key: 'inbox.enableDeletedUnitsFilter', type: 'boolean', default: false },
+  { key: 'filters.enableServiceFilter', type: 'boolean', default: true },
 ] as const satisfies readonly FeatureFlagDefinition[];
 
 export type FeatureFlagKey = (typeof featureFlagDefinitions)[number]['key'];

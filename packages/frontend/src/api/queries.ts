@@ -8,6 +8,8 @@ import {
   type DeleteSavedSearchMutation,
   type GetAllDialogsForPartiesQuery,
   type GetSearchAutocompleteDialogsQuery,
+  type GetServiceResourcesQuery,
+  type GetServiceResourcesQueryVariables,
   type NotificationSettingsInput,
   type NotificationsettingsForCurrentUserQuery,
   type OrganizationsQuery,
@@ -236,6 +238,10 @@ export const searchAutocompleteDialogs = (
 
 export const updateLanguage = (language: string): Promise<UpdateLanguageMutation> =>
   graphQLSDK.UpdateLanguage({ language });
+
+export const fetchServiceResources = (
+  variables?: GetServiceResourcesQueryVariables,
+): Promise<GetServiceResourcesQuery> => graphQLSDK.getServiceResources(variables);
 
 export const updateProfileSettingPreference = (
   shouldShowDeletedEntities: boolean,
