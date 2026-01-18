@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.117.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.117.1...v1.117.2) (2026-01-18)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @opentelemetry/exporter-trace-otlp-grpc to v0.210.0 ([#3606](https://github.com/Altinn/dialogporten-frontend/issues/3606)) ([14e65e7](https://github.com/Altinn/dialogporten-frontend/commit/14e65e7941e274d97400098a6b2b89ded20c6ed6))
+* **e2e:** tests breaking after using design system buttons ([#3621](https://github.com/Altinn/dialogporten-frontend/issues/3621)) ([88aa2ab](https://github.com/Altinn/dialogporten-frontend/commit/88aa2aba30c26f8b05e1637e13d8b0dd30ef1dd9))
+
 ## [1.117.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.117.0...v1.117.1) (2026-01-18)
 
 
