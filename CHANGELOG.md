@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.117.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.117.2...v1.117.3) (2026-01-18)
+
+
+### Bug Fixes
+
+* **bookmark:** buttons missing label ([#3623](https://github.com/Altinn/dialogporten-frontend/issues/3623)) ([ee98aff](https://github.com/Altinn/dialogporten-frontend/commit/ee98affd9f39c8fcc473efed58a9a3e4dfb53a0f))
+
 ## [1.117.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.117.1...v1.117.2) (2026-01-18)
 
 
