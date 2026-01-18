@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.117.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.117.3...v1.117.4) (2026-01-18)
+
+
+### Bug Fixes
+
+* **e2e:** after buttons change ([#3625](https://github.com/Altinn/dialogporten-frontend/issues/3625)) ([ba2f2e2](https://github.com/Altinn/dialogporten-frontend/commit/ba2f2e2802c726014d9a33e77e20ca7fdfb7e7b9))
+
 ## [1.117.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.117.2...v1.117.3) (2026-01-18)
 
 
