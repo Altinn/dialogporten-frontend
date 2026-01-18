@@ -150,6 +150,7 @@
   "filter_bar.remove_filter": "Fjern filter",
   "filter_bar.save_search": "Lagra søk",
   "filter_bar.saved_search": "Lagra søk",
+  "filter_bar.undo_saved_search": "Fjern lagra søk",
   "floating_dropdown.help_pages": "Hjelpesider",
   "floating_dropdown.show_new_functionality": "Vis nye funksjonar",
   "floatingdropdown.open_alt_text": "Opne hjelp- og alternativmeny",
