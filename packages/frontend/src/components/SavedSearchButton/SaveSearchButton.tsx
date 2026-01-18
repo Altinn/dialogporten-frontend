@@ -41,6 +41,7 @@ export const SaveSearchButton = ({ disabled, className, filterState, viewType }:
         onClick={() => deleteSearch(matchingSavedSearch.id)}
         loading={isCTALoading}
         variant="ghost"
+        aria-label={t('filter_bar.saved_search')}
       >
         <BookmarkFillIcon />
         <span>{t('filter_bar.saved_search')}</span>
@@ -57,6 +58,7 @@ export const SaveSearchButton = ({ disabled, className, filterState, viewType }:
       }
       variant="ghost"
       loading={isCTALoading}
+      aria-label={t('filter_bar.save_search')}
     >
       <BookmarkIcon />
       <span>{t('filter_bar.save_search')}</span>
