@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.117.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.117.0...v1.117.1) (2026-01-18)
+
+
+### Bug Fixes
+
+* **paginating:** condition was reverted for testing purposes ([#3618](https://github.com/Altinn/dialogporten-frontend/issues/3618)) ([685aed3](https://github.com/Altinn/dialogporten-frontend/commit/685aed3ec097fd6883f0a27212cefd47ffe99dec))
+
 ## [1.117.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.116.4...v1.117.0) (2026-01-16)
 
 
