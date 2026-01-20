@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.117.6](https://github.com/Altinn/dialogporten-frontend/compare/v1.117.5...v1.117.6) (2026-01-20)
+
+
+### Bug Fixes
+
+* **infra:** change certificate for at23 ([#3631](https://github.com/Altinn/dialogporten-frontend/issues/3631)) ([b2f3278](https://github.com/Altinn/dialogporten-frontend/commit/b2f3278de89a8f82cbd64518e88f723e9aa52751))
+* **infra:** change certificate for tt02 and yt01 ([#3634](https://github.com/Altinn/dialogporten-frontend/issues/3634)) ([e881776](https://github.com/Altinn/dialogporten-frontend/commit/e8817767b884ce9ca1e78fc519b8d5e79839156e))
+
 ## [1.117.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.117.4...v1.117.5) (2026-01-20)
 
 
