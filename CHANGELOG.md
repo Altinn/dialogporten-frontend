@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.117.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.117.4...v1.117.5) (2026-01-20)
+
+
+### Bug Fixes
+
+* **e2e:** fix flakey saved searches test ([#3627](https://github.com/Altinn/dialogporten-frontend/issues/3627)) ([83f1cf1](https://github.com/Altinn/dialogporten-frontend/commit/83f1cf1cfcb9ffb14364eb4bd026addaf9d230d0))
+
 ## [1.117.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.117.3...v1.117.4) (2026-01-18)
 
 
