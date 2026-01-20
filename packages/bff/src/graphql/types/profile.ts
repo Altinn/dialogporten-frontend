@@ -278,6 +278,7 @@ export const ProfileSettingPreference = objectType({
     t.nullable.string('language', { resolve: (obj) => obj.language });
     t.int('preSelectedPartyId', { resolve: (obj) => obj.preSelectedPartyId });
     t.boolean('doNotPromptForParty', { resolve: (obj) => obj.doNotPromptForParty });
+    t.nullable.boolean('shouldShowDeletedEntities', { resolve: (obj) => obj.shouldShowDeletedEntities });
   },
 });
 

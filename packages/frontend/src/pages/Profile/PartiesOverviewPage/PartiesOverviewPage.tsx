@@ -25,6 +25,7 @@ import {
   formatNorwegianId,
   useAccounts,
 } from '../../../components/PageLayout/Accounts/useAccounts';
+import { useFeatureFlag } from '../../../featureFlags/useFeatureFlag';
 import { usePageTitle } from '../../../hooks/usePageTitle';
 import { useProfileOnboarding } from '../../../onboardingTour/useProfileOnboarding';
 import { PageRoutes } from '../../routes.ts';
@@ -37,11 +38,13 @@ export const PartiesOverviewPage = () => {
   const { t } = useTranslation();
   const { search } = useLocation();
   const { getAccountAlertSettings, settings } = useSettings();
-  const { addFavoriteParty, deleteFavoriteParty } = useProfile();
+  const isDeletedUnitsFilterEnabled = useFeatureFlag<boolean>('inbox.enableDeletedUnitsFilter');
+  const { addFavoriteParty, deleteFavoriteParty, shouldShowDeletedEntities, updateShowDeletedEntities } = useProfile();
   const { parties, selectedParties, allOrganizationsSelected, isLoading, flattenedParties } = useParties();
   const [searchValue, setSearchValue] = useState<string>('');
   const [expandedItem, setExpandedItem] = useState<string>('');
-  const [includeDeletedParties, setIncludeDeletedParties] = useState<boolean>(false);
+
+  const includeDeletedParties = isDeletedUnitsFilterEnabled ? (shouldShowDeletedEntities ?? false) : true;
 
   const { filters, getFilterLabel, filterState, setFilterState, filteredParties, isSearching } = useAccountFilters({
     searchValue,
@@ -300,11 +303,11 @@ export const PartiesOverviewPage = () => {
           onFilterStateChange={setFilterState}
           filters={filters}
         >
-          {filterState?.partyScope?.[0] !== 'PERSONS' && (
+          {isDeletedUnitsFilterEnabled && filterState?.partyScope?.[0] !== 'PERSONS' && (
             <Switch
               size="xs"
               checked={includeDeletedParties}
-              onChange={(e) => setIncludeDeletedParties(e.target.checked)}
+              onChange={(e) => updateShowDeletedEntities(e.target.checked)}
               aria-checked={includeDeletedParties}
               label={t('parties.filter.show_deleted')}
               className={styles.deletedFilter}

@@ -8,6 +8,7 @@ import {
   deleteFavoriteParty as deleteFavoritePartyRaw,
   getNotificationsettingsForCurrentUser,
   profile,
+  updateProfileSettingPreference as updateProfileSettingPreferenceRaw,
 } from '../../api/queries.ts';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
@@ -52,6 +53,13 @@ export const useProfile = (disabled?: boolean) => {
     void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PROFILE] });
   };
 
+  const shouldShowDeletedEntities = data?.profile?.user?.profileSettingPreference?.shouldShowDeletedEntities;
+
+  const updateShowDeletedEntities = async (shouldShow: boolean) => {
+    await updateProfileSettingPreferenceRaw(shouldShow);
+    void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PROFILE] });
+  };
+
   return {
     profile: data?.profile,
     isLoading,
@@ -65,5 +73,7 @@ export const useProfile = (disabled?: boolean) => {
     addFavoriteParty,
     addFavoritePartyToGroup,
     updateProfileLanguage,
+    shouldShowDeletedEntities,
+    updateShowDeletedEntities,
   };
 };

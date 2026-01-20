@@ -53,7 +53,7 @@ test.describe('Saved Searches', () => {
       // If undoSaveButton is not visible, saveButton should be available
       await expect(saveButton).toBeVisible({ timeout: 5000 });
     }
-    
+
     // Save the search
     await saveButton.click();
     const successMessage = page.getByText('Søket ditt er lagret');

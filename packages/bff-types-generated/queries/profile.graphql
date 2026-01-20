@@ -17,6 +17,9 @@ query profile {
       phoneNumber
       externalIdentity
       partyId
+      profileSettingPreference {
+        shouldShowDeletedEntities
+      }
 
       party {
         partyId
