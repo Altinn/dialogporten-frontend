@@ -39,8 +39,22 @@ test.describe('Saved Searches', () => {
 
     // Wait for save button to appear (indicates filter state has updated)
     const saveButton = toolbarArea.getByRole('button', { name: 'Lagre søk' });
+    // Wait for save button to appear (indicates filter state has updated)
+    const undoSaveButton = toolbarArea.getByRole('button', { name: 'Lagret søk' });
 
-    // Step 5: Save the search
+    // Step 5: Check button state and handle accordingly
+    try {
+      // Check if undoSaveButton is visible
+      await expect(undoSaveButton).toBeVisible({ timeout: 2000 });
+      // If undoSaveButton is visible, click it and wait for saveButton
+      await undoSaveButton.click();
+      await expect(saveButton).toBeVisible({ timeout: 5000 });
+    } catch {
+      // If undoSaveButton is not visible, saveButton should be available
+      await expect(saveButton).toBeVisible({ timeout: 5000 });
+    }
+    
+    // Save the search
     await saveButton.click();
     const successMessage = page.getByText('Søket ditt er lagret');
     await expect(successMessage).toBeVisible({ timeout: 10000 });
