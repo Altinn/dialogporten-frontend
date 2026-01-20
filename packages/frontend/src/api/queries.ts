@@ -16,6 +16,7 @@ import {
   type SystemLabel,
   type UpdateLanguageMutation,
   type UpdateNotificationSettingMutation,
+  type UpdateProfileSettingPreferenceMutation,
   type UpdateSavedSearchMutation,
   type UpdateSystemLabelMutation,
   getSdk,
@@ -235,3 +236,8 @@ export const searchAutocompleteDialogs = (
 
 export const updateLanguage = (language: string): Promise<UpdateLanguageMutation> =>
   graphQLSDK.UpdateLanguage({ language });
+
+export const updateProfileSettingPreference = (
+  shouldShowDeletedEntities: boolean,
+): Promise<UpdateProfileSettingPreferenceMutation> =>
+  graphQLSDK.UpdateProfileSettingPreference({ shouldShowDeletedEntities });

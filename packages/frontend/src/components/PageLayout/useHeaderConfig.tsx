@@ -13,6 +13,7 @@ import { ANALYTICS_EVENTS } from '../../analyticsEvents.ts';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { updateLanguage } from '../../api/queries.ts';
 import { getFrontPageLink } from '../../auth';
+import { useFeatureFlag } from '../../featureFlags/useFeatureFlag';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { useProfile } from '../../pages/Profile';
 import { PageRoutes } from '../../pages/routes.ts';
@@ -35,7 +36,16 @@ export const useHeaderConfig = (): UseHeaderConfigReturn => {
   const { searchValue, setSearchValue, onClear } = useSearchString();
   const { autocomplete } = useAutocomplete({ selectedParties, searchValue });
 
-  const { favoritesGroup, addFavoriteParty, deleteFavoriteParty, updateProfileLanguage } = useProfile();
+  const isDeletedUnitsFilterEnabled = useFeatureFlag<boolean>('inbox.enableDeletedUnitsFilter');
+
+  const {
+    favoritesGroup,
+    addFavoriteParty,
+    deleteFavoriteParty,
+    updateProfileLanguage,
+    shouldShowDeletedEntities,
+    updateShowDeletedEntities,
+  } = useProfile();
 
   const handleToggleFavorite = useCallback(
     async (accountUuid: string) => {
@@ -80,6 +90,24 @@ export const useHeaderConfig = (): UseHeaderConfigReturn => {
     [parties, isProfile, location.pathname, navigate],
   );
 
+  const handleShowDeletedUnitsChange = useCallback(
+    async (shouldShow: boolean) => {
+      try {
+        await updateShowDeletedEntities(shouldShow);
+      } catch (error) {
+        logError(
+          error as Error,
+          {
+            context: 'useHeaderConfig.handleShowDeletedUnitsChange',
+            shouldShow,
+          },
+          'Error updating show deleted units setting',
+        );
+      }
+    },
+    [updateShowDeletedEntities, logError],
+  );
+
   const partyListDTO = mapPartiesToAuthorizedParties(parties);
 
   const favoriteAccountUuids = (favoritesGroup?.parties ?? []).filter(
@@ -98,6 +126,10 @@ export const useHeaderConfig = (): UseHeaderConfigReturn => {
     onSelectAccount: handleSelectAccount,
     onToggleFavorite: handleToggleFavorite,
     languageCode: i18n.language,
+    ...(isDeletedUnitsFilterEnabled && {
+      showDeletedUnits: shouldShowDeletedEntities ?? undefined,
+      onShowDeletedUnitsChange: handleShowDeletedUnitsChange,
+    }),
   });
 
   const { mobileMenu, desktopMenu } = useGlobalMenu();

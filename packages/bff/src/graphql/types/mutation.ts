@@ -1,5 +1,5 @@
 import { logger } from '@altinn/dialogporten-node-logger';
-import { extendType, intArg, nonNull, stringArg } from 'nexus';
+import { booleanArg, extendType, intArg, nonNull, stringArg } from 'nexus';
 import config from '../../config.js';
 import {
   addFavoriteParty,
@@ -9,6 +9,7 @@ import {
   getOrCreateProfile,
   updateLanguage,
   updateNotificationsSetting,
+  updateProfileSettingPreference,
 } from '../functions/profile.ts';
 import { createSavedSearch, deleteSavedSearch, updateSavedSearch } from '../functions/savedsearch.ts';
 import { languageCodes, updateAltinnPersistentContextValue } from './cookie.js';
@@ -227,6 +228,27 @@ export const UpdateLanguage = extendType({
         } catch (error) {
           logger.error(error, 'Failed to update language:');
           return error;
+        }
+      },
+    });
+  },
+});
+
+export const UpdateProfileSettingPreference = extendType({
+  type: 'Mutation',
+  definition(t) {
+    t.field('updateProfileSettingPreference', {
+      type: Response,
+      args: {
+        shouldShowDeletedEntities: booleanArg(),
+      },
+      resolve: async (_, { shouldShowDeletedEntities }, ctx) => {
+        try {
+          await updateProfileSettingPreference(ctx, shouldShowDeletedEntities);
+          return { success: true };
+        } catch (error) {
+          logger.error(error, 'Failed to update profile setting preference:');
+          return { success: false, message: 'Failed to update profile setting preference' };
         }
       },
     });
