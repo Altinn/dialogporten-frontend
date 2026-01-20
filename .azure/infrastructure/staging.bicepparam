@@ -35,12 +35,6 @@ param applicationGatewayConfiguration = {
       sslCertificateSecretKey: 'af-tt02-altinn-no'
       enableAvailabilityTest: true
     }
-    {
-      name: 'af.tt.altinn.no'
-      sslCertificateSecretKey: 'star-tt-altinn-no'
-      redirectTo: 'af.tt02.altinn.no'
-      enableAvailabilityTest: false
-    }
   ]
   sslCertificateKeyVaultName: readEnvironmentVariable('CERTIFICATE_KEY_VAULT_NAME')
   zones: ['1', '2']
