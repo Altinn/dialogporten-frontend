@@ -27,4 +27,5 @@ export const QUERY_KEYS = {
   ALERT_BANNER: 'alertBanner',
   ALTINN_COOKIE: 'altinnCookie',
   UPDATED_LANGUAGE: 'updatedLanguage',
+  SHOW_DELETED_ENTITIES: 'showDeletedEntities',
 };
