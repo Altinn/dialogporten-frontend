@@ -30,7 +30,7 @@ import { usePageTitle } from '../../../hooks/usePageTitle';
 import { useProfileOnboarding } from '../../../onboardingTour/useProfileOnboarding';
 import { PageRoutes } from '../../routes.ts';
 import { getBreadcrumbs } from '../Settings/Settings.tsx';
-import { useSettings } from '../Settings/useSettings.tsx';
+import { SettingsType, useSettings } from '../Settings/useSettings.tsx';
 import { useAccountFilters } from '../useAccountFilters.tsx';
 import styles from './partiesOverviewPage.module.css';
 
@@ -49,7 +49,7 @@ export const PartiesOverviewPage = () => {
   const { filters, getFilterLabel, filterState, setFilterState, filteredParties, isSearching } = useAccountFilters({
     searchValue,
     parties,
-    includeDeletedParties,
+    includeDeletedParties: true,
   });
 
   const { accounts, accountGroups } = useAccounts({
@@ -280,9 +280,30 @@ export const PartiesOverviewPage = () => {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const accountListItems = useMemo(() => accounts.map(mapAccountToPartyListItem), [accounts]);
-  const hits = accountListItems.map((a) => ({ ...a, groupId: 'search' }));
+
+  const displayAccountListItems = useMemo(() => {
+    if (includeDeletedParties) {
+      return accountListItems;
+    }
+    return accountListItems.filter((item) => {
+      if (item.groupId === SettingsType.favorites || item.groupId === 'primary') {
+        return true;
+      }
+      return !item.isDeleted;
+    });
+  }, [accountListItems, includeDeletedParties]);
+
+  // Filter deleted from search results when switched off
+  const displayHits = useMemo(() => {
+    const baseHits = displayAccountListItems.map((a) => ({ ...a, groupId: 'search' }));
+    if (includeDeletedParties) {
+      return baseHits;
+    }
+    return baseHits.filter((item) => !item.isDeleted);
+  }, [displayAccountListItems, includeDeletedParties]);
+
   const searchGroup = {
-    search: { title: t('search.hits', { count: accountListItems.length }) },
+    search: { title: t('search.hits', { count: displayHits.length }) },
   };
 
   return (
@@ -314,11 +335,11 @@ export const PartiesOverviewPage = () => {
             />
           )}
         </Toolbar>
-        {isSearching && hits.length === 0 && <Heading size="lg">{t('profile.settings.no_results')}</Heading>}
+        {isSearching && displayHits.length === 0 && <Heading size="lg">{t('profile.settings.no_results')}</Heading>}
         <AccountList
           isVirtualized
           groups={isSearching ? searchGroup : accountGroups}
-          items={isSearching ? hits : accountListItems}
+          items={isSearching ? displayHits : displayAccountListItems}
         />
       </Section>
     </PageBase>
