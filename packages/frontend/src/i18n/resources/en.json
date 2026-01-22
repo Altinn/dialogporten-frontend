@@ -154,6 +154,7 @@
   "filter_bar.undo_saved_search": "Remove saved search",
   "filter_bar.service.recommendations": "Recommended services",
   "filter_bar.service.search_hits": "{count, plural, =0 {No hits} one {# hit} other {# hits}}",
+  "filter_bar.service.search_placeholder": "Search for service",
   "floating_dropdown.help_pages": "Help pages",
   "floating_dropdown.show_new_functionality": "Show new functionality",
   "floatingdropdown.open_alt_text": "Open help and options menu",
