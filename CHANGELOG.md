@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.118.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.118.0...v1.118.1) (2026-01-22)
+
+
+### Bug Fixes
+
+* **services:** improve list of suggested services ([#3642](https://github.com/Altinn/dialogporten-frontend/issues/3642)) ([64b10b3](https://github.com/Altinn/dialogporten-frontend/commit/64b10b32cfa5e8c3f66c9dd5a88be2d935454295))
+
 ## [1.118.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.117.6...v1.118.0) (2026-01-22)
 
 
