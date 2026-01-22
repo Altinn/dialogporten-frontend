@@ -11,13 +11,14 @@ interface TransformedServiceResource {
   selfIdentifiedUserEnabled: boolean;
 }
 
-const serviceResourcesRedisKey = 'arbeidsflate-service-resources:v1';
+const serviceResourcesRedisKey = 'arbeidsflate-service-resources:v2';
 let refreshTimer: NodeJS.Timeout | null = null;
 
 async function fetchServiceResources(): Promise<Resource[]> {
   try {
     const response = await fetch(
-      config.platformBaseURL + '/resourceregistry/api/v1/resource/resourcelist?includeAltinn2=true&includeApps=true',
+      config.platformBaseURL +
+        '/resourceregistry/api/v1/resource/resourcelist?includeAltinn2=false&includeApps=true&includeMigratedApps=true',
     );
     if (!response.ok) {
       logger.error(`Network response was not ok: ${response.status} ${response.statusText}`);
