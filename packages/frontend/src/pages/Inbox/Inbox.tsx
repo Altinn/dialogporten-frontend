@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { type InboxViewType, useDialogs } from '../../api/hooks/useDialogs.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
-import { createFiltersURLQuery, createMessageBoxLink } from '../../auth';
+import { createFiltersURLQuery } from '../../auth';
 import { EmptyState } from '../../components/EmptyState/EmptyState.tsx';
 import { Notice } from '../../components/Notice';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
@@ -54,8 +54,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
     allOrganizationsSelected,
     parties,
     partiesEmptyList,
-    isSelfIdentifiedUser,
-    currentPartyUuid,
     isError: unableToLoadParties,
     isLoading: isLoadingParties,
     organizationLimitReached,
@@ -179,21 +177,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
             <a href="/api/logout">{t('inbox.unable_to_load_parties.link')}</a>
           </DsParagraph>
         </DsAlert>
-      </PageBase>
-    );
-  }
-
-  if (isSelfIdentifiedUser) {
-    return (
-      <PageBase margin="page">
-        <Notice
-          title={t('notice.self_identified_warning.title')}
-          description={t('notice.self_identified_warning.description')}
-          link={{
-            href: createMessageBoxLink(currentPartyUuid),
-            label: t('notice.self_identified_warning.button_link'),
-          }}
-        />
       </PageBase>
     );
   }

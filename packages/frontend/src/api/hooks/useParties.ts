@@ -197,7 +197,6 @@ export const useParties = (): UsePartiesOutput => {
         }
       } else {
         setPartiesEmptyList(true);
-        // TODO: Remove this when Dialogporten adds self-identified user to parties response
         setIsSelfIdentifiedUser(true);
       }
     }

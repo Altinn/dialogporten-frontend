@@ -52,7 +52,7 @@ export const useDialogs = ({
   const disableFlipNamesPatch = useFeatureFlag<boolean>('dialogporten.disableFlipNamesPatch');
   const disableDialogCount = useFeatureFlag<boolean>('inbox.disableDialogCount');
   const enableSearchLanguageCode = useFeatureFlag<boolean>('dialogporten.enableSearchLanguageCode');
-  const { selectedParties, isSelfIdentifiedUser, parties: allParties, allOrganizationsSelected } = useParties();
+  const { selectedParties, parties: allParties, allOrganizationsSelected } = useParties();
   const format = useFormat();
   const partyIds = getPartyIds(selectedParties, true);
   const previousTokensRef = useRef<string>('');
@@ -91,7 +91,6 @@ export const useDialogs = ({
         });
       },
       enabled:
-        !isSelfIdentifiedUser &&
         partyIds.length > 0 &&
         (applicableParties.length > 0 || serviceResources.length > 0) &&
         (applicableParties.length <= 20 || serviceResources.length <= 0),

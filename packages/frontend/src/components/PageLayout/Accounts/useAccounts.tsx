@@ -144,7 +144,9 @@ export const useAccounts = ({
   const { groupId: _, ...loadingAccount } = loadingAccountMenuItem;
 
   const currentEndUser = useMemo(() => {
-    return parties.find((party) => party.partyType === 'Person' && party.isCurrentEndUser);
+    return parties.find(
+      (party) => (party.partyType === 'Person' || party.partyType === 'SelfIdentified') && party.isCurrentEndUser,
+    );
   }, [parties]);
 
   const otherPeople = useMemo(
