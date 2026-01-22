@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.118.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.117.6...v1.118.0) (2026-01-22)
+
+
+### Features
+
+* Add integration for filtering deleted parties ([#3629](https://github.com/Altinn/dialogporten-frontend/issues/3629)) ([4cdbaa9](https://github.com/Altinn/dialogporten-frontend/commit/4cdbaa9c5533e948fe9e03bee1ffc31e446cb392))
+* support filter by service ([#3620](https://github.com/Altinn/dialogporten-frontend/issues/3620)) ([4d5d294](https://github.com/Altinn/dialogporten-frontend/commit/4d5d2943aed4d21d16ed92a548e9320804bcd25b))
+
+
+### Bug Fixes
+
+* Profile actors favourites filtering and fav-switch api fix ([#3637](https://github.com/Altinn/dialogporten-frontend/issues/3637)) ([e5440c0](https://github.com/Altinn/dialogporten-frontend/commit/e5440c068033cc062cab98fefc22a5534791310a))
+* **toolbar:** i18n placeholder for resource service filter ([#3641](https://github.com/Altinn/dialogporten-frontend/issues/3641)) ([43cc26a](https://github.com/Altinn/dialogporten-frontend/commit/43cc26af286bb790d4048412930bcef8fce1da2a))
+
 ## [1.117.6](https://github.com/Altinn/dialogporten-frontend/compare/v1.117.5...v1.117.6) (2026-01-20)
 
 
