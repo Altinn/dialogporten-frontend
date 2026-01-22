@@ -270,6 +270,7 @@ const createServiceFilter = (props: ServiceFilterProps): ToolbarFilterProps => {
   const search: ToolbarSearchProps = {
     name,
     onClear: () => onServiceResourcesQueryChange(''),
+    placeholder: t('filter_bar.service.search_placeholder'),
     value: serviceResourcesQuery,
     onChange: (e: ChangeEvent<HTMLInputElement>) => {
       onServiceResourcesQueryChange(e.target.value);

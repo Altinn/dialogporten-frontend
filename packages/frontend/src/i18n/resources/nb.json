@@ -154,6 +154,7 @@
   "filter_bar.undo_saved_search": "Fjern lagret søk",
   "filter_bar.service.recommendations": "Foreslåtte tjenester",
   "filter_bar.service.search_hits": "{count, plural, =0 {Ingen treff} one {# treff} other {# treff}}",
+  "filter_bar.service.search_placeholder": "Søk etter tjeneste",
   "floating_dropdown.help_pages": "Hjelpesider",
   "floating_dropdown.show_new_functionality": "Vis nye funksjoner",
   "floatingdropdown.open_alt_text": "Åpne hjelp- og alternativmeny",
