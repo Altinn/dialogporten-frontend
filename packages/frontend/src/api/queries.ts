@@ -15,6 +15,7 @@ import {
   type OrganizationsQuery,
   type SavedSearchInput,
   type SavedSearchesQuery,
+  type SetPreSelectedPartyMutation,
   type SystemLabel,
   type UpdateLanguageMutation,
   type UpdateNotificationSettingMutation,
@@ -189,6 +190,8 @@ export const addFavoritePartyToGroup = (partyId: string, groupName: string): Pro
   graphQLSDK.AddFavoritePartyToGroup({ partyId, groupName });
 export const deleteFavoriteParty = (partyId: string): Promise<DeleteFavoritePartyMutation> =>
   graphQLSDK.DeleteFavoriteParty({ partyId });
+export const setPreSelectedParty = (partyUuid: string): Promise<SetPreSelectedPartyMutation> =>
+  graphQLSDK.SetPreSelectedParty({ partyUuid });
 export const createSavedSearch = (name: string, data: SavedSearchInput): Promise<CreateSavedSearchMutation> =>
   graphQLSDK.CreateSavedSearch({ name, data });
 export const getNotificationsettingsForCurrentUser = (): Promise<NotificationsettingsForCurrentUserQuery> =>

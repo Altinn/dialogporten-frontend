@@ -8,6 +8,7 @@ import {
   deleteFavoriteParty as deleteFavoritePartyRaw,
   getNotificationsettingsForCurrentUser,
   profile,
+  setPreSelectedParty as setPreSelectedPartyRaw,
   updateProfileSettingPreference as updateProfileSettingPreferenceRaw,
 } from '../../api/queries.ts';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
@@ -72,6 +73,11 @@ export const useProfile = (disabled?: boolean) => {
     }
   };
 
+  const setPreSelectedParty = async (partyId: string) => {
+    await setPreSelectedPartyRaw(partyId);
+    void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PROFILE] });
+  };
+
   return {
     profile: data?.profile,
     isLoading,
@@ -84,6 +90,7 @@ export const useProfile = (disabled?: boolean) => {
     deleteFavoriteParty,
     addFavoriteParty,
     addFavoritePartyToGroup,
+    setPreSelectedParty,
     updateProfileLanguage,
     shouldShowDeletedEntities,
     updateShowDeletedEntities,

@@ -7,6 +7,7 @@ import {
   deleteFavoriteParty,
   deleteNotificationsSetting,
   getOrCreateProfile,
+  setPreSelectedParty,
   updateLanguage,
   updateNotificationsSetting,
   updateProfileSettingPreference,
@@ -249,6 +250,25 @@ export const UpdateProfileSettingPreference = extendType({
         } catch (error) {
           logger.error(error, 'Failed to update profile setting preference:');
           return { success: false, message: 'Failed to update profile setting preference' };
+        }
+      },
+    });
+  },
+});
+
+export const SetPreSelectedParty = extendType({
+  type: 'Mutation',
+  definition(t) {
+    t.field('setPreSelectedParty', {
+      type: Response,
+      args: { partyUuid: stringArg() },
+      resolve: async (_, { partyUuid }, ctx) => {
+        try {
+          await setPreSelectedParty(ctx, partyUuid);
+          return { success: true, message: 'PreSelectedParty set successfully' };
+        } catch (error) {
+          logger.error(error, 'Failed to set preselected party:');
+          return { success: false, message: 'Failed to set preselected party' };
         }
       },
     });
