@@ -367,6 +367,14 @@ const mutateUpdateLanguageMock = graphql.mutation('UpdateLanguage', (req) => {
   });
 });
 
+const getServiceResourcesMock = graphql.query('getServiceResources', () => {
+  return HttpResponse.json({
+    data: {
+      serviceResources: [],
+    },
+  });
+});
+
 export const handlers = [
   isAuthenticatedMock,
   getAllDialogsForPartiesMock,
@@ -386,6 +394,7 @@ export const handlers = [
   getAllDialogsforCountMock,
   streamMock,
   mutateUpdateLanguageMock,
+  getServiceResourcesMock,
   mockAltinn2Messages,
   mockNotificationsettingsForCurrentUser,
   featuresMock,

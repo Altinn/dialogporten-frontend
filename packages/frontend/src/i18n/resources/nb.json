@@ -145,12 +145,15 @@
   "filter_bar.add_filter": "Legg til filter",
   "filter_bar.label.choose_recipient": "Velg mottaker",
   "filter_bar.label.choose_sender": "Velg avsender",
+  "filter_bar.label.choose_service": "Velg tjeneste",
   "filter_bar.label.choose_status": "Velg status",
   "filter_bar.label.updated": "Oppdatert dato",
   "filter_bar.remove_filter": "Fjern filter",
   "filter_bar.save_search": "Lagre søk",
   "filter_bar.saved_search": "Lagret søk",
   "filter_bar.undo_saved_search": "Fjern lagret søk",
+  "filter_bar.service.recommendations": "Foreslåtte tjenester",
+  "filter_bar.service.search_hits": "{count, plural, =0 {Ingen treff} one {# treff} other {# treff}}",
   "floating_dropdown.help_pages": "Hjelpesider",
   "floating_dropdown.show_new_functionality": "Vis nye funksjoner",
   "floatingdropdown.open_alt_text": "Åpne hjelp- og alternativmeny",
@@ -162,6 +165,7 @@
   "footer.nav.help_contact": "Hjelp og kontakt",
   "inbox.search.placeholder": "Søk i innboksen",
   "inbox.filter.multiple.sender": "{count, plural, =0 {Velg avsender} one {# avsender} other {# avsendere}}",
+  "inbox.filter.multiple.service": "{count, plural, =0 {Velg tjeneste} one {# tjeneste} other {# tjenester}}",
   "inbox.filter.multiple.status": "{count, plural, =0 {Velg status} one {# status} other {# statuser}}",
   "inbox.heading.attachments": "{count, plural, =0 {Ingen vedlegg} one {# vedlegg} other {# vedlegg}}",
   "inbox.heading.choose_all": "Velg alle",
@@ -431,5 +435,7 @@
   "word.ssn": "Fødselsnummer: ",
   "word.to": "til",
   "word.unread": "Ulest",
-  "word.you": "deg"
+  "word.you": "deg",
+  "organizationLimitReached.serviceFilter.title": "Alle virksomheter - Bruk tjenestesøk",
+  "organizationLimitReached.serviceFilter.description": "Du har tilgang til {count} virksomheter, men vi kan foreløpig ikke vise dialoger for mer enn 20 samtidig. Prøv å bruke tjenestefilter for å innskrenke søket ditt - opptil 20 tjenester støttes."
 }

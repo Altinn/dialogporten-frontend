@@ -48,7 +48,7 @@ export const createMessageBoxLink = (currentPartyUuid?: string) => {
 
 export type hostEnv = 'local' | 'at23' | 'tt02' | 'yt' | 'prod';
 
-const getEnvByHost = (): hostEnv => {
+export const getEnvByHost = (): hostEnv => {
   if (location.host.includes('app.localhost')) {
     return 'local';
   }
