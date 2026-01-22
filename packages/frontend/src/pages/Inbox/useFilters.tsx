@@ -56,25 +56,28 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
         if (!serviceResourcesQuery) {
           let shortlist = [];
           if (envByHost === 'at23' || envByHost === 'local') {
-            shortlist = ['se_2933_2015', 'se_3019_202200', 'se_1051_130818', 'se_4417_1'];
+            shortlist = [
+              'urn:altinn:resource:se_2933_2015',
+              'urn:altinn:resource:se_3019_202200',
+              'urn:altinn:resource:se_1051_130818',
+              'se_4417_1',
+            ];
           } else if (envByHost === 'tt02') {
             shortlist = [
-              'nabovarsel',
-              'ske-soeknad-endring-stans-utleggstrekk',
-              'se_5793_1',
-              'brg-migratedcorrespondence-smnekt-1',
+              'urn:altinn:resource:nabovarsel',
+              'urn:altinn:resource:ske-soeknad-endring-stans-utleggstrekk',
+              'urn:altinn:resource:se_5793_1',
+              'urn:altinn:resource:brg-migratedcorrespondence-smnekt-1',
             ];
           } else {
             shortlist = [
-              'se_4655_4',
-              'ske-soeknad-endring-stans-utleggstrekk',
-              'se_5793_1',
-              'brg-migratedcorrespondence-smnekt-1',
+              'urn:altinn:resource:se_4655_4',
+              'urn:altinn:resource:ske-soeknad-endring-stans-utleggstrekk',
+              'urn:altinn:resource:se_5793_1',
+              'urn:altinn:resource:brg-migratedcorrespondence-smnekt-1',
             ];
           }
-          return shortlist.some(
-            (sr) => option.id?.toLowerCase().includes(sr) || option.title?.nb?.toLowerCase().includes(sr),
-          );
+          return shortlist.some((sr) => option.id?.toLowerCase() === sr);
         }
 
         const serviceResourcesQueryLowerCase = serviceResourcesQuery.toLowerCase();
