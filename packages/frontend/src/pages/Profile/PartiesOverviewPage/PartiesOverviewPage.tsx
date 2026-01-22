@@ -6,6 +6,7 @@ import {
   type AvatarType,
   type AvatarVariant,
   Heading,
+  Icon,
   PageBase,
   PageNav,
   Section,
@@ -14,7 +15,7 @@ import {
   Toolbar,
 } from '@altinn/altinn-components';
 import type { AccountListItemType } from '@altinn/altinn-components/dist/types/lib/components/Account/AccountListItem';
-import { BellIcon, HashtagIcon, InboxIcon } from '@navikt/aksel-icons';
+import { BellIcon, HashtagIcon, HouseHeartFillIcon, HouseHeartIcon, InboxIcon } from '@navikt/aksel-icons';
 import { type ElementType, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps, useLocation } from 'react-router-dom';
@@ -32,6 +33,7 @@ import { PageRoutes } from '../../routes.ts';
 import { getBreadcrumbs } from '../Settings/Settings.tsx';
 import { SettingsType, useSettings } from '../Settings/useSettings.tsx';
 import { useAccountFilters } from '../useAccountFilters.tsx';
+import { ConfirmSetPreselectedActorModal } from './ConfirmSetPreselectedActorModal.tsx';
 import styles from './partiesOverviewPage.module.css';
 
 export const PartiesOverviewPage = () => {
@@ -39,7 +41,17 @@ export const PartiesOverviewPage = () => {
   const { search } = useLocation();
   const { getAccountAlertSettings, settings } = useSettings();
   const isDeletedUnitsFilterEnabled = useFeatureFlag<boolean>('inbox.enableDeletedUnitsFilter');
-  const { addFavoriteParty, deleteFavoriteParty, shouldShowDeletedEntities, updateShowDeletedEntities } = useProfile();
+  const {
+    addFavoriteParty,
+    deleteFavoriteParty,
+    setPreSelectedParty,
+    user,
+    shouldShowDeletedEntities,
+    updateShowDeletedEntities,
+  } = useProfile();
+  const [openConfirmSetPreselectedActorModal, setOpenConfirmSetPreselectedActorModal] = useState<
+    boolean | PartyItemProp
+  >(false);
   const { parties, selectedParties, allOrganizationsSelected, isLoading, flattenedParties } = useParties();
   const [searchValue, setSearchValue] = useState<string>('');
   const [expandedItem, setExpandedItem] = useState<string>('');
@@ -241,6 +253,7 @@ export const PartiesOverviewPage = () => {
   const mapAccountToPartyListItem = (account: PartyItemProp): AccountListItemProps => {
     const { label: _, variant: __, ...party } = account;
     const itemId = account.id + account.groupId;
+    const isPreSelectedParty = user?.profileSettingPreference?.preselectedPartyUuid === party.uuid;
     const accountType = party.type === 'subunit' ? 'company' : party.type;
     return {
       ...party,
@@ -262,6 +275,19 @@ export const PartiesOverviewPage = () => {
           isCurrentEndUser={party.isCurrentEndUser ?? false}
           id={party.id}
         />
+      ),
+      badge: !party.isCurrentEndUser && (
+        <button
+          type="button"
+          aria-label="Set preferred party"
+          className={styles.preSelectedBadgeButton}
+          onClick={() => setOpenConfirmSetPreselectedActorModal(party)}
+        >
+          <Icon
+            className={styles.preSelectedBadgeIcon}
+            svgElement={isPreSelectedParty ? HouseHeartFillIcon : HouseHeartIcon}
+          />
+        </button>
       ),
       contextMenu: {
         id: party.groupId + party.id + '-menu',
@@ -342,6 +368,11 @@ export const PartiesOverviewPage = () => {
           items={isSearching ? displayHits : displayAccountListItems}
         />
       </Section>
+      <ConfirmSetPreselectedActorModal
+        showActor={openConfirmSetPreselectedActorModal}
+        onClose={() => setOpenConfirmSetPreselectedActorModal(false)}
+        onConfirm={(partyUuid) => setPreSelectedParty(partyUuid)}
+      />
     </PageBase>
   );
 };

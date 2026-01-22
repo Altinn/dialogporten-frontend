@@ -17,9 +17,6 @@ query profile {
       phoneNumber
       externalIdentity
       partyId
-      profileSettingPreference {
-        shouldShowDeletedEntities
-      }
 
       party {
         partyId
@@ -52,6 +49,11 @@ query profile {
           addressCity
           dateOfDeath
         }
+      }
+      profileSettingPreference {
+        shouldShowDeletedEntities
+        preselectedPartyUuid
+        doNotPromptForParty
       }
     }
   }
