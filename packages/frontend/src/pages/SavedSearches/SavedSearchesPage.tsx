@@ -26,6 +26,9 @@ export const SavedSearchesPage = () => {
     parties,
     selectedParties,
     allOrganizationsSelected,
+    options: {
+      showGroups: true,
+    },
   });
 
   if (isSelfIdentifiedUser) {
