@@ -19,7 +19,6 @@ interface UseServiceResourceProps {
 
 export const useServiceResource = (props: UseServiceResourceProps = {}): UseServiceResourceOutput => {
   const { resourceType, ids } = props;
-
   const { isSelfIdentifiedUser, selectedParties } = useParties();
   const isServiceFilterEnabled = useFeatureFlag<boolean>('filters.enableServiceFilter');
 
