@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.119.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.118.1...v1.119.0) (2026-01-23)
+
+
+### Features
+
+* support fetching dialogs for selfidentified users ([#3647](https://github.com/Altinn/dialogporten-frontend/issues/3647)) ([3ae9896](https://github.com/Altinn/dialogporten-frontend/commit/3ae989622c2a8ae0b6757f068f545e437765f280))
+
+
+### Bug Fixes
+
+* **accountSelector:** groups not showing in saved searches page ([#3649](https://github.com/Altinn/dialogporten-frontend/issues/3649)) ([ed2bccd](https://github.com/Altinn/dialogporten-frontend/commit/ed2bccd58d282ea903565adcad97c84b91c343c3))
+
 ## [1.118.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.118.0...v1.118.1) (2026-01-22)
 
 
