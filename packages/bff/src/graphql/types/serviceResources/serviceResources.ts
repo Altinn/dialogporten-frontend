@@ -1,12 +1,13 @@
 import { logger } from '@altinn/dialogporten-node-logger';
 import { booleanArg, extendType, list, objectType, stringArg } from 'nexus';
-import config from '../../config.js';
+import config from '../../../config.js';
 import type { LocalizedText, Resource } from './resourceRegistry.ts';
+import { getEnvironmentConfig } from './serviceResourcesConfig.js';
 
 interface TransformedServiceResource {
   id: string;
   title: LocalizedText;
-  orgCode: string;
+  org: string;
   resourceType: string;
   selfIdentifiedUserEnabled: boolean;
 }
@@ -36,15 +37,133 @@ async function fetchServiceResources(): Promise<Resource[]> {
   }
 }
 
-async function storeServiceResourcesInRedis(): Promise<TransformedServiceResource[]> {
+export interface ResourceFilters {
+  /** Filter by resource types - only include these types */
+  includeResourceTypes?: string[];
+  /** Filter by resource types - exclude these types */
+  excludeResourceTypes?: string[];
+  /** Filter by organization codes - only include these organizations */
+  includeOrgCodes?: string[];
+  /** Filter by organization codes - exclude these organizations */
+  excludeOrgCodes?: string[];
+  /** Filter by resource IDs - exclude these specific resource IDs */
+  excludeIds?: string[];
+  /** Only include resources that are enabled for self-identified users */
+  onlySelfIdentifiedUserEnabled?: boolean;
+  /** Only include resources that are visible */
+  onlyVisible?: boolean;
+  /** Only include resources that are delegable */
+  onlyDelegable?: boolean;
+  /** Filter by resource status - only include these statuses */
+  includeResourceStatuses?: string[];
+  /** Filter by resource status - exclude these statuses */
+  excludeResourceStatuses?: string[];
+  /** Custom filter function for advanced filtering */
+  customFilter?: (resource: Resource) => boolean;
+}
+
+export async function storeServiceResourcesInRedis(filters?: ResourceFilters): Promise<TransformedServiceResource[]> {
   try {
-    const { default: redisClient } = await import('../../redisClient.ts');
+    const { default: redisClient } = await import('../../../redisClient.ts');
     const serviceResources = await fetchServiceResources();
 
-    const transformedResources = serviceResources.map((resource) => ({
+    // Apply filters to service resources before transformation
+    let filteredResources = serviceResources;
+
+    if (filters) {
+      filteredResources = serviceResources.filter((resource) => {
+        if (filters.includeResourceTypes && filters.includeResourceTypes.length > 0) {
+          if (
+            !filters.includeResourceTypes.some((type) => type.toLowerCase() === resource.resourceType.toLowerCase())
+          ) {
+            return false;
+          }
+        }
+
+        // Filter by excluded resource types
+        if (filters.excludeResourceTypes && filters.excludeResourceTypes.length > 0) {
+          if (filters.excludeResourceTypes.some((type) => type.toLowerCase() === resource.resourceType.toLowerCase())) {
+            return false;
+          }
+        }
+
+        // Filter by included organization codes
+        if (filters.includeOrgCodes && filters.includeOrgCodes.length > 0) {
+          const orgCode = resource.hasCompetentAuthority?.orgcode || resource.hasCompetentAuthority?.organization || '';
+          if (!filters.includeOrgCodes.some((code) => code.toLowerCase() === orgCode.toLowerCase())) {
+            return false;
+          }
+        }
+
+        // Filter by excluded organization codes
+        if (filters.excludeOrgCodes && filters.excludeOrgCodes.length > 0) {
+          const orgCode = resource.hasCompetentAuthority?.orgcode || resource.hasCompetentAuthority?.organization || '';
+          if (filters.excludeOrgCodes.some((code) => code.toLowerCase() === orgCode.toLowerCase())) {
+            return false;
+          }
+        }
+
+        // Filter by self-identified user enabled
+        if (filters.onlySelfIdentifiedUserEnabled === true) {
+          if (!resource.selfIdentifiedUserEnabled) {
+            return false;
+          }
+        }
+
+        // Filter by visible resources only
+        if (filters.onlyVisible === true) {
+          if (!resource.visible) {
+            return false;
+          }
+        }
+
+        // Filter by delegable resources only
+        if (filters.onlyDelegable === true) {
+          if (!resource.delegable) {
+            return false;
+          }
+        }
+
+        // Filter by included resource statuses
+        if (filters.includeResourceStatuses && filters.includeResourceStatuses.length > 0) {
+          const status = resource.status || '';
+          if (!filters.includeResourceStatuses.some((s) => s.toLowerCase() === status.toLowerCase())) {
+            return false;
+          }
+        }
+
+        // Filter by excluded resource statuses
+        if (filters.excludeResourceStatuses && filters.excludeResourceStatuses.length > 0) {
+          const status = resource.status || '';
+          if (filters.excludeResourceStatuses.some((s) => s.toLowerCase() === status.toLowerCase())) {
+            return false;
+          }
+        }
+
+        // Filter by excluded resource IDs
+        if (filters.excludeIds && filters.excludeIds.length > 0) {
+          if (filters.excludeIds.includes(resource.identifier)) {
+            return false;
+          }
+        }
+
+        // Apply custom filter function
+        if (filters.customFilter && !filters.customFilter(resource)) {
+          return false;
+        }
+
+        return true;
+      });
+    }
+
+    const transformedResources = filteredResources.map((resource) => ({
       id: resource.identifier,
       title: resource.title,
-      orgCode: resource.hasCompetentAuthority?.orgcode || '',
+      org: (
+        resource.hasCompetentAuthority?.orgcode ||
+        resource.hasCompetentAuthority?.organization ||
+        ''
+      ).toLowerCase(),
       resourceType: resource.resourceType,
       selfIdentifiedUserEnabled: resource.selfIdentifiedUserEnabled || false,
     }));
@@ -66,26 +185,30 @@ export async function getServiceResourcesFromRedis(filters?: {
   onlySelfIdentifiedUserEnabled?: boolean;
 }): Promise<TransformedServiceResource[]> {
   try {
-    const { default: redisClient } = await import('../../redisClient.ts');
+    const { default: redisClient } = await import('../../../redisClient.ts');
     const data = await redisClient.get(serviceResourcesRedisKey);
     let resources: TransformedServiceResource[];
 
     if (data) {
       resources = JSON.parse(data);
     } else {
-      resources = await storeServiceResourcesInRedis();
+      resources = await storeServiceResourcesInRedis(getEnvironmentConfig(config.platformBaseURL));
     }
 
     // Apply filters if provided
     if (filters) {
       if (filters.resourceType && filters.resourceType.length > 0) {
-        resources = resources.filter((resource) => filters.resourceType!.includes(resource.resourceType));
+        resources = resources.filter((resource) =>
+          filters.resourceType!.some((type) => type.toLowerCase() === resource.resourceType.toLowerCase()),
+        );
       }
       if (filters.ids && filters.ids.length > 0) {
         resources = resources.filter((resource) => filters.ids!.includes(resource.id));
       }
       if (filters.org && filters.org.length > 0) {
-        resources = resources.filter((resource) => filters.org!.includes(resource.orgCode));
+        resources = resources.filter((resource) =>
+          filters.org!.some((org) => org.toLowerCase() === resource.org.toLowerCase()),
+        );
       }
       if (filters.onlySelfIdentifiedUserEnabled === true) {
         resources = resources.filter((resource) => resource.selfIdentifiedUserEnabled);
@@ -102,11 +225,11 @@ export async function getServiceResourcesFromRedis(filters?: {
 // Background refresh function - attempts to refresh data but keeps old version on failure
 async function refreshServiceResourcesInBackground(): Promise<void> {
   try {
-    const { default: redisClient } = await import('../../redisClient.ts');
+    const { default: redisClient } = await import('../../../redisClient.ts');
     const existingData = await redisClient.get(serviceResourcesRedisKey);
 
     try {
-      await storeServiceResourcesInRedis();
+      await storeServiceResourcesInRedis(getEnvironmentConfig(config.platformBaseURL));
       logger.info('Service resources refreshed successfully in background');
     } catch (refreshError) {
       logger.warn(refreshError, 'Failed to refresh service resources, keeping existing data');
@@ -184,10 +307,10 @@ export const ServiceResource = objectType({
         return resource.title;
       },
     });
-    t.string('orgCode', {
+    t.string('org', {
       description: 'Organization (=service owner) code for the service resource',
       resolve: (resource) => {
-        return resource.orgCode;
+        return resource.org;
       },
     });
     t.string('resourceType', {
