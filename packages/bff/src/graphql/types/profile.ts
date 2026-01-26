@@ -276,7 +276,9 @@ export const ProfileSettingPreference = objectType({
   definition(t) {
     t.nullable.string('languageType', { resolve: (obj) => obj.languageType }); // added based on spec, marked 'writeOnly' in spec but ignoring here
     t.nullable.string('language', { resolve: (obj) => obj.language });
-    t.nullable.string('preselectedPartyUuid', { resolve: (obj) => obj.preselectedPartyUuid });
+    t.nullable.string('preselectedPartyUuid', {
+      resolve: (obj) => obj.preselectedPartyUuid ?? obj.preSelectedPartyUuid,
+    });
     t.boolean('doNotPromptForParty', { resolve: (obj) => obj.doNotPromptForParty });
     t.nullable.boolean('shouldShowDeletedEntities', { resolve: (obj) => obj.shouldShowDeletedEntities });
   },
