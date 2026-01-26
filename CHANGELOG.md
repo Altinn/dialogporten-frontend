@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.119.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.119.1...v1.119.2) (2026-01-26)
+
+
+### Bug Fixes
+
+* Added functionality for Preselected actor ([4dc55e8](https://github.com/Altinn/dialogporten-frontend/commit/4dc55e81896bd7b3373fe98f6b0c5fa1200befc9))
+* Make order by date in Sent map ([#3654](https://github.com/Altinn/dialogporten-frontend/issues/3654)) ([d8bd34b](https://github.com/Altinn/dialogporten-frontend/commit/d8bd34b715264ead340608bcf1363c67ff2a3a00))
+
 ## [1.119.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.119.0...v1.119.1) (2026-01-26)
 
 
