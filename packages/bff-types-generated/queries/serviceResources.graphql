@@ -11,12 +11,11 @@ query getServiceResources(
     onlySelfIdentifiedUserEnabled: $onlySelfIdentifiedUserEnabled
   ) {
     id
-    resourceType
     title {
       nb
       nn
       en
     }
-    orgCode
+    org
   }
 }

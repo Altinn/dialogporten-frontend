@@ -57,24 +57,27 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
           let shortlist = [];
           if (envByHost === 'at23' || envByHost === 'local') {
             shortlist = [
-              'urn:altinn:resource:se_2933_2015',
-              'urn:altinn:resource:se_3019_202200',
-              'urn:altinn:resource:se_1051_130818',
-              'se_4417_1',
+              'urn:altinn:resource:app_hdir_a2-4081-3',
+              'urn:altinn:resource:app_sfd_a2-2975-1',
+              'urn:altinn:resource:app_skd_a2-1051-181125',
+              'urn:altinn:resource:nav-migratedcorrespondence-4503-',
+              'urn:altinn:resource:app_skd_a2-1049-111124',
             ];
           } else if (envByHost === 'tt02') {
             shortlist = [
-              'urn:altinn:resource:nabovarsel',
-              'urn:altinn:resource:ske-soeknad-endring-stans-utleggstrekk',
-              'urn:altinn:resource:se_5793_1',
-              'urn:altinn:resource:brg-migratedcorrespondence-smnekt-1',
+              'urn:altinn:resource:app_skd_a2-1051-130203',
+              'urn:altinn:resource:app_brg_bvr-utv',
+              'urn:altinn:resource:app_dibk_a2-4655-2',
+              'urn:altinn:resource:nav_sykepenger_inntektsmelding',
             ];
           } else {
             shortlist = [
-              'urn:altinn:resource:se_4655_4',
-              'urn:altinn:resource:ske-soeknad-endring-stans-utleggstrekk',
-              'urn:altinn:resource:se_5793_1',
-              'urn:altinn:resource:brg-migratedcorrespondence-smnekt-1',
+              'urn:altinn:resource:app_brg_a2-2705-201511',
+              'urn:altinn:resource:app_skd_a2-3736-140122',
+              'urn:altinn:resource:app_skd_a2-1051-130203',
+              'urn:altinn:resource:app_skd_a2-3707-190403',
+              'urn:altinn:resource:app_dibk_a2-4655-4',
+              'urn:altinn:resource:nav_sykepenger_inntektsmelding',
             ];
           }
           return shortlist.some((sr) => option.id?.toLowerCase() === sr);
