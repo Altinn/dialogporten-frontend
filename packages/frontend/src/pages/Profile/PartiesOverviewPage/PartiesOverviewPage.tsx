@@ -5,6 +5,7 @@ import {
   type AccountOrganizationItemProps,
   type AvatarType,
   type AvatarVariant,
+  Badge,
   Heading,
   Icon,
   PageBase,
@@ -49,9 +50,9 @@ export const PartiesOverviewPage = () => {
     shouldShowDeletedEntities,
     updateShowDeletedEntities,
   } = useProfile();
-  const [openConfirmSetPreselectedActorModal, setOpenConfirmSetPreselectedActorModal] = useState<
-    boolean | PartyItemProp
-  >(false);
+  const [openConfirmSetPreselectedActorModal, setOpenConfirmSetPreselectedActorModal] = useState<PartyItemProp | null>(
+    null,
+  );
   const { parties, selectedParties, allOrganizationsSelected, isLoading, flattenedParties } = useParties();
   const [searchValue, setSearchValue] = useState<string>('');
   const [expandedItem, setExpandedItem] = useState<string>('');
@@ -277,17 +278,20 @@ export const PartiesOverviewPage = () => {
         />
       ),
       badge: !party.isCurrentEndUser && (
-        <button
-          type="button"
-          aria-label="Set preferred party"
-          className={styles.preSelectedBadgeButton}
-          onClick={() => setOpenConfirmSetPreselectedActorModal(party)}
-        >
-          <Icon
-            className={styles.preSelectedBadgeIcon}
-            svgElement={isPreSelectedParty ? HouseHeartFillIcon : HouseHeartIcon}
-          />
-        </button>
+        <>
+          {party.isDeleted && <Badge color="danger" label={t('badge.deleted')} variant="base" />}
+          <button
+            type="button"
+            aria-label="Set preferred party"
+            className={styles.preSelectedBadgeButton}
+            onClick={() => setOpenConfirmSetPreselectedActorModal(party)}
+          >
+            <Icon
+              className={styles.preSelectedBadgeIcon}
+              svgElement={isPreSelectedParty ? HouseHeartFillIcon : HouseHeartIcon}
+            />
+          </button>
+        </>
       ),
       contextMenu: {
         id: party.groupId + party.id + '-menu',
@@ -370,8 +374,10 @@ export const PartiesOverviewPage = () => {
       </Section>
       <ConfirmSetPreselectedActorModal
         showActor={openConfirmSetPreselectedActorModal}
-        onClose={() => setOpenConfirmSetPreselectedActorModal(false)}
-        onConfirm={(partyUuid) => setPreSelectedParty(partyUuid)}
+        onClose={() => setOpenConfirmSetPreselectedActorModal(null)}
+        onConfirm={async (partyUuid) => {
+          await setPreSelectedParty(partyUuid);
+        }}
       />
     </PageBase>
   );

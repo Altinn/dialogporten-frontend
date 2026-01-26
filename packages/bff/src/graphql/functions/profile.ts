@@ -212,6 +212,10 @@ export const getUserFromCore = async (context: Context) => {
 };
 
 export const setPreSelectedParty = async (context: Context, partyUuid: string) => {
+  if (!partyUuid) {
+    logger.error('partyUuid is required');
+    throw new Error('partyUuid is required');
+  }
   const token = await exchangeToken(context);
   if (!token) {
     logger.error('No token found in session');

@@ -263,6 +263,9 @@ export const SetPreSelectedParty = extendType({
       type: Response,
       args: { partyUuid: stringArg() },
       resolve: async (_, { partyUuid }, ctx) => {
+        if (!partyUuid) {
+          return { success: false, message: 'partyUuid is required' };
+        }
         try {
           await setPreSelectedParty(ctx, partyUuid);
           return { success: true, message: 'PreSelectedParty set successfully' };
