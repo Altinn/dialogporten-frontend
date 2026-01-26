@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.119.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.119.0...v1.119.1) (2026-01-26)
+
+
+### Bug Fixes
+
+* **service-filter:** change query params to upstream for service resources ([#3645](https://github.com/Altinn/dialogporten-frontend/issues/3645)) ([d3a73fc](https://github.com/Altinn/dialogporten-frontend/commit/d3a73fcfad6e23054d1be0cedf527a109b3e5782))
+
 ## [1.119.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.118.1...v1.119.0) (2026-01-23)
 
 
