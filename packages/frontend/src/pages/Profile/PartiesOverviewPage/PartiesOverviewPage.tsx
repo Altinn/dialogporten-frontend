@@ -27,12 +27,13 @@ import {
   formatNorwegianId,
   useAccounts,
 } from '../../../components/PageLayout/Accounts/useAccounts';
+import { useFilteredAccounts } from '../../../components/PageLayout/Accounts/useFilteredAccounts';
 import { useFeatureFlag } from '../../../featureFlags/useFeatureFlag';
 import { usePageTitle } from '../../../hooks/usePageTitle';
 import { useProfileOnboarding } from '../../../onboardingTour/useProfileOnboarding';
 import { PageRoutes } from '../../routes.ts';
 import { getBreadcrumbs } from '../Settings/Settings.tsx';
-import { SettingsType, useSettings } from '../Settings/useSettings.tsx';
+import { useSettings } from '../Settings/useSettings.tsx';
 import { useAccountFilters } from '../useAccountFilters.tsx';
 import { ConfirmSetPreselectedActorModal } from './ConfirmSetPreselectedActorModal.tsx';
 import styles from './partiesOverviewPage.module.css';
@@ -75,6 +76,8 @@ export const PartiesOverviewPage = () => {
       showFavorites: !isSearching,
     },
   });
+
+  const { filteredAccounts } = useFilteredAccounts({ accounts });
 
   usePageTitle({ baseTitle: t('component.parties_settings') });
   useProfileOnboarding({ isLoading, pageType: 'parties' });
@@ -309,28 +312,11 @@ export const PartiesOverviewPage = () => {
   };
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  const accountListItems = useMemo(() => accounts.map(mapAccountToPartyListItem), [accounts]);
+  const accountListItems = useMemo(() => filteredAccounts.map(mapAccountToPartyListItem), [filteredAccounts]);
 
-  const displayAccountListItems = useMemo(() => {
-    if (includeDeletedParties) {
-      return accountListItems;
-    }
-    return accountListItems.filter((item) => {
-      if (item.groupId === SettingsType.favorites || item.groupId === 'primary') {
-        return true;
-      }
-      return !item.isDeleted;
-    });
-  }, [accountListItems, includeDeletedParties]);
-
-  // Filter deleted from search results when switched off
   const displayHits = useMemo(() => {
-    const baseHits = displayAccountListItems.map((a) => ({ ...a, groupId: 'search' }));
-    if (includeDeletedParties) {
-      return baseHits;
-    }
-    return baseHits.filter((item) => !item.isDeleted);
-  }, [displayAccountListItems, includeDeletedParties]);
+    return accountListItems.map((a) => ({ ...a, groupId: 'search' }));
+  }, [accountListItems]);
 
   const searchGroup = {
     search: { title: t('search.hits', { count: displayHits.length }) },
@@ -369,7 +355,7 @@ export const PartiesOverviewPage = () => {
         <AccountList
           isVirtualized
           groups={isSearching ? searchGroup : accountGroups}
-          items={isSearching ? displayHits : displayAccountListItems}
+          items={isSearching ? displayHits : accountListItems}
         />
       </Section>
       <ConfirmSetPreselectedActorModal
