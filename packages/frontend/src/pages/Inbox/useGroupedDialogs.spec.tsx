@@ -10,6 +10,7 @@ import useGroupedDialogs from './useGroupedDialogs.tsx';
 
 vi.mock('react-i18next', () => ({
   useTranslation: vi.fn(),
+  Trans: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 vi.mock('../../i18n/useDateFnsLocale.tsx', () => ({
@@ -389,5 +390,85 @@ describe('useGroupedDialogs', () => {
 
     expect(uniqueOrderIndexes).toHaveLength(2);
     expect(uniqueOrderIndexes.toString()).toBe('2025,2024');
+  });
+
+  it('should use date-based grouping for sent view', () => {
+    //put to sent and mock group key for dates ['2025', '2024', 'January', 'February', ...]
+    const sentMockData = mockData.map((item) => ({ ...item, viewType: 'sent' as InboxViewType }));
+    const formatMock = vi.fn((date, formatString) => {
+      if (formatString === 'yyyy') {
+        return new Date(date).getFullYear().toString();
+      }
+      if (formatString === 'LLLL') {
+        const monthNames = [
+          'January',
+          'February',
+          'March',
+          'April',
+          'May',
+          'June',
+          'July',
+          'August',
+          'September',
+          'October',
+          'November',
+          'December',
+        ];
+        return monthNames[new Date(date).getMonth()];
+      }
+      return date.toString();
+    });
+    (useFormat as Mock).mockReturnValue(formatMock);
+
+    const { result } = renderHook(
+      () =>
+        useGroupedDialogs({
+          items: sentMockData,
+          hasNextPage: false,
+          displaySearchResults: false,
+          viewType: 'sent',
+          isLoading: false,
+          onSeenByLogModalChange: () => {},
+        }),
+      {
+        wrapper: createCustomWrapper(),
+      },
+    );
+
+    const groups = result.current.groups;
+    const groupKeys = Object.keys(groups);
+
+    expect(groupKeys).toContain('2025');
+    expect(groupKeys).toContain('2024');
+    expect(groupKeys).not.toContain('sent');
+
+    const orderIndexes = Object.values(groups).map((item) => item.orderIndex);
+    expect(orderIndexes).toContain(2025);
+    expect(orderIndexes).toContain(2024);
+  });
+
+  it('should use status-based grouping for archive view', () => {
+    const archiveMockData = mockData.map((item) => ({ ...item, viewType: 'archive' as InboxViewType }));
+    const { result } = renderHook(
+      () =>
+        useGroupedDialogs({
+          items: archiveMockData,
+          hasNextPage: false,
+          displaySearchResults: false,
+          viewType: 'archive',
+          isLoading: false,
+          onSeenByLogModalChange: () => {},
+        }),
+      {
+        wrapper: createCustomWrapper(),
+      },
+    );
+
+    const groups = result.current.groups;
+    const groupKeys = Object.keys(groups);
+
+    expect(groupKeys).toContain('archive');
+    expect(groupKeys).not.toContain('2025');
+    expect(groupKeys).not.toContain('2024');
   });
 });

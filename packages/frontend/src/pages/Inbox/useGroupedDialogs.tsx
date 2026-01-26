@@ -120,14 +120,14 @@ const useGroupedDialogs = ({
   const format = useFormat();
   const systemLabelActions = useDialogActions();
   const { allOrganizationsSelected } = useParties();
-  const collapseGroups = displaySearchResults || viewType !== 'inbox';
+  const collapseGroups = displaySearchResults || (viewType !== 'inbox' && viewType !== 'sent');
   const getCollapsedGroupTitle = (viewType: InboxViewType, count: number, hasNextPage: boolean) =>
     (hasNextPage ? t('word.moreThan') : '') + t(`inbox.heading.title.${viewType}`, { count });
 
   const clockPrefix = t('word.clock_prefix');
   const formatString = `do MMMM yyyy ${clockPrefix ? `'${clockPrefix}' ` : ''}HH.mm`;
   const allWithinSameYear = items.every((d) => new Date(d.contentUpdatedAt).getFullYear() === new Date().getFullYear());
-  const isInbox = viewType === 'inbox';
+  const useDateGrouping = viewType === 'inbox' || viewType === 'sent';
 
   const formatDialogItem = (item: InboxItemInput, groupId: string): DialogListItemProps => {
     const contextMenu: ContextMenuProps = {
@@ -196,7 +196,7 @@ const useGroupedDialogs = ({
       };
     }
 
-    if (!displaySearchResults && !isInbox && !isLoading) {
+    if (!displaySearchResults && !useDateGrouping && !isLoading) {
       const groups: Record<string, DialogListGroupPropsSort> = {};
       const allDialogs: DialogListItemProps[] = [];
 
