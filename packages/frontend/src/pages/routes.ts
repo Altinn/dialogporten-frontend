@@ -8,8 +8,6 @@ export enum PageRoutes {
   bin = '/bin',
   profile = '/profile',
   partiesOverview = '/profile/parties',
-  authorize = '/profile/authorize',
-  access = '/profile/access',
   notifications = '/profile/notifications',
   settings = '/profile/settings',
   activities = '/profile/activities',
