@@ -13,6 +13,7 @@ import { type ChangeEvent, type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useParties } from '../../../api/hooks/useParties.ts';
+import { useFeatureFlag } from '../../../featureFlags/useFeatureFlag';
 import { useProfile } from '../../../pages/Profile';
 import { SettingsType } from '../../../pages/Profile/Settings/useSettings.tsx';
 import type { PageRoutes } from '../../../pages/routes.ts';
@@ -22,6 +23,7 @@ interface UseAccountOptions {
   showFavorites?: boolean;
   showGroups?: boolean;
   groups?: Record<string, { title?: string | ReactNode }>;
+  excludeDeleted?: boolean;
 }
 
 export interface PartyItemProp extends AccountMenuItemProps {
@@ -125,7 +127,8 @@ export const useAccounts = ({
   const navigate = useNavigate();
   const location = useLocation();
   const { setSelectedPartyIds } = useParties();
-  const { favoritesGroup } = useProfile();
+  const { favoritesGroup, shouldShowDeletedEntities } = useProfile();
+  const isDeletedUnitsFilterEnabled = useFeatureFlag<boolean>('inbox.enableDeletedUnitsFilter');
   const [searchString, setSearchString] = useState<string>('');
   const accountSearchThreshold = 2;
   const showSearch = parties.length > accountSearchThreshold;
@@ -411,8 +414,26 @@ export const useAccounts = ({
     }
   };
 
+  /** deleted units filtering - FF: "inbox.enableDeletedUnitsFilter"
+   * FF off -> always include deleted parties
+   * FF on, switch off -> exclude deleted parties
+   * FF on, switch on -> include deleted parties
+   */
+  const shouldExcludeDeleted = options.excludeDeleted ?? true;
+  const includeDeletedParties = isDeletedUnitsFilterEnabled ? (shouldShowDeletedEntities ?? false) : true;
+
+  let filteredAccounts = accounts;
+  if (shouldExcludeDeleted && !includeDeletedParties) {
+    filteredAccounts = accounts.filter((item) => {
+      if (item.groupId === SettingsType.favorites || item.groupId === 'primary') {
+        return true;
+      }
+      return !item.isDeleted;
+    });
+  }
+
   return {
-    accounts,
+    accounts: filteredAccounts,
     accountGroups,
     selectedAccount,
     accountSearch,
