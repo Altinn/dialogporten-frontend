@@ -27,7 +27,6 @@ import {
   formatNorwegianId,
   useAccounts,
 } from '../../../components/PageLayout/Accounts/useAccounts';
-import { useFilteredAccounts } from '../../../components/PageLayout/Accounts/useFilteredAccounts';
 import { useFeatureFlag } from '../../../featureFlags/useFeatureFlag';
 import { usePageTitle } from '../../../hooks/usePageTitle';
 import { useProfileOnboarding } from '../../../onboardingTour/useProfileOnboarding';
@@ -76,8 +75,6 @@ export const PartiesOverviewPage = () => {
       showFavorites: !isSearching,
     },
   });
-
-  const { filteredAccounts } = useFilteredAccounts({ accounts });
 
   usePageTitle({ baseTitle: t('component.parties_settings') });
   useProfileOnboarding({ isLoading, pageType: 'parties' });
@@ -312,7 +309,7 @@ export const PartiesOverviewPage = () => {
   };
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  const accountListItems = useMemo(() => filteredAccounts.map(mapAccountToPartyListItem), [filteredAccounts]);
+  const accountListItems = useMemo(() => accounts.map(mapAccountToPartyListItem), [accounts]);
 
   const displayHits = useMemo(() => {
     return accountListItems.map((a) => ({ ...a, groupId: 'search' }));

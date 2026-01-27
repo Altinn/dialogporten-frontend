@@ -19,7 +19,6 @@ import { createFiltersURLQuery } from '../../auth';
 import { EmptyState } from '../../components/EmptyState/EmptyState.tsx';
 import { Notice } from '../../components/Notice';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
-import { useFilteredAccounts } from '../../components/PageLayout/Accounts/useFilteredAccounts.tsx';
 import { useSearchString } from '../../components/PageLayout/Search/';
 import { SaveSearchButton } from '../../components/SavedSearchButton/SaveSearchButton.tsx';
 import { isSavedSearchDisabled } from '../../components/SavedSearchButton/savedSearchEnabled.ts';
@@ -123,8 +122,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
     },
   });
 
-  const { filteredAccounts } = useFilteredAccounts({ accounts });
-
   const { filters, getFilterLabel } = useFilters({ viewType });
 
   usePageTitle({
@@ -199,7 +196,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
           <Toolbar
             data-testid="inbox-toolbar"
             accountMenu={{
-              items: filteredAccounts,
+              items: accounts,
               search: accountSearch,
               groups: accountGroups,
               currentAccount: selectedAccount,

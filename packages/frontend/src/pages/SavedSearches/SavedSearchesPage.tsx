@@ -2,7 +2,6 @@ import { BookmarksSettingsList, PageBase, Toolbar } from '@altinn/altinn-compone
 import { t } from 'i18next';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
-import { useFilteredAccounts } from '../../components/PageLayout/Accounts/useFilteredAccounts.tsx';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
 import { PageRoutes } from '../routes.ts';
 import styles from './savedSearchesPage.module.css';
@@ -23,15 +22,13 @@ export const SavedSearchesPage = () => {
     },
   });
 
-  const { filteredAccounts } = useFilteredAccounts({ accounts });
-
   return (
     <PageBase margin="page">
       <div className={styles.gridContainer} style={{ marginTop: '-1rem' }}>
         {selectedAccount ? (
           <Toolbar
             accountMenu={{
-              items: filteredAccounts,
+              items: accounts,
               search: accountSearch,
               groups: accountGroups,
               currentAccount: selectedAccount,
