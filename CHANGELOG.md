@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.119.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.119.2...v1.119.3) (2026-01-27)
+
+
+### Bug Fixes
+
+* Filter deleted units from toolbar list if switch off, refactor ([#3657](https://github.com/Altinn/dialogporten-frontend/issues/3657)) ([1bec8b4](https://github.com/Altinn/dialogporten-frontend/commit/1bec8b4c1e1658c21712ead5782004faa23ca807))
+
 ## [1.119.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.119.1...v1.119.2) (2026-01-26)
 
 
