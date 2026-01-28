@@ -125,7 +125,7 @@
   "filter_bar.label.choose_status": "Vel status",
   "filter_bar.label.updated": "Oppdatert dato",
   "filter_bar.remove_filter": "Fjern filter",
-  "filter_bar.save_search": "Lagra søk",
+  "filter_bar.save_search": "Lagre søk",
   "filter_bar.saved_search": "Lagra søk",
   "filter_bar.service.recommendations": "Foreslåtte tenester",
   "filter_bar.service.search_hits": "{count, plural, =0 {Ingen treff} one {# treff} other {# treff}}",
