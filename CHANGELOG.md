@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.119.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.119.3...v1.119.4) (2026-01-28)
+
+
+### Bug Fixes
+
+* Fix nynorsk translations for saved search and add filter btn ([#3661](https://github.com/Altinn/dialogporten-frontend/issues/3661)) ([9298f14](https://github.com/Altinn/dialogporten-frontend/commit/9298f14038d14c67d2466577ef586d5e81f237b5))
+
 ## [1.119.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.119.2...v1.119.3) (2026-01-27)
 
 
