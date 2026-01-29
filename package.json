@@ -12,7 +12,7 @@
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "lint-staged": "^16.0.0",
-    "mprocs": "^0.8.0",
+    "mprocs": "^0.8.2",
     "turbo": "2.5.3"
   },
   "engines": {
