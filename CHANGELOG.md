@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.119.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.119.4...v1.119.5) (2026-01-30)
+
+
+### Bug Fixes
+
+* Various deleted parties fixes and tests ([#3671](https://github.com/Altinn/dialogporten-frontend/issues/3671)) ([811174a](https://github.com/Altinn/dialogporten-frontend/commit/811174a98da4459ba3ff984da087e9fff4097868))
+
 ## [1.119.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.119.3...v1.119.4) (2026-01-28)
 
 
