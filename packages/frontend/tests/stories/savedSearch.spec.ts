@@ -39,7 +39,7 @@ test.describe('Saved search', () => {
     const parentLi = page.locator('a[href*="org=ok"]').locator('xpath=ancestor::li[1]');
     await parentLi.getByRole('button').click();
 
-    await page.getByText('Slett').click();
+    await parentLi.getByText('Slett søk').click();
     await expect(page.getByText('Søket ditt ble slettet')).toBeVisible();
     await expect(page.getByRole('main')).toContainText('Du har ingen lagrede søk');
   });

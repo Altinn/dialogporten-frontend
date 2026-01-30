@@ -196,7 +196,7 @@ export const useAccounts = ({
           isCurrentEndUser: false,
           uuid: person.partyUuid,
           description: options.showDescription ? description : undefined,
-          badge: person.isDeleted ? { color: 'danger', label: t('badge.deleted'), variant: 'base' } : undefined,
+          badge: person.isDeleted ? { color: 'neutral', label: t('badge.deleted'), variant: 'subtle' } : undefined,
           groupId: 'persons',
         } as PartyItemProp;
       })
@@ -239,7 +239,7 @@ export const useAccounts = ({
         parentId: parent?.party,
         parentName: parent?.name,
         description: options.showDescription ? description : undefined,
-        badge: party.isDeleted ? { color: 'danger', label: t('badge.deleted'), variant: 'base' } : undefined,
+        badge: party.isDeleted ? { color: 'neutral', label: t('badge.deleted'), variant: 'subtle' } : undefined,
         groupId: parent?.party ?? party.party,
       } as PartyItemProp;
     });
