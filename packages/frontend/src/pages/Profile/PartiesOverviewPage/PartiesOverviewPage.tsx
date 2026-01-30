@@ -279,7 +279,7 @@ export const PartiesOverviewPage = () => {
       ),
       badge: !party.isCurrentEndUser && (
         <>
-          {party.isDeleted && <Badge color="danger" label={t('badge.deleted')} variant="base" />}
+          {party.isDeleted && <Badge color="neutral" label={t('badge.deleted')} variant="subtle" />}
           <button
             type="button"
             aria-label="Set preferred party"

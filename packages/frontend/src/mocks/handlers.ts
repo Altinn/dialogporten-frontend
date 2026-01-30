@@ -367,6 +367,82 @@ const mutateUpdateLanguageMock = graphql.mutation('UpdateLanguage', (req) => {
   });
 });
 
+const mutateUpdateProfileSettingPreferenceMock = graphql.mutation('UpdateProfileSettingPreference', (req) => {
+  const { shouldShowDeletedEntities } = req.variables;
+
+  if (inMemoryStore.profile?.user?.profileSettingPreference) {
+    inMemoryStore.profile.user.profileSettingPreference.shouldShowDeletedEntities = shouldShowDeletedEntities;
+  }
+
+  return HttpResponse.json({
+    data: {
+      updateProfileSettingPreference: {
+        success: true,
+        message: 'Profile setting updated successfully',
+      },
+    },
+  });
+});
+
+const mutateAddFavoritePartyMock = graphql.mutation('AddFavoriteParty', (req) => {
+  const { partyId } = req.variables;
+  if (!inMemoryStore.profile) {
+    return HttpResponse.json({
+      data: { addFavoriteParty: { success: false, message: 'Profile not found' } },
+    });
+  }
+
+  if (!inMemoryStore.profile.groups) {
+    inMemoryStore.profile.groups = [];
+  }
+
+  let favoritesGroup = inMemoryStore.profile.groups.find((group) => group?.isFavorite);
+  if (!favoritesGroup) {
+    favoritesGroup = {
+      isFavorite: true,
+      parties: [],
+    };
+    inMemoryStore.profile.groups.push(favoritesGroup);
+  }
+
+  if (!favoritesGroup.parties?.includes(partyId)) {
+    favoritesGroup.parties = [...(favoritesGroup.parties || []), partyId];
+  }
+
+  return HttpResponse.json({
+    data: {
+      addFavoriteParty: {
+        success: true,
+        message: 'Party added to favorites',
+      },
+    },
+  });
+});
+
+const mutateDeleteFavoritePartyMock = graphql.mutation('DeleteFavoriteParty', (req) => {
+  const { partyId } = req.variables;
+
+  if (!inMemoryStore.profile?.groups) {
+    return HttpResponse.json({
+      data: { deleteFavoriteParty: { success: false, message: 'No favorites found' } },
+    });
+  }
+
+  const favoritesGroup = inMemoryStore.profile.groups.find((group) => group?.isFavorite);
+  if (favoritesGroup?.parties) {
+    favoritesGroup.parties = favoritesGroup.parties.filter((id) => id !== partyId);
+  }
+
+  return HttpResponse.json({
+    data: {
+      deleteFavoriteParty: {
+        success: true,
+        message: 'Party removed from favorites',
+      },
+    },
+  });
+});
+
 const getServiceResourcesMock = graphql.query('getServiceResources', () => {
   return HttpResponse.json({
     data: {
@@ -394,6 +470,9 @@ export const handlers = [
   getAllDialogsforCountMock,
   streamMock,
   mutateUpdateLanguageMock,
+  mutateUpdateProfileSettingPreferenceMock,
+  mutateAddFavoritePartyMock,
+  mutateDeleteFavoritePartyMock,
   getServiceResourcesMock,
   mockAltinn2Messages,
   mockNotificationsettingsForCurrentUser,
