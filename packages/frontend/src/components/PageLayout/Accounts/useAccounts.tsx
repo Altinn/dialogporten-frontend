@@ -290,6 +290,14 @@ export const useAccounts = ({
     };
   }
 
+  /** deleted units filtering - FF: "inbox.enableDeletedUnitsFilter"
+   * FF off -> always include deleted parties
+   * FF on, switch off -> exclude deleted parties
+   * FF on, switch on -> include deleted parties
+   */
+  const shouldExcludeDeleted = options.excludeDeleted ?? true;
+  const includeDeletedParties = isDeletedUnitsFilterEnabled ? (shouldShowDeletedEntities ?? false) : true;
+
   const accountGroups = {
     ...options.groups,
     ...(organizationAccounts.length && options.groups?.companies
@@ -319,6 +327,12 @@ export const useAccounts = ({
       }
     : undefined;
 
+  // Filter organizations for "Alle virksomheter" avatar group
+  const organizationsForAvatarGroup =
+    shouldExcludeDeleted && !includeDeletedParties
+      ? organizationAccounts.filter((org) => !org.isDeleted)
+      : organizationAccounts;
+
   const allOrganizationsAccount: PartyItemProp = {
     uuid: 'N/A',
     id: 'ALL',
@@ -327,8 +341,8 @@ export const useAccounts = ({
     groupId: 'groups',
     icon: {
       type: 'group' as AccountMenuItemProps['type'],
-      maxItemsCountReachedLabel: organizationAccounts.length > 99 ? '..' : '',
-      items: organizationAccounts.map((party) => ({
+      maxItemsCountReachedLabel: organizationsForAvatarGroup.length > 99 ? '..' : '',
+      items: organizationsForAvatarGroup.map((party) => ({
         id: party.id,
         name: party.name,
         type: 'company' as AccountMenuItemProps['type'],
@@ -413,14 +427,6 @@ export const useAccounts = ({
       navigate(route + `?${search.toString()}`);
     }
   };
-
-  /** deleted units filtering - FF: "inbox.enableDeletedUnitsFilter"
-   * FF off -> always include deleted parties
-   * FF on, switch off -> exclude deleted parties
-   * FF on, switch on -> include deleted parties
-   */
-  const shouldExcludeDeleted = options.excludeDeleted ?? true;
-  const includeDeletedParties = isDeletedUnitsFilterEnabled ? (shouldShowDeletedEntities ?? false) : true;
 
   let filteredAccounts = accounts;
   if (shouldExcludeDeleted && !includeDeletedParties) {

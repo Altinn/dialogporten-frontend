@@ -12,6 +12,10 @@ export const profile: Profile = {
     "phoneNumber": "+4748995855",
     "externalIdentity": "",
     "partyId": 1,
+    "profileSettingPreference": {
+      "shouldShowDeletedEntities": true,
+      "preselectedPartyUuid": null
+    },
     "party": {
       "partyId": 1,
       "partyUuid": "urn:altinn:person:uuid:test-testesen",
