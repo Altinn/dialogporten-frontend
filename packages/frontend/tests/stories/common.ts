@@ -10,7 +10,7 @@ export async function performSearch(page: Page, query: string, action?: 'clear' 
   await searchbarInput.click();
   await expect(searchbarInput).toBeVisible();
   await page.locator("[name='Søk']").fill(query);
-  const searchLink = page.getByRole('menuitem', { name: 'Søk i innboksen etter ' + query });
+  const searchLink = page.locator('li').filter({ hasText: query + ' i innboksen' });
 
   if (endGameAction === 'clear') {
     await page.getByTestId('search-button-clear').click();
@@ -49,4 +49,18 @@ export async function getToolbarAccountInfo(page: Page, name: string): Promise<{
 export async function selectPartyFromToolbar(page: Page, partyName: string) {
   const toolbar = page.getByTestId('inbox-toolbar');
   await toolbar.locator('li').filter({ hasText: partyName }).first().click();
+}
+
+export async function openContextMenuForDialog(page: Page, title: string) {
+  const dialogItem = page.locator('li', { has: page.getByRole('link', { name: title }) }).first();
+  const btn = dialogItem.locator(`button[aria-label^="Kontekstmeny for dialog med tittel ${title}"]`);
+
+  await btn.click();
+  await expect(btn).toHaveAttribute('aria-expanded', 'true');
+
+  const menuRoot = dialogItem.locator('[id^="dialog-context-menu-"][id$="-root"]');
+  const menu = menuRoot.locator('[role="menu"]');
+  await expect(menu).toBeVisible();
+
+  return { dialogItem, menuRoot };
 }

@@ -7,15 +7,9 @@ test.describe('Saved search', () => {
   test('Create and delete saved search', async ({ page, isMobile }) => {
     await page.goto(defaultAppURL);
     const toolbarArea = page.getByTestId('inbox-toolbar');
-    await toolbarArea.getByRole('button', { name: 'add' }).click();
-
-    await toolbarArea.getByText('Velg avsender').locator('visible=true').click();
-    await page
-      .getByTestId('filter-base-toolbar-filter-org')
-      .locator('span')
-      .filter({ hasText: 'Oslo kommune' })
-      .nth(1)
-      .click();
+    await toolbarArea.getByRole('button', { name: /legg til/i }).click();
+    await toolbarArea.getByRole('menuitem', { name: 'Velg tjenesteeier' }).first().click();
+    await page.locator('li').filter({ hasText: 'Oslo kommune' }).nth(1).click();
 
     if (isMobile) {
       await page.getByRole('button', { name: 'Vis alle resultater' }).click();
@@ -71,23 +65,18 @@ test.describe('Saved search', () => {
   test('Saved search link shows correct result', async ({ page, isMobile }) => {
     await page.goto(defaultAppURL);
 
-    await page.getByTestId('account-menu-button').click();
-    const toolbarArea = page.getByTestId('inbox-toolbar');
-    await toolbarArea.getByText('Testbedrift AS Avd Oslo').locator('visible=true').click();
-    await expectIsCompanyPage(page);
-    await expect(page.getByRole('link', { name: 'Innkalling til sesjon' })).toBeVisible();
-
-    await performSearch(page, 'innkalling', 'enter');
-
+    await page.getByTestId('inbox-toolbar').getByRole('button', { name: 'Test Testesen' }).click();
+    await page.getByRole('option', { name: 'Testbedrift As Avd Oslo' }).click();
+    await page.getByTestId('searchbar-input').click();
+    await page.getByTestId('searchbar-input').fill('innkalling');
+    await page.getByTestId('searchbar-input').press('Enter');
     await page.getByRole('button', { name: 'Lagre søk' }).click();
 
-    if (isMobile) {
-      await page.getByRole('button', { name: 'Meny' }).click();
-      await page.getByRole('link', { name: 'Lagrede søk' }).click();
-      await page.getByRole('button', { name: 'Meny' }).click();
-    } else {
-      await getSidebarMenuItem(page, PageRoutes.savedSearches).click();
-    }
+    await page
+      .getByRole('link', { name: /Lagrede søk/i })
+      .or(page.getByRole('menuitem', { name: /Lagrede søk/i }))
+      .first()
+      .click();
 
     // Wait for saved search to appear, then find the link
     await expect(page.getByRole('main')).toContainText('1 lagret søk');
@@ -107,58 +96,34 @@ test.describe('Saved search', () => {
     await page.goto(defaultAppURL);
 
     /* Create saved search with Oslo kommune and status send from inbox */
-    const toolbarArea = page.getByTestId('inbox-toolbar');
 
-    await toolbarArea.getByRole('button', { name: 'add' }).click();
-    await toolbarArea.getByText('Velg avsender').locator('visible=true').click();
-    await page
-      .getByTestId('filter-base-toolbar-filter-org')
-      .locator('span')
-      .filter({ hasText: 'Oslo kommune' })
-      .nth(1)
-      .click();
-
-    if (isMobile) {
-      await page.getByRole('button', { name: 'Vis alle resultater' }).click();
-    } else {
-      await page.keyboard.press('Escape');
-    }
-
-    await toolbarArea.getByRole('button', { name: 'add' }).click();
-    await toolbarArea.getByText('Velg status').locator('visible=true').click();
-    await page
-      .getByTestId('filter-base-toolbar-filter-status')
-      .locator('span')
-      .filter({ hasText: 'Sendt' })
-      .nth(1)
-      .click();
-
-    if (isMobile) {
-      await page.getByRole('button', { name: 'Vis alle resultater' }).click();
-    } else {
-      await page.keyboard.press('Escape');
-    }
+    await page.getByRole('button', { name: 'Legg til filter' }).click();
+    await page.getByLabel('Velg tjenesteeier').click();
+    await page.getByRole('searchbox', { name: 'Søk' }).fill('Oslo');
+    await page.locator('li').filter({ hasText: 'Oslo kommune' }).nth(1).click();
+    await page.keyboard.press('Escape');
+    await page.getByRole('button', { name: 'Legg til' }).click();
+    await page.getByLabel('Velg status').click();
+    await page.locator('#SENT').click();
+    await page.keyboard.press('Escape');
 
     await page.getByRole('button', { name: 'Lagre søk' }).click();
     await expect(page.getByText('Søket ditt er lagret')).toBeVisible();
 
+    await page.getByRole('button', { name: 'Fjern alle filtre' }).click();
+
+    await page.getByRole('button', { name: 'Legg til filter' }).click();
+    await page.getByLabel('Velg tjenesteeier').click();
+    await page.getByRole('searchbox', { name: 'Søk' }).fill('Oslo');
+    await page.locator('li').filter({ hasText: 'Oslo kommune' }).nth(1).click();
+    await page.keyboard.press('Escape');
+    await page.getByRole('button', { name: 'Legg til' }).click();
+    await page.getByLabel('Velg status').click();
+    await page.locator('#SENT').click();
+    await page.keyboard.press('Escape');
+
     /* Navigate to sent folder and add Oslo kommune as filter...
     It should not be possible to save search since a matching search already exists */
-    await getSidebarMenuItem(page, PageRoutes.sent).click();
-    await toolbarArea.getByRole('button', { name: 'add' }).click();
-    await toolbarArea.getByText('Velg avsender').locator('visible=true').click();
-    await page
-      .getByTestId('filter-base-toolbar-filter-org')
-      .locator('span')
-      .filter({ hasText: 'Oslo kommune' })
-      .nth(1)
-      .click();
-
-    if (isMobile) {
-      await page.getByRole('button', { name: 'Vis alle resultater' }).click();
-    } else {
-      await page.keyboard.press('Escape');
-    }
 
     // Søk allerede lagret
     await expect(page.getByText('Lagret søk')).toBeVisible();

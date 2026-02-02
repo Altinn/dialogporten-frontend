@@ -1,19 +1,18 @@
-import type { ToolbarFilterProps, ToolbarProps } from '@altinn/altinn-components';
-import { useMemo, useState } from 'react';
+import type { FilterProps, ToolbarFilterProps } from '@altinn/altinn-components';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { useDialogsCount } from '../../api/hooks/useDialogsCount.tsx';
 import { useServiceResource } from '../../api/hooks/useServiceResource.ts';
 import { getOrganization } from '../../api/utils/organizations.ts';
-import { getEnvByHost } from '../../auth';
 import { useFeatureFlag } from '../../featureFlags';
-import { FilterCategory, getFilters, readFiltersFromURLQuery } from './filters.ts';
+import { FilterCategory, getFilters, readFiltersFromURLQuery } from './filters';
 import { useOrganizations } from './useOrganizations.ts';
 
 interface UseFiltersOutput {
-  filters: ToolbarFilterProps[];
-  getFilterLabel: ToolbarProps['getFilterLabel'];
+  filters: FilterProps[];
+  getFilterLabel: ToolbarFilterProps['getFilterLabel'];
 }
 
 interface UseFiltersProps {
@@ -21,15 +20,12 @@ interface UseFiltersProps {
 }
 
 export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { dialogCounts: allDialogs } = useDialogsCount();
   const enableServiceFilter = useFeatureFlag<boolean>('filters.enableServiceFilter');
-  const [serviceResourcesQuery, setServiceResourcesQuery] = useState<string>('');
   const { organizations } = useOrganizations();
-  const { serviceResources } = useServiceResource({});
-
+  const { serviceResources } = useServiceResource();
   const [params] = useSearchParams();
-  const orgsFromSearchState = params.getAll('org');
 
   const currentFilters = useMemo(() => {
     const filters = readFiltersFromURLQuery(params.toString());
@@ -48,81 +44,30 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
     return normalizedFilters;
   }, [params]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  const filteredServiceResources = useMemo(() => {
-    const envByHost = getEnvByHost();
-    return serviceResources
-      .filter((option) => {
-        if (!serviceResourcesQuery) {
-          let shortlist = [];
-          if (envByHost === 'at23' || envByHost === 'local') {
-            shortlist = [
-              'urn:altinn:resource:app_hdir_a2-4081-3',
-              'urn:altinn:resource:app_sfd_a2-2975-1',
-              'urn:altinn:resource:app_skd_a2-1051-181125',
-              'urn:altinn:resource:nav-migratedcorrespondence-4503-',
-              'urn:altinn:resource:app_skd_a2-1049-111124',
-            ];
-          } else if (envByHost === 'tt02') {
-            shortlist = [
-              'urn:altinn:resource:app_skd_a2-1051-130203',
-              'urn:altinn:resource:app_brg_bvr-utv',
-              'urn:altinn:resource:app_dibk_a2-4655-2',
-              'urn:altinn:resource:nav_sykepenger_inntektsmelding',
-            ];
-          } else {
-            shortlist = [
-              'urn:altinn:resource:app_brg_a2-2705-201511',
-              'urn:altinn:resource:app_skd_a2-3736-140122',
-              'urn:altinn:resource:app_skd_a2-1051-130203',
-              'urn:altinn:resource:app_skd_a2-3707-190403',
-              'urn:altinn:resource:app_dibk_a2-4655-4',
-              'urn:altinn:resource:nav_sykepenger_inntektsmelding',
-            ];
-          }
-          return shortlist.some((sr) => option.id?.toLowerCase() === sr);
-        }
-
-        const serviceResourcesQueryLowerCase = serviceResourcesQuery.toLowerCase();
-        const optionTitle = option.title?.[i18n.language as 'nb' | 'nn' | 'en']?.toLowerCase();
-        const optionId = option.id?.toLowerCase();
-
-        return (
-          optionTitle?.includes(serviceResourcesQueryLowerCase) || optionId?.includes(serviceResourcesQueryLowerCase)
-        );
-      })
-      .slice(0, 5);
-  }, [serviceResources, serviceResourcesQuery]);
-
-  const filters = useMemo(
+  const filters: FilterProps[] = useMemo(
     () =>
       getFilters({
         allDialogs,
         allOrganizations: organizations,
         viewType,
-        orgsFromSearchState,
-        serviceResources: filteredServiceResources,
+        serviceResources,
         currentFilters,
-        serviceResourcesQuery,
-        onServiceResourcesQueryChange: setServiceResourcesQuery,
         enableServiceFilter,
       }),
-    [
-      allDialogs,
-      organizations,
-      viewType,
-      orgsFromSearchState,
-      filteredServiceResources,
-      currentFilters,
-      serviceResourcesQuery,
-      enableServiceFilter,
-    ],
+    [allDialogs, organizations, viewType, currentFilters, enableServiceFilter, serviceResources],
   );
 
-  const getFilterLabel = (name: string, value: (string | number)[] | undefined) => {
+  const getFilterLabel = (name: string, value: (string | number)[] | undefined): string | undefined => {
     const filter = filters.find((f) => f.name === name);
-    if (!filter || !value) {
-      return '';
+
+    if (filter && !value?.length) {
+      if (typeof filter.title === 'string' || typeof filter.label === 'string') {
+        return filter.title;
+      }
+    }
+
+    if (!filter || !value?.length) {
+      return undefined;
     }
 
     if (name === FilterCategory.STATUS) {
@@ -146,13 +91,12 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
 
     if (name === FilterCategory.SERVICE) {
       if (value?.length === 1) {
-        const service = serviceResources.find((sr) => sr.id === String(value[0]));
-        return service?.title?.nb || service?.title?.en || service?.title?.nn || service?.id || String(value[0]);
+        return t('inbox.filter.single.service');
       }
       return t('inbox.filter.multiple.service', { count: value?.length });
     }
 
-    return '';
+    return undefined;
   };
 
   return { filters, getFilterLabel };

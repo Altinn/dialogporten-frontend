@@ -12,9 +12,6 @@ export const appURLSavedSearches = baseURL + PageRoutes.savedSearches + baseQuer
 
 export const appURLProfileLanding = baseURL + PageRoutes.profile + baseQueryParams;
 export const appURLProfileSettings = baseURL + PageRoutes.settings + baseQueryParams;
-export const appURLProfileNotifications = baseURL + PageRoutes.notifications + baseQueryParams;
-export const appURLProfilePartiesOverview = baseURL + PageRoutes.partiesOverview + baseQueryParams;
-export const appURLProfileActivities = baseURL + PageRoutes.activities + baseQueryParams;
 
 export const appUrlWithPlaywrightId = (id: string): string => {
   return appURLInbox + `&playwrightId=${id}`;

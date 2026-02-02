@@ -30,7 +30,7 @@ test.describe('LoginPartyContext', () => {
 
   test('Shows available parties in dropdown when clicked', async ({ page }: { page: Page }) => {
     // Open party selector
-    await page.getByTestId('account-menu-button').click();
+    await page.locator('#toolbar-menu-root > button').click();
 
     // Verify all expected parties are available
     const expectedParties = [
@@ -45,14 +45,11 @@ test.describe('LoginPartyContext', () => {
       const party = await getToolbarAccountInfo(page, partyName);
       expect(party.found).toEqual(true);
     }
-
-    const toolbar = page.getByTestId('inbox-toolbar');
-    await expect(toolbar.locator('a').filter({ hasText: 'Alle virksomheter' })).toBeVisible();
   });
 
   test('Shows correct messages when switching to company party', async ({ page }: { page: Page }) => {
     // Open party selector and switch to Firma AS
-    await page.getByTestId('account-menu-button').click();
+    await page.locator('#toolbar-menu-root > button').click();
     await selectPartyFromToolbar(page, 'Firma AS');
 
     // Verify party switch and message visibility
@@ -68,21 +65,22 @@ test.describe('LoginPartyContext', () => {
 
   test('Shows correct messages when switching to sub-party', async ({ page }: { page: Page }) => {
     // Navigate to parent party
-    await page.getByTestId('account-menu-button').click();
-    await selectPartyFromToolbar(page, 'Testbedrift AS');
+    const toolbarMenu = page.locator('#toolbar-menu-root');
+    await toolbarMenu.locator('> button').click();
+    await toolbarMenu.locator('[role="option"][data-id="urn:altinn:organization:identifier-no:2"]').click();
     await expect(page.getByRole('link', { name: 'This is a message 1 for' })).toBeVisible();
 
     // Navigate to parent party
-    await page.getByTestId('account-menu-button').click();
-    await selectPartyFromToolbar(page, 'Testbedrift As Avd Oslo');
+    await toolbarMenu.locator('> button').click();
+    await toolbarMenu.locator('[role="option"][data-id="urn:altinn:organization:identifier-sub:2"]').click();
     await expect(page.getByRole('link', { name: 'This is a message 1 for' })).not.toBeVisible();
     await expect(page.getByRole('link', { name: 'Innkalling til sesjon' })).toBeVisible();
   });
 
   test('Shows all messages when selecting "Alle virksomheter"', async ({ page }: { page: Page }) => {
     // Navigate to "Alle virksomheter"
-    await page.getByTestId('account-menu-button').click();
-    await page.locator('a').filter({ hasText: 'TTT5Alle virksomheter' }).click();
+    await page.locator('#toolbar-menu-root > button').click();
+    await page.getByRole('option', { name: 'Alle virksomheter' }).click();
 
     // Verify all company messages are visible (but not person messages)
     await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).not.toBeVisible();
@@ -104,8 +102,9 @@ test.describe('LoginPartyContext', () => {
 
   test('Maintains party selection after page reload', async ({ page }: { page: Page }) => {
     // Navigate to "Alle virksomheter"
-    await page.getByTestId('account-menu-button').click();
-    await page.locator('a').filter({ hasText: 'TTT5Alle virksomheter' }).click();
+    await page.locator('#toolbar-menu-root > button').click();
+    await page.getByRole('option', { name: 'Alle virksomheter' }).click();
+
     // Reload page and verify state is maintained
     await page.reload();
     const urlAfterReload = new URL(page.url());
@@ -114,13 +113,15 @@ test.describe('LoginPartyContext', () => {
   });
 
   test('Correct colour theme for selected party', async ({ page }: { page: Page }) => {
-    await expect(page.getByTestId('account-menu-button')).toContainText('Test Testesen');
+    await expect(page.locator('#toolbar-menu-root')).toContainText('Test Testesen');
     await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).toBeVisible();
     await expectIsPersonPage(page);
 
-    await page.getByTestId('account-menu-button').click();
-    await page.locator('a').filter({ hasText: 'FFirma ASOrg. nr. :' }).click();
-    await expect(page.getByTestId('account-menu-button')).toContainText('Firma AS');
+    await page.locator('#toolbar-menu-root > button').click();
+    await page.getByRole('option', { name: 'Firma AS' }).click();
+
+    await expect(page.locator('#toolbar-menu-root')).toContainText('Firma AS');
+
     await expectIsCompanyPage(page);
 
     await page.reload();

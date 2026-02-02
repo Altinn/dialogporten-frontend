@@ -1,4 +1,4 @@
-import type { FilterState } from '@altinn/altinn-components/dist/types/lib/components/Toolbar/Toolbar';
+import type { FilterState } from '@altinn/altinn-components';
 import type { TFunction } from 'i18next';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -51,8 +51,6 @@ export const usePageTitle = ({ baseTitle, searchValue, filterState, getFilterLab
       }
     }
 
-    const title = titleParts.join(' + ') + ` - Altinn ${t('word.beta')}`;
-
-    document.title = title;
+    document.title = titleParts.join(' + ') + ` - Altinn ${t('word.beta')}`;
   }, [baseTitle, searchValue, filterState, getFilterLabel, t]);
 };

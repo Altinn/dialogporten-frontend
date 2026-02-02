@@ -1,8 +1,7 @@
-import { waitFor } from '@testing-library/react';
 import { appUrlWithPlaywrightId, baseQueryParams, baseURL, defaultAppURL } from '..';
 import { firstMsgId } from '../../src/mocks/data/stories/search-flow/dialogs';
 import { expect, test } from '../fixtures';
-import { performSearch, selectDialogBySearch } from './common';
+import { performSearch } from './common';
 
 test.describe('Search flow', () => {
   test('less than 3 chars not allowed', async ({ page }) => {
@@ -15,8 +14,7 @@ test.describe('Search flow', () => {
     await searchbarInput.click();
     await searchbarInput.fill('mel');
     await expect(page.getByText('Anbefalte treff')).toBeVisible();
-    const searchButton = page.getByRole('menuitem', { name: 'Søk i innboksen etter mel' });
-    await expect(searchButton).toBeVisible();
+    await expect(page.getByText('mel i innboksen3 treff')).toBeVisible();
   });
 
   test('Badge with number of msgs and (5) visible suggestions', async ({ page }) => {
@@ -30,11 +28,11 @@ test.describe('Search flow', () => {
     await searchbarInput.click();
     await searchbarInput.fill('test');
 
-    await expect(page.getByRole('menuitem', { name: 'First test message First test' })).toBeVisible();
-    await expect(page.getByRole('menuitem', { name: 'Second test message Second test' })).toBeVisible();
-    await expect(page.getByRole('menuitem', { name: 'Third test message Third test' })).toBeVisible();
-    await expect(page.getByRole('menuitem', { name: 'Fourth test message Fourth test' })).toBeVisible();
-    await expect(page.getByRole('menuitem', { name: 'Fifth test message Fifth test' })).toBeVisible();
+    await expect(page.locator('#searchbar-autocomplete').getByLabel('First test message')).toBeVisible();
+    await expect(page.locator('#searchbar-autocomplete').getByLabel('Second test message')).toBeVisible();
+    await expect(page.locator('#searchbar-autocomplete').getByLabel('Third test message')).toBeVisible();
+    await expect(page.locator('#searchbar-autocomplete').getByLabel('Fourth test message')).toBeVisible();
+    await expect(page.locator('#searchbar-autocomplete').getByLabel('Fifth test message')).toBeVisible();
   });
 
   test('Search link should open dialog details with enter', async ({ page, isMobile }) => {
@@ -42,7 +40,8 @@ test.describe('Search flow', () => {
       await page.goto(appUrlWithPlaywrightId('search-flow'));
       await page.getByTestId('searchbar-input').click();
       await page.getByTestId('searchbar-input').fill('Sixth');
-      await page.getByRole('menuitem', { name: 'Sixth test message Sixth test' }).waitFor({ state: 'visible' });
+
+      await expect(page.locator('#searchbar-autocomplete').getByLabel('Sixth test message')).toBeVisible();
 
       await page.getByTestId('searchbar-input').press('ArrowDown');
       await page.getByTestId('searchbar-input').press('Enter');
@@ -57,7 +56,7 @@ test.describe('Search flow', () => {
     await page.goto(appUrlWithPlaywrightId('search-flow'));
     await page.getByTestId('searchbar-input').click();
     await page.getByTestId('searchbar-input').fill('Sixth');
-    await page.getByRole('menuitem', { name: 'Sixth test message Sixth test' }).click();
+    await page.locator('#searchbar-autocomplete').getByLabel('Sixth test message').click();
 
     // Dialog details
     await expect(page.getByRole('heading', { name: 'Sixth test message' }).locator('span')).toBeVisible();

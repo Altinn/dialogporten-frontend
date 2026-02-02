@@ -1,4 +1,4 @@
-import type { FilterState, ToolbarFilterProps, ToolbarProps } from '@altinn/altinn-components';
+import type { FilterProps, FilterState, ToolbarFilterProps } from '@altinn/altinn-components';
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,8 +10,8 @@ enum FilterStateEnum {
 }
 
 interface UseFiltersOutput {
-  filters: ToolbarFilterProps[];
-  getFilterLabel: ToolbarProps['getFilterLabel'];
+  filters: FilterProps[];
+  getFilterLabel: ToolbarFilterProps['getFilterLabel'];
   filterState: FilterState;
   setFilterState: (filterState: FilterState) => void;
   filteredParties: PartyFieldsFragment[];
@@ -34,23 +34,25 @@ export const useAccountFilters = ({
     partyScope: [FilterStateEnum.ALL_PARTIES],
   });
 
-  const filterOptions: ToolbarFilterProps[] = [
+  const accountFilters: FilterProps[] = [
     {
-      optionType: 'radio',
       name: 'partyScope',
       label: t('filter_bar.add_filter'),
-      options: [
+      items: [
         {
+          role: 'radio',
           groupId: '1',
           label: t('parties.filter.all_parties'),
           value: FilterStateEnum.ALL_PARTIES,
         },
         {
+          role: 'radio',
           groupId: '2',
           label: t('parties.filter.persons'),
           value: FilterStateEnum.PERSONS,
         },
         {
+          role: 'radio',
           groupId: '2',
           label: t('parties.filter.companies'),
           value: FilterStateEnum.COMPANIES,
@@ -117,5 +119,5 @@ export const useAccountFilters = ({
 
   const isSearching = searchValue.length > 0 || filterState.partyScope?.[0] !== FilterStateEnum.ALL_PARTIES;
 
-  return { filters: filterOptions, getFilterLabel, filterState, setFilterState, filteredParties, isSearching };
+  return { filters: accountFilters, getFilterLabel, filterState, setFilterState, filteredParties, isSearching };
 };

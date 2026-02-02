@@ -11,14 +11,21 @@ test.describe('Search suggests with senders', () => {
     await expect(searchbarInput).toBeVisible();
     await searchbarInput.click();
     await searchbarInput.fill('arbeids');
-    await expect(page.getByRole('menuitem', { name: 'Arbeids- og velferdsetaten (NAV)' })).toBeVisible();
+
+    await expect(
+      page.getByRole('menuitem', { name: 'Arbeids- og velferdsetaten (NAV)' }).filter({ has: page.locator('a') }),
+    ).toBeVisible();
 
     await searchbarInput.fill('skatt');
-    await expect(page.getByRole('menuitem', { name: 'Skatteetaten' })).toBeVisible();
 
+    await page
+      .getByRole('menuitem', { name: 'Skatteetaten' })
+      .filter({ has: page.locator('a') })
+      .click();
     await searchbarInput.fill('skatt test1');
-    const button = page.getByRole('menuitem', { name: 'Søk etter avsender Skatteetaten' });
-    await expect(button).toBeVisible();
+    await expect(
+      page.getByRole('menuitem', { name: /Søk etter avsender Skatteetaten/i }).filter({ has: page.locator('a') }),
+    ).toBeVisible();
   });
 
   test('Not rendering senders suggestions with no match', async ({ page }) => {
@@ -26,7 +33,7 @@ test.describe('Search suggests with senders', () => {
     await searchbarInput.click();
     await searchbarInput.fill('test1');
 
-    await expect(page.getByLabel('Søk i innboksen etter test1')).toContainText('Ingen treff');
+    await expect(page.locator('#inboxScope')).toContainText('Ingen treff');
   });
 
   test('Selecting sender search filters data correctly', async ({ page }) => {
@@ -34,7 +41,10 @@ test.describe('Search suggests with senders', () => {
     await searchbarInput.click();
     await searchbarInput.fill('skatt');
     await page.getByText(/^2 treff$/).waitFor();
-    await page.getByRole('menuitem', { name: 'Søk etter avsender Skatteetaten' }).click();
+    await page
+      .getByRole('menuitem', { name: /Søk etter avsender Skatteetaten/i })
+      .filter({ has: page.locator('a') })
+      .click();
 
     await expect.poll(() => page.url()).toEqual(`${defaultAppURL}&playwrightId=search-sender&org=skd`);
 
@@ -47,7 +57,10 @@ test.describe('Search suggests with senders', () => {
     const searchbarInput = page.locator("[name='Søk']");
     await searchbarInput.click();
     await searchbarInput.fill('skatt test1');
-    await page.getByRole('menuitem', { name: 'Søk etter avsender Skatteetaten med fritekst test1' }).click();
+    await page
+      .getByRole('menuitem', { name: /Søk etter avsender Skatteetaten med fritekst test1/i })
+      .filter({ has: page.locator('a') })
+      .click();
 
     await expect(page).toHaveURL(`${defaultAppURL}&playwrightId=search-sender&org=skd&search=test1`);
     await expect(page.getByRole('link', { name: 'test1 skatt' })).toBeVisible();
@@ -60,7 +73,10 @@ test.describe('Search suggests with senders', () => {
     const searchbarInput = page.locator("[name='Søk']");
     await searchbarInput.click();
     await searchbarInput.fill('skatt test1');
-    await page.getByRole('menuitem', { name: 'Skatteetaten' }).click();
+    await page
+      .getByRole('menuitem', { name: /Søk etter avsender Skatteetaten med fritekst test1/i })
+      .filter({ has: page.locator('a') })
+      .click();
 
     await expect(page).toHaveURL(`${defaultAppURL}&playwrightId=search-sender&org=skd&search=test1`);
     await expect(page.getByRole('link', { name: 'test1 skatt' })).toBeVisible();

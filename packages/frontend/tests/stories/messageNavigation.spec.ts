@@ -10,29 +10,34 @@ test.describe('Message navigation', () => {
     await page.goto(pageWithMockOrganizations);
     await expectIsPersonPage(page);
 
-    await expect(page.getByTestId('account-menu-button')).toContainText('Test Testesen');
+    await expect(page.locator('#toolbar-menu-root')).toContainText('Test Testesen');
     await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).toBeVisible();
     await page.getByRole('link', { name: 'Skatten din for 2022' }).click();
     await page.getByRole('link', { name: 'Tilbake', exact: true }).click();
-    await expect(page.getByTestId('account-menu-button')).toContainText('Test Testesen');
+    await expect(page.locator('#toolbar-menu-root')).toContainText('Test Testesen');
 
-    await page.getByTestId('account-menu-button').click();
+    await page.locator('#toolbar-menu-root > button').click();
+    await page.locator('button[id="urn:altinn:organization:identifier-no:1"]').click();
 
-    await page.locator('a').filter({ hasText: 'FFirma ASOrg. nr. :' }).click();
-    await expect(page.getByTestId('account-menu-button')).toContainText('Firma AS');
+    await expect(page.locator('#toolbar-menu-root')).toContainText('Firma AS');
     await expect(page.getByRole('link', { name: 'This is a message 1 for Firma AS' })).toBeVisible();
     await page.getByRole('link', { name: 'This is a message 1 for Firma' }).click();
     await page.getByRole('link', { name: 'Tilbake', exact: true }).click();
-    await expect(page.getByTestId('account-menu-button')).toContainText('Firma AS');
+
+    await expect(page.locator('#toolbar-menu-root')).toContainText('Firma AS');
     await expectIsCompanyPage(page);
+
     expect(new URL(page.url()).searchParams.has('party')).toBe(true);
 
-    await page.getByTestId('account-menu-button').click();
-    await page.locator('a').filter({ hasText: 'TTT5Alle virksomheter' }).click();
-    await expect(page.getByTestId('account-menu-button')).toContainText('Alle virksomheter');
+    await page.locator('#toolbar-menu-root > button').click();
+    await page.getByRole('option', { name: 'Alle virksomheter' }).click();
+    await expect(page.locator('#toolbar-menu-root')).toContainText('Alle virksomheter');
+
     await page.getByRole('link', { name: 'This is a message 1 for Firma' }).click();
     await page.getByRole('link', { name: 'Tilbake' }).click();
-    await expect(page.getByTestId('account-menu-button')).toContainText('Alle virksomheter');
+
+    await expect(page.locator('#toolbar-menu-root')).toContainText('Alle virksomheter');
+
     await expectIsPersonPage(page);
     expect(new URL(page.url()).searchParams.has('allParties')).toBe(true);
   });
@@ -42,8 +47,11 @@ test.describe('Message navigation', () => {
 
     await expect(page.locator('h2').filter({ hasText: /^Skatten din for 2022$/ })).toBeVisible();
     await page.getByRole('link', { name: 'Skatten din for 2022' }).click();
-    await page.getByRole('button', { name: 'Flytt til papirkurv' }).click();
-    await expect(page.getByText('Flyttet til papirkurv')).toBeVisible();
+    await page
+      .getByRole('button', { name: /flytt til papirkurv/i })
+      .or(page.getByRole('menuitem', { name: /flytt til papirkurv/i }))
+      .click();
+    await expect(page.getByText(/flyttet til papirkurv/i)).toBeVisible();
 
     if (isMobile) {
       await page.getByRole('button', { name: 'Meny' }).click();

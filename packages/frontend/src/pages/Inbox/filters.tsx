@@ -1,4 +1,11 @@
-import type { FilterState, ToolbarFilterProps, ToolbarSearchProps } from '@altinn/altinn-components';
+import type {
+  AvatarProps,
+  FilterProps,
+  FilterState,
+  MenuItemProps,
+  ToolbarFilterProps,
+} from '@altinn/altinn-components';
+import { CalendarIcon, InformationSquareIcon, MenuGridIcon, MenuHamburgerIcon } from '@navikt/aksel-icons';
 import {
   type CountableDialogFieldsFragment,
   DialogStatus,
@@ -8,38 +15,16 @@ import {
   SystemLabel,
 } from 'bff-types-generated';
 import { endOfDay, endOfMonth, endOfWeek, startOfDay, startOfMonth, startOfWeek, subMonths, subYears } from 'date-fns';
-import { t } from 'i18next';
-import type { ChangeEvent } from 'react';
+import i18n, { t } from 'i18next';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { getOrganization } from '../../api/utils/organizations.ts';
+import { getEnvByHost } from '../../auth';
 
-interface ServiceFilterProps extends ToolbarFilterProps {
+interface ServiceFilterProps {
   serviceResources: ServiceResource[];
   currentFilters?: FilterState;
-  serviceResourcesQuery: string;
-  onServiceResourcesQueryChange: (query: string) => void;
+  allOrganizations: OrganizationFieldsFragment[];
 }
-
-export const getExclusiveLabel = (labels: string[]): SystemLabel => {
-  const EXCLUSIVE_LABELS = [SystemLabel.Archive, SystemLabel.Bin, SystemLabel.Sent, SystemLabel.Default] as const;
-
-  if (!labels || !Array.isArray(labels)) {
-    return SystemLabel.Default;
-  }
-
-  const match = EXCLUSIVE_LABELS.find((exclusiveLabel) => labels.includes(exclusiveLabel));
-  return match ?? SystemLabel.Default;
-};
-
-export const countOccurrences = (array: string[]): Record<string, number> => {
-  return array.reduce(
-    (acc, item) => {
-      acc[item] = (acc[item] || 0) + 1;
-      return acc;
-    },
-    {} as Record<string, number>,
-  );
-};
 
 export enum DateFilterOption {
   TODAY = 'TODAY',
@@ -49,6 +34,35 @@ export enum DateFilterOption {
   LAST_TWELVE_MONTHS = 'LAST_TWELVE_MONTHS',
   OLDER_THAN_ONE_YEAR = 'OLDER_THAN_ONE_YEAR',
 }
+
+const getSuggestedServiceIds = () => {
+  const envByHost = getEnvByHost();
+  if (envByHost === 'at23' || envByHost === 'local') {
+    return [
+      'urn:altinn:resource:app_hdir_a2-4081-3',
+      'urn:altinn:resource:app_sfd_a2-2975-1',
+      'urn:altinn:resource:app_skd_a2-1051-181125',
+      'urn:altinn:resource:nav-migratedcorrespondence-4503-',
+      'urn:altinn:resource:app_skd_a2-1049-111124',
+    ];
+  }
+  if (envByHost === 'tt02') {
+    return [
+      'urn:altinn:resource:app_skd_a2-1051-130203',
+      'urn:altinn:resource:app_brg_bvr-utv',
+      'urn:altinn:resource:app_dibk_a2-4655-2',
+      'urn:altinn:resource:nav_sykepenger_inntektsmelding',
+    ];
+  }
+  return [
+    'urn:altinn:resource:app_brg_a2-2705-201511',
+    'urn:altinn:resource:app_skd_a2-3736-140122',
+    'urn:altinn:resource:app_skd_a2-1051-130203',
+    'urn:altinn:resource:app_skd_a2-3707-190403',
+    'urn:altinn:resource:app_dibk_a2-4655-4',
+    'urn:altinn:resource:nav_sykepenger_inntektsmelding',
+  ];
+};
 
 export const getDateRange = (unit: 'day' | 'week' | 'month' | 'sixMonths' | 'year') => {
   const now = new Date();
@@ -82,234 +96,264 @@ export enum FilterCategory {
   SERVICE = 'service',
 }
 
-const getFilteredDialogs = (
-  dialogs: CountableDialogFieldsFragment[],
-  currentFilters: FilterState,
-  excludeFilterCategory?: FilterCategory,
-): CountableDialogFieldsFragment[] => {
-  return dialogs.filter((dialog) => {
-    if (excludeFilterCategory !== FilterCategory.ORG && currentFilters.org?.length) {
-      if (!currentFilters.org.includes(dialog.org)) {
-        return false;
-      }
-    }
-
-    if (excludeFilterCategory !== FilterCategory.STATUS && currentFilters.status?.length) {
-      const dialogSystemLabel = getExclusiveLabel(dialog.endUserContext?.systemLabels || []);
-      const hasMatchingStatus = currentFilters.status.some((status) => {
-        if ([SystemLabel.Archive, SystemLabel.Bin, SystemLabel.Sent].includes(status as SystemLabel)) {
-          return dialogSystemLabel === status;
-        }
-        return dialog.status === status;
-      });
-
-      if (!hasMatchingStatus) {
-        return false;
-      }
-    }
-
-    if (excludeFilterCategory !== FilterCategory.UPDATED && currentFilters.updated?.length) {
-      const dateFilter = currentFilters.updated[0] as DateFilterOption;
-      if (dateFilter && filterRanges[dateFilter]) {
-        const dialogDate = new Date(dialog.contentUpdatedAt);
-        const { start, end } = filterRanges[dateFilter];
-
-        if (start && dialogDate < start) return false;
-        if (end && dialogDate > end) return false;
-      }
-    }
-
-    return true;
-  });
-};
-
-const createDateOptions = (): ToolbarFilterProps['options'] => {
+const createDateOptions = (): MenuItemProps[] => {
   const options = [
     {
+      id: DateFilterOption.TODAY,
+      role: 'radio',
       value: DateFilterOption.TODAY,
-      groupId: 'group-0',
+      groupId: 'date-recent',
     },
     {
+      id: DateFilterOption.THIS_WEEK,
+      role: 'radio',
       value: DateFilterOption.THIS_WEEK,
-      groupId: 'group-0',
+      groupId: 'date-recent',
     },
     {
+      id: DateFilterOption.THIS_MONTH,
+      role: 'radio',
       value: DateFilterOption.THIS_MONTH,
-      groupId: 'group-0',
+      groupId: 'date-recent',
     },
     {
+      id: DateFilterOption.LAST_SIX_MONTHS,
+      role: 'radio',
       value: DateFilterOption.LAST_SIX_MONTHS,
-      groupId: 'group-1',
+      groupId: 'date-months',
     },
     {
+      id: DateFilterOption.LAST_TWELVE_MONTHS,
+      role: 'radio',
       value: DateFilterOption.LAST_TWELVE_MONTHS,
-      groupId: 'group-1',
+      groupId: 'date-months',
     },
     {
+      id: DateFilterOption.OLDER_THAN_ONE_YEAR,
+      role: 'radio',
       value: DateFilterOption.OLDER_THAN_ONE_YEAR,
-      groupId: 'group-2',
+      groupId: 'date-older',
     },
   ];
 
   return options.map((option) => ({
-    label: t(`filter.date.${option.value.toLowerCase()}`),
-    value: option.value,
-    groupId: option.groupId,
+    ...option,
+    title: t(`filter.date.${option.value.toLowerCase()}`),
+    name: FilterCategory.UPDATED,
   }));
 };
 
-const createSenderOrgFilter = (
+const createServiceOwnerFilter = (
   allDialogs: CountableDialogFieldsFragment[],
   allOrganizations: OrganizationFieldsFragment[],
-  orgsFromSearchState: string[],
-  currentFilters: FilterState = {},
-): ToolbarFilterProps => {
-  const filteredDialogs = getFilteredDialogs(allDialogs, currentFilters, FilterCategory.ORG);
-  const orgCount = countOccurrences(filteredDialogs.map((d) => d.org));
-  const uniqueOrgs = Array.from(new Set([...allDialogs.map((d) => d.org), ...orgsFromSearchState]));
-
+): FilterProps => {
+  const mostRelevantOrgs = Array.from(new Set([...allDialogs.map((d) => d.org)]));
   return {
-    label: t('filter_bar.label.choose_sender'),
+    id: FilterCategory.ORG,
+    icon: MenuHamburgerIcon,
+    groupId: 'service-related',
+    title: t('filter_bar.label.choose_sender'),
     name: FilterCategory.ORG,
+    searchable: true,
     removable: true,
-    optionType: 'checkbox',
-    options: uniqueOrgs
-      .map((org) => ({
-        label: getOrganization(allOrganizations, org)?.name || org,
-        value: org,
-      }))
-      .filter((option) => {
-        if (orgsFromSearchState.includes(option.value)) {
-          return true;
-        }
-        return (orgCount[option.value] || 0) > 0;
-      })
-      .sort((a, b) => a.label?.localeCompare(b.label)),
-  };
-};
-
-const createStatusFilter = (): ToolbarFilterProps => {
-  return {
-    label: t('filter_bar.label.choose_status'),
-    name: FilterCategory.STATUS,
-    removable: true,
-    optionType: 'checkbox',
-    optionGroups: {
-      'static-status': {
-        title: t('filter_bar.label.static_status'),
-        divider: true,
+    groups: {
+      'service-owners': {
+        title: t('filter_bar.group.choose_sender'),
       },
-      'dynamic-status': {
-        title: t('filter_bar.label.dynamic_status'),
-        divider: true,
+      selected: {},
+      'most-relevant': {
+        title: t('filter_bar.group.choose_sender'),
       },
     },
-    options: [
-      {
-        label: t('status.not_applicable'),
-        groupId: 'status-group-0',
-        value: DialogStatus.NotApplicable,
-      },
-      {
-        label: t('status.requires_attention'),
-        groupId: 'status-group-1',
-        value: DialogStatus.RequiresAttention,
-      },
-      {
-        label: t('status.awaiting'),
-        groupId: 'status-group-1',
-        value: DialogStatus.Awaiting,
-      },
-      {
-        label: t('status.in_progress'),
-        groupId: 'status-group-1',
-        value: DialogStatus.InProgress,
-      },
-      {
-        label: t('status.completed'),
-        groupId: 'status-group-1',
-        value: DialogStatus.Completed,
-      },
-      {
-        label: t('status.draft'),
-        groupId: 'status-group-2',
-        value: DialogStatus.Draft,
-      },
-      {
-        label: t('status.sent'),
-        groupId: 'status-group-2',
-        value: SystemLabel.Sent,
-      },
-      {
-        label: t('status.archive'),
-        groupId: 'status-group-3',
-        value: SystemLabel.Archive,
-      },
-      {
-        label: t('status.bin'),
-        groupId: 'status-group-3',
-        value: SystemLabel.Bin,
-      },
-    ],
-  };
-};
-
-const createUpdatedAtFilter = (): ToolbarFilterProps => {
-  return {
-    id: FilterCategory.UPDATED,
-    name: FilterCategory.UPDATED,
-    label: t('filter_bar.label.updated'),
-    optionType: 'radio',
-    removable: true,
-    options: createDateOptions(),
-  };
-};
-
-const createServiceFilter = (props: ServiceFilterProps): ToolbarFilterProps => {
-  const { serviceResources, currentFilters = {}, serviceResourcesQuery, onServiceResourcesQueryChange, name } = props;
-  const search: ToolbarSearchProps = {
-    name,
-    onClear: () => onServiceResourcesQueryChange(''),
-    placeholder: t('filter_bar.service.search_placeholder'),
-    value: serviceResourcesQuery,
-    onChange: (e: ChangeEvent<HTMLInputElement>) => {
-      onServiceResourcesQueryChange(e.target.value);
-    },
-  };
-
-  // Calculate the count of serviceResources that have IDs (used for search results)
-  const serviceResourcesCount = serviceResources.filter((serviceResource) => serviceResource.id).length;
-
-  return {
-    label: props.label,
-    name: FilterCategory.SERVICE,
-    removable: true,
-    optionType: props.optionType,
-    search,
-    optionGroups: {
-      recommendations: {
-        title: t('filter_bar.service.recommendations'),
-      },
-      search: {
-        title: t('filter_bar.service.search_hits', { count: serviceResourcesCount }),
-      },
-    },
-    options: serviceResources
-      .filter((serviceResource) => serviceResource.id)
-      .map((serviceResource) => {
-        const title =
-          serviceResource.title?.nb || serviceResource.title?.en || serviceResource.title?.nn || serviceResource.id!;
+    items: allOrganizations
+      .map((org) => {
+        const localizedOrg = getOrganization(allOrganizations, org.id ?? '');
         return {
-          groupId: serviceResourcesQuery ? 'search' : 'recommendations',
-          label: title,
-          value: serviceResource.id!,
-          checked: currentFilters.service?.includes(serviceResource.id ?? '') ?? false,
+          id: org.id ?? '',
+          name: FilterCategory.ORG,
+          title: localizedOrg?.name ?? '',
+          icon: {
+            name: localizedOrg?.name,
+            imageUrl: localizedOrg?.logo,
+            imageUrlAlt: t('dialog.imageAltURL', { companyName: localizedOrg?.name ?? org?.id }),
+            type: 'company',
+          } as AvatarProps,
+          value: org.id ?? '',
+          role: 'checkbox',
+          groupId: mostRelevantOrgs.includes(org.id ?? '') ? 'most-relevant' : 'service-owners',
         };
       })
       .sort((a, b) => {
-        const labelA = String(a.label || '');
-        const labelB = String(b.label || '');
-        return labelA.localeCompare(labelB);
+        const groupOrder: Record<string, number> = {
+          'most-relevant': 0,
+          'service-owners': 1,
+        };
+        const ga = groupOrder[a.groupId] ?? Number.MAX_SAFE_INTEGER;
+        const gb = groupOrder[b.groupId] ?? Number.MAX_SAFE_INTEGER;
+
+        if (ga !== gb) return ga - gb;
+
+        return (a.title ?? '').localeCompare(b.title ?? '', undefined, { sensitivity: 'base' });
+      }),
+  };
+};
+
+const createStatusFilter = (): FilterProps => {
+  return {
+    id: FilterCategory.STATUS,
+    title: t('filter_bar.label.choose_status'),
+    groupId: 'status-date',
+    icon: InformationSquareIcon,
+    name: FilterCategory.STATUS,
+    removable: true,
+    groups: {
+      'status-general': {
+        title: t('filter_bar.group.choose_status'),
+      },
+      'status-active': {},
+      'status-draft': {},
+      'status-history': {},
+    },
+    items: [
+      {
+        id: DialogStatus.NotApplicable,
+        title: t('status.not_applicable'),
+        groupId: 'status-general',
+        value: DialogStatus.NotApplicable,
+      },
+      {
+        id: DialogStatus.RequiresAttention,
+        title: t('status.requires_attention'),
+        groupId: 'status-active',
+        value: DialogStatus.RequiresAttention,
+      },
+      {
+        id: DialogStatus.Awaiting,
+        title: t('status.awaiting'),
+        groupId: 'status-active',
+        value: DialogStatus.Awaiting,
+      },
+      {
+        id: DialogStatus.InProgress,
+        title: t('status.in_progress'),
+        groupId: 'status-active',
+        value: DialogStatus.InProgress,
+      },
+      {
+        id: DialogStatus.Completed,
+        title: t('status.completed'),
+        groupId: 'status-active',
+        value: DialogStatus.Completed,
+      },
+      {
+        id: DialogStatus.Draft,
+        title: t('status.draft'),
+        groupId: 'status-draft',
+        value: DialogStatus.Draft,
+      },
+      {
+        id: SystemLabel.Sent,
+        title: t('status.sent'),
+        groupId: 'status-history',
+        value: SystemLabel.Sent,
+      },
+      {
+        id: SystemLabel.Archive,
+        title: t('status.archive'),
+        groupId: 'status-history',
+        value: SystemLabel.Archive,
+      },
+      {
+        id: SystemLabel.Bin,
+        title: t('status.bin'),
+        groupId: 'status-history',
+        value: SystemLabel.Bin,
+      },
+    ].map((item) => ({
+      ...item,
+      role: 'checkbox',
+      name: FilterCategory.STATUS,
+    })),
+  };
+};
+
+const createUpdatedAtFilter = (): FilterProps => {
+  return {
+    title: t('filter_bar.label.updated'),
+    icon: CalendarIcon,
+    groupId: 'status-date',
+    id: FilterCategory.UPDATED,
+    name: FilterCategory.UPDATED,
+    removable: true,
+    groups: {
+      'date-recent': {
+        title: t('filter_bar.group.choose_date'),
+      },
+      'date-months': {},
+      'date-older': {},
+    },
+    items: createDateOptions(),
+  };
+};
+
+const createServiceFilter = ({
+  serviceResources,
+  currentFilters = {},
+  allOrganizations,
+}: ServiceFilterProps): FilterProps => {
+  const suggestedServiceIds = getSuggestedServiceIds();
+  const serviceFilters: FilterProps[] = serviceResources
+    .map((s) => ({
+      id: s.id!,
+      name: s.id!,
+      items: [],
+      title: s.title?.[i18n.language as keyof typeof s.title] ?? '',
+      groupId: suggestedServiceIds?.includes(s.id!) ? 'most-relevant' : 'services',
+      description: getOrganization(allOrganizations, s.org ?? '')?.name || '',
+    }))
+    .sort((a, b) => {
+      const groupOrder: Record<string, number> = {
+        'most-relevant': 0,
+        services: 1,
+      };
+      const ga = groupOrder[a.groupId] ?? Number.MAX_SAFE_INTEGER;
+      const gb = groupOrder[b.groupId] ?? Number.MAX_SAFE_INTEGER;
+
+      if (ga !== gb) return ga - gb;
+
+      return (a.title ?? '').localeCompare(b.title ?? '', undefined, { sensitivity: 'base' });
+    });
+
+  return {
+    id: FilterCategory.SERVICE,
+    groupId: 'service-related',
+    icon: MenuGridIcon,
+    title: t('filter_bar.label.choose_service'),
+    name: FilterCategory.SERVICE,
+    removable: true,
+    virtualized: true,
+    searchable: true,
+    groups: {
+      selected: {},
+      'most-relevant': {
+        title: t('filter_bar.group.choose_service'),
+      },
+      services: {},
+    },
+    items: serviceFilters
+      .filter((serviceResource) => serviceResource.id)
+      .map((serviceResource) => {
+        const checked = currentFilters.service?.includes(serviceResource.id ?? '') ?? false;
+        return {
+          groupId: serviceResource.groupId,
+          description: serviceResource.description,
+          title: serviceResource.title,
+          value: serviceResource.id,
+          searchWords: [serviceResource.id, serviceResource.title],
+          checked,
+          role: 'checkbox',
+          name: FilterCategory.SERVICE,
+        } as MenuItemProps;
       }),
   };
 };
@@ -324,8 +368,6 @@ const createServiceFilter = (props: ServiceFilterProps): ToolbarFilterProps => {
  * @param orgsFromSearchState
  * @param serviceResources
  * @param currentFilters - The current filter state to calculate accurate counts
- * @param serviceResourcesQuery
- * @param onServiceResourcesQueryChange
  * @param enableServiceFilter
  * @returns {Array} - The array of filter settings.
  */
@@ -334,48 +376,41 @@ export const getFilters = ({
   allDialogs,
   allOrganizations,
   viewType,
-  orgsFromSearchState = [],
   serviceResources = [],
   currentFilters,
-  serviceResourcesQuery,
-  onServiceResourcesQueryChange,
   enableServiceFilter,
 }: {
   allDialogs: CountableDialogFieldsFragment[];
   allOrganizations: OrganizationFieldsFragment[];
   viewType: InboxViewType;
-  serviceResourcesQuery: string;
-  onServiceResourcesQueryChange: (query: string) => void;
-  orgsFromSearchState?: string[];
   serviceResources?: ServiceResource[];
   currentFilters?: FilterState;
   enableServiceFilter?: boolean;
-}): ToolbarFilterProps[] => {
-  const senderOrgFilter = createSenderOrgFilter(allDialogs, allOrganizations, orgsFromSearchState);
+}): ToolbarFilterProps['filters'] => {
+  const senderOrgFilter = createServiceOwnerFilter(allDialogs, allOrganizations ?? []);
   const statusFilter = createStatusFilter();
   const updatedAtFilter = createUpdatedAtFilter();
   const serviceFilter = createServiceFilter({
-    label: t('filter_bar.label.choose_service'),
-    name: 'service',
-    optionType: 'checkbox',
-    options: [],
     serviceResources,
     currentFilters,
-    serviceResourcesQuery,
-    onServiceResourcesQueryChange,
+    allOrganizations,
   });
 
-  const filters = [senderOrgFilter, updatedAtFilter];
+  const filters = [];
+
   if (viewType === 'inbox') {
     filters.push(statusFilter);
   }
+
+  filters.push(updatedAtFilter);
+  filters.push(senderOrgFilter);
 
   if (enableServiceFilter) {
     filters.push(serviceFilter);
   }
 
   return filters.filter((filter) => {
-    return filter.name === FilterCategory.SERVICE ? true : filter.options?.length > 0;
+    return filter.name === FilterCategory.SERVICE ? true : filter.items?.length > 0;
   });
 };
 
@@ -509,20 +544,14 @@ export const mergeFilterDefaults = (
 };
 
 export const aggregateFilterState = (filterState: FilterState, viewType: InboxViewType): FilterState => {
-  if (!viewType) return filterState;
+  const presets = presetFiltersByView[viewType];
+  if (!presets) return filterState;
 
-  const presets = presetFiltersByView[viewType] ?? {};
-  const merged = { ...filterState };
+  // @ts-ignore
+  const asArray = (v: unknown): DialogStatus[] => (v == null ? [] : Array.isArray(v) ? v : [v]);
 
-  const mergeList = <T>(a?: T[], b?: T[], c?: T[]) => Array.from(new Set([...(a ?? []), ...(b ?? []), ...(c ?? [])]));
-
-  if ('status' in presets || 'label' in presets) {
-    merged.status = mergeList(
-      presets.status as string[] | undefined,
-      presets.label as string[] | undefined,
-      filterState.status,
-    );
-  }
-
-  return merged;
+  return {
+    ...filterState,
+    status: [...new Set([...asArray(presets.status), ...asArray(presets.label), ...asArray(filterState.status)])],
+  };
 };

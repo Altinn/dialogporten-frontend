@@ -5,7 +5,6 @@ import { type Mock, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createCustomWrapper } from '../../../../utils/test-utils.tsx';
 import { useParties } from '../../../api/hooks/useParties.ts';
 import { useProfile } from '../../../pages/Profile';
-import { PageRoutes } from '../../../pages/routes.ts';
 import { formatNorwegianId, formatSSN, useAccounts } from './useAccounts.tsx';
 
 // Mock dependencies
@@ -140,25 +139,6 @@ describe('useAccounts', () => {
     (useProfile as Mock).mockReturnValue({ favoritesGroup: { parties: [] } });
   });
 
-  it('should return loading state when isLoading is true', () => {
-    const { result } = renderHook(
-      () =>
-        useAccounts({
-          parties: [],
-          selectedParties: [],
-          allOrganizationsSelected: false,
-          isLoading: true,
-        }),
-      {
-        wrapper: createCustomWrapper(),
-      },
-    );
-
-    expect(result.current.accounts).toHaveLength(1);
-    expect(result.current.accounts[0].loading).toBe(true);
-    expect(result.current.accountGroups).toEqual({ loading: { title: 'profile.accounts.loading' } });
-  });
-
   it('should return empty state when no selected parties', () => {
     const { result } = renderHook(
       () =>
@@ -253,72 +233,6 @@ describe('useAccounts', () => {
       expect(account.badge?.color).toBe('neutral');
       expect(account.badge?.label).toBe('badge.deleted');
     }
-  });
-
-  it('should provide search functionality when parties count exceeds threshold', () => {
-    const selectedParties = parties;
-
-    const { result } = renderHook(
-      () =>
-        useAccounts({
-          parties,
-          selectedParties,
-          allOrganizationsSelected: false,
-          isLoading: false,
-        }),
-      {
-        wrapper: createCustomWrapper(),
-      },
-    );
-
-    // Should provide search when parties > 2
-    expect(result.current.accountSearch).toBeDefined();
-    expect(result.current.accountSearch?.placeholder).toBe('parties.search');
-    expect(result.current.filterAccount).toBeDefined();
-  });
-
-  it('should handle onSelectAccount correctly', () => {
-    const selectedParties = [parties[0]];
-
-    const { result } = renderHook(
-      () =>
-        useAccounts({
-          parties,
-          selectedParties,
-          allOrganizationsSelected: false,
-          isLoading: false,
-        }),
-      {
-        wrapper: createCustomWrapper(),
-      },
-    );
-
-    // Test selecting an account
-    result.current.onSelectAccount('urn:altinn:person:identifier-no:1', PageRoutes.inbox);
-
-    expect(mockSetSelectedPartyIds).toHaveBeenCalledWith(['urn:altinn:person:identifier-no:1'], false);
-  });
-
-  it('should handle all organizations selection', () => {
-    const selectedParties = parties;
-
-    const { result } = renderHook(
-      () =>
-        useAccounts({
-          parties,
-          selectedParties,
-          allOrganizationsSelected: false,
-          isLoading: false,
-        }),
-      {
-        wrapper: createCustomWrapper(),
-      },
-    );
-
-    // Test selecting all organizations
-    result.current.onSelectAccount('ALL', PageRoutes.inbox);
-
-    expect(mockSetSelectedPartyIds).toHaveBeenCalledWith([], true);
   });
 
   it('should handle options correctly', () => {

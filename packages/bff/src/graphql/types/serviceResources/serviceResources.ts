@@ -12,7 +12,7 @@ interface TransformedServiceResource {
   selfIdentifiedUserEnabled: boolean;
 }
 
-const serviceResourcesRedisKey = 'arbeidsflate-service-resources:v2';
+const serviceResourcesRedisKey = 'arbeidsflate-service-resources:v3';
 let refreshTimer: NodeJS.Timeout | null = null;
 
 async function fetchServiceResources(): Promise<Resource[]> {

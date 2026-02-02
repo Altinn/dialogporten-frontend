@@ -70,6 +70,7 @@ export const useDialogActions = () => {
         groupId: 'mark-as-unread',
         icon: EyeClosedIcon,
         label: t('dialog.toolbar.mark_as_unread'),
+        'aria-label': t('dialog.toolbar.mark_as_unread'),
         as: 'button',
         onClick: () => {
           if (location.pathname !== PageRoutes.inbox) {
@@ -94,6 +95,7 @@ export const useDialogActions = () => {
         groupId: 'system-labels',
         icon: InboxFillIcon,
         label: t('dialog.toolbar.move_undo'),
+        'aria-label': t('dialog.toolbar.move_undo'),
         as: 'button',
         onClick: () =>
           handleUpdateLabel(
@@ -113,6 +115,7 @@ export const useDialogActions = () => {
         groupId: 'system-labels',
         icon: ArchiveIcon,
         label: t('dialog.toolbar.move_to_archive'),
+        'aria-label': t('dialog.toolbar.move_to_archive'),
         as: 'button',
         onClick: () =>
           handleUpdateLabel(
@@ -132,6 +135,7 @@ export const useDialogActions = () => {
         groupId: 'system-labels',
         icon: TrashIcon,
         label: t('dialog.toolbar.move_to_bin'),
+        'aria-label': t('dialog.toolbar.move_to_bin'),
         as: 'button',
         onClick: () =>
           handleUpdateLabel(
