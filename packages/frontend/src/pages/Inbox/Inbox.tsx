@@ -9,7 +9,7 @@ import {
   type SeenByLogItemProps,
   Toolbar,
 } from '@altinn/altinn-components';
-import type { FilterState } from '@altinn/altinn-components/dist/types/lib/components/Toolbar/Toolbar';
+import type { FilterState } from '@altinn/altinn-components';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useSearchParams } from 'react-router-dom';
@@ -113,7 +113,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     }
   }, [searchParams.toString()]);
 
-  const { accounts, selectedAccount, accountSearch, accountGroups, onSelectAccount, filterAccount } = useAccounts({
+  const { accounts, selectedAccount, accountSearch, accountGroups, onSelectAccount } = useAccounts({
     parties,
     selectedParties,
     allOrganizationsSelected,
@@ -121,6 +121,8 @@ export const Inbox = ({ viewType }: InboxProps) => {
       showGroups: true,
     },
   });
+
+  const selectedAccountId = selectedAccount?.id;
 
   const { filters, getFilterLabel } = useFilters({ viewType });
 
@@ -199,19 +201,25 @@ export const Inbox = ({ viewType }: InboxProps) => {
               items: accounts,
               search: accountSearch,
               groups: accountGroups,
-              currentAccount: selectedAccount,
-              onSelectAccount: (account: string) => onSelectAccount(account, PageRoutes[viewType]),
-              filterAccount,
-              isVirtualized: true,
+              label: selectedAccount?.name ?? '',
+              onSelectId: (id: string) => {
+                onSelectAccount(id, PageRoutes[viewType]);
+              },
+              searchable: true,
+              virtualized: true,
               title: t('parties.change_label'),
             }}
-            filterState={filterState}
-            getFilterLabel={getFilterLabel}
-            onFilterStateChange={onFiltersChange}
-            filters={filters}
-            showResultsLabel={t('filter.show_all_results')}
-            removeButtonAltText={t('filter_bar.remove_filter')}
-            addFilterButtonLabel={hasValidFilters ? t('filter_bar.add') : t('filter_bar.add_filter')}
+            filter={{
+              filterState,
+              filters,
+              getFilterLabel,
+              onFilterStateChange: onFiltersChange,
+              addLabel: t('filter_bar.add'),
+              addNextLabel: t('filter_bar.add_filter'),
+              resetLabel: t('filter_bar.reset_filters'),
+              submitLabel: t('filter.show_all_results'),
+              removeLabel: t('filter_bar.remove_filter'),
+            }}
           >
             <SaveSearchButton viewType={viewType} disabled={savedSearchDisabled} filterState={filterState} />
           </Toolbar>
@@ -219,7 +227,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
       </section>
       <AlertBanner showAlertBanner={isAlertBannerEnabled && !!alertBannerContent} />
       <Section>
-        {isAltinn2MessagesEnabled && <Altinn2ActiveSchemasNotification selectedAccount={selectedAccount} />}
+        {isAltinn2MessagesEnabled && <Altinn2ActiveSchemasNotification selectedAccountId={selectedAccountId} />}
         {dialogsSuccess && !dialogItems.length && !isLoading && !isLimitReached && (
           <EmptyState query={enteredSearchValue} viewType={viewType} searchMode={searchMode} />
         )}

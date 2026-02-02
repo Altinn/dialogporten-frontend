@@ -151,7 +151,7 @@ const useGroupedDialogs = ({
           },
         },
       ],
-      ariaLabel: t('dialog.context_menu.label', { title: item.title }),
+      'aria-label': t('dialog.context_menu.label', { title: item.title }),
     };
 
     return {

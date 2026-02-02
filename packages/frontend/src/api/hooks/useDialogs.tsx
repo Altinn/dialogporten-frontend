@@ -1,4 +1,4 @@
-import type { FilterState } from '@altinn/altinn-components/dist/types/lib/components/Toolbar/Toolbar';
+import type { FilterState } from '@altinn/altinn-components';
 import { keepPreviousData, useQueryClient } from '@tanstack/react-query';
 import type {
   DialogStatus,

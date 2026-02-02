@@ -13,7 +13,7 @@ import { type ChangeEvent, type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useParties } from '../../../api/hooks/useParties.ts';
-import { useFeatureFlag } from '../../../featureFlags/useFeatureFlag';
+import { useFeatureFlag } from '../../../featureFlags';
 import { useProfile } from '../../../pages/Profile';
 import { SettingsType } from '../../../pages/Profile/Settings/useSettings.tsx';
 import type { PageRoutes } from '../../../pages/routes.ts';
@@ -53,8 +53,8 @@ interface UseAccountsOutput {
   accountSearch: AccountSearchProps | undefined;
   filterAccount?: (item: AccountMenuItemProps, search: string) => boolean;
   onSelectAccount: (account: string, route: PageRoutes) => void;
-  selectedAccount?: Account;
-  currentAccount?: Account;
+  selectedAccount?: AccountMenuItemProps;
+  currentAccount?: AccountMenuItemProps;
 }
 
 export const formatSSN = (ssn: string, maskIdentifierSuffix: boolean) => {
@@ -83,30 +83,6 @@ export const formatNorwegianId = (partyId: string, isCurrentEndUser: boolean) =>
   }
 
   return [ssnOrOrgNo.slice(0, 3), ssnOrOrgNo.slice(3, 6), ssnOrOrgNo.slice(6, 9)].join('\u2009');
-};
-
-const filterAccount = (item: AccountMenuItemProps, search: string) => {
-  if (search.length && item.groupId === SettingsType.favorites) {
-    return false;
-  }
-
-  if (search) {
-    const partyItem: PartyItemProp = item as PartyItemProp;
-    const normalized = search.trim().toLowerCase();
-    const parts = normalized.split(/\s+/);
-    const title = (partyItem.name ?? '').toString().toLowerCase();
-    const parentName = (partyItem.parentName ?? '').toString().toLowerCase();
-    const ssnOrOrgNo = getSSNOrOrgNo(partyItem.id);
-    return parts.some(
-      (part) =>
-        title.includes(part) ||
-        parentName.includes(part) ||
-        title.includes(normalized) ||
-        parentName.includes(normalized) ||
-        ssnOrOrgNo.includes(normalized),
-    );
-  }
-  return false;
 };
 
 const compareName = (a: string, b: string) =>
@@ -139,7 +115,6 @@ export const useAccounts = ({
     type: 'person' as AccountMenuItemProps['type'],
     groupId: 'loading',
     title: '',
-    loading: true,
     icon: { name: '', type: 'person' },
     name: '',
   };
@@ -185,10 +160,13 @@ export const useAccounts = ({
     return otherPeople
       .map((person) => {
         const description = t('word.ssn') + formatNorwegianId(person.party, false);
+        const ssnOrOrgNo = getSSNOrOrgNo(person.party);
         return {
           id: person.party,
-          ssnOrOrgNo: getSSNOrOrgNo(person.party),
+          searchWords: [person.name, ssnOrOrgNo],
+          ssnOrOrgNo,
           name: person.name,
+          title: person.name,
           type: 'person' as AccountMenuItemProps['type'],
           icon: { name: person.name, type: 'person' as AvatarType },
           isDeleted: person.isDeleted,
@@ -218,11 +196,13 @@ export const useAccounts = ({
               false,
             )}, ${t('profile.account.partOf')} ${parent.name}`
           : `${t('word.orgNo')} ${formatNorwegianId(party.party, false)}`;
-
+      const orgNo = getSSNOrOrgNo(party.party);
       return {
         id: party.party,
-        ssnOrOrgNo: getSSNOrOrgNo(party.party),
+        searchWords: [orgNo, party.name],
+        ssnOrOrgNo: orgNo,
         name: party.name,
+        title: party.name,
         type: 'company' as AccountMenuItemProps['type'],
         icon: {
           name: party.name,
@@ -274,10 +254,10 @@ export const useAccounts = ({
     return {
       accounts: [loadingAccountMenuItem as PartyItemProp],
       accountGroups: { loading: { title: t('profile.accounts.loading') } },
-      selectedAccount: loadingAccount as Account,
+      selectedAccount: loadingAccount,
       accountSearch: undefined,
       onSelectAccount: () => {},
-      currentAccount: loadingAccount as Account,
+      currentAccount: loadingAccount,
     };
   }
 
@@ -313,7 +293,9 @@ export const useAccounts = ({
   const endUserAccount: PartyItemProp | undefined = currentEndUser
     ? {
         id: currentEndUser.party ?? '',
+        searchWords: [currentEndUser.name],
         name: currentEndUser.name ?? '',
+        title: currentEndUser.name ?? '',
         type: 'person' as AccountMenuItemProps['type'],
         groupId: 'primary',
         icon: {
@@ -337,6 +319,7 @@ export const useAccounts = ({
     uuid: 'N/A',
     id: 'ALL',
     name: t('parties.labels.all_organizations'),
+    title: t('parties.labels.all_organizations'),
     type: 'group',
     groupId: 'groups',
     icon: {
@@ -445,6 +428,5 @@ export const useAccounts = ({
     accountSearch,
     onSelectAccount,
     currentAccount,
-    filterAccount,
   };
 };

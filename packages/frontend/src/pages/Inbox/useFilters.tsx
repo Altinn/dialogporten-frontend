@@ -1,4 +1,4 @@
-import type { ToolbarFilterProps, ToolbarProps } from '@altinn/altinn-components';
+import type { FilterProps, ToolbarFilterProps } from '@altinn/altinn-components';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
@@ -12,8 +12,8 @@ import { FilterCategory, getFilters, readFiltersFromURLQuery } from './filters.t
 import { useOrganizations } from './useOrganizations.ts';
 
 interface UseFiltersOutput {
-  filters: ToolbarFilterProps[];
-  getFilterLabel: ToolbarProps['getFilterLabel'];
+  filters: FilterProps[];
+  getFilterLabel: ToolbarFilterProps['getFilterLabel'];
 }
 
 interface UseFiltersProps {
@@ -94,7 +94,7 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
       .slice(0, 5);
   }, [serviceResources, serviceResourcesQuery]);
 
-  const filters = useMemo(
+  const filters: FilterProps[] = useMemo(
     () =>
       getFilters({
         allDialogs,
@@ -119,10 +119,10 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
     ],
   );
 
-  const getFilterLabel = (name: string, value: (string | number)[] | undefined) => {
+  const getFilterLabel = (name: string, value: (string | number)[] | undefined): string | undefined => {
     const filter = filters.find((f) => f.name === name);
-    if (!filter || !value) {
-      return '';
+    if (!filter || !value?.length) {
+      return undefined;
     }
 
     if (name === FilterCategory.STATUS) {
@@ -152,7 +152,7 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
       return t('inbox.filter.multiple.service', { count: value?.length });
     }
 
-    return '';
+    return undefined;
   };
 
   return { filters, getFilterLabel };

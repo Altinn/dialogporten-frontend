@@ -125,6 +125,7 @@
   "filter_bar.label.choose_status": "Vel status",
   "filter_bar.label.updated": "Oppdatert dato",
   "filter_bar.remove_filter": "Fjern filter",
+  "filter_bar.reset_filters": "Fjern filtre",
   "filter_bar.save_search": "Lagre søk",
   "filter_bar.saved_search": "Lagra søk",
   "filter_bar.service.recommendations": "Foreslåtte tenester",

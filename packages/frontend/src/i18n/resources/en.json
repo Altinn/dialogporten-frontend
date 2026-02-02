@@ -125,6 +125,7 @@
   "filter_bar.label.choose_status": "Choose status",
   "filter_bar.label.updated": "Updated",
   "filter_bar.remove_filter": "Remove filter",
+  "filter_bar.reset_filters": "Clear filters",
   "filter_bar.save_search": "Save search",
   "filter_bar.saved_search": "Saved search",
   "filter_bar.service.recommendations": "Recommended services",

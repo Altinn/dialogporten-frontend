@@ -140,25 +140,6 @@ describe('useAccounts', () => {
     (useProfile as Mock).mockReturnValue({ favoritesGroup: { parties: [] } });
   });
 
-  it('should return loading state when isLoading is true', () => {
-    const { result } = renderHook(
-      () =>
-        useAccounts({
-          parties: [],
-          selectedParties: [],
-          allOrganizationsSelected: false,
-          isLoading: true,
-        }),
-      {
-        wrapper: createCustomWrapper(),
-      },
-    );
-
-    expect(result.current.accounts).toHaveLength(1);
-    expect(result.current.accounts[0].loading).toBe(true);
-    expect(result.current.accountGroups).toEqual({ loading: { title: 'profile.accounts.loading' } });
-  });
-
   it('should return empty state when no selected parties', () => {
     const { result } = renderHook(
       () =>

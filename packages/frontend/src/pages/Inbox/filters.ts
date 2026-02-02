@@ -1,4 +1,4 @@
-import type { FilterState, ToolbarFilterProps, ToolbarSearchProps } from '@altinn/altinn-components';
+import type { FilterProps, FilterState, MenuItemProps, ToolbarFilterProps } from '@altinn/altinn-components';
 import {
   type CountableDialogFieldsFragment,
   DialogStatus,
@@ -9,11 +9,10 @@ import {
 } from 'bff-types-generated';
 import { endOfDay, endOfMonth, endOfWeek, startOfDay, startOfMonth, startOfWeek, subMonths, subYears } from 'date-fns';
 import { t } from 'i18next';
-import type { ChangeEvent } from 'react';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { getOrganization } from '../../api/utils/organizations.ts';
 
-interface ServiceFilterProps extends ToolbarFilterProps {
+interface ServiceFilterProps {
   serviceResources: ServiceResource[];
   currentFilters?: FilterState;
   serviceResourcesQuery: string;
@@ -123,38 +122,50 @@ const getFilteredDialogs = (
   });
 };
 
-const createDateOptions = (): ToolbarFilterProps['options'] => {
+const createDateOptions = (): MenuItemProps[] => {
   const options = [
     {
+      id: DateFilterOption.TODAY,
+      role: 'radio',
       value: DateFilterOption.TODAY,
       groupId: 'group-0',
     },
     {
+      id: DateFilterOption.THIS_WEEK,
+      role: 'radio',
       value: DateFilterOption.THIS_WEEK,
       groupId: 'group-0',
     },
     {
+      id: DateFilterOption.THIS_MONTH,
+      role: 'radio',
       value: DateFilterOption.THIS_MONTH,
       groupId: 'group-0',
     },
     {
+      id: DateFilterOption.LAST_SIX_MONTHS,
+      role: 'radio',
       value: DateFilterOption.LAST_SIX_MONTHS,
       groupId: 'group-1',
     },
     {
+      id: DateFilterOption.LAST_TWELVE_MONTHS,
+      role: 'radio',
       value: DateFilterOption.LAST_TWELVE_MONTHS,
       groupId: 'group-1',
     },
     {
+      id: DateFilterOption.OLDER_THAN_ONE_YEAR,
+      role: 'radio',
       value: DateFilterOption.OLDER_THAN_ONE_YEAR,
       groupId: 'group-2',
     },
   ];
 
   return options.map((option) => ({
+    ...option,
     label: t(`filter.date.${option.value.toLowerCase()}`),
-    value: option.value,
-    groupId: option.groupId,
+    name: FilterCategory.UPDATED,
   }));
 };
 
@@ -163,20 +174,23 @@ const createSenderOrgFilter = (
   allOrganizations: OrganizationFieldsFragment[],
   orgsFromSearchState: string[],
   currentFilters: FilterState = {},
-): ToolbarFilterProps => {
+): FilterProps => {
   const filteredDialogs = getFilteredDialogs(allDialogs, currentFilters, FilterCategory.ORG);
   const orgCount = countOccurrences(filteredDialogs.map((d) => d.org));
   const uniqueOrgs = Array.from(new Set([...allDialogs.map((d) => d.org), ...orgsFromSearchState]));
 
   return {
+    id: FilterCategory.ORG,
     label: t('filter_bar.label.choose_sender'),
     name: FilterCategory.ORG,
     removable: true,
-    optionType: 'checkbox',
-    options: uniqueOrgs
+    items: uniqueOrgs
       .map((org) => ({
+        id: org,
+        name: FilterCategory.ORG,
         label: getOrganization(allOrganizations, org)?.name || org,
         value: org,
+        role: 'checkbox',
       }))
       .filter((option) => {
         if (orgsFromSearchState.includes(option.value)) {
@@ -188,13 +202,13 @@ const createSenderOrgFilter = (
   };
 };
 
-const createStatusFilter = (): ToolbarFilterProps => {
+const createStatusFilter = (): FilterProps => {
   return {
+    id: FilterCategory.STATUS,
     label: t('filter_bar.label.choose_status'),
     name: FilterCategory.STATUS,
     removable: true,
-    optionType: 'checkbox',
-    optionGroups: {
+    groups: {
       'static-status': {
         title: t('filter_bar.label.static_status'),
         divider: true,
@@ -204,89 +218,94 @@ const createStatusFilter = (): ToolbarFilterProps => {
         divider: true,
       },
     },
-    options: [
+    items: [
       {
+        id: DialogStatus.NotApplicable,
         label: t('status.not_applicable'),
         groupId: 'status-group-0',
         value: DialogStatus.NotApplicable,
       },
       {
+        id: DialogStatus.RequiresAttention,
         label: t('status.requires_attention'),
         groupId: 'status-group-1',
         value: DialogStatus.RequiresAttention,
       },
       {
+        id: DialogStatus.Awaiting,
         label: t('status.awaiting'),
         groupId: 'status-group-1',
         value: DialogStatus.Awaiting,
       },
       {
+        id: DialogStatus.InProgress,
         label: t('status.in_progress'),
         groupId: 'status-group-1',
         value: DialogStatus.InProgress,
       },
       {
+        id: DialogStatus.Completed,
         label: t('status.completed'),
         groupId: 'status-group-1',
         value: DialogStatus.Completed,
       },
       {
+        id: DialogStatus.Draft,
         label: t('status.draft'),
         groupId: 'status-group-2',
         value: DialogStatus.Draft,
       },
       {
+        id: SystemLabel.Sent,
         label: t('status.sent'),
         groupId: 'status-group-2',
         value: SystemLabel.Sent,
       },
       {
+        id: SystemLabel.Archive,
         label: t('status.archive'),
         groupId: 'status-group-3',
         value: SystemLabel.Archive,
       },
       {
+        id: SystemLabel.Bin,
         label: t('status.bin'),
         groupId: 'status-group-3',
         value: SystemLabel.Bin,
       },
-    ],
+    ].map((item) => ({
+      ...item,
+      role: 'checkbox',
+      name: FilterCategory.STATUS,
+    })),
   };
 };
 
-const createUpdatedAtFilter = (): ToolbarFilterProps => {
+const createUpdatedAtFilter = (): FilterProps => {
   return {
     id: FilterCategory.UPDATED,
     name: FilterCategory.UPDATED,
     label: t('filter_bar.label.updated'),
-    optionType: 'radio',
     removable: true,
-    options: createDateOptions(),
+    items: createDateOptions(),
   };
 };
 
-const createServiceFilter = (props: ServiceFilterProps): ToolbarFilterProps => {
-  const { serviceResources, currentFilters = {}, serviceResourcesQuery, onServiceResourcesQueryChange, name } = props;
-  const search: ToolbarSearchProps = {
-    name,
-    onClear: () => onServiceResourcesQueryChange(''),
-    placeholder: t('filter_bar.service.search_placeholder'),
-    value: serviceResourcesQuery,
-    onChange: (e: ChangeEvent<HTMLInputElement>) => {
-      onServiceResourcesQueryChange(e.target.value);
-    },
-  };
-
+const createServiceFilter = ({
+  serviceResources,
+  currentFilters = {},
+  serviceResourcesQuery,
+}: ServiceFilterProps): FilterProps => {
   // Calculate the count of serviceResources that have IDs (used for search results)
   const serviceResourcesCount = serviceResources.filter((serviceResource) => serviceResource.id).length;
 
   return {
-    label: props.label,
+    id: FilterCategory.SERVICE,
+    label: t('filter_bar.label.choose_service'),
     name: FilterCategory.SERVICE,
     removable: true,
-    optionType: props.optionType,
-    search,
-    optionGroups: {
+    searchable: true,
+    groups: {
       recommendations: {
         title: t('filter_bar.service.recommendations'),
       },
@@ -294,7 +313,7 @@ const createServiceFilter = (props: ServiceFilterProps): ToolbarFilterProps => {
         title: t('filter_bar.service.search_hits', { count: serviceResourcesCount }),
       },
     },
-    options: serviceResources
+    items: serviceResources
       .filter((serviceResource) => serviceResource.id)
       .map((serviceResource) => {
         const title =
@@ -304,6 +323,7 @@ const createServiceFilter = (props: ServiceFilterProps): ToolbarFilterProps => {
           label: title,
           value: serviceResource.id!,
           checked: currentFilters.service?.includes(serviceResource.id ?? '') ?? false,
+          role: 'checkbox',
         };
       })
       .sort((a, b) => {
@@ -350,15 +370,11 @@ export const getFilters = ({
   serviceResources?: ServiceResource[];
   currentFilters?: FilterState;
   enableServiceFilter?: boolean;
-}): ToolbarFilterProps[] => {
+}): ToolbarFilterProps['filters'] => {
   const senderOrgFilter = createSenderOrgFilter(allDialogs, allOrganizations, orgsFromSearchState);
   const statusFilter = createStatusFilter();
   const updatedAtFilter = createUpdatedAtFilter();
   const serviceFilter = createServiceFilter({
-    label: t('filter_bar.label.choose_service'),
-    name: 'service',
-    optionType: 'checkbox',
-    options: [],
     serviceResources,
     currentFilters,
     serviceResourcesQuery,
@@ -375,7 +391,7 @@ export const getFilters = ({
   }
 
   return filters.filter((filter) => {
-    return filter.name === FilterCategory.SERVICE ? true : filter.options?.length > 0;
+    return filter.name === FilterCategory.SERVICE ? true : filter.items?.length > 0;
   });
 };
 
