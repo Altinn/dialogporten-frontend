@@ -18,7 +18,7 @@ importers:
         specifier: ^16.0.0
         version: 16.2.7
       mprocs:
-        specifier: ^0.8.0
+        specifier: ^0.8.2
         version: 0.8.2
       turbo:
         specifier: 2.5.3
@@ -199,7 +199,7 @@ importers:
         specifier: ^8.2.2
         version: 8.2.2
       mprocs:
-        specifier: ^0.8.0
+        specifier: ^0.8.2
         version: 0.8.2
       nodemon:
         specifier: ^3.1.10

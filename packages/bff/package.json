@@ -76,7 +76,7 @@
     "@types/node": "^22.15.21",
     "@types/graphql-depth-limit": "1.1.6",
     "concurrently": "^8.2.2",
-    "mprocs": "^0.8.0",
+    "mprocs": "^0.8.2",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
