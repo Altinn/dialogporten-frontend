@@ -53,6 +53,9 @@ export const NotificationsPage = () => {
         [SettingsType.companies]: {
           title: companiesTitle,
         },
+        [SettingsType.alternativeNotifications]: {
+          title: t('profile.settings.alternative_addresses'),
+        },
       },
     },
   });
