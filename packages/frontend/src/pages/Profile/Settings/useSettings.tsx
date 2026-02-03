@@ -18,6 +18,7 @@ import { usePartiesWithNotificationSettings } from '../usePartiesWithNotificatio
 import { useProfile } from '../useProfile.tsx';
 import { AccountAlertsDetails } from './AccountAlertsDetails.tsx';
 import { ContactProfileDetails } from './ContactProfileDetails.tsx';
+import { VarslingsprofilDetails } from './VarslingsprofilDetails.tsx';
 
 export enum SettingsType {
   contact = `contact`,
@@ -27,12 +28,13 @@ export enum SettingsType {
   primary = 'primary',
   profiles = 'profiles',
   favorites = 'favorites',
+  alternativeNotifications = 'alternativeNotifications',
 }
 
 interface UseSettingsOptions {
   groups?: Record<SettingsType | string, { title?: string | ReactNode }>;
-  excludeGroups?: (keyof typeof SettingsType)[];
-  includeGroups?: (keyof typeof SettingsType)[];
+  excludeGroups?: SettingsType[];
+  includeGroups?: SettingsType[];
 }
 
 interface UseSettingsInput {
@@ -356,9 +358,27 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
     },
   ];
 
+  const alternativeAddressSettings: SettingsItemProps[] = [
+    {
+      id: 'varslingsprofil',
+      groupId: 'alternativeNotifications',
+      variant: 'modal',
+      icon: PersonRectangleIcon,
+      title: t('Varslingsprofil'),
+      value: '-', //??? alternative or if not then -
+      badge: { label: '2 aktører' }, //core list.length
+      modalProps: {
+        icon: PersonRectangleIcon,
+        title: 'Varslingsadresse',
+      },
+      children: <VarslingsprofilDetails />,
+    },
+  ];
+
   const allSettings = [
     ...contactSettings,
     ...alertSettings,
+    ...alternativeAddressSettings,
     ...contactProfilePhoneSettings,
     ...contactProfileEmailSettings,
     ...accountAlertSettings,
