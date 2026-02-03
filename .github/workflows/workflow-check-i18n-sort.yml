@@ -1,0 +1,46 @@
+name: Check i18n sort
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  check-i18n-sort:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          fetch-depth: 0
+
+      - name: "Installing Dependencies"
+        uses: ./.github/actions/install
+
+      - name: Run i18n:sort
+        run: pnpm --filter frontend i18n:sort
+
+      - name: Check for uncommitted changes
+        id: check-changes
+        run: |
+          if [ -n "$(git status --porcelain packages/frontend/src/i18n/resources/)" ]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "❌ i18n files are not properly sorted!"
+            echo ""
+            echo "The following files have unsorted keys:"
+            git status --porcelain packages/frontend/src/i18n/resources/
+            echo ""
+            echo "Please run 'pnpm --filter frontend i18n:sort' and commit the changes."
+            git diff packages/frontend/src/i18n/resources/
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "✅ All i18n files are properly sorted"
+          fi
+
+      - name: Fail if files are not sorted
+        if: ${{ steps.check-changes.outputs.has_changes == 'true' }}
+        run: |
+          echo "i18n files must be sorted before committing. Run 'pnpm --filter frontend i18n:sort' and commit the changes."
+          exit 1
