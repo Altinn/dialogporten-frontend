@@ -1,0 +1,6 @@
+mutation verifyAddress($data: VerifyAddressInput!) {
+  verifyAddress(data: $data) {
+    success
+    message
+  }
+}

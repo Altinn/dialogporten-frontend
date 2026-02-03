@@ -11,10 +11,11 @@ import {
   updateLanguage,
   updateNotificationsSetting,
   updateProfileSettingPreference,
+  verifyAddress,
 } from '../functions/profile.ts';
 import { createSavedSearch, deleteSavedSearch, updateSavedSearch } from '../functions/savedsearch.ts';
 import { languageCodes, updateAltinnPersistentContextValue } from './cookie.js';
-import { NotificationSettingsInput, Response, SavedSearchInput, SavedSearches } from './index.ts';
+import { NotificationSettingsInput, Response, SavedSearchInput, SavedSearches, VerifyAddressInput } from './index.ts';
 
 export const Mutation = extendType({
   type: 'Mutation',
@@ -250,6 +251,27 @@ export const UpdateProfileSettingPreference = extendType({
         } catch (error) {
           logger.error(error, 'Failed to update profile setting preference:');
           return { success: false, message: 'Failed to update profile setting preference' };
+        }
+      },
+    });
+  },
+});
+
+export const VerifyAddress = extendType({
+  type: 'Mutation',
+  definition(t) {
+    t.field('verifyAddress', {
+      type: Response,
+      args: {
+        data: VerifyAddressInput,
+      },
+      resolve: async (_, { data }, ctx) => {
+        try {
+          const result = await verifyAddress(data, ctx);
+          return result;
+        } catch (error) {
+          logger.error(error, 'Failed to verify address:');
+          return { success: false, message: 'Failed to verify address' };
         }
       },
     });

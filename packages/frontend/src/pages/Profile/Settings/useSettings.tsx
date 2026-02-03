@@ -2,6 +2,7 @@ import {
   AvatarGroup,
   type AvatarGroupProps,
   type AvatarVariant,
+  Badge,
   type BadgeProps,
   type SettingsGroupProps,
   type SettingsItemProps,
@@ -16,6 +17,7 @@ import { useParties } from '../../../api/hooks/useParties.ts';
 import { useAccounts } from '../../../components/PageLayout/Accounts/useAccounts.tsx';
 import { usePartiesWithNotificationSettings } from '../usePartiesWithNotificationSettings.tsx';
 import { useProfile } from '../useProfile.tsx';
+import { useVerifiedAddresses } from '../useVerifiedAddresses.tsx';
 import { AccountAlertsDetails } from './AccountAlertsDetails.tsx';
 import { ContactProfileDetails } from './ContactProfileDetails.tsx';
 
@@ -31,8 +33,8 @@ export enum SettingsType {
 
 interface UseSettingsOptions {
   groups?: Record<SettingsType | string, { title?: string | ReactNode }>;
-  excludeGroups?: (keyof typeof SettingsType)[];
-  includeGroups?: (keyof typeof SettingsType)[];
+  excludeGroups?: SettingsType[];
+  includeGroups?: SettingsType[];
 }
 
 interface UseSettingsInput {
@@ -100,6 +102,10 @@ export const useSettings = ({
   const [searchString, setSearchString] = useState<string>('');
   const { partiesWithNotificationSettings, uniqueEmailAddresses, uniquePhoneNumbers } =
     usePartiesWithNotificationSettings(parties);
+  const { verifiedAddresses } = useVerifiedAddresses();
+
+  const isVerifiedAddress = (value: string, type: 'Email' | 'Sms') =>
+    verifiedAddresses.some((addr) => addr?.value === value && addr?.addressType === type);
 
   const getUsedByEmail = (email?: string): UsedByLogItemProps[] | undefined => {
     if (!email) return undefined;
@@ -299,7 +305,20 @@ export const useSettings = ({
     icon: PersonRectangleIcon,
     title: t('profile.settings.notification_profile_email'),
     value: uea.email,
-    badge: <AvatarGroup items={getAvatarGroup(getUsedByEmail(uea.email))} size="lg" />,
+    badge: (
+      <>
+        <AvatarGroup items={getAvatarGroup(getUsedByEmail(uea.email))} size="lg" />
+        <Badge
+          label={t(
+            isVerifiedAddress(uea.email, 'Email')
+              ? 'profile.verification.status_verified'
+              : 'profile.verification.status_unverified',
+          )}
+          color={isVerifiedAddress(uea.email, 'Email') ? 'success' : 'neutral'}
+          size="sm"
+        />
+      </>
+    ),
     variant: 'modal',
     children: (
       <ContactProfileDetails
@@ -318,7 +337,20 @@ export const useSettings = ({
     icon: PersonRectangleIcon,
     title: t('profile.settings.notification_profile_sms'),
     value: uep.phoneNumber,
-    badge: <AvatarGroup items={getAvatarGroup(getUsedByPhoneNumber(uep.phoneNumber))} size="lg" />,
+    badge: (
+      <>
+        <AvatarGroup items={getAvatarGroup(getUsedByPhoneNumber(uep.phoneNumber))} size="lg" />
+        <Badge
+          label={t(
+            isVerifiedAddress(uep.phoneNumber, 'Sms')
+              ? 'profile.verification.status_verified'
+              : 'profile.verification.status_unverified',
+          )}
+          color={isVerifiedAddress(uep.phoneNumber, 'Sms') ? 'success' : 'neutral'}
+          size="sm"
+        />
+      </>
+    ),
     variant: 'modal',
     children: (
       <ContactProfileDetails

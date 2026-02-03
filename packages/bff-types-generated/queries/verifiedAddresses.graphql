@@ -1,0 +1,6 @@
+query verifiedAddresses {
+  verifiedAddresses {
+    value
+    addressType
+  }
+}

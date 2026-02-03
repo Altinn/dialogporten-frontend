@@ -21,6 +21,9 @@ import {
   type UpdateProfileSettingPreferenceMutation,
   type UpdateSavedSearchMutation,
   type UpdateSystemLabelMutation,
+  type VerifiedAddressesQuery,
+  type VerifyAddressMutation,
+  type VerifyAddressMutationVariables,
   getSdk,
 } from 'bff-types-generated';
 import { ClientError, GraphQLClient, type RequestMiddleware, type ResponseMiddleware } from 'graphql-request';
@@ -237,3 +240,8 @@ export const updateProfileSettingPreference = (
   shouldShowDeletedEntities: boolean,
 ): Promise<UpdateProfileSettingPreferenceMutation> =>
   graphQLSDK.UpdateProfileSettingPreference({ shouldShowDeletedEntities });
+
+export const getVerifiedAddresses = (): Promise<VerifiedAddressesQuery> => graphQLSDK.verifiedAddresses();
+
+export const verifyAddress = (data: VerifyAddressMutationVariables['data']): Promise<VerifyAddressMutation> =>
+  graphQLSDK.verifyAddress({ data });

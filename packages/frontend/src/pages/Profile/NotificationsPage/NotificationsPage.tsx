@@ -7,6 +7,7 @@ import { usePageTitle } from '../../../hooks/usePageTitle';
 import { SettingsType, useSettings } from '../Settings/useSettings.tsx';
 import { useProfile } from '../useProfile';
 import styles from './notificationsPage.module.css';
+
 export interface NotificationAccountsType extends PartyFieldsFragment {
   notificationSettings?: NotificationSettingsResponse;
   parentId?: string;

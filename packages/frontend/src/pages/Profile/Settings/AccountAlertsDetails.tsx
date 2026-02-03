@@ -1,7 +1,11 @@
 import {
+  Badge,
   Button,
   ButtonGroup,
+  Field,
   Fieldset,
+  Heading,
+  Input,
   Section,
   Switch,
   TextField,
@@ -11,14 +15,23 @@ import {
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { deleteNotificationsetting, updateNotificationsetting } from '../../../api/queries.ts';
+import { deleteNotificationsetting, updateNotificationsetting, verifyAddress } from '../../../api/queries.ts';
 import { QUERY_KEYS } from '../../../constants/queryKeys.ts';
 import { useErrorLogger } from '../../../hooks/useErrorLogger.ts';
 import type { NotificationAccountsType } from '../NotificationsPage/NotificationsPage.tsx';
 import { useProfile } from '../useProfile.tsx';
+import { useVerifiedAddresses } from '../useVerifiedAddresses.tsx';
+import styles from './AccountAlertsDetails.module.css';
 
 export interface AccountAlertsDetailsProps {
   notificationParty?: NotificationAccountsType | null;
+}
+
+type VerificationStep = 'awaiting_email_code' | 'awaiting_sms_code';
+
+interface PendingVerification {
+  step: VerificationStep;
+  address: string;
 }
 
 export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetailsProps) => {
@@ -26,12 +39,14 @@ export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetails
   const queryClient = useQueryClient();
   const { openSnackbar } = useSnackbar();
   const { t } = useTranslation();
-
   const { logError } = useErrorLogger();
+  const { verifiedAddresses } = useVerifiedAddresses();
+
   const notificationSetting = notificationParty?.notificationSettings;
   const alertPhoneNumber = notificationSetting?.phoneNumber || user?.phoneNumber || '';
   const alertEmailAddress = notificationSetting?.emailAddress || user?.email || '';
   const partyUuid = notificationSetting?.partyUuid || notificationParty?.partyUuid || '';
+
   const [enablePhoneNotifications, setEnablePhoneNotifications] = useState<boolean>(
     !!notificationSetting?.phoneNumber && alertPhoneNumber.length > 0,
   );
@@ -41,18 +56,18 @@ export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetails
   const [alertEmailAddressState, setAlertEmailAddressState] = useState<string>(alertEmailAddress);
   const [alertPhoneNumberState, setAlertPhoneNumberState] = useState<string>(alertPhoneNumber);
 
+  const [verificationState, setVerificationState] = useState<PendingVerification | null>(null);
+  const [codeInput, setCodeInput] = useState('');
+  const [codeError, setCodeError] = useState('');
+  const [isSendingCode, setIsSendingCode] = useState(false);
+  const [isConfirmingCode, setIsConfirmingCode] = useState(false);
+
   const isAnotherPerson = notificationParty?.partyType === 'Person' && !notificationParty.isCurrentEndUser;
   const isCompany = notificationParty?.partyType === 'Organization';
 
   const handleClose = () => {
-    /* Close the nearest <dialog> element (since this component is rendered inside it)
-Using `closest('dialog')` keeps it scoped to this instance instead of querying the entire DOM.
-This is a pragmatic solution until the dialog exposes an onClose prop or ref we can call directly. */
     document.activeElement?.closest('dialog')?.close();
   };
-
-  const organizationContactEmailPattern =
-    /^(?:(?:"[^"]+")|(?:[a-zA-Z0-9!#$%&'*+\-=?^_`{|}~]+(?:\.[a-zA-Z0-9!#$%&'*+\-=?^_`{|}~]+)*))@(?:(?:[a-zA-Z0-9æøåÆØÅ](?:[a-zA-Z0-9\-æøåÆØÅ]{0,61}[a-zA-Z0-9æøåÆØÅ])?\.){1,9}[a-zA-Z]{2,14}|\d{1,3}(?:\.\d{1,3}){3})$/;
 
   const isDirty =
     (enablePhoneNotifications && alertPhoneNumberState !== alertPhoneNumber) ||
@@ -60,63 +75,187 @@ This is a pragmatic solution until the dialog exposes an onClose prop or ref we 
     enablePhoneNotifications !== (!!notificationSetting?.phoneNumber && alertPhoneNumber.length > 0) ||
     enableEmailNotifications !== (!!notificationSetting?.emailAddress && alertEmailAddress.length > 0);
 
-  const handleUpdateNotificationSettings = async (e: React.FormEvent<HTMLFormElement>) => {
-    handleClose();
+  const invalidateQueries = () => {
+    void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.VERIFIED_ADDRESSES] });
+    void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.NOTIFICATION_SETTINGS_FOR_CURRENT_USER] });
+  };
 
-    e.preventDefault();
-    const updatedSettings = notificationSetting?.partyUuid
-      ? {
-          ...notificationSetting,
-          userId: notificationSetting.userId,
-          partyUuid,
-          emailAddress: enableEmailNotifications ? alertEmailAddressState : '',
-          phoneNumber: enablePhoneNotifications ? alertPhoneNumberState : '',
-        }
-      : {
-          partyUuid,
-          emailAddress: enableEmailNotifications ? alertEmailAddressState : '',
-          phoneNumber: enablePhoneNotifications ? alertPhoneNumberState : '',
-        };
+  const isAlreadyVerified = (value: string, type: 'Email' | 'Sms') =>
+    verifiedAddresses.some(
+      (a: { value?: string | null; addressType?: string | null } | null) =>
+        a?.value === value && a?.addressType === type,
+    );
+
+  const handleTriggerVerification = async (type: 'email' | 'sms') => {
+    setIsSendingCode(true);
     try {
-      if (enableEmailNotifications || enablePhoneNotifications) {
-        const result = await updateNotificationsetting(updatedSettings);
-        if (!result?.updateNotificationSetting?.success) {
-          openSnackbar({
-            message: t('profile.account_alerts.snackbar.error'),
-            color: 'danger',
-          });
-        } else {
-          openSnackbar({
-            message: t('profile.account_alerts.snackbar.success'),
-            color: 'company',
-          });
-        }
-      } else {
-        await deleteNotificationsetting(partyUuid);
-        openSnackbar({
-          message: t('profile.account_alerts.snackbar.success'),
-          color: 'company',
+      if (type === 'email') {
+        await updateNotificationsetting({
+          partyUuid,
+          emailAddress: alertEmailAddressState,
+          generateVerificationCode: true,
         });
+        setVerificationState({ step: 'awaiting_email_code', address: alertEmailAddressState });
+      } else {
+        await updateNotificationsetting({
+          partyUuid,
+          phoneNumber: alertPhoneNumberState,
+          generateVerificationCode: true,
+        });
+        setVerificationState({ step: 'awaiting_sms_code', address: alertPhoneNumberState });
+      }
+      setCodeInput('');
+      setCodeError('');
+    } catch (err) {
+      logError(
+        err as Error,
+        { context: 'AccountAlertsDetails.handleTriggerVerification' },
+        'Error sending verification code',
+      );
+      openSnackbar({ message: t('profile.account_alerts.snackbar.error'), color: 'danger' });
+    } finally {
+      setIsSendingCode(false);
+    }
+  };
+
+  const handleConfirmCode = async () => {
+    if (!verificationState) return;
+    setIsConfirmingCode(true);
+    setCodeError('');
+    try {
+      const result = await verifyAddress({
+        value: verificationState.address,
+        type: verificationState.step === 'awaiting_email_code' ? 'Email' : 'Sms',
+        verificationCode: codeInput,
+      });
+      if (result?.verifyAddress?.success) {
+        invalidateQueries();
+        setVerificationState(null);
+      } else {
+        setCodeError(t('profile.verification.code_invalid'));
       }
     } catch (err) {
       logError(
         err as Error,
-        {
-          context: 'CompanyNotificationSettings.handleUpdateNotificationSettings',
-          partyUuid,
-          enablePhoneNotifications,
-          enableEmailNotifications,
-        },
+        { context: 'AccountAlertsDetails.handleConfirmCode' },
+        'Error confirming verification code',
+      );
+      openSnackbar({ message: t('profile.account_alerts.snackbar.error'), color: 'danger' });
+    } finally {
+      setIsConfirmingCode(false);
+    }
+  };
+
+  // TO-DO #3806: Resend functionality can be added after API supports it
+  // const handleResend = async () => {
+  //   if (!verificationState) return;
+  //   setIsSendingCode(true);
+  //   try {
+  //     if (verificationState.step === 'awaiting_email_code') {
+  //       await updateNotificationsetting({
+  //         partyUuid,
+  //         emailAddress: verificationState.address,
+  //         generateVerificationCode: true,
+  //       });
+  //     } else {
+  //       await updateNotificationsetting({
+  //         partyUuid,
+  //         phoneNumber: verificationState.address,
+  //         generateVerificationCode: true,
+  //       });
+  //     }
+  //   } catch (err) {
+  //     logError(err as Error, { context: 'AccountAlertsDetails.handleResend' }, 'Error resending verification code');
+  //     openSnackbar({ message: t('profile.account_alerts.snackbar.error'), color: 'danger' });
+  //   } finally {
+  //     setIsSendingCode(false);
+  //   }
+  // };
+
+  const handleUpdateNotificationSettings = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const updatedSettings = {
+      partyUuid,
+      userId: notificationSetting?.userId,
+      emailAddress: enableEmailNotifications ? alertEmailAddressState : '',
+      phoneNumber: enablePhoneNotifications ? alertPhoneNumberState : '',
+      resourceIncludeList: notificationSetting?.resourceIncludeList,
+    };
+    try {
+      if (enableEmailNotifications || enablePhoneNotifications) {
+        const result = await updateNotificationsetting(updatedSettings);
+        if (result?.updateNotificationSetting?.success) {
+          handleClose();
+          openSnackbar({ message: t('profile.account_alerts.snackbar.success'), color: 'company' });
+        } else {
+          openSnackbar({ message: t('profile.account_alerts.snackbar.error'), color: 'danger' });
+        }
+      } else {
+        await deleteNotificationsetting(partyUuid);
+        handleClose();
+        openSnackbar({ message: t('profile.account_alerts.snackbar.success'), color: 'company' });
+      }
+    } catch (err) {
+      logError(
+        err as Error,
+        { context: 'AccountAlertsDetails.handleUpdateNotificationSettings', partyUuid },
         'Error updating notification settings',
       );
-      openSnackbar({
-        message: t('profile.account_alerts.snackbar.error'),
-        color: 'danger',
-      });
+      openSnackbar({ message: t('profile.account_alerts.snackbar.error'), color: 'danger' });
     } finally {
       void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.NOTIFICATION_SETTINGS_FOR_CURRENT_USER] });
     }
   };
+
+  const isEmailVerified = !!alertEmailAddressState && isAlreadyVerified(alertEmailAddressState, 'Email');
+  const isPhoneVerified = !!alertPhoneNumberState && isAlreadyVerified(alertPhoneNumberState, 'Sms');
+  const hasUnverifiedEmail = enableEmailNotifications && !!alertEmailAddressState && !isEmailVerified;
+  const hasUnverifiedSms = enablePhoneNotifications && !!alertPhoneNumberState && !isPhoneVerified;
+  const needsVerification = hasUnverifiedEmail || hasUnverifiedSms;
+
+  if (verificationState) {
+    const isEmail = verificationState.step === 'awaiting_email_code';
+    return (
+      <Section spacing={4}>
+        <Heading size="sm">{t('profile.verification.verify_address_title')}</Heading>
+        <TextField
+          label={
+            isEmail ? t('profile.account_alerts.email_placeholder') : t('profile.account_alerts.phone_placeholder')
+          }
+          value={verificationState.address}
+          readOnly
+          size="sm"
+        />
+        <TextField
+          label={t('profile.verification.code_label')}
+          value={codeInput}
+          onChange={(e) => {
+            setCodeInput(e.target.value);
+            setCodeError('');
+          }}
+          placeholder={t('profile.verification.code_placeholder')}
+          inputMode="numeric"
+          autoComplete="one-time-code"
+        />
+        <Typography size="sm">
+          <p>{isEmail ? t('profile.verification.code_hint_email') : t('profile.verification.code_hint_sms')}</p>
+        </Typography>
+        {codeError && <Typography size="sm">{codeError}</Typography>}
+        <ButtonGroup>
+          <Button type="button" variant="tinted" onClick={handleConfirmCode} disabled={isConfirmingCode || !codeInput}>
+            {t('profile.verification.confirm_button')}
+          </Button>
+          <Button type="button" variant="outline" onClick={() => setVerificationState(null)}>
+            {t('profile.account_alerts.cancel')}
+          </Button>
+          {/* TO-DO #3806 Resend functionality can be added after API supports it */}
+          {/* <Button type="button" variant="outline" onClick={handleResend} disabled={isSendingCode}>
+            {t('profile.verification.resend_code')}
+          </Button> */}
+        </ButtonGroup>
+      </Section>
+    );
+  }
 
   return (
     <form onSubmit={handleUpdateNotificationSettings}>
@@ -130,32 +269,27 @@ This is a pragmatic solution until the dialog exposes an onClose prop or ref we 
             onChange={() => setEnablePhoneNotifications((prev) => !prev)}
           />
           {enablePhoneNotifications && (
-            <TextField
-              name="tel"
-              pattern="^(([0-9]{5})|([0-9]{8})|((00[0-9]{2})[0-9]+)|((\+[0-9]{2})[0-9]+))$"
-              required
-              onInvalid={(e) => {
-                if (e.currentTarget.validity.valueMissing) {
-                  e.currentTarget.setCustomValidity(t('profile.account_alerts.phone_required'));
-                } else if (e.currentTarget.validity.patternMismatch) {
-                  e.currentTarget.setCustomValidity(t('profile.account_alerts.phone_invalid'));
-                } else {
-                  e.currentTarget.setCustomValidity('');
-                }
-              }}
-              onChange={(e) => {
-                setAlertPhoneNumberState(e.target.value);
-                if (e.currentTarget.validity.valueMissing) {
-                  e.currentTarget.setCustomValidity(t('profile.account_alerts.phone_required'));
-                } else if (e.currentTarget.validity.patternMismatch) {
-                  e.currentTarget.setCustomValidity(t('profile.account_alerts.phone_invalid'));
-                } else {
-                  e.currentTarget.setCustomValidity('');
-                }
-              }}
-              placeholder={t('profile.account_alerts.phone_placeholder')}
-              value={alertPhoneNumberState}
-            />
+            <Field>
+              <div className={styles.fieldWrapper}>
+                <Input
+                  name="tel"
+                  size="sm"
+                  value={alertPhoneNumberState}
+                  onChange={(e) => setAlertPhoneNumberState(e.target.value)}
+                  placeholder={t('profile.account_alerts.phone_placeholder')}
+                  autoComplete="tel"
+                />
+                {alertPhoneNumberState && (
+                  <span data-size="sm" className={styles.badgeOverlay}>
+                    <Badge color={isPhoneVerified ? 'success' : 'company'}>
+                      {isPhoneVerified
+                        ? t('profile.verification.status_verified')
+                        : t('profile.verification.status_new_sms')}
+                    </Badge>
+                  </span>
+                )}
+              </div>
+            </Field>
           )}
           <Switch
             label={t('profile.account_alerts.notify_email')}
@@ -165,33 +299,62 @@ This is a pragmatic solution until the dialog exposes an onClose prop or ref we 
             onChange={() => setEnableEmailNotifications((prev) => !prev)}
           />
           {enableEmailNotifications && (
-            <TextField
-              name="email"
-              type="email"
-              required
-              pattern={organizationContactEmailPattern.source}
-              value={alertEmailAddressState}
-              onChange={(e) => {
-                setAlertEmailAddressState(e.currentTarget.value);
-                if (!organizationContactEmailPattern.test(e.currentTarget.value)) {
-                  e.currentTarget.setCustomValidity(t('profile.account_alerts.email_invalid'));
-                } else {
-                  e.currentTarget.setCustomValidity('');
-                }
-              }}
-            />
+            <Field>
+              <div className={styles.fieldWrapper}>
+                <Input
+                  name="email"
+                  size="sm"
+                  value={alertEmailAddressState}
+                  onChange={(e) => setAlertEmailAddressState(e.target.value)}
+                  placeholder={t('profile.account_alerts.email_placeholder')}
+                  autoComplete="email"
+                />
+                {alertEmailAddressState && (
+                  <span data-size="sm" className={styles.badgeOverlay}>
+                    <Badge color={isEmailVerified ? 'success' : 'company'}>
+                      {isEmailVerified
+                        ? t('profile.verification.status_verified')
+                        : t('profile.verification.status_new_address')}
+                    </Badge>
+                  </span>
+                )}
+              </div>
+            </Field>
           )}
         </Fieldset>
         <Typography size="sm">
           {isAnotherPerson && <p>{t('profile.notifications.personal_for_person')}</p>}
           {isCompany && <p>{t('profile.notifications.personal_explanation')}</p>}
         </Typography>
+        {needsVerification && (
+          <Typography size="sm">
+            <p>{t('profile.account_alerts.new_addresses_must_verify')}</p>
+          </Typography>
+        )}
         <ButtonGroup>
-          <Button type="submit" disabled={!isDirty}>
-            {t('profile.account_alerts.save')}
-          </Button>
+          {hasUnverifiedEmail && (
+            <Button
+              type="button"
+              variant="tinted"
+              onClick={() => handleTriggerVerification('email')}
+              disabled={isSendingCode}
+            >
+              {t('profile.account_alerts.verify_email')}
+            </Button>
+          )}
+          {hasUnverifiedSms && (
+            <Button
+              type="button"
+              variant="tinted"
+              onClick={() => handleTriggerVerification('sms')}
+              disabled={isSendingCode}
+            >
+              {t('profile.account_alerts.verify_sms')}
+            </Button>
+          )}
+          {!needsVerification && isDirty && <Button type="submit">{t('profile.account_alerts.save')}</Button>}
           <Button type="button" variant="outline" onClick={handleClose}>
-            {t('profile.account_alerts.cancel')}
+            {t('word.close')}
           </Button>
         </ButtonGroup>
       </Section>

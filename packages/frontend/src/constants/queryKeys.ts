@@ -29,4 +29,5 @@ export const QUERY_KEYS = {
   ALTINN_COOKIE: 'altinnCookie',
   UPDATED_LANGUAGE: 'updatedLanguage',
   SHOW_DELETED_ENTITIES: 'showDeletedEntities',
+  VERIFIED_ADDRESSES: 'verifiedAddresses',
 };

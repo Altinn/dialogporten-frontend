@@ -5,7 +5,7 @@ import config from '../../config.ts';
 import { GroupRepository, PartyRepository, ProfileRepository } from '../../db.ts';
 import { Group, Party, ProfileTable } from '../../entities.ts';
 import type { PreselectedPartyOperationType } from '../types/mutation.ts';
-import type { NotificationSettingsInputData } from '../types/profile.ts';
+import type { NotificationSettingsInputData, VerifyAddressInputData } from '../types/profile.ts';
 
 const { platformBaseURL } = config;
 
@@ -451,6 +451,56 @@ export const updateProfileSettingPreference = async (context: Context, shouldSho
   } catch (error) {
     logger.error(error, 'Error updating profile setting preference:');
     throw new Error('Failed to update profile setting preference');
+  }
+};
+
+export const verifyAddress = async (data: VerifyAddressInputData, context: Context) => {
+  const newToken = await exchangeToken(context);
+  try {
+    await axios.post(
+      `${platformProfileAPI_url}users/current/verification/verify`,
+      { value: data.value, type: data.type, verificationCode: data.verificationCode },
+      {
+        timeout: 30000,
+        headers: {
+          Authorization: `Bearer ${newToken}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+      },
+    );
+    return { success: true };
+  } catch (error) {
+    if (typeof error === 'object' && error !== null && 'response' in error) {
+      const axiosError = error as { response?: { status?: number } };
+      if (axiosError.response?.status === 422) {
+        return { success: false, message: 'invalid_code' };
+      }
+    }
+    logger.error(error, 'Error verifying address:');
+    throw error;
+  }
+};
+
+export const getVerifiedAddresses = async (context: Context) => {
+  const newToken = await exchangeToken(context);
+  if (!newToken) {
+    logger.error('No new token received');
+    throw new Error('Unable to exchange token');
+  }
+  try {
+    const response = await axios.get(`${platformProfileAPI_url}users/current/verification/verified-addresses`, {
+      timeout: 30000,
+      headers: {
+        Authorization: `Bearer ${newToken}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    });
+    return response.data ?? [];
+  } catch (error) {
+    logger.error(error, 'Error fetching verified addresses for user:');
+    return [];
   }
 };
 
