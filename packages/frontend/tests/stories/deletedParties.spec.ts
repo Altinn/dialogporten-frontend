@@ -49,3 +49,48 @@ test('Should render deleted parties if added to favourites', async ({ page }) =>
   await expect(page.locator('a').filter({ hasText: 'AAvviklet Forretning Tiger' })).toBeVisible(); //deleted but favourited
   await expect(page.locator('a').filter({ hasText: 'NNedlagt Underenhet Fjellrev' })).not.toBeVisible(); //deleted
 });
+
+test('Should exclude dialogs from deleted organizations when filter is OFF', async ({ page }) => {
+  const dateScenarioPage = appUrlWithPlaywrightId('deleted-parties');
+  await page.goto(dateScenarioPage);
+
+  // Dialogs from deleted organizations
+  const deletedOrgDialogs = [
+    'Varsel om sletting',
+    'Siste skatteoppgjør',
+    'Avslutning av arbeidsforhold',
+    'Konkurserklæring',
+    'Avslutning av virksomhet',
+    'Siste MVA-oppgjør',
+  ];
+
+  await page.getByLabel('Uglesett Ask').click();
+  await page.getByRole('switch', { name: 'Vis slettede' }).click();
+  await expect(page.getByRole('switch', { name: 'Vis slettede' })).not.toBeChecked();
+
+  await page.getByRole('button', { name: 'Lukk kontomeny' }).click();
+
+  await page.getByTestId('account-menu-button').click();
+  await page.locator('a').filter({ hasText: 'Alle virksomheter' }).click();
+
+  await page.waitForLoadState('networkidle');
+
+  for (const dialogTitle of deletedOrgDialogs) {
+    await expect(page.getByRole('link', { name: dialogTitle })).not.toBeVisible();
+  }
+
+  await page.getByLabel('Uglesett Ask').click();
+  await page.getByRole('switch', { name: 'Vis slettede' }).click();
+  await expect(page.getByRole('switch', { name: 'Vis slettede' })).toBeChecked();
+
+  await page.getByRole('button', { name: 'Lukk kontomeny' }).click();
+
+  await page.getByTestId('account-menu-button').click();
+  await page.locator('a').filter({ hasText: 'Alle virksomheter' }).click();
+
+  await page.waitForLoadState('networkidle');
+
+  for (const dialogTitle of deletedOrgDialogs) {
+    await expect(page.getByRole('link', { name: dialogTitle })).toBeVisible();
+  }
+});
