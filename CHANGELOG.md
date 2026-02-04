@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.119.6](https://github.com/Altinn/dialogporten-frontend/compare/v1.119.5...v1.119.6) (2026-02-04)
+
+
+### Bug Fixes
+
+* Exclude deleted parties dialogs if deleted parties are hidden ([#3688](https://github.com/Altinn/dialogporten-frontend/issues/3688)) ([711401b](https://github.com/Altinn/dialogporten-frontend/commit/711401b4805e0f7134dd4b75994f329b7a20d888))
+
 ## [1.119.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.119.4...v1.119.5) (2026-01-30)
 
 
