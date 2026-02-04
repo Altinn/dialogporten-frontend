@@ -16,6 +16,7 @@ import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
 import { normalizeFilterDefaults } from '../../pages/Inbox/filters.ts';
 import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
+import { useProfile } from '../../pages/Profile/useProfile.tsx';
 import { graphQLSDK } from '../queries.ts';
 import { getPartyIds, mapDialogToToInboxItems, mergeDialogItems } from '../utils/dialog.ts';
 import { useParties } from './useParties.ts';
@@ -52,9 +53,19 @@ export const useDialogs = ({
   const disableFlipNamesPatch = useFeatureFlag<boolean>('dialogporten.disableFlipNamesPatch');
   const disableDialogCount = useFeatureFlag<boolean>('inbox.disableDialogCount');
   const enableSearchLanguageCode = useFeatureFlag<boolean>('dialogporten.enableSearchLanguageCode');
+  const isDeletedUnitsFilterEnabled = useFeatureFlag<boolean>('inbox.enableDeletedUnitsFilter');
+  const { shouldShowDeletedEntities } = useProfile();
   const { selectedParties, parties: allParties, allOrganizationsSelected } = useParties();
   const format = useFormat();
-  const partyIds = getPartyIds(selectedParties, true);
+
+  const shouldExcludeDeleted = isDeletedUnitsFilterEnabled && !shouldShowDeletedEntities;
+
+  const partiesToUse =
+    allOrganizationsSelected && shouldExcludeDeleted
+      ? selectedParties.filter((party) => !party.isDeleted)
+      : selectedParties;
+
+  const partyIds = getPartyIds(partiesToUse, true);
   const previousTokensRef = useRef<string>('');
   const viewTypeKey = viewType ?? 'global';
   const applicableParties = allOrganizationsSelected && serviceResources?.length ? [] : partyIds;
