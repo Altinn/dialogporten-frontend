@@ -11,9 +11,8 @@ interface Altinn2ActiveSchemasNotificationProps {
 }
 
 export const Altinn2ActiveSchemasNotification = ({ selectedAccountId }: Altinn2ActiveSchemasNotificationProps) => {
-  const selectedAccountIdentifier = extractIdentifierNumber(selectedAccountId);
-
   const { t } = useTranslation();
+  const selectedAccountIdentifier = extractIdentifierNumber(selectedAccountId);
   const { altinn2messages, isSuccess: altinn2messagesSuccess } = useAltinn2Messages(selectedAccountIdentifier);
 
   const mostRecentMessage = useMemo(() => {

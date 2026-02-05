@@ -1,5 +1,4 @@
 import type {
-  Account,
   AccountMenuItemProps,
   AccountSearchProps,
   AvatarGroupProps,
@@ -53,8 +52,7 @@ interface UseAccountsOutput {
   accountSearch: AccountSearchProps | undefined;
   filterAccount?: (item: AccountMenuItemProps, search: string) => boolean;
   onSelectAccount: (account: string, route: PageRoutes) => void;
-  selectedAccount?: AccountMenuItemProps;
-  currentAccount?: AccountMenuItemProps;
+  currentAccountName: string;
 }
 
 export const formatSSN = (ssn: string, maskIdentifierSuffix: boolean) => {
@@ -118,8 +116,6 @@ export const useAccounts = ({
     icon: { name: '', type: 'person' },
     name: '',
   };
-
-  const { groupId: _, ...loadingAccount } = loadingAccountMenuItem;
 
   const currentEndUser = useMemo(() => {
     return parties.find(
@@ -254,10 +250,9 @@ export const useAccounts = ({
     return {
       accounts: [loadingAccountMenuItem as PartyItemProp],
       accountGroups: { loading: { title: t('profile.accounts.loading') } },
-      selectedAccount: loadingAccount,
       accountSearch: undefined,
       onSelectAccount: () => {},
-      currentAccount: loadingAccount,
+      currentAccountName: '',
     };
   }
 
@@ -267,6 +262,7 @@ export const useAccounts = ({
       accountGroups: {},
       accountSearch: undefined,
       onSelectAccount: () => {},
+      currentAccountName: '',
     };
   }
 
@@ -346,39 +342,6 @@ export const useAccounts = ({
     ...organizationAccounts,
   ];
 
-  const selectedAccountMenuItem = allOrganizationsSelected
-    ? allOrganizationsAccount
-    : accounts.find((account) => selectedParties[0]?.party === account.id);
-
-  const selectedAccount = (
-    selectedAccountMenuItem
-      ? {
-          id: selectedAccountMenuItem.id,
-          name: selectedAccountMenuItem.name,
-          description:
-            options.showDescription && selectedAccountMenuItem.description
-              ? String(selectedAccountMenuItem.description)
-              : undefined,
-          type: selectedAccountMenuItem.type,
-          icon: selectedAccountMenuItem.icon,
-        }
-      : loadingAccount
-  ) as Account;
-
-  const currentAccount: Account = allOrganizationsSelected
-    ? {
-        id: endUserAccount?.id ?? 'not_found',
-        name: endUserAccount?.name ?? '',
-        description:
-          options.showDescription && endUserAccount?.description ? String(endUserAccount.description) : undefined,
-        type: 'person',
-        icon: {
-          type: 'person',
-          name: endUserAccount?.name ?? '',
-        },
-      }
-    : selectedAccount || loadingAccount;
-
   const accountSearch = showSearch
     ? {
         name: 'account-search',
@@ -424,9 +387,10 @@ export const useAccounts = ({
   return {
     accounts: filteredAccounts,
     accountGroups,
-    selectedAccount,
     accountSearch,
     onSelectAccount,
-    currentAccount,
+    currentAccountName: allOrganizationsSelected
+      ? t('parties.labels.all_organizations')
+      : (selectedParties?.[0]?.name ?? ''),
   };
 };

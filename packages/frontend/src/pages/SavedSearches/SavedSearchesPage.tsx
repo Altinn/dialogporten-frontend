@@ -13,7 +13,7 @@ export const SavedSearchesPage = () => {
 
   usePageTitle({ baseTitle: t('sidebar.saved_searches') });
 
-  const { accounts, selectedAccount, accountSearch, accountGroups, onSelectAccount } = useAccounts({
+  const { accounts, accountSearch, accountGroups, onSelectAccount, currentAccountName } = useAccounts({
     parties,
     selectedParties,
     allOrganizationsSelected,
@@ -25,13 +25,13 @@ export const SavedSearchesPage = () => {
   return (
     <PageBase margin="page">
       <div className={styles.gridContainer} style={{ marginTop: '-1rem' }}>
-        {selectedAccount ? (
+        {currentAccountName ? (
           <Toolbar
             accountMenu={{
               items: accounts,
               search: accountSearch,
               groups: accountGroups,
-              label: selectedAccount.name,
+              label: currentAccountName,
               onSelectId: (account: string) => onSelectAccount(account, PageRoutes.savedSearches),
               virtualized: true,
               title: t('parties.change_label'),

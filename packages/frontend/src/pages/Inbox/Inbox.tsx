@@ -113,7 +113,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     }
   }, [searchParams.toString()]);
 
-  const { accounts, selectedAccount, accountSearch, accountGroups, onSelectAccount } = useAccounts({
+  const { accounts, accountSearch, accountGroups, onSelectAccount, currentAccountName } = useAccounts({
     parties,
     selectedParties,
     allOrganizationsSelected,
@@ -121,8 +121,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
       showGroups: true,
     },
   });
-
-  const selectedAccountId = selectedAccount?.id;
 
   const { filters, getFilterLabel } = useFilters({ viewType });
 
@@ -194,14 +192,14 @@ export const Inbox = ({ viewType }: InboxProps) => {
   return (
     <PageBase margin="page">
       <section data-testid="inbox-toolbar" style={{ marginTop: '-1rem' }}>
-        {selectedAccount ? (
+        {currentAccountName ? (
           <Toolbar
             data-testid="inbox-toolbar"
             accountMenu={{
               items: accounts,
               search: accountSearch,
               groups: accountGroups,
-              label: selectedAccount?.name ?? '',
+              label: currentAccountName,
               onSelectId: (id: string) => {
                 onSelectAccount(id, PageRoutes[viewType]);
               },
@@ -227,7 +225,9 @@ export const Inbox = ({ viewType }: InboxProps) => {
       </section>
       <AlertBanner showAlertBanner={isAlertBannerEnabled && !!alertBannerContent} />
       <Section>
-        {isAltinn2MessagesEnabled && <Altinn2ActiveSchemasNotification selectedAccountId={selectedAccountId} />}
+        {isAltinn2MessagesEnabled && (
+          <Altinn2ActiveSchemasNotification selectedAccountId={selectedParties?.[0]?.party} />
+        )}
         {dialogsSuccess && !dialogItems.length && !isLoading && !isLimitReached && (
           <EmptyState query={enteredSearchValue} viewType={viewType} searchMode={searchMode} />
         )}
