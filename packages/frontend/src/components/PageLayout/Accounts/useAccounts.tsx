@@ -10,8 +10,7 @@ import type { PartyFieldsFragment } from 'bff-types-generated';
 import i18n from 'i18next';
 import { type ChangeEvent, type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useParties } from '../../../api/hooks/useParties.ts';
+import { useNavigate } from 'react-router-dom';
 import { useFeatureFlag } from '../../../featureFlags';
 import { useProfile } from '../../../pages/Profile';
 import { SettingsType } from '../../../pages/Profile/Settings/useSettings.tsx';
@@ -99,8 +98,6 @@ export const useAccounts = ({
 }: UseAccountsProps): UseAccountsOutput => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const location = useLocation();
-  const { setSelectedPartyIds } = useParties();
   const { favoritesGroup, shouldShowDeletedEntities } = useProfile();
   const isDeletedUnitsFilterEnabled = useFeatureFlag<boolean>('inbox.enableDeletedUnitsFilter');
   const [searchString, setSearchString] = useState<string>('');
@@ -359,19 +356,24 @@ export const useAccounts = ({
       }
     : undefined;
 
-  const onSelectAccount = (account: string, route: PageRoutes) => {
-    const allAccountsSelected = account === 'ALL';
+  const onSelectAccount = (partyId: string, route: PageRoutes) => {
+    const allAccountsSelected = partyId === 'ALL';
     const search = new URLSearchParams();
 
-    if (location.pathname === route) {
-      setSelectedPartyIds(allAccountsSelected ? [] : [account], allAccountsSelected);
+    if (allAccountsSelected) {
+      search.append('allParties', 'true');
+      search.delete('party');
     } else {
-      search.append(
-        allAccountsSelected ? 'allParties' : 'party',
-        allAccountsSelected ? 'true' : encodeURIComponent(account),
-      );
-      navigate(route + `?${search.toString()}`);
+      const party = parties.find((p) => p.party === partyId);
+      if (!party) {
+        console.error('Selected party not found:', partyId);
+        return;
+      }
+      search.append('party', encodeURIComponent(party.party));
+      search.delete('allParties');
     }
+
+    navigate(`${route}?${search.toString()}`, { replace: true });
   };
 
   let filteredAccounts = accounts;
