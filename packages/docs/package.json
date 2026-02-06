@@ -24,9 +24,9 @@
     "@docusaurus/theme-classic": "3.9.2",
     "@docusaurus/theme-mermaid": "3.9.2",
     "@easyops-cn/docusaurus-search-local": "0.52.2",
-    "@mdx-js/react": "^3.1.1",
-    "clsx": "^2.1.1",
-    "prism-react-renderer": "^2.4.1",
+    "@mdx-js/react": "3.1.1",
+    "clsx": "2.1.1",
+    "prism-react-renderer": "2.4.1",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },
@@ -34,10 +34,10 @@
     "@docusaurus/module-type-aliases": "3.9.2",
     "@docusaurus/tsconfig": "3.9.2",
     "@docusaurus/types": "3.9.2",
-    "@types/node": "^22.15.21",
+    "@types/node": "22.19.3",
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",
-    "typescript": "~5.5.4"
+    "typescript": "5.5.4"
   },
   "browserslist": {
     "production": [

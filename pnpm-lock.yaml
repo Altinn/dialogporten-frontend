@@ -15,10 +15,10 @@ importers:
         specifier: 1.9.4
         version: 1.9.4
       lint-staged:
-        specifier: ^16.0.0
+        specifier: 16.2.7
         version: 16.2.7
       mprocs:
-        specifier: ^0.8.0
+        specifier: 0.8.2
         version: 0.8.2
       turbo:
         specifier: 2.5.3
@@ -39,13 +39,13 @@ importers:
         specifier: 1.99.0
         version: 1.99.0
       '@fastify/cookie':
-        specifier: ^11.0.2
+        specifier: 11.0.2
         version: 11.0.2
       '@fastify/cors':
-        specifier: ^10.1.0
+        specifier: 10.1.0
         version: 10.1.0
       '@fastify/formbody':
-        specifier: ^8.0.2
+        specifier: 8.0.2
         version: 8.0.2
       '@fastify/helmet':
         specifier: 13.0.1
@@ -54,25 +54,25 @@ importers:
         specifier: 0.16.0
         version: 0.16.0(@opentelemetry/api@1.9.0)
       '@fastify/session':
-        specifier: ^11.1.0
+        specifier: 11.1.1
         version: 11.1.1
       '@graphql-tools/executor-http':
-        specifier: ^1.3.3
+        specifier: 1.3.3
         version: 1.3.3(@types/node@22.19.3)(graphql@16.12.0)
       '@graphql-tools/schema':
-        specifier: ^10.0.23
+        specifier: 10.0.31
         version: 10.0.31(graphql@16.12.0)
       '@graphql-tools/stitch':
-        specifier: ^9.4.23
+        specifier: 9.4.29
         version: 9.4.29(graphql@16.12.0)
       '@graphql-tools/utils':
-        specifier: ^10.8.6
+        specifier: 10.11.0
         version: 10.11.0(graphql@16.12.0)
       '@graphql-tools/wrap':
-        specifier: ^10.0.36
+        specifier: 10.1.4
         version: 10.1.4(graphql@16.12.0)
       '@microsoft/feature-management':
-        specifier: ^2.2.0
+        specifier: 2.2.0
         version: 2.2.0
       '@opentelemetry/api':
         specifier: 1.9.0
@@ -117,19 +117,19 @@ importers:
         specifier: 1.37.0
         version: 1.37.0
       axios:
-        specifier: ^1.12.2
+        specifier: 1.13.2
         version: 1.13.2
       connect-redis:
-        specifier: ^7.1.1
+        specifier: 7.1.1
         version: 7.1.1(express-session@1.18.2)
       cookie-parser:
-        specifier: ^1.4.7
+        specifier: 1.4.7
         version: 1.4.7
       cors:
-        specifier: ^2.8.5
+        specifier: 2.8.5
         version: 2.8.5
       dotenv:
-        specifier: ^16.5.0
+        specifier: 16.6.1
         version: 16.6.1
       fastify:
         specifier: 5.3.3
@@ -138,141 +138,141 @@ importers:
         specifier: workspace:*
         version: link:../fastify-graphiql
       fastify-plugin:
-        specifier: ^5.0.1
+        specifier: 5.1.0
         version: 5.1.0
       graphql:
-        specifier: ^16.11.0
+        specifier: 16.12.0
         version: 16.12.0
       graphql-depth-limit:
-        specifier: ^1.1.0
+        specifier: 1.1.0
         version: 1.1.0(graphql@16.12.0)
       graphql-http:
-        specifier: ^1.22.4
+        specifier: 1.22.4
         version: 1.22.4(graphql@16.12.0)
       graphql-tools:
-        specifier: ^9.0.18
+        specifier: 9.0.26
         version: 9.0.26(graphql-ws@6.0.6(graphql@16.12.0)(ws@8.19.0))(graphql@16.12.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)
       ioredis:
-        specifier: ^5.6.1
+        specifier: 5.9.1
         version: 5.9.1
       jsonwebtoken:
-        specifier: ^9.0.2
+        specifier: 9.0.3
         version: 9.0.3
       nexus:
-        specifier: ^1.3.0
+        specifier: 1.3.0
         version: 1.3.0(graphql@16.12.0)
       pg:
-        specifier: ^8.16.0
+        specifier: 8.16.3
         version: 8.16.3
       reflect-metadata:
-        specifier: ^0.2.2
+        specifier: 0.2.2
         version: 0.2.2
       typeorm:
         specifier: 0.3.28
         version: 0.3.28(ioredis@5.9.1)(pg@8.16.3)(ts-node@10.9.2(@swc/core@1.15.8)(@types/node@22.19.3)(typescript@5.9.3))
       util:
-        specifier: ^0.12.5
+        specifier: 0.12.5
         version: 0.12.5
       zod:
-        specifier: ^3.25.20
+        specifier: 3.25.76
         version: 3.25.76
     devDependencies:
       '@tsconfig/node22':
-        specifier: ^22.0.2
+        specifier: 22.0.5
         version: 22.0.5
       '@types/cookie-parser':
-        specifier: ^1.4.8
+        specifier: 1.4.10
         version: 1.4.10(@types/express@4.17.25)
       '@types/cors':
-        specifier: ^2.8.18
+        specifier: 2.8.19
         version: 2.8.19
       '@types/graphql-depth-limit':
         specifier: 1.1.6
         version: 1.1.6
       '@types/jsonwebtoken':
-        specifier: ^9.0.9
+        specifier: 9.0.10
         version: 9.0.10
       '@types/node':
-        specifier: ^22.15.21
+        specifier: 22.19.3
         version: 22.19.3
       concurrently:
-        specifier: ^8.2.2
+        specifier: 8.2.2
         version: 8.2.2
       mprocs:
-        specifier: ^0.8.0
+        specifier: 0.8.2
         version: 0.8.2
       nodemon:
-        specifier: ^3.1.10
+        specifier: 3.1.11
         version: 3.1.11
       ts-node:
-        specifier: ^10.9.2
+        specifier: 10.9.2
         version: 10.9.2(@swc/core@1.15.8)(@types/node@22.19.3)(typescript@5.9.3)
       tsconfig-paths:
-        specifier: ^4.2.0
+        specifier: 4.2.0
         version: 4.2.0
       tslib:
-        specifier: ^2.8.1
+        specifier: 2.8.1
         version: 2.8.1
       typescript:
-        specifier: ^5.8.3
+        specifier: 5.9.3
         version: 5.9.3
       vitest:
-        specifier: ^3.2.4
+        specifier: 3.2.4
         version: 3.2.4(@types/debug@4.1.12)(@types/node@22.19.3)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.3)(typescript@5.9.3))(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
 
   packages/bff-types-generated:
     dependencies:
       '@graphql-codegen/cli':
-        specifier: ^5.0.6
+        specifier: 5.0.7
         version: 5.0.7(@parcel/watcher@2.5.1)(@types/node@24.10.4)(graphql@16.12.0)(typescript@5.9.3)
       '@graphql-codegen/typescript-operations':
-        specifier: ^4.6.1
+        specifier: 4.6.1
         version: 4.6.1(graphql@16.12.0)
       '@graphql-tools/stitch':
-        specifier: ^9.4.23
+        specifier: 9.4.29
         version: 9.4.29(graphql@16.12.0)
       '@graphql-typed-document-node/core':
-        specifier: ^3.2.0
+        specifier: 3.2.0
         version: 3.2.0(graphql@16.12.0)
       '@tsconfig/node22':
-        specifier: ^22.0.2
+        specifier: 22.0.5
         version: 22.0.5
       bff:
         specifier: workspace:*
         version: link:../bff
       graphql:
-        specifier: ^16.11.0
+        specifier: 16.12.0
         version: 16.12.0
       graphql-request:
-        specifier: ^7.2.0
+        specifier: 7.4.0
         version: 7.4.0(graphql@16.12.0)
       graphql-tag:
         specifier: ^2.12.6
         version: 2.12.6(graphql@16.12.0)
       nodemon:
-        specifier: ^3.1.10
+        specifier: 3.1.11
         version: 3.1.11
     devDependencies:
       '@graphql-codegen/typescript':
-        specifier: ^4.1.6
+        specifier: 4.1.6
         version: 4.1.6(graphql@16.12.0)
       '@graphql-codegen/typescript-graphql-request':
-        specifier: ^6.3.0
+        specifier: 6.4.0
         version: 6.4.0(graphql-request@7.4.0(graphql@16.12.0))(graphql-tag@2.12.6(graphql@16.12.0))(graphql@16.12.0)
       '@graphql-codegen/typescript-resolvers':
-        specifier: ^4.5.1
+        specifier: 4.5.2
         version: 4.5.2(graphql@16.12.0)
       '@parcel/watcher':
-        specifier: ^2.5.1
+        specifier: 2.5.1
         version: 2.5.1
       ts-node:
-        specifier: ^10.9.2
+        specifier: 10.9.2
         version: 10.9.2(@swc/core@1.15.8)(@types/node@24.10.4)(typescript@5.9.3)
       typescript:
-        specifier: ^5.8.3
+        specifier: 5.9.3
         version: 5.9.3
       vitest:
-        specifier: ^3.2.4
+        specifier: 3.2.4
         version: 3.2.4(@types/debug@4.1.12)(@types/node@24.10.4)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.30.2)(msw@2.12.7(@types/node@24.10.4)(typescript@5.9.3))(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
 
   packages/docs:
@@ -296,13 +296,13 @@ importers:
         specifier: 0.52.2
         version: 0.52.2(@docusaurus/faster@3.9.2(@docusaurus/types@3.9.2(@swc/core@1.15.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)))(@docusaurus/theme-common@3.9.2(@docusaurus/plugin-content-docs@3.9.2(@docusaurus/faster@3.9.2(@docusaurus/types@3.9.2(@swc/core@1.15.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)))(@mdx-js/react@3.1.1(@types/react@19.2.7)(react@19.2.3))(@rspack/core@1.7.1)(@swc/core@1.15.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.5.4))(@swc/core@1.15.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(@mdx-js/react@3.1.1(@types/react@19.2.7)(react@19.2.3))(@rspack/core@1.7.1)(@swc/core@1.15.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.5.4)
       '@mdx-js/react':
-        specifier: ^3.1.1
+        specifier: 3.1.1
         version: 3.1.1(@types/react@19.2.7)(react@19.2.3)
       clsx:
-        specifier: ^2.1.1
+        specifier: 2.1.1
         version: 2.1.1
       prism-react-renderer:
-        specifier: ^2.4.1
+        specifier: 2.4.1
         version: 2.4.1(react@19.2.3)
       react:
         specifier: 19.2.3
@@ -321,7 +321,7 @@ importers:
         specifier: 3.9.2
         version: 3.9.2(@swc/core@1.15.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@types/node':
-        specifier: ^22.15.21
+        specifier: 22.19.3
         version: 22.19.3
       '@types/react':
         specifier: 19.2.7
@@ -330,22 +330,22 @@ importers:
         specifier: 19.2.3
         version: 19.2.3(@types/react@19.2.7)
       typescript:
-        specifier: ~5.5.4
+        specifier: 5.5.4
         version: 5.5.4
 
   packages/e2e:
     devDependencies:
       '@playwright/test':
-        specifier: ^1.52.0
+        specifier: 1.57.0
         version: 1.57.0
       '@types/node':
-        specifier: ^24.0.1
+        specifier: 24.10.4
         version: 24.10.4
 
   packages/embeddable-markdown-html:
     dependencies:
       mdast-util-to-hast:
-        specifier: ^13.2.1
+        specifier: 13.2.1
         version: 13.2.1
       react:
         specifier: 19.2.3
@@ -354,16 +354,16 @@ importers:
         specifier: 19.2.3
         version: 19.2.3(react@19.2.3)
       rehype-class-names:
-        specifier: ^2.0.0
+        specifier: 2.0.0
         version: 2.0.0
       rehype-parse:
-        specifier: ^9.0.1
+        specifier: 9.0.1
         version: 9.0.1
       rehype-react:
-        specifier: ^8.0.0
+        specifier: 8.0.0
         version: 8.0.0
       rehype-sanitize:
-        specifier: ^6.0.0
+        specifier: 6.0.0
         version: 6.0.0
       remark-gfm:
         specifier: ^4.0.1
@@ -375,14 +375,14 @@ importers:
         specifier: ^11.1.2
         version: 11.1.2
       unified:
-        specifier: ^11.0.5
+        specifier: 11.0.5
         version: 11.0.5
     devDependencies:
       '@testing-library/jest-dom':
-        specifier: ^6.6.3
+        specifier: 6.9.1
         version: 6.9.1
       '@testing-library/react':
-        specifier: ^16.3.0
+        specifier: 16.3.1
         version: 16.3.1(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.7))(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@types/react':
         specifier: 19.2.7
@@ -391,22 +391,22 @@ importers:
         specifier: 19.2.3
         version: 19.2.3(@types/react@19.2.7)
       '@vitejs/plugin-react-swc':
-        specifier: ^3.9.0
+        specifier: 3.11.0
         version: 3.11.0(vite@7.3.1(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
       '@vitest/expect':
-        specifier: ^2.1.9
+        specifier: 2.1.9
         version: 2.1.9
       hast-util-sanitize:
-        specifier: ^5.0.2
+        specifier: 5.0.2
         version: 5.0.2
       typescript:
-        specifier: ^5.8.3
+        specifier: 5.9.3
         version: 5.9.3
       vite:
-        specifier: ^7.1.5
+        specifier: 7.3.1
         version: 7.3.1(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
       vitest:
-        specifier: ^3.2.4
+        specifier: 3.2.4
         version: 3.2.4(@types/debug@4.1.12)(@types/node@24.10.4)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.30.2)(msw@2.12.7(@types/node@24.10.4)(typescript@5.9.3))(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
 
   packages/fastify-graphiql:
@@ -415,11 +415,11 @@ importers:
         specifier: 5.3.3
         version: 5.3.3
       fastify-plugin:
-        specifier: ^5.0.1
+        specifier: 5.1.0
         version: 5.1.0
     devDependencies:
       vitest:
-        specifier: ^3.2.4
+        specifier: 3.2.4
         version: 3.2.4(@types/debug@4.1.12)(@types/node@24.10.4)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.30.2)(msw@2.12.7(@types/node@24.10.4)(typescript@5.9.3))(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
 
   packages/frontend:
@@ -434,37 +434,37 @@ importers:
         specifier: 3.3.9
         version: 3.3.9(tslib@2.8.1)
       '@navikt/aksel-icons':
-        specifier: ^7.37.0
+        specifier: 7.38.0
         version: 7.38.0
       '@reactour/tour':
-        specifier: ^3.8.0
+        specifier: 3.8.0
         version: 3.8.0(react@19.2.3)
       '@tanstack/react-query':
-        specifier: ^5.85.9
+        specifier: 5.90.16
         version: 5.90.16(react@19.2.3)
       bff-types-generated:
         specifier: workspace:*
         version: link:../bff-types-generated
       classnames:
-        specifier: ^2.5.1
+        specifier: 2.5.1
         version: 2.5.1
       date-fns:
-        specifier: ^3.6.0
+        specifier: 3.6.0
         version: 3.6.0
       embeddable-markdown-html:
         specifier: workspace:*
         version: link:../embeddable-markdown-html
       graphql:
-        specifier: ^16.11.0
+        specifier: 16.12.0
         version: 16.12.0
       graphql-request:
-        specifier: ^7.2.0
+        specifier: 7.4.0
         version: 7.4.0(graphql@16.12.0)
       i18next:
-        specifier: ^23.16.8
+        specifier: 23.16.8
         version: 23.16.8
       i18next-icu:
-        specifier: ^2.3.0
+        specifier: 2.4.1
         version: 2.4.1(intl-messageformat@10.7.18)
       react:
         specifier: 19.2.3
@@ -473,29 +473,29 @@ importers:
         specifier: 19.2.3
         version: 19.2.3(react@19.2.3)
       react-i18next:
-        specifier: ^15.5.2
+        specifier: 15.7.4
         version: 15.7.4(i18next@23.16.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3)
       react-router-dom:
-        specifier: ^7.6.0
+        specifier: 7.12.0
         version: 7.12.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       sse.js:
-        specifier: ^2.6.0
+        specifier: 2.7.2
         version: 2.7.2
       use-debounce:
-        specifier: ^10.0.4
+        specifier: 10.1.0
         version: 10.1.0(react@19.2.3)
     devDependencies:
       '@axe-core/playwright':
-        specifier: ^4.10.1
+        specifier: 4.11.0
         version: 4.11.0(playwright-core@1.57.0)
       '@playwright/test':
-        specifier: ^1.52.0
+        specifier: 1.57.0
         version: 1.57.0
       '@testing-library/react':
-        specifier: ^16.3.0
+        specifier: 16.3.1
         version: 16.3.1(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.7))(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@types/node':
-        specifier: ^22.15.21
+        specifier: 22.19.3
         version: 22.19.3
       '@types/react':
         specifier: 19.2.7
@@ -504,43 +504,43 @@ importers:
         specifier: 19.2.3
         version: 19.2.3(@types/react@19.2.7)
       '@types/reactour':
-        specifier: ^1.18.5
+        specifier: 1.18.5
         version: 1.18.5
       '@typescript-eslint/eslint-plugin':
-        specifier: ^6.21.0
+        specifier: 6.21.0
         version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
       '@typescript-eslint/parser':
-        specifier: ^6.21.0
+        specifier: 6.21.0
         version: 6.21.0(eslint@8.57.1)(typescript@5.9.3)
       '@vitejs/plugin-react-swc':
-        specifier: ^3.9.0
+        specifier: 3.11.0
         version: 3.11.0(vite@7.3.1(@types/node@22.19.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
       axe-html-reporter:
-        specifier: ^2.2.11
+        specifier: 2.2.11
         version: 2.2.11(axe-core@4.11.1)
       dotenv:
-        specifier: ^16.5.0
+        specifier: 16.6.1
         version: 16.6.1
       jsdom:
-        specifier: ^26.1.0
+        specifier: 26.1.0
         version: 26.1.0
       msw:
-        specifier: ^2.11.1
+        specifier: 2.12.7
         version: 2.12.7(@types/node@22.19.3)(typescript@5.9.3)
       tsx:
-        specifier: ^4.19.4
+        specifier: 4.21.0
         version: 4.21.0
       typescript:
-        specifier: ^5.8.3
+        specifier: 5.9.3
         version: 5.9.3
       vite:
-        specifier: ^7.1.5
+        specifier: 7.3.1
         version: 7.3.1(@types/node@22.19.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
       vitest:
-        specifier: ^3.2.4
+        specifier: 3.2.4
         version: 3.2.4(@types/debug@4.1.12)(@types/node@22.19.3)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.30.2)(msw@2.12.7(@types/node@22.19.3)(typescript@5.9.3))(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
       web-streams-polyfill:
-        specifier: ^3.3.3
+        specifier: 3.3.3
         version: 3.3.3
 
   packages/node-logger:
@@ -6302,11 +6302,12 @@ packages:
 
   glob@10.5.0:
     resolution: {integrity: sha512-DfXN8DfhJ7NH3Oe7cFmu3NCu1wKbkReJ8TorzSAFbSKrlNaQSKfIzqYqVY8zlbs2NLBbWpRiU52GX2PbaBVNkg==}
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
     hasBin: true
 
   glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
-    deprecated: Glob versions prior to v9 are no longer supported
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
   global-dirs@3.0.1:
     resolution: {integrity: sha512-NBcGGFbBA9s1VzD41QXDG+3++t9Mn5t1FpLdhESY6oKY4gYTFpX4wO3sqGUa0Srjtbfj3szX0RnemmrVRUdULA==}
@@ -15138,7 +15139,7 @@ snapshots:
 
   '@types/bonjour@3.5.13':
     dependencies:
-      '@types/node': 22.19.3
+      '@types/node': 24.10.4
 
   '@types/chai@5.2.3':
     dependencies:
@@ -15148,7 +15149,7 @@ snapshots:
   '@types/connect-history-api-fallback@1.5.4':
     dependencies:
       '@types/express-serve-static-core': 4.19.7
-      '@types/node': 22.19.3
+      '@types/node': 24.10.4
 
   '@types/connect@3.4.38':
     dependencies:
@@ -15160,7 +15161,7 @@ snapshots:
 
   '@types/cors@2.8.19':
     dependencies:
-      '@types/node': 22.19.3
+      '@types/node': 24.10.4
 
   '@types/d3-array@3.2.2': {}
 
@@ -15303,7 +15304,7 @@ snapshots:
 
   '@types/express-serve-static-core@4.19.7':
     dependencies:
-      '@types/node': 22.19.3
+      '@types/node': 24.10.4
       '@types/qs': 6.14.0
       '@types/range-parser': 1.2.7
       '@types/send': 1.2.1
@@ -15356,7 +15357,7 @@ snapshots:
   '@types/jsonwebtoken@9.0.10':
     dependencies:
       '@types/ms': 2.1.0
-      '@types/node': 22.19.3
+      '@types/node': 24.10.4
 
   '@types/mdast@4.0.4':
     dependencies:
@@ -15392,7 +15393,7 @@ snapshots:
 
   '@types/pg@8.15.5':
     dependencies:
-      '@types/node': 22.19.3
+      '@types/node': 24.10.4
       pg-protocol: 1.10.3
       pg-types: 2.2.0
 
@@ -15455,12 +15456,12 @@ snapshots:
   '@types/serve-static@1.15.10':
     dependencies:
       '@types/http-errors': 2.0.5
-      '@types/node': 22.19.3
+      '@types/node': 24.10.4
       '@types/send': 0.17.6
 
   '@types/sockjs@0.3.36':
     dependencies:
-      '@types/node': 22.19.3
+      '@types/node': 24.10.4
 
   '@types/statuses@2.0.6': {}
 
@@ -15473,7 +15474,7 @@ snapshots:
 
   '@types/ws@8.18.1':
     dependencies:
-      '@types/node': 22.19.3
+      '@types/node': 24.10.4
 
   '@types/yargs-parser@21.0.3': {}
 
@@ -17401,7 +17402,7 @@ snapshots:
 
   eval@0.1.8:
     dependencies:
-      '@types/node': 22.19.3
+      '@types/node': 24.10.4
       require-like: 0.1.2
 
   event-target-shim@5.0.1: {}
@@ -18549,7 +18550,7 @@ snapshots:
 
   jest-worker@27.5.1:
     dependencies:
-      '@types/node': 22.19.3
+      '@types/node': 24.10.4
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
@@ -20601,7 +20602,7 @@ snapshots:
       '@protobufjs/path': 1.1.2
       '@protobufjs/pool': 1.1.0
       '@protobufjs/utf8': 1.1.0
-      '@types/node': 22.19.3
+      '@types/node': 24.10.4
       long: 5.3.2
 
   protobufjs@8.0.0:
