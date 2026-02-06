@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useParties } from '../../api/hooks/useParties';
-import { getAboutNewAltinnLink } from '../../auth/url';
+import { getAboutNewAltinnLink } from '../../auth';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { pruneSearchQueryParams } from '../../pages/Inbox/queryParams.ts';
 import { PageRoutes } from '../../pages/routes.ts';
@@ -27,8 +27,8 @@ export const BetaModal = () => {
   const [__, setShowProfileTour] = useGlobalState<boolean>(QUERY_KEYS.SHOW_PROFILE_TOUR, false);
   const { search, pathname } = useLocation();
   const learnMoreLink = getAboutNewAltinnLink(currentPartyUuid, i18n.language);
-
   const isProfilePage = pathname.startsWith(PageRoutes.profile);
+  const isDialogDetails = pathname.startsWith('/inbox/');
 
   const handleOk = () => {
     if (dontShowAgain) {
@@ -61,7 +61,7 @@ export const BetaModal = () => {
     setIsOpen(false);
   };
 
-  if (isMock) return null;
+  if (isMock || isDialogDetails) return null;
 
   if (!isOpen) {
     return null;
