@@ -249,6 +249,7 @@ const getFooterPathForLanguage = (path: string, language?: string): string => {
     const pathMap: Record<string, string> = {
       '/om-altinn/': '/about-altinn/',
       '/hjelp/': '/help/',
+      '/om-altinn/driftsmeldinger/': '/about-altinn/service-announcements/',
       '/om-altinn/personvern/': '/about-altinn/privacy/',
       '/om-altinn/tilgjengelighet/': '/about-altinn/tilgjengelighet/',
     };
@@ -259,6 +260,7 @@ const getFooterPathForLanguage = (path: string, language?: string): string => {
     const pathMap: Record<string, string> = {
       '/om-altinn/': '/om-altinn/',
       '/hjelp/': '/hjelp/',
+      '/om-altinn/driftsmeldinger/': '/om-altinn/driftsmeldingar/',
       '/om-altinn/personvern/': '/om-altinn/personvern/',
       '/om-altinn/tilgjengelighet/': '/om-altinn/tilgjengelighet/',
     };
@@ -282,6 +284,10 @@ export const getFooterLinks = (currentPartyUuid: string, language?: string) => {
     {
       href: `${getFooterLink(currentPartyUuid, '/om-altinn/', language)}`,
       resourceId: 'footer.nav.about_altinn',
+    },
+    {
+      href: `${getFooterLink(currentPartyUuid, '/om-altinn/driftsmeldinger/', language)}`,
+      resourceId: 'footer.nav.service_announcements',
     },
     {
       href: `${getFooterLink(currentPartyUuid, '/om-altinn/personvern/', language)}`,
