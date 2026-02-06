@@ -295,16 +295,22 @@ const createServiceFilter = ({
   serviceResources,
   currentFilters = {},
   serviceResourcesQuery,
+  onServiceResourcesQueryChange,
 }: ServiceFilterProps): FilterProps => {
-  // Calculate the count of serviceResources that have IDs (used for search results)
   const serviceResourcesCount = serviceResources.filter((serviceResource) => serviceResource.id).length;
-
   return {
     id: FilterCategory.SERVICE,
     label: t('filter_bar.label.choose_service'),
     name: FilterCategory.SERVICE,
     removable: true,
     searchable: true,
+    virtualized: true,
+    search: {
+      name: 'search-service',
+      onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+        onServiceResourcesQueryChange(e.target.value);
+      },
+    },
     groups: {
       recommendations: {
         title: t('filter_bar.service.recommendations'),
@@ -316,17 +322,20 @@ const createServiceFilter = ({
     items: serviceResources
       .filter((serviceResource) => serviceResource.id)
       .map((serviceResource) => {
+        const checked = currentFilters.service?.includes(serviceResource.id ?? '') ?? false;
         const title =
           serviceResource.title?.nb || serviceResource.title?.en || serviceResource.title?.nn || serviceResource.id!;
         return {
           groupId: serviceResourcesQuery ? 'search' : 'recommendations',
           label: title,
           value: serviceResource.id!,
-          checked: currentFilters.service?.includes(serviceResource.id ?? '') ?? false,
+          searchWords: [serviceResource.id!, title],
+          checked,
           role: 'checkbox',
-        };
+          name: FilterCategory.SERVICE,
+        } as MenuItemProps;
       })
-      .sort((a, b) => {
+      .sort((a: MenuItemProps, b: MenuItemProps) => {
         const labelA = String(a.label || '');
         const labelB = String(b.label || '');
         return labelA.localeCompare(labelB);
@@ -525,20 +534,14 @@ export const mergeFilterDefaults = (
 };
 
 export const aggregateFilterState = (filterState: FilterState, viewType: InboxViewType): FilterState => {
-  if (!viewType) return filterState;
+  const presets = presetFiltersByView[viewType];
+  if (!presets) return filterState;
 
-  const presets = presetFiltersByView[viewType] ?? {};
-  const merged = { ...filterState };
+  // @ts-ignore
+  const asArray = (v: unknown): DialogStatus[] => (v == null ? [] : Array.isArray(v) ? v : [v]);
 
-  const mergeList = <T>(a?: T[], b?: T[], c?: T[]) => Array.from(new Set([...(a ?? []), ...(b ?? []), ...(c ?? [])]));
-
-  if ('status' in presets || 'label' in presets) {
-    merged.status = mergeList(
-      presets.status as string[] | undefined,
-      presets.label as string[] | undefined,
-      filterState.status,
-    );
-  }
-
-  return merged;
+  return {
+    ...filterState,
+    status: [...new Set([...asArray(presets.status), ...asArray(presets.label), ...asArray(filterState.status)])],
+  };
 };

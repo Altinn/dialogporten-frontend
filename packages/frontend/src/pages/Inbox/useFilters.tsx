@@ -8,7 +8,7 @@ import { useServiceResource } from '../../api/hooks/useServiceResource.ts';
 import { getOrganization } from '../../api/utils/organizations.ts';
 import { getEnvByHost } from '../../auth';
 import { useFeatureFlag } from '../../featureFlags';
-import { FilterCategory, getFilters, readFiltersFromURLQuery } from './filters.ts';
+import { FilterCategory, getFilters, readFiltersFromURLQuery } from './filters';
 import { useOrganizations } from './useOrganizations.ts';
 
 interface UseFiltersOutput {
@@ -48,50 +48,48 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
     return normalizedFilters;
   }, [params]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  const filteredServiceResources = useMemo(() => {
+  // biome-ignore lint/correctness/useExhaustiveDependencies: i18n language won't change
+  const suggestedServiceResources = useMemo(() => {
     const envByHost = getEnvByHost();
-    return serviceResources
-      .filter((option) => {
-        if (!serviceResourcesQuery) {
-          let shortlist = [];
-          if (envByHost === 'at23' || envByHost === 'local') {
-            shortlist = [
-              'urn:altinn:resource:app_hdir_a2-4081-3',
-              'urn:altinn:resource:app_sfd_a2-2975-1',
-              'urn:altinn:resource:app_skd_a2-1051-181125',
-              'urn:altinn:resource:nav-migratedcorrespondence-4503-',
-              'urn:altinn:resource:app_skd_a2-1049-111124',
-            ];
-          } else if (envByHost === 'tt02') {
-            shortlist = [
-              'urn:altinn:resource:app_skd_a2-1051-130203',
-              'urn:altinn:resource:app_brg_bvr-utv',
-              'urn:altinn:resource:app_dibk_a2-4655-2',
-              'urn:altinn:resource:nav_sykepenger_inntektsmelding',
-            ];
-          } else {
-            shortlist = [
-              'urn:altinn:resource:app_brg_a2-2705-201511',
-              'urn:altinn:resource:app_skd_a2-3736-140122',
-              'urn:altinn:resource:app_skd_a2-1051-130203',
-              'urn:altinn:resource:app_skd_a2-3707-190403',
-              'urn:altinn:resource:app_dibk_a2-4655-4',
-              'urn:altinn:resource:nav_sykepenger_inntektsmelding',
-            ];
-          }
-          return shortlist.some((sr) => option.id?.toLowerCase() === sr);
+    console.info('serviceResources', serviceResourcesQuery);
+    return serviceResources.filter((option) => {
+      if (!serviceResourcesQuery) {
+        let shortlist = [];
+        if (envByHost === 'at23' || envByHost === 'local') {
+          shortlist = [
+            'urn:altinn:resource:app_hdir_a2-4081-3',
+            'urn:altinn:resource:app_sfd_a2-2975-1',
+            'urn:altinn:resource:app_skd_a2-1051-181125',
+            'urn:altinn:resource:nav-migratedcorrespondence-4503-',
+            'urn:altinn:resource:app_skd_a2-1049-111124',
+          ];
+        } else if (envByHost === 'tt02') {
+          shortlist = [
+            'urn:altinn:resource:app_skd_a2-1051-130203',
+            'urn:altinn:resource:app_brg_bvr-utv',
+            'urn:altinn:resource:app_dibk_a2-4655-2',
+            'urn:altinn:resource:nav_sykepenger_inntektsmelding',
+          ];
+        } else {
+          shortlist = [
+            'urn:altinn:resource:app_brg_a2-2705-201511',
+            'urn:altinn:resource:app_skd_a2-3736-140122',
+            'urn:altinn:resource:app_skd_a2-1051-130203',
+            'urn:altinn:resource:app_skd_a2-3707-190403',
+            'urn:altinn:resource:app_dibk_a2-4655-4',
+            'urn:altinn:resource:nav_sykepenger_inntektsmelding',
+          ];
         }
+        return shortlist.some((sr) => option.id?.toLowerCase() === sr);
+      }
 
-        const serviceResourcesQueryLowerCase = serviceResourcesQuery.toLowerCase();
-        const optionTitle = option.title?.[i18n.language as 'nb' | 'nn' | 'en']?.toLowerCase();
-        const optionId = option.id?.toLowerCase();
-
-        return (
-          optionTitle?.includes(serviceResourcesQueryLowerCase) || optionId?.includes(serviceResourcesQueryLowerCase)
-        );
-      })
-      .slice(0, 5);
+      const serviceResourcesQueryLowerCase = serviceResourcesQuery.toLowerCase();
+      const optionTitle = option.title?.[i18n.language as 'nb' | 'nn' | 'en']?.toLowerCase();
+      const optionId = option.id?.toLowerCase();
+      return (
+        optionTitle?.includes(serviceResourcesQueryLowerCase) || optionId?.includes(serviceResourcesQueryLowerCase)
+      );
+    });
   }, [serviceResources, serviceResourcesQuery]);
 
   const filters: FilterProps[] = useMemo(
@@ -101,7 +99,7 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
         allOrganizations: organizations,
         viewType,
         orgsFromSearchState,
-        serviceResources: filteredServiceResources,
+        serviceResources: suggestedServiceResources,
         currentFilters,
         serviceResourcesQuery,
         onServiceResourcesQueryChange: setServiceResourcesQuery,
@@ -112,7 +110,7 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
       organizations,
       viewType,
       orgsFromSearchState,
-      filteredServiceResources,
+      suggestedServiceResources,
       currentFilters,
       serviceResourcesQuery,
       enableServiceFilter,

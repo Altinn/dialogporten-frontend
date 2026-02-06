@@ -8,7 +8,7 @@ import {
   SearchDialogFieldsFragment,
   TransmissionType,
 } from 'bff-types-generated';
-import { naiveSearchFilter } from "../../filters.ts";
+import { naiveSearchFilter } from "../../filters";
 import { InMemoryStore } from "../../handlers.ts";
 
 export const filterDialogs = ({

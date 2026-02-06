@@ -3,7 +3,7 @@ import type {
   PartyFieldsFragment,
   Profile,
   SavedSearchesFieldsFragment,
-  SearchDialogFieldsFragment,
+  SearchDialogFieldsFragment, ServiceResource,
 } from 'bff-types-generated';
 import { profile as mockedProfile } from './data/base/profile.ts';
 import { dialogs as mockedDialogs } from './data/base/dialogs.ts';
@@ -35,12 +35,14 @@ export const getMockedData = async (
   savedSearches: SavedSearchesFieldsFragment[];
   organizations: OrganizationFieldsFragment[];
   features: Record<string, boolean>
+  services: ServiceResource[]
 }> => {
   const profile = await findProfileById(url);
   const features = await findFeaturesById(url);
   const parties = await findPartiesById(url);
   const dialogs = await findDialogsById(url);
   const { organizations } = await import('./data/base/organizations.ts');
+  const { services } = await import('./data/base/services.ts');
 
-  return { profile, dialogs, parties, savedSearches: [], organizations, features };
+  return { profile, dialogs, parties, savedSearches: [], organizations, features, services };
 };

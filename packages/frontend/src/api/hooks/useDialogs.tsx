@@ -14,7 +14,7 @@ import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useFeatureFlag } from '../../featureFlags';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
-import { normalizeFilterDefaults } from '../../pages/Inbox/filters.ts';
+import { normalizeFilterDefaults } from '../../pages/Inbox/filters';
 import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
 import { useProfile } from '../../pages/Profile';
 import { graphQLSDK } from '../queries.ts';

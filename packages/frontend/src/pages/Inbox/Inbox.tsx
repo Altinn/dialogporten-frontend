@@ -30,7 +30,7 @@ import { useInboxOnboarding } from '../../onboardingTour';
 import { PageRoutes } from '../routes.ts';
 import { AlertBanner } from './AlertBanner.tsx';
 import { Altinn2ActiveSchemasNotification } from './Altinn2ActiveSchemasNotification.tsx';
-import { FilterCategory, readFiltersFromURLQuery } from './filters.ts';
+import { FilterCategory, readFiltersFromURLQuery } from './filters';
 import { useFilters } from './useFilters.tsx';
 import useGroupedDialogs from './useGroupedDialogs.tsx';
 import { useMockError } from './useMockError.tsx';
@@ -212,8 +212,8 @@ export const Inbox = ({ viewType }: InboxProps) => {
               filters,
               getFilterLabel,
               onFilterStateChange: onFiltersChange,
-              addLabel: t('filter_bar.add'),
-              addNextLabel: t('filter_bar.add_filter'),
+              addLabel: t('filter_bar.add_filter'),
+              addNextLabel: t('filter_bar.add'),
               resetLabel: t('filter_bar.reset_filters'),
               submitLabel: t('filter.show_all_results'),
               removeLabel: t('filter_bar.remove_filter'),

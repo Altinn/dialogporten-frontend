@@ -135,21 +135,23 @@ const useGroupedDialogs = ({
       placement: 'right',
       items: [
         ...(item ? systemLabelActions(item.id, item.label, item.unread) : []),
-        {
-          id: 'seenby-log',
-          groupId: 'logs',
-          label: item.seenByLabel,
-          as: 'button',
-          icon: item.seenByLog,
-          hidden: !item.seenByLabel,
-          onClick: () => {
-            onSeenByLogModalChange({
-              title: item.title,
-              dialogId: item.id,
-              items: item.seenByLog.items,
-            });
-          },
-        },
+        ...(item.seenByLabel
+          ? [
+              {
+                id: 'seenby-log',
+                groupId: 'logs',
+                label: item.seenByLabel,
+                icon: item.seenByLog,
+                onClick: () => {
+                  onSeenByLogModalChange({
+                    title: item.title,
+                    dialogId: item.id,
+                    items: item.seenByLog.items,
+                  });
+                },
+              },
+            ]
+          : []),
       ],
       'aria-label': t('dialog.context_menu.label', { title: item.title }),
     };
