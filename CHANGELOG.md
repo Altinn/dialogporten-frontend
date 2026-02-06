@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.119.7](https://github.com/Altinn/dialogporten-frontend/compare/v1.119.6...v1.119.7) (2026-02-06)
+
+
+### Bug Fixes
+
+* **footer:** update footer with new service announcement link ([#3695](https://github.com/Altinn/dialogporten-frontend/issues/3695)) ([f6f1d43](https://github.com/Altinn/dialogporten-frontend/commit/f6f1d43a2cea238c99f87b5dcb49f6b9b655b7fb))
+* **onboarding:** hide welcome modal in dialog details ([#3698](https://github.com/Altinn/dialogporten-frontend/issues/3698)) ([fb91f5c](https://github.com/Altinn/dialogporten-frontend/commit/fb91f5c26aeec8c856cec7638d7054564c4d553a))
+
 ## [1.119.6](https://github.com/Altinn/dialogporten-frontend/compare/v1.119.5...v1.119.6) (2026-02-04)
 
 
