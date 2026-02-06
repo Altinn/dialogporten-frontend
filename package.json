@@ -11,12 +11,12 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
-    "lint-staged": "^16.0.0",
-    "mprocs": "^0.8.0",
+    "lint-staged": "16.2.7",
+    "mprocs": "0.8.2",
     "turbo": "2.5.3"
   },
   "engines": {
-    "node": ">=22.0.0"
+    "node": "v25.6.0"
   },
   "lint-staged": {
     "**/*.*": "biome check --staged --no-errors-on-unmatched --write"
