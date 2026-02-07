@@ -14,7 +14,7 @@ import { useOrganizations } from './useOrganizations.ts';
 interface UseFiltersOutput {
   filters: FilterProps[];
   getFilterLabel: ToolbarFilterProps['getFilterLabel'];
-  filterGroups: ToolbarFilterProps['groups'];
+  filterGroups: FilterProps['groups'];
 }
 
 interface UseFiltersProps {
@@ -95,10 +95,9 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
         groupId: 'selected',
       }));
 
-    const retValue = !serviceResourcesQuery
+    return !serviceResourcesQuery
       ? [...recommendedServices, ...selectedServices]
       : [...serviceResources, ...selectedServices];
-    return retValue;
   }, [serviceResources, serviceResourcesQuery, currentFilters]);
 
   const filters: FilterProps[] = useMemo(
@@ -161,17 +160,14 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
     return undefined;
   };
 
-  const filterGroups = useMemo<ToolbarFilterProps['groups']>(
-    () => ({
-      'status-date': {
-        title: t('filter_bar.group.status_date'),
-      },
-      'service-related': {
-        title: t('filter_bar.group.service_related'),
-      },
-    }),
-    [t],
-  );
+  const filterGroups = {
+    'status-date': {
+      title: t('filter_bar.group.status_date'),
+    },
+    'service-related': {
+      title: t('filter_bar.group.service_related'),
+    },
+  };
 
   return { filters, getFilterLabel, filterGroups };
 };
