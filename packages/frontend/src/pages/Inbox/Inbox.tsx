@@ -9,7 +9,7 @@ import {
   type SeenByLogItemProps,
   Toolbar,
 } from '@altinn/altinn-components';
-import type { FilterState } from '@altinn/altinn-components/dist/types/lib/components/Toolbar/Toolbar';
+import type { FilterState } from '@altinn/altinn-components';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useSearchParams } from 'react-router-dom';
@@ -30,7 +30,7 @@ import { useInboxOnboarding } from '../../onboardingTour';
 import { PageRoutes } from '../routes.ts';
 import { AlertBanner } from './AlertBanner.tsx';
 import { Altinn2ActiveSchemasNotification } from './Altinn2ActiveSchemasNotification.tsx';
-import { FilterCategory, readFiltersFromURLQuery } from './filters.ts';
+import { FilterCategory, readFiltersFromURLQuery } from './filters';
 import { useFilters } from './useFilters.tsx';
 import useGroupedDialogs from './useGroupedDialogs.tsx';
 import { useMockError } from './useMockError.tsx';
@@ -113,7 +113,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     }
   }, [searchParams.toString()]);
 
-  const { accounts, selectedAccount, accountSearch, accountGroups, onSelectAccount, filterAccount } = useAccounts({
+  const { accounts, accountSearch, accountGroups, onSelectAccount, currentAccountName } = useAccounts({
     parties,
     selectedParties,
     allOrganizationsSelected,
@@ -122,7 +122,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     },
   });
 
-  const { filters, getFilterLabel } = useFilters({ viewType });
+  const { filters, getFilterLabel, filterGroups } = useFilters({ viewType });
 
   usePageTitle({
     baseTitle: viewType,
@@ -192,26 +192,33 @@ export const Inbox = ({ viewType }: InboxProps) => {
   return (
     <PageBase margin="page">
       <section data-testid="inbox-toolbar" style={{ marginTop: '-1rem' }}>
-        {selectedAccount ? (
+        {currentAccountName ? (
           <Toolbar
             data-testid="inbox-toolbar"
             accountMenu={{
               items: accounts,
               search: accountSearch,
               groups: accountGroups,
-              currentAccount: selectedAccount,
-              onSelectAccount: (account: string) => onSelectAccount(account, PageRoutes[viewType]),
-              filterAccount,
-              isVirtualized: true,
+              label: currentAccountName,
+              onSelectId: (id: string) => {
+                onSelectAccount(id, PageRoutes[viewType]);
+              },
+              searchable: true,
+              virtualized: true,
               title: t('parties.change_label'),
             }}
-            filterState={filterState}
-            getFilterLabel={getFilterLabel}
-            onFilterStateChange={onFiltersChange}
-            filters={filters}
-            showResultsLabel={t('filter.show_all_results')}
-            removeButtonAltText={t('filter_bar.remove_filter')}
-            addFilterButtonLabel={hasValidFilters ? t('filter_bar.add') : t('filter_bar.add_filter')}
+            filter={{
+              filterState,
+              filters,
+              groups: filterGroups,
+              getFilterLabel,
+              onFilterStateChange: onFiltersChange,
+              addLabel: t('filter_bar.add_filter'),
+              addNextLabel: t('filter_bar.add'),
+              resetLabel: t('filter_bar.reset_filters'),
+              submitLabel: t('filter.show_all_results'),
+              removeLabel: t('filter_bar.remove_filter'),
+            }}
           >
             <SaveSearchButton viewType={viewType} disabled={savedSearchDisabled} filterState={filterState} />
           </Toolbar>
@@ -219,7 +226,9 @@ export const Inbox = ({ viewType }: InboxProps) => {
       </section>
       <AlertBanner showAlertBanner={isAlertBannerEnabled && !!alertBannerContent} />
       <Section>
-        {isAltinn2MessagesEnabled && <Altinn2ActiveSchemasNotification selectedAccount={selectedAccount} />}
+        {isAltinn2MessagesEnabled && (
+          <Altinn2ActiveSchemasNotification selectedAccountId={selectedParties?.[0]?.party} />
+        )}
         {dialogsSuccess && !dialogItems.length && !isLoading && !isLimitReached && (
           <EmptyState query={enteredSearchValue} viewType={viewType} searchMode={searchMode} />
         )}

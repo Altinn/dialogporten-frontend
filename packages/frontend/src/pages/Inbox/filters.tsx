@@ -1,4 +1,5 @@
-import type { FilterState, ToolbarFilterProps, ToolbarSearchProps } from '@altinn/altinn-components';
+import type { FilterProps, FilterState, MenuItemProps, ToolbarFilterProps } from '@altinn/altinn-components';
+import { CalendarIcon, InformationSquareIcon, MenuGridIcon, MenuHamburgerIcon } from '@navikt/aksel-icons';
 import {
   type CountableDialogFieldsFragment,
   DialogStatus,
@@ -9,11 +10,10 @@ import {
 } from 'bff-types-generated';
 import { endOfDay, endOfMonth, endOfWeek, startOfDay, startOfMonth, startOfWeek, subMonths, subYears } from 'date-fns';
 import { t } from 'i18next';
-import type { ChangeEvent } from 'react';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { getOrganization } from '../../api/utils/organizations.ts';
 
-interface ServiceFilterProps extends ToolbarFilterProps {
+interface ServiceFilterProps {
   serviceResources: ServiceResource[];
   currentFilters?: FilterState;
   serviceResourcesQuery: string;
@@ -123,38 +123,50 @@ const getFilteredDialogs = (
   });
 };
 
-const createDateOptions = (): ToolbarFilterProps['options'] => {
+const createDateOptions = (): MenuItemProps[] => {
   const options = [
     {
+      id: DateFilterOption.TODAY,
+      role: 'radio',
       value: DateFilterOption.TODAY,
-      groupId: 'group-0',
+      groupId: 'date-recent',
     },
     {
+      id: DateFilterOption.THIS_WEEK,
+      role: 'radio',
       value: DateFilterOption.THIS_WEEK,
-      groupId: 'group-0',
+      groupId: 'date-recent',
     },
     {
+      id: DateFilterOption.THIS_MONTH,
+      role: 'radio',
       value: DateFilterOption.THIS_MONTH,
-      groupId: 'group-0',
+      groupId: 'date-recent',
     },
     {
+      id: DateFilterOption.LAST_SIX_MONTHS,
+      role: 'radio',
       value: DateFilterOption.LAST_SIX_MONTHS,
-      groupId: 'group-1',
+      groupId: 'date-months',
     },
     {
+      id: DateFilterOption.LAST_TWELVE_MONTHS,
+      role: 'radio',
       value: DateFilterOption.LAST_TWELVE_MONTHS,
-      groupId: 'group-1',
+      groupId: 'date-months',
     },
     {
+      id: DateFilterOption.OLDER_THAN_ONE_YEAR,
+      role: 'radio',
       value: DateFilterOption.OLDER_THAN_ONE_YEAR,
-      groupId: 'group-2',
+      groupId: 'date-older',
     },
   ];
 
   return options.map((option) => ({
+    ...option,
     label: t(`filter.date.${option.value.toLowerCase()}`),
-    value: option.value,
-    groupId: option.groupId,
+    name: FilterCategory.UPDATED,
   }));
 };
 
@@ -163,20 +175,31 @@ const createSenderOrgFilter = (
   allOrganizations: OrganizationFieldsFragment[],
   orgsFromSearchState: string[],
   currentFilters: FilterState = {},
-): ToolbarFilterProps => {
+): FilterProps => {
   const filteredDialogs = getFilteredDialogs(allDialogs, currentFilters, FilterCategory.ORG);
   const orgCount = countOccurrences(filteredDialogs.map((d) => d.org));
   const uniqueOrgs = Array.from(new Set([...allDialogs.map((d) => d.org), ...orgsFromSearchState]));
 
   return {
+    id: FilterCategory.ORG,
+    icon: MenuHamburgerIcon,
+    groupId: 'service-related',
     label: t('filter_bar.label.choose_sender'),
     name: FilterCategory.ORG,
     removable: true,
-    optionType: 'checkbox',
-    options: uniqueOrgs
+    groups: {
+      'service-owners': {
+        title: t('filter_bar.group.choose_sender'),
+      },
+    },
+    items: uniqueOrgs
       .map((org) => ({
+        id: org,
+        name: FilterCategory.ORG,
         label: getOrganization(allOrganizations, org)?.name || org,
         value: org,
+        role: 'checkbox',
+        groupId: 'service-owners',
       }))
       .filter((option) => {
         if (orgsFromSearchState.includes(option.value)) {
@@ -188,125 +211,165 @@ const createSenderOrgFilter = (
   };
 };
 
-const createStatusFilter = (): ToolbarFilterProps => {
+const createStatusFilter = (): FilterProps => {
   return {
+    id: FilterCategory.STATUS,
     label: t('filter_bar.label.choose_status'),
+    groupId: 'status-date',
+    icon: InformationSquareIcon,
     name: FilterCategory.STATUS,
     removable: true,
-    optionType: 'checkbox',
-    optionGroups: {
-      'static-status': {
-        title: t('filter_bar.label.static_status'),
-        divider: true,
+    groups: {
+      'status-general': {
+        title: t('filter_bar.group.choose_status'),
       },
-      'dynamic-status': {
-        title: t('filter_bar.label.dynamic_status'),
-        divider: true,
-      },
+      'status-active': {},
+      'status-draft': {},
+      'status-history': {},
     },
-    options: [
+    items: [
       {
+        id: DialogStatus.NotApplicable,
         label: t('status.not_applicable'),
-        groupId: 'status-group-0',
+        groupId: 'status-general',
         value: DialogStatus.NotApplicable,
       },
       {
+        id: DialogStatus.RequiresAttention,
         label: t('status.requires_attention'),
-        groupId: 'status-group-1',
+        groupId: 'status-active',
         value: DialogStatus.RequiresAttention,
       },
       {
+        id: DialogStatus.Awaiting,
         label: t('status.awaiting'),
-        groupId: 'status-group-1',
+        groupId: 'status-active',
         value: DialogStatus.Awaiting,
       },
       {
+        id: DialogStatus.InProgress,
         label: t('status.in_progress'),
-        groupId: 'status-group-1',
+        groupId: 'status-active',
         value: DialogStatus.InProgress,
       },
       {
+        id: DialogStatus.Completed,
         label: t('status.completed'),
-        groupId: 'status-group-1',
+        groupId: 'status-active',
         value: DialogStatus.Completed,
       },
       {
+        id: DialogStatus.Draft,
         label: t('status.draft'),
-        groupId: 'status-group-2',
+        groupId: 'status-draft',
         value: DialogStatus.Draft,
       },
       {
+        id: SystemLabel.Sent,
         label: t('status.sent'),
-        groupId: 'status-group-2',
+        groupId: 'status-history',
         value: SystemLabel.Sent,
       },
       {
+        id: SystemLabel.Archive,
         label: t('status.archive'),
-        groupId: 'status-group-3',
+        groupId: 'status-history',
         value: SystemLabel.Archive,
       },
       {
+        id: SystemLabel.Bin,
         label: t('status.bin'),
-        groupId: 'status-group-3',
+        groupId: 'status-history',
         value: SystemLabel.Bin,
       },
-    ],
+    ].map((item) => ({
+      ...item,
+      role: 'checkbox',
+      name: FilterCategory.STATUS,
+    })),
   };
 };
 
-const createUpdatedAtFilter = (): ToolbarFilterProps => {
+const createUpdatedAtFilter = (): FilterProps => {
   return {
+    icon: CalendarIcon,
+    groupId: 'status-date',
     id: FilterCategory.UPDATED,
     name: FilterCategory.UPDATED,
     label: t('filter_bar.label.updated'),
-    optionType: 'radio',
     removable: true,
-    options: createDateOptions(),
+    groups: {
+      'date-recent': {
+        title: t('filter_bar.group.choose_date'),
+      },
+      'date-months': {},
+      'date-older': {},
+    },
+    items: createDateOptions(),
   };
 };
 
-const createServiceFilter = (props: ServiceFilterProps): ToolbarFilterProps => {
-  const { serviceResources, currentFilters = {}, serviceResourcesQuery, onServiceResourcesQueryChange, name } = props;
-  const search: ToolbarSearchProps = {
-    name,
-    onClear: () => onServiceResourcesQueryChange(''),
-    placeholder: t('filter_bar.service.search_placeholder'),
-    value: serviceResourcesQuery,
-    onChange: (e: ChangeEvent<HTMLInputElement>) => {
-      onServiceResourcesQueryChange(e.target.value);
-    },
-  };
-
-  // Calculate the count of serviceResources that have IDs (used for search results)
+const createServiceFilter = ({
+  serviceResources,
+  currentFilters = {},
+  serviceResourcesQuery,
+  onServiceResourcesQueryChange,
+}: ServiceFilterProps): FilterProps => {
   const serviceResourcesCount = serviceResources.filter((serviceResource) => serviceResource.id).length;
-
+  const groupFallback = serviceResourcesQuery ? 'search' : 'recommendations';
+  const allowedGroups = new Set(['recommendations', 'selected', 'search']);
   return {
-    label: props.label,
+    id: FilterCategory.SERVICE,
+    groupId: 'service-related',
+    icon: MenuGridIcon,
+    label: t('filter_bar.label.choose_service'),
     name: FilterCategory.SERVICE,
     removable: true,
-    optionType: props.optionType,
-    search,
-    optionGroups: {
+    searchable: true,
+    virtualized: true,
+    search: {
+      name: 'search-service',
+      onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+        onServiceResourcesQueryChange(e.target.value);
+      },
+      onClear: () => {
+        onServiceResourcesQueryChange('');
+      },
+    },
+    groups: {
       recommendations: {
-        title: t('filter_bar.service.recommendations'),
+        title: t('filter_bar.group.choose_service'),
+      },
+      selected: {
+        title: t('filter_bar.service.selected'),
       },
       search: {
         title: t('filter_bar.service.search_hits', { count: serviceResourcesCount }),
       },
     },
-    options: serviceResources
+    items: serviceResources
       .filter((serviceResource) => serviceResource.id)
       .map((serviceResource) => {
+        const checked = currentFilters.service?.includes(serviceResource.id ?? '') ?? false;
         const title =
           serviceResource.title?.nb || serviceResource.title?.en || serviceResource.title?.nn || serviceResource.id!;
+        const normalizedGroupId =
+          checked || serviceResource.groupId === 'selected'
+            ? 'selected'
+            : allowedGroups.has(serviceResource.groupId ?? '')
+              ? serviceResource.groupId!
+              : groupFallback;
         return {
-          groupId: serviceResourcesQuery ? 'search' : 'recommendations',
+          groupId: normalizedGroupId,
           label: title,
           value: serviceResource.id!,
-          checked: currentFilters.service?.includes(serviceResource.id ?? '') ?? false,
-        };
+          searchWords: [serviceResource.id!, title],
+          checked,
+          role: 'checkbox',
+          name: FilterCategory.SERVICE,
+        } as MenuItemProps;
       })
-      .sort((a, b) => {
+      .sort((a: MenuItemProps, b: MenuItemProps) => {
         const labelA = String(a.label || '');
         const labelB = String(b.label || '');
         return labelA.localeCompare(labelB);
@@ -350,32 +413,32 @@ export const getFilters = ({
   serviceResources?: ServiceResource[];
   currentFilters?: FilterState;
   enableServiceFilter?: boolean;
-}): ToolbarFilterProps[] => {
+}): ToolbarFilterProps['filters'] => {
   const senderOrgFilter = createSenderOrgFilter(allDialogs, allOrganizations, orgsFromSearchState);
   const statusFilter = createStatusFilter();
   const updatedAtFilter = createUpdatedAtFilter();
   const serviceFilter = createServiceFilter({
-    label: t('filter_bar.label.choose_service'),
-    name: 'service',
-    optionType: 'checkbox',
-    options: [],
     serviceResources,
     currentFilters,
     serviceResourcesQuery,
     onServiceResourcesQueryChange,
   });
 
-  const filters = [senderOrgFilter, updatedAtFilter];
+  const filters = [];
+
   if (viewType === 'inbox') {
     filters.push(statusFilter);
   }
+
+  filters.push(updatedAtFilter);
+  filters.push(senderOrgFilter);
 
   if (enableServiceFilter) {
     filters.push(serviceFilter);
   }
 
   return filters.filter((filter) => {
-    return filter.name === FilterCategory.SERVICE ? true : filter.options?.length > 0;
+    return filter.name === FilterCategory.SERVICE ? true : filter.items?.length > 0;
   });
 };
 
@@ -509,20 +572,14 @@ export const mergeFilterDefaults = (
 };
 
 export const aggregateFilterState = (filterState: FilterState, viewType: InboxViewType): FilterState => {
-  if (!viewType) return filterState;
+  const presets = presetFiltersByView[viewType];
+  if (!presets) return filterState;
 
-  const presets = presetFiltersByView[viewType] ?? {};
-  const merged = { ...filterState };
+  // @ts-ignore
+  const asArray = (v: unknown): DialogStatus[] => (v == null ? [] : Array.isArray(v) ? v : [v]);
 
-  const mergeList = <T>(a?: T[], b?: T[], c?: T[]) => Array.from(new Set([...(a ?? []), ...(b ?? []), ...(c ?? [])]));
-
-  if ('status' in presets || 'label' in presets) {
-    merged.status = mergeList(
-      presets.status as string[] | undefined,
-      presets.label as string[] | undefined,
-      filterState.status,
-    );
-  }
-
-  return merged;
+  return {
+    ...filterState,
+    status: [...new Set([...asArray(presets.status), ...asArray(presets.label), ...asArray(filterState.status)])],
+  };
 };

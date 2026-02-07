@@ -1,6 +1,6 @@
 import { graphql, http, HttpResponse } from 'msw';
 import { formatDisplayName } from '@altinn/altinn-components';
-import { naiveSearchFilter } from './filters.ts';
+import { naiveSearchFilter } from './filters';
 import {
   SavedSearchesFieldsFragment,
   DialogByIdFieldsFragment,
@@ -9,7 +9,7 @@ import {
   SearchDialogFieldsFragment,
   PartyFieldsFragment,
   OrganizationFieldsFragment,
-  SystemLabel,
+  SystemLabel, ServiceResource,
 } from 'bff-types-generated';
 import { convertToDialogByIdTemplate, filterDialogs } from './data/base/helper.ts';
 import { getMockedData } from './data.ts';
@@ -22,6 +22,7 @@ export type InMemoryStore = {
   parties?: PartyFieldsFragment[];
   organizations?: OrganizationFieldsFragment[];
   features?: Record<string, boolean>
+  services?: ServiceResource[];
 };
 
 let inMemoryStore: InMemoryStore = {
@@ -31,6 +32,7 @@ let inMemoryStore: InMemoryStore = {
   parties: data.parties,
   organizations: data.organizations,
   features: data.features,
+  services: data.services,
 };
 
 const isAuthenticatedMock = http.get('/api/isAuthenticated', () => {
@@ -446,7 +448,7 @@ const mutateDeleteFavoritePartyMock = graphql.mutation('DeleteFavoriteParty', (r
 const getServiceResourcesMock = graphql.query('getServiceResources', () => {
   return HttpResponse.json({
     data: {
-      serviceResources: [],
+      serviceResources: inMemoryStore.services,
     },
   });
 });

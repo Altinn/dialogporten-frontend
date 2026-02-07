@@ -13,7 +13,7 @@ import { ANALYTICS_EVENTS } from '../../analyticsEvents.ts';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { updateLanguage } from '../../api/queries.ts';
 import { getFrontPageLink } from '../../auth';
-import { useFeatureFlag } from '../../featureFlags/useFeatureFlag';
+import { useFeatureFlag } from '../../featureFlags';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { useProfile } from '../../pages/Profile';
 import { PageRoutes } from '../../pages/routes.ts';
@@ -122,7 +122,7 @@ export const useHeaderConfig = (): UseHeaderConfigReturn => {
     currentAccountUuid: currentPartyUuid,
     selfAccountUuid,
     isLoading,
-    isVirtualized: true,
+    virtualized: true,
     onSelectAccount: handleSelectAccount,
     onToggleFavorite: handleToggleFavorite,
     languageCode: i18n.language,

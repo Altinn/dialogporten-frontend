@@ -5,7 +5,6 @@ import { DialogDetailsPage } from './pages/DialogDetailsPage';
 import { ErrorPage } from './pages/Error/Error.tsx';
 import { Inbox } from './pages/Inbox';
 import { FrontChannelLogout } from './pages/LogoutPage/FrontChannelLogout.tsx';
-import { Activities } from './pages/Profile/Activities/Activities.tsx';
 import { NotificationsPage } from './pages/Profile/NotificationsPage/NotificationsPage.tsx';
 import { PartiesOverviewPage } from './pages/Profile/PartiesOverviewPage/PartiesOverviewPage.tsx';
 import { Profile } from './pages/Profile/Profile.tsx';
@@ -47,7 +46,6 @@ function App() {
           />
           <Route path={PageRoutes.notifications} element={withErrorBoundary(<NotificationsPage />, 'Notifications')} />
           <Route path={PageRoutes.settings} element={withErrorBoundary(<Settings />, 'Settings')} />
-          <Route path={PageRoutes.activities} element={withErrorBoundary(<Activities />, 'Activities')} />
           <Route
             path={PageRoutes.drafts}
             element={withErrorBoundary(<Inbox key="draft" viewType={'drafts'} />, 'Drafts')}

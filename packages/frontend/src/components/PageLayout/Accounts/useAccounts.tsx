@@ -1,5 +1,4 @@
 import type {
-  Account,
   AccountMenuItemProps,
   AccountSearchProps,
   AvatarGroupProps,
@@ -11,9 +10,8 @@ import type { PartyFieldsFragment } from 'bff-types-generated';
 import i18n from 'i18next';
 import { type ChangeEvent, type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useParties } from '../../../api/hooks/useParties.ts';
-import { useFeatureFlag } from '../../../featureFlags/useFeatureFlag';
+import { useNavigate } from 'react-router-dom';
+import { useFeatureFlag } from '../../../featureFlags';
 import { useProfile } from '../../../pages/Profile';
 import { SettingsType } from '../../../pages/Profile/Settings/useSettings.tsx';
 import type { PageRoutes } from '../../../pages/routes.ts';
@@ -53,8 +51,7 @@ interface UseAccountsOutput {
   accountSearch: AccountSearchProps | undefined;
   filterAccount?: (item: AccountMenuItemProps, search: string) => boolean;
   onSelectAccount: (account: string, route: PageRoutes) => void;
-  selectedAccount?: Account;
-  currentAccount?: Account;
+  currentAccountName: string;
 }
 
 export const formatSSN = (ssn: string, maskIdentifierSuffix: boolean) => {
@@ -85,30 +82,6 @@ export const formatNorwegianId = (partyId: string, isCurrentEndUser: boolean) =>
   return [ssnOrOrgNo.slice(0, 3), ssnOrOrgNo.slice(3, 6), ssnOrOrgNo.slice(6, 9)].join('\u2009');
 };
 
-const filterAccount = (item: AccountMenuItemProps, search: string) => {
-  if (search.length && item.groupId === SettingsType.favorites) {
-    return false;
-  }
-
-  if (search) {
-    const partyItem: PartyItemProp = item as PartyItemProp;
-    const normalized = search.trim().toLowerCase();
-    const parts = normalized.split(/\s+/);
-    const title = (partyItem.name ?? '').toString().toLowerCase();
-    const parentName = (partyItem.parentName ?? '').toString().toLowerCase();
-    const ssnOrOrgNo = getSSNOrOrgNo(partyItem.id);
-    return parts.some(
-      (part) =>
-        title.includes(part) ||
-        parentName.includes(part) ||
-        title.includes(normalized) ||
-        parentName.includes(normalized) ||
-        ssnOrOrgNo.includes(normalized),
-    );
-  }
-  return false;
-};
-
 const compareName = (a: string, b: string) =>
   a.localeCompare(b, i18n.language, {
     sensitivity: 'base',
@@ -125,8 +98,6 @@ export const useAccounts = ({
 }: UseAccountsProps): UseAccountsOutput => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const location = useLocation();
-  const { setSelectedPartyIds } = useParties();
   const { favoritesGroup, shouldShowDeletedEntities } = useProfile();
   const isDeletedUnitsFilterEnabled = useFeatureFlag<boolean>('inbox.enableDeletedUnitsFilter');
   const [searchString, setSearchString] = useState<string>('');
@@ -139,12 +110,9 @@ export const useAccounts = ({
     type: 'person' as AccountMenuItemProps['type'],
     groupId: 'loading',
     title: '',
-    loading: true,
     icon: { name: '', type: 'person' },
     name: '',
   };
-
-  const { groupId: _, ...loadingAccount } = loadingAccountMenuItem;
 
   const currentEndUser = useMemo(() => {
     return parties.find(
@@ -185,10 +153,13 @@ export const useAccounts = ({
     return otherPeople
       .map((person) => {
         const description = t('word.ssn') + formatNorwegianId(person.party, false);
+        const ssnOrOrgNo = getSSNOrOrgNo(person.party);
         return {
           id: person.party,
-          ssnOrOrgNo: getSSNOrOrgNo(person.party),
+          searchWords: [person.name, ssnOrOrgNo],
+          ssnOrOrgNo,
           name: person.name,
+          title: person.name,
           type: 'person' as AccountMenuItemProps['type'],
           icon: { name: person.name, type: 'person' as AvatarType },
           isDeleted: person.isDeleted,
@@ -218,11 +189,13 @@ export const useAccounts = ({
               false,
             )}, ${t('profile.account.partOf')} ${parent.name}`
           : `${t('word.orgNo')} ${formatNorwegianId(party.party, false)}`;
-
+      const orgNo = getSSNOrOrgNo(party.party);
       return {
         id: party.party,
-        ssnOrOrgNo: getSSNOrOrgNo(party.party),
+        searchWords: [orgNo, party.name],
+        ssnOrOrgNo: orgNo,
         name: party.name,
+        title: party.name,
         type: 'company' as AccountMenuItemProps['type'],
         icon: {
           name: party.name,
@@ -274,10 +247,9 @@ export const useAccounts = ({
     return {
       accounts: [loadingAccountMenuItem as PartyItemProp],
       accountGroups: { loading: { title: t('profile.accounts.loading') } },
-      selectedAccount: loadingAccount as Account,
       accountSearch: undefined,
       onSelectAccount: () => {},
-      currentAccount: loadingAccount as Account,
+      currentAccountName: '',
     };
   }
 
@@ -287,6 +259,7 @@ export const useAccounts = ({
       accountGroups: {},
       accountSearch: undefined,
       onSelectAccount: () => {},
+      currentAccountName: '',
     };
   }
 
@@ -313,7 +286,9 @@ export const useAccounts = ({
   const endUserAccount: PartyItemProp | undefined = currentEndUser
     ? {
         id: currentEndUser.party ?? '',
+        searchWords: [currentEndUser.name],
         name: currentEndUser.name ?? '',
+        title: currentEndUser.name ?? '',
         type: 'person' as AccountMenuItemProps['type'],
         groupId: 'primary',
         icon: {
@@ -337,6 +312,7 @@ export const useAccounts = ({
     uuid: 'N/A',
     id: 'ALL',
     name: t('parties.labels.all_organizations'),
+    title: t('parties.labels.all_organizations'),
     type: 'group',
     groupId: 'groups',
     icon: {
@@ -363,39 +339,6 @@ export const useAccounts = ({
     ...organizationAccounts,
   ];
 
-  const selectedAccountMenuItem = allOrganizationsSelected
-    ? allOrganizationsAccount
-    : accounts.find((account) => selectedParties[0]?.party === account.id);
-
-  const selectedAccount = (
-    selectedAccountMenuItem
-      ? {
-          id: selectedAccountMenuItem.id,
-          name: selectedAccountMenuItem.name,
-          description:
-            options.showDescription && selectedAccountMenuItem.description
-              ? String(selectedAccountMenuItem.description)
-              : undefined,
-          type: selectedAccountMenuItem.type,
-          icon: selectedAccountMenuItem.icon,
-        }
-      : loadingAccount
-  ) as Account;
-
-  const currentAccount: Account = allOrganizationsSelected
-    ? {
-        id: endUserAccount?.id ?? 'not_found',
-        name: endUserAccount?.name ?? '',
-        description:
-          options.showDescription && endUserAccount?.description ? String(endUserAccount.description) : undefined,
-        type: 'person',
-        icon: {
-          type: 'person',
-          name: endUserAccount?.name ?? '',
-        },
-      }
-    : selectedAccount || loadingAccount;
-
   const accountSearch = showSearch
     ? {
         name: 'account-search',
@@ -413,19 +356,24 @@ export const useAccounts = ({
       }
     : undefined;
 
-  const onSelectAccount = (account: string, route: PageRoutes) => {
-    const allAccountsSelected = account === 'ALL';
+  const onSelectAccount = (partyId: string, route: PageRoutes) => {
+    const allAccountsSelected = partyId === 'ALL';
     const search = new URLSearchParams();
 
-    if (location.pathname === route) {
-      setSelectedPartyIds(allAccountsSelected ? [] : [account], allAccountsSelected);
+    if (allAccountsSelected) {
+      search.append('allParties', 'true');
+      search.delete('party');
     } else {
-      search.append(
-        allAccountsSelected ? 'allParties' : 'party',
-        allAccountsSelected ? 'true' : encodeURIComponent(account),
-      );
-      navigate(route + `?${search.toString()}`);
+      const party = parties.find((p) => p.party === partyId);
+      if (!party) {
+        console.error('Selected party not found:', partyId);
+        return;
+      }
+      search.append('party', encodeURIComponent(party.party));
+      search.delete('allParties');
     }
+
+    navigate(`${route}?${search.toString()}`, { replace: true });
   };
 
   let filteredAccounts = accounts;
@@ -441,10 +389,10 @@ export const useAccounts = ({
   return {
     accounts: filteredAccounts,
     accountGroups,
-    selectedAccount,
     accountSearch,
     onSelectAccount,
-    currentAccount,
-    filterAccount,
+    currentAccountName: allOrganizationsSelected
+      ? t('parties.labels.all_organizations')
+      : (selectedParties?.[0]?.name ?? ''),
   };
 };

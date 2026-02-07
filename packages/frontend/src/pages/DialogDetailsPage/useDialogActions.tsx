@@ -114,6 +114,7 @@ export const useDialogActions = () => {
         icon: ArchiveIcon,
         label: t('dialog.toolbar.move_to_archive'),
         as: 'button',
+        'aria-label': t('dialog.toolbar.move_to_archive'),
         onClick: () =>
           handleUpdateLabel(
             dialogId,

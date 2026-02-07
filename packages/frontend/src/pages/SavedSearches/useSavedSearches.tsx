@@ -29,7 +29,7 @@ import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { useFormatDistance } from '../../i18n/useDateFnsLocale.tsx';
-import { DateFilterOption } from '../Inbox/filters.ts';
+import { DateFilterOption } from '../Inbox/filters';
 import { useOrganizations } from '../Inbox/useOrganizations.ts';
 import { PageRoutes } from '../routes.ts';
 import { buildCurrentStateURL, buildSavedSearchURL } from './bookmarkURL.ts';
