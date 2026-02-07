@@ -14,6 +14,7 @@ import { useOrganizations } from './useOrganizations.ts';
 interface UseFiltersOutput {
   filters: FilterProps[];
   getFilterLabel: ToolbarFilterProps['getFilterLabel'];
+  filterGroups: ToolbarFilterProps['groups'];
 }
 
 interface UseFiltersProps {
@@ -51,9 +52,8 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
   // biome-ignore lint/correctness/useExhaustiveDependencies: i18n language won't change
   const suggestedServiceResources = useMemo(() => {
     const envByHost = getEnvByHost();
-    console.info('serviceResources', serviceResourcesQuery);
-    return serviceResources.filter((option) => {
-      if (!serviceResourcesQuery) {
+    const recommendedServices = serviceResources
+      .filter((option) => {
         let shortlist = [];
         if (envByHost === 'at23' || envByHost === 'local') {
           shortlist = [
@@ -81,16 +81,25 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
           ];
         }
         return shortlist.some((sr) => option.id?.toLowerCase() === sr);
-      }
+      })
+      .map((option) => ({
+        id: option.id + '-suggestion',
+        ...option,
+        groupId: 'recommendations',
+      }));
 
-      const serviceResourcesQueryLowerCase = serviceResourcesQuery.toLowerCase();
-      const optionTitle = option.title?.[i18n.language as 'nb' | 'nn' | 'en']?.toLowerCase();
-      const optionId = option.id?.toLowerCase();
-      return (
-        optionTitle?.includes(serviceResourcesQueryLowerCase) || optionId?.includes(serviceResourcesQueryLowerCase)
-      );
-    });
-  }, [serviceResources, serviceResourcesQuery]);
+    const selectedServices = serviceResources
+      .filter((service) => currentFilters?.service?.includes(service.id!))
+      .map((service) => ({
+        ...service,
+        groupId: 'selected',
+      }));
+
+    const retValue = !serviceResourcesQuery
+      ? [...recommendedServices, ...selectedServices]
+      : [...serviceResources, ...selectedServices];
+    return retValue;
+  }, [serviceResources, serviceResourcesQuery, currentFilters]);
 
   const filters: FilterProps[] = useMemo(
     () =>
@@ -144,8 +153,7 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
 
     if (name === FilterCategory.SERVICE) {
       if (value?.length === 1) {
-        const service = serviceResources.find((sr) => sr.id === String(value[0]));
-        return service?.title?.nb || service?.title?.en || service?.title?.nn || service?.id || String(value[0]);
+        return t('inbox.filter.single.service');
       }
       return t('inbox.filter.multiple.service', { count: value?.length });
     }
@@ -153,5 +161,17 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
     return undefined;
   };
 
-  return { filters, getFilterLabel };
+  const filterGroups = useMemo<ToolbarFilterProps['groups']>(
+    () => ({
+      'status-date': {
+        title: t('filter_bar.group.status_date'),
+      },
+      'service-related': {
+        title: t('filter_bar.group.service_related'),
+      },
+    }),
+    [t],
+  );
+
+  return { filters, getFilterLabel, filterGroups };
 };

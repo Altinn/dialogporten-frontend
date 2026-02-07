@@ -122,7 +122,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     },
   });
 
-  const { filters, getFilterLabel } = useFilters({ viewType });
+  const { filters, getFilterLabel, filterGroups } = useFilters({ viewType });
 
   usePageTitle({
     baseTitle: viewType,
@@ -210,6 +210,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
             filter={{
               filterState,
               filters,
+              groups: filterGroups,
               getFilterLabel,
               onFilterStateChange: onFiltersChange,
               addLabel: t('filter_bar.add_filter'),

@@ -1,4 +1,5 @@
 import type { FilterProps, FilterState, MenuItemProps, ToolbarFilterProps } from '@altinn/altinn-components';
+import { CalendarIcon, InformationSquareIcon, MenuGridIcon, MenuHamburgerIcon } from '@navikt/aksel-icons';
 import {
   type CountableDialogFieldsFragment,
   DialogStatus,
@@ -128,37 +129,37 @@ const createDateOptions = (): MenuItemProps[] => {
       id: DateFilterOption.TODAY,
       role: 'radio',
       value: DateFilterOption.TODAY,
-      groupId: 'group-0',
+      groupId: 'date-recent',
     },
     {
       id: DateFilterOption.THIS_WEEK,
       role: 'radio',
       value: DateFilterOption.THIS_WEEK,
-      groupId: 'group-0',
+      groupId: 'date-recent',
     },
     {
       id: DateFilterOption.THIS_MONTH,
       role: 'radio',
       value: DateFilterOption.THIS_MONTH,
-      groupId: 'group-0',
+      groupId: 'date-recent',
     },
     {
       id: DateFilterOption.LAST_SIX_MONTHS,
       role: 'radio',
       value: DateFilterOption.LAST_SIX_MONTHS,
-      groupId: 'group-1',
+      groupId: 'date-months',
     },
     {
       id: DateFilterOption.LAST_TWELVE_MONTHS,
       role: 'radio',
       value: DateFilterOption.LAST_TWELVE_MONTHS,
-      groupId: 'group-1',
+      groupId: 'date-months',
     },
     {
       id: DateFilterOption.OLDER_THAN_ONE_YEAR,
       role: 'radio',
       value: DateFilterOption.OLDER_THAN_ONE_YEAR,
-      groupId: 'group-2',
+      groupId: 'date-older',
     },
   ];
 
@@ -181,9 +182,16 @@ const createSenderOrgFilter = (
 
   return {
     id: FilterCategory.ORG,
+    icon: MenuHamburgerIcon,
+    groupId: 'service-related',
     label: t('filter_bar.label.choose_sender'),
     name: FilterCategory.ORG,
     removable: true,
+    groups: {
+      'service-owners': {
+        title: t('filter_bar.group.choose_sender'),
+      },
+    },
     items: uniqueOrgs
       .map((org) => ({
         id: org,
@@ -191,6 +199,7 @@ const createSenderOrgFilter = (
         label: getOrganization(allOrganizations, org)?.name || org,
         value: org,
         role: 'checkbox',
+        groupId: 'service-owners',
       }))
       .filter((option) => {
         if (orgsFromSearchState.includes(option.value)) {
@@ -206,71 +215,71 @@ const createStatusFilter = (): FilterProps => {
   return {
     id: FilterCategory.STATUS,
     label: t('filter_bar.label.choose_status'),
+    groupId: 'status-date',
+    icon: InformationSquareIcon,
     name: FilterCategory.STATUS,
     removable: true,
     groups: {
-      'static-status': {
-        title: t('filter_bar.label.static_status'),
-        divider: true,
+      'status-general': {
+        title: t('filter_bar.group.choose_status'),
       },
-      'dynamic-status': {
-        title: t('filter_bar.label.dynamic_status'),
-        divider: true,
-      },
+      'status-active': {},
+      'status-draft': {},
+      'status-history': {},
     },
     items: [
       {
         id: DialogStatus.NotApplicable,
         label: t('status.not_applicable'),
-        groupId: 'status-group-0',
+        groupId: 'status-general',
         value: DialogStatus.NotApplicable,
       },
       {
         id: DialogStatus.RequiresAttention,
         label: t('status.requires_attention'),
-        groupId: 'status-group-1',
+        groupId: 'status-active',
         value: DialogStatus.RequiresAttention,
       },
       {
         id: DialogStatus.Awaiting,
         label: t('status.awaiting'),
-        groupId: 'status-group-1',
+        groupId: 'status-active',
         value: DialogStatus.Awaiting,
       },
       {
         id: DialogStatus.InProgress,
         label: t('status.in_progress'),
-        groupId: 'status-group-1',
+        groupId: 'status-active',
         value: DialogStatus.InProgress,
       },
       {
         id: DialogStatus.Completed,
         label: t('status.completed'),
-        groupId: 'status-group-1',
+        groupId: 'status-active',
         value: DialogStatus.Completed,
       },
       {
         id: DialogStatus.Draft,
         label: t('status.draft'),
-        groupId: 'status-group-2',
+        groupId: 'status-draft',
         value: DialogStatus.Draft,
       },
       {
         id: SystemLabel.Sent,
         label: t('status.sent'),
-        groupId: 'status-group-2',
+        groupId: 'status-history',
         value: SystemLabel.Sent,
       },
       {
         id: SystemLabel.Archive,
         label: t('status.archive'),
-        groupId: 'status-group-3',
+        groupId: 'status-history',
         value: SystemLabel.Archive,
       },
       {
         id: SystemLabel.Bin,
         label: t('status.bin'),
-        groupId: 'status-group-3',
+        groupId: 'status-history',
         value: SystemLabel.Bin,
       },
     ].map((item) => ({
@@ -283,10 +292,19 @@ const createStatusFilter = (): FilterProps => {
 
 const createUpdatedAtFilter = (): FilterProps => {
   return {
+    icon: CalendarIcon,
+    groupId: 'status-date',
     id: FilterCategory.UPDATED,
     name: FilterCategory.UPDATED,
     label: t('filter_bar.label.updated'),
     removable: true,
+    groups: {
+      'date-recent': {
+        title: t('filter_bar.group.choose_date'),
+      },
+      'date-months': {},
+      'date-older': {},
+    },
     items: createDateOptions(),
   };
 };
@@ -298,8 +316,12 @@ const createServiceFilter = ({
   onServiceResourcesQueryChange,
 }: ServiceFilterProps): FilterProps => {
   const serviceResourcesCount = serviceResources.filter((serviceResource) => serviceResource.id).length;
+  const groupFallback = serviceResourcesQuery ? 'search' : 'recommendations';
+  const allowedGroups = new Set(['recommendations', 'selected', 'search']);
   return {
     id: FilterCategory.SERVICE,
+    groupId: 'service-related',
+    icon: MenuGridIcon,
     label: t('filter_bar.label.choose_service'),
     name: FilterCategory.SERVICE,
     removable: true,
@@ -310,10 +332,16 @@ const createServiceFilter = ({
       onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
         onServiceResourcesQueryChange(e.target.value);
       },
+      onClear: () => {
+        onServiceResourcesQueryChange('');
+      },
     },
     groups: {
       recommendations: {
-        title: t('filter_bar.service.recommendations'),
+        title: t('filter_bar.group.choose_service'),
+      },
+      selected: {
+        title: t('filter_bar.service.selected'),
       },
       search: {
         title: t('filter_bar.service.search_hits', { count: serviceResourcesCount }),
@@ -325,8 +353,14 @@ const createServiceFilter = ({
         const checked = currentFilters.service?.includes(serviceResource.id ?? '') ?? false;
         const title =
           serviceResource.title?.nb || serviceResource.title?.en || serviceResource.title?.nn || serviceResource.id!;
+        const normalizedGroupId =
+          checked || serviceResource.groupId === 'selected'
+            ? 'selected'
+            : allowedGroups.has(serviceResource.groupId ?? '')
+              ? serviceResource.groupId!
+              : groupFallback;
         return {
-          groupId: serviceResourcesQuery ? 'search' : 'recommendations',
+          groupId: normalizedGroupId,
           label: title,
           value: serviceResource.id!,
           searchWords: [serviceResource.id!, title],
@@ -390,10 +424,14 @@ export const getFilters = ({
     onServiceResourcesQueryChange,
   });
 
-  const filters = [senderOrgFilter, updatedAtFilter];
+  const filters = [];
+
   if (viewType === 'inbox') {
     filters.push(statusFilter);
   }
+
+  filters.push(updatedAtFilter);
+  filters.push(senderOrgFilter);
 
   if (enableServiceFilter) {
     filters.push(serviceFilter);
