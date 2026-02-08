@@ -14,14 +14,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "pino": "9.3.2",
+    "pino": "9.14.0",
     "pino-opentelemetry-transport": "1.1.0",
-    "pino-pretty": "11.2.2"
+    "pino-pretty": "11.3.0"
   },
   "devDependencies": {
-    "@types/node": "22.5.1",
-    "typescript": "5.5.4",
-    "zod": "3.23.8"
+    "@types/node": "22.19.9",
+    "typescript": "5.9.3",
+    "zod": "3.25.76"
   },
   "repository": {
     "type": "git",
