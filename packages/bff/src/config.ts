@@ -19,7 +19,7 @@ const envVariables = z.object({
     .enum(['http/protobuf', 'http/json', 'grpc'])
     .default('http/protobuf')
     .or(z.literal('').transform(() => 'http/protobuf')),
-  OTEL_TRACES_SAMPLER_ARG: z.coerce.number().min(0).max(1).default(1),
+  OTEL_TRACES_SAMPLER_ARG: z.coerce.number().min(0).max(1).default(0.05),
   APP_CONFIG_CONNECTION_STRING: z.string().default(''),
   PORT: z.coerce.number().default(3000),
   OIDC_URL: z.string().default('test.idporten.no'),
