@@ -51,9 +51,6 @@ param postgresConfiguration = {
     autoGrow: 'Enabled'
     type: 'Premium_LRS'
   }
-  highAvailability: {
-    mode: 'Disabled'
-  }
   backupRetentionDays: 7
   availabilityZone: '1'
   version: '15'
