@@ -17,7 +17,7 @@ test('should navigate to inbox when changing account from global menu', async ({
   expect(page.url()).toEqual(appURLDrafts);
 
   await page.getByLabel('Test Testesen').click();
-  await page.locator('a').filter({ hasText: 'FFirma ASOrg.nr:' }).click();
+  await page.locator('a').filter({ hasText: 'FFirma ASOrg.nr.' }).click();
 
   expect(new URL(page.url()).searchParams.get('party')).toBe('urn%3Aaltinn%3Aorganization%3Aidentifier-no%3A1');
   expect(matchPathName(page.url(), appURLInbox)).toBe(true);

@@ -50,6 +50,11 @@ query profile {
           dateOfDeath
         }
       }
+      profileSettingPreference {
+        shouldShowDeletedEntities
+        preselectedPartyUuid
+        doNotPromptForParty
+      }
     }
   }
 }

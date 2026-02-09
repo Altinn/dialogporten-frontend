@@ -211,6 +211,45 @@ export const getUserFromCore = async (context: Context) => {
   return;
 };
 
+export const setPreSelectedParty = async (context: Context, partyUuid: string) => {
+  if (!partyUuid) {
+    logger.error('partyUuid is required');
+    throw new Error('partyUuid is required');
+  }
+  const token = await exchangeToken(context);
+  if (!token) {
+    logger.error('No token found in session');
+    throw new Error('No token found in session');
+  }
+  try {
+    const json = { preSelectedPartyUuid: partyUuid };
+    const response = await axios.patch(`${platformProfileAPI_url}users/current/profilesettings`, json, {
+      timeout: 30000,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    if (error && typeof error === 'object' && 'response' in error) {
+      const axiosError = error as { response?: { status?: number; data?: unknown } };
+      const responseData = axiosError.response?.data;
+      logger.error(
+        {
+          status: axiosError.response?.status,
+          responseData,
+          partyUuid,
+          url: `${platformProfileAPI_url}users/current/profilesettings`,
+        },
+        'Platform API error response:',
+      );
+    }
+    throw error;
+  }
+};
+
 export const getFavoritesFromCore = async (token: string) => {
   try {
     const { data } = await axios.get(`${platformProfileAPI_url}users/current/party-groups/favorites`, {
@@ -373,6 +412,33 @@ export const getNotificationAddressByOrgNumber = async (orgnr: string, context: 
     return { data: null, status, statusText };
   }
   return data;
+};
+
+export const updateProfileSettingPreference = async (context: Context, shouldShowDeletedEntities: boolean) => {
+  const newToken = await exchangeToken(context);
+  if (!newToken) {
+    logger.error('No new token received');
+    throw new Error('Unable to exchange token');
+  }
+
+  try {
+    const { data } = await axios.patch(
+      `${platformProfileAPI_url}users/current/profilesettings`,
+      { shouldShowDeletedEntities },
+      {
+        timeout: 30000,
+        headers: {
+          Authorization: `Bearer ${newToken}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+      },
+    );
+    return data;
+  } catch (error) {
+    logger.error(error, 'Error updating profile setting preference:');
+    throw new Error('Failed to update profile setting preference');
+  }
 };
 
 export const updateLanguage = async (pid: string, language: string) => {

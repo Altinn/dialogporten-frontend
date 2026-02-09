@@ -1,0 +1,21 @@
+query getServiceResources(
+  $ids: [String!]
+  $resourceType: [String]
+  $org: [String]
+  $onlySelfIdentifiedUserEnabled: Boolean
+) {
+  serviceResources(
+    resourceType: $resourceType
+    ids: $ids
+    org: $org
+    onlySelfIdentifiedUserEnabled: $onlySelfIdentifiedUserEnabled
+  ) {
+    id
+    title {
+      nb
+      nn
+      en
+    }
+    org
+  }
+}

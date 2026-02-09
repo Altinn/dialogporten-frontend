@@ -1,3 +1,18 @@
 .deletedFilter {
   margin-left: 0.5rem;
 }
+
+.preSelectedBadgeButton {
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.preSelectedBadgeIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+}

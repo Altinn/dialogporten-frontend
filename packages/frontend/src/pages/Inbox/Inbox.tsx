@@ -10,12 +10,12 @@ import {
   Toolbar,
 } from '@altinn/altinn-components';
 import type { FilterState } from '@altinn/altinn-components/dist/types/lib/components/Toolbar/Toolbar';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { type InboxViewType, useDialogs } from '../../api/hooks/useDialogs.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
-import { createFiltersURLQuery, createMessageBoxLink } from '../../auth';
+import { createFiltersURLQuery } from '../../auth';
 import { EmptyState } from '../../components/EmptyState/EmptyState.tsx';
 import { Notice } from '../../components/Notice';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
@@ -23,7 +23,6 @@ import { useSearchString } from '../../components/PageLayout/Search/';
 import { SaveSearchButton } from '../../components/SavedSearchButton/SaveSearchButton.tsx';
 import { isSavedSearchDisabled } from '../../components/SavedSearchButton/savedSearchEnabled.ts';
 import { SeenByModal } from '../../components/SeenByModal/SeenByModal.tsx';
-import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useFeatureFlag } from '../../featureFlags';
 import { useAlertBanner } from '../../hooks/useAlertBanner.ts';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
@@ -47,25 +46,27 @@ export interface CurrentSeenByLog {
 }
 
 export const Inbox = ({ viewType }: InboxProps) => {
+  useMockError();
   const { t } = useTranslation();
+
   const {
     selectedParties,
     allOrganizationsSelected,
     parties,
     partiesEmptyList,
-    isSelfIdentifiedUser,
-    currentPartyUuid,
     isError: unableToLoadParties,
     isLoading: isLoadingParties,
     organizationLimitReached,
   } = useParties();
-  useMockError();
+
   const location = useLocation();
   const [filterState, setFilterState] = useState<FilterState>(readFiltersFromURLQuery(location.search));
   const [currentSeenByLogModal, setCurrentSeenByLogModal] = useState<CurrentSeenByLog | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
+
   const isAltinn2MessagesEnabled = useFeatureFlag<boolean>('inbox.enableAltinn2Messages');
   const isAlertBannerEnabled = useFeatureFlag<boolean>('inbox.enableAlertBanner');
+  const isServiceFilterEnabled = useFeatureFlag<boolean>('filters.enableServiceFilter');
   const alertBannerContent = useAlertBanner();
 
   const onFiltersChange = (filters: FilterState) => {
@@ -77,11 +78,19 @@ export const Inbox = ({ viewType }: InboxProps) => {
   };
 
   const { enteredSearchValue } = useSearchString();
-
   const validSearchString = enteredSearchValue.length > 2 ? enteredSearchValue : undefined;
   const hasValidFilters = Object.values(filterState).some((arr) => typeof arr !== 'undefined' && arr?.length > 0);
   const searchMode = viewType === 'inbox' && (hasValidFilters || !!validSearchString);
   const savedSearchDisabled = isSavedSearchDisabled(filterState, enteredSearchValue);
+
+  const selectedServices = (filterState.service ?? []) as string[];
+  const selectedServicesCount = selectedServices.length;
+  const serviceLimitReached = selectedServicesCount > 20;
+
+  const isLimitReached =
+    (organizationLimitReached && !isServiceFilterEnabled) ||
+    (organizationLimitReached && isServiceFilterEnabled && selectedServicesCount === 0) ||
+    (organizationLimitReached && isServiceFilterEnabled && serviceLimitReached);
 
   const {
     dialogs,
@@ -91,11 +100,10 @@ export const Inbox = ({ viewType }: InboxProps) => {
     isFetchingNextPage,
     hasNextPage,
   } = useDialogs({
-    parties: selectedParties,
     viewType,
     filterState,
     search: validSearchString,
-    queryKey: QUERY_KEYS.DIALOGS,
+    serviceResources: selectedServices,
   });
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
@@ -155,6 +163,10 @@ export const Inbox = ({ viewType }: InboxProps) => {
     isFetchingNextPage,
   });
 
+  const dialogItems = useMemo(() => {
+    return isLimitReached ? [] : groupedDialogs;
+  }, [groupedDialogs, isLimitReached]);
+
   if (unableToLoadParties) {
     return (
       <PageBase>
@@ -169,21 +181,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
     );
   }
 
-  if (isSelfIdentifiedUser) {
-    return (
-      <PageBase margin="page">
-        <Notice
-          title={t('notice.self_identified_warning.title')}
-          description={t('notice.self_identified_warning.description')}
-          link={{
-            href: createMessageBoxLink(currentPartyUuid),
-            label: t('notice.self_identified_warning.button_link'),
-          }}
-        />
-      </PageBase>
-    );
-  }
-
   if (partiesEmptyList) {
     return (
       <PageBase margin="page">
@@ -192,10 +189,10 @@ export const Inbox = ({ viewType }: InboxProps) => {
     );
   }
 
-  if (organizationLimitReached) {
-    return (
-      <PageBase margin="page">
-        <Section data-testid="inbox-toolbar" style={{ marginTop: '-1rem' }}>
+  return (
+    <PageBase margin="page">
+      <section data-testid="inbox-toolbar" style={{ marginTop: '-1rem' }}>
+        {selectedAccount ? (
           <Toolbar
             data-testid="inbox-toolbar"
             accountMenu={{
@@ -208,64 +205,52 @@ export const Inbox = ({ viewType }: InboxProps) => {
               isVirtualized: true,
               title: t('parties.change_label'),
             }}
-          />
-          <Notice
-            title={t('organizationLimitReached.title')}
-            description={t('organizationLimitReached.description', { count: selectedParties.length })}
-          />
-        </Section>
-      </PageBase>
-    );
-  }
-
-  return (
-    <PageBase margin="page">
-      <section data-testid="inbox-toolbar" style={{ marginTop: '-1rem' }}>
-        {selectedAccount ? (
-          <>
-            <Toolbar
-              data-testid="inbox-toolbar"
-              accountMenu={{
-                items: accounts,
-                search: accountSearch,
-                groups: accountGroups,
-                currentAccount: selectedAccount,
-                onSelectAccount: (account: string) => onSelectAccount(account, PageRoutes[viewType]),
-                filterAccount,
-                isVirtualized: true,
-                title: t('parties.change_label'),
-              }}
-              filterState={filterState}
-              getFilterLabel={getFilterLabel}
-              onFilterStateChange={onFiltersChange}
-              filters={filters}
-              showResultsLabel={t('filter.show_all_results')}
-              removeButtonAltText={t('filter_bar.remove_filter')}
-              addFilterButtonLabel={hasValidFilters ? t('filter_bar.add') : t('filter_bar.add_filter')}
-            >
-              <SaveSearchButton viewType={viewType} disabled={savedSearchDisabled} filterState={filterState} />
-            </Toolbar>
-          </>
+            filterState={filterState}
+            getFilterLabel={getFilterLabel}
+            onFilterStateChange={onFiltersChange}
+            filters={filters}
+            showResultsLabel={t('filter.show_all_results')}
+            removeButtonAltText={t('filter_bar.remove_filter')}
+            addFilterButtonLabel={hasValidFilters ? t('filter_bar.add') : t('filter_bar.add_filter')}
+          >
+            <SaveSearchButton viewType={viewType} disabled={savedSearchDisabled} filterState={filterState} />
+          </Toolbar>
         ) : null}
       </section>
       <AlertBanner showAlertBanner={isAlertBannerEnabled && !!alertBannerContent} />
       <Section>
         {isAltinn2MessagesEnabled && <Altinn2ActiveSchemasNotification selectedAccount={selectedAccount} />}
-        {dialogsSuccess && !dialogs.length && !isLoading && (
+        {dialogsSuccess && !dialogItems.length && !isLoading && !isLimitReached && (
           <EmptyState query={enteredSearchValue} viewType={viewType} searchMode={searchMode} />
         )}
-        <DialogList
-          items={groupedDialogs}
-          groups={groups}
-          sortGroupBy={([aKey], [bKey]) => (groups[bKey]?.orderIndex ?? 0) - (groups[aKey]?.orderIndex ?? 0)}
-          isLoading={isLoading}
-          highlightWords={searchMode ? [enteredSearchValue] : undefined}
-        />
-        {hasNextPage && (
-          <Button aria-label={t('dialog.aria.fetch_more')} onClick={fetchNextPage} variant="outline" size="lg">
-            <span data-size="md">{t('dialog.fetch_more')}</span>
-          </Button>
+        {isLimitReached && (
+          <Notice
+            title={
+              isServiceFilterEnabled
+                ? t('organizationLimitReached.serviceFilter.title')
+                : t('organizationLimitReached.title')
+            }
+            description={
+              isServiceFilterEnabled
+                ? t('organizationLimitReached.serviceFilter.description', { count: selectedParties.length })
+                : t('organizationLimitReached.description', { count: selectedParties.length })
+            }
+          />
         )}
+        <>
+          <DialogList
+            items={dialogItems}
+            groups={groups}
+            sortGroupBy={([aKey], [bKey]) => (groups[bKey]?.orderIndex ?? 0) - (groups[aKey]?.orderIndex ?? 0)}
+            isLoading={isLoading}
+            highlightWords={searchMode ? [enteredSearchValue] : undefined}
+          />
+          {hasNextPage && (
+            <Button aria-label={t('dialog.aria.fetch_more')} onClick={fetchNextPage} variant="outline" size="lg">
+              <span data-size="md">{t('dialog.fetch_more')}</span>
+            </Button>
+          )}
+        </>
       </Section>
       <SeenByModal
         title={currentSeenByLogModal?.title}

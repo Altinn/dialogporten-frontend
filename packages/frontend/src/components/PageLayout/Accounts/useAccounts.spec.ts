@@ -250,7 +250,7 @@ describe('useAccounts', () => {
     expect(deletedAccounts.length).toBeGreaterThan(0);
 
     for (const account of deletedAccounts) {
-      expect(account.badge?.color).toBe('danger');
+      expect(account.badge?.color).toBe('neutral');
       expect(account.badge?.label).toBe('badge.deleted');
     }
   });

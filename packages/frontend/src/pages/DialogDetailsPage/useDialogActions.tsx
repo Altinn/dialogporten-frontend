@@ -66,7 +66,7 @@ export const useDialogActions = () => {
 
     if (dialogId && !isUnread) {
       items.push({
-        id: 'delete',
+        id: 'mark-as-unread',
         groupId: 'mark-as-unread',
         icon: EyeClosedIcon,
         label: t('dialog.toolbar.mark_as_unread'),

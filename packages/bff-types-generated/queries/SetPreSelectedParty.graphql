@@ -1,0 +1,6 @@
+mutation SetPreSelectedParty($partyUuid: String) {
+  setPreSelectedParty(partyUuid: $partyUuid) {
+    success
+    message
+  }
+}

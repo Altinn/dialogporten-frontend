@@ -14,11 +14,12 @@ import { OnboardingTourProvider } from './onboardingTour';
 declare const __APP_VERSION__: string;
 console.info('App Version:', __APP_VERSION__);
 
+const urlParams = new URLSearchParams(window.location.search);
+const isEnableMocking = urlParams.get('mock') === 'true';
+
 async function enableMocking() {
   if (import.meta.env.DEV) {
-    const urlParams = new URLSearchParams(window.location.search);
-    const enableMocking = urlParams.get('mock') === 'true';
-    if (enableMocking) {
+    if (isEnableMocking) {
       const { worker } = await import('./mocks/browser');
       return worker.start();
     }
@@ -55,7 +56,7 @@ if (element) {
         <LoggerContextProvider>
           <QueryClientProvider client={queryClient}>
             <BrowserRouter>
-              <FeatureFlagProvider initialFlags={initialFlags}>
+              <FeatureFlagProvider initialFlags={isEnableMocking ? undefined : initialFlags}>
                 <AuthProvider>
                   <RootProvider>
                     <OnboardingTourProvider>

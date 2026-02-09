@@ -1,5 +1,5 @@
 import { format, formatDistance } from 'date-fns';
-import { type Locale, enGB, nb } from 'date-fns/locale';
+import { type Locale, enGB, nb, nn } from 'date-fns/locale';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 export type { Locale } from 'date-fns/locale';
@@ -15,6 +15,8 @@ export const useDateFnsLocale = () => {
         return enGB;
       case 'nb':
         return nb;
+      case 'nn':
+        return nn;
       default:
         return defaultLocale;
     }

@@ -5,7 +5,9 @@ import {
   type AccountOrganizationItemProps,
   type AvatarType,
   type AvatarVariant,
+  Badge,
   Heading,
+  Icon,
   PageBase,
   PageNav,
   Section,
@@ -14,7 +16,7 @@ import {
   Toolbar,
 } from '@altinn/altinn-components';
 import type { AccountListItemType } from '@altinn/altinn-components/dist/types/lib/components/Account/AccountListItem';
-import { BellIcon, HashtagIcon, InboxIcon } from '@navikt/aksel-icons';
+import { BellIcon, HashtagIcon, HouseHeartFillIcon, HouseHeartIcon, InboxIcon } from '@navikt/aksel-icons';
 import { type ElementType, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps, useLocation } from 'react-router-dom';
@@ -25,28 +27,42 @@ import {
   formatNorwegianId,
   useAccounts,
 } from '../../../components/PageLayout/Accounts/useAccounts';
+import { useFeatureFlag } from '../../../featureFlags/useFeatureFlag';
 import { usePageTitle } from '../../../hooks/usePageTitle';
 import { useProfileOnboarding } from '../../../onboardingTour/useProfileOnboarding';
 import { PageRoutes } from '../../routes.ts';
 import { getBreadcrumbs } from '../Settings/Settings.tsx';
 import { useSettings } from '../Settings/useSettings.tsx';
 import { useAccountFilters } from '../useAccountFilters.tsx';
+import { ConfirmSetPreselectedActorModal } from './ConfirmSetPreselectedActorModal.tsx';
 import styles from './partiesOverviewPage.module.css';
 
 export const PartiesOverviewPage = () => {
   const { t } = useTranslation();
   const { search } = useLocation();
   const { getAccountAlertSettings, settings } = useSettings();
-  const { addFavoriteParty, deleteFavoriteParty } = useProfile();
+  const isDeletedUnitsFilterEnabled = useFeatureFlag<boolean>('inbox.enableDeletedUnitsFilter');
+  const {
+    addFavoriteParty,
+    deleteFavoriteParty,
+    setPreSelectedParty,
+    user,
+    shouldShowDeletedEntities,
+    updateShowDeletedEntities,
+  } = useProfile();
+  const [openConfirmSetPreselectedActorModal, setOpenConfirmSetPreselectedActorModal] = useState<PartyItemProp | null>(
+    null,
+  );
   const { parties, selectedParties, allOrganizationsSelected, isLoading, flattenedParties } = useParties();
   const [searchValue, setSearchValue] = useState<string>('');
   const [expandedItem, setExpandedItem] = useState<string>('');
-  const [includeDeletedParties, setIncludeDeletedParties] = useState<boolean>(false);
+
+  const includeDeletedParties = isDeletedUnitsFilterEnabled ? (shouldShowDeletedEntities ?? false) : true;
 
   const { filters, getFilterLabel, filterState, setFilterState, filteredParties, isSearching } = useAccountFilters({
     searchValue,
     parties,
-    includeDeletedParties,
+    includeDeletedParties: true,
   });
 
   const { accounts, accountGroups } = useAccounts({
@@ -238,6 +254,7 @@ export const PartiesOverviewPage = () => {
   const mapAccountToPartyListItem = (account: PartyItemProp): AccountListItemProps => {
     const { label: _, variant: __, ...party } = account;
     const itemId = account.id + account.groupId;
+    const isPreSelectedParty = user?.profileSettingPreference?.preselectedPartyUuid === party.uuid;
     const accountType = party.type === 'subunit' ? 'company' : party.type;
     return {
       ...party,
@@ -260,6 +277,22 @@ export const PartiesOverviewPage = () => {
           id={party.id}
         />
       ),
+      badge: !party.isCurrentEndUser && (
+        <>
+          {party.isDeleted && <Badge color="neutral" label={t('badge.deleted')} variant="subtle" />}
+          <button
+            type="button"
+            aria-label="Set preferred party"
+            className={styles.preSelectedBadgeButton}
+            onClick={() => setOpenConfirmSetPreselectedActorModal(party)}
+          >
+            <Icon
+              className={styles.preSelectedBadgeIcon}
+              svgElement={isPreSelectedParty ? HouseHeartFillIcon : HouseHeartIcon}
+            />
+          </button>
+        </>
+      ),
       contextMenu: {
         id: party.groupId + party.id + '-menu',
         items: [
@@ -277,9 +310,13 @@ export const PartiesOverviewPage = () => {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const accountListItems = useMemo(() => accounts.map(mapAccountToPartyListItem), [accounts]);
-  const hits = accountListItems.map((a) => ({ ...a, groupId: 'search' }));
+
+  const displayHits = useMemo(() => {
+    return accountListItems.map((a) => ({ ...a, groupId: 'search' }));
+  }, [accountListItems]);
+
   const searchGroup = {
-    search: { title: t('search.hits', { count: accountListItems.length }) },
+    search: { title: t('search.hits', { count: displayHits.length }) },
   };
 
   return (
@@ -300,24 +337,31 @@ export const PartiesOverviewPage = () => {
           onFilterStateChange={setFilterState}
           filters={filters}
         >
-          {filterState?.partyScope?.[0] !== 'PERSONS' && (
+          {isDeletedUnitsFilterEnabled && filterState?.partyScope?.[0] !== 'PERSONS' && (
             <Switch
               size="xs"
               checked={includeDeletedParties}
-              onChange={(e) => setIncludeDeletedParties(e.target.checked)}
+              onChange={(e) => updateShowDeletedEntities(e.target.checked)}
               aria-checked={includeDeletedParties}
               label={t('parties.filter.show_deleted')}
               className={styles.deletedFilter}
             />
           )}
         </Toolbar>
-        {isSearching && hits.length === 0 && <Heading size="lg">{t('profile.settings.no_results')}</Heading>}
+        {isSearching && displayHits.length === 0 && <Heading size="lg">{t('profile.settings.no_results')}</Heading>}
         <AccountList
           isVirtualized
           groups={isSearching ? searchGroup : accountGroups}
-          items={isSearching ? hits : accountListItems}
+          items={isSearching ? displayHits : accountListItems}
         />
       </Section>
+      <ConfirmSetPreselectedActorModal
+        showActor={openConfirmSetPreselectedActorModal}
+        onClose={() => setOpenConfirmSetPreselectedActorModal(null)}
+        onConfirm={async (partyUuid) => {
+          await setPreSelectedParty(partyUuid);
+        }}
+      />
     </PageBase>
   );
 };

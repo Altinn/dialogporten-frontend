@@ -15,6 +15,8 @@ const defaultFeatureFlags: Record<string, boolean | number | string> = {
   'inbox.enableAlertBanner': false,
   'dialogporten.disableSubscriptions': false,
   'dialogporten.enableManualSubscriptionRefresh': false,
+  'inbox.enableDeletedUnitsFilter': false,
+  'filters.enableServiceFilter': false,
 };
 
 /* Fore more details, cf. https://learn.microsoft.com/en-us/azure/azure-app-configuration/quickstart-feature-flag-javascript?tabs=entra-id */

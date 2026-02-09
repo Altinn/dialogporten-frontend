@@ -13,6 +13,7 @@ import { type ChangeEvent, type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useParties } from '../../../api/hooks/useParties.ts';
+import { useFeatureFlag } from '../../../featureFlags/useFeatureFlag';
 import { useProfile } from '../../../pages/Profile';
 import { SettingsType } from '../../../pages/Profile/Settings/useSettings.tsx';
 import type { PageRoutes } from '../../../pages/routes.ts';
@@ -22,6 +23,7 @@ interface UseAccountOptions {
   showFavorites?: boolean;
   showGroups?: boolean;
   groups?: Record<string, { title?: string | ReactNode }>;
+  excludeDeleted?: boolean;
 }
 
 export interface PartyItemProp extends AccountMenuItemProps {
@@ -125,7 +127,8 @@ export const useAccounts = ({
   const navigate = useNavigate();
   const location = useLocation();
   const { setSelectedPartyIds } = useParties();
-  const { favoritesGroup } = useProfile();
+  const { favoritesGroup, shouldShowDeletedEntities } = useProfile();
+  const isDeletedUnitsFilterEnabled = useFeatureFlag<boolean>('inbox.enableDeletedUnitsFilter');
   const [searchString, setSearchString] = useState<string>('');
   const accountSearchThreshold = 2;
   const showSearch = parties.length > accountSearchThreshold;
@@ -144,7 +147,9 @@ export const useAccounts = ({
   const { groupId: _, ...loadingAccount } = loadingAccountMenuItem;
 
   const currentEndUser = useMemo(() => {
-    return parties.find((party) => party.partyType === 'Person' && party.isCurrentEndUser);
+    return parties.find(
+      (party) => (party.partyType === 'Person' || party.partyType === 'SelfIdentified') && party.isCurrentEndUser,
+    );
   }, [parties]);
 
   const otherPeople = useMemo(
@@ -191,7 +196,7 @@ export const useAccounts = ({
           isCurrentEndUser: false,
           uuid: person.partyUuid,
           description: options.showDescription ? description : undefined,
-          badge: person.isDeleted ? { color: 'danger', label: t('badge.deleted'), variant: 'base' } : undefined,
+          badge: person.isDeleted ? { color: 'neutral', label: t('badge.deleted'), variant: 'subtle' } : undefined,
           groupId: 'persons',
         } as PartyItemProp;
       })
@@ -234,7 +239,7 @@ export const useAccounts = ({
         parentId: parent?.party,
         parentName: parent?.name,
         description: options.showDescription ? description : undefined,
-        badge: party.isDeleted ? { color: 'danger', label: t('badge.deleted'), variant: 'base' } : undefined,
+        badge: party.isDeleted ? { color: 'neutral', label: t('badge.deleted'), variant: 'subtle' } : undefined,
         groupId: parent?.party ?? party.party,
       } as PartyItemProp;
     });
@@ -285,6 +290,14 @@ export const useAccounts = ({
     };
   }
 
+  /** deleted units filtering - FF: "inbox.enableDeletedUnitsFilter"
+   * FF off -> always include deleted parties
+   * FF on, switch off -> exclude deleted parties
+   * FF on, switch on -> include deleted parties
+   */
+  const shouldExcludeDeleted = options.excludeDeleted ?? true;
+  const includeDeletedParties = isDeletedUnitsFilterEnabled ? (shouldShowDeletedEntities ?? false) : true;
+
   const accountGroups = {
     ...options.groups,
     ...(organizationAccounts.length && options.groups?.companies
@@ -314,6 +327,12 @@ export const useAccounts = ({
       }
     : undefined;
 
+  // Filter organizations for "Alle virksomheter" avatar group
+  const organizationsForAvatarGroup =
+    shouldExcludeDeleted && !includeDeletedParties
+      ? organizationAccounts.filter((org) => !org.isDeleted)
+      : organizationAccounts;
+
   const allOrganizationsAccount: PartyItemProp = {
     uuid: 'N/A',
     id: 'ALL',
@@ -322,8 +341,8 @@ export const useAccounts = ({
     groupId: 'groups',
     icon: {
       type: 'group' as AccountMenuItemProps['type'],
-      maxItemsCountReachedLabel: organizationAccounts.length > 99 ? '..' : '',
-      items: organizationAccounts.map((party) => ({
+      maxItemsCountReachedLabel: organizationsForAvatarGroup.length > 99 ? '..' : '',
+      items: organizationsForAvatarGroup.map((party) => ({
         id: party.id,
         name: party.name,
         type: 'company' as AccountMenuItemProps['type'],
@@ -409,8 +428,18 @@ export const useAccounts = ({
     }
   };
 
+  let filteredAccounts = accounts;
+  if (shouldExcludeDeleted && !includeDeletedParties) {
+    filteredAccounts = accounts.filter((item) => {
+      if (item.groupId === SettingsType.favorites || item.groupId === 'primary') {
+        return true;
+      }
+      return !item.isDeleted;
+    });
+  }
+
   return {
-    accounts,
+    accounts: filteredAccounts,
     accountGroups,
     selectedAccount,
     accountSearch,

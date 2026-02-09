@@ -8,14 +8,18 @@ import {
   type DeleteSavedSearchMutation,
   type GetAllDialogsForPartiesQuery,
   type GetSearchAutocompleteDialogsQuery,
+  type GetServiceResourcesQuery,
+  type GetServiceResourcesQueryVariables,
   type NotificationSettingsInput,
   type NotificationsettingsForCurrentUserQuery,
   type OrganizationsQuery,
   type SavedSearchInput,
   type SavedSearchesQuery,
+  type SetPreSelectedPartyMutation,
   type SystemLabel,
   type UpdateLanguageMutation,
   type UpdateNotificationSettingMutation,
+  type UpdateProfileSettingPreferenceMutation,
   type UpdateSavedSearchMutation,
   type UpdateSystemLabelMutation,
   getSdk,
@@ -186,6 +190,8 @@ export const addFavoritePartyToGroup = (partyId: string, groupName: string): Pro
   graphQLSDK.AddFavoritePartyToGroup({ partyId, groupName });
 export const deleteFavoriteParty = (partyId: string): Promise<DeleteFavoritePartyMutation> =>
   graphQLSDK.DeleteFavoriteParty({ partyId });
+export const setPreSelectedParty = (partyUuid: string): Promise<SetPreSelectedPartyMutation> =>
+  graphQLSDK.SetPreSelectedParty({ partyUuid });
 export const createSavedSearch = (name: string, data: SavedSearchInput): Promise<CreateSavedSearchMutation> =>
   graphQLSDK.CreateSavedSearch({ name, data });
 export const getNotificationsettingsForCurrentUser = (): Promise<NotificationsettingsForCurrentUserQuery> =>
@@ -235,3 +241,12 @@ export const searchAutocompleteDialogs = (
 
 export const updateLanguage = (language: string): Promise<UpdateLanguageMutation> =>
   graphQLSDK.UpdateLanguage({ language });
+
+export const fetchServiceResources = (
+  variables?: GetServiceResourcesQueryVariables,
+): Promise<GetServiceResourcesQuery> => graphQLSDK.getServiceResources(variables);
+
+export const updateProfileSettingPreference = (
+  shouldShowDeletedEntities: boolean,
+): Promise<UpdateProfileSettingPreferenceMutation> =>
+  graphQLSDK.UpdateProfileSettingPreference({ shouldShowDeletedEntities });

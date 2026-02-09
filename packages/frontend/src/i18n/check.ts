@@ -32,7 +32,7 @@ const compareKeys = (masterKeys: string[], targetKeys: string[]): string[] => {
 const main = () => {
   const masterFilePath = path.join(directoryPath, masterFileName);
   const masterData = loadJsonFile(masterFilePath);
-  const masterKeys = Object.keys(masterData).sort();
+  const masterKeys = Object.keys(masterData).sort((a, b) => a.localeCompare(b));
 
   const jsonFiles = getJsonFiles(directoryPath);
 
@@ -46,7 +46,7 @@ const main = () => {
 
     if (sortKeys) {
       const sortedData: { [key: string]: string } = {};
-      for (const key of keys.sort()) {
+      for (const key of keys.sort((a, b) => a.localeCompare(b))) {
         sortedData[key] = data[key];
       }
       saveJsonFile(filePath, sortedData);
@@ -56,7 +56,7 @@ const main = () => {
       continue;
     }
 
-    const missingKeys = compareKeys(masterKeys, keys).sort();
+    const missingKeys = compareKeys(masterKeys, keys).sort((a, b) => a.localeCompare(b));
 
     if (missingKeys.length > 0) {
       warnings[file] = missingKeys;

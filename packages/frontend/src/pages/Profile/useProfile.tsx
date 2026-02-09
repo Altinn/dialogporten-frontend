@@ -8,10 +8,12 @@ import {
   deleteFavoriteParty as deleteFavoritePartyRaw,
   getNotificationsettingsForCurrentUser,
   profile,
+  setPreSelectedParty as setPreSelectedPartyRaw,
+  updateProfileSettingPreference as updateProfileSettingPreferenceRaw,
 } from '../../api/queries.ts';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
-import { useGlobalStringState } from '../../useGlobalState.ts';
+import { useGlobalState, useGlobalStringState } from '../../useGlobalState.ts';
 
 export const useProfile = (disabled?: boolean) => {
   const { data, isLoading, isSuccess } = useAuthenticatedQuery<ProfileQuery>({
@@ -27,6 +29,11 @@ export const useProfile = (disabled?: boolean) => {
   const [updatedLanguage, updateProfileLanguage] = useGlobalStringState(QUERY_KEYS.UPDATED_LANGUAGE, '');
   const language = updatedLanguage || data?.profile?.language || i18n.language || 'nb';
   const favoritesGroup = groups.find((group) => group?.isFavorite);
+
+  const [localShowDeletedEntities, setLocalShowDeletedEntities] = useGlobalState<boolean | null>(
+    QUERY_KEYS.SHOW_DELETED_ENTITIES,
+    null,
+  );
 
   const queryClient = useQueryClient();
 
@@ -52,6 +59,25 @@ export const useProfile = (disabled?: boolean) => {
     void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PROFILE] });
   };
 
+  // Use local state if set, otherwise fall back to server value
+  const serverShowDeletedEntities = data?.profile?.user?.profileSettingPreference?.shouldShowDeletedEntities;
+  const shouldShowDeletedEntities = localShowDeletedEntities ?? serverShowDeletedEntities;
+
+  const updateShowDeletedEntities = async (shouldShow: boolean) => {
+    setLocalShowDeletedEntities(shouldShow);
+    try {
+      await updateProfileSettingPreferenceRaw(shouldShow);
+    } catch {
+      setLocalShowDeletedEntities(null);
+      void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PROFILE] });
+    }
+  };
+
+  const setPreSelectedParty = async (partyId: string) => {
+    await setPreSelectedPartyRaw(partyId);
+    void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PROFILE] });
+  };
+
   return {
     profile: data?.profile,
     isLoading,
@@ -64,6 +90,9 @@ export const useProfile = (disabled?: boolean) => {
     deleteFavoriteParty,
     addFavoriteParty,
     addFavoritePartyToGroup,
+    setPreSelectedParty,
     updateProfileLanguage,
+    shouldShowDeletedEntities,
+    updateShowDeletedEntities,
   };
 };

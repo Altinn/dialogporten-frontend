@@ -20,9 +20,7 @@ const pageMapping: Record<string, string> = {
   [PageRoutes.partiesOverview]: 'Parties Management',
   [PageRoutes.notifications]: 'Notification Settings',
   [PageRoutes.settings]: 'User Settings',
-  [PageRoutes.access]: 'Access Management',
   [PageRoutes.activities]: 'Activity Log',
-  [PageRoutes.authorize]: 'Authorization',
   [PageRoutes.error]: 'Error Page',
 };
 

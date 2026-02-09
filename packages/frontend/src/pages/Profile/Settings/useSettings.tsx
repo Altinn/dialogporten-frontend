@@ -151,6 +151,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
       groups: options?.groups,
       showDescription: true,
       showFavorites: false,
+      excludeDeleted: false,
     },
   });
 

@@ -15,6 +15,7 @@ export const QUERY_KEYS = {
   NOTIFICATION_SETTINGS_FOR_CURRENT_USER: 'notificationSettingsForCurrentUser',
   PROFILE_PARTIES_WITH_NOTIFICATION_SETTINGS: 'profilePartiesWithNotificationSettings',
   ORGANIZATIONS: 'organizations',
+  SERVICE_RESOURCES: 'serviceResources',
   SEARCH_VALUE: 'searchValue',
   ENTERED_SEARCH_VALUE: 'enteredSearchValue',
   SET_ARCHIVE_LABEL_LOADING: 'setArchiveLabelLoading',
@@ -27,4 +28,5 @@ export const QUERY_KEYS = {
   ALERT_BANNER: 'alertBanner',
   ALTINN_COOKIE: 'altinnCookie',
   UPDATED_LANGUAGE: 'updatedLanguage',
+  SHOW_DELETED_ENTITIES: 'showDeletedEntities',
 };

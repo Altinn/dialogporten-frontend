@@ -1,0 +1,83 @@
+# Service Resources Filtering
+
+## Source
+
+The system integrates with the Altinn Resource Registry via: [The Resource Registry](https://platform.altinn.no/resourceregistry/api/v1/resource/resourcelist?includeAltinn2=false&includeApps=true&includeMigratedApps=true)
+The returned list is then **post-filtered** before being shown in the UI.
+
+---
+
+## 1. Global Filtering Rules (always applied)
+
+### 1.1 Excluded Organizations
+Resources from the following organization codes are excluded:
+
+- **`acn`** — Accenture (test/development organization)
+- **`bft`** — Brønnøysund Register Centre test services
+- **`ttd`** — Test Technology Development services
+
+**Business rationale:** These organizations primarily provide test services, internal tools, or development resources that should not appear in the production user interface.
+
+---
+
+### 1.2 Included Resource Types
+Only the following resource types are included in the UI:
+
+- **`GenericAccessResource`** — Generic, non-Studio resources
+- **`AltinnApp`** — Altinn 3 applications
+- **`CorrespondenceService`** — [Correspondence services](https://docs.altinn.studio/en/correspondence/)
+
+**Business rationale:** These types are supported by the UI and represent the service categories end users should interact with.
+
+---
+
+### 1.3 Visibility Requirement
+- **Rule:** Only resources with `visible: true` are included.
+
+**Business rationale:** Only resources intended to be shown in the delegation UI make sense to display.
+
+---
+
+### 1.4 Delegation Capability
+- **Rule:** Only resources with `delegable: true` are included.
+
+**Business rationale:** Ensures the resource can actually be used for delegation and therefore is relevant in the UI.
+
+---
+
+## 2. Environment-Specific Test Data Exclusion
+
+The system detects the deployment environment and applies additional exclusions to remove test resources.
+
+### 2.1 Exclude Initial ID Lists
+- **Rule:** Resources are excluded if their IDs match an environment-specific list of known test resources (typically identified by obvious test names/titles).
+
+Example lists:
+- `prodTestIDs`
+- `tt02TestIds`
+- `at23TestIds`
+
+Cf. `packages/bff/src/graphql/types/serviceResources/serviceResourceIds.ts`
+
+**Business rationale:** The Resource Registry currently lacks a reliable dedicated flag (e.g. `isTestResource`) for identifying test resources, so environment-specific ID lists are used as a safeguard.
+
+---
+
+## 3. Resource Registry Integration
+
+### 3.1 URL Parameters
+
+- **`includeAltinn2=false`** — Excludes legacy Altinn 2 services
+
+- **`includeApps=true`** — Includes Altinn 3 applications
+
+- **`includeMigratedApps=true`** — Includes services migrated from Altinn 2 to Altinn 3
+
+---
+
+## 4. Maintenance Considerations / Future Improvements
+
+- Test ID arrays (`prodTestIDs`, `tt02TestIds`, `at23TestIds`) require periodic review and updates.
+- The organization exclusion list may need updates as new test organizations are created.
+- The included resource type list should be revisited if/when new resource types are introduced.
+- Long-term goal: the Resource Registry should expose a dedicated flag (e.g. `isTestResource`) so test resources can be filtered reliably without maintaining environment-specific ID lists.

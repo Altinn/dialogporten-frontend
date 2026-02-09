@@ -23,7 +23,7 @@ test.describe('Sidebar menu', () => {
     } else {
       await getSidebarMenuItem(page, PageRoutes.sent).click();
     }
-    await expect(page.getByRole('heading', { name: 'sendt' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Melding om hull i veien' })).toBeVisible();
 
     if (isMobile) {
       await page.getByRole('button', { name: 'Meny' }).click();

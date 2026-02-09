@@ -20,6 +20,7 @@ import alertBannerApi from './features/alertBannerApi.ts';
 import featureApi from './features/featureApi.js';
 import graphqlApi from './graphql/api.ts';
 import { fastifyHeaders } from './graphql/fastifyHeaders.ts';
+import { startServiceResourcesRefresh, stopServiceResourcesRefresh } from './graphql/types/index.js';
 import { otelSDK } from './instrumentation.ts';
 import redisClient from './redisClient.ts';
 
@@ -27,17 +28,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const errorTemplate = readFileSync(join(__dirname, 'templates', 'error.html'), 'utf-8');
 
-const {
-  version,
-  port,
-  host,
-  oidc_url,
-  hostname,
-  client_id,
-  client_secret,
-  redisConnectionString,
-  appConfigConnectionString,
-} = config;
+const { version, port, host, redisConnectionString, appConfigConnectionString } = config;
 
 const startServer = async (): Promise<void> => {
   const { secret, enableGraphiql } = config;
@@ -129,6 +120,8 @@ const startServer = async (): Promise<void> => {
       throw error;
     }
     logger.info(`Server ${version} is running on ${address}`);
+
+    startServiceResourcesRefresh();
   });
 
   // Graceful Shutdown
@@ -139,6 +132,9 @@ const startServer = async (): Promise<void> => {
       // Stop accepting new connections
       await server.close();
       logger.info('Closed Fastify server.');
+
+      // Stop service resources background refresh
+      stopServiceResourcesRefresh();
 
       // Disconnect Redis
       await redisClient.quit();

@@ -1,5 +1,5 @@
 import { logger } from '@altinn/dialogporten-node-logger';
-import { extendType, intArg, nonNull, stringArg } from 'nexus';
+import { booleanArg, extendType, intArg, nonNull, stringArg } from 'nexus';
 import config from '../../config.js';
 import {
   addFavoriteParty,
@@ -7,8 +7,10 @@ import {
   deleteFavoriteParty,
   deleteNotificationsSetting,
   getOrCreateProfile,
+  setPreSelectedParty,
   updateLanguage,
   updateNotificationsSetting,
+  updateProfileSettingPreference,
 } from '../functions/profile.ts';
 import { createSavedSearch, deleteSavedSearch, updateSavedSearch } from '../functions/savedsearch.ts';
 import { languageCodes, updateAltinnPersistentContextValue } from './cookie.js';
@@ -227,6 +229,49 @@ export const UpdateLanguage = extendType({
         } catch (error) {
           logger.error(error, 'Failed to update language:');
           return error;
+        }
+      },
+    });
+  },
+});
+
+export const UpdateProfileSettingPreference = extendType({
+  type: 'Mutation',
+  definition(t) {
+    t.field('updateProfileSettingPreference', {
+      type: Response,
+      args: {
+        shouldShowDeletedEntities: booleanArg(),
+      },
+      resolve: async (_, { shouldShowDeletedEntities }, ctx) => {
+        try {
+          await updateProfileSettingPreference(ctx, shouldShowDeletedEntities);
+          return { success: true };
+        } catch (error) {
+          logger.error(error, 'Failed to update profile setting preference:');
+          return { success: false, message: 'Failed to update profile setting preference' };
+        }
+      },
+    });
+  },
+});
+
+export const SetPreSelectedParty = extendType({
+  type: 'Mutation',
+  definition(t) {
+    t.field('setPreSelectedParty', {
+      type: Response,
+      args: { partyUuid: stringArg() },
+      resolve: async (_, { partyUuid }, ctx) => {
+        if (!partyUuid) {
+          return { success: false, message: 'partyUuid is required' };
+        }
+        try {
+          await setPreSelectedParty(ctx, partyUuid);
+          return { success: true, message: 'PreSelectedParty set successfully' };
+        } catch (error) {
+          logger.error(error, 'Failed to set preselected party:');
+          return { success: false, message: 'Failed to set preselected party' };
         }
       },
     });
