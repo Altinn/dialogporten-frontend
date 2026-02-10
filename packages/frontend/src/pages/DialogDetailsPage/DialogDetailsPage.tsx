@@ -1,5 +1,6 @@
 import { type Color, type ContextMenuProps, DialogLayout } from '@altinn/altinn-components';
 import { ClockDashedIcon } from '@navikt/aksel-icons';
+import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps, useLocation, useParams } from 'react-router-dom';
@@ -7,6 +8,7 @@ import { useDialogById } from '../../api/hooks/useDialogById.tsx';
 import { useDialogByIdSubscription } from '../../api/hooks/useDialogByIdSubscription.ts';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { DialogDetails } from '../../components';
+import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
 import { useDialogActions } from './useDialogActions.tsx';
 
@@ -16,6 +18,7 @@ export const DialogDetailsPage = () => {
   const { parties } = useParties();
   const { t } = useTranslation();
   const location = useLocation();
+  const qc = useQueryClient();
   const {
     dialog,
     isLoading: isLoadingDialog,
@@ -51,6 +54,20 @@ export const DialogDetailsPage = () => {
   useEffect(() => {
     mountAtRef.current = Date.now();
   }, []);
+
+  // We intentionally clear all cached main content reference queries for this dialog when leaving `/inbox/:dialogId`.
+  // Reason: the expandable content is fetched lazily and keyed by (dialogId, itemId). If we keep it across navigations,
+  // it can survive for `gcTime` and be reused on re-entry. For FCE we want each dialog visit to start clean and refetch
+  // while still avoiding re-fetches during expand/collapse within the same visit for transmissions.
+  useEffect(() => {
+    return () => {
+      if (!dialogId) return;
+      qc.removeQueries({
+        queryKey: [QUERY_KEYS.MAIN_CONTENT_REFERENCE, dialogId, dialogId],
+        exact: false,
+      });
+    };
+  }, [qc, dialogId]);
 
   const dialogTokenIsFreshAfterMount = dataUpdatedAt > mountAtRef.current ? dialog?.dialogToken : undefined;
   const { onMessageEvent } = useDialogByIdSubscription(dialog?.id, dialogTokenIsFreshAfterMount);
