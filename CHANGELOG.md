@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.120.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.119.7...v1.120.0) (2026-02-10)
+
+
+### Features
+
+* **workspace:** migrate to new Toolbar/menu + improve owner/service filters ([#3687](https://github.com/Altinn/dialogporten-frontend/issues/3687)) ([973f391](https://github.com/Altinn/dialogporten-frontend/commit/973f3915c2fd6bb1a12a135cdf2aa127f81c7787))
+
 ## [1.119.7](https://github.com/Altinn/dialogporten-frontend/compare/v1.119.6...v1.119.7) (2026-02-06)
 
 
