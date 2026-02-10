@@ -10,6 +10,5 @@ export enum PageRoutes {
   partiesOverview = '/profile/parties',
   notifications = '/profile/notifications',
   settings = '/profile/settings',
-  activities = '/profile/activities',
   error = '/error',
 }

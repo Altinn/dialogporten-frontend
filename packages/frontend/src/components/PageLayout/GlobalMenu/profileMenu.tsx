@@ -66,7 +66,6 @@ export function buildProfileMenu({
       id: '1',
       groupId: 'global',
       size: 'lg',
-      iconTheme: 'base',
       icon: {
         name: formatDisplayName({
           fullName: currentEndUserName ?? '',
@@ -123,7 +122,6 @@ export function buildProfileMenu({
       'data-testid': 'sidebar-about-altinn',
       groupId: 'help',
       icon: InformationSquareIcon,
-      iconTheme: 'transparent',
       size: 'sm',
       title: t('global_menu.about_altinn'),
       as: createMenuItemComponent({
@@ -135,7 +133,6 @@ export function buildProfileMenu({
       'data-testid': 'sidebar-start-business',
       groupId: 'help',
       icon: Buildings2Icon,
-      iconTheme: 'transparent',
       size: 'sm',
       title: t('global_menu.start_business'),
       as: createMenuItemComponent({
@@ -147,7 +144,6 @@ export function buildProfileMenu({
       'data-testid': 'sidebar-need-help',
       groupId: 'help',
       icon: ChatExclamationmarkIcon,
-      iconTheme: 'transparent',
       size: 'sm',
       title: t('global_menu.need_help'),
       as: createMenuItemComponent({
@@ -157,14 +153,13 @@ export function buildProfileMenu({
   ];
 
   const sidebarMenu: MenuProps = {
+    variant: 'tinted',
     groups: menuGroups,
     color: 'person',
-    variant: 'subtle',
-    defaultIconTheme: 'default',
     items: [
       ...profileItems.map((item, idx) => ({
         ...item,
-        iconTheme: idx === 0 ? 'base' : item.iconTheme,
+        iconTheme: idx === 0 ? 'base' : 'tinted',
       })),
     ],
   };
@@ -176,7 +171,6 @@ export function buildProfileMenu({
       groupId: 'global',
       size: 'lg',
       icon: InboxFillIcon,
-      iconTheme: 'tinted',
       title: t('sidebar.inbox'),
       selected: isRouteSelected(pathname, PageRoutes.inbox, fromView),
       expanded: true,
@@ -193,7 +187,6 @@ export function buildProfileMenu({
       id: 'am',
       groupId: 'global',
       size: 'lg',
-      iconTheme: 'tinted',
       selected: false,
       icon: PadlockLockedFillIcon,
       as: 'a',
@@ -210,7 +203,6 @@ export function buildProfileMenu({
       groupId: 'global',
       size: 'lg',
       icon: MenuGridIcon,
-      iconTheme: 'tinted',
       title: t('global_menu.all_forms_services'),
       as: createMenuItemComponent({
         to: getNewFormLink(currentPartyUuid, i18n.language),
@@ -227,7 +219,6 @@ export function buildProfileMenu({
       to: PageRoutes.profile + pruneSearchQueryParams(currentSearchQuery),
     }),
     icon: PersonCircleIcon,
-    iconTheme: 'transparent',
     title: t('sidebar.profile'),
     selected: true,
     items: [],

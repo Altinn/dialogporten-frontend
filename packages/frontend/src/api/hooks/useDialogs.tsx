@@ -1,4 +1,4 @@
-import type { FilterState } from '@altinn/altinn-components/dist/types/lib/components/Toolbar/Toolbar';
+import type { FilterState } from '@altinn/altinn-components';
 import { keepPreviousData, useQueryClient } from '@tanstack/react-query';
 import type {
   DialogStatus,
@@ -14,9 +14,9 @@ import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useFeatureFlag } from '../../featureFlags';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
-import { normalizeFilterDefaults } from '../../pages/Inbox/filters.ts';
+import { normalizeFilterDefaults } from '../../pages/Inbox/filters';
 import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
-import { useProfile } from '../../pages/Profile/useProfile.tsx';
+import { useProfile } from '../../pages/Profile';
 import { graphQLSDK } from '../queries.ts';
 import { getPartyIds, mapDialogToToInboxItems, mergeDialogItems } from '../utils/dialog.ts';
 import { useParties } from './useParties.ts';

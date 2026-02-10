@@ -1,4 +1,4 @@
-import { type Account, NotificationItem } from '@altinn/altinn-components';
+import { NotificationItem } from '@altinn/altinn-components';
 import { BellIcon } from '@navikt/aksel-icons';
 import type { Altinn2Message } from 'bff-types-generated';
 import { useMemo } from 'react';
@@ -7,13 +7,12 @@ import { useAltinn2Messages } from '../../api/hooks/useAltinn2Messages.tsx';
 import { extractIdentifierNumber } from '../../components/PageLayout/mapPartyToAuthorizedParty.ts';
 
 interface Altinn2ActiveSchemasNotificationProps {
-  selectedAccount?: Account;
+  selectedAccountId?: string;
 }
 
-export const Altinn2ActiveSchemasNotification = ({ selectedAccount }: Altinn2ActiveSchemasNotificationProps) => {
-  const selectedAccountIdentifier = extractIdentifierNumber(selectedAccount?.id);
-
+export const Altinn2ActiveSchemasNotification = ({ selectedAccountId }: Altinn2ActiveSchemasNotificationProps) => {
   const { t } = useTranslation();
+  const selectedAccountIdentifier = extractIdentifierNumber(selectedAccountId);
   const { altinn2messages, isSuccess: altinn2messagesSuccess } = useAltinn2Messages(selectedAccountIdentifier);
 
   const mostRecentMessage = useMemo(() => {
@@ -27,13 +26,10 @@ export const Altinn2ActiveSchemasNotification = ({ selectedAccount }: Altinn2Act
     }, altinn2messages?.[0] || null);
   }, [altinn2messages]);
 
-  if (!altinn2messagesSuccess || !altinn2messages || altinn2messages.length === 0) {
+  if (!altinn2messagesSuccess || !altinn2messages || altinn2messages.length === 0 || !selectedAccountId) {
     return null;
   }
 
-  if (!selectedAccount) {
-    return null;
-  }
   const daysSinceMostRecentMessage = Math.floor(
     (Date.now() - new Date(mostRecentMessage?.LastChangedDateTime || '').getTime()) / (1000 * 60 * 60 * 24),
   );

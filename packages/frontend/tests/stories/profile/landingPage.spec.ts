@@ -7,15 +7,12 @@ test.describe('Profile Landing Page', () => {
     await page.goto(appURLProfileLanding);
     await page.waitForLoadState('networkidle');
 
-    const userNameHeading = page.getByRole('heading').first();
-    await expect(userNameHeading).toBeVisible();
-    await expect(userNameHeading).not.toHaveText('');
+    await expect(page.locator('#main-content')).toContainText('Test Testesen');
+    await expect(page.locator('#main-content')).toContainText('Fødselsnr.: 228162 98923');
 
-    await expect(page.getByText(/Fødselsnr.:/)).toBeVisible();
-
-    await expect(page.getByText('Mobiltelefon')).toBeVisible();
-    await expect(page.getByText('E-postadresse')).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Adresse', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Mobiltelefon +' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'E-postadresse nullstilt@' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Adresse Kirkegata 25, 4307' })).toBeVisible();
   });
 
   test('contact settings are interactive and open modals', async ({ page }) => {

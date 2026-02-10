@@ -27,7 +27,7 @@ import {
   formatNorwegianId,
   useAccounts,
 } from '../../../components/PageLayout/Accounts/useAccounts';
-import { useFeatureFlag } from '../../../featureFlags/useFeatureFlag';
+import { useFeatureFlag } from '../../../featureFlags';
 import { usePageTitle } from '../../../hooks/usePageTitle';
 import { useProfileOnboarding } from '../../../onboardingTour/useProfileOnboarding';
 import { PageRoutes } from '../../routes.ts';
@@ -332,10 +332,12 @@ export const PartiesOverviewPage = () => {
             onChange: (e) => setSearchValue((e.target as HTMLInputElement).value),
             onClear: () => setSearchValue(''),
           }}
-          getFilterLabel={getFilterLabel}
-          filterState={filterState}
-          onFilterStateChange={setFilterState}
-          filters={filters}
+          filter={{
+            getFilterLabel,
+            filterState,
+            onFilterStateChange: setFilterState,
+            filters,
+          }}
         >
           {isDeletedUnitsFilterEnabled && filterState?.partyScope?.[0] !== 'PERSONS' && (
             <Switch
@@ -350,7 +352,7 @@ export const PartiesOverviewPage = () => {
         </Toolbar>
         {isSearching && displayHits.length === 0 && <Heading size="lg">{t('profile.settings.no_results')}</Heading>}
         <AccountList
-          isVirtualized
+          virtualized
           groups={isSearching ? searchGroup : accountGroups}
           items={isSearching ? displayHits : accountListItems}
         />

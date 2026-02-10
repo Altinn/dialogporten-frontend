@@ -13,7 +13,7 @@ import { ANALYTICS_EVENTS } from '../../analyticsEvents.ts';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { updateLanguage } from '../../api/queries.ts';
 import { getFrontPageLink } from '../../auth';
-import { useFeatureFlag } from '../../featureFlags/useFeatureFlag';
+import { useFeatureFlag } from '../../featureFlags';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { useProfile } from '../../pages/Profile';
 import { PageRoutes } from '../../pages/routes.ts';
@@ -81,13 +81,13 @@ export const useHeaderConfig = (): UseHeaderConfigReturn => {
         return;
       }
 
-      const search = new URLSearchParams();
-      search.append('party', encodeURIComponent(party.party));
+      const search = new URLSearchParams(location.search);
+      search.set('party', party.party);
       navigate(`${targetRoute}?${search.toString()}`, {
         replace: location.pathname === targetRoute,
       });
     },
-    [parties, isProfile, location.pathname, navigate],
+    [parties, isProfile, location.pathname, location.search, navigate],
   );
 
   const handleShowDeletedUnitsChange = useCallback(
@@ -116,13 +116,13 @@ export const useHeaderConfig = (): UseHeaderConfigReturn => {
 
   const selfAccountUuid = currentEndUser?.partyUuid;
 
-  const accountSelectorData = useAccountSelector({
+  const accountSelector = useAccountSelector({
     partyListDTO,
     favoriteAccountUuids,
     currentAccountUuid: currentPartyUuid,
     selfAccountUuid,
     isLoading,
-    isVirtualized: true,
+    virtualized: true,
     onSelectAccount: handleSelectAccount,
     onToggleFavorite: handleToggleFavorite,
     languageCode: i18n.language,
@@ -185,8 +185,6 @@ export const useHeaderConfig = (): UseHeaderConfigReturn => {
         },
     mobileMenu,
   };
-
-  const accountSelector = accountSelectorData;
 
   const globalHeaderProps: GlobalHeaderProps = {
     ...commonProps,

@@ -7,14 +7,18 @@ test.describe('Testing filter bar', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(defaultAppURL);
 
-    await page.getByRole('button', { name: 'add' }).click();
-    await page
-      .getByTestId('inbox-toolbar')
-      .getByRole('group')
-      .locator('a')
-      .filter({ hasText: 'Velg avsender' })
+    const toolbar = page.getByTestId('inbox-toolbar');
+    await toolbar.getByRole('button', { name: /legg til/i }).click();
+    await toolbar
+      .locator('#tool-filter-add')
+      .getByRole('menuitem', { name: /velg tjenesteeier/i })
+      .locator('button[data-id="org"], button#org')
       .click();
-    await page.getByRole('menuitemcheckbox', { name: 'Skatteetaten' }).locator('div').first().click();
+    await page
+      .getByRole('menuitemcheckbox', { name: 'Skatteetaten' })
+      .or(page.getByRole('checkbox', { name: 'Skatteetaten' }))
+      .first()
+      .click();
     await page.keyboard.press('Escape');
   });
 
@@ -22,19 +26,32 @@ test.describe('Testing filter bar', () => {
     expect(new URL(page.url()).searchParams.get('org')).toEqual('skd');
     await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).toBeVisible();
 
-    await page.getByRole('button', { name: 'Fjern filter' }).click();
+    const removeOrgFilter = page
+      .locator('[data-id="filter-button-org"]')
+      .locator('..')
+      .locator('button[popovertarget]')
+      .or(page.getByRole('button', { name: /fjern filter/i }));
+    await removeOrgFilter.click();
 
     expect(new URL(page.url()).searchParams.has('org')).toEqual(false);
 
-    await page.getByRole('button', { name: 'add' }).click();
-
-    await page.getByTestId('inbox-toolbar').getByRole('group').locator('a').filter({ hasText: 'Velg status' }).click();
     await page
-      .getByTestId('filter-base-toolbar-filter-status')
-      .locator('span')
-      .filter({ hasText: 'Avsluttet' })
-      .nth(1)
+      .getByTestId('inbox-toolbar')
+      .getByRole('button', { name: /legg til/i })
       .click();
+
+    await page
+      .getByTestId('inbox-toolbar')
+      .locator('#tool-filter-add')
+      .getByRole('menuitem', { name: /velg status/i })
+      .locator('button[data-id="status"], button#status')
+      .click();
+    const statusMenu = page.getByTestId('filter-base-toolbar-filter-status');
+    const completedOption = statusMenu
+      .locator('[data-id="COMPLETED"]')
+      .or(page.getByRole('menuitemcheckbox', { name: /avsluttet|fullført|ferdig/i }))
+      .or(page.getByRole('checkbox', { name: /avsluttet|fullført|ferdig/i }));
+    await completedOption.first().click();
     expect(new URL(page.url()).searchParams.get('status')).toEqual('COMPLETED');
 
     await page.keyboard.press('Escape');

@@ -1,7 +1,7 @@
 import type { Altinn2messagesQuery } from 'bff-types-generated';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
-import { useFeatureFlag } from '../../featureFlags/useFeatureFlag.ts';
+import { useFeatureFlag } from '../../featureFlags';
 import { fetchAltinn2Messages } from '../queries.ts';
 
 export const useAltinn2Messages = (selectedAccountIdentifier?: string) => {

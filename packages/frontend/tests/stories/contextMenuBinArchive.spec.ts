@@ -1,14 +1,17 @@
 import { expect, test } from '@playwright/test';
 import { PageRoutes } from '../../src/pages/routes';
 import { defaultAppURL } from '../index';
-import { getSidebarMenuItem } from './common';
+import { getSidebarMenuItem, openContextMenuForDialog } from './common';
 
 test('Move to bin and archive', async ({ page, isMobile }) => {
   await page.goto(defaultAppURL);
-  /* use context menu to transfer dialog to archive */
-  await page.getByRole('button', { name: 'Kontekstmeny for dialog med tittel Melding om bortkjøring av snø' }).click();
-  await page.getByRole('button', { name: 'Flytt til arkiv' }).click();
 
+  const title = 'Melding om bortkjøring av snø';
+
+  const { menuRoot: defaultRoot } = await openContextMenuForDialog(page, title);
+  await defaultRoot.locator('button[role="menuitem"][aria-label="Flytt til arkivet"]').click();
+
+  // Go to archive
   const archiveLink = getSidebarMenuItem(page, PageRoutes.archive);
   const binLink = getSidebarMenuItem(page, PageRoutes.bin);
 
@@ -20,12 +23,13 @@ test('Move to bin and archive', async ({ page, isMobile }) => {
     await archiveLink.click();
   }
 
-  await expect(page.getByRole('heading', { name: 'Melding om bortkjøring av snø' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: title })).toBeVisible();
 
-  /* use context menu to transfer dialog to bin */
-  await page.getByRole('button', { name: 'Kontekstmeny for dialog med tittel Melding om bortkjøring av snø' }).click();
-  await page.getByRole('button', { name: 'Flytt til papirkurv' }).click();
+  // Move to bin from archive
+  const { menuRoot: archivedRoot } = await openContextMenuForDialog(page, title);
+  await archivedRoot.locator('button[role="menuitem"][aria-label="Flytt til papirkurven"]').click();
 
+  // Go to bin
   if (isMobile) {
     await page.getByRole('button', { name: 'Meny' }).click();
     await page.getByRole('link', { name: 'Papirkurv' }).click();
@@ -33,5 +37,6 @@ test('Move to bin and archive', async ({ page, isMobile }) => {
   } else {
     await binLink.click();
   }
-  await expect(page.getByRole('heading', { name: 'Melding om bortkjøring av snø' })).toBeVisible();
+
+  await expect(page.getByRole('heading', { name: title })).toBeVisible();
 });

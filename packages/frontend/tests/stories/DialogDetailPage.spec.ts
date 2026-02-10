@@ -22,8 +22,11 @@ test.describe('DialogDetailsPage', () => {
       .waitFor();
     await expect(page.locator('h2').filter({ hasText: /^Grunnleggende konsepter fra markdown$/ })).toBeVisible();
 
-    await page.getByRole('button', { name: 'Flytt til arkiv' }).click();
-    page.locator('span').filter({ hasText: /^Flyttet til arkiv$/ });
+    await page
+      .getByRole('button', { name: /flytt til arkiv/i })
+      .or(page.getByRole('menuitem', { name: /flytt til arkiv/i }))
+      .click();
+    await expect(page.getByText(/flyttet til arkiv/i)).toBeVisible();
 
     if (isMobile) {
       await page.getByRole('button', { name: 'Meny' }).click();
@@ -37,8 +40,11 @@ test.describe('DialogDetailsPage', () => {
     await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).toBeVisible();
 
     await page.getByRole('link', { name: 'Skatten din for 2022' }).click();
-    await page.getByRole('button', { name: 'Flytt til papirkurv' }).click();
-    page.locator('span').filter({ hasText: /^Flyttet til papirkurv$/ });
+    await page
+      .getByRole('button', { name: /flytt til papirkurv/i })
+      .or(page.getByRole('menuitem', { name: /flytt til papirkurv/i }))
+      .click();
+    await expect(page.getByText(/flyttet til papirkurv/i)).toBeVisible();
 
     if (isMobile) {
       await page.getByRole('button', { name: 'Meny' }).click();

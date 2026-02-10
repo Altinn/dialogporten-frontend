@@ -142,6 +142,7 @@ export function buildInboxMenu({
       items: [
         {
           id: '2',
+          size: 'md',
           'data-testid': 'sidebar-drafts',
           groupId: '2',
           icon: DocPencilIcon,
@@ -153,6 +154,7 @@ export function buildInboxMenu({
         },
         {
           id: '3',
+          size: 'md',
           'data-testid': 'sidebar-sent',
           groupId: '2',
           icon: FileCheckmarkIcon,
@@ -164,6 +166,7 @@ export function buildInboxMenu({
         },
         {
           id: '4',
+          size: 'md',
           'data-testid': 'sidebar-saved-searches',
           groupId: '3',
           icon: BookmarkIcon,
@@ -175,6 +178,7 @@ export function buildInboxMenu({
         },
         {
           id: '5',
+          size: 'md',
           'data-testid': 'sidebar-archive',
           groupId: '4',
           icon: ArchiveIcon,
@@ -186,6 +190,7 @@ export function buildInboxMenu({
         },
         {
           id: '6',
+          size: 'md',
           'data-testid': 'sidebar-bin',
           groupId: '4',
           icon: TrashIcon,
@@ -200,6 +205,7 @@ export function buildInboxMenu({
   ];
 
   const sidebarMenu: MenuProps = {
+    variant: 'tinted',
     groups: {
       ...menuGroups,
       shortcuts: {
@@ -207,12 +213,9 @@ export function buildInboxMenu({
         divider: false,
       },
     },
-    variant: 'subtle',
-    defaultIconTheme: 'default',
     items: [
       ...inboxItems.map((item, idx) => ({
         ...item,
-        iconTheme: idx === 0 ? 'base' : item.iconTheme,
         badge: idx === 0 ? undefined : item.badge,
       })),
       ...shortcuts,
@@ -235,7 +238,6 @@ export function buildInboxMenu({
         groupId: 'global',
         size: 'lg',
         icon: PadlockLockedFillIcon,
-        iconTheme: 'tinted',
         as: 'a',
         href: getAccessAMUILink(currentPartyUuid),
         title: t('altinn.access_management'),
@@ -251,7 +253,6 @@ export function buildInboxMenu({
         groupId: 'global',
         size: 'lg',
         icon: MenuGridIcon,
-        iconTheme: 'tinted',
         title: t('global_menu.all_forms_services'),
         as: createMenuItemComponent({
           to: getNewFormLink(currentPartyUuid, i18n.language),
@@ -267,14 +268,12 @@ export function buildInboxMenu({
           to: PageRoutes.profile + pruneSearchQueryParams(currentSearchQuery),
         }),
         icon: PersonCircleIcon,
-        iconTheme: 'transparent',
         title: t('sidebar.profile'),
         selected: false,
         expanded: true,
         items: [],
       },
     ],
-    defaultIconTheme: 'tinted',
   };
   const desktopMenu: MenuProps = {
     ...mobileMenu,

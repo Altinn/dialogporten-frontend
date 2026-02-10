@@ -17,22 +17,21 @@ test.describe('Date filter, system date set 2024', () => {
   });
 
   test('Date filter - quick filters functionality', async ({ page }) => {
-    await page.getByRole('button', { name: 'add' }).click();
-    await expect(page.locator('a').filter({ hasText: 'Oppdatert dato' })).toBeVisible();
-    await page
-      .getByTestId('inbox-toolbar')
-      .getByRole('group')
-      .locator('a')
-      .filter({ hasText: 'Oppdatert dato' })
+    const toolbar = page.getByTestId('inbox-toolbar');
+    await toolbar.getByRole('button', { name: /legg til/i }).click();
+    const addMenu = toolbar.locator('#tool-filter-add');
+    await addMenu
+      .getByRole('menuitem', { name: /velg dato/i })
+      .locator('button[data-id="updated"]')
       .click();
 
-    const item = page.getByRole('menuitemcheckbox', { name: 'I dag' });
+    const item = page.getByRole('radio', { name: 'I dag' });
     await expect(item.first()).toBeVisible();
 
-    const item2 = page.getByRole('menuitemcheckbox', { name: 'Siste tolv måneder' });
+    const item2 = page.getByRole('radio', { name: 'Siste tolv måneder' });
     await expect(item2.first()).toBeVisible();
 
-    await page.getByRole('menuitemcheckbox', { name: 'I dag' }).first().locator('div').click;
+    await page.getByRole('radio', { name: 'I dag' }).first().click();
 
     await expect(page.getByRole('link', { name: 'Mocked system date Dec 31, 2024' })).toBeVisible();
     await expect(
