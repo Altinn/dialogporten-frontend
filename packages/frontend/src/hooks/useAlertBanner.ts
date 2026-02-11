@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useAuthenticatedQuery } from '../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../constants/queryKeys.ts';
-import type { AlertBannerContent, AlertBannerResponse } from '../types/alertBanner.ts';
+import type { AlertBannerContent, AlertBannerResponse } from './alertBanner.ts';
 
 async function fetchAlertBannerContent(): Promise<AlertBannerResponse> {
   const res = await fetch('/api/alert-banner');

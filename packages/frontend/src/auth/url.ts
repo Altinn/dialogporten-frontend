@@ -12,7 +12,13 @@ export const createFiltersURLQuery = (activeFilters: FilterState, allFilterKeys:
   for (const [id, value] of Object.entries(activeFilters).filter(([_, value]) => typeof value !== 'undefined')) {
     if (Array.isArray(value)) {
       for (const v of value) {
-        url.searchParams.append(id, String(v));
+        if (id === 'fromDate' || id === 'toDate') {
+          if (activeFilters.updated) {
+            url.searchParams.append(id, String(v));
+          }
+        } else {
+          url.searchParams.append(id, String(v));
+        }
       }
     } else {
       url.searchParams.append(id, String(value));

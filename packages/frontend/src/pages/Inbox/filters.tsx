@@ -1,9 +1,10 @@
-import type {
-  AvatarProps,
-  FilterProps,
-  FilterState,
-  MenuItemProps,
-  ToolbarFilterProps,
+import {
+  type AvatarProps,
+  type FilterProps,
+  type FilterState,
+  type MenuItemProps,
+  SelectDateFilter,
+  type ToolbarFilterProps,
 } from '@altinn/altinn-components';
 import { CalendarIcon, InformationSquareIcon, MenuGridIcon, MenuHamburgerIcon } from '@navikt/aksel-icons';
 import {
@@ -14,7 +15,20 @@ import {
   type ServiceResource,
   SystemLabel,
 } from 'bff-types-generated';
-import { endOfDay, endOfMonth, endOfWeek, startOfDay, startOfMonth, startOfWeek, subMonths, subYears } from 'date-fns';
+import {
+  endOfDay,
+  endOfMonth,
+  endOfWeek,
+  format,
+  isValid,
+  parseISO,
+  startOfDay,
+  startOfMonth,
+  startOfWeek,
+  subMonths,
+  subYears,
+} from 'date-fns';
+import type { Locale } from 'date-fns/locale';
 import i18n, { t } from 'i18next';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { getOrganization } from '../../api/utils/organizations.ts';
@@ -80,6 +94,28 @@ export const getDateRange = (unit: 'day' | 'week' | 'month' | 'sixMonths' | 'yea
   }
 };
 
+const toIsoStartOfLocalDay = (dateStr?: string | number | undefined) => {
+  if (!dateStr || typeof dateStr !== 'string') return undefined;
+  try {
+    const date = parseISO(dateStr);
+    if (!isValid(date)) return undefined;
+    return startOfDay(date).toISOString();
+  } catch {
+    return undefined;
+  }
+};
+
+const toIsoEndOfLocalDay = (dateStr?: string | number | undefined) => {
+  if (!dateStr || typeof dateStr !== 'string') return undefined;
+  try {
+    const date = parseISO(dateStr);
+    if (!isValid(date)) return undefined;
+    return endOfDay(date).toISOString();
+  } catch {
+    return undefined;
+  }
+};
+
 const filterRanges: Record<DateFilterOption, { start?: Date; end?: Date }> = {
   [DateFilterOption.TODAY]: getDateRange('day'),
   [DateFilterOption.THIS_WEEK]: getDateRange('week'),
@@ -94,6 +130,8 @@ export enum FilterCategory {
   STATUS = 'status',
   UPDATED = 'updated',
   SERVICE = 'service',
+  FROM_DATE = 'fromDate',
+  TO_DATE = 'toDate',
 }
 
 const createDateOptions = (): MenuItemProps[] => {
@@ -134,11 +172,20 @@ const createDateOptions = (): MenuItemProps[] => {
       value: DateFilterOption.OLDER_THAN_ONE_YEAR,
       groupId: 'date-older',
     },
+    {
+      id: DateFilterOption.OLDER_THAN_ONE_YEAR,
+      title: t('filter.date.fromandtodate'),
+      icon: CalendarIcon,
+      linkIcon: true,
+      role: 'datepicker',
+      value: DateFilterOption.OLDER_THAN_ONE_YEAR,
+      groupId: 'custom',
+    },
   ];
 
   return options.map((option) => ({
-    ...option,
     title: t(`filter.date.${option.value.toLowerCase()}`),
+    ...option,
     name: FilterCategory.UPDATED,
   }));
 };
@@ -280,6 +327,7 @@ const createStatusFilter = (): FilterProps => {
 const createUpdatedAtFilter = (): FilterProps => {
   return {
     title: t('filter_bar.label.updated'),
+    as: SelectDateFilter,
     icon: CalendarIcon,
     groupId: 'status-date',
     id: FilterCategory.UPDATED,
@@ -485,7 +533,7 @@ export const normalizeFilterDefaults = ({
   searchQuery,
 }: NormalizeFilterDefaults): GetAllDialogsForPartiesQueryVariables => {
   const SYSTEM_LABEL_STATUSES = [SystemLabel.Bin, SystemLabel.Archive, SystemLabel.Sent] as string[];
-  const { updatedAfter, ...baseFilters } = filters;
+  const { updatedAfter, fromDate, toDate, ...baseFilters } = filters;
   const { status, org, systemLabel, serviceResources } = baseFilters;
   const normalized: GetAllDialogsForPartiesQueryVariables = { ...baseFilters };
 
@@ -493,10 +541,15 @@ export const normalizeFilterDefaults = ({
     (f) => Array.isArray(f) && f.length > 0,
   );
 
-  if (updatedAfter && filterRanges[updatedAfter as unknown as DateFilterOption]) {
-    const { start, end } = filterRanges[updatedAfter as unknown as DateFilterOption];
-    if (start) normalized.updatedAfter = start.toISOString();
-    if (end) normalized.updatedBefore = end.toISOString();
+  if (updatedAfter) {
+    if (filterRanges[updatedAfter as unknown as DateFilterOption]) {
+      const { start, end } = filterRanges[updatedAfter as unknown as DateFilterOption];
+      if (start) normalized.updatedAfter = start.toISOString();
+      if (end) normalized.updatedBefore = end.toISOString();
+    } else if (updatedAfter?.[0] === 'fromAndToDate') {
+      normalized.updatedAfter = toIsoStartOfLocalDay(fromDate?.[0]);
+      normalized.updatedBefore = toIsoEndOfLocalDay(toDate?.[0]);
+    }
   }
 
   const normalizedStatus = (normalized.status ?? []) as string[];
@@ -554,4 +607,67 @@ export const aggregateFilterState = (filterState: FilterState, viewType: InboxVi
     ...filterState,
     status: [...new Set([...asArray(presets.status), ...asArray(presets.label), ...asArray(filterState.status)])],
   };
+};
+
+type Dateish = string | number | Date;
+
+const parseDateish = (value?: Dateish): Date | undefined => {
+  if (value === undefined || value === null) return undefined;
+
+  if (value instanceof Date) return isValid(value) ? value : undefined;
+
+  const s = String(value);
+  if (!s) return undefined;
+
+  try {
+    const d = parseISO(s);
+    return isValid(d) ? d : undefined;
+  } catch {
+    return undefined;
+  }
+};
+
+/**
+ * Standalone single-date formatter.
+ */
+export const formatSingleDate = (value: Dateish | undefined, locale: Locale): string | undefined => {
+  const d = parseDateish(value);
+  if (!d) return undefined;
+
+  return format(d, 'd. MMMM yyyy', { locale });
+};
+
+export const formatDateRange = (
+  fromStr: Dateish | undefined,
+  toStr: Dateish | undefined,
+  locale: Locale,
+): string | undefined => {
+  const from = parseDateish(fromStr);
+  const to = parseDateish(toStr);
+
+  if (!from && !to) return undefined;
+
+  const fullFrom = from ? formatSingleDate(from, locale)! : undefined;
+  const fullTo = to ? formatSingleDate(to, locale)! : undefined;
+
+  if (from && !to) return `${fullFrom}—`;
+  if (!from && to) return `—${fullTo}`;
+
+  const sameYear = from!.getFullYear() === to!.getFullYear();
+  const sameMonth = sameYear && from!.getMonth() === to!.getMonth();
+  const sameDay = sameMonth && from!.getDate() === to!.getDate();
+
+  if (sameDay) return fullFrom;
+
+  if (sameMonth) {
+    // 3.–5. februar 2026
+    return `${format(from!, 'd.', { locale })}–${format(to!, 'd. MMMM yyyy', { locale })}`;
+  }
+
+  if (sameYear) {
+    // 3. februar–5. juni 2026
+    return `${format(from!, 'd. MMMM', { locale })}–${format(to!, 'd. MMMM yyyy', { locale })}`;
+  }
+
+  return `${fullFrom}–${fullTo}`;
 };

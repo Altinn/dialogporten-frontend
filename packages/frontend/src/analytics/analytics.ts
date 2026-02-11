@@ -1,9 +1,9 @@
 import { ReactPlugin } from '@microsoft/applicationinsights-react-js';
 import type { ITelemetryItem, ITelemetryPlugin } from '@microsoft/applicationinsights-web';
 import { ApplicationInsights } from '@microsoft/applicationinsights-web';
-import type { AnalyticsEventName } from './analyticsEvents';
-import { config } from './config';
-import { PageRoutes } from './pages/routes';
+import { config } from '../config.ts';
+import { PageRoutes } from '../pages/routes.ts';
+import type { AnalyticsEventName } from './analyticsEvents.ts';
 
 let applicationInsights: ApplicationInsights | null = null;
 

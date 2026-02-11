@@ -1,4 +1,4 @@
-import type { FilterProps, ToolbarFilterProps } from '@altinn/altinn-components';
+import type { FilterProps, FilterState } from '@altinn/altinn-components';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
@@ -7,12 +7,17 @@ import { useDialogsCount } from '../../api/hooks/useDialogsCount.tsx';
 import { useServiceResource } from '../../api/hooks/useServiceResource.ts';
 import { getOrganization } from '../../api/utils/organizations.ts';
 import { useFeatureFlag } from '../../featureFlags';
-import { FilterCategory, getFilters, readFiltersFromURLQuery } from './filters';
+import { useDateFnsLocale } from '../../i18n/useDateFnsLocale.tsx';
+import { FilterCategory, formatDateRange, getFilters, readFiltersFromURLQuery } from './filters';
 import { useOrganizations } from './useOrganizations.ts';
 
 interface UseFiltersOutput {
   filters: FilterProps[];
-  getFilterLabel: ToolbarFilterProps['getFilterLabel'];
+  getFilterLabel: (
+    name: string,
+    value: (string | number)[] | undefined,
+    filterState?: FilterState,
+  ) => string | undefined;
 }
 
 interface UseFiltersProps {
@@ -22,6 +27,7 @@ interface UseFiltersProps {
 export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
   const { t } = useTranslation();
   const { dialogCounts: allDialogs } = useDialogsCount();
+  const { locale } = useDateFnsLocale();
   const enableServiceFilter = useFeatureFlag<boolean>('filters.enableServiceFilter');
   const { organizations } = useOrganizations();
   const { serviceResources } = useServiceResource();
@@ -57,7 +63,11 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
     [allDialogs, organizations, viewType, currentFilters, enableServiceFilter, serviceResources],
   );
 
-  const getFilterLabel = (name: string, value: (string | number)[] | undefined): string | undefined => {
+  const getFilterLabel = (
+    name: string,
+    value: (string | number)[] | undefined,
+    filterState?: FilterState,
+  ): string | undefined => {
     const filter = filters.find((f) => f.name === name);
 
     if (filter && !value?.length) {
@@ -78,6 +88,13 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
     }
 
     if (name === FilterCategory.UPDATED) {
+      if (value[0] === 'fromAndToDate') {
+        const dateDate = formatDateRange(filterState?.fromDate?.[0], filterState?.toDate?.[0], locale);
+        if (dateDate) {
+          return dateDate;
+        }
+      }
+
       return value.map((v) => t(`filter.date.${v.toString().toLowerCase()}`)).join(', ');
     }
 

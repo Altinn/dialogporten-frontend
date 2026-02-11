@@ -26,8 +26,8 @@ import {
 } from 'bff-types-generated';
 import { ClientError, GraphQLClient, type RequestMiddleware, type ResponseMiddleware } from 'graphql-request';
 import i18n from 'i18next';
-import { Analytics } from '../analytics';
-import { logError } from '../utils/errorLogger';
+import { Analytics } from '../analytics/analytics.ts';
+import { logError } from '../analytics/errorLogger.ts';
 
 const requestMiddleware: RequestMiddleware = (request) => {
   try {

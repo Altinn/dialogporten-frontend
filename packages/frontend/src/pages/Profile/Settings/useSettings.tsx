@@ -163,12 +163,6 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
     },
     onClear: () => setSearchString(''),
     placeholder: '',
-    getResultsLabel: (hits: number) => {
-      if (hits === 0) {
-        return t('profile.settings.no_results');
-      }
-      return t('parties.results', { hits });
-    },
   };
 
   if (isLoading) {

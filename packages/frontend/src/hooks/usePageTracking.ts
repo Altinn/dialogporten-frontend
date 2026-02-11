@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Analytics } from '../analytics';
+import { Analytics } from '../analytics/analytics.ts';
 
 export const usePageTracking = () => {
   const location = useLocation();

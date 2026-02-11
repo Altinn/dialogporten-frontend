@@ -76,6 +76,8 @@ export const useDialogs = ({
       org: Array.isArray(filterState?.org) && filterState?.org?.length > 0 ? (filterState?.org as string[]) : undefined,
       systemLabel: filterState?.systemLabel as SystemLabel[] | undefined,
       updatedAfter: filterState?.updated,
+      fromDate: filterState?.fromDate,
+      toDate: filterState?.toDate,
       serviceResources,
     },
     viewType,

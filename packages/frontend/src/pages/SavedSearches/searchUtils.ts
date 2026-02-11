@@ -1,6 +1,6 @@
 import type { SavedSearchesFieldsFragment } from 'bff-types-generated';
+import { logError } from '../../analytics/errorLogger.ts';
 import type { FormatDistanceFunction } from '../../i18n/useDateFnsLocale.tsx';
-import { logError } from '../../utils/errorLogger';
 
 export const autoFormatRelativeTime = (date: Date, formatDistance: FormatDistanceFunction): string => {
   try {
