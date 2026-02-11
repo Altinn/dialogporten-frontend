@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.120.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.120.0...v1.120.1) (2026-02-11)
+
+
+### Bug Fixes
+
+* **account:** improvements to selecting account ([#3709](https://github.com/Altinn/dialogporten-frontend/issues/3709)) ([2570812](https://github.com/Altinn/dialogporten-frontend/commit/2570812e0daa792b2b0cc67cc5765010b02f8d96))
+* Scope FCE content cache to dialog view for mainContent and more aggressively for transmission FCE ([#3708](https://github.com/Altinn/dialogporten-frontend/issues/3708)) ([10b1741](https://github.com/Altinn/dialogporten-frontend/commit/10b1741b57957345b0f48f84cf321b1cb1c33af9))
+
 ## [1.120.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.119.7...v1.120.0) (2026-02-10)
 
 
