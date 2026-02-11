@@ -202,15 +202,16 @@ export const DialogDetails = ({
     /* Add content reference to each item in the transmission - ensure they are not eagerly loaded, will only render on expand */
     return dialog.transmissions.map((transmission) => ({
       ...transmission,
-      items: transmission.items?.map((item, index) => {
+      items: transmission.items?.map((item) => {
         return {
           ...item,
           children: dialog.contentReferenceForTransmissions[item.id as string]
             ? dialogToken && (
                 <MainContentReference
-                  id={item.id ?? `${transmission.id}-${index}`}
+                  id={item.id}
                   content={dialog.contentReferenceForTransmissions[item.id as string]}
                   dialogToken={dialogToken}
+                  dialogId={dialog?.id ?? ''}
                 />
               )
             : null,
@@ -246,6 +247,7 @@ export const DialogDetails = ({
                         id={item.id}
                         content={dialog.contentReferenceForTransmissions[item.id as string]}
                         dialogToken={dialogToken}
+                        dialogId={dialog?.id}
                       />
                     )
                   : null,
@@ -361,7 +363,12 @@ export const DialogDetails = ({
       >
         <p>{dialog.summary}</p>
         {dialogToken && (
-          <MainContentReference content={dialog.mainContentReference} dialogToken={dialogToken} id={dialog.id} />
+          <MainContentReference
+            content={dialog.mainContentReference}
+            dialogToken={dialogToken}
+            id={dialog.id}
+            dialogId={dialog.id}
+          />
         )}
         {dialog.attachments.length > 0 && (
           <DialogAttachments

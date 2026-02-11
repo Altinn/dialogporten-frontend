@@ -299,3 +299,12 @@ export const getFooterLinks = (currentPartyUuid: string, language?: string) => {
     },
   ];
 };
+
+export const isValidURL = (url: string) => {
+  try {
+    const newUrl = new URL(url);
+    return newUrl.protocol === 'http:' || newUrl.protocol === 'https:';
+  } catch (_) {
+    return false;
+  }
+};
