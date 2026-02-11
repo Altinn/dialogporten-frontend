@@ -26,7 +26,7 @@ interface UseHeaderConfigReturn {
 }
 
 export const useHeaderConfig = (): UseHeaderConfigReturn => {
-  const { currentEndUser, parties, selectedParties, isLoading, currentPartyUuid } = useParties();
+  const { currentEndUser, parties, selectedParties, isLoading, currentPartyUuid, setSelectedPartyIds } = useParties();
   const { t, i18n } = useTranslation();
   const { logError } = useErrorLogger();
   const location = useLocation();
@@ -71,6 +71,7 @@ export const useHeaderConfig = (): UseHeaderConfigReturn => {
     [favoritesGroup?.parties, addFavoriteParty, deleteFavoriteParty, logError],
   );
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const handleSelectAccount = useCallback(
     (accountUuid: string) => {
       const targetRoute = isProfile ? PageRoutes.profile : PageRoutes.inbox;
@@ -81,13 +82,22 @@ export const useHeaderConfig = (): UseHeaderConfigReturn => {
         return;
       }
 
-      const search = new URLSearchParams(location.search);
-      search.set('party', party.party);
-      navigate(`${targetRoute}?${search.toString()}`, {
-        replace: location.pathname === targetRoute,
-      });
+      /* Selected party already selected */
+      if (selectedParties.length === 1 && selectedParties[0].party === party.party) {
+        return;
+      }
+
+      if (party.partyType === 'Person') {
+        setSelectedPartyIds([party.party], false);
+      } else {
+        const search = new URLSearchParams(location.search);
+        search.set('party', party.party);
+        navigate(`${targetRoute}?${search.toString()}`, {
+          replace: location.pathname === targetRoute,
+        });
+      }
     },
-    [parties, isProfile, location.pathname, location.search, navigate],
+    [parties, isProfile, location.pathname, navigate],
   );
 
   const handleShowDeletedUnitsChange = useCallback(

@@ -11,6 +11,7 @@ import i18n from 'i18next';
 import { type ChangeEvent, type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { useParties } from '../../../api/hooks/useParties.ts';
 import { useFeatureFlag } from '../../../featureFlags';
 import { useProfile } from '../../../pages/Profile';
 import { SettingsType } from '../../../pages/Profile/Settings/useSettings.tsx';
@@ -98,6 +99,7 @@ export const useAccounts = ({
 }: UseAccountsProps): UseAccountsOutput => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { setSelectedPartyIds } = useParties();
   const { favoritesGroup, shouldShowDeletedEntities } = useProfile();
   const isDeletedUnitsFilterEnabled = useFeatureFlag<boolean>('inbox.enableDeletedUnitsFilter');
   const [searchString, setSearchString] = useState<string>('');
@@ -358,21 +360,31 @@ export const useAccounts = ({
 
   const onSelectAccount = (partyId: string, route: PageRoutes) => {
     const search = new URLSearchParams(location.search);
+    const isPersonAccount = partyId.includes('person');
+    const isCurrentAccount = partyId === selectedParties[0]?.party;
 
-    if (partyId === 'ALL') {
-      search.set('allParties', 'true');
-      search.delete('party');
+    if (isCurrentAccount) return;
+
+    /* Prevent person urn in query param */
+    if (isPersonAccount) {
+      setSelectedPartyIds([partyId], false);
     } else {
-      const party = parties.find((p) => p.party === partyId);
-      if (!party) {
-        console.error('Selected party not found:', partyId);
-        return;
+      /* State will picked up by url change */
+      if (partyId === 'ALL') {
+        search.set('allParties', 'true');
+        search.delete('party');
+      } else {
+        const party = parties.find((p) => p.party === partyId);
+        if (!party) {
+          console.error('Selected party not found:', partyId);
+          return;
+        }
+        search.set('party', party.party);
+        search.delete('allParties');
       }
-      search.set('party', party.party);
-      search.delete('allParties');
-    }
 
-    navigate(`${route}?${search.toString()}`, { replace: true });
+      navigate(`${route}?${search.toString()}`, { replace: true });
+    }
   };
 
   let filteredAccounts = accounts;
