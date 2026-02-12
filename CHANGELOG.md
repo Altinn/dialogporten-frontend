@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.121.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.120.1...v1.121.0) (2026-02-12)
+
+
+### Features
+
+* **filter:** add to and from date filter ([#3713](https://github.com/Altinn/dialogporten-frontend/issues/3713)) ([fec645c](https://github.com/Altinn/dialogporten-frontend/commit/fec645c6032415ebe578f70e5a953dfa09fb6a64))
+
 ## [1.120.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.120.0...v1.120.1) (2026-02-11)
 
 
