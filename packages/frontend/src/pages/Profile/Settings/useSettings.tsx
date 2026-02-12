@@ -38,6 +38,7 @@ interface UseSettingsOptions {
 interface UseSettingsInput {
   options?: UseSettingsOptions;
   isLoading?: boolean;
+  isSelfIdentifiedUser?: boolean;
 }
 
 interface UseSettingsOutput {
@@ -86,7 +87,11 @@ export const getNotificationsSettingsBadge = ({
   };
 };
 
-export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettingsInput = {}): UseSettingsOutput => {
+export const useSettings = ({
+  options: inputOptions = {},
+  isLoading,
+  isSelfIdentifiedUser = false,
+}: UseSettingsInput = {}): UseSettingsOutput => {
   const { isLoading: isLoadingParties, parties, selectedParties, allOrganizationsSelected } = useParties();
   const { user } = useProfile();
   const { t } = useTranslation();
@@ -234,7 +239,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
       icon: MobileIcon,
       title: t('profile.settings.mobile_phone'),
       value: user?.phoneNumber || '',
-      badge: getChangeSettingsBadge(user?.phoneNumber || ''),
+      badge: isSelfIdentifiedUser ? undefined : getChangeSettingsBadge(user?.phoneNumber || ''),
       variant: 'modal',
       children: (
         <ContactProfileDetails
@@ -251,7 +256,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
       icon: PaperplaneIcon,
       title: t('profile.settings.email_address'),
       value: user?.email || '',
-      badge: getChangeSettingsBadge(user?.email || ''),
+      badge: isSelfIdentifiedUser ? undefined : getChangeSettingsBadge(user?.email || ''),
       variant: 'modal',
       children: (
         <ContactProfileDetails
@@ -262,24 +267,28 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
         />
       ),
     },
-    {
-      id: 'contact-address',
-      groupId: SettingsType.contact,
-      icon: HouseHeartIcon,
-      title: t('profile.settings.address'),
-      value: address,
-      badge: getChangeSettingsBadge(address),
-      variant: 'modal',
-      children: (
-        <ContactProfileDetails
-          variant="address"
-          mailingPostalCity={user?.party?.person?.mailingPostalCity ?? ''}
-          mailingPostalCode={user?.party?.person?.mailingPostalCode ?? ''}
-          mailingAddress={user?.party?.person?.mailingAddress ?? ''}
-          readOnly
-        />
-      ),
-    },
+    ...(!isSelfIdentifiedUser
+      ? [
+          {
+            id: 'contact-address',
+            groupId: SettingsType.contact,
+            icon: HouseHeartIcon,
+            title: t('profile.settings.address'),
+            value: address,
+            badge: getChangeSettingsBadge(address),
+            variant: 'modal',
+            children: (
+              <ContactProfileDetails
+                variant="address"
+                mailingPostalCity={user?.party?.person?.mailingPostalCity ?? ''}
+                mailingPostalCode={user?.party?.person?.mailingPostalCode ?? ''}
+                mailingAddress={user?.party?.person?.mailingAddress ?? ''}
+                readOnly
+              />
+            ),
+          } as SettingsItemProps,
+        ]
+      : []),
   ];
 
   const contactProfileEmailSettings: SettingsItemProps[] = uniqueEmailAddresses.map((uea) => ({
@@ -327,7 +336,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
       icon: BellIcon,
       title: t('profile.settings.sms_notifications'),
       value: user?.phoneNumber || '',
-      badge: { label: t('profile.settings.change'), variant: 'text' },
+      badge: isSelfIdentifiedUser ? undefined : { label: t('profile.settings.change'), variant: 'text' },
       variant: 'modal',
       children: (
         <ContactProfileDetails
@@ -344,7 +353,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
       icon: BellIcon,
       title: t('profile.settings.email_notifications'),
       value: user?.email || '',
-      badge: { label: t('profile.settings.change'), variant: 'text' },
+      badge: isSelfIdentifiedUser ? undefined : { label: t('profile.settings.change'), variant: 'text' },
       variant: 'modal',
       children: <ContactProfileDetails variant="email" emailAddress={user?.email || ''} readOnly />,
     },

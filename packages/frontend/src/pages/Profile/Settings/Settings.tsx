@@ -25,12 +25,13 @@ export const Settings = () => {
   const { t } = useTranslation();
   const { search } = useLocation();
   const { isLoading: isLoadingUser } = useProfile();
-  const { isLoading: isLoadingParties } = useParties();
+  const { isLoading: isLoadingParties, isSelfIdentifiedUser } = useParties();
 
   usePageTitle({ baseTitle: t('component.settings') });
 
   const { settingsGroups, settings, settingsSearch } = useSettings({
     isLoading: isLoadingUser || isLoadingParties,
+    isSelfIdentifiedUser,
     options: {
       includeGroups: [SettingsType.contact],
     },
