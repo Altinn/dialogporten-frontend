@@ -1,5 +1,6 @@
 import { logger } from '@altinn/dialogporten-node-logger';
 import { extendType, objectType } from 'nexus';
+import config from '../../config.js';
 
 interface Organization {
   name: {
@@ -39,6 +40,14 @@ interface TransformedOrganization {
 }
 
 const organizationsRedisKey = 'arbeidsflate-organizations:v1';
+const excludeOrgsInProd = ['bits', 'bft', 'acn', 'ttd'];
+
+const filterProdOrgs = (orgs: TransformedOrganization[]) => {
+  if (config.environment === 'prod') {
+    return orgs.filter((org) => !excludeOrgsInProd.includes(org.id));
+  }
+  return orgs;
+};
 
 async function fetchOrganizations() {
   try {
@@ -62,7 +71,7 @@ async function storeOrganizationsInRedis(): Promise<TransformedOrganization[]> {
     const { default: redisClient } = await import('../../redisClient.ts');
     const organizations = await fetchOrganizations();
     if (organizations && Array.isArray(organizations)) {
-      const transformedOrganizations = organizations!.flatMap((org) => convertOrgsToJson(org));
+      const transformedOrganizations = filterProdOrgs(organizations.flatMap((org) => convertOrgsToJson(org)));
       await redisClient.set(organizationsRedisKey, JSON.stringify(transformedOrganizations), 'EX', 60 * 60 * 24); // Store for 24 hours
       return transformedOrganizations;
     }
