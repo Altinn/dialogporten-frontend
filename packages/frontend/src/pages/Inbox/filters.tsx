@@ -205,7 +205,7 @@ const createServiceOwnerFilter = (
     removable: true,
     groups: {
       'service-owners': {
-        title: t('filter_bar.group.choose_sender'),
+        title: mostRelevantOrgs.length ? '' : t('filter_bar.group.choose_sender'),
       },
       selected: {},
       'most-relevant': {

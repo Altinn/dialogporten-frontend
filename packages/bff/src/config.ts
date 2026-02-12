@@ -46,6 +46,7 @@ const envVariables = z.object({
   ENABLE_INIT_SESSION_ENDPOINT: z.preprocess(stringToBoolean, z.boolean().default(false)),
   LOGOUT_REDIRECT_URI: z.string().default('https://tt02.altinn.no/ui/Authentication/Logout'),
   AUTH_CONTEXT_COOKIE_DOMAIN: z.string().default('.at23.altinn.cloud'),
+  ENVIRONMENT: z.enum(['dev', 'test', 'staging', 'yt01', 'prod']).default('test'),
 });
 
 const env = envVariables.parse(process.env);
@@ -94,6 +95,7 @@ const config = {
   appConfigConnectionString: env.APP_CONFIG_CONNECTION_STRING,
   enableNewOIDC,
   authContextCookieDomain: env.AUTH_CONTEXT_COOKIE_DOMAIN,
+  environment: env.ENVIRONMENT,
 };
 
 export default config;

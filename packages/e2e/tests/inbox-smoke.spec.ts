@@ -21,6 +21,10 @@ test.describe('Inbox smoke tests', () => {
     await expect(page).toHaveURL(`${baseURL}/inbox/0198cc16-d75d-75ad-b6bc-2337d64363dd/`);
     await expect(page.getByText(/Digitaliseringsdirektoratet\s*til Ustabil Konditor/)).toBeVisible();
 
-    await expect(page.getByRole('button', { name: 'Flytt til arkivet' })).toBeVisible();
+    await expect(
+      page
+        .getByRole('button', { name: /flytt til arkiv/i })
+        .or(page.getByRole('menuitem', { name: /flytt til arkiv/i })),
+    ).toBeVisible();
   });
 });

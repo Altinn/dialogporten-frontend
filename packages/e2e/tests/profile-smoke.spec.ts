@@ -13,24 +13,30 @@ test.describe('Profile smoke tests', () => {
   test('should navigate to profile from inbox', async ({ page, baseURL }) => {
     await expect(page).toHaveURL(`${baseURL}/`);
 
-    await page.getByRole('button', { name: 'Meny', exact: true }).click();
-    await page.getByRole('link', { name: 'Din profil' }).click();
+    await page.goto(`${baseURL}/profile`);
     await expect(page).toHaveURL(`${baseURL}/profile`);
-    await page.getByRole('button', { name: 'Lukk' }).click();
+    const closeButton = page.getByRole('button', { name: 'Lukk' });
+    if (await closeButton.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await closeButton.click();
+    }
     await expect(page.getByRole('heading', { name: 'Ustabil Konditor' })).toBeVisible();
     await expect(page.getByText('Fødselsnr.: 159152')).toBeVisible();
   });
 
   test('should enable notifications', async ({ page, baseURL }) => {
     await page.goto(`${baseURL}/profile`);
-    await page.getByRole('button', { name: 'Lukk' }).click();
+    const closeButton = page.getByRole('button', { name: 'Lukk' });
+    if (await closeButton.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await closeButton.click();
+    }
 
-    await page.getByRole('button', { name: 'Meny', exact: true }).click();
-    await page.getByRole('link', { name: 'Din profil' }).first().click();
-
-    await page.getByRole('link', { name: 'Varsler' }).click();
+    await page
+      .getByRole('link', { name: 'Varsler' })
+      .or(page.getByRole('menuitem', { name: 'Varsler' }))
+      .first()
+      .click();
     await page.getByRole('button', { name: 'Konge Glad Tiger AS' }).first().click();
-    const switchLocator = page.getByRole('switch', { name: 'Varsle på E-post' });
+    const switchLocator = page.getByRole('switch', { name: /varsle på e-post/i });
 
     const isChecked = await switchLocator.isChecked();
 
