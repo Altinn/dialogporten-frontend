@@ -158,6 +158,7 @@ export const useAccounts = ({
         const ssnOrOrgNo = getSSNOrOrgNo(person.party);
         return {
           id: person.party,
+          selected: !allOrganizationsSelected && person.party === selectedParties[0]?.party,
           searchWords: [person.name, ssnOrOrgNo],
           ssnOrOrgNo,
           name: person.name,
@@ -174,7 +175,7 @@ export const useAccounts = ({
         } as PartyItemProp;
       })
       .sort((a, b) => compareName(a.name, b.name));
-  }, [otherPeople, favoritesGroup, options.showDescription, t]);
+  }, [allOrganizationsSelected, otherPeople, favoritesGroup, options.showDescription, t, selectedParties]);
 
   const organizationAccounts = useMemo<PartyItemProp[]>(() => {
     const mapped = organizations.map((party) => {
@@ -194,6 +195,7 @@ export const useAccounts = ({
       const orgNo = getSSNOrOrgNo(party.party);
       return {
         id: party.party,
+        selected: !allOrganizationsSelected && party.party === selectedParties[0]?.party,
         searchWords: [orgNo, party.name],
         ssnOrOrgNo: orgNo,
         name: party.name,
@@ -243,7 +245,15 @@ export const useAccounts = ({
     const grouped = parents.flatMap((p) => [p, ...(childrenByParentId.get(p.id) ?? [])]);
 
     return [...grouped, ...children];
-  }, [organizations, availableParties, favoritesGroup, options.showDescription, t]);
+  }, [
+    selectedParties,
+    allOrganizationsSelected,
+    organizations,
+    availableParties,
+    favoritesGroup,
+    options.showDescription,
+    t,
+  ]);
 
   if (isLoading) {
     return {
@@ -288,6 +298,7 @@ export const useAccounts = ({
   const endUserAccount: PartyItemProp | undefined = currentEndUser
     ? {
         id: currentEndUser.party ?? '',
+        selected: !allOrganizationsSelected && currentEndUser.party === selectedParties[0]?.party,
         searchWords: [currentEndUser.name],
         name: currentEndUser.name ?? '',
         title: currentEndUser.name ?? '',
@@ -312,6 +323,7 @@ export const useAccounts = ({
 
   const allOrganizationsAccount: PartyItemProp = {
     uuid: 'N/A',
+    selected: allOrganizationsSelected,
     id: 'ALL',
     name: t('parties.labels.all_organizations'),
     title: t('parties.labels.all_organizations'),
@@ -355,9 +367,10 @@ export const useAccounts = ({
   const onSelectAccount = (partyId: string, route: PageRoutes) => {
     const search = new URLSearchParams(location.search);
     const isPersonAccount = partyId.includes('person');
+    const isAllPartiesSelected = search.get('allParties') === 'true';
     const isCurrentAccount = partyId === selectedParties[0]?.party;
 
-    if (isCurrentAccount) return;
+    if (isCurrentAccount && !isAllPartiesSelected) return;
 
     /* Prevent person urn in query param */
     if (isPersonAccount) {

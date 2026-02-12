@@ -68,35 +68,3 @@ query getAllDialogsForCount(
     hasNextPage
   }
 }
-
-query getSearchAutocompleteDialogs(
-  $partyURIs: [String!]
-  $search: String
-  $org: [String!]
-  $status: [DialogStatus!]
-  $createdAfter: DateTime
-  $createdBefore: DateTime
-  $limit: Int
-  $searchLanguageCode: String
-  $serviceResource: [String!]
-) {
-  searchDialogs(
-    input: {
-      party: $partyURIs
-      search: $search
-      org: $org
-      status: $status
-      orderBy: { createdAt: null, updatedAt: null, dueAt: null, contentUpdatedAt: DESC }
-      createdAfter: $createdAfter
-      createdBefore: $createdBefore
-      excludeApiOnly: true
-      limit: $limit
-      searchLanguageCode: $searchLanguageCode
-      serviceResource: $serviceResource
-    }
-  ) {
-    items {
-      ...SearchAutocompleteDialogFields
-    }
-  }
-}

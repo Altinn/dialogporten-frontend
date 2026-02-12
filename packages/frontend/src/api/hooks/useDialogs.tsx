@@ -51,8 +51,6 @@ export const useDialogs = ({
 }: UseDialogsProps): UseDialogsOutput => {
   const { organizations } = useOrganizations();
   const disableFlipNamesPatch = useFeatureFlag<boolean>('dialogporten.disableFlipNamesPatch');
-  const disableDialogCount = useFeatureFlag<boolean>('inbox.disableDialogCount');
-  const enableSearchLanguageCode = useFeatureFlag<boolean>('dialogporten.enableSearchLanguageCode');
   const isDeletedUnitsFilterEnabled = useFeatureFlag<boolean>('inbox.enableDeletedUnitsFilter');
   const { shouldShowDeletedEntities } = useProfile();
   const { selectedParties, parties: allParties, allOrganizationsSelected } = useParties();
@@ -84,6 +82,9 @@ export const useDialogs = ({
     searchQuery: search,
   });
 
+  const queryClient = useQueryClient();
+  const previousPartyIdsRef = useRef<string[]>([]);
+
   const { data, isSuccess, isLoading, isFetching, isError, fetchNextPage, isFetchingNextPage, isPlaceholderData } =
     useAuthenticatedInfiniteQuery<GetAllDialogsForPartiesQuery>({
       queryKey: [QUERY_KEYS.DIALOGS, partyIds, viewTypeKey, queryVariables, search, serviceResources],
@@ -98,9 +99,7 @@ export const useDialogs = ({
           continuationToken,
           limit: 100,
           search: searchString,
-          ...(enableSearchLanguageCode && {
-            searchLanguageCode: i18n.language,
-          }),
+          searchLanguageCode: i18n.language,
         });
       },
       enabled:
@@ -123,22 +122,19 @@ export const useDialogs = ({
       placeholderData: keepPreviousData,
     });
 
-  const queryClient = useQueryClient();
-  const previousPartyIdsRef = useRef<string[]>([]);
-
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    if (!disableDialogCount || !data) return;
+    if (!data) return;
 
     const partyIds = selectedParties.map((party) => party.party);
     const selectedPartiesChanged =
       !previousPartyIdsRef.current.length || partyIds.join(',') !== previousPartyIdsRef.current.join(',');
-    const currentData = queryClient.getQueryData<GetAllDialogsForCountQuery>([QUERY_KEYS.COUNT_DIALOGS]);
+    const currentData = queryClient.getQueryData<GetAllDialogsForCountQuery>([QUERY_KEYS.DIALOGS_FOR_RECOMMENDATIONS]);
     const allNewItems: SearchDialogFieldsFragment[] =
       data.pages.flatMap((page) => page.searchDialogs?.items ?? []) ?? [];
 
     if (selectedPartiesChanged) {
-      queryClient.setQueryData<GetAllDialogsForCountQuery>([QUERY_KEYS.COUNT_DIALOGS], {
+      queryClient.setQueryData<GetAllDialogsForCountQuery>([QUERY_KEYS.DIALOGS_FOR_RECOMMENDATIONS], {
         searchDialogs: {
           items: allNewItems,
           hasNextPage: false,
@@ -155,7 +151,7 @@ export const useDialogs = ({
       const mergedItems = mergeDialogItems(existingItems, allNewItems);
       const hasNextPage = data.pages[data.pages.length - 1]?.searchDialogs?.hasNextPage ?? false;
 
-      queryClient.setQueryData<GetAllDialogsForCountQuery>([QUERY_KEYS.COUNT_DIALOGS], {
+      queryClient.setQueryData<GetAllDialogsForCountQuery>([QUERY_KEYS.DIALOGS_FOR_RECOMMENDATIONS], {
         searchDialogs: {
           items: mergedItems,
           hasNextPage,
@@ -163,7 +159,7 @@ export const useDialogs = ({
       });
     }
     previousPartyIdsRef.current = partyIds;
-  }, [disableDialogCount, data, selectedParties]);
+  }, [data, selectedParties]);
 
   const content = data?.pages.flatMap((page) => page.searchDialogs?.items ?? []) || [];
   const dialogCountInconclusive =

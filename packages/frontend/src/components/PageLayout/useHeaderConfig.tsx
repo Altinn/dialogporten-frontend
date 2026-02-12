@@ -1,7 +1,10 @@
 import {
+  type FilterState,
   type GlobalHeaderProps,
   type HeaderProps,
   type MenuItemProps,
+  QueryLabel,
+  type ToolbarSearchProps,
   useAccountSelector,
 } from '@altinn/altinn-components';
 import type { ChangeEvent } from 'react';
@@ -12,29 +15,30 @@ import { Analytics } from '../../analytics/analytics.ts';
 import { ANALYTICS_EVENTS } from '../../analytics/analyticsEvents.ts';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { updateLanguage } from '../../api/queries.ts';
-import { getFrontPageLink } from '../../auth';
+import { createFiltersURLQuery, getFrontPageLink } from '../../auth';
 import { useFeatureFlag } from '../../featureFlags';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
+import { FilterCategory } from '../../pages/Inbox/filters.tsx';
+import { pruneSearchQueryParams } from '../../pages/Inbox/queryParams.ts';
 import { useProfile } from '../../pages/Profile';
 import { PageRoutes } from '../../pages/routes.ts';
 import { useGlobalMenu } from './GlobalMenu';
-import { useAutocomplete, useSearchString } from './Search';
+import { useSearchString } from './Search';
 import { mapPartiesToAuthorizedParties } from './mapPartyToAuthorizedParty';
 
-interface UseHeaderConfigReturn {
+interface UseHeaderConfigOutput {
   headerProps: HeaderProps;
+  inboxSearch: ToolbarSearchProps;
 }
 
-export const useHeaderConfig = (): UseHeaderConfigReturn => {
+export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutput => {
   const { currentEndUser, parties, selectedParties, isLoading, currentPartyUuid, setSelectedPartyIds } = useParties();
   const { t, i18n } = useTranslation();
   const { logError } = useErrorLogger();
   const location = useLocation();
   const navigate = useNavigate();
   const isProfile = location.pathname.includes(PageRoutes.profile);
-
   const { searchValue, setSearchValue, onClear } = useSearchString();
-  const { autocomplete } = useAutocomplete({ selectedParties, searchValue });
 
   const isDeletedUnitsFilterEnabled = useFeatureFlag<boolean>('inbox.enableDeletedUnitsFilter');
 
@@ -179,20 +183,6 @@ export const useHeaderConfig = (): UseHeaderConfigReturn => {
       ],
       onSelect: (lang: string) => handleUpdateLanguage(lang),
     },
-    search: isProfile
-      ? undefined
-      : {
-          expanded: false,
-          name: t('word.search'),
-          placeholder: t('inbox.search.placeholder'),
-          value: searchValue,
-          onClear,
-          onChange: (event: ChangeEvent<HTMLInputElement>) => setSearchValue(event.target.value),
-          autocomplete: {
-            ...autocomplete,
-            items: autocomplete.items,
-          },
-        },
     mobileMenu,
   };
 
@@ -222,7 +212,75 @@ export const useHeaderConfig = (): UseHeaderConfigReturn => {
     accountSelector,
   };
 
+  const ignoreCountFor = ['fromDate', 'toDate', 'search'];
+  const activeFilters = Object.keys(filterState ?? {})
+    .filter((key) => !ignoreCountFor.includes(key))
+    .filter((key) => (filterState?.[key]?.length ?? 0) > 0);
+  const inboxSearch: ToolbarSearchProps = {
+    id: 'inbox-toolbar-search',
+    collapsible: true,
+    value: searchValue,
+    onClear,
+    onChange: (event: ChangeEvent<HTMLInputElement>) => setSearchValue(event.target.value),
+    name: t('word.search'),
+    placeholder: t('inbox.search.placeholder'),
+    minLength: 3,
+    menu: {
+      groups: {
+        suggestions: {
+          title: '',
+        },
+      },
+      items: [
+        {
+          groupId: 'suggestions',
+          title: searchValue,
+          label: <QueryLabel params={[{ type: 'search', value: searchValue, label: searchValue }]} />,
+          'aria-label': t('search.autocomplete.searchInInbox', { query: searchValue }),
+          onClick: () => {
+            navigate(`/${pruneSearchQueryParams(location.search, { search: searchValue })}`);
+          },
+          as: 'button',
+          linkIcon: true,
+        },
+        {
+          groupId: 'suggestions',
+          title: searchValue,
+          'aria-label': t('search.autocomplete.searchInInbox_with_filters', {
+            query: searchValue,
+            count: activeFilters.length,
+          }),
+          hidden: activeFilters.length === 0,
+          label: (
+            <QueryLabel
+              params={[
+                { type: 'search', value: searchValue, label: searchValue },
+                {
+                  type: 'filter',
+                  value: 'filters',
+                  label: t('search.autoComplete.activeFilters', { count: activeFilters.length }),
+                },
+              ]}
+            />
+          ),
+          onClick: () => {
+            const currentURL = new URL(window.location.href);
+            const allowedFilters = Object.values(FilterCategory);
+            const updatedURL = createFiltersURLQuery(filterState ?? {}, allowedFilters, currentURL.toString());
+            const searchParams = new URLSearchParams(updatedURL.searchParams);
+            searchParams.set('search', searchValue);
+            navigate(`/?${searchParams.toString()}`);
+          },
+          as: 'button',
+          linkIcon: true,
+        },
+      ],
+      onClose: () => {},
+    },
+  };
+
   return {
     headerProps: globalHeaderProps,
+    inboxSearch,
   };
 };

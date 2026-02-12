@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
-import { useDialogsCount } from '../../api/hooks/useDialogsCount.tsx';
+import { useDialogsForRecommendations } from '../../api/hooks/useDialogsForRecommendations.tsx';
 import { useServiceResource } from '../../api/hooks/useServiceResource.ts';
 import { getOrganization } from '../../api/utils/organizations.ts';
 import { useFeatureFlag } from '../../featureFlags';
@@ -26,7 +26,7 @@ interface UseFiltersProps {
 
 export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
   const { t } = useTranslation();
-  const { dialogCounts: allDialogs } = useDialogsCount();
+  const dialogsForRecommendations = useDialogsForRecommendations();
   const { locale } = useDateFnsLocale();
   const enableServiceFilter = useFeatureFlag<boolean>('filters.enableServiceFilter');
   const { organizations } = useOrganizations();
@@ -53,14 +53,14 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
   const filters: FilterProps[] = useMemo(
     () =>
       getFilters({
-        allDialogs,
+        allDialogs: dialogsForRecommendations,
         allOrganizations: organizations,
         viewType,
         serviceResources,
         currentFilters,
         enableServiceFilter,
       }),
-    [allDialogs, organizations, viewType, currentFilters, enableServiceFilter, serviceResources],
+    [dialogsForRecommendations, organizations, viewType, currentFilters, enableServiceFilter, serviceResources],
   );
 
   const getFilterLabel = (

@@ -113,7 +113,7 @@ export const useParties = (): UsePartiesOutput => {
       const personParams = new URLSearchParams(stripQueryParamsForParty(searchParamsString));
       handleChangSearchParams(personParams);
     } else {
-      const params = createPartyParams(searchParamsString, 'party', encodeURIComponent(partyIds[0]));
+      const params = createPartyParams(searchParamsString, 'party', partyIds[0]);
       handleChangSearchParams(params);
     }
 

@@ -19,9 +19,7 @@ test.describe('Saved Searches', () => {
     await addButton.click();
 
     // Step 2: Select sender filter option
-    const senderOption = toolbarArea
-      .getByRole('menuitem', { name: /velg (tjenesteeier|avsender)/i })
-      .first();
+    const senderOption = toolbarArea.getByRole('menuitem', { name: /velg (tjenesteeier|avsender)/i }).first();
     await expect(senderOption).toBeVisible();
     await senderOption.click();
 
@@ -65,7 +63,7 @@ test.describe('Saved Searches', () => {
     await expect(page.locator('#main-content')).toContainText('1 lagret søk', { timeout: 10000 });
 
     // Step 8: Open saved search menu
-    const menuButton = page.getByRole('button', { name: 'Åpne meny' })
+    const menuButton = page.getByRole('button', { name: 'Åpne meny' });
     await expect(menuButton).toBeVisible();
     await menuButton.click();
 
@@ -83,7 +81,7 @@ test.describe('Saved Searches', () => {
     await saveEditButton.click();
 
     // Step 10: Open menu again and edit title (second time)
-    const menuButton2 = page.getByRole('button', { name: 'Åpne meny' })
+    const menuButton2 = page.getByRole('button', { name: 'Åpne meny' });
     await expect(menuButton2).toBeVisible();
     await menuButton2.click();
 
@@ -100,7 +98,7 @@ test.describe('Saved Searches', () => {
     await saveEditButton2.click();
 
     // Step 11: Delete the saved search
-    const menuButton3 = page.getByRole('button', { name: 'Åpne meny' })
+    const menuButton3 = page.getByRole('button', { name: 'Åpne meny' });
     await expect(menuButton3).toBeVisible();
     await menuButton3.click();
 

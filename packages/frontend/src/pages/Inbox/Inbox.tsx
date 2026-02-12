@@ -20,6 +20,7 @@ import { EmptyState } from '../../components/EmptyState/EmptyState.tsx';
 import { Notice } from '../../components/Notice';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
 import { useSearchString } from '../../components/PageLayout/Search/';
+import { useHeaderConfig } from '../../components/PageLayout/useHeaderConfig.tsx';
 import { SaveSearchButton } from '../../components/SavedSearchButton/SaveSearchButton.tsx';
 import { isSavedSearchDisabled } from '../../components/SavedSearchButton/savedSearchEnabled.ts';
 import { SeenByModal } from '../../components/SeenByModal/SeenByModal.tsx';
@@ -61,6 +62,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
 
   const location = useLocation();
   const [filterState, setFilterState] = useState<FilterState>(readFiltersFromURLQuery(location.search));
+  const { inboxSearch } = useHeaderConfig(filterState);
   const [currentSeenByLogModal, setCurrentSeenByLogModal] = useState<CurrentSeenByLog | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -202,6 +204,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
         {currentAccountName ? (
           <Toolbar
             data-testid="inbox-toolbar"
+            search={inboxSearch}
             accountMenu={{
               items: accounts,
               search: accountSearch,

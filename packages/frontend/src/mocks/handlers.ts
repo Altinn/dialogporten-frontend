@@ -1,11 +1,9 @@
 import { graphql, http, HttpResponse } from 'msw';
 import { formatDisplayName } from '@altinn/altinn-components';
-import { naiveSearchFilter } from './filters';
 import {
   SavedSearchesFieldsFragment,
   DialogByIdFieldsFragment,
   Profile,
-  SearchAutocompleteDialogFieldsFragment,
   SearchDialogFieldsFragment,
   PartyFieldsFragment,
   OrganizationFieldsFragment,
@@ -321,38 +319,6 @@ const mutateUpdateSystemLabelMock = graphql.mutation('updateSystemLabel', (req) 
   });
 });
 
-const searchAutocompleteDialogsMock = graphql.query('getSearchAutocompleteDialogs', (req) => {
-  const {
-    variables: { partyURIs, search },
-  } = req;
-  const itemsForParty = inMemoryStore.dialogs?.filter((dialog) => partyURIs.includes(dialog.party));
-  const filteredItems = itemsForParty?.filter((item) => naiveSearchFilter(item, search));
-  const autoCompleteItems: SearchAutocompleteDialogFieldsFragment[] = filteredItems?.map(item => ({
-    id: item.id,
-    seenSinceLastContentUpdate: item.seenSinceLastContentUpdate,
-    content: {
-      __typename: "SearchContent",
-      title: {
-        __typename: "ContentValue",
-        mediaType: item.content.title.mediaType,
-        value: item.content.title.value.map(val => ({
-          __typename: "Localization",
-          value: val.value,
-          languageCode: val.languageCode
-        }))
-      },
-      summary: item.content.summary
-    }
-  })) ?? [];
-
-  return HttpResponse.json({
-    data: {
-      searchDialogs: {
-        items: autoCompleteItems,
-      },
-    },
-  });
-})
 
 const mutateUpdateLanguageMock = graphql.mutation('UpdateLanguage', (req) => {
   const { language } = req.variables;
@@ -466,7 +432,6 @@ export const handlers = [
   mutateUpdateSystemLabelMock,
   deleteSavedSearchMock,
   getOrganizationsMock,
-  searchAutocompleteDialogsMock,
   getContentMarkdownMock,
   getAllDialogsForPartiesMock,
   getAllDialogsforCountMock,

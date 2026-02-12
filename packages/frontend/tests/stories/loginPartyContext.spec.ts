@@ -53,7 +53,7 @@ test.describe('LoginPartyContext', () => {
     await selectPartyFromToolbar(page, 'Firma AS');
 
     // Verify party switch and message visibility
-    await expect(page.getByRole('button', { name: 'Firma AS', exact: true }).first()).toBeVisible();
+    await expect(page.getByTestId('inbox-toolbar').getByRole('button', { name: 'Firma AS' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'This is a message 1 for Firma AS' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).not.toBeVisible();
 

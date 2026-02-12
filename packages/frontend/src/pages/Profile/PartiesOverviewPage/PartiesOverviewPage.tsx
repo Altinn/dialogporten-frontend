@@ -294,6 +294,7 @@ export const PartiesOverviewPage = () => {
         </>
       ),
       contextMenu: {
+        placement: 'right',
         id: party.groupId + party.id + '-menu',
         items: [
           {

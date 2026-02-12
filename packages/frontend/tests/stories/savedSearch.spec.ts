@@ -55,8 +55,9 @@ test.describe('Saved search', () => {
     }
 
     await expect(page.getByRole('main')).toContainText('1 lagret søk');
+    await getSidebarMenuItem(page, PageRoutes.inbox).click();
 
-    await performSearch(page, 'skatten din');
+    await performSearch(page, 'skatten din', 'click');
 
     await expect(page.getByRole('button', { name: 'Lagret søk' })).not.toBeVisible();
     await expect(page.getByRole('button', { name: 'Lagre søk' })).toBeVisible();
@@ -67,9 +68,7 @@ test.describe('Saved search', () => {
 
     await page.getByTestId('inbox-toolbar').getByRole('button', { name: 'Test Testesen' }).click();
     await page.getByRole('option', { name: 'Testbedrift As Avd Oslo' }).click();
-    await page.getByTestId('searchbar-input').click();
-    await page.getByTestId('searchbar-input').fill('innkalling');
-    await page.getByTestId('searchbar-input').press('Enter');
+    await performSearch(page, 'innkalling', 'enter');
     await page.getByRole('button', { name: 'Lagre søk' }).click();
 
     await page

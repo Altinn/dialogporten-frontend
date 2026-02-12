@@ -7,7 +7,6 @@ import {
   type DeleteNotificationSettingMutation,
   type DeleteSavedSearchMutation,
   type GetAllDialogsForPartiesQuery,
-  type GetSearchAutocompleteDialogsQuery,
   type GetServiceResourcesQuery,
   type GetServiceResourcesQueryVariables,
   type NotificationSettingsInput,
@@ -25,7 +24,6 @@ import {
   getSdk,
 } from 'bff-types-generated';
 import { ClientError, GraphQLClient, type RequestMiddleware, type ResponseMiddleware } from 'graphql-request';
-import i18n from 'i18next';
 import { Analytics } from '../analytics/analytics.ts';
 import { logError } from '../analytics/errorLogger.ts';
 
@@ -220,22 +218,6 @@ export const searchDialogs = (
     partyURIs,
     search: search?.length === 0 ? undefined : search,
     org: org?.length === 0 ? undefined : org,
-  });
-};
-
-export const searchAutocompleteDialogs = (
-  partyURIs: string[],
-  search: string | undefined,
-  enableSearchLanguageCode: boolean,
-): Promise<GetSearchAutocompleteDialogsQuery> => {
-  return graphQLSDK.getSearchAutocompleteDialogs({
-    partyURIs,
-    search,
-    limit: 6,
-    ...(enableSearchLanguageCode && {
-      searchLanguageCode: i18n.language,
-    }),
-    searchLanguageCode: i18n.language,
   });
 };
 

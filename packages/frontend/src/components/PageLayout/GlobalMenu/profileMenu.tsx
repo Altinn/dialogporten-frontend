@@ -83,7 +83,7 @@ export function buildProfileMenu({
           id: '1',
           groupId: '2',
           icon: HeartIcon,
-          size: 'sm',
+          size: 'md',
           title: t('sidebar.profile.parties'),
           selected: isRouteSelected(pathname, PageRoutes.partiesOverview, fromView),
           as: createMenuItemComponent({
@@ -94,7 +94,7 @@ export function buildProfileMenu({
           id: '2',
           groupId: '2',
           icon: BellIcon,
-          size: 'sm',
+          size: 'md',
           title: t('sidebar.profile.notifications'),
           selected: isRouteSelected(pathname, PageRoutes.notifications, fromView),
           as: createMenuItemComponent({
@@ -105,7 +105,7 @@ export function buildProfileMenu({
           id: '3',
           groupId: '4',
           icon: CogIcon,
-          size: 'sm',
+          size: 'md',
           title: t('sidebar.profile.settings'),
           selected: isRouteSelected(pathname, PageRoutes.settings, fromView),
           as: createMenuItemComponent({
