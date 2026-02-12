@@ -81,6 +81,8 @@
   "dialog.toolbar.toast.move_to_bin_success": "Flytta til papirkorg",
   "dialog.toolbar.toast.move_to_inbox_failed": "Flytting til innboks feila",
   "dialog.toolbar.toast.move_to_inbox_success": "Flytta til innboks",
+  "dialog.gui_action.delete_grace_period": "Dialogen kan ikkje slettast enno fordi han er i ein bevaringsperiode på {days, plural, =1 {# dag} other {# dagar}} etter innsending. Du kan slette han frå {date}.",
+  "dialog.gui_action.failed": "Handlinga kunne ikkje utførast. Prøv igjen seinare.",
   "dialog.transmission.collapseLabel": "Vis mindre",
   "dialog.transmission.expandLabel": "Vis meir",
   "emptyState.archive.descriptionAfterBold": "Her kan du lagre meldingar du vil ta vare på, men som ikkje lenger treng å liggje i innboksen. Ver merksam på at arkivet ikkje er eit journal- og arkivsystem.",
