@@ -110,7 +110,7 @@ test.describe('Saved search', () => {
     await page.getByRole('button', { name: 'Lagre søk' }).click();
     await expect(page.getByText('Søket ditt er lagret')).toBeVisible();
 
-    await page.getByRole('button', { name: 'Fjern alle filtre' }).click();
+    await page.getByRole('button', { name: 'Nullstill' }).click();
 
     await page.getByRole('button', { name: 'Legg til filter' }).click();
     await page.getByLabel('Velg tjenesteeier').click();

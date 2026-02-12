@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import type React from 'react';
 import { type ReactNode, createContext } from 'react';
-import { Analytics } from '../analytics';
+import { Analytics } from '../analytics/analytics.ts';
 import { featureFlagDefinitions, getFeatureFlag } from './FeatureFlags';
 
 export type FeatureFlagValues = Record<string, boolean | number | string | undefined>;

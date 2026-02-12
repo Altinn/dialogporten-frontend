@@ -19,8 +19,8 @@ import {
 import { type ChangeEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps, useNavigate } from 'react-router-dom';
-import { Analytics } from '../../analytics';
-import { ANALYTICS_EVENTS } from '../../analyticsEvents';
+import { Analytics } from '../../analytics/analytics.ts';
+import { ANALYTICS_EVENTS } from '../../analytics/analyticsEvents.ts';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { useServiceResource } from '../../api/hooks/useServiceResource.ts';
 import { createSavedSearch, deleteSavedSearch, fetchSavedSearches, updateSavedSearch } from '../../api/queries.ts';
@@ -28,8 +28,8 @@ import { getOrganization } from '../../api/utils/organizations.ts';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
-import { useFormatDistance } from '../../i18n/useDateFnsLocale.tsx';
-import { DateFilterOption } from '../Inbox/filters';
+import { useDateFnsLocale, useFormatDistance } from '../../i18n/useDateFnsLocale.tsx';
+import { DateFilterOption, formatSingleDate } from '../Inbox/filters';
 import { useOrganizations } from '../Inbox/useOrganizations.ts';
 import { PageRoutes } from '../routes.ts';
 import { buildCurrentStateURL, buildSavedSearchURL } from './bookmarkURL.ts';
@@ -143,6 +143,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
   const [inputValues, setInputValues] = useState<Record<string, string>>({});
   const { organizations } = useOrganizations();
   const { serviceResources } = useServiceResource({});
+  const { locale } = useDateFnsLocale();
   const navigate = useNavigate();
 
   const formatDistance = useFormatDistance();
@@ -272,7 +273,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
     bookmarkSectionProps = {
       title: t('savedSearches.loading_saved_searches'),
       items: Array.from({ length: 3 }, (_, i) => ({
-        id: i.toString(),
+        id: 'loading-' + i.toString(),
         title: t('savedSearches.loading_saved_searches') + randomString(),
         expandIconAltText: t('savedSearches.expand_icon_alt_text'),
         onClose: () => setShowModalItemId(null),
@@ -290,33 +291,55 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
       const bookmarkLink = buildSavedSearchURL(savedSearch);
       const searchId = savedSearch.id.toString();
       const currentInputValue = inputValues[searchId] ?? savedSearch.name ?? '';
+      const hiddenFilters = ['fromAndToDate'];
 
-      const params: QueryItemProps[] = (savedSearch.data?.filters ?? []).map((filter) => {
-        if (filter?.id === 'org') {
-          const org = getOrganization(organizations, filter.value ?? '')?.name || filter.value;
+      const params: QueryItemProps[] = (savedSearch.data?.filters ?? [])
+        .filter((filter) => filter?.value && !hiddenFilters.includes(filter.value))
+        .map((filter) => {
+          if (filter?.id === 'org') {
+            const org = getOrganization(organizations, filter.value ?? '')?.name || filter.value;
+            return {
+              id: org,
+              type: 'filter' as QueryItemType,
+              label: org ?? '',
+            };
+          }
+
+          if (filter?.id === 'service') {
+            const service = serviceResources.find((sr) => sr.id === filter.value);
+            const serviceTitle =
+              service?.title?.nb || service?.title?.en || service?.title?.nn || service?.id || filter.value;
+            return {
+              id: 'serivce' + service?.id,
+              type: 'filter' as QueryItemType,
+              label: serviceTitle ?? '',
+            };
+          }
+
+          if (filter?.id === 'fromDate' && filter?.value) {
+            return {
+              id: 'filter-from',
+              type: 'filter' as QueryItemType,
+              label: t('filter.query.fromDate', { date: formatSingleDate(filter.value, locale) }),
+            };
+          }
+
+          if (filter?.id === 'toDate' && filter?.value) {
+            return {
+              id: 'filter-to',
+              type: 'filter' as QueryItemType,
+              label: t('filter.query.toDate', { date: formatSingleDate(filter.value, locale) }),
+            };
+          }
+
           return {
+            id: 'filter-' + filter?.value,
             type: 'filter' as QueryItemType,
-            label: org ?? '',
+            label: isPlaceholderValue(filter?.value)
+              ? t(`filter.query.${(filter?.value ?? '').toLowerCase()}`)
+              : (filter?.value ?? ''),
           };
-        }
-
-        if (filter?.id === 'service') {
-          const service = serviceResources.find((sr) => sr.id === filter.value);
-          const serviceTitle =
-            service?.title?.nb || service?.title?.en || service?.title?.nn || service?.id || filter.value;
-          return {
-            type: 'filter' as QueryItemType,
-            label: serviceTitle ?? '',
-          };
-        }
-
-        return {
-          type: 'filter' as QueryItemType,
-          label: isPlaceholderValue(filter?.value)
-            ? t(`filter.query.${(filter?.value ?? '').toLowerCase()}`)
-            : (filter?.value ?? ''),
-        };
-      });
+        });
 
       if (savedSearch.data?.fromView) {
         const viewType = fromPathToViewType(savedSearch.data.fromView);
@@ -355,7 +378,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
           id: `menu-saved-search-${savedSearch.id}`,
           items: [
             {
-              id: 'search-inbox',
+              id: `menu-saved-search-${savedSearch.id}-link`,
               title: t('inbox.search.placeholder'),
               icon: MagnifyingGlassIcon,
               onClick: () => {
@@ -365,7 +388,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
               },
             },
             {
-              id: 'edit-saved-search',
+              id: `menu-saved-search-${savedSearch.id}-edit`,
               title: t('savedSearches.edit_title'),
               icon: PencilIcon,
               onClick: () => {
@@ -373,7 +396,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
               },
             },
             {
-              id: 'delete-saved-search',
+              id: `menu-saved-search-${savedSearch.id}-delete`,
               title: t('savedSearches.delete_search_menu'),
               icon: TrashIcon,
               onClick: () => {

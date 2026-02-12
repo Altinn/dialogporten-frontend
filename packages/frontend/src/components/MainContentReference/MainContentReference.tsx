@@ -2,7 +2,7 @@ import { Alert, Button, Typography } from '@altinn/altinn-components';
 import { Html, Markdown } from 'embeddable-markdown-html';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Analytics } from '../../analytics.ts';
+import { Analytics } from '../../analytics/analytics.ts';
 import { type DialogByIdDetails, EmbeddableMediaType } from '../../api/hooks/useDialogById.tsx';
 import { isValidURL } from '../../auth';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';

@@ -2,7 +2,7 @@ import type { BadgeProps } from '@altinn/altinn-components';
 import { formatDistance } from 'date-fns';
 import type { Locale } from 'date-fns/locale';
 import type { TFunction } from 'i18next';
-import { logError } from '../../utils/errorLogger.ts';
+import { logError } from '../../analytics/errorLogger.ts';
 
 const MEDIA_TYPE_TO_EXT: Record<string, string> = {
   'application/octet-stream': '',

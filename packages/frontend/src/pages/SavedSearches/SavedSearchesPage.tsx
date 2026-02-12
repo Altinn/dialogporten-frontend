@@ -10,7 +10,6 @@ import { useSavedSearches } from './useSavedSearches.tsx';
 export const SavedSearchesPage = () => {
   const { selectedPartyIds, parties, selectedParties, allOrganizationsSelected } = useParties();
   const { bookmarkSectionProps } = useSavedSearches(selectedPartyIds);
-
   usePageTitle({ baseTitle: t('sidebar.saved_searches') });
 
   const { accounts, accountSearch, accountGroups, onSelectAccount, currentAccountName } = useAccounts({
@@ -35,6 +34,7 @@ export const SavedSearchesPage = () => {
               onSelectId: (account: string) => onSelectAccount(account, PageRoutes.savedSearches),
               virtualized: true,
               title: t('parties.change_label'),
+              searchable: true,
             }}
           />
         ) : null}

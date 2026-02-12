@@ -7,7 +7,7 @@ interface PageTitleOptions {
   baseTitle: string;
   searchValue?: string;
   filterState?: FilterState;
-  getFilterLabel?: (key: string, values: (string | number)[]) => string | undefined;
+  getFilterLabel?: (key: string, values: (string | number)[], filterState: FilterState) => string | undefined;
 }
 
 const translateInboxViewType = (baseTitle: string, t: TFunction): string => {
@@ -39,7 +39,7 @@ export const usePageTitle = ({ baseTitle, searchValue, filterState, getFilterLab
       const filterEntries = Object.entries(filterState);
       for (const [key, values] of filterEntries) {
         if (values && values.length > 0) {
-          const label = getFilterLabel(key, values);
+          const label = getFilterLabel(key, values, filterState);
           if (label) {
             activeFilters.push(label);
           }

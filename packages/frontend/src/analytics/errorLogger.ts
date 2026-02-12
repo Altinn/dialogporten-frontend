@@ -1,4 +1,4 @@
-import { Analytics } from '../analytics';
+import { Analytics } from './analytics.ts';
 
 /**
  * Standalone error logging function for use in non-React contexts

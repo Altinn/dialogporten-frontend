@@ -74,7 +74,13 @@ export const Inbox = ({ viewType }: InboxProps) => {
     const allowedFilters = Object.values(FilterCategory);
     const updatedURL = createFiltersURLQuery(filters, allowedFilters, currentURL.toString());
     setSearchParams(updatedURL.searchParams, { replace: true });
-    setFilterState(filters);
+
+    if (!filters?.updated) {
+      const { fromDate, toDate, ...restState } = filters;
+      setFilterState(restState);
+    } else {
+      setFilterState(filters);
+    }
   };
 
   const { enteredSearchValue } = useSearchString();
@@ -211,7 +217,8 @@ export const Inbox = ({ viewType }: InboxProps) => {
             filter={{
               filterState,
               filters,
-              getFilterLabel,
+              getFilterLabel: (name: string, filterValues: (string | number)[] | undefined) =>
+                getFilterLabel?.(name, filterValues, filterState),
               onFilterStateChange: onFiltersChange,
               addLabel: t('filter_bar.add_filter'),
               addNextLabel: t('filter_bar.add'),

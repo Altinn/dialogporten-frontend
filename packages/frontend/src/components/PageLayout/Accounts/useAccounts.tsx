@@ -349,12 +349,6 @@ export const useAccounts = ({
           setSearchString(event.target.value);
         },
         placeholder: t('parties.search'),
-        getResultsLabel: (hits: number) => {
-          if (hits === 0) {
-            return t('parties.search.no_results');
-          }
-          return t('parties.results', { hits });
-        },
       }
     : undefined;
 
