@@ -18,7 +18,7 @@ export const NotificationsPage = () => {
   const { t, i18n } = useTranslation();
   const { search } = useLocation();
   const { isLoading: isLoadingUser } = useProfile();
-  const { isLoading: isLoadingParties } = useParties();
+  const { isLoading: isLoadingParties, isSelfIdentifiedUser } = useParties();
   const notificationSettingsUrl = getNotificationSettingsLink(i18n.language);
 
   usePageTitle({ baseTitle: t('component.notifications') });
@@ -38,6 +38,7 @@ export const NotificationsPage = () => {
 
   const { settingsGroups, settings, settingsSearch } = useSettings({
     isLoading: isLoadingUser || isLoadingParties,
+    isSelfIdentifiedUser,
     options: {
       excludeGroups: [SettingsType.contact, SettingsType.primary, SettingsType.favorites],
       groups: {
