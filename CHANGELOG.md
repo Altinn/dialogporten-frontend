@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.123.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.123.0...v1.123.1) (2026-02-13)
+
+
+### Bug Fixes
+
+* **search:** keep current folder when performing a search ([#3728](https://github.com/Altinn/dialogporten-frontend/issues/3728)) ([9ce2bf3](https://github.com/Altinn/dialogporten-frontend/commit/9ce2bf3e29710f4315c7aa68afa71016cfe96d68))
+
 ## [1.123.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.122.1...v1.123.0) (2026-02-13)
 
 
