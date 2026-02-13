@@ -27,6 +27,7 @@ interface UseAccountOptions {
 
 export interface PartyItemProp extends AccountMenuItemProps {
   uuid: string;
+  isPreselectedParty?: boolean;
   isDeleted?: boolean;
   parentId?: string | undefined;
   parentName?: string | undefined;
@@ -99,8 +100,9 @@ export const useAccounts = ({
 }: UseAccountsProps): UseAccountsOutput => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
   const { setSelectedPartyIds } = useParties();
-  const { favoritesGroup, shouldShowDeletedEntities } = useProfile();
+  const { user, favoritesGroup, shouldShowDeletedEntities } = useProfile();
   const isDeletedUnitsFilterEnabled = useFeatureFlag<boolean>('inbox.enableDeletedUnitsFilter');
   const [searchString, setSearchString] = useState<string>('');
   const accountSearchThreshold = 2;
@@ -155,6 +157,7 @@ export const useAccounts = ({
     return otherPeople
       .map((person) => {
         const description = t('word.ssn') + formatNorwegianId(person.party, false);
+        const isPreselectedParty = user?.profileSettingPreference?.preselectedPartyUuid === person.partyUuid;
         const ssnOrOrgNo = getSSNOrOrgNo(person.party);
         return {
           id: person.party,
@@ -166,7 +169,8 @@ export const useAccounts = ({
           type: 'person' as AccountMenuItemProps['type'],
           icon: { name: person.name, type: 'person' as AvatarType },
           isDeleted: person.isDeleted,
-          isFavorite: favoritesGroup?.parties?.includes(person.partyUuid),
+          isFavorite: favoritesGroup?.parties?.includes(person.partyUuid) || isPreselectedParty,
+          isPreselectedParty,
           isCurrentEndUser: false,
           uuid: person.partyUuid,
           description: options.showDescription ? description : undefined,
@@ -175,11 +179,12 @@ export const useAccounts = ({
         } as PartyItemProp;
       })
       .sort((a, b) => compareName(a.name, b.name));
-  }, [allOrganizationsSelected, otherPeople, favoritesGroup, options.showDescription, t, selectedParties]);
+  }, [allOrganizationsSelected, otherPeople, favoritesGroup, options.showDescription, t, selectedParties, user]);
 
   const organizationAccounts = useMemo<PartyItemProp[]>(() => {
     const mapped = organizations.map((party) => {
       const isParent = Array.isArray(availableParties.find((p) => p.party === party.party)?.subParties);
+      const isPreselectedParty = user?.profileSettingPreference?.preselectedPartyUuid === party.partyUuid;
 
       const parent = isParent
         ? undefined
@@ -208,7 +213,8 @@ export const useAccounts = ({
           isDeleted: party.isDeleted,
         },
         isDeleted: party.isDeleted,
-        isFavorite: favoritesGroup?.parties?.includes(party.partyUuid),
+        isFavorite: favoritesGroup?.parties?.includes(party.partyUuid) || isPreselectedParty,
+        isPreselectedParty,
         isCurrentEndUser: false,
         uuid: party.partyUuid,
         disabled: party.hasOnlyAccessToSubParties,
@@ -253,6 +259,7 @@ export const useAccounts = ({
     favoritesGroup,
     options.showDescription,
     t,
+    user,
   ]);
 
   if (isLoading) {

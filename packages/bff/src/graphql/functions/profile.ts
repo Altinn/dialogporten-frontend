@@ -3,6 +3,7 @@ import axios from 'axios';
 import config from '../../config.ts';
 import { GroupRepository, PartyRepository, ProfileRepository } from '../../db.ts';
 import { Group, Party, ProfileTable } from '../../entities.ts';
+import type { PreselectedPartyOperationType } from '../types/mutation.ts';
 import type { NotificationSettingsInputData } from '../types/profile.ts';
 
 const { platformBaseURL } = config;
@@ -211,7 +212,11 @@ export const getUserFromCore = async (context: Context) => {
   return;
 };
 
-export const setPreSelectedParty = async (context: Context, partyUuid: string) => {
+export const setPreSelectedParty = async (
+  context: Context,
+  partyUuid: string,
+  operationType: PreselectedPartyOperationType,
+) => {
   if (!partyUuid) {
     logger.error('partyUuid is required');
     throw new Error('partyUuid is required');
@@ -222,7 +227,7 @@ export const setPreSelectedParty = async (context: Context, partyUuid: string) =
     throw new Error('No token found in session');
   }
   try {
-    const json = { preSelectedPartyUuid: partyUuid };
+    const json = { preSelectedPartyUuid: operationType === 'set' ? partyUuid : null };
     const response = await axios.patch(`${platformProfileAPI_url}users/current/profilesettings`, json, {
       timeout: 30000,
       headers: {
