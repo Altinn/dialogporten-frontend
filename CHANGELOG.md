@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.122.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.121.0...v1.122.0) (2026-02-13)
+
+
+### Features
+
+* move inbox search to toolbar ([#3720](https://github.com/Altinn/dialogporten-frontend/issues/3720)) ([afb16ae](https://github.com/Altinn/dialogporten-frontend/commit/afb16ae76ca14076f43a685e1f61eee5a53583ae))
+
+
+### Bug Fixes
+
+* **toolbar:** minor improvements to layout ([#3716](https://github.com/Altinn/dialogporten-frontend/issues/3716)) ([fc585a2](https://github.com/Altinn/dialogporten-frontend/commit/fc585a2533d3ba7e089a1d9cd4887dbf4868e165))
+
 ## [1.121.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.120.1...v1.121.0) (2026-02-12)
 
 
