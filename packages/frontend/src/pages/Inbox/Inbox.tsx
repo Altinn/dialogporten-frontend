@@ -88,7 +88,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const { enteredSearchValue } = useSearchString();
   const validSearchString = enteredSearchValue.length > 2 ? enteredSearchValue : undefined;
   const hasValidFilters = Object.values(filterState).some((arr) => typeof arr !== 'undefined' && arr?.length > 0);
-  const searchMode = viewType === 'inbox' && (hasValidFilters || !!validSearchString);
+  const searchMode = hasValidFilters || !!validSearchString;
   const savedSearchDisabled = isSavedSearchDisabled(filterState, enteredSearchValue);
 
   const selectedServices = (filterState.service ?? []) as string[];
