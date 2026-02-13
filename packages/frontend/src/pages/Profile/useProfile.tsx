@@ -14,6 +14,7 @@ import {
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useGlobalState, useGlobalStringState } from '../../useGlobalState.ts';
+import type { PreselectedPartyOperationType } from './PartiesOverviewPage/PartiesOverviewPage.tsx';
 
 export const useProfile = (disabled?: boolean) => {
   const { data, isLoading, isSuccess } = useAuthenticatedQuery<ProfileQuery>({
@@ -73,8 +74,8 @@ export const useProfile = (disabled?: boolean) => {
     }
   };
 
-  const setPreSelectedParty = async (partyId: string) => {
-    await setPreSelectedPartyRaw(partyId);
+  const setPreSelectedParty = async (partyId: string, operationType: PreselectedPartyOperationType) => {
+    await setPreSelectedPartyRaw(partyId, operationType);
     void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PROFILE] });
   };
 

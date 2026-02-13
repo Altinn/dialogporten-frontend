@@ -26,6 +26,7 @@ import {
 import { ClientError, GraphQLClient, type RequestMiddleware, type ResponseMiddleware } from 'graphql-request';
 import { Analytics } from '../analytics/analytics.ts';
 import { logError } from '../analytics/errorLogger.ts';
+import type { PreselectedPartyOperationType } from '../pages/Profile/PartiesOverviewPage/PartiesOverviewPage.tsx';
 
 const requestMiddleware: RequestMiddleware = (request) => {
   try {
@@ -188,8 +189,10 @@ export const addFavoritePartyToGroup = (partyId: string, groupName: string): Pro
   graphQLSDK.AddFavoritePartyToGroup({ partyId, groupName });
 export const deleteFavoriteParty = (partyId: string): Promise<DeleteFavoritePartyMutation> =>
   graphQLSDK.DeleteFavoriteParty({ partyId });
-export const setPreSelectedParty = (partyUuid: string): Promise<SetPreSelectedPartyMutation> =>
-  graphQLSDK.SetPreSelectedParty({ partyUuid });
+export const setPreSelectedParty = (
+  partyUuid: string,
+  operationType: PreselectedPartyOperationType,
+): Promise<SetPreSelectedPartyMutation> => graphQLSDK.SetPreSelectedParty({ partyUuid, operationType });
 export const createSavedSearch = (name: string, data: SavedSearchInput): Promise<CreateSavedSearchMutation> =>
   graphQLSDK.CreateSavedSearch({ name, data });
 export const getNotificationsettingsForCurrentUser = (): Promise<NotificationsettingsForCurrentUserQuery> =>

@@ -256,18 +256,22 @@ export const UpdateProfileSettingPreference = extendType({
   },
 });
 
+export type PreselectedPartyOperationType = 'set' | 'unset';
 export const SetPreSelectedParty = extendType({
   type: 'Mutation',
   definition(t) {
     t.field('setPreSelectedParty', {
       type: Response,
-      args: { partyUuid: stringArg() },
-      resolve: async (_, { partyUuid }, ctx) => {
+      args: { partyUuid: stringArg(), operationType: nonNull(stringArg()) },
+      resolve: async (_, { partyUuid, operationType }, ctx) => {
         if (!partyUuid) {
           return { success: false, message: 'partyUuid is required' };
         }
+        if (operationType !== 'set' && operationType !== 'unset') {
+          return { success: false, message: 'operationType must be "set" or "unset"' };
+        }
         try {
-          await setPreSelectedParty(ctx, partyUuid);
+          await setPreSelectedParty(ctx, partyUuid, operationType as PreselectedPartyOperationType);
           return { success: true, message: 'PreSelectedParty set successfully' };
         } catch (error) {
           logger.error(error, 'Failed to set preselected party:');
