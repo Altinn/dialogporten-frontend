@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
-import { createMessageBoxLink } from '../../auth/url.ts';
+import { createMessageBoxLink } from '../../auth';
 
 interface EmptyStateProps {
   query?: string;

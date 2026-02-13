@@ -238,7 +238,7 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
           label: <QueryLabel params={[{ type: 'search', value: searchValue, label: searchValue }]} />,
           'aria-label': t('search.autocomplete.searchInInbox', { query: searchValue }),
           onClick: () => {
-            navigate(`/${pruneSearchQueryParams(location.search, { search: searchValue })}`);
+            navigate(`${location.pathname}${pruneSearchQueryParams(location.search, { search: searchValue })}`);
           },
           as: 'button',
           linkIcon: true,
@@ -269,7 +269,7 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
             const updatedURL = createFiltersURLQuery(filterState ?? {}, allowedFilters, currentURL.toString());
             const searchParams = new URLSearchParams(updatedURL.searchParams);
             searchParams.set('search', searchValue);
-            navigate(`/?${searchParams.toString()}`);
+            navigate(`${location.pathname}?${searchParams.toString()}`);
           },
           as: 'button',
           linkIcon: true,
