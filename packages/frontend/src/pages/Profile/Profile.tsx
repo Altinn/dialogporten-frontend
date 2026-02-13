@@ -10,6 +10,7 @@ import { useProfile } from './useProfile';
 
 export const Profile = () => {
   const { user, isLoading } = useProfile();
+  const { currentEndUser } = useParties();
   const { isSelfIdentifiedUser } = useParties();
   const { settings } = useSettings({
     options: {
@@ -22,9 +23,7 @@ export const Profile = () => {
   useProfileOnboarding({ isLoading, pageType: 'main' });
 
   const userDisplayName = formatDisplayName({
-    fullName: [user?.party?.person?.firstName, user?.party?.person?.middleName, user?.party?.person?.lastName]
-      .filter(Boolean)
-      .join(' '),
+    fullName: currentEndUser?.name ?? '',
     type: 'person',
   });
 
