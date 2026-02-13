@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.123.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.122.1...v1.123.0) (2026-02-13)
+
+
+### Features
+
+* Preselected party can now be removed. Updated design and context menu. ([4314ecc](https://github.com/Altinn/dialogporten-frontend/commit/4314ecc1897d4def026e0de646ae9637cd690dca))
+
 ## [1.122.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.122.0...v1.122.1) (2026-02-13)
 
 
