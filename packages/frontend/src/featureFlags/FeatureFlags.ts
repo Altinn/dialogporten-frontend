@@ -8,8 +8,6 @@ export interface FeatureFlagDefinition {
 
 export const featureFlagDefinitions = [
   { key: 'dialogporten.disableFlipNamesPatch', type: 'boolean', default: false },
-  { key: 'dialogporten.enableSearchLanguageCode', type: 'boolean', default: false },
-  { key: 'inbox.disableDialogCount', type: 'boolean', default: false },
   { key: 'inbox.enableAltinn2Messages', type: 'boolean', default: false },
   { key: 'inbox.enableAlertBanner', type: 'boolean', default: false },
   { key: 'dialogporten.disableSubscriptions', type: 'boolean', default: false },

@@ -6,16 +6,17 @@ export const getSearchbarInput = (page: Page) => page.locator("[name='Søk']");
 
 export async function performSearch(page: Page, query: string, action?: 'clear' | 'click' | 'enter') {
   const endGameAction = action || 'click';
-  const searchbarInput = page.locator("[name='Søk']");
+  const searchbarInput = page.getByTestId('inbox-toolbar').getByPlaceholder('Søk ...');
   await searchbarInput.click();
   await expect(searchbarInput).toBeVisible();
-  await page.locator("[name='Søk']").fill(query);
-  const searchLink = page.locator('li').filter({ hasText: query + ' i innboksen' });
+  await searchbarInput.fill(query);
+  const searchButton = page.getByRole('option', { name: 'Søk i innboksen etter ' + query });
+  await expect(searchButton).toBeVisible();
 
   if (endGameAction === 'clear') {
-    await page.getByTestId('search-button-clear').click();
+    await page.getByTestId('clear-button').click();
   } else if (endGameAction === 'click') {
-    await searchLink.click();
+    await searchButton.click();
   } else if (endGameAction === 'enter') {
     await page.keyboard.press('Enter');
   }
@@ -47,8 +48,8 @@ export async function getToolbarAccountInfo(page: Page, name: string): Promise<{
 }
 
 export async function selectPartyFromToolbar(page: Page, partyName: string) {
-  const toolbar = page.getByTestId('inbox-toolbar');
-  await toolbar.locator('li').filter({ hasText: partyName }).first().click();
+  const toolbar = page.locator('#toolbar-menu-listbox');
+  await toolbar.locator('li').filter({ hasText: partyName }).nth(1).click();
 }
 
 export async function openContextMenuForDialog(page: Page, title: string) {

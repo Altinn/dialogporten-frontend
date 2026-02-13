@@ -35,21 +35,6 @@ fragment SearchDialogFields on SearchDialog {
   }
 }
 
-fragment SearchAutocompleteDialogFields on SearchDialog {
-  id
-  seenSinceLastContentUpdate {
-    ...SeenLogFields
-  }
-  content {
-    title {
-      ...DialogContentFields
-    }
-    summary {
-      ...DialogContentFields
-    }
-  }
-}
-
 fragment DialogByIdFields on Dialog {
   id
   dialogToken
