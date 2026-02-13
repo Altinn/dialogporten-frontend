@@ -1,12 +1,12 @@
 import { Button, ButtonGroup, Modal, Typography } from '@altinn/altinn-components';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { PartyItemProp } from '../../../components/PageLayout/Accounts/useAccounts';
+import type { PreselectedActorModalProps, PreselectedPartyOperationType } from './PartiesOverviewPage';
 
 interface ConfirmSetPreselectedActorModalProps {
-  showActor: PartyItemProp | null;
+  showActor: PreselectedActorModalProps | null;
   onClose: () => void;
-  onConfirm: (partyUuid: string) => Promise<void>;
+  onConfirm: (partyUuid: string, operationType: PreselectedPartyOperationType) => Promise<void>;
 }
 
 export const ConfirmSetPreselectedActorModal = ({
@@ -20,10 +20,10 @@ export const ConfirmSetPreselectedActorModal = ({
   if (!showActor) return null;
 
   const handleConfirm = async () => {
-    if (!showActor?.uuid) return;
+    if (!showActor?.party?.uuid) return;
     setIsSubmitting(true);
     try {
-      await onConfirm(showActor.uuid);
+      await onConfirm(showActor.party.uuid, showActor.operation);
       onClose();
     } catch (error) {
       // Error is logged in the mutation handler
@@ -35,14 +35,20 @@ export const ConfirmSetPreselectedActorModal = ({
   return (
     <Modal open={!!showActor} onClose={onClose} closedBy="none">
       <Typography>
-        <p>{t('profile.parties.confirm_set_preselected_actor', { name: showActor?.name })}</p>
+        {showActor.operation === 'set' ? (
+          <p>{t('profile.parties.confirm_set_preselected_actor', { name: showActor?.party?.name })}</p>
+        ) : (
+          <p>{t('profile.parties.confirm_unset_preselected_actor', { name: showActor?.party?.name })}</p>
+        )}
       </Typography>
       <ButtonGroup>
-        <Button onClick={onClose} variant="outline" disabled={isSubmitting}>
+        <Button onClick={onClose} variant="outline" disabled={isSubmitting} type="button">
           {t('profile.parties.cancel')}
         </Button>
-        <Button onClick={handleConfirm} disabled={isSubmitting}>
-          {t('profile.parties.confirm_set_preselected_actor_button')}
+        <Button onClick={handleConfirm} disabled={isSubmitting} type="button">
+          {showActor.operation === 'set'
+            ? t('profile.parties.confirm_set_preselected_actor_button')
+            : t('profile.parties.confirm_unset_preselected_actor_button')}
         </Button>
       </ButtonGroup>
     </Modal>

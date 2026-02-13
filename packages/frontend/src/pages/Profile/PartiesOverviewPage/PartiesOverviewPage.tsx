@@ -6,8 +6,8 @@ import {
   type AvatarType,
   type AvatarVariant,
   Badge,
+  Button,
   Heading,
-  Icon,
   PageBase,
   PageNav,
   Section,
@@ -37,6 +37,13 @@ import { useAccountFilters } from '../useAccountFilters.tsx';
 import { ConfirmSetPreselectedActorModal } from './ConfirmSetPreselectedActorModal.tsx';
 import styles from './partiesOverviewPage.module.css';
 
+export type PreselectedPartyOperationType = 'set' | 'unset';
+
+export type PreselectedActorModalProps = {
+  party?: PartyItemProp;
+  operation: PreselectedPartyOperationType;
+};
+
 export const PartiesOverviewPage = () => {
   const { t } = useTranslation();
   const { search } = useLocation();
@@ -46,13 +53,11 @@ export const PartiesOverviewPage = () => {
     addFavoriteParty,
     deleteFavoriteParty,
     setPreSelectedParty,
-    user,
     shouldShowDeletedEntities,
     updateShowDeletedEntities,
   } = useProfile();
-  const [openConfirmSetPreselectedActorModal, setOpenConfirmSetPreselectedActorModal] = useState<PartyItemProp | null>(
-    null,
-  );
+  const [openConfirmSetPreselectedActorModal, setOpenConfirmSetPreselectedActorModal] =
+    useState<PreselectedActorModalProps | null>(null);
   const { parties, selectedParties, allOrganizationsSelected, isLoading, flattenedParties } = useParties();
   const [searchValue, setSearchValue] = useState<string>('');
   const [expandedItem, setExpandedItem] = useState<string>('');
@@ -254,20 +259,21 @@ export const PartiesOverviewPage = () => {
   const mapAccountToPartyListItem = (account: PartyItemProp): AccountListItemProps => {
     const { label: _, variant: __, ...party } = account;
     const itemId = account.id + account.groupId;
-    const isPreSelectedParty = user?.profileSettingPreference?.preselectedPartyUuid === party.uuid;
     const accountType = party.type === 'subunit' ? 'company' : party.type;
+
     return {
       ...party,
+      isPreselectedParty: party.isPreselectedParty ?? false,
       type: accountType as AccountListItemType,
-      groupId: String(party.groupId),
       favourite: party.isFavorite,
+      groupId: String(party.groupId),
       isCurrentEndUser: party.isCurrentEndUser,
       isDeleted: party.isDeleted,
       collapsible: true,
       expanded: expandedItem === itemId,
       onClick: () => toggleExpanded(itemId),
       highlightWords: (searchValue ?? '').split(' '),
-      as: 'button',
+      as: 'button' as ElementType,
       title: party.name,
       onToggleFavourite: () => onToggleFavourite(party.uuid, party.isFavorite),
       children: (
@@ -277,20 +283,20 @@ export const PartiesOverviewPage = () => {
           id={party.id}
         />
       ),
-      badge: !party.isCurrentEndUser && (
+      badge: (
         <>
           {party.isDeleted && <Badge color="neutral" label={t('badge.deleted')} variant="subtle" />}
-          <button
-            type="button"
-            aria-label="Set preferred party"
-            className={styles.preSelectedBadgeButton}
-            onClick={() => setOpenConfirmSetPreselectedActorModal(party)}
-          >
-            <Icon
-              className={styles.preSelectedBadgeIcon}
-              svgElement={isPreSelectedParty ? HouseHeartFillIcon : HouseHeartIcon}
-            />
-          </button>
+          {party.isPreselectedParty && (
+            <Button
+              size="xs"
+              variant="ghost"
+              rounded
+              aria-label={t('profile.unset_preselected_party')}
+              onClick={() => setOpenConfirmSetPreselectedActorModal({ party, operation: 'unset' })}
+            >
+              <HouseHeartFillIcon />
+            </Button>
+          )}
         </>
       ),
       contextMenu: {
@@ -304,6 +310,25 @@ export const PartiesOverviewPage = () => {
             title: t('profile.go_to_inbox'),
             as: (props) => <Link to={'/?party=' + party.id} {...props} />,
           },
+          party.isPreselectedParty
+            ? {
+                id: party.groupId + 'set-preselected-party',
+                icon: HouseHeartFillIcon,
+                onClick: () =>
+                  setOpenConfirmSetPreselectedActorModal({
+                    party,
+                    operation: 'unset',
+                  }),
+                title: t('profile.unset_preselected_party'),
+                as: 'button' as ElementType,
+              }
+            : {
+                id: party.groupId + 'set-preselected-party',
+                icon: HouseHeartIcon,
+                onClick: () => setOpenConfirmSetPreselectedActorModal({ party, operation: 'set' }),
+                title: t('profile.set_preselected_party'),
+                as: 'button' as ElementType,
+              },
         ],
       },
     };
@@ -361,8 +386,8 @@ export const PartiesOverviewPage = () => {
       <ConfirmSetPreselectedActorModal
         showActor={openConfirmSetPreselectedActorModal}
         onClose={() => setOpenConfirmSetPreselectedActorModal(null)}
-        onConfirm={async (partyUuid) => {
-          await setPreSelectedParty(partyUuid);
+        onConfirm={async (partyUuid: string, operationType: PreselectedPartyOperationType) => {
+          await setPreSelectedParty(partyUuid, operationType);
         }}
       />
     </PageBase>
