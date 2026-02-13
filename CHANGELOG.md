@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.122.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.122.0...v1.122.1) (2026-02-13)
+
+
+### Bug Fixes
+
+* **accountselector:** autocomplete wrapper broke the sizing of the input field in account selector ([#3723](https://github.com/Altinn/dialogporten-frontend/issues/3723)) ([964553a](https://github.com/Altinn/dialogporten-frontend/commit/964553a67603148123185a77b982553c95dd243b))
+* Prepare profil pages for self identified users ([#3718](https://github.com/Altinn/dialogporten-frontend/issues/3718)) ([afdaa1d](https://github.com/Altinn/dialogporten-frontend/commit/afdaa1d8bee18c004f1448cbd2f9fc821cfe6a72))
+
 ## [1.122.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.121.0...v1.122.0) (2026-02-13)
 
 
