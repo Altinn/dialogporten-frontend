@@ -13,10 +13,13 @@ import {
   DsAlert,
   DsParagraph,
   Heading,
+  type SnackbarColor,
+  SnackbarDuration,
   Timeline,
   TimelineSegment,
   TransmissionList,
   Typography,
+  useSnackbar,
 } from '@altinn/altinn-components';
 import type { ActivityLogSegmentProps } from '@altinn/altinn-components/dist/types/lib/components';
 import { useQueryClient } from '@tanstack/react-query';
@@ -90,6 +93,10 @@ const handleDialogActionClick = async (
   dialogToken: string,
   responseFinished: () => void,
   logError: (error: Error, context?: Record<string, unknown>, errorMessage?: string) => void,
+  openSnackbar: (config: { message: string; color: SnackbarColor; duration: number }) => void,
+  // biome-ignore lint/suspicious/noExplicitAny: i18next t function has complex overloaded types
+  t: any,
+  format: (date: Date | string, formatStr: string) => string,
 ): Promise<void> => {
   const { id, title, url, httpMethod, prompt } = props;
 
@@ -135,10 +142,62 @@ const handleDialogActionClick = async (
       );
 
       if (!response.ok) {
+        // Special handling for 422 Unprocessable Entity (grace period not satisfied)
+        if (response.status === 422) {
+          try {
+            const errorData = await response.json();
+            const gracePeriodDays = errorData.gracePeriodDays;
+            const deletionAllowedAt = errorData.deletionAllowedAt;
+
+            if (deletionAllowedAt) {
+              const deletionDate = new Date(deletionAllowedAt);
+              const formattedDate = format(deletionDate, 'do MMMM yyyy');
+
+              openSnackbar({
+                message: t('dialog.gui_action.delete_grace_period', {
+                  date: formattedDate,
+                  days: gracePeriodDays,
+                }),
+                color: 'danger',
+                duration: SnackbarDuration.long,
+              });
+
+              Analytics.trackEvent(ANALYTICS_EVENTS.GUI_ACTION_CANCELLED, {
+                'action.id': id,
+                'action.title': title,
+                'cancellation.reason': 'grace_period_not_satisfied',
+                'gracePeriod.days': gracePeriodDays,
+              });
+
+              responseFinished();
+              return;
+            }
+          } catch (parseError) {
+            // JSON parse failed - fall through to generic error handling
+            logError(
+              parseError as Error,
+              {
+                context: 'DialogDetails.handleDialogActionClick.422.parseError',
+                url,
+                httpMethod,
+              },
+              'Failed to parse 422 error response',
+            );
+          }
+        }
+
+        // Generic error handling for all other errors (including unparseable 422s)
         let responseBody = '';
         try {
           responseBody = await response.text();
         } catch {}
+
+        openSnackbar({
+          message: t('dialog.gui_action.failed'),
+          color: 'danger',
+          duration: SnackbarDuration.normal,
+        });
+
         logError(
           new Error(`HTTP ${response.status}: ${response.statusText}`),
           {
@@ -180,6 +239,7 @@ export const DialogDetails = ({
   const enableManualSubscriptionRefresh = useFeatureFlag<boolean>('dialogporten.enableManualSubscriptionRefresh');
   const { t } = useTranslation();
   const { logError } = useErrorLogger();
+  const { openSnackbar } = useSnackbar();
   const [actionIdLoading, setActionIdLoading] = useState<string>('');
   const [actionIdUpdating, setActionIdUpdating] = useState<string>('');
   const [showAllTransmissions, setShowAllTransmissions] = useState<boolean>(false);
@@ -319,7 +379,16 @@ export const DialogDetails = ({
     onClick: () => {
       setActionIdLoading(action.id);
       setActionIdUpdating(action.id);
-      dialogToken && void handleDialogActionClick(action, dialogToken, () => setActionIdLoading(''), logError);
+      dialogToken &&
+        void handleDialogActionClick(
+          action,
+          dialogToken,
+          () => setActionIdLoading(''),
+          logError,
+          openSnackbar,
+          t,
+          format,
+        );
       enableManualSubscriptionRefresh && handleManualSubscriptionRefresh();
     },
   }));

@@ -81,6 +81,8 @@
   "dialog.toolbar.toast.move_to_bin_success": "Moved to bin",
   "dialog.toolbar.toast.move_to_inbox_failed": "Failed to move to inbox",
   "dialog.toolbar.toast.move_to_inbox_success": "Moved to inbox",
+  "dialog.gui_action.delete_grace_period": "The dialog cannot be deleted yet because it is in a preservation period of {days, plural, =1 {# day} other {# days}} after submission. You can delete it from {date}.",
+  "dialog.gui_action.failed": "The action could not be performed. Please try again later.",
   "dialog.transmission.collapseLabel": "Hide",
   "dialog.transmission.expandLabel": "Show",
   "emptyState.archive.descriptionAfterBold": "You can store messages here that you want to keep, even if they no longer need to stay in your inbox. Please note that this archive is not intended to function as a record-keeping or archival system.",
