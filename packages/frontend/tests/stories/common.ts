@@ -59,9 +59,9 @@ export async function openContextMenuForDialog(page: Page, title: string) {
   await btn.click();
   await expect(btn).toHaveAttribute('aria-expanded', 'true');
 
-  const menuRoot = dialogItem.locator('[id^="dialog-context-menu-"][id$="-root"]');
-  const menu = menuRoot.locator('[role="menu"]');
-  await expect(menu).toBeVisible();
+  // Menu is now rendered via React portal to document.body — locate at page level
+  const menuRoot = page.locator('[role="menu"]:not([aria-hidden="true"])');
+  await expect(menuRoot).toBeVisible();
 
   return { dialogItem, menuRoot };
 }
