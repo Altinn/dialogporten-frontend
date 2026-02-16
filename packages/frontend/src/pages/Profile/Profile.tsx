@@ -17,6 +17,7 @@ export const Profile = () => {
       includeGroups: [SettingsType.contact],
     },
     isSelfIdentifiedUser,
+    disabled: isSelfIdentifiedUser,
   });
 
   usePageTitle({ baseTitle: t('sidebar.profile') });

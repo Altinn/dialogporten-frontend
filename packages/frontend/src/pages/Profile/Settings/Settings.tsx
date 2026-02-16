@@ -32,6 +32,7 @@ export const Settings = () => {
   const { settingsGroups, settings, settingsSearch } = useSettings({
     isLoading: isLoadingUser || isLoadingParties,
     isSelfIdentifiedUser,
+    disabled: isSelfIdentifiedUser,
     options: {
       includeGroups: [SettingsType.contact],
     },
