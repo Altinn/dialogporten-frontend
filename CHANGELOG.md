@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.124.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.123.1...v1.124.0) (2026-02-16)
+
+
+### Features
+
+* Handle 422 error when deleting dialog ([#3727](https://github.com/Altinn/dialogporten-frontend/issues/3727)) ([0ad07da](https://github.com/Altinn/dialogporten-frontend/commit/0ad07da4c738519989b10b04b8fe987b0af0390e))
+
+
+### Bug Fixes
+
+* bump AC to v0.56.9, fix context menu ([#3735](https://github.com/Altinn/dialogporten-frontend/issues/3735)) ([ea4c073](https://github.com/Altinn/dialogporten-frontend/commit/ea4c0736618cff7dcd8b1389c7a098a0c8d3a2b4))
+* Disable settings for self ident user ([#3734](https://github.com/Altinn/dialogporten-frontend/issues/3734)) ([b2c506f](https://github.com/Altinn/dialogporten-frontend/commit/b2c506f1be1671210b7ee45914c81289231fa0ce))
+* **profile:** use party name for profile header ([#3730](https://github.com/Altinn/dialogporten-frontend/issues/3730)) ([a548164](https://github.com/Altinn/dialogporten-frontend/commit/a54816484161590c3aff5ec2255978b1c01b110e))
+
 ## [1.123.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.123.0...v1.123.1) (2026-02-13)
 
 
