@@ -39,6 +39,7 @@ export const NotificationsPage = () => {
   const { settingsGroups, settings, settingsSearch } = useSettings({
     isLoading: isLoadingUser || isLoadingParties,
     isSelfIdentifiedUser,
+    disabled: isSelfIdentifiedUser,
     options: {
       excludeGroups: [SettingsType.contact, SettingsType.primary, SettingsType.favorites],
       groups: {

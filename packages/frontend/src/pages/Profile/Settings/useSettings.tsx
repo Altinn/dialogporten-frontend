@@ -39,6 +39,7 @@ interface UseSettingsInput {
   options?: UseSettingsOptions;
   isLoading?: boolean;
   isSelfIdentifiedUser?: boolean;
+  disabled?: boolean;
 }
 
 interface UseSettingsOutput {
@@ -91,6 +92,7 @@ export const useSettings = ({
   options: inputOptions = {},
   isLoading,
   isSelfIdentifiedUser = false,
+  disabled = false,
 }: UseSettingsInput = {}): UseSettingsOutput => {
   const { isLoading: isLoadingParties, parties, selectedParties, allOrganizationsSelected } = useParties();
   const { user } = useProfile();
@@ -365,7 +367,7 @@ export const useSettings = ({
     ...contactProfilePhoneSettings,
     ...contactProfileEmailSettings,
     ...accountAlertSettings,
-  ];
+  ].map((item) => (disabled ? { ...item, disabled: true } : item));
 
   const settings = allSettings.filter((item) => {
     const { includeGroups, excludeGroups } = options;
