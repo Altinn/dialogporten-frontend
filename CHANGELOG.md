@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.124.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.124.0...v1.124.1) (2026-02-17)
+
+
+### Bug Fixes
+
+* Onboarding fix after ui changes ([#3738](https://github.com/Altinn/dialogporten-frontend/issues/3738)) ([42add9e](https://github.com/Altinn/dialogporten-frontend/commit/42add9ee56afa282d6a8c7fd55b49c2c80fab590))
+
 ## [1.124.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.123.1...v1.124.0) (2026-02-16)
 
 
