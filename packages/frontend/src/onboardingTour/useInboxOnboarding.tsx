@@ -16,7 +16,7 @@ interface UseInboxOnboardingProps {
 //for static elements - desktop
 export const desktopTourSteps = [
   {
-    selector: '[data-testid="searchbar-input"]',
+    selector: '[data-testid="inbox-toolbar"] input[data-collapsible="true"]',
     content: (
       <OnboardingPopover titleKey="onboarding.tour.search.title" infoTextKey="onboarding.tour.search.description" />
     ),
@@ -28,39 +28,35 @@ export const desktopTourSteps = [
     ),
   },
   {
-    selector: 'aside nav > ul > li:nth-child(1)',
+    selector: 'aside [data-testid="sidebar-inbox"]',
     content: (
       <OnboardingPopover titleKey="onboarding.tour.inbox.title" infoTextKey="onboarding.tour.inbox.description" />
     ),
   },
   {
-    selector: 'aside nav a[href*="drafts"]',
+    selector: 'aside [data-testid="sidebar-drafts"]',
     content: <OnboardingPopover titleKey="component.drafts" infoTextKey="onboarding.tour.drafts.description" />,
   },
   {
-    selector: 'aside nav a[href*="sent"]',
+    selector: 'aside [data-testid="sidebar-sent"]',
     content: <OnboardingPopover titleKey="component.sent" infoTextKey="onboarding.tour.sent.description" />,
   },
   {
-    selector: 'aside nav > ul > li:nth-child(2)',
+    selector: 'aside [data-testid="sidebar-exit"]',
     content: (
       <OnboardingPopover
         titleKey="onboarding.tour.shortcuts.title"
         infoTextKey="onboarding.tour.shortcuts.description"
       />
     ),
-    highlightedSelectors: [
-      'aside nav > ul > li:nth-child(2)',
-      'aside nav > ul > li:nth-child(3)',
-      'aside nav > ul > li:nth-child(4)',
-    ],
+    highlightedSelectors: ['aside [data-testid="sidebar-exit"]', 'aside [data-testid="sidebar-new-schema"]'],
   },
 ];
 
 //for static elements - mobile and tablet
 export const mobileTourSteps = [
   {
-    selector: '[data-testid="searchbar-input"]',
+    selector: '[data-testid="inbox-toolbar"] input[data-collapsible="true"]',
     content: (
       <OnboardingPopover titleKey="onboarding.tour.search.title" infoTextKey="onboarding.tour.search.description" />
     ),

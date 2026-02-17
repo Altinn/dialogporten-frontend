@@ -19,7 +19,7 @@ const STORAGE_KEYS = {
 const getDesktopTourSteps = () => ({
   main: [
     {
-      selector: 'aside nav',
+      selector: 'aside a[href="/profile"]',
       content: (
         <OnboardingPopover
           titleKey="onboarding.tour.profile.main.navigation.title"
@@ -39,7 +39,7 @@ const getDesktopTourSteps = () => ({
   ],
   parties: [
     {
-      selector: 'aside nav a[href*="parties"]',
+      selector: 'aside a[href="/profile/parties"]',
       content: (
         <OnboardingPopover
           titleKey="onboarding.tour.profile.parties.control.title"
