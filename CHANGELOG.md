@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.124.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.124.1...v1.124.2) (2026-02-17)
+
+
+### Bug Fixes
+
+* Pre-selected user modal fix, delete button behaviour, snackbar duration ([#3740](https://github.com/Altinn/dialogporten-frontend/issues/3740)) ([d67b822](https://github.com/Altinn/dialogporten-frontend/commit/d67b82289814aac72d78afc159653fa2321cb049))
+
 ## [1.124.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.124.0...v1.124.1) (2026-02-17)
 
 
