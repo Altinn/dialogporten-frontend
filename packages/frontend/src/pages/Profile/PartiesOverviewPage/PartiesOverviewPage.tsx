@@ -47,7 +47,9 @@ export type PreselectedActorModalProps = {
 export const PartiesOverviewPage = () => {
   const { t } = useTranslation();
   const { search } = useLocation();
-  const { getAccountAlertSettings, settings } = useSettings();
+  const { isSelfIdentifiedUser, parties, selectedParties, allOrganizationsSelected, isLoading, flattenedParties } =
+    useParties();
+  const { getAccountAlertSettings, settings } = useSettings({ disabled: true, isSelfIdentifiedUser });
   const isDeletedUnitsFilterEnabled = useFeatureFlag<boolean>('inbox.enableDeletedUnitsFilter');
   const {
     addFavoriteParty,
@@ -58,7 +60,6 @@ export const PartiesOverviewPage = () => {
   } = useProfile();
   const [openConfirmSetPreselectedActorModal, setOpenConfirmSetPreselectedActorModal] =
     useState<PreselectedActorModalProps | null>(null);
-  const { parties, selectedParties, allOrganizationsSelected, isLoading, flattenedParties } = useParties();
   const [searchValue, setSearchValue] = useState<string>('');
   const [expandedItem, setExpandedItem] = useState<string>('');
 
