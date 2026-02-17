@@ -92,6 +92,7 @@ const handleDialogActionClick = async (
   props: DialogActionProps,
   dialogToken: string,
   responseFinished: () => void,
+  onError: () => void,
   logError: (error: Error, context?: Record<string, unknown>, errorMessage?: string) => void,
   openSnackbar: (config: { message: string; color: SnackbarColor; duration: number }) => void,
   // biome-ignore lint/suspicious/noExplicitAny: i18next t function has complex overloaded types
@@ -159,7 +160,7 @@ const handleDialogActionClick = async (
                   days: gracePeriodDays,
                 }),
                 color: 'danger',
-                duration: SnackbarDuration.long,
+                duration: 10000,
               });
 
               Analytics.trackEvent(ANALYTICS_EVENTS.GUI_ACTION_CANCELLED, {
@@ -169,6 +170,7 @@ const handleDialogActionClick = async (
                 'gracePeriod.days': gracePeriodDays,
               });
 
+              onError();
               responseFinished();
               return;
             }
@@ -210,6 +212,7 @@ const handleDialogActionClick = async (
           },
           `Dialog action failed: ${response.statusText}`,
         );
+        onError();
       }
     } catch (error) {
       logError(
@@ -221,6 +224,7 @@ const handleDialogActionClick = async (
         },
         'Error performing dialog action',
       );
+      onError();
     } finally {
       responseFinished();
     }
@@ -384,6 +388,7 @@ export const DialogDetails = ({
           action,
           dialogToken,
           () => setActionIdLoading(''),
+          () => setActionIdUpdating(''),
           logError,
           openSnackbar,
           t,

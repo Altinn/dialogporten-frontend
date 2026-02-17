@@ -1,7 +1,8 @@
-import { Button, ButtonGroup, Modal, Typography } from '@altinn/altinn-components';
+import { Button, Modal, Typography } from '@altinn/altinn-components';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { PreselectedActorModalProps, PreselectedPartyOperationType } from './PartiesOverviewPage';
+import styles from './confirmSetPreselectedActorModal.module.css';
 
 interface ConfirmSetPreselectedActorModalProps {
   showActor: PreselectedActorModalProps | null;
@@ -41,7 +42,8 @@ export const ConfirmSetPreselectedActorModal = ({
           <p>{t('profile.parties.confirm_unset_preselected_actor', { name: showActor?.party?.name })}</p>
         )}
       </Typography>
-      <ButtonGroup>
+
+      <div className={styles.buttonGroupContainer}>
         <Button onClick={onClose} variant="outline" disabled={isSubmitting} type="button">
           {t('profile.parties.cancel')}
         </Button>
@@ -50,7 +52,7 @@ export const ConfirmSetPreselectedActorModal = ({
             ? t('profile.parties.confirm_set_preselected_actor_button')
             : t('profile.parties.confirm_unset_preselected_actor_button')}
         </Button>
-      </ButtonGroup>
+      </div>
     </Modal>
   );
 };
