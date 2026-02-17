@@ -49,7 +49,7 @@ export const PartiesOverviewPage = () => {
   const { search } = useLocation();
   const { isSelfIdentifiedUser, parties, selectedParties, allOrganizationsSelected, isLoading, flattenedParties } =
     useParties();
-  const { getAccountAlertSettings, settings } = useSettings({ disabled: true, isSelfIdentifiedUser });
+  const { getAccountAlertSettings, settings } = useSettings({ disabled: isSelfIdentifiedUser, isSelfIdentifiedUser });
   const isDeletedUnitsFilterEnabled = useFeatureFlag<boolean>('inbox.enableDeletedUnitsFilter');
   const {
     addFavoriteParty,
