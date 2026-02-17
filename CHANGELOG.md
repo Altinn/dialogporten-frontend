@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.124.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.124.3...v1.124.4) (2026-02-17)
+
+
+### Bug Fixes
+
+* Remove fixed disabled addresses for normal users in profil ([#3744](https://github.com/Altinn/dialogporten-frontend/issues/3744)) ([7721ddf](https://github.com/Altinn/dialogporten-frontend/commit/7721ddfb78d816e4bdd5e8dea7cf15c6f5256e26))
+
 ## [1.124.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.124.2...v1.124.3) (2026-02-17)
 
 
