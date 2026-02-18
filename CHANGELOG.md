@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.124.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.124.4...v1.124.5) (2026-02-18)
+
+
+### Bug Fixes
+
+* Bump AC v.0.56.12 + fixes ([#3748](https://github.com/Altinn/dialogporten-frontend/issues/3748)) ([9f7610f](https://github.com/Altinn/dialogporten-frontend/commit/9f7610f003369306e1f72170d053403117673c3c))
+
 ## [1.124.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.124.3...v1.124.4) (2026-02-17)
 
 
