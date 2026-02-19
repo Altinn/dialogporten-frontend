@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.124.6](https://github.com/Altinn/dialogporten-frontend/compare/v1.124.5...v1.124.6) (2026-02-19)
+
+
+### Bug Fixes
+
+* Add auto-search deboounce and reset on clear, minor margin improvements ([#3754](https://github.com/Altinn/dialogporten-frontend/issues/3754)) ([7ae9957](https://github.com/Altinn/dialogporten-frontend/commit/7ae9957cf6bf0c760040c4ed664c36d90ed84548))
+
 ## [1.124.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.124.4...v1.124.5) (2026-02-18)
 
 
