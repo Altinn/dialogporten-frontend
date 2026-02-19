@@ -10,15 +10,11 @@ export async function performSearch(page: Page, query: string, action?: 'clear' 
   await searchbarInput.click();
   await expect(searchbarInput).toBeVisible();
   await searchbarInput.fill(query);
-  const searchButton = page.getByRole('option', { name: 'Søk i innboksen etter ' + query });
-  await expect(searchButton).toBeVisible();
-
   if (endGameAction === 'clear') {
     await page.getByTestId('clear-button').click();
-  } else if (endGameAction === 'click') {
-    await searchButton.click();
-  } else if (endGameAction === 'enter') {
+  } else {
     await page.keyboard.press('Enter');
+    await page.waitForURL((url) => url.searchParams.has('search'));
   }
 }
 

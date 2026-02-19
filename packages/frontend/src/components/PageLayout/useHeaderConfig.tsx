@@ -38,6 +38,7 @@ export const useHeaderConfig = (): UseHeaderConfigOutput => {
 
   const [isTyping, setIsTyping] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const inputValueRef = useRef<string>('');
 
   useEffect(
     () => () => {
@@ -230,6 +231,7 @@ export const useHeaderConfig = (): UseHeaderConfigOutput => {
     },
     onChange: (event: ChangeEvent<HTMLInputElement>) => {
       const value = event.target.value;
+      inputValueRef.current = value;
       if (value === '') {
         if (debounceRef.current) clearTimeout(debounceRef.current);
         setIsTyping(false);
@@ -248,7 +250,7 @@ export const useHeaderConfig = (): UseHeaderConfigOutput => {
       if (event.key === 'Enter') {
         if (debounceRef.current) clearTimeout(debounceRef.current);
         setIsTyping(false);
-        searchValue ? onSearch(searchValue) : onClear();
+        inputValueRef.current ? onSearch(inputValueRef.current) : onClear();
       }
     },
     name: t('word.search'),

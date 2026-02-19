@@ -98,7 +98,7 @@ test.describe('Saved search', () => {
 
     await page.getByRole('button', { name: 'Legg til filter' }).click();
     await page.getByLabel('Velg tjenesteeier').click();
-    await page.getByRole('searchbox', { name: 'Søk' }).fill('Oslo');
+    await page.locator('input[aria-controls="toolbar-filter-menu-listbox"]').fill('Oslo');
     await page.locator('li').filter({ hasText: 'Oslo kommune' }).nth(1).click();
     await page.keyboard.press('Escape');
     await page.getByRole('button', { name: 'Legg til' }).click();
@@ -113,7 +113,7 @@ test.describe('Saved search', () => {
 
     await page.getByRole('button', { name: 'Legg til filter' }).click();
     await page.getByLabel('Velg tjenesteeier').click();
-    await page.getByRole('searchbox', { name: 'Søk' }).fill('Oslo');
+    await page.locator('input[aria-controls="toolbar-filter-menu-listbox"]').fill('Oslo');
     await page.locator('li').filter({ hasText: 'Oslo kommune' }).nth(1).click();
     await page.keyboard.press('Escape');
     await page.getByRole('button', { name: 'Legg til' }).click();

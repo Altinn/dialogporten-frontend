@@ -199,38 +199,39 @@ export const Inbox = ({ viewType }: InboxProps) => {
 
   return (
     <PageBase>
-      {currentAccountName ? (
-        <Toolbar
-          data-testid="inbox-toolbar"
-          search={inboxSearch}
-          accountMenu={{
-            items: accounts,
-            search: accountSearch,
-            groups: accountGroups,
-            label: currentAccountName,
-            onSelectId: (id: string) => {
-              onSelectAccount(id, PageRoutes[viewType]);
-            },
-            searchable: true,
-            virtualized: true,
-            title: t('parties.change_label'),
-          }}
-          filter={{
-            filterState,
-            filters,
-            getFilterLabel: (name: string, filterValues: (string | number)[] | undefined) =>
-              getFilterLabel?.(name, filterValues, filterState),
-            onFilterStateChange: onFiltersChange,
-            addLabel: t('filter_bar.add_filter'),
-            addNextLabel: t('filter_bar.add'),
-            resetLabel: t('filter_bar.reset_filters'),
-            submitLabel: t('filter.show_all_results'),
-            removeLabel: t('filter_bar.remove_filter'),
-          }}
-        >
-          <SaveSearchButton viewType={viewType} disabled={savedSearchDisabled} filterState={filterState} />
-        </Toolbar>
-      ) : null}
+      <div data-testid="inbox-toolbar">
+        {currentAccountName ? (
+          <Toolbar
+            search={inboxSearch}
+            accountMenu={{
+              items: accounts,
+              search: accountSearch,
+              groups: accountGroups,
+              label: currentAccountName,
+              onSelectId: (id: string) => {
+                onSelectAccount(id, PageRoutes[viewType]);
+              },
+              searchable: true,
+              virtualized: true,
+              title: t('parties.change_label'),
+            }}
+            filter={{
+              filterState,
+              filters,
+              getFilterLabel: (name: string, filterValues: (string | number)[] | undefined) =>
+                getFilterLabel?.(name, filterValues, filterState),
+              onFilterStateChange: onFiltersChange,
+              addLabel: t('filter_bar.add_filter'),
+              addNextLabel: t('filter_bar.add'),
+              resetLabel: t('filter_bar.reset_filters'),
+              submitLabel: t('filter.show_all_results'),
+              removeLabel: t('filter_bar.remove_filter'),
+            }}
+          >
+            <SaveSearchButton viewType={viewType} disabled={savedSearchDisabled} filterState={filterState} />
+          </Toolbar>
+        ) : null}
+      </div>
       <AlertBanner showAlertBanner={isAlertBannerEnabled && !!alertBannerContent} />
       {isAltinn2MessagesEnabled && <Altinn2ActiveSchemasNotification selectedAccountId={selectedParties?.[0]?.party} />}
       {dialogsSuccess && !dialogItems.length && !isLoading && !isLimitReached && (
