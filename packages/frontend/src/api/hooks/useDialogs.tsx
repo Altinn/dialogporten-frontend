@@ -93,7 +93,7 @@ export const useDialogs = ({
       retry: 3,
       queryFn: (args) => {
         const continuationToken = args.pageParam as string | undefined;
-        const searchString = (search ?? '').length >= 3 ? search : undefined;
+        const searchString = (search ?? '').length >= 1 ? search : undefined;
         return graphQLSDK.getAllDialogsForParties({
           ...queryVariables,
           continuationToken,

@@ -22,8 +22,8 @@ export const SavedSearchesPage = () => {
   });
 
   return (
-    <PageBase margin="page">
-      <div className={styles.gridContainer} style={{ marginTop: '-1rem' }}>
+    <PageBase>
+      <div className={styles.gridContainer}>
         {currentAccountName ? (
           <Toolbar
             accountMenu={{
