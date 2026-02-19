@@ -53,48 +53,36 @@ export const EmptyState = ({ query, viewType, searchMode }: EmptyStateProps) => 
 
   if (viewType === 'inbox') {
     return (
-      <Section spacing={3} margin="section">
+      <>
         <Heading size="lg">{t('emptyState.inbox.title')}</Heading>
         <Typography size="sm">
           <p>{t('emptyState.inbox.description', { br: <br key={'inbox-p-br'} /> })}</p>
           <Link to={createMessageBoxLink(currentPartyUuid)}>{t('inbox.historical_messages_date_warning_link')}</Link>
         </Typography>
-      </Section>
+      </>
     );
   }
 
   if (viewType === 'drafts') {
-    return (
-      <Section spacing={3} margin="section">
-        <Heading size="lg">{t('emptyState.drafts.title')}</Heading>
-      </Section>
-    );
+    return <Heading size="lg">{t('emptyState.drafts.title')}</Heading>;
   }
 
   if (viewType === 'sent') {
-    return (
-      <Section spacing={3} margin="section">
-        <Heading size="lg">{t('emptyState.sent.title')}</Heading>
-      </Section>
-    );
+    return <Heading size="lg">{t('emptyState.sent.title')}</Heading>;
   }
 
   if (viewType === 'bin') {
-    return (
-      <Section spacing={3} margin="section">
-        <Heading size="lg">{t('emptyState.bin.title')}</Heading>
-      </Section>
-    );
+    return <Heading size="lg">{t('emptyState.bin.title')}</Heading>;
   }
 
   if (viewType === 'archive') {
     return (
-      <Section spacing={3} margin="section">
+      <>
         <Heading size="lg">{t('emptyState.archive.title')}</Heading>
         <Typography size="sm">
           <p>{t('emptyState.archive.descriptionAfterBold')}</p>
         </Typography>
-      </Section>
+      </>
     );
   }
 

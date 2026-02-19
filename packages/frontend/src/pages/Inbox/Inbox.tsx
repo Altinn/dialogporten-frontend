@@ -5,7 +5,6 @@ import {
   DsParagraph,
   Heading,
   PageBase,
-  Section,
   type SeenByLogItemProps,
   Toolbar,
 } from '@altinn/altinn-components';
@@ -62,7 +61,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
 
   const location = useLocation();
   const [filterState, setFilterState] = useState<FilterState>(readFiltersFromURLQuery(location.search));
-  const { inboxSearch } = useHeaderConfig(filterState);
+  const { inboxSearch } = useHeaderConfig();
   const [currentSeenByLogModal, setCurrentSeenByLogModal] = useState<CurrentSeenByLog | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -86,7 +85,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
   };
 
   const { enteredSearchValue } = useSearchString();
-  const validSearchString = enteredSearchValue.length > 2 ? enteredSearchValue : undefined;
+  const validSearchString = enteredSearchValue.length >= 1 ? enteredSearchValue : undefined;
   const hasValidFilters = Object.values(filterState).some((arr) => typeof arr !== 'undefined' && arr?.length > 0);
   const searchMode = hasValidFilters || !!validSearchString;
   const savedSearchDisabled = isSavedSearchDisabled(filterState, enteredSearchValue);
@@ -192,85 +191,80 @@ export const Inbox = ({ viewType }: InboxProps) => {
 
   if (partiesEmptyList) {
     return (
-      <PageBase margin="page">
+      <PageBase>
         <Notice title={t('inbox.no_parties_found')} />
       </PageBase>
     );
   }
 
   return (
-    <PageBase margin="page">
-      <section data-testid="inbox-toolbar" style={{ marginTop: '-1rem' }}>
-        {currentAccountName ? (
-          <Toolbar
-            data-testid="inbox-toolbar"
-            search={inboxSearch}
-            accountMenu={{
-              items: accounts,
-              search: accountSearch,
-              groups: accountGroups,
-              label: currentAccountName,
-              onSelectId: (id: string) => {
-                onSelectAccount(id, PageRoutes[viewType]);
-              },
-              searchable: true,
-              virtualized: true,
-              title: t('parties.change_label'),
-            }}
-            filter={{
-              filterState,
-              filters,
-              getFilterLabel: (name: string, filterValues: (string | number)[] | undefined) =>
-                getFilterLabel?.(name, filterValues, filterState),
-              onFilterStateChange: onFiltersChange,
-              addLabel: t('filter_bar.add_filter'),
-              addNextLabel: t('filter_bar.add'),
-              resetLabel: t('filter_bar.reset_filters'),
-              submitLabel: t('filter.show_all_results'),
-              removeLabel: t('filter_bar.remove_filter'),
-            }}
-          >
-            <SaveSearchButton viewType={viewType} disabled={savedSearchDisabled} filterState={filterState} />
-          </Toolbar>
-        ) : null}
-      </section>
+    <PageBase>
+      {currentAccountName ? (
+        <Toolbar
+          data-testid="inbox-toolbar"
+          search={inboxSearch}
+          accountMenu={{
+            items: accounts,
+            search: accountSearch,
+            groups: accountGroups,
+            label: currentAccountName,
+            onSelectId: (id: string) => {
+              onSelectAccount(id, PageRoutes[viewType]);
+            },
+            searchable: true,
+            virtualized: true,
+            title: t('parties.change_label'),
+          }}
+          filter={{
+            filterState,
+            filters,
+            getFilterLabel: (name: string, filterValues: (string | number)[] | undefined) =>
+              getFilterLabel?.(name, filterValues, filterState),
+            onFilterStateChange: onFiltersChange,
+            addLabel: t('filter_bar.add_filter'),
+            addNextLabel: t('filter_bar.add'),
+            resetLabel: t('filter_bar.reset_filters'),
+            submitLabel: t('filter.show_all_results'),
+            removeLabel: t('filter_bar.remove_filter'),
+          }}
+        >
+          <SaveSearchButton viewType={viewType} disabled={savedSearchDisabled} filterState={filterState} />
+        </Toolbar>
+      ) : null}
       <AlertBanner showAlertBanner={isAlertBannerEnabled && !!alertBannerContent} />
-      <Section>
-        {isAltinn2MessagesEnabled && (
-          <Altinn2ActiveSchemasNotification selectedAccountId={selectedParties?.[0]?.party} />
+      {isAltinn2MessagesEnabled && <Altinn2ActiveSchemasNotification selectedAccountId={selectedParties?.[0]?.party} />}
+      {dialogsSuccess && !dialogItems.length && !isLoading && !isLimitReached && (
+        <EmptyState query={enteredSearchValue} viewType={viewType} searchMode={searchMode} />
+      )}
+      {isLimitReached && (
+        <Notice
+          title={
+            isServiceFilterEnabled
+              ? t('organizationLimitReached.serviceFilter.title')
+              : t('organizationLimitReached.title')
+          }
+          description={
+            isServiceFilterEnabled
+              ? t('organizationLimitReached.serviceFilter.description', { count: selectedParties.length })
+              : t('organizationLimitReached.description', { count: selectedParties.length })
+          }
+        />
+      )}
+      <>
+        <DialogList
+          items={dialogItems}
+          groups={groups}
+          sortGroupBy={([aKey], [bKey]) => (groups[bKey]?.orderIndex ?? 0) - (groups[aKey]?.orderIndex ?? 0)}
+          isLoading={isLoading}
+          highlightWords={searchMode ? [enteredSearchValue] : undefined}
+        />
+        {hasNextPage && (
+          <Button aria-label={t('dialog.aria.fetch_more')} onClick={fetchNextPage} variant="outline" size="lg">
+            <span data-size="md">{t('dialog.fetch_more')}</span>
+          </Button>
         )}
-        {dialogsSuccess && !dialogItems.length && !isLoading && !isLimitReached && (
-          <EmptyState query={enteredSearchValue} viewType={viewType} searchMode={searchMode} />
-        )}
-        {isLimitReached && (
-          <Notice
-            title={
-              isServiceFilterEnabled
-                ? t('organizationLimitReached.serviceFilter.title')
-                : t('organizationLimitReached.title')
-            }
-            description={
-              isServiceFilterEnabled
-                ? t('organizationLimitReached.serviceFilter.description', { count: selectedParties.length })
-                : t('organizationLimitReached.description', { count: selectedParties.length })
-            }
-          />
-        )}
-        <>
-          <DialogList
-            items={dialogItems}
-            groups={groups}
-            sortGroupBy={([aKey], [bKey]) => (groups[bKey]?.orderIndex ?? 0) - (groups[aKey]?.orderIndex ?? 0)}
-            isLoading={isLoading}
-            highlightWords={searchMode ? [enteredSearchValue] : undefined}
-          />
-          {hasNextPage && (
-            <Button aria-label={t('dialog.aria.fetch_more')} onClick={fetchNextPage} variant="outline" size="lg">
-              <span data-size="md">{t('dialog.fetch_more')}</span>
-            </Button>
-          )}
-        </>
-      </Section>
+      </>
+
       <SeenByModal
         title={currentSeenByLogModal?.title}
         items={currentSeenByLogModal?.items}
