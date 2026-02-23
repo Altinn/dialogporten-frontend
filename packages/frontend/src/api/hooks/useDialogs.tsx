@@ -14,7 +14,7 @@ import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useFeatureFlag } from '../../featureFlags';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
-import { normalizeFilterDefaults } from '../../pages/Inbox/filters';
+import { normalizeFilterDefaults, removeUndefinedValues } from '../../pages/Inbox/filters';
 import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
 import { useProfile } from '../../pages/Profile';
 import { graphQLSDK } from '../queries.ts';
@@ -82,18 +82,20 @@ export const useDialogs = ({
     searchQuery: search,
   });
 
+  const queryVariableKey = removeUndefinedValues(queryVariables);
+
   const queryClient = useQueryClient();
   const previousPartyIdsRef = useRef<string[]>([]);
 
   const { data, isSuccess, isLoading, isFetching, isError, fetchNextPage, isFetchingNextPage, isPlaceholderData } =
     useAuthenticatedInfiniteQuery<GetAllDialogsForPartiesQuery>({
-      queryKey: [QUERY_KEYS.DIALOGS, partyIds, viewTypeKey, queryVariables, search, serviceResources],
+      queryKey: [QUERY_KEYS.DIALOGS, partyIds, viewTypeKey, queryVariableKey, search, serviceResources],
       staleTime: 1000 * 60 * 10,
       gcTime: 0,
       retry: 3,
       queryFn: (args) => {
         const continuationToken = args.pageParam as string | undefined;
-        const searchString = (search ?? '').length >= 1 ? search : undefined;
+        const searchString = (search ?? '').length >= 3 ? search : undefined; //min 3 characters to search, API requirement
         return graphQLSDK.getAllDialogsForParties({
           ...queryVariables,
           continuationToken,

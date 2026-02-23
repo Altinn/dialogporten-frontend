@@ -30,7 +30,7 @@ import { useInboxOnboarding } from '../../onboardingTour';
 import { PageRoutes } from '../routes.ts';
 import { AlertBanner } from './AlertBanner.tsx';
 import { Altinn2ActiveSchemasNotification } from './Altinn2ActiveSchemasNotification.tsx';
-import { FilterCategory, readFiltersFromURLQuery } from './filters';
+import { FilterCategory, hasValidFilters, readFiltersFromURLQuery } from './filters';
 import { useFilters } from './useFilters.tsx';
 import useGroupedDialogs from './useGroupedDialogs.tsx';
 import { useMockError } from './useMockError.tsx';
@@ -61,7 +61,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
 
   const location = useLocation();
   const [filterState, setFilterState] = useState<FilterState>(readFiltersFromURLQuery(location.search));
-  const { inboxSearch } = useHeaderConfig();
+  const { inboxSearch } = useHeaderConfig(filterState);
   const [currentSeenByLogModal, setCurrentSeenByLogModal] = useState<CurrentSeenByLog | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -85,9 +85,9 @@ export const Inbox = ({ viewType }: InboxProps) => {
   };
 
   const { enteredSearchValue } = useSearchString();
-  const validSearchString = enteredSearchValue.length >= 1 ? enteredSearchValue : undefined;
-  const hasValidFilters = Object.values(filterState).some((arr) => typeof arr !== 'undefined' && arr?.length > 0);
-  const searchMode = hasValidFilters || !!validSearchString;
+  const validSearchString = enteredSearchValue.length > 2 ? enteredSearchValue : undefined;
+
+  const searchMode = hasValidFilters(filterState) || !!validSearchString;
   const savedSearchDisabled = isSavedSearchDisabled(filterState, enteredSearchValue);
 
   const selectedServices = (filterState.service ?? []) as string[];
