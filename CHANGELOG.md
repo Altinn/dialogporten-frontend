@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.124.7](https://github.com/Altinn/dialogporten-frontend/compare/v1.124.6...v1.124.7) (2026-02-23)
+
+
+### Bug Fixes
+
+* revert auto search func fix custom range date ([#3759](https://github.com/Altinn/dialogporten-frontend/issues/3759)) ([d6fd028](https://github.com/Altinn/dialogporten-frontend/commit/d6fd028324c2844fcda626041dbf8481c8b63d80))
+
 ## [1.124.6](https://github.com/Altinn/dialogporten-frontend/compare/v1.124.5...v1.124.6) (2026-02-19)
 
 
