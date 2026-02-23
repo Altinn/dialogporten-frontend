@@ -509,6 +509,28 @@ export const presetFiltersByView: Record<InboxViewType, Partial<GetAllDialogsFor
   },
 };
 
+export const removeUndefinedValues = <T extends Record<string, unknown>>(obj: T): T => {
+  const result = {} as T;
+  for (const [key, value] of Object.entries(obj)) {
+    if (typeof value !== 'undefined') {
+      result[key as keyof T] = value as T[keyof T];
+    }
+  }
+  return result;
+};
+
+export const hasValidFilters = (filterState: FilterState) => {
+  return Object.values(filterState).some((arr) => {
+    if (typeof arr === 'undefined' || arr.length === 0) {
+      return false;
+    }
+    const { fromDate, toDate } = filterState;
+    if (arr[0] === 'fromAndToDate' && typeof fromDate === 'undefined' && typeof toDate === 'undefined') return false;
+
+    return true;
+  });
+};
+
 /**
  * Normalizes and merges dialog filter values based on system status labels and view presets.
  *
@@ -537,9 +559,18 @@ export const normalizeFilterDefaults = ({
   const { status, org, systemLabel, serviceResources } = baseFilters;
   const normalized: GetAllDialogsForPartiesQueryVariables = { ...baseFilters };
 
-  const hasFilters = [status, org, systemLabel, updatedAfter, serviceResources].some(
-    (f) => Array.isArray(f) && f.length > 0,
-  );
+  const hasFilters = [status, org, systemLabel, updatedAfter, serviceResources].some((f) => {
+    // Special case for date filters: if "fromAndToDate" is selected, both fromDate and toDate must be provided to be valid
+    if (
+      typeof f?.[0] === 'string' &&
+      f?.[0] === 'fromAndToDate' &&
+      typeof fromDate === 'undefined' &&
+      typeof toDate === 'undefined'
+    ) {
+      return false;
+    }
+    return Array.isArray(f) && f.length > 0;
+  });
 
   if (updatedAfter) {
     if (filterRanges[updatedAfter as unknown as DateFilterOption]) {

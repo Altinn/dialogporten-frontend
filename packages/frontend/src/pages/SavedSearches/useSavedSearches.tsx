@@ -354,7 +354,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
 
       return {
         id: searchId,
-        title: savedSearch.name || t('filter_bar.saved_search'),
+        title: savedSearch.name || '',
         as: (props: LinkProps) => <Link {...props} to={bookmarkLink} />,
         onChange: (e: ChangeEvent<HTMLInputElement>) => {
           setInputValues((prev) => ({ ...prev, [searchId]: e.target.value }));
