@@ -31,7 +31,7 @@ interface UseHeaderConfigOutput {
   inboxSearch: ToolbarSearchProps;
 }
 
-export const useHeaderConfig = (filterState: FilterState): UseHeaderConfigOutput => {
+export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutput => {
   const { currentEndUser, parties, selectedParties, isLoading, currentPartyUuid, setSelectedPartyIds } = useParties();
   const { t, i18n } = useTranslation();
   const { logError } = useErrorLogger();
