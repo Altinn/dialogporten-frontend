@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.124.9](https://github.com/Altinn/dialogporten-frontend/compare/v1.124.8...v1.124.9) (2026-02-24)
+
+
+### Bug Fixes
+
+* **AccountSelector:** falling behind on location.search for cookie overriden chosen account ([#3769](https://github.com/Altinn/dialogporten-frontend/issues/3769)) ([5a4e5e3](https://github.com/Altinn/dialogporten-frontend/commit/5a4e5e3af98a90d74f84c4db410180efa769f7f2))
+
 ## [1.124.8](https://github.com/Altinn/dialogporten-frontend/compare/v1.124.7...v1.124.8) (2026-02-24)
 
 
