@@ -101,7 +101,7 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
         });
       }
     },
-    [parties, isProfile, location.pathname, navigate],
+    [parties, isProfile, location.pathname, navigate, selectedParties, location.search],
   );
 
   const handleShowDeletedUnitsChange = useCallback(
