@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.124.8](https://github.com/Altinn/dialogporten-frontend/compare/v1.124.7...v1.124.8) (2026-02-24)
+
+
+### Bug Fixes
+
+* **bookmarksection:** refactor to support api changes for bookmark section in altinn-components ([#3763](https://github.com/Altinn/dialogporten-frontend/issues/3763)) ([f321c60](https://github.com/Altinn/dialogporten-frontend/commit/f321c60dc8e8b00dcbe7e6ce7557a19533b12240))
+
 ## [1.124.7](https://github.com/Altinn/dialogporten-frontend/compare/v1.124.6...v1.124.7) (2026-02-23)
 
 
