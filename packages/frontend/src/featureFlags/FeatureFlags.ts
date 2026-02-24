@@ -11,7 +11,6 @@ export const featureFlagDefinitions = [
   { key: 'inbox.enableAltinn2Messages', type: 'boolean', default: false },
   { key: 'inbox.enableAlertBanner', type: 'boolean', default: false },
   { key: 'dialogporten.disableSubscriptions', type: 'boolean', default: false },
-  { key: 'dialogporten.enableManualSubscriptionRefresh', type: 'boolean', default: false },
   { key: 'inbox.enableDeletedUnitsFilter', type: 'boolean', default: false },
   { key: 'filters.enableServiceFilter', type: 'boolean', default: true },
 ] as const satisfies readonly FeatureFlagDefinition[];

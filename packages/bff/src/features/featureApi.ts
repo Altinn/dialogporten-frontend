@@ -12,7 +12,6 @@ const defaultFeatureFlags: Record<string, boolean | number | string> = {
   'debug.test': false, // only used for debugging,
   'inbox.enableAlertBanner': false,
   'dialogporten.disableSubscriptions': false,
-  'dialogporten.enableManualSubscriptionRefresh': false,
   'inbox.enableDeletedUnitsFilter': false,
   'filters.enableServiceFilter': false,
 };
