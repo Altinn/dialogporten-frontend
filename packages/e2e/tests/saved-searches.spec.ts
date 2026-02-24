@@ -102,7 +102,7 @@ test.describe('Saved Searches', () => {
     await expect(menuButton3).toBeVisible();
     await menuButton3.click();
 
-    const deleteLink = page.getByLabel('Slett søk');
+    const deleteLink = page.getByLabel('Slett');
     await expect(deleteLink).toBeVisible();
     await deleteLink.click();
 

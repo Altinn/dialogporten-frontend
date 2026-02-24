@@ -1,4 +1,4 @@
-import { type Color, type ContextMenuProps, DialogLayout } from '@altinn/altinn-components';
+import { type Color, type ContextMenuProps, DialogLayout, type PageMenuProps } from '@altinn/altinn-components';
 import { ClockDashedIcon } from '@navikt/aksel-icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
@@ -81,7 +81,7 @@ export const DialogDetailsPage = () => {
         label: t('word.back'),
         as: (props: LinkProps) => <Link {...props} to={previousPath} state={{ scrollToId: dialogId }} />,
       }}
-      pageMenu={displayDialogActions ? { items: labelActions } : undefined}
+      pageMenu={{ items: displayDialogActions ? labelActions : [] } as PageMenuProps}
       contextMenu={displayDialogActions ? contextMenu : undefined}
     >
       <DialogDetails

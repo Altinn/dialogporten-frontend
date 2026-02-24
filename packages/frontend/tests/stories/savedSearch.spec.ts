@@ -30,10 +30,10 @@ test.describe('Saved search', () => {
 
     await expect(page.getByRole('main')).toContainText('1 lagret søk');
     await expect(page.locator('a[href*="org=ok"]')).toBeVisible();
-    const parentLi = page.locator('a[href*="org=ok"]').locator('xpath=ancestor::li[1]');
-    await parentLi.getByRole('button').click();
 
-    await page.getByText('Slett søk').click();
+    await page.getByRole('button', { name: 'Åpne meny' }).click();
+    await page.getByLabel('Slett søk').click();
+
     await expect(page.getByText('Søket ditt ble slettet')).toBeVisible();
     await expect(page.getByRole('main')).toContainText('Du har ingen lagrede søk');
   });

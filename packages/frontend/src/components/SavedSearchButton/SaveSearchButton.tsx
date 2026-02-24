@@ -23,7 +23,7 @@ export const SaveSearchButton = ({ disabled, className, filterState, viewType }:
     currentPartySavedSearches: savedSearches,
     isCTALoading,
     saveSearch,
-    deleteSearch,
+    onDeleteSavedSearch,
   } = useSavedSearches(selectedPartyIds);
 
   if (disabled) {
@@ -38,7 +38,7 @@ export const SaveSearchButton = ({ disabled, className, filterState, viewType }:
       <Button
         size="xs"
         className={className}
-        onClick={() => deleteSearch(matchingSavedSearch.id)}
+        onClick={() => onDeleteSavedSearch(matchingSavedSearch.id.toString())}
         loading={isCTALoading}
         variant="ghost"
         aria-label={t('filter_bar.saved_search')}
