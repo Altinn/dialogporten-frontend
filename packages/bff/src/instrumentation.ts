@@ -14,16 +14,25 @@ import { NodeSDK } from '@opentelemetry/sdk-node';
 import {
   BatchSpanProcessor,
   ParentBasedSampler,
-  type Span,
-  TraceIdRatioBasedSampler,
   type ReadableSpan,
+  type Span,
   type SpanProcessor,
+  TraceIdRatioBasedSampler,
 } from '@opentelemetry/sdk-trace-base';
 import { ATTR_SERVICE_NAME, SEMRESATTRS_SERVICE_INSTANCE_ID } from '@opentelemetry/semantic-conventions';
 import config from './config.ts';
-import { shouldDropSpanByName } from './otelSpanFilter.ts';
 
 const { openTelemetry } = config;
+const spansExcludedFromExport = new Set([
+  'graphql.parse',
+  'graphql.validate',
+  'graphql.parseSchema',
+  'graphql.validateSchema',
+]);
+
+const shouldDropSpanByName = (spanName: string): boolean => {
+  return spansExcludedFromExport.has(spanName);
+};
 
 // Configure HTTP instrumentation with filtering
 const httpInstrumentationConfig: HttpInstrumentationConfig = {
