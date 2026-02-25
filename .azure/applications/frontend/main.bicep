@@ -20,6 +20,9 @@ param applicationInsightsInstrumentationKey string
 @minLength(3)
 param dialogportenStreamUrl string
 
+@description('Set to true to disable Application Insights dependency tracking.')
+param applicationInsightsDisableDependencyTracking string = 'false'
+
 @description('The workload profile name to use, defaults to "Consumption"')
 param workloadProfileName string = 'Consumption'
 
@@ -48,6 +51,10 @@ var environmentVariables = [
   {
     name: 'DIALOGPORTEN_STREAM_URL'
     value: dialogportenStreamUrl
+  }
+  {
+    name: 'APPLICATION_INSIGHTS_DISABLE_DEPENDENCY_TRACKING'
+    value: applicationInsightsDisableDependencyTracking
   }
 ]
 

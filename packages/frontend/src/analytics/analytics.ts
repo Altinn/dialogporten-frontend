@@ -176,6 +176,10 @@ if (applicationInsightsEnabled) {
 
       switch (envelope.baseType) {
         case 'RemoteDependencyData': {
+          if (config.applicationInsightsDisableDependencyTracking) {
+            return false;
+          }
+
           const dependencyData = envelope.baseData;
           const backendTraceId = dependencyData?.properties?.['backend.traceId'];
 
