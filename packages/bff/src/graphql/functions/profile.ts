@@ -1,5 +1,6 @@
 import { logger } from '@altinn/dialogporten-node-logger';
 import axios from 'axios';
+import type { FastifyRequest } from 'fastify';
 import config from '../../config.ts';
 import { GroupRepository, PartyRepository, ProfileRepository } from '../../db.ts';
 import { Group, Party, ProfileTable } from '../../entities.ts';
@@ -24,6 +25,13 @@ export type TokenType = {
 export interface Context {
   session: {
     get: (key: string) => TokenType | string | undefined;
+  };
+  request: {
+    raw: {
+      cookies?: {
+        altinnPersistentContext?: string;
+      };
+    };
   };
 }
 

@@ -1,5 +1,5 @@
-query altinn2messages($selectedAccountIdentifier: String!) {
-  altinn2messages(selectedAccountIdentifier: $selectedAccountIdentifier) {
+query altinn2messages($selectedAccountIdentifier: String!, $isSelfIdentified: Boolean!) {
+  altinn2messages(selectedAccountIdentifier: $selectedAccountIdentifier, isSelfIdentified: $isSelfIdentified) {
     MessageId
     MessageLink
     Subject
