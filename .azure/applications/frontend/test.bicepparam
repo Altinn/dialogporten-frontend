@@ -13,4 +13,4 @@ param applicationInsightsInstrumentationKey = readEnvironmentVariable('AZURE_APP
 
 // environment variables
 param dialogportenStreamUrl = 'https://platform.at23.altinn.cloud/dialogporten/graphql/stream'
-param applicationInsightsDisableDependencyTracking = 'false'
+param applicationInsightsDisableDependencyTracking = 'true'

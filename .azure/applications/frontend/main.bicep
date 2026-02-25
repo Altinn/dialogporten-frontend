@@ -21,7 +21,7 @@ param applicationInsightsInstrumentationKey string
 param dialogportenStreamUrl string
 
 @description('Set to true to disable Application Insights dependency tracking.')
-param applicationInsightsDisableDependencyTracking string = 'false'
+param applicationInsightsDisableDependencyTracking string = 'true'
 
 @description('The workload profile name to use, defaults to "Consumption"')
 param workloadProfileName string = 'Consumption'
