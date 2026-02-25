@@ -6,11 +6,10 @@ interface Window {
 
 declare const window: Window;
 
-const isTrue = (value: string | undefined): boolean => value?.toLowerCase() === 'true';
-
 export const config = {
   applicationInsightsInstrumentationKey: window.applicationInsightsInstrumentationKey,
-  applicationInsightsDisableDependencyTracking: isTrue(window.applicationInsightsDisableDependencyTracking),
+  applicationInsightsDisableDependencyTracking:
+    window.applicationInsightsDisableDependencyTracking?.toLowerCase() === 'true',
   dialogportenStreamUrl: import.meta.env.DEV
     ? 'https://platform.at23.altinn.cloud/dialogporten/graphql/stream'
     : window.dialogportenStreamUrl,
