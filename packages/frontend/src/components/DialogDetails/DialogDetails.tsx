@@ -22,7 +22,6 @@ import {
   useSnackbar,
 } from '@altinn/altinn-components';
 import type { ActivityLogSegmentProps } from '@altinn/altinn-components/dist/types/lib/components';
-import { useQueryClient } from '@tanstack/react-query';
 import { DialogEventType, DialogStatus } from 'bff-types-generated';
 import { type ReactElement, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -31,8 +30,6 @@ import { ANALYTICS_EVENTS } from '../../analytics/analyticsEvents.ts';
 import type { DialogByIdDetails } from '../../api/hooks/useDialogById.tsx';
 import type { DialogEventData } from '../../api/hooks/useDialogByIdSubscription.ts';
 import type { TimelineSegmentWithTransmissions } from '../../api/utils/transmissions.ts';
-import { QUERY_KEYS } from '../../constants/queryKeys.ts';
-import { useFeatureFlag } from '../../featureFlags';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { getDialogStatus } from '../../pages/Inbox/status.ts';
@@ -239,8 +236,6 @@ export const DialogDetails = ({
   dialogToken,
   onMessageEvent,
 }: DialogDetailsProps): ReactElement => {
-  const queryClient = useQueryClient();
-  const enableManualSubscriptionRefresh = useFeatureFlag<boolean>('dialogporten.enableManualSubscriptionRefresh');
   const { t } = useTranslation();
   const { logError } = useErrorLogger();
   const { openSnackbar } = useSnackbar();
@@ -361,14 +356,6 @@ export const DialogDetails = ({
     );
   }
 
-  const handleManualSubscriptionRefresh = async () => {
-    setTimeout(async () => {
-      await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.DIALOG_BY_ID, dialog.id] });
-      setActionIdLoading('');
-      setActionIdUpdating('');
-    }, 2_000);
-  };
-
   const clockPrefix = t('word.clock_prefix');
   const formatString = clockPrefix ? `do MMMM yyyy '${clockPrefix}' HH.mm` : `do MMMM yyyy HH.mm`;
   const dueAtLabel = dialog.dueAt ? t('dialog.due_at', { date: format(dialog.dueAt, formatString) }) : '';
@@ -394,7 +381,6 @@ export const DialogDetails = ({
           t,
           format,
         );
-      enableManualSubscriptionRefresh && handleManualSubscriptionRefresh();
     },
   }));
 
