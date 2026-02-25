@@ -387,3 +387,12 @@ data/homepage/config/proxmox.yaml
 
 # Claude config
 .claude
+
+# .agents, used mainly by skills.sh
+.agents
+
+# Used by conductor and other kanban style AI agent tools
+.omc
+
+# Used by skills.sh
+skills-lock.json
