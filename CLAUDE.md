@@ -93,6 +93,7 @@ PostgreSQL  Redis     Dialogporten API
 - `packages/bff/src/auth/` - OIDC authentication flows
 - `packages/bff/src/migrations/` - TypeORM database migrations
 - `.azure/` - Bicep infrastructure code
+- `.agents/skills/` - Repo-defined agent skills (keep these up to date when relevant)
 
 ## Code Conventions
 
@@ -101,6 +102,11 @@ PostgreSQL  Redis     Dialogporten API
 - **Console logs**: `noConsoleLog` rule enforced - use the node-logger package instead
 - **GraphQL**: Nexus for type-safe schema definition in BFF
 - **Testing**: Vitest for unit tests, Playwright for E2E, axe-core for accessibility
+
+## Agent Skills (`.agents/skills/`)
+
+- **Keep skills in sync when relevant**: If you change behavior/workflows that are described by an existing skill in `.agents/skills/<skill>/SKILL.md`, update that skill file so it matches the new reality.
+- **Only update what’s defined**: Only update skills that already exist in `.agents/skills/` (and/or are listed in `skills-lock.json`). Do not create new skills or new skill folders unless they are already defined in this repo or explicitly requested.
 
 ## Mock Data for Testing
 
