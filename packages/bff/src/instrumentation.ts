@@ -1,6 +1,7 @@
 import type { IncomingMessage } from 'node:http';
 import { logger } from '@altinn/dialogporten-node-logger';
 import { FastifyOtelInstrumentation } from '@fastify/otel';
+import type { Context } from '@opentelemetry/api';
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-grpc';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
 import { GraphQLInstrumentation } from '@opentelemetry/instrumentation-graphql';
@@ -10,11 +11,28 @@ import { PgInstrumentation } from '@opentelemetry/instrumentation-pg';
 import { resourceFromAttributes } from '@opentelemetry/resources';
 import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
 import { NodeSDK } from '@opentelemetry/sdk-node';
-import { ParentBasedSampler, TraceIdRatioBasedSampler } from '@opentelemetry/sdk-trace-base';
+import {
+  BatchSpanProcessor,
+  ParentBasedSampler,
+  type ReadableSpan,
+  type Span,
+  type SpanProcessor,
+  TraceIdRatioBasedSampler,
+} from '@opentelemetry/sdk-trace-base';
 import { ATTR_SERVICE_NAME, SEMRESATTRS_SERVICE_INSTANCE_ID } from '@opentelemetry/semantic-conventions';
 import config from './config.ts';
 
 const { openTelemetry } = config;
+const spansExcludedFromExport = new Set([
+  'graphql.parse',
+  'graphql.validate',
+  'graphql.parseSchema',
+  'graphql.validateSchema',
+]);
+
+const shouldDropSpanByName = (spanName: string): boolean => {
+  return spansExcludedFromExport.has(spanName);
+};
 
 // Configure HTTP instrumentation with filtering
 const httpInstrumentationConfig: HttpInstrumentationConfig = {
@@ -58,6 +76,29 @@ const resource = resourceFromAttributes({
   [SEMRESATTRS_SERVICE_INSTANCE_ID]: config.info.instanceId || 'local-dev',
 });
 
+class SpanNameFilteringProcessor implements SpanProcessor {
+  constructor(private readonly delegate: SpanProcessor) {}
+
+  onStart(span: Span, parentContext: Context): void {
+    this.delegate.onStart(span, parentContext);
+  }
+
+  onEnd(span: ReadableSpan): void {
+    if (shouldDropSpanByName(span.name)) {
+      return;
+    }
+    this.delegate.onEnd(span);
+  }
+
+  forceFlush(): Promise<void> {
+    return this.delegate.forceFlush();
+  }
+
+  shutdown(): Promise<void> {
+    return this.delegate.shutdown();
+  }
+}
+
 const initializeOpenTelemetry = () => {
   try {
     if (!config.openTelemetry.enabled) {
@@ -78,6 +119,7 @@ const initializeOpenTelemetry = () => {
     const sampler = new ParentBasedSampler({
       root: new TraceIdRatioBasedSampler(openTelemetry.sampleRate),
     });
+    const spanProcessor: SpanProcessor = new SpanNameFilteringProcessor(new BatchSpanProcessor(traceExporter));
 
     logger.info(
       {
@@ -93,7 +135,7 @@ const initializeOpenTelemetry = () => {
     // Initialize NodeSDK
     const sdk = new NodeSDK({
       resource,
-      traceExporter,
+      spanProcessors: [spanProcessor],
       metricReaders: [metricReader],
       instrumentations,
       sampler,
