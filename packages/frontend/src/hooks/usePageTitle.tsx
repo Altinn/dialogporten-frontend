@@ -27,7 +27,6 @@ export const usePageTitle = ({ baseTitle, searchValue, filterState, getFilterLab
 
   useEffect(() => {
     const translatedBaseTitle = translateInboxViewType(baseTitle, t);
-
     const titleParts: string[] = searchValue ? [] : [translatedBaseTitle];
 
     if (searchValue?.trim()) {

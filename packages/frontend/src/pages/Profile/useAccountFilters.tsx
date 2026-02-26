@@ -41,18 +41,21 @@ export const useAccountFilters = ({
       items: [
         {
           role: 'radio',
+          name: 'partyScope',
           groupId: '1',
           label: t('parties.filter.all_parties'),
           value: FilterStateEnum.ALL_PARTIES,
         },
         {
           role: 'radio',
+          name: 'partyScope',
           groupId: '2',
           label: t('parties.filter.persons'),
           value: FilterStateEnum.PERSONS,
         },
         {
           role: 'radio',
+          name: 'partyScope',
           groupId: '2',
           label: t('parties.filter.companies'),
           value: FilterStateEnum.COMPANIES,
@@ -61,7 +64,9 @@ export const useAccountFilters = ({
     },
   ];
 
-  const getFilterLabel = (_: string, filterValues: (string | number)[] | undefined) => {
+  const getFilterLabel = (key: string) => {
+    const filterValues = filterState[key];
+
     if (filterValues?.includes(FilterStateEnum.ALL_PARTIES)) {
       return t('parties.filter.all_parties');
     }

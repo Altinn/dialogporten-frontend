@@ -9,7 +9,6 @@ import {
   Button,
   Heading,
   PageBase,
-  PageNav,
   Section,
   type SettingsItemProps,
   Switch,
@@ -19,7 +18,7 @@ import type { AccountListItemType } from '@altinn/altinn-components/dist/types/l
 import { BellIcon, HashtagIcon, HouseHeartFillIcon, HouseHeartIcon, InboxIcon } from '@navikt/aksel-icons';
 import { type ElementType, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, type LinkProps, useLocation } from 'react-router-dom';
+import { Link, type LinkProps } from 'react-router-dom';
 import { useProfile } from '..';
 import { useParties } from '../../../api/hooks/useParties';
 import {
@@ -31,7 +30,6 @@ import { useFeatureFlag } from '../../../featureFlags';
 import { usePageTitle } from '../../../hooks/usePageTitle';
 import { useProfileOnboarding } from '../../../onboardingTour/useProfileOnboarding';
 import { PageRoutes } from '../../routes.ts';
-import { getBreadcrumbs } from '../Settings/Settings.tsx';
 import { useSettings } from '../Settings/useSettings.tsx';
 import { useAccountFilters } from '../useAccountFilters.tsx';
 import { ConfirmSetPreselectedActorModal } from './ConfirmSetPreselectedActorModal.tsx';
@@ -46,7 +44,6 @@ export type PreselectedActorModalProps = {
 
 export const PartiesOverviewPage = () => {
   const { t } = useTranslation();
-  const { search } = useLocation();
   const { isSelfIdentifiedUser, parties, selectedParties, allOrganizationsSelected, isLoading, flattenedParties } =
     useParties();
   const { getAccountAlertSettings, settings } = useSettings({ disabled: isSelfIdentifiedUser, isSelfIdentifiedUser });
@@ -348,7 +345,6 @@ export const PartiesOverviewPage = () => {
 
   return (
     <PageBase color="person">
-      <PageNav breadcrumbs={getBreadcrumbs(t('sidebar.profile'), t('sidebar.profile.parties'), search)} />
       <Section as="header" spacing={6}>
         <Heading size="xl">{t('component.parties_settings')}</Heading>
         <Toolbar
@@ -368,7 +364,7 @@ export const PartiesOverviewPage = () => {
         >
           {isDeletedUnitsFilterEnabled && filterState?.partyScope?.[0] !== 'PERSONS' && (
             <Switch
-              size="xs"
+              size="sm"
               checked={includeDeletedParties}
               onChange={(e) => updateShowDeletedEntities(e.target.checked)}
               aria-checked={includeDeletedParties}

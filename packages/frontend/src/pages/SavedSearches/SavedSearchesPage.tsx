@@ -3,6 +3,7 @@ import { t } from 'i18next';
 import { type ChangeEvent, useMemo, useState } from 'react';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
+import { getPageRouteTitle } from '../../components/PageLayout/pageRouteToTitle.ts';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
 import { PageRoutes } from '../routes.ts';
 import { useSavedSearches } from './useSavedSearches.tsx';
@@ -34,6 +35,9 @@ export const SavedSearchesPage = () => {
 
   return (
     <PageBase>
+      <Heading as="h1" size="xl">
+        {t(getPageRouteTitle(PageRoutes.savedSearches))}
+      </Heading>
       {currentAccountName ? (
         <Toolbar
           accountMenu={{

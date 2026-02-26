@@ -1,3 +1,4 @@
+import type { FilterState } from '@altinn/altinn-components';
 import {
   Button,
   DialogList,
@@ -8,7 +9,6 @@ import {
   type SeenByLogItemProps,
   Toolbar,
 } from '@altinn/altinn-components';
-import type { FilterState } from '@altinn/altinn-components';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useSearchParams } from 'react-router-dom';
@@ -19,6 +19,7 @@ import { EmptyState } from '../../components/EmptyState/EmptyState.tsx';
 import { Notice } from '../../components/Notice';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
 import { useSearchString } from '../../components/PageLayout/Search/';
+import { getPageRouteTitle } from '../../components/PageLayout/pageRouteToTitle.ts';
 import { useHeaderConfig } from '../../components/PageLayout/useHeaderConfig.tsx';
 import { SaveSearchButton } from '../../components/SavedSearchButton/SaveSearchButton.tsx';
 import { isSavedSearchDisabled } from '../../components/SavedSearchButton/savedSearchEnabled.ts';
@@ -178,6 +179,9 @@ export const Inbox = ({ viewType }: InboxProps) => {
   if (unableToLoadParties) {
     return (
       <PageBase>
+        <Heading as="h1" size="xl">
+          {t(getPageRouteTitle(PageRoutes[viewType]))}
+        </Heading>
         <DsAlert data-color="danger">
           <Heading data-size="xs">{t('inbox.unable_to_load_parties.title')}</Heading>
           <DsParagraph>
@@ -192,6 +196,9 @@ export const Inbox = ({ viewType }: InboxProps) => {
   if (partiesEmptyList) {
     return (
       <PageBase>
+        <Heading as="h1" size="xl">
+          {t(getPageRouteTitle(PageRoutes[viewType]))}
+        </Heading>
         <Notice title={t('inbox.no_parties_found')} />
       </PageBase>
     );
@@ -199,6 +206,9 @@ export const Inbox = ({ viewType }: InboxProps) => {
 
   return (
     <PageBase>
+      <Heading as="h1" size="xl">
+        {t(getPageRouteTitle(PageRoutes[viewType]))}
+      </Heading>
       <div data-testid="inbox-toolbar">
         {currentAccountName ? (
           <Toolbar
