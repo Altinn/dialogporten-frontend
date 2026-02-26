@@ -1,11 +1,9 @@
-import { Breadcrumbs, Heading, ListItemLabel, PageBase, SettingsList, Toolbar } from '@altinn/altinn-components';
+import { Heading, ListItemLabel, PageBase, SettingsList, Toolbar } from '@altinn/altinn-components';
 import type { NotificationSettingsResponse, PartyFieldsFragment } from 'bff-types-generated';
 import { useTranslation } from 'react-i18next';
-import { useLocation } from 'react-router-dom';
 import { useParties } from '../../../api/hooks/useParties.ts';
 import { getNotificationSettingsLink } from '../../../auth';
 import { usePageTitle } from '../../../hooks/usePageTitle';
-import { getBreadcrumbs } from '../Settings/Settings.tsx';
 import { SettingsType, useSettings } from '../Settings/useSettings.tsx';
 import { useProfile } from '../useProfile';
 import styles from './notificationsPage.module.css';
@@ -16,7 +14,6 @@ export interface NotificationAccountsType extends PartyFieldsFragment {
 
 export const NotificationsPage = () => {
   const { t, i18n } = useTranslation();
-  const { search } = useLocation();
   const { isLoading: isLoadingUser } = useProfile();
   const { isLoading: isLoadingParties, isSelfIdentifiedUser } = useParties();
   const notificationSettingsUrl = getNotificationSettingsLink(i18n.language);
@@ -61,7 +58,6 @@ export const NotificationsPage = () => {
 
   return (
     <PageBase>
-      <Breadcrumbs items={getBreadcrumbs(t('sidebar.profile'), t('sidebar.profile.notifications'), search)} />
       <Heading size="xl">{t('profile.settings.notification_settings')}</Heading>
       <Toolbar
         search={{

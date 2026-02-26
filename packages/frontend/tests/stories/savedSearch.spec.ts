@@ -84,6 +84,7 @@ test.describe('Saved search', () => {
     await expect(savedSearchLink).toBeVisible();
 
     await savedSearchLink.click();
+    await page.keyboard.press('Escape');
     await expect(page.getByRole('link', { name: 'Innkalling til sesjon' })).toBeVisible();
     await expectIsCompanyPage(page);
   });

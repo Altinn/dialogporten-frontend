@@ -2,7 +2,6 @@ import {
   type FilterState,
   type GlobalHeaderProps,
   type HeaderProps,
-  type MenuItemProps,
   QueryLabel,
   type ToolbarSearchProps,
   useAccountSelector,
@@ -10,7 +9,7 @@ import {
 import type { ChangeEvent } from 'react';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, type LinkProps, useLocation, useNavigate } from 'react-router-dom';
 import { Analytics } from '../../analytics/analytics.ts';
 import { ANALYTICS_EVENTS } from '../../analytics/analyticsEvents.ts';
 import { useParties } from '../../api/hooks/useParties.ts';
@@ -169,9 +168,8 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
 
   const commonProps = {
     logo: {
-      as: (props: MenuItemProps) => {
-        // @ts-expect-error - LinkProps expects title: string, but we pass ReactNode
-        return <Link to={getFrontPageLink(currentPartyUuid, i18n.language)} {...props} />;
+      as: (props: LinkProps) => {
+        return <Link {...props} to={getFrontPageLink(currentPartyUuid, i18n.language)} />;
       },
     },
     locale: {
