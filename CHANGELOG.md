@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.124.10](https://github.com/Altinn/dialogporten-frontend/compare/v1.124.9...v1.124.10) (2026-02-25)
+
+
+### Bug Fixes
+
+* Add env flag to disable Application Insights dependency tracking ([#3776](https://github.com/Altinn/dialogporten-frontend/issues/3776)) ([0d76c07](https://github.com/Altinn/dialogporten-frontend/commit/0d76c07117dae38b9d2d9cc45beeea58645c9037))
+* **e2e:** failed saved search test ([#3772](https://github.com/Altinn/dialogporten-frontend/issues/3772)) ([da1af91](https://github.com/Altinn/dialogporten-frontend/commit/da1af911e0d0690eb969cd0a7ca61f35199cf87a))
+
 ## [1.124.9](https://github.com/Altinn/dialogporten-frontend/compare/v1.124.8...v1.124.9) (2026-02-24)
 
 
