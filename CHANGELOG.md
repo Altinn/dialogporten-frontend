@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.125.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.124.10...v1.125.0) (2026-02-26)
+
+
+### Features
+
+* **frontend:** add global breadcrumbs and h1 headers to every route ([#3784](https://github.com/Altinn/dialogporten-frontend/issues/3784)) ([af068f0](https://github.com/Altinn/dialogporten-frontend/commit/af068f063c88f167f23c8820b2dfec988b28ad24))
+
+
+### Bug Fixes
+
+* **altinn2messages:** add support for SI users ([#3778](https://github.com/Altinn/dialogporten-frontend/issues/3778)) ([464cbef](https://github.com/Altinn/dialogporten-frontend/commit/464cbef1b4d8faf109adbab6e7943ef79f88455a))
+* Profile actors missing "you" label ([#3785](https://github.com/Altinn/dialogporten-frontend/issues/3785)) ([3dca32a](https://github.com/Altinn/dialogporten-frontend/commit/3dca32a6e0aea4e838a05dae8bdee0e887a3afdf))
+
 ## [1.124.10](https://github.com/Altinn/dialogporten-frontend/compare/v1.124.9...v1.124.10) (2026-02-25)
 
 
