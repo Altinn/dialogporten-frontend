@@ -286,6 +286,7 @@ export const PartiesOverviewPage = () => {
       ),
       badge: (
         <>
+          {party.badge && <Badge {...party.badge} />}
           {party.isDeleted && <Badge color="neutral" label={t('badge.deleted')} variant="subtle" />}
           {party.isPreselectedParty && (
             <Button
