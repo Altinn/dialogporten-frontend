@@ -14,7 +14,7 @@ test.describe('Sidebar menu', () => {
     } else {
       await getSidebarMenuItem(page, PageRoutes.drafts).click();
     }
-    await expect(page.getByRole('heading', { name: 'utkast' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Utkast' })).toBeVisible();
 
     if (isMobile) {
       await page.getByRole('button', { name: 'Meny' }).click();

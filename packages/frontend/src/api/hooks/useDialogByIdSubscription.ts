@@ -31,7 +31,6 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
   const { logError } = useErrorLogger();
 
   const eventSourceRef = useRef<SSE | null>(null);
-  const lastInvalidatedDate = useRef(new Date().toISOString());
   const isFirstRender = useRef(true);
   const onMessageRef = useRef<((eventData: DialogEventData, rawEvent: MessageEvent) => void) | undefined>(undefined);
 
@@ -81,10 +80,6 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
         try {
           const jsonPayload = JSON.parse(event.data);
           const updatedType: DialogEventType | undefined = jsonPayload.data?.dialogEvents?.type;
-          const now = new Date().toISOString();
-          const diff = new Date(now).getTime() - new Date(lastInvalidatedDate.current).getTime();
-          if (diff <= 500) return;
-          lastInvalidatedDate.current = now;
 
           onMessageRef.current?.(jsonPayload, event);
           if (updatedType === DialogEventType.DialogDeleted) {
