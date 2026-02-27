@@ -5,6 +5,7 @@ import {
   expectIsCompanyPage,
   expectIsPersonPage,
   getSearchbarInput,
+  getToolbarAccountInfo,
   performSearch,
   selectPartyFromToolbar,
 } from './common';
@@ -30,8 +31,6 @@ test.describe('LoginPartyContext', () => {
   test('Shows available parties in dropdown when clicked', async ({ page }: { page: Page }) => {
     // Open party selector
     await page.locator('#toolbar-menu-root > button').click();
-    const options = page.locator('#toolbar-menu-listbox [role="option"]');
-    await expect(options.first()).toBeVisible();
 
     // Verify all expected parties are available
     const expectedParties = [
@@ -43,7 +42,8 @@ test.describe('LoginPartyContext', () => {
     ];
 
     for (const partyName of expectedParties) {
-      await expect(options.filter({ hasText: partyName }).first()).toBeVisible();
+      const party = await getToolbarAccountInfo(page, partyName);
+      expect(party.found).toEqual(true);
     }
   });
 
