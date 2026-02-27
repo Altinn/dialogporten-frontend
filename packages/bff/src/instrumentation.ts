@@ -22,7 +22,7 @@ import {
 import { ATTR_SERVICE_NAME, SEMRESATTRS_SERVICE_INSTANCE_ID } from '@opentelemetry/semantic-conventions';
 import config from './config.ts';
 import {
-  shouldDropSpanByAzureAppConfigurationAttributes,
+  filterAppConfigSpans,
 } from './instrumentationFilters.ts';
 
 const { openTelemetry } = config;
@@ -33,12 +33,12 @@ const spansExcludedFromExport = new Set([
   'graphql.validateSchema',
 ]);
 
-const shouldDropSpanByName = (spanName: string): boolean => {
+const filterGraphQLSpans = (spanName: string): boolean => {
   return spansExcludedFromExport.has(spanName);
 };
 
 const shouldDropSpan = (span: ReadableSpan): boolean => {
-  return shouldDropSpanByName(span.name) || shouldDropSpanByAzureAppConfigurationAttributes(span.attributes);
+  return filterGraphQLSpans(span.name) || filterAppConfigSpans(span.attributes);
 };
 
 // Configure HTTP instrumentation with filtering
