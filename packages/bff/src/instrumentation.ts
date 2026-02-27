@@ -21,6 +21,10 @@ import {
 } from '@opentelemetry/sdk-trace-base';
 import { ATTR_SERVICE_NAME, SEMRESATTRS_SERVICE_INSTANCE_ID } from '@opentelemetry/semantic-conventions';
 import config from './config.ts';
+import {
+  isAzureAppConfigurationOutgoingRequest,
+  shouldDropSpanByAzureAppConfigurationAttributes,
+} from './instrumentationFilters.ts';
 
 const { openTelemetry } = config;
 const spansExcludedFromExport = new Set([
@@ -32,6 +36,10 @@ const spansExcludedFromExport = new Set([
 
 const shouldDropSpanByName = (spanName: string): boolean => {
   return spansExcludedFromExport.has(spanName);
+};
+
+const shouldDropSpan = (span: ReadableSpan): boolean => {
+  return shouldDropSpanByName(span.name) || shouldDropSpanByAzureAppConfigurationAttributes(span.attributes);
 };
 
 // Configure HTTP instrumentation with filtering
@@ -49,11 +57,7 @@ const httpInstrumentationConfig: HttpInstrumentationConfig = {
     return false;
   },
   ignoreOutgoingRequestHook: (request) => {
-    // Ignore outgoing requests to Azure App Configuration
-    if ((request.hostname ?? request.host)?.includes('appconfiguration.azconfig.io')) {
-      return true;
-    }
-    return false;
+    return isAzureAppConfigurationOutgoingRequest(request);
   },
 };
 
@@ -84,7 +88,7 @@ class SpanNameFilteringProcessor implements SpanProcessor {
   }
 
   onEnd(span: ReadableSpan): void {
-    if (shouldDropSpanByName(span.name)) {
+    if (shouldDropSpan(span)) {
       return;
     }
     this.delegate.onEnd(span);
