@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.125.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.125.0...v1.125.1) (2026-02-27)
+
+
+### Bug Fixes
+
+* disable fetching a2 messages for SI users since this always will result in 401 ([#3787](https://github.com/Altinn/dialogporten-frontend/issues/3787)) ([6c5a69b](https://github.com/Altinn/dialogporten-frontend/commit/6c5a69bc49ae3be94fef94043a7c7f6bdafa95db))
+* Double badge in profile account list ([#3790](https://github.com/Altinn/dialogporten-frontend/issues/3790)) ([e4211fb](https://github.com/Altinn/dialogporten-frontend/commit/e4211fb43e01d009c641c53f877a772c16d6c4c2))
+
 ## [1.125.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.124.10...v1.125.0) (2026-02-26)
 
 
