@@ -22,7 +22,6 @@ import {
 import { ATTR_SERVICE_NAME, SEMRESATTRS_SERVICE_INSTANCE_ID } from '@opentelemetry/semantic-conventions';
 import config from './config.ts';
 import {
-  isAzureAppConfigurationOutgoingRequest,
   shouldDropSpanByAzureAppConfigurationAttributes,
 } from './instrumentationFilters.ts';
 
@@ -55,9 +54,6 @@ const httpInstrumentationConfig: HttpInstrumentationConfig = {
       return true;
     }
     return false;
-  },
-  ignoreOutgoingRequestHook: (request) => {
-    return isAzureAppConfigurationOutgoingRequest(request);
   },
 };
 
