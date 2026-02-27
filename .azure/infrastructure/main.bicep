@@ -1,4 +1,5 @@
 targetScope = 'subscription'
+import { baseTags } from '../functions/baseTags.bicep'
 
 param environment string
 param location string
@@ -81,10 +82,7 @@ var srcKeyVault = {
   resourceGroupName: secrets.sourceKeyVaultResourceGroup
 }
 
-var tags = {
-  Environment: environment
-  Product: 'Arbeidsflate'
-}
+var tags = baseTags({}, environment)
 
 var namePrefix = 'dp-fe-${environment}'
 

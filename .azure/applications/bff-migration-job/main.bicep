@@ -1,4 +1,5 @@
 targetScope = 'resourceGroup'
+import { baseTags } from '../../functions/baseTags.bicep'
 
 @minLength(3)
 param imageTag string
@@ -22,10 +23,7 @@ param workloadProfileName string = 'Consumption'
 var namePrefix = 'dp-fe-${environment}'
 var baseImageUrl = 'ghcr.io/altinn/dialogporten-frontend-'
 var containerAppJobName = '${namePrefix}-bff-migration-job'
-var tags = {
-  Environment: environment
-  Product: 'Arbeidsflate'
-}
+var tags = baseTags({}, environment)
 
 resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' existing = {
   name: containerAppEnvironmentName
