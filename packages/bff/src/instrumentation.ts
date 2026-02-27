@@ -23,19 +23,10 @@ import { ATTR_SERVICE_NAME, SEMRESATTRS_SERVICE_INSTANCE_ID } from '@opentelemet
 import config from './config.ts';
 import {
   filterAppConfigSpans,
+  filterGraphQLSpans,
 } from './instrumentationFilters.ts';
 
 const { openTelemetry } = config;
-const spansExcludedFromExport = new Set([
-  'graphql.parse',
-  'graphql.validate',
-  'graphql.parseSchema',
-  'graphql.validateSchema',
-]);
-
-const filterGraphQLSpans = (spanName: string): boolean => {
-  return spansExcludedFromExport.has(spanName);
-};
 
 const shouldDropSpan = (span: ReadableSpan): boolean => {
   return filterGraphQLSpans(span.name) || filterAppConfigSpans(span.attributes);

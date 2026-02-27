@@ -1,4 +1,14 @@
 const appConfigurationHostIdentifier = 'appconfiguration.azconfig.io';
+const spansExcludedFromExport = new Set([
+  'graphql.parse',
+  'graphql.validate',
+  'graphql.parseSchema',
+  'graphql.validateSchema',
+]);
+
+export const filterGraphQLSpans = (spanName: string): boolean => {
+  return spansExcludedFromExport.has(spanName);
+};
 
 export const isAzureAppConfigurationHost = (value: string | undefined): boolean => {
   return value?.toLowerCase().includes(appConfigurationHostIdentifier) ?? false;
