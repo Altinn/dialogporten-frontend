@@ -1,4 +1,5 @@
 targetScope = 'resourceGroup'
+import { baseTags } from '../../functions/baseTags.bicep'
 
 @minLength(3)
 param imageTag string
@@ -30,10 +31,7 @@ var namePrefix = 'dp-fe-${environment}'
 var baseImageUrl = 'ghcr.io/altinn/dialogporten-frontend-'
 var serviceName = 'frontend'
 var containerAppName = '${namePrefix}-${serviceName}'
-var tags = {
-  Environment: environment
-  Product: 'Arbeidsflate'
-}
+var tags = baseTags({}, environment)
 
 resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' existing = {
   name: containerAppEnvironmentName
