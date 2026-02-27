@@ -63,6 +63,7 @@ test.describe('Message navigation', () => {
 
     await page.getByRole('link', { name: 'Skatten din for 2022' }).click();
     await page.getByRole('link', { name: 'Tilbake', exact: true }).click();
-    await expect(page.getByRole('heading', { name: 'i papirkurv' })).toBeVisible();
+    await expect(page).toHaveURL(/\/bin(?:\?|$)/);
+    await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).toBeVisible();
   });
 });

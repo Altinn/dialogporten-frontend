@@ -21,10 +21,7 @@ import {
 } from '@opentelemetry/sdk-trace-base';
 import { ATTR_SERVICE_NAME, SEMRESATTRS_SERVICE_INSTANCE_ID } from '@opentelemetry/semantic-conventions';
 import config from './config.ts';
-import {
-  filterAppConfigSpans,
-  filterGraphQLSpans,
-} from './instrumentationFilters.ts';
+import { filterAppConfigSpans, filterGraphQLSpans } from './instrumentationFilters.ts';
 
 const { openTelemetry } = config;
 

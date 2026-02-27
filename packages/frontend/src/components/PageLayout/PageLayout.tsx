@@ -141,7 +141,7 @@ export const PageLayout: React.FC = () => {
     }
 
     return steps;
-  }, [currentPartyUuid, location.pathname, fromView, docTitle]);
+  }, [currentPartyUuid, location.pathname, fromView, docTitle, t]);
 
   let color: LayoutColor = 'neutral';
   let theme: LayoutTheme = 'default';
