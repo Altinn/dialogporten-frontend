@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.125.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.125.1...v1.125.2) (2026-02-27)
+
+
+### Bug Fixes
+
+* **subscription:** remove guard to prevent updates within 500 ms window ([#3793](https://github.com/Altinn/dialogporten-frontend/issues/3793)) ([1fbf27d](https://github.com/Altinn/dialogporten-frontend/commit/1fbf27d42c19eb4265f396e8e6cfcd72ef3426c7))
+
 ## [1.125.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.125.0...v1.125.1) (2026-02-27)
 
 
