@@ -21,17 +21,12 @@ import {
 } from '@opentelemetry/sdk-trace-base';
 import { ATTR_SERVICE_NAME, SEMRESATTRS_SERVICE_INSTANCE_ID } from '@opentelemetry/semantic-conventions';
 import config from './config.ts';
+import { filterAppConfigSpans, filterGraphQLSpans } from './instrumentationFilters.ts';
 
 const { openTelemetry } = config;
-const spansExcludedFromExport = new Set([
-  'graphql.parse',
-  'graphql.validate',
-  'graphql.parseSchema',
-  'graphql.validateSchema',
-]);
 
-const shouldDropSpanByName = (spanName: string): boolean => {
-  return spansExcludedFromExport.has(spanName);
+const shouldDropSpan = (span: ReadableSpan): boolean => {
+  return filterGraphQLSpans(span.name) || filterAppConfigSpans(span.attributes);
 };
 
 // Configure HTTP instrumentation with filtering
@@ -44,13 +39,6 @@ const httpInstrumentationConfig: HttpInstrumentationConfig = {
     }
     // Ignore readiness and liveness probes
     if (request.url === '/api/liveness' || request.url === '/api/readiness') {
-      return true;
-    }
-    return false;
-  },
-  ignoreOutgoingRequestHook: (request) => {
-    // Ignore outgoing requests to Azure App Configuration
-    if ((request.hostname ?? request.host)?.includes('appconfiguration.azconfig.io')) {
       return true;
     }
     return false;
@@ -84,7 +72,7 @@ class SpanNameFilteringProcessor implements SpanProcessor {
   }
 
   onEnd(span: ReadableSpan): void {
-    if (shouldDropSpanByName(span.name)) {
+    if (shouldDropSpan(span)) {
       return;
     }
     this.delegate.onEnd(span);
