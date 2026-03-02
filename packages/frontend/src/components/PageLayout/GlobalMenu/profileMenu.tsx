@@ -8,6 +8,7 @@ import {
   HeartIcon,
   InboxFillIcon,
   InformationSquareIcon,
+  MagnifyingGlassIcon,
   MenuGridIcon,
   PadlockLockedFillIcon,
   PersonCircleIcon,
@@ -15,6 +16,7 @@ import {
 import {
   getAboutNewAltinnLink,
   getAccessAMUILink,
+  getFrontPageLink,
   getNeedHelpLink,
   getNewFormLink,
   getStartNewBusinessLink,
@@ -206,6 +208,17 @@ export function buildProfileMenu({
       title: t('global_menu.all_forms_services'),
       as: createMenuItemComponent({
         to: getNewFormLink(currentPartyUuid, i18n.language),
+      }),
+      selected: false,
+    },
+    {
+      id: 'altinn-search',
+      groupId: 'global',
+      size: 'lg',
+      icon: MagnifyingGlassIcon,
+      title: t('global_menu.altinn_search'),
+      as: createMenuItemComponent({
+        to: `${getFrontPageLink(currentPartyUuid)}/sok?`,
       }),
       selected: false,
     },

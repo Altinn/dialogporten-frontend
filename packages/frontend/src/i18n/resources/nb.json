@@ -179,6 +179,7 @@
   "footer.nav.privacy_policy": "Personvern",
   "global_menu.about_altinn": "Om nye Altinn",
   "global_menu.all_forms_services": "Alle skjema og tjenester",
+  "global_menu.altinn_search": "Søk i Altinn",
   "global_menu.need_help": "Trenger du hjelp?",
   "global_menu.start_business": "Starte og drive bedrift",
   "inbox.filter.multiple.sender": "{count, plural, =0 {Velg tjenesteeier} one {# tjenesteeier} other {# tjenesteeiere}}",

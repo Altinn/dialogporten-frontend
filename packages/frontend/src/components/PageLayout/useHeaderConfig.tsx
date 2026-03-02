@@ -200,12 +200,6 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
         },
       },
     },
-    globalSearch: {
-      onSearch: (value: string) => {
-        const encodedValue = encodeURIComponent(value);
-        window.location.href = `${getFrontPageLink(currentPartyUuid)}/sok?q=${encodedValue}`;
-      },
-    },
     desktopMenu,
     accountSelector,
   };
