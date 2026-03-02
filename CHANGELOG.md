@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.125.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.125.2...v1.125.3) (2026-03-02)
+
+
+### Bug Fixes
+
+* **bff:** filter app configuration telemetry spans ([#3788](https://github.com/Altinn/dialogporten-frontend/issues/3788)) ([9f936e8](https://github.com/Altinn/dialogporten-frontend/commit/9f936e89265f38f3d2fe04c4e9de4d5f84ccfad2))
+* move search from header as link to menu ([#3798](https://github.com/Altinn/dialogporten-frontend/issues/3798)) ([30cbc71](https://github.com/Altinn/dialogporten-frontend/commit/30cbc7125d3ca033dad3f2ba2ccc593c25816523))
+
 ## [1.125.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.125.1...v1.125.2) (2026-02-27)
 
 
