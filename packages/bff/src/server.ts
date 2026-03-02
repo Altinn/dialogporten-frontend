@@ -9,7 +9,7 @@ import formBody from '@fastify/formbody';
 import session from '@fastify/session';
 import type { FastifySessionOptions } from '@fastify/session';
 import RedisStore from 'connect-redis';
-import Fastify from 'fastify';
+import Fastify, { type FastifyError } from 'fastify';
 import fastifyGraphiql from 'fastify-graphiql';
 import { oidc, userApi, verifyToken } from './auth/index.ts';
 import healthChecks from './azure/HealthChecks.ts';
@@ -78,7 +78,7 @@ const startServer = async (): Promise<void> => {
     server.register(session, cookieSessionConfig);
   }
 
-  server.setErrorHandler((error, request, reply) => {
+  server.setErrorHandler<FastifyError>((error, request, reply) => {
     logger.error(error, `Error handling request ${request.method} ${request.url}`);
 
     //csp nonce for inline styles
