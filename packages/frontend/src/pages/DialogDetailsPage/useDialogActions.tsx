@@ -16,6 +16,7 @@ import { PageRoutes } from '../routes.ts';
 export const useDialogActions = () => {
   const { t } = useTranslation();
   const { openSnackbar } = useSnackbar();
+  const { state } = useLocation();
   const { search } = useLocation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -73,10 +74,13 @@ export const useDialogActions = () => {
         'aria-label': t('dialog.toolbar.mark_as_unread'),
         as: 'button',
         onClick: () => {
-          if (location.pathname !== PageRoutes.inbox) {
+          if (
+            !(
+              [PageRoutes.bin, PageRoutes.inbox, PageRoutes.drafts, PageRoutes.archive, PageRoutes.sent] as string[]
+            ).includes(location.pathname)
+          )
             // Escape before a subscription of dialog cases a refetch and removes the label
-            navigate(PageRoutes.inbox + pruneSearchQueryParams(search.toString()));
-          }
+            navigate(state.fromView || PageRoutes.inbox + pruneSearchQueryParams(search.toString()));
           void handleUpdateLabel(
             dialogId,
             SystemLabel.MarkedAsUnopened,

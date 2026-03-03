@@ -6,6 +6,7 @@ import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { type PartyCookieName, getPartyFromCookie } from '../../cookie.ts';
 import {
+  FixedGlobalQueryParams,
   getSelectedAllPartiesFromQueryParams,
   getSelectedPartyFromQueryParams,
 } from '../../pages/Inbox/queryParams.ts';
@@ -34,10 +35,13 @@ interface UsePartiesOutput {
   organizationLimitReached: boolean;
 }
 
-const stripQueryParamsForParty = (searchParamString: string) => {
+const stripQueryParamsForParty = (searchParamString: string, includeSubAccounts = false) => {
   const params = new URLSearchParams(searchParamString);
-  params.delete('party');
-  params.delete('allParties');
+  params.delete(FixedGlobalQueryParams.party);
+  params.delete(FixedGlobalQueryParams.allParties);
+  if (!includeSubAccounts) {
+    params.delete(FixedGlobalQueryParams.subAccounts);
+  }
   return params.toString();
 };
 
@@ -45,10 +49,18 @@ type FlattenedParty = PartyFieldsFragment & {
   parentId?: string;
 };
 
-const createPartyParams = (searchParamString: string, key: string, value: string): URLSearchParams => {
+const createPartyParams = (
+  searchParamString: string,
+  key: string,
+  value: string,
+  includeSubAccounts = false,
+): URLSearchParams => {
   const params = new URLSearchParams(searchParamString);
-  params.delete('allParties');
-  params.delete('party');
+  params.delete(FixedGlobalQueryParams.allParties);
+  params.delete(FixedGlobalQueryParams.party);
+  if (!includeSubAccounts) {
+    params.delete(FixedGlobalQueryParams.subAccounts);
+  }
   params.set(key, value);
   return params;
 };
@@ -101,9 +113,13 @@ export const useParties = (): UsePartiesOutput => {
     setAllOrganizationsSelected(allOrgSelected);
     const partyIsPerson = partyIds.some((partyId) => partyId.includes('person')) || isSelfIdentifiedUser;
     const searchParamsString = searchParams.toString();
+    const currentParty = searchParams.get(FixedGlobalQueryParams.party);
+    const hasAllPartiesParam = searchParams.get(FixedGlobalQueryParams.allParties) === 'true';
+    const isSamePartySelection =
+      !allOrgSelected && !partyIsPerson && currentParty === partyIds[0] && !hasAllPartiesParam;
 
     if (allOrgSelected) {
-      const allPartiesParams = createPartyParams(searchParamsString, 'allParties', 'true');
+      const allPartiesParams = createPartyParams(searchParamsString, FixedGlobalQueryParams.allParties, 'true', true);
       handleChangSearchParams(allPartiesParams);
     } else if (partyIsPerson) {
       /* We need to exclude person from URL because it contains information we don't want to expose in the URL.
@@ -113,7 +129,12 @@ export const useParties = (): UsePartiesOutput => {
       const personParams = new URLSearchParams(stripQueryParamsForParty(searchParamsString));
       handleChangSearchParams(personParams);
     } else {
-      const params = createPartyParams(searchParamsString, 'party', partyIds[0]);
+      const params = createPartyParams(
+        searchParamsString,
+        FixedGlobalQueryParams.party,
+        partyIds[0],
+        isSamePartySelection,
+      );
       handleChangSearchParams(params);
     }
 

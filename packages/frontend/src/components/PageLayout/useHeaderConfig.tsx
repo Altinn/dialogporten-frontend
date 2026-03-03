@@ -201,7 +201,10 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
       },
     },
     desktopMenu,
-    accountSelector,
+    accountSelector: {
+      ...accountSelector,
+      scrollLock: true,
+    },
   };
 
   const ignoreCountFor = ['fromDate', 'toDate', 'search'];

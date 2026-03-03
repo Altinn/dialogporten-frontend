@@ -6,12 +6,14 @@ import type {
   BadgeProps,
   MenuItemGroups,
 } from '@altinn/altinn-components';
+import { useQueryClient } from '@tanstack/react-query';
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import i18n from 'i18next';
 import { type ChangeEvent, type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useParties } from '../../../api/hooks/useParties.ts';
+import { QUERY_KEYS } from '../../../constants/queryKeys.ts';
 import { useFeatureFlag } from '../../../featureFlags';
 import { useProfile } from '../../../pages/Profile';
 import { SettingsType } from '../../../pages/Profile/Settings/useSettings.tsx';
@@ -100,11 +102,11 @@ export const useAccounts = ({
 }: UseAccountsProps): UseAccountsOutput => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-
   const { setSelectedPartyIds } = useParties();
   const { user, favoritesGroup, shouldShowDeletedEntities } = useProfile();
   const isDeletedUnitsFilterEnabled = useFeatureFlag<boolean>('inbox.enableDeletedUnitsFilter');
   const [searchString, setSearchString] = useState<string>('');
+  const queryClient = useQueryClient();
   const accountSearchThreshold = 2;
   const showSearch = parties.length > accountSearchThreshold;
   const availableParties = availablePartiesInput ?? parties;
@@ -378,6 +380,8 @@ export const useAccounts = ({
     const isCurrentAccount = partyId === selectedParties[0]?.party;
 
     if (isCurrentAccount && !isAllPartiesSelected) return;
+
+    queryClient.setQueryData([QUERY_KEYS.SELECTED_SUB_ACCOUNTS], []);
 
     /* Prevent person urn in query param */
     if (isPersonAccount) {

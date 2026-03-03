@@ -114,11 +114,231 @@ export const parties: PartyFieldsFragment[] = [
       {
         "party": "urn:altinn:organization:identifier-no:315455685",
         "partyType": "Organization",
-        "name": "HUMAN TANKEFULL KATT SPESIALIST",
+        "name": "HUMAN TANKEFULL KATT SPESIALIST 01",
         "isCurrentEndUser": false,
         "isDeleted": false,
         "partyUuid": "2e68d30e-a8a5-48b6-9711-1930c58d3eba",
         "partyId": 51998618,
+        "dateOfBirth": null
+      },
+      {
+        "party": "urn:altinn:organization:identifier-no:315455686",
+        "partyType": "Organization",
+        "name": "HUMAN TANKEFULL KATT SPESIALIST 02",
+        "isCurrentEndUser": false,
+        "isDeleted": false,
+        "partyUuid": "fd6cf793-5ee4-43f5-88d4-458a96b6a6a1",
+        "partyId": 51998619,
+        "dateOfBirth": null
+      },
+      {
+        "party": "urn:altinn:organization:identifier-no:315455687",
+        "partyType": "Organization",
+        "name": "HUMAN TANKEFULL KATT SPESIALIST 03",
+        "isCurrentEndUser": false,
+        "isDeleted": false,
+        "partyUuid": "1cc2c9c2-7d8a-4d76-a09d-6b44a7e8eb1f",
+        "partyId": 51998620,
+        "dateOfBirth": null
+      },
+      {
+        "party": "urn:altinn:organization:identifier-no:315455688",
+        "partyType": "Organization",
+        "name": "HUMAN TANKEFULL KATT SPESIALIST 04",
+        "isCurrentEndUser": false,
+        "isDeleted": false,
+        "partyUuid": "7b1b75dd-90f0-4e86-8d0a-2c91c5b9e7f4",
+        "partyId": 51998621,
+        "dateOfBirth": null
+      },
+      {
+        "party": "urn:altinn:organization:identifier-no:315455689",
+        "partyType": "Organization",
+        "name": "HUMAN TANKEFULL KATT SPESIALIST 05",
+        "isCurrentEndUser": false,
+        "isDeleted": false,
+        "partyUuid": "0c8f9e63-9d16-4de7-8d4c-9d4a7f7c2d3c",
+        "partyId": 51998622,
+        "dateOfBirth": null
+      },
+      {
+        "party": "urn:altinn:organization:identifier-no:315455690",
+        "partyType": "Organization",
+        "name": "HUMAN TANKEFULL KATT SPESIALIST 06",
+        "isCurrentEndUser": false,
+        "isDeleted": false,
+        "partyUuid": "b6a9e8c7-5b1d-4f4a-9e1b-7c0b5a2c3e91",
+        "partyId": 51998623,
+        "dateOfBirth": null
+      },
+      {
+        "party": "urn:altinn:organization:identifier-no:315455691",
+        "partyType": "Organization",
+        "name": "HUMAN TANKEFULL KATT SPESIALIST 07",
+        "isCurrentEndUser": false,
+        "isDeleted": false,
+        "partyUuid": "3aa2a9d1-2e9d-4a5f-85fe-2b88d1b2d7d0",
+        "partyId": 51998624,
+        "dateOfBirth": null
+      },
+      {
+        "party": "urn:altinn:organization:identifier-no:315455692",
+        "partyType": "Organization",
+        "name": "HUMAN TANKEFULL KATT SPESIALIST 08",
+        "isCurrentEndUser": false,
+        "isDeleted": false,
+        "partyUuid": "c7d6c0e5-54df-4e4f-b2e1-4b5cb24d3e0b",
+        "partyId": 51998625,
+        "dateOfBirth": null
+      },
+      {
+        "party": "urn:altinn:organization:identifier-no:315455693",
+        "partyType": "Organization",
+        "name": "HUMAN TANKEFULL KATT SPESIALIST 09",
+        "isCurrentEndUser": false,
+        "isDeleted": false,
+        "partyUuid": "4e9cbd9b-1a62-4ef8-9ee4-3f0a80c4b45a",
+        "partyId": 51998626,
+        "dateOfBirth": null
+      },
+      {
+        "party": "urn:altinn:organization:identifier-no:315455694",
+        "partyType": "Organization",
+        "name": "HUMAN TANKEFULL KATT SPESIALIST 10",
+        "isCurrentEndUser": false,
+        "isDeleted": false,
+        "partyUuid": "8a6fd7a2-98a2-4d30-a0a1-0a7b5d6c9b2d",
+        "partyId": 51998627,
+        "dateOfBirth": null
+      },
+      {
+        "party": "urn:altinn:organization:identifier-no:315455695",
+        "partyType": "Organization",
+        "name": "HUMAN TANKEFULL KATT SPESIALIST 11",
+        "isCurrentEndUser": false,
+        "isDeleted": false,
+        "partyUuid": "2f4f6b0a-3f2a-43a0-bc8e-0c6d0d0f6cc1",
+        "partyId": 51998628,
+        "dateOfBirth": null
+      },
+      {
+        "party": "urn:altinn:organization:identifier-no:315455696",
+        "partyType": "Organization",
+        "name": "HUMAN TANKEFULL KATT SPESIALIST 12",
+        "isCurrentEndUser": false,
+        "isDeleted": false,
+        "partyUuid": "b1d2c3e4-5f6a-4b7c-8d9e-0f1a2b3c4d5e",
+        "partyId": 51998629,
+        "dateOfBirth": null
+      },
+      {
+        "party": "urn:altinn:organization:identifier-no:315455697",
+        "partyType": "Organization",
+        "name": "HUMAN TANKEFULL KATT SPESIALIST 13",
+        "isCurrentEndUser": false,
+        "isDeleted": false,
+        "partyUuid": "d2e3f4a5-b6c7-48d9-a0b1-c2d3e4f5a6b7",
+        "partyId": 51998630,
+        "dateOfBirth": null
+      },
+      {
+        "party": "urn:altinn:organization:identifier-no:315455698",
+        "partyType": "Organization",
+        "name": "HUMAN TANKEFULL KATT SPESIALIST 14",
+        "isCurrentEndUser": false,
+        "isDeleted": false,
+        "partyUuid": "e3f4a5b6-c7d8-49e0-a1b2-c3d4e5f6a7b8",
+        "partyId": 51998631,
+        "dateOfBirth": null
+      },
+      {
+        "party": "urn:altinn:organization:identifier-no:315455699",
+        "partyType": "Organization",
+        "name": "HUMAN TANKEFULL KATT SPESIALIST 15",
+        "isCurrentEndUser": false,
+        "isDeleted": false,
+        "partyUuid": "f4a5b6c7-d8e9-4af1-a2b3-c4d5e6f7a8b9",
+        "partyId": 51998632,
+        "dateOfBirth": null
+      },
+      {
+        "party": "urn:altinn:organization:identifier-no:315455700",
+        "partyType": "Organization",
+        "name": "HUMAN TANKEFULL KATT SPESIALIST 16",
+        "isCurrentEndUser": false,
+        "isDeleted": false,
+        "partyUuid": "a5b6c7d8-e9f0-4b02-a3b4-c5d6e7f8a9b0",
+        "partyId": 51998633,
+        "dateOfBirth": null
+      },
+      {
+        "party": "urn:altinn:organization:identifier-no:315455701",
+        "partyType": "Organization",
+        "name": "HUMAN TANKEFULL KATT SPESIALIST 17",
+        "isCurrentEndUser": false,
+        "isDeleted": false,
+        "partyUuid": "b6c7d8e9-f001-4c13-a4b5-c6d7e8f9a0b1",
+        "partyId": 51998634,
+        "dateOfBirth": null
+      },
+      {
+        "party": "urn:altinn:organization:identifier-no:315455702",
+        "partyType": "Organization",
+        "name": "HUMAN TANKEFULL KATT SPESIALIST 18",
+        "isCurrentEndUser": false,
+        "isDeleted": false,
+        "partyUuid": "c7d8e9f0-0123-4d24-a5b6-c7d8e9f0a1b2",
+        "partyId": 51998635,
+        "dateOfBirth": null
+      },
+      {
+        "party": "urn:altinn:organization:identifier-no:315455703",
+        "partyType": "Organization",
+        "name": "HUMAN TANKEFULL KATT SPESIALIST 19",
+        "isCurrentEndUser": false,
+        "isDeleted": false,
+        "partyUuid": "d8e9f001-2345-4e35-a6b7-d8e9f0a1b2c3",
+        "partyId": 51998636,
+        "dateOfBirth": null
+      },
+      {
+        "party": "urn:altinn:organization:identifier-no:315455704",
+        "partyType": "Organization",
+        "name": "HUMAN TANKEFULL KATT SPESIALIST 20",
+        "isCurrentEndUser": false,
+        "isDeleted": false,
+        "partyUuid": "e9f00123-4567-4f46-a7b8-e9f00123a4b5",
+        "partyId": 51998637,
+        "dateOfBirth": null
+      },
+      {
+        "party": "urn:altinn:organization:identifier-no:315455705",
+        "partyType": "Organization",
+        "name": "HUMAN TANKEFULL KATT SPESIALIST 21",
+        "isCurrentEndUser": false,
+        "isDeleted": false,
+        "partyUuid": "f0012345-6789-4057-a8b9-f0012345b6c7",
+        "partyId": 51998638,
+        "dateOfBirth": null
+      },
+      {
+        "party": "urn:altinn:organization:identifier-no:315455706",
+        "partyType": "Organization",
+        "name": "HUMAN TANKEFULL KATT SPESIALIST 22",
+        "isCurrentEndUser": false,
+        "isDeleted": false,
+        "partyUuid": "f0012345-67s9-4057-a8b9-f0012345b6c7",
+        "partyId": 51998638,
+        "dateOfBirth": null
+      },
+      {
+        "party": "urn:altinn:organization:identifier-no:315455707",
+        "partyType": "Organization",
+        "name": "HUMAN TANKEFULL KATT SPESIALIST 23",
+        "isCurrentEndUser": false,
+        "isDeleted": false,
+        "partyUuid": "f0012345-6789-4057-a8b9-f0012345b6cc",
+        "partyId": 51998638,
         "dateOfBirth": null
       }
     ],

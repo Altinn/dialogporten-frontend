@@ -74,8 +74,7 @@ test('Should exclude dialogs from deleted organizations when filter is OFF', asy
 
   await page.getByRole('button', { name: 'Lukk kontomeny' }).click();
 
-  await page.locator('#toolbar-menu-root > button').click();
-  await page.locator('button[aria-label="Alle virksomheter"]').click();
+  await page.getByRole('button', { name: 'Alle virksomheter' }).click();
 
   await page.waitForLoadState('networkidle');
 
