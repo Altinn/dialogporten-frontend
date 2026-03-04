@@ -38,6 +38,10 @@ param additionalEnvironmentVariables = [
     value: 'false'
   }
   {
+    name: 'APPLICATIONINSIGHTS_ENABLED'
+    value: 'false'
+  }
+  {
     name: 'OTEL_TRACES_SAMPLER_ARG'
     value: '0.05'
   }
