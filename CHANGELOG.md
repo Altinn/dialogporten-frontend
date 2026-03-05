@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.126.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.125.3...v1.126.0) (2026-03-05)
+
+
+### Features
+
+* Add notifications page email and sms verification ([#3684](https://github.com/Altinn/dialogporten-frontend/issues/3684)) ([b743c11](https://github.com/Altinn/dialogporten-frontend/commit/b743c116674432bc9b3d4452bb3937a2f04a5470))
+
 ## [1.125.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.125.2...v1.125.3) (2026-03-02)
 
 
