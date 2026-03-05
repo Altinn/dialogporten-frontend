@@ -8,6 +8,7 @@ import {
   getNotificationsettingsForCurrentUser,
   getOrCreateProfile,
   getUserFromCore,
+  getVerifiedAddresses,
 } from '../functions/profile.ts';
 import { getLanguageFromAltinnContext, languageCodes, updateAltinnPersistentContextValue } from './cookie.js';
 import { getOrganizationsFromRedis } from './organization.ts';
@@ -91,6 +92,13 @@ export const Query = objectType({
       type: list('NotificationSettingsResponse'),
       resolve: async (_source, _args, ctx) => {
         return (await getNotificationsettingsForCurrentUser(ctx)) ?? null;
+      },
+    });
+
+    t.field('verifiedAddresses', {
+      type: list('VerifiedAddressResponse'),
+      resolve: async (_source, _args, ctx) => {
+        return (await getVerifiedAddresses(ctx)) ?? [];
       },
     });
 

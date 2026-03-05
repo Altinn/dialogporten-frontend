@@ -4,4 +4,7 @@ fragment NotificationsettingForCurrentUserFields on NotificationSettingsResponse
   resourceIncludeList
   userId
   partyUuid
+  emailVerificationStatus
+  smsVerificationStatus
+  needsConfirmation
 }

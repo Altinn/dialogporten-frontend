@@ -249,6 +249,18 @@ export const NotificationSettingsResponse = objectType({
       description: 'ID of the party',
       resolve: (obj) => obj.partyUuid,
     });
+    t.nullable.string('emailVerificationStatus', {
+      description: 'Verification status for the email address (Unverified, Verified, Legacy)',
+      resolve: (obj) => obj.emailVerificationStatus,
+    });
+    t.nullable.string('smsVerificationStatus', {
+      description: 'Verification status for the SMS/phone number (Unverified, Verified, Legacy)',
+      resolve: (obj) => obj.smsVerificationStatus,
+    });
+    t.nullable.boolean('needsConfirmation', {
+      description: 'Indicates whether the notification settings need confirmation',
+      resolve: (obj) => obj.needsConfirmation,
+    });
   },
 });
 
@@ -260,6 +272,7 @@ export const NotificationSettingsInput = inputObjectType({
     t.string('emailAddress');
     t.string('phoneNumber');
     t.list.string('resourceIncludeList');
+    t.nullable.boolean('generateVerificationCode');
   },
 });
 
@@ -269,6 +282,22 @@ export interface NotificationSettingsInputData {
   emailAddress?: string;
   phoneNumber?: string;
   resourceIncludeList?: string[];
+  generateVerificationCode?: boolean;
+}
+
+export const VerifyAddressInput = inputObjectType({
+  name: 'VerifyAddressInput',
+  definition(t) {
+    t.string('value');
+    t.string('type');
+    t.string('verificationCode');
+  },
+});
+
+export interface VerifyAddressInputData {
+  value: string;
+  type: 'Email' | 'Sms';
+  verificationCode: string;
 }
 
 export const ProfileSettingPreference = objectType({
@@ -281,6 +310,14 @@ export const ProfileSettingPreference = objectType({
     });
     t.boolean('doNotPromptForParty', { resolve: (obj) => obj.doNotPromptForParty });
     t.nullable.boolean('shouldShowDeletedEntities', { resolve: (obj) => obj.shouldShowDeletedEntities });
+  },
+});
+
+export const VerifiedAddressResponse = objectType({
+  name: 'VerifiedAddressResponse',
+  definition(t) {
+    t.nullable.string('value');
+    t.nullable.string('addressType', { resolve: (obj) => obj.type ?? null });
   },
 });
 
