@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.126.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.126.0...v1.126.1) (2026-03-06)
+
+
+### Bug Fixes
+
+* Datepicker scrollbar fix ([#3811](https://github.com/Altinn/dialogporten-frontend/issues/3811)) ([3c368e5](https://github.com/Altinn/dialogporten-frontend/commit/3c368e5ab48bdfad775fcc28d73f2fad9deff755))
+
 ## [1.126.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.125.3...v1.126.0) (2026-03-05)
 
 
