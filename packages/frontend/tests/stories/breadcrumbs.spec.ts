@@ -3,8 +3,6 @@ import { expect, test } from '../fixtures';
 import { defaultAppURL } from '../index';
 import { getSidebarMenuItem } from './common';
 
-test('test', async () => {});
-
 test.describe('Breadcrumbs', () => {
   test('if expected breadcrumps are there', async ({ page }) => {
     await page.goto(defaultAppURL);

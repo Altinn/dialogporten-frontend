@@ -1,4 +1,11 @@
-import { BookmarkModal, BookmarkSettingsList, Heading, PageBase, Toolbar } from '@altinn/altinn-components';
+import {
+  BookmarkModal,
+  BookmarkSettingsList,
+  Heading,
+  PageBase,
+  Toolbar,
+  ToolbarMenu,
+} from '@altinn/altinn-components';
 import { t } from 'i18next';
 import { type ChangeEvent, useMemo, useState } from 'react';
 import { useParties } from '../../api/hooks/useParties.ts';
@@ -39,18 +46,21 @@ export const SavedSearchesPage = () => {
         {t(getPageRouteTitle(PageRoutes.savedSearches))}
       </Heading>
       {currentAccountName ? (
-        <Toolbar
-          accountMenu={{
-            items: accounts,
-            search: accountSearch,
-            groups: accountGroups,
-            label: currentAccountName,
-            onSelectId: (account: string) => onSelectAccount(account, PageRoutes.savedSearches),
-            virtualized: true,
-            title: t('parties.change_label'),
-            searchable: true,
-          }}
-        />
+        <Toolbar>
+          <ToolbarMenu
+            size="md"
+            items={accounts}
+            search={accountSearch}
+            groups={accountGroups}
+            label={currentAccountName}
+            onSelectId={(id: string) => {
+              onSelectAccount(id, PageRoutes.savedSearches);
+            }}
+            title={t('parties.change_label')}
+            searchable
+            virtualized
+          />
+        </Toolbar>
       ) : null}
       <Heading size="lg">{title}</Heading>
       {items?.length > 0 && <BookmarkSettingsList items={items} loading={isLoading} />}

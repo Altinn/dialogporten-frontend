@@ -29,6 +29,7 @@ interface UseDialogsProps {
   filterState?: FilterState;
   search?: string;
   serviceResources?: string[];
+  partyIdsOverride?: string[];
 }
 
 interface UseDialogsOutput {
@@ -48,25 +49,29 @@ export const useDialogs = ({
   filterState,
   search,
   serviceResources = [],
+  partyIdsOverride = [],
 }: UseDialogsProps): UseDialogsOutput => {
   const { organizations } = useOrganizations();
   const disableFlipNamesPatch = useFeatureFlag<boolean>('dialogporten.disableFlipNamesPatch');
   const isDeletedUnitsFilterEnabled = useFeatureFlag<boolean>('inbox.enableDeletedUnitsFilter');
+  const enableSubAccountsMenu = useFeatureFlag<boolean>('filters.enableSubAccountsMenu');
   const { shouldShowDeletedEntities } = useProfile();
   const { selectedParties, parties: allParties, allOrganizationsSelected } = useParties();
   const format = useFormat();
 
   const shouldExcludeDeleted = isDeletedUnitsFilterEnabled && !shouldShowDeletedEntities;
-
   const partiesToUse =
     allOrganizationsSelected && shouldExcludeDeleted
       ? selectedParties.filter((party) => !party.isDeleted)
       : selectedParties;
 
-  const partyIds = getPartyIds(partiesToUse, true);
+  const isPartyIdsOverridden = partyIdsOverride.length > 0;
+  const partyIds = isPartyIdsOverridden ? partyIdsOverride : getPartyIds(partiesToUse, !enableSubAccountsMenu);
   const previousTokensRef = useRef<string>('');
   const viewTypeKey = viewType ?? 'global';
-  const applicableParties = allOrganizationsSelected && serviceResources?.length ? [] : partyIds;
+  const applicableParties =
+    allOrganizationsSelected && !isPartyIdsOverridden && serviceResources?.length ? [] : partyIds;
+
   const queryVariables = normalizeFilterDefaults({
     filters: {
       partyURIs: applicableParties,
@@ -82,9 +87,8 @@ export const useDialogs = ({
     searchQuery: search,
   });
 
-  const queryVariableKey = removeUndefinedValues(queryVariables);
-
   const queryClient = useQueryClient();
+  const queryVariableKey = removeUndefinedValues(queryVariables);
   const previousPartyIdsRef = useRef<string[]>([]);
 
   const { data, isSuccess, isLoading, isFetching, isError, fetchNextPage, isFetchingNextPage, isPlaceholderData } =
@@ -106,6 +110,7 @@ export const useDialogs = ({
       },
       enabled:
         partyIds.length > 0 &&
+        partyIds.length <= 20 &&
         (applicableParties.length > 0 || serviceResources.length > 0) &&
         (applicableParties.length <= 20 || serviceResources.length <= 0),
       getNextPageParam(lastPage: GetAllDialogsForPartiesQuery): unknown | undefined | null {

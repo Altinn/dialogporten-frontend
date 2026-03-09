@@ -1,6 +1,9 @@
+import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from 'lz-string';
+
 export const FixedGlobalQueryParams = {
   party: 'party',
   allParties: 'allParties',
+  subAccounts: 'subAccounts',
   mock: 'mock',
   playwrightId: 'playwrightId',
 };
@@ -19,6 +22,29 @@ export const getSelectedPartyFromQueryParams = (searchParams: URLSearchParams): 
 
 export const getSelectedAllPartiesFromQueryParams = (searchParams: URLSearchParams): boolean => {
   return searchParams.get(FixedGlobalQueryParams.allParties) === 'true';
+};
+
+export const getSelectedSubAccountsFromQueryParams = (searchParams: URLSearchParams): string[] => {
+  return decodeSubAccountIds(searchParams.get(FixedGlobalQueryParams.subAccounts));
+};
+
+export const encodeSubAccountIds = (ids: string[]): string | undefined => {
+  if (!ids.length) return undefined;
+  const compressed = compressToEncodedURIComponent(JSON.stringify(ids));
+  return compressed || undefined;
+};
+
+const decodeSubAccountIds = (value: string | null): string[] => {
+  if (!value) return [];
+  const decompressed = decompressFromEncodedURIComponent(value);
+  if (!decompressed) return [];
+  try {
+    const parsed = JSON.parse(decompressed);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((id): id is string => typeof id === 'string' && id.length > 0);
+  } catch {
+    return [];
+  }
 };
 
 /**

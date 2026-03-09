@@ -14,6 +14,7 @@ test.describe('LoginPartyContext', () => {
   test.beforeEach(async ({ page }: { page: Page }) => {
     const dateScenarioPage = appUrlWithPlaywrightId('login-party-context');
     await page.goto(dateScenarioPage);
+    await page.waitForLoadState('networkidle');
   });
 
   test('Shows correct messages for person party by default', async ({ page }: { page: Page }) => {
@@ -68,12 +69,14 @@ test.describe('LoginPartyContext', () => {
     const toolbarMenu = page.locator('#toolbar-menu-root');
     await toolbarMenu.locator('> button').click();
     await toolbarMenu.locator('[role="option"][data-id="urn:altinn:organization:identifier-no:2"]').click();
-    await expect(page.getByRole('link', { name: 'This is a message 1 for' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'This is a message 1 for Testbedrift AS', exact: true })).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: 'This is a message 1 for Testbedrift AS sub party AVD SUB' }),
+    ).toBeVisible();
 
     // Navigate to parent party
     await toolbarMenu.locator('> button').click();
     await toolbarMenu.locator('[role="option"][data-id="urn:altinn:organization:identifier-sub:2"]').click();
-    await expect(page.getByRole('link', { name: 'This is a message 1 for' })).not.toBeVisible();
     await expect(page.getByRole('link', { name: 'Innkalling til sesjon' })).toBeVisible();
   });
 

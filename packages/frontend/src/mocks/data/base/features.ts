@@ -4,4 +4,6 @@ export const features = {
   "inbox.enableAlertBanner": false,
   "dialogporten.disableSubscriptions": false,
   "inbox.enableDeletedUnitsFilter": true,
+  "filters.enableSubAccountsMenu": true,
+  "filters.enableServiceFilter": true,
 }

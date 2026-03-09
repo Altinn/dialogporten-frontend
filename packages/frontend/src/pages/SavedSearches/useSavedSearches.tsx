@@ -30,6 +30,7 @@ import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { useDateFnsLocale, useFormatDistance } from '../../i18n/useDateFnsLocale.tsx';
 import { DateFilterOption, formatSingleDate } from '../Inbox/filters';
+import { FixedGlobalQueryParams } from '../Inbox/queryParams.ts';
 import { useOrganizations } from '../Inbox/useOrganizations.ts';
 import { PageRoutes } from '../routes.ts';
 import { buildCurrentStateURL, buildSavedSearchURL } from './bookmarkURL.ts';
@@ -312,9 +313,13 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
     const bookmarkLink = buildSavedSearchURL(savedSearch);
     const searchId = savedSearch.id.toString();
     const hiddenFilters = ['fromAndToDate'];
+    const hiddenFilterIds = [FixedGlobalQueryParams.subAccounts];
 
     const params: QueryItemProps[] = (savedSearch.data?.filters ?? [])
-      .filter((filter) => filter?.value && !hiddenFilters.includes(filter.value))
+      .filter(
+        (filter) =>
+          filter?.value && !hiddenFilters.includes(filter.value) && !hiddenFilterIds.includes(filter?.id ?? ''),
+      )
       .map((filter) => {
         if (filter?.id === 'org') {
           const org = getOrganization(organizations, filter.value ?? '')?.name || filter.value;
