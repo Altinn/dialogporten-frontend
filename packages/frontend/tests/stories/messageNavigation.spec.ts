@@ -43,7 +43,7 @@ test.describe('Message navigation', () => {
   });
 
   /* Fix this later */
-  test.skip('Back button navigates to previous page the message has been opened from', async ({ page, isMobile }) => {
+  test('Back button navigates to previous page the message has been opened from', async ({ page, isMobile }) => {
     await page.goto(pageWithMockOrganizations);
 
     await expect(page.locator('h2').filter({ hasText: /^Skatten din for 2022$/ })).toBeVisible();

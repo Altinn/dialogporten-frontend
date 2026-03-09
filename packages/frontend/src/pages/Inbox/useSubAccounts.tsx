@@ -163,7 +163,7 @@ export const useSubAccounts = ({
     }
     if (allOrganizationsSelected) {
       if (selectedSubAccountIds.length === 0) {
-        return t('parties.labels.units_count', { count: accounts.length });
+        return t('parties.labels.units_count', { count: subAccounts.length - 1 });
       }
       return t('parties.labels.units_count', { count: selectedSubAccountIds.length });
     }
