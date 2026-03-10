@@ -22,6 +22,7 @@ import type { NotificationAccountsType } from '../NotificationsPage/Notification
 import { useProfile } from '../useProfile.tsx';
 import { useVerifiedAddresses } from '../useVerifiedAddresses.tsx';
 import styles from './AccountAlertsDetails.module.css';
+import { ServiceResourceNotificationsModal } from './ServiceResourceNotificationsModal.tsx';
 
 export interface AccountAlertsDetailsProps {
   notificationParty?: NotificationAccountsType | null;
@@ -64,6 +65,8 @@ export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetails
 
   const isAnotherPerson = notificationParty?.partyType === 'Person' && !notificationParty.isCurrentEndUser;
   const isCompany = notificationParty?.partyType === 'Organization';
+
+  const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
 
   const handleClose = () => {
     document.activeElement?.closest('dialog')?.close();
@@ -258,106 +261,120 @@ export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetails
   }
 
   return (
-    <form onSubmit={handleUpdateNotificationSettings}>
-      <Section spacing={6}>
-        <Fieldset size="sm">
-          <Switch
-            label={t('profile.account_alerts.notify_sms')}
-            name="smsAlerts"
-            value="SMS"
-            checked={enablePhoneNotifications}
-            onChange={() => setEnablePhoneNotifications((prev) => !prev)}
-          />
-          {enablePhoneNotifications && (
-            <Field>
-              <div className={styles.fieldWrapper}>
-                <Input
-                  name="tel"
-                  size="sm"
-                  value={alertPhoneNumberState}
-                  onChange={(e) => setAlertPhoneNumberState(e.target.value)}
-                  placeholder={t('profile.account_alerts.phone_placeholder')}
-                  autoComplete="tel"
-                />
-                {alertPhoneNumberState && (
-                  <span data-size="sm" className={styles.badgeOverlay}>
-                    <Badge color={isPhoneVerified ? 'success' : 'company'}>
-                      {isPhoneVerified
-                        ? t('profile.verification.status_verified')
-                        : t('profile.verification.status_new_sms')}
-                    </Badge>
-                  </span>
-                )}
-              </div>
-            </Field>
-          )}
-          <Switch
-            label={t('profile.account_alerts.notify_email')}
-            name="emailAlerts"
-            value={t('profile.account_alerts.switch_email_value')}
-            checked={enableEmailNotifications}
-            onChange={() => setEnableEmailNotifications((prev) => !prev)}
-          />
-          {enableEmailNotifications && (
-            <Field>
-              <div className={styles.fieldWrapper}>
-                <Input
-                  name="email"
-                  size="sm"
-                  value={alertEmailAddressState}
-                  onChange={(e) => setAlertEmailAddressState(e.target.value)}
-                  placeholder={t('profile.account_alerts.email_placeholder')}
-                  autoComplete="email"
-                />
-                {alertEmailAddressState && (
-                  <span data-size="sm" className={styles.badgeOverlay}>
-                    <Badge color={isEmailVerified ? 'success' : 'company'}>
-                      {isEmailVerified
-                        ? t('profile.verification.status_verified')
-                        : t('profile.verification.status_new_address')}
-                    </Badge>
-                  </span>
-                )}
-              </div>
-            </Field>
-          )}
-        </Fieldset>
-        <Typography size="sm">
-          {isAnotherPerson && <p>{t('profile.notifications.personal_for_person')}</p>}
-          {isCompany && <p>{t('profile.notifications.personal_explanation')}</p>}
-        </Typography>
-        {needsVerification && (
+    <>
+      <form onSubmit={handleUpdateNotificationSettings}>
+        <Section spacing={6}>
+          <Fieldset size="sm">
+            <Switch
+              label={t('profile.account_alerts.notify_sms')}
+              name="smsAlerts"
+              value="SMS"
+              checked={enablePhoneNotifications}
+              onChange={() => setEnablePhoneNotifications((prev) => !prev)}
+            />
+            {enablePhoneNotifications && (
+              <Field>
+                <div className={styles.fieldWrapper}>
+                  <Input
+                    name="tel"
+                    size="sm"
+                    value={alertPhoneNumberState}
+                    onChange={(e) => setAlertPhoneNumberState(e.target.value)}
+                    placeholder={t('profile.account_alerts.phone_placeholder')}
+                    autoComplete="tel"
+                  />
+                  {alertPhoneNumberState && (
+                    <span data-size="sm" className={styles.badgeOverlay}>
+                      <Badge color={isPhoneVerified ? 'success' : 'company'}>
+                        {isPhoneVerified
+                          ? t('profile.verification.status_verified')
+                          : t('profile.verification.status_new_sms')}
+                      </Badge>
+                    </span>
+                  )}
+                </div>
+              </Field>
+            )}
+            <Switch
+              label={t('profile.account_alerts.notify_email')}
+              name="emailAlerts"
+              value={t('profile.account_alerts.switch_email_value')}
+              checked={enableEmailNotifications}
+              onChange={() => setEnableEmailNotifications((prev) => !prev)}
+            />
+            {enableEmailNotifications && (
+              <Field>
+                <div className={styles.fieldWrapper}>
+                  <Input
+                    name="email"
+                    size="sm"
+                    value={alertEmailAddressState}
+                    onChange={(e) => setAlertEmailAddressState(e.target.value)}
+                    placeholder={t('profile.account_alerts.email_placeholder')}
+                    autoComplete="email"
+                  />
+                  {alertEmailAddressState && (
+                    <span data-size="sm" className={styles.badgeOverlay}>
+                      <Badge color={isEmailVerified ? 'success' : 'company'}>
+                        {isEmailVerified
+                          ? t('profile.verification.status_verified')
+                          : t('profile.verification.status_new_address')}
+                      </Badge>
+                    </span>
+                  )}
+                </div>
+              </Field>
+            )}
+          </Fieldset>
           <Typography size="sm">
-            <p>{t('profile.account_alerts.new_addresses_must_verify')}</p>
+            {isAnotherPerson && <p>{t('profile.notifications.personal_for_person')}</p>}
+            {isCompany && (
+              <p>
+                {t('profile.notifications.personal_explanation')}{' '}
+                <button type="button" className={styles.linkButton} onClick={() => setIsServiceModalOpen(true)}>
+                  {t('profile.account_alerts.single_service_notifications')}
+                </button>
+              </p>
+            )}
           </Typography>
-        )}
-        <ButtonGroup>
-          {hasUnverifiedEmail && (
-            <Button
-              type="button"
-              variant="tinted"
-              onClick={() => handleTriggerVerification('email')}
-              disabled={isSendingCode}
-            >
-              {t('profile.account_alerts.verify_email')}
-            </Button>
+          {needsVerification && (
+            <Typography size="sm">
+              <p>{t('profile.account_alerts.new_addresses_must_verify')}</p>
+            </Typography>
           )}
-          {hasUnverifiedSms && (
-            <Button
-              type="button"
-              variant="tinted"
-              onClick={() => handleTriggerVerification('sms')}
-              disabled={isSendingCode}
-            >
-              {t('profile.account_alerts.verify_sms')}
+          <ButtonGroup>
+            {hasUnverifiedEmail && (
+              <Button
+                type="button"
+                variant="tinted"
+                onClick={() => handleTriggerVerification('email')}
+                disabled={isSendingCode}
+              >
+                {t('profile.account_alerts.verify_email')}
+              </Button>
+            )}
+            {hasUnverifiedSms && (
+              <Button
+                type="button"
+                variant="tinted"
+                onClick={() => handleTriggerVerification('sms')}
+                disabled={isSendingCode}
+              >
+                {t('profile.account_alerts.verify_sms')}
+              </Button>
+            )}
+            {!needsVerification && isDirty && <Button type="submit">{t('profile.account_alerts.save')}</Button>}
+            <Button type="button" variant="outline" onClick={handleClose}>
+              {t('word.close')}
             </Button>
-          )}
-          {!needsVerification && isDirty && <Button type="submit">{t('profile.account_alerts.save')}</Button>}
-          <Button type="button" variant="outline" onClick={handleClose}>
-            {t('word.close')}
-          </Button>
-        </ButtonGroup>
-      </Section>
-    </form>
+          </ButtonGroup>
+        </Section>
+      </form>
+      <ServiceResourceNotificationsModal
+        open={isServiceModalOpen}
+        onClose={() => setIsServiceModalOpen(false)}
+        notificationParty={notificationParty}
+      />
+    </>
   );
 };
