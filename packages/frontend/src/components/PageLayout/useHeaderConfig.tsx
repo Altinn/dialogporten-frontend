@@ -74,34 +74,31 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
     [favoritesGroup?.parties, addFavoriteParty, deleteFavoriteParty, logError],
   );
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  const handleSelectAccount = useCallback(
-    (accountUuid: string) => {
-      const targetRoute = isProfile ? PageRoutes.profile : PageRoutes.inbox;
-      const party = parties.find((p) => p.partyUuid === accountUuid);
+  const handleSelectAccount = (accountUuid: string) => {
+    const targetRoute = isProfile ? PageRoutes.profile : PageRoutes.inbox;
+    const party = parties.find((p) => p.partyUuid === accountUuid);
 
-      if (!party) {
-        console.error('Selected party not found:', accountUuid);
-        return;
-      }
+    if (!party) {
+      console.error('Selected party not found:', accountUuid);
+      return;
+    }
 
-      /* Selected party already selected */
-      if (selectedParties.length === 1 && selectedParties[0].party === party.party) {
-        return;
-      }
+    /* Selected party already selected */
+    if (selectedParties.length === 1 && selectedParties[0].party === party.party) {
+      return;
+    }
 
-      if (party.partyType === 'Person') {
-        setSelectedPartyIds([party.party], false);
-      } else {
-        const search = new URLSearchParams(location.search);
-        search.set('party', party.party);
-        navigate(`${targetRoute}?${search.toString()}`, {
-          replace: location.pathname === targetRoute,
-        });
-      }
-    },
-    [parties, isProfile, location.pathname, navigate, selectedParties, location.search],
-  );
+    if (party.partyType === 'Person') {
+      setSelectedPartyIds([party.party], false);
+    } else {
+      const search = new URLSearchParams(location.search);
+      search.set('party', party.party);
+      search.delete('allParties');
+      navigate(`${targetRoute}?${search.toString()}`, {
+        replace: location.pathname === targetRoute,
+      });
+    }
+  };
 
   const handleShowDeletedUnitsChange = useCallback(
     async (shouldShow: boolean) => {
@@ -203,7 +200,6 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
     desktopMenu,
     accountSelector: {
       ...accountSelector,
-      scrollLock: true,
     },
   };
 
