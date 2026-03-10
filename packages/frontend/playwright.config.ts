@@ -12,10 +12,12 @@ export default defineConfig({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 3 : 0,
-  workers: undefined,
+  workers: process.env.CI ? 1 : undefined,
   timeout: 15000,
   reporter: 'html',
   use: {
+    browserName: 'firefox',
+    defaultBrowserType: 'firefox',
     locale: 'nb-NO',
     timezoneId: 'Europe/Oslo',
     trace: 'on-first-retry',
@@ -31,7 +33,7 @@ export default defineConfig({
   projects: [
     {
       name: 'playwright',
-      use: { ...devices['Desktop Chrome'] },
+      use: { ...devices['Desktop Firefox'] },
     },
     {
       name: 'playwright-mobile',
@@ -40,7 +42,7 @@ export default defineConfig({
     {
       name: 'accessibility',
       testDir: './tests/accessibility',
-      use: { ...devices['Desktop Chrome'] },
+      use: { ...devices['Desktop Firefox'] },
     },
   ],
   webServer: {
