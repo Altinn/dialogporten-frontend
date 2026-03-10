@@ -1,15 +1,5 @@
-query getServiceResources(
-  $ids: [String!]
-  $resourceType: [String]
-  $org: [String]
-  $onlySelfIdentifiedUserEnabled: Boolean
-) {
-  serviceResources(
-    resourceType: $resourceType
-    ids: $ids
-    org: $org
-    onlySelfIdentifiedUserEnabled: $onlySelfIdentifiedUserEnabled
-  ) {
+query getServiceResources($ids: [String!], $resourceType: [String], $org: [String]) {
+  serviceResources(resourceType: $resourceType, ids: $ids, org: $org) {
     id
     title {
       nb
@@ -17,5 +7,6 @@ query getServiceResources(
       en
     }
     org
+    delegable
   }
 }

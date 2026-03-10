@@ -19,26 +19,26 @@ interface UseServiceResourceProps {
 
 export const useServiceResource = (props: UseServiceResourceProps = {}): UseServiceResourceOutput => {
   const { resourceType, ids } = props;
-  const { isSelfIdentifiedUser, selectedParties } = useParties();
+  const { selectedParties } = useParties();
   const isServiceFilterEnabled = useFeatureFlag<boolean>('filters.enableServiceFilter');
 
   const normalizedIds = useMemo(() => (ids?.length ? [...ids].sort((a, b) => a.localeCompare(b)) : undefined), [ids]);
 
-  const variables = useMemo(() => {
-    const v: GetServiceResourcesQueryVariables = {};
-    if (isSelfIdentifiedUser) v.onlySelfIdentifiedUserEnabled = true;
-    if (resourceType) v.resourceType = resourceType;
-    if (normalizedIds?.length) v.ids = normalizedIds;
-    return Object.keys(v).length ? v : undefined;
-  }, [isSelfIdentifiedUser, resourceType, normalizedIds]);
+  const variables = useMemo<GetServiceResourcesQueryVariables | undefined>(() => {
+    if (!resourceType && !normalizedIds?.length) {
+      return undefined;
+    }
+
+    return {
+      ...(resourceType && { resourceType }),
+      ...(normalizedIds?.length && { ids: normalizedIds }),
+    };
+  }, [resourceType, normalizedIds]);
 
   const enabled = isServiceFilterEnabled && selectedParties.length > 0;
 
   const { data, isLoading, isSuccess } = useAuthenticatedQuery<GetServiceResourcesQuery>({
-    queryKey: [
-      QUERY_KEYS.SERVICE_RESOURCES,
-      { resourceType: resourceType ?? null, ids: normalizedIds ?? null, self: isSelfIdentifiedUser },
-    ],
+    queryKey: [QUERY_KEYS.SERVICE_RESOURCES, { resourceType: resourceType ?? null, ids: normalizedIds ?? null }],
     queryFn: () => fetchServiceResources(variables),
     retry: 3,
     staleTime: 1000 * 60 * 20,
