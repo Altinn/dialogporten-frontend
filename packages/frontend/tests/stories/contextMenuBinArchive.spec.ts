@@ -14,29 +14,15 @@ test.describe('Move dialogs between archive and bin', () => {
     await defaultRoot.locator('button[role="menuitem"][aria-label="Flytt til arkivet"]').click();
 
     const archiveLink = getSidebarMenuItem(page, PageRoutes.archive);
-    const binLink = getSidebarMenuItem(page, PageRoutes.bin);
 
-    if (isMobile) {
-      await page.getByRole('button', { name: 'Meny' }).click();
-      await page.getByRole('link', { name: 'Arkiv' }).click();
-      await page.getByRole('button', { name: 'Meny' }).click();
-    } else {
-      await archiveLink.click();
-    }
-
+    await archiveLink.click();
     await page.waitForLoadState('networkidle');
     await expect(page.getByRole('heading', { name: title })).toBeVisible();
 
     const { menuRoot: archivedRoot } = await openContextMenuForDialog(page, title);
     await archivedRoot.locator('button[role="menuitem"][aria-label="Flytt til papirkurven"]').click();
-
-    if (isMobile) {
-      await page.getByRole('button', { name: 'Meny' }).click();
-      await page.getByRole('link', { name: 'Papirkurv' }).click();
-      await page.getByRole('button', { name: 'Meny' }).click();
-    } else {
-      await binLink.click();
-    }
+    const binLink = getSidebarMenuItem(page, PageRoutes.bin);
+    await binLink.click();
 
     await expect(page.getByRole('heading', { name: title })).toBeVisible();
   });

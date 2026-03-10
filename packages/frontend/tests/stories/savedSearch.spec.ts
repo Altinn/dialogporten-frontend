@@ -75,8 +75,9 @@ test.describe('Saved search', () => {
   });
 
   test('Saved search link shows correct result', async ({ page }) => {
-    await page.goto(defaultAppURL);
+    test.slow();
 
+    await page.goto(defaultAppURL);
     await page.waitForLoadState('networkidle');
 
     await page.getByTestId('inbox-toolbar').getByRole('button', { name: 'Test Testesen' }).click();

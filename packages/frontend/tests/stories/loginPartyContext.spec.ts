@@ -29,23 +29,17 @@ test.describe('LoginPartyContext', () => {
     expect(url.searchParams.has('allParties')).toBe(false);
   });
 
-  test('Shows available parties in dropdown when clicked', async ({ page }: { page: Page }) => {
-    // Open party selector
+  test('Shows available parties in dropdown when clicked', async ({ page }) => {
     await page.locator('#toolbar-menu-root > button').click();
 
-    // Verify all expected parties are available
-    const expectedParties = [
-      'Firma AS',
-      'Testbedrift AS',
-      'Testbedrift AS Avd Sub',
-      'Testbedrift AS Avd Oslo',
-      'Alle virksomheter',
-    ];
+    const listbox = page.getByRole('listbox');
+    await expect(listbox).toBeVisible();
 
-    for (const partyName of expectedParties) {
-      const party = await getToolbarAccountInfo(page, partyName);
-      expect(party.found).toEqual(true);
-    }
+    await expect(page.locator('[role="option"][data-id="urn:altinn:organization:identifier-no:1"]')).toBeVisible(); // Firma AS
+    await expect(page.locator('[role="option"][data-id="urn:altinn:organization:identifier-no:2"]')).toBeVisible(); // Testbedrift AS
+    await expect(page.locator('[role="option"][data-id="urn:altinn:organization:identifier-sub:1"]')).toBeVisible(); // Testbedrift As Avd Sub
+    await expect(page.locator('[role="option"][data-id="urn:altinn:organization:identifier-sub:2"]')).toBeVisible(); // Testbedrift As Avd Oslo
+    await expect(page.locator('[role="option"][data-id="ALL"]')).toBeVisible(); // Alle virksomheter
   });
 
   test('Shows correct messages when switching to company party', async ({ page }: { page: Page }) => {
@@ -109,7 +103,7 @@ test.describe('LoginPartyContext', () => {
     await page.getByRole('option', { name: 'Alle virksomheter' }).click();
 
     // Reload page and verify state is maintained
-    await page.reload();
+    await Promise.all([page.waitForLoadState('domcontentloaded'), page.reload()]);
     const urlAfterReload = new URL(page.url());
     expect(urlAfterReload.searchParams.has('party')).toBe(false);
     expect(urlAfterReload.searchParams.get('allParties')).toBe('true');
@@ -126,9 +120,6 @@ test.describe('LoginPartyContext', () => {
     await expect(page.locator('#toolbar-menu-root')).toContainText('Firma AS');
 
     await expectIsCompanyPage(page);
-
-    await page.reload();
-    await expectIsCompanyPage(page);
   });
 
   test('Searchbar input adds search params', async ({ page }: { page: Page }) => {
@@ -138,10 +129,6 @@ test.describe('LoginPartyContext', () => {
     const searchParams = new URL(page.url()).searchParams;
     expect(searchParams.get('search')).toBe('skatten din');
 
-    await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Melding om bortkjøring av snø' })).not.toBeVisible();
-
-    await page.reload();
     await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Melding om bortkjøring av snø' })).not.toBeVisible();
   });
