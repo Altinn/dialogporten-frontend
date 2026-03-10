@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.127.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.126.1...v1.127.0) (2026-03-10)
+
+
+### Features
+
+* Add single services notification managment dashboard ([#3824](https://github.com/Altinn/dialogporten-frontend/issues/3824)) ([911197a](https://github.com/Altinn/dialogporten-frontend/commit/911197a7bb144b0d1c013b776edc22f24511ebde))
+* select multiple subunits ([#3801](https://github.com/Altinn/dialogporten-frontend/issues/3801)) ([a50ea3a](https://github.com/Altinn/dialogporten-frontend/commit/a50ea3a5c4e02b37b4f95fc77b1925c3e882ccdb))
+* **serviceResource:** add delegable flag to service resource to determine whether the resource itself is delegable ([#3826](https://github.com/Altinn/dialogporten-frontend/issues/3826)) ([26adeb7](https://github.com/Altinn/dialogporten-frontend/commit/26adeb70826f9107905c1e5b581d1e916386d34e))
+
+
+### Bug Fixes
+
+* **onSelectAccount:** not dropping allParties in query param if organization account is selected from account selector in header ([#3825](https://github.com/Altinn/dialogporten-frontend/issues/3825)) ([163014f](https://github.com/Altinn/dialogporten-frontend/commit/163014f3d74b4fce53532d524a5c6d88805d6fe6))
+* **subAccountMenu:** incorrect count of orgs for label ([#3821](https://github.com/Altinn/dialogporten-frontend/issues/3821)) ([ee114d0](https://github.com/Altinn/dialogporten-frontend/commit/ee114d00f6976e352b148d579da61518542955ee))
+
 ## [1.126.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.126.0...v1.126.1) (2026-03-06)
 
 
