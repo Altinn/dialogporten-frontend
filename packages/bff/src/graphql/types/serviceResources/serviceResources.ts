@@ -1,5 +1,5 @@
 import { logger } from '@altinn/dialogporten-node-logger';
-import { booleanArg, extendType, list, objectType, stringArg } from 'nexus';
+import { extendType, list, objectType, stringArg } from 'nexus';
 import config from '../../../config.js';
 import type { LocalizedText, Resource } from './resourceRegistry.ts';
 import { getEnvironmentConfig } from './serviceResourcesConfig.js';
@@ -9,10 +9,10 @@ interface TransformedServiceResource {
   title: LocalizedText;
   org: string;
   resourceType: string;
-  selfIdentifiedUserEnabled: boolean;
+  delegable: boolean;
 }
 
-const serviceResourcesRedisKey = 'arbeidsflate-service-resources:v3';
+const serviceResourcesRedisKey = 'arbeidsflate-service-resources:v4';
 let refreshTimer: NodeJS.Timeout | null = null;
 
 async function fetchServiceResources(): Promise<Resource[]> {
@@ -48,8 +48,6 @@ export interface ResourceFilters {
   excludeOrgCodes?: string[];
   /** Filter by resource IDs - exclude these specific resource IDs */
   excludeIds?: string[];
-  /** Only include resources that are enabled for self-identified users */
-  onlySelfIdentifiedUserEnabled?: boolean;
   /** Only include resources that are visible */
   onlyVisible?: boolean;
   /** Only include resources that are delegable */
@@ -99,13 +97,6 @@ export async function storeServiceResourcesInRedis(filters?: ResourceFilters): P
         if (filters.excludeOrgCodes && filters.excludeOrgCodes.length > 0) {
           const orgCode = resource.hasCompetentAuthority?.orgcode || resource.hasCompetentAuthority?.organization || '';
           if (filters.excludeOrgCodes.some((code) => code.toLowerCase() === orgCode.toLowerCase())) {
-            return false;
-          }
-        }
-
-        // Filter by self-identified user enabled
-        if (filters.onlySelfIdentifiedUserEnabled === true) {
-          if (!resource.selfIdentifiedUserEnabled) {
             return false;
           }
         }
@@ -165,7 +156,7 @@ export async function storeServiceResourcesInRedis(filters?: ResourceFilters): P
         ''
       ).toLowerCase(),
       resourceType: resource.resourceType,
-      selfIdentifiedUserEnabled: resource.selfIdentifiedUserEnabled || false,
+      delegable: resource.delegable,
     }));
 
     await redisClient.set(serviceResourcesRedisKey, JSON.stringify(transformedResources), 'EX', 60 * 60 * 24); // Store for 24 hours
@@ -182,7 +173,6 @@ export async function getServiceResourcesFromRedis(filters?: {
   resourceType?: string[];
   ids?: string[];
   org?: string[];
-  onlySelfIdentifiedUserEnabled?: boolean;
 }): Promise<TransformedServiceResource[]> {
   try {
     const { default: redisClient } = await import('../../../redisClient.ts');
@@ -209,9 +199,6 @@ export async function getServiceResourcesFromRedis(filters?: {
         resources = resources.filter((resource) =>
           filters.org!.some((org) => org.toLowerCase() === resource.org.toLowerCase()),
         );
-      }
-      if (filters.onlySelfIdentifiedUserEnabled === true) {
-        resources = resources.filter((resource) => resource.selfIdentifiedUserEnabled);
       }
     }
 
@@ -307,6 +294,13 @@ export const ServiceResource = objectType({
         return resource.title;
       },
     });
+    t.field('delegable', {
+      type: 'Boolean',
+      description: 'Whether the service resource is delegable',
+      resolve: (resource) => {
+        return resource.delegable;
+      },
+    });
     t.string('org', {
       description: 'Organization (=service owner) code for the service resource',
       resolve: (resource) => {
@@ -344,17 +338,12 @@ export const ServiceResourceQuery = extendType({
             description: 'Filter by organization codes',
           }),
         ),
-        onlySelfIdentifiedUserEnabled: booleanArg({
-          description: 'Show only resources enabled for self-identified users',
-          default: false,
-        }),
       },
       resolve: async (_, args) => {
         const filters: {
           resourceType?: string[];
           ids?: string[];
           org?: string[];
-          onlySelfIdentifiedUserEnabled?: boolean;
         } = {};
 
         if (args.resourceType) {
@@ -373,10 +362,6 @@ export const ServiceResourceQuery = extendType({
           filters.org = args.org.filter(
             (orgCode: string | null | undefined): orgCode is string => orgCode !== null && orgCode !== undefined,
           );
-        }
-
-        if (args.onlySelfIdentifiedUserEnabled) {
-          filters.onlySelfIdentifiedUserEnabled = true;
         }
 
         return await getServiceResourcesFromRedis(Object.keys(filters).length > 0 ? filters : undefined);
