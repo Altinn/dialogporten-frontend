@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.128.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.127.1...v1.128.0) (2026-03-11)
+
+
+### Features
+
+* Feature flag profile resend verification code ([#3832](https://github.com/Altinn/dialogporten-frontend/issues/3832)) ([c08ab81](https://github.com/Altinn/dialogporten-frontend/commit/c08ab81095d4fbfd7465184de47ea712563ceb6a))
+
 ## [1.127.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.127.0...v1.127.1) (2026-03-11)
 
 
