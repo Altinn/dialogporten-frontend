@@ -34,7 +34,7 @@ export const encodeSubAccountIds = (ids: string[]): string | undefined => {
   return compressed || undefined;
 };
 
-const decodeSubAccountIds = (value: string | null): string[] => {
+export const decodeSubAccountIds = (value?: string | null): string[] => {
   if (!value) return [];
   const decompressed = decompressFromEncodedURIComponent(value);
   if (!decompressed) return [];

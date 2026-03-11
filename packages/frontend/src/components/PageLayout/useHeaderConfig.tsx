@@ -18,7 +18,7 @@ import { createFiltersURLQuery, getFrontPageLink } from '../../auth';
 import { useFeatureFlag } from '../../featureFlags';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { FilterCategory } from '../../pages/Inbox/filters.tsx';
-import { pruneSearchQueryParams } from '../../pages/Inbox/queryParams.ts';
+import { FixedGlobalQueryParams, pruneSearchQueryParams } from '../../pages/Inbox/queryParams.ts';
 import { useProfile } from '../../pages/Profile';
 import { PageRoutes } from '../../pages/routes.ts';
 import { useGlobalMenu } from './GlobalMenu';
@@ -94,6 +94,7 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
       const search = new URLSearchParams(location.search);
       search.set('party', party.party);
       search.delete('allParties');
+      search.delete(FixedGlobalQueryParams.subAccounts);
       navigate(`${targetRoute}?${search.toString()}`, {
         replace: location.pathname === targetRoute,
       });
