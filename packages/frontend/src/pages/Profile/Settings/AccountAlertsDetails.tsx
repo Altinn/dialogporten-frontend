@@ -17,6 +17,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { deleteNotificationsetting, updateNotificationsetting, verifyAddress } from '../../../api/queries.ts';
 import { QUERY_KEYS } from '../../../constants/queryKeys.ts';
+import { useFeatureFlag } from '../../../featureFlags/useFeatureFlag.ts';
 import { useErrorLogger } from '../../../hooks/useErrorLogger.ts';
 import type { NotificationAccountsType } from '../NotificationsPage/NotificationsPage.tsx';
 import { useProfile } from '../useProfile.tsx';
@@ -65,6 +66,8 @@ export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetails
 
   const isAnotherPerson = notificationParty?.partyType === 'Person' && !notificationParty.isCurrentEndUser;
   const isCompany = notificationParty?.partyType === 'Organization';
+
+  const enableResendVerificationCode = useFeatureFlag<boolean>('profile.enableResendVerificationCode');
 
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
 
@@ -149,31 +152,30 @@ export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetails
     }
   };
 
-  // TO-DO #3806: Resend functionality can be added after API supports it
-  // const handleResend = async () => {
-  //   if (!verificationState) return;
-  //   setIsSendingCode(true);
-  //   try {
-  //     if (verificationState.step === 'awaiting_email_code') {
-  //       await updateNotificationsetting({
-  //         partyUuid,
-  //         emailAddress: verificationState.address,
-  //         generateVerificationCode: true,
-  //       });
-  //     } else {
-  //       await updateNotificationsetting({
-  //         partyUuid,
-  //         phoneNumber: verificationState.address,
-  //         generateVerificationCode: true,
-  //       });
-  //     }
-  //   } catch (err) {
-  //     logError(err as Error, { context: 'AccountAlertsDetails.handleResend' }, 'Error resending verification code');
-  //     openSnackbar({ message: t('profile.account_alerts.snackbar.error'), color: 'danger' });
-  //   } finally {
-  //     setIsSendingCode(false);
-  //   }
-  // };
+  const handleResend = async () => {
+    if (!verificationState) return;
+    setIsSendingCode(true);
+    try {
+      if (verificationState.step === 'awaiting_email_code') {
+        await updateNotificationsetting({
+          partyUuid,
+          emailAddress: verificationState.address,
+          generateVerificationCode: true,
+        });
+      } else {
+        await updateNotificationsetting({
+          partyUuid,
+          phoneNumber: verificationState.address,
+          generateVerificationCode: true,
+        });
+      }
+    } catch (err) {
+      logError(err as Error, { context: 'AccountAlertsDetails.handleResend' }, 'Error resending verification code');
+      openSnackbar({ message: t('profile.account_alerts.snackbar.error'), color: 'danger' });
+    } finally {
+      setIsSendingCode(false);
+    }
+  };
 
   const handleUpdateNotificationSettings = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -248,13 +250,14 @@ export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetails
           <Button type="button" variant="tinted" onClick={handleConfirmCode} disabled={isConfirmingCode || !codeInput}>
             {t('profile.verification.confirm_button')}
           </Button>
+          {enableResendVerificationCode && (
+            <Button type="button" variant="outline" onClick={handleResend} disabled={isSendingCode}>
+              {t('profile.verification.resend_code')}
+            </Button>
+          )}
           <Button type="button" variant="outline" onClick={() => setVerificationState(null)}>
             {t('profile.account_alerts.cancel')}
           </Button>
-          {/* TO-DO #3806 Resend functionality can be added after API supports it */}
-          {/* <Button type="button" variant="outline" onClick={handleResend} disabled={isSendingCode}>
-            {t('profile.verification.resend_code')}
-          </Button> */}
         </ButtonGroup>
       </Section>
     );
