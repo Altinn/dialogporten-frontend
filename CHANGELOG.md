@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.127.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.127.0...v1.127.1) (2026-03-11)
+
+
+### Bug Fixes
+
+* **subAccounts:** filter hasOnlyAccessToSubParties and ensure they are properly disabled from account list ([#3829](https://github.com/Altinn/dialogporten-frontend/issues/3829)) ([2e878ac](https://github.com/Altinn/dialogporten-frontend/commit/2e878ac1df8b915d18fce15d2cc2e31ae78d44fb))
+
 ## [1.127.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.126.1...v1.127.0) (2026-03-10)
 
 
