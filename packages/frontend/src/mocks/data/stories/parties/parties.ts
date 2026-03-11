@@ -1090,14 +1090,14 @@ export const parties: PartyFieldsFragment[] = [
     ],
     "name": "HES UPOPULÆR KATT SKORPION",
     "isCurrentEndUser": false,
-    "isDeleted": false,
+    "isDeleted": true,
     "partyUuid": "9f0d9f46-bde6-430c-bf58-2aae2419613a",
     "partyId": 51788142,
     "dateOfBirth": null
   },
   {
     "party": "urn:altinn:organization:identifier-no:310759414",
-    "hasOnlyAccessToSubParties": false,
+    "hasOnlyAccessToSubParties": true,
     "partyType": "Organization",
     "subParties": [
       {

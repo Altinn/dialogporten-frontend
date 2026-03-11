@@ -5,9 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import type { PartyItemProp } from '../../components/PageLayout/Accounts/useAccounts.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
-import { useFeatureFlag } from '../../featureFlags';
 import { useGlobalState } from '../../useGlobalState.ts';
-import { useProfile } from '../Profile';
 import { getSelectedSubAccountsFromQueryParams } from './queryParams.ts';
 
 interface UseSubAccountsProps {
@@ -43,9 +41,7 @@ export const useSubAccounts = ({
   allOrganizationsSelected,
 }: UseSubAccountsProps): UseSubAccountsOutput => {
   const { t } = useTranslation();
-  const { shouldShowDeletedEntities } = useProfile();
   const [searchParams] = useSearchParams();
-  const isDeletedUnitsFilterEnabled = useFeatureFlag<boolean>('inbox.enableDeletedUnitsFilter');
   const [selectedSubAccountIds, setSelectedSubAccountIds] = useGlobalState<string[]>(
     QUERY_KEYS.SELECTED_SUB_ACCOUNTS,
     getSelectedSubAccountsFromQueryParams(searchParams),
@@ -59,8 +55,6 @@ export const useSubAccounts = ({
   const parentAccount = useMemo(() => {
     return !allOrganizationsSelected && selectedAccount?.isParent ? selectedAccount : undefined;
   }, [allOrganizationsSelected, selectedAccount]);
-
-  const includeDeletedParties = isDeletedUnitsFilterEnabled ? (shouldShowDeletedEntities ?? false) : true;
 
   const subAccountsAndAll = useMemo<PartyItemProp[]>(() => {
     if (allOrganizationsSelected) {
@@ -81,9 +75,8 @@ export const useSubAccounts = ({
   }, [allOrganizationsSelected, accounts, parentAccount]);
 
   const filteredSubAccounts = useMemo(() => {
-    if (includeDeletedParties) return subAccountsAndAll;
-    return subAccountsAndAll.filter((item) => !item.isDeleted);
-  }, [includeDeletedParties, subAccountsAndAll]);
+    return subAccountsAndAll.filter((item) => !item.disabled);
+  }, [subAccountsAndAll]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: Intentional to avoid trigger on updates
   useEffect(() => {
@@ -163,7 +156,7 @@ export const useSubAccounts = ({
     }
     if (allOrganizationsSelected) {
       if (selectedSubAccountIds.length === 0) {
-        return t('parties.labels.units_count', { count: subAccounts.length - 1 });
+        return t('parties.labels.units_count', { count: filteredSubAccounts.length });
       }
       return t('parties.labels.units_count', { count: selectedSubAccountIds.length });
     }
