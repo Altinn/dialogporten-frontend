@@ -6,4 +6,5 @@ export const features = {
   "inbox.enableDeletedUnitsFilter": true,
   "filters.enableSubAccountsMenu": true,
   "filters.enableServiceFilter": true,
+  "profile.enableResendVerificationCode": true,
 }
