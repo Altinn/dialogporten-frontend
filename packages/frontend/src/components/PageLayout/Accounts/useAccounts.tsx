@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import { useParties } from '../../../api/hooks/useParties.ts';
 import { QUERY_KEYS } from '../../../constants/queryKeys.ts';
 import { useFeatureFlag } from '../../../featureFlags';
+import { FixedGlobalQueryParams } from '../../../pages/Inbox/queryParams.ts';
 import { useProfile } from '../../../pages/Profile';
 import { SettingsType } from '../../../pages/Profile/Settings/useSettings.tsx';
 import type { PageRoutes } from '../../../pages/routes.ts';
@@ -389,18 +390,19 @@ export const useAccounts = ({
     } else {
       /* State will picked up by url change */
       if (partyId === 'ALL') {
-        search.set('allParties', 'true');
-        search.delete('party');
+        search.set(FixedGlobalQueryParams.allParties, 'true');
+        search.delete(FixedGlobalQueryParams.party);
+        search.delete(FixedGlobalQueryParams.subAccounts);
       } else {
         const party = parties.find((p) => p.party === partyId);
         if (!party) {
           console.error('Selected party not found:', partyId);
           return;
         }
-        search.set('party', party.party);
-        search.delete('allParties');
+        search.set(FixedGlobalQueryParams.party, party.party);
+        search.delete(FixedGlobalQueryParams.allParties);
+        search.delete(FixedGlobalQueryParams.subAccounts);
       }
-
       navigate(`${route}?${search.toString()}`, { replace: true });
     }
   };

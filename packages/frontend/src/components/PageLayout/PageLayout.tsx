@@ -66,6 +66,7 @@ export const PageLayout: React.FC = () => {
     queryClient.setQueryData(['search'], () => searchString || '');
   }, [searchParams]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const breadcrumbItems = useMemo(() => {
     const isProfile = location.pathname.includes(PageRoutes.profile);
     const steps = [

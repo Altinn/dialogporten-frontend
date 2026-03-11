@@ -35,13 +35,11 @@ interface UsePartiesOutput {
   organizationLimitReached: boolean;
 }
 
-const stripQueryParamsForParty = (searchParamString: string, includeSubAccounts = false) => {
+const stripQueryParamsForPersonParty = (searchParamString: string) => {
   const params = new URLSearchParams(searchParamString);
   params.delete(FixedGlobalQueryParams.party);
   params.delete(FixedGlobalQueryParams.allParties);
-  if (!includeSubAccounts) {
-    params.delete(FixedGlobalQueryParams.subAccounts);
-  }
+  params.delete(FixedGlobalQueryParams.subAccounts);
   return params.toString();
 };
 
@@ -49,18 +47,10 @@ type FlattenedParty = PartyFieldsFragment & {
   parentId?: string;
 };
 
-const createPartyParams = (
-  searchParamString: string,
-  key: string,
-  value: string,
-  includeSubAccounts = false,
-): URLSearchParams => {
+const createPartyParams = (searchParamString: string, key: string, value: string): URLSearchParams => {
   const params = new URLSearchParams(searchParamString);
   params.delete(FixedGlobalQueryParams.allParties);
   params.delete(FixedGlobalQueryParams.party);
-  if (!includeSubAccounts) {
-    params.delete(FixedGlobalQueryParams.subAccounts);
-  }
   params.set(key, value);
   return params;
 };
@@ -113,28 +103,19 @@ export const useParties = (): UsePartiesOutput => {
     setAllOrganizationsSelected(allOrgSelected);
     const partyIsPerson = partyIds.some((partyId) => partyId.includes('person')) || isSelfIdentifiedUser;
     const searchParamsString = searchParams.toString();
-    const currentParty = searchParams.get(FixedGlobalQueryParams.party);
-    const hasAllPartiesParam = searchParams.get(FixedGlobalQueryParams.allParties) === 'true';
-    const isSamePartySelection =
-      !allOrgSelected && !partyIsPerson && currentParty === partyIds[0] && !hasAllPartiesParam;
 
     if (allOrgSelected) {
-      const allPartiesParams = createPartyParams(searchParamsString, FixedGlobalQueryParams.allParties, 'true', true);
+      const allPartiesParams = createPartyParams(searchParamsString, FixedGlobalQueryParams.allParties, 'true');
       handleChangSearchParams(allPartiesParams);
     } else if (partyIsPerson) {
       /* We need to exclude person from URL because it contains information we don't want to expose in the URL.
        * However, if current end user has multiple parties of type person, we need to resolve to current end (user logged in)
        * user party from URL.
        */
-      const personParams = new URLSearchParams(stripQueryParamsForParty(searchParamsString));
+      const personParams = new URLSearchParams(stripQueryParamsForPersonParty(searchParamsString));
       handleChangSearchParams(personParams);
     } else {
-      const params = createPartyParams(
-        searchParamsString,
-        FixedGlobalQueryParams.party,
-        partyIds[0],
-        isSamePartySelection,
-      );
+      const params = createPartyParams(searchParamsString, FixedGlobalQueryParams.party, partyIds[0]);
       handleChangSearchParams(params);
     }
 

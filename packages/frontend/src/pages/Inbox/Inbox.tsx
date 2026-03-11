@@ -127,7 +127,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const { inboxSearch } = useHeaderConfig(filterState);
   const [currentSeenByLogModal, setCurrentSeenByLogModal] = useState<CurrentSeenByLog | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
-  const searchParamsString = searchParams.toString();
   const subAccountsParam = searchParams.get(FixedGlobalQueryParams.subAccounts) ?? '';
 
   const isAltinn2MessagesEnabled = useFeatureFlag<boolean>('inbox.enableAltinn2Messages');
@@ -218,26 +217,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
   }, [filterState, subAccountsParamForSave]);
 
   const savedSearchDisabled = isSavedSearchDisabled(savedSearchFilterState, enteredSearchValue);
-
-  const subAccountIdsToPersist = useMemo(() => {
-    if (!isSubAccountsMenuEnabled || !partyIdsOverride?.length) return [];
-    return partyIdsOverride;
-  }, [isSubAccountsMenuEnabled, partyIdsOverride]);
-
-  useEffect(() => {
-    const nextParams = new URLSearchParams(searchParamsString);
-    const encoded = encodeSubAccountIds(subAccountIdsToPersist);
-
-    if (encoded) {
-      nextParams.set(FixedGlobalQueryParams.subAccounts, encoded);
-    } else {
-      nextParams.delete(FixedGlobalQueryParams.subAccounts);
-    }
-
-    if (nextParams.toString() !== searchParamsString) {
-      setSearchParams(nextParams, { replace: true });
-    }
-  }, [searchParamsString, setSearchParams, subAccountIdsToPersist]);
 
   const {
     dialogs,

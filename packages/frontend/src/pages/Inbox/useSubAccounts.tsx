@@ -1,12 +1,10 @@
 import type { MenuItemGroups, MenuItemProps } from '@altinn/altinn-components';
 import type { PartyFieldsFragment } from 'bff-types-generated';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import type { PartyItemProp } from '../../components/PageLayout/Accounts/useAccounts.tsx';
-import { QUERY_KEYS } from '../../constants/queryKeys.ts';
-import { useGlobalState } from '../../useGlobalState.ts';
-import { getSelectedSubAccountsFromQueryParams } from './queryParams.ts';
+import { FixedGlobalQueryParams, encodeSubAccountIds, getSelectedSubAccountsFromQueryParams } from './queryParams.ts';
 
 interface UseSubAccountsProps {
   accounts: PartyItemProp[];
@@ -41,10 +39,25 @@ export const useSubAccounts = ({
   allOrganizationsSelected,
 }: UseSubAccountsProps): UseSubAccountsOutput => {
   const { t } = useTranslation();
-  const [searchParams] = useSearchParams();
-  const [selectedSubAccountIds, setSelectedSubAccountIds] = useGlobalState<string[]>(
-    QUERY_KEYS.SELECTED_SUB_ACCOUNTS,
-    getSelectedSubAccountsFromQueryParams(searchParams),
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  const selectedSubAccountIds = useMemo(() => {
+    return getSelectedSubAccountsFromQueryParams(searchParams);
+  }, [searchParams.get(FixedGlobalQueryParams.subAccounts)]);
+
+  const updateSelectedSubAccountIds = useCallback(
+    (ids: string[]) => {
+      const nextParams = new URLSearchParams(searchParams.toString());
+      const encoded = encodeSubAccountIds(ids);
+      if (encoded) {
+        nextParams.set(FixedGlobalQueryParams.subAccounts, encoded);
+      } else {
+        nextParams.delete(FixedGlobalQueryParams.subAccounts);
+      }
+      setSearchParams(nextParams, { replace: true });
+    },
+    [searchParams, setSearchParams],
   );
 
   const selectedPartyId = selectedParties[0]?.party;
@@ -78,20 +91,6 @@ export const useSubAccounts = ({
     return subAccountsAndAll.filter((item) => !item.disabled);
   }, [subAccountsAndAll]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: Intentional to avoid trigger on updates
-  useEffect(() => {
-    if (!selectedSubAccountIds.length) return;
-    if (accounts.length === 0) return;
-    if (!filteredSubAccounts.length) {
-      setSelectedSubAccountIds([]);
-      return;
-    }
-    const filteredIds = selectedSubAccountIds.filter((id) => filteredSubAccounts.some((item) => item.id === id));
-    if (filteredIds.length !== selectedSubAccountIds.length) {
-      setSelectedSubAccountIds(filteredIds);
-    }
-  }, [accounts.length, filteredSubAccounts, selectedSubAccountIds]);
-
   const allLabel = allOrganizationsSelected ? t('parties.labels.all_organizations') : t('parties.labels.all_units');
   const mainUnitLabel = t('parties.labels.main_unit');
   const subUnitLabel = t('parties.labels.sub_unit');
@@ -104,16 +103,29 @@ export const useSubAccounts = ({
           return subUnitLabel;
         }
       }
-
       return item.name;
     },
     [mainUnitLabel, parentAccount, subUnitLabel],
   );
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  const onSelectSubAccount = useCallback(
+    (id: string) => {
+      if (!id || id === ALL_SUB_ACCOUNTS_ID) {
+        updateSelectedSubAccountIds([]);
+        return;
+      }
+
+      if (selectedSubAccountIds.includes(id)) {
+        updateSelectedSubAccountIds(selectedSubAccountIds.filter((item: string) => item !== id));
+      } else {
+        updateSelectedSubAccountIds([...selectedSubAccountIds, id]);
+      }
+    },
+    [selectedSubAccountIds, updateSelectedSubAccountIds],
+  );
+
   const subAccounts = useMemo<MenuItemProps[]>(() => {
     if (!filteredSubAccounts.length) return [];
-
     const items = [...filteredSubAccounts].map((item) => {
       return {
         id: `subaccount-${item.id}`,
@@ -140,14 +152,19 @@ export const useSubAccounts = ({
         role: 'radio',
         name: 'subaccount',
         value: 'all',
-        onChange: () => {
-          setSelectedSubAccountIds([]);
-        },
+        onChange: () => updateSelectedSubAccountIds([]),
         checked: selectedSubAccountIds.length === 0,
       },
       ...items,
     ];
-  }, [allLabel, filteredSubAccounts, getSubAccountTitle, selectedSubAccountIds]);
+  }, [
+    allLabel,
+    filteredSubAccounts,
+    getSubAccountTitle,
+    selectedSubAccountIds,
+    onSelectSubAccount,
+    updateSelectedSubAccountIds,
+  ]);
 
   const getSubAccountLabel = useCallback(() => {
     if (selectedSubAccountIds.length === 1) {
@@ -167,33 +184,12 @@ export const useSubAccounts = ({
       return t('parties.labels.units_count', { count: selectedSubAccountIds.length });
     }
     return t('parties.labels.units_count', { count: filteredSubAccounts.length });
-  }, [
-    allLabel,
-    filteredSubAccounts,
-    selectedSubAccountIds,
-    t,
-    accounts?.length,
-    allOrganizationsSelected,
-    getSubAccountTitle,
-  ]);
-
-  const onSelectSubAccount = (id: string) => {
-    if (!id || id === ALL_SUB_ACCOUNTS_ID) {
-      setSelectedSubAccountIds([]);
-      return;
-    }
-
-    if (selectedSubAccountIds.includes(id)) {
-      setSelectedSubAccountIds(selectedSubAccountIds.filter((item: string) => item !== id));
-    } else {
-      setSelectedSubAccountIds([...selectedSubAccountIds, id]);
-    }
-  };
+  }, [allLabel, filteredSubAccounts, selectedSubAccountIds, t, allOrganizationsSelected, getSubAccountTitle]);
 
   const groups = {
     all: {
       title: allOrganizationsSelected
-        ? t('parties.labels.units_count', { count: accounts.length })
+        ? t('parties.labels.units_count', { count: filteredSubAccounts.length })
         : parentAccount?.name,
     },
   };
