@@ -19,7 +19,7 @@ test.describe('Saved search', () => {
   test('Create and delete saved search', async ({ page, isMobile }) => {
     const toolbarArea = page.getByTestId('inbox-toolbar');
     await toolbarArea.getByRole('button', { name: /legg til/i }).click();
-    await toolbarArea.getByRole('menuitem', { name: 'Velg tjenesteeier' }).first().click();
+    await toolbarArea.locator('#tool-filter-add').locator('button[data-id="org"], button#org').click();
     await page.locator('li').filter({ hasText: 'Oslo kommune' }).nth(1).click();
 
     if (isMobile) {
@@ -104,12 +104,12 @@ test.describe('Saved search', () => {
     /* Create saved search with Oslo kommune and status send from inbox */
 
     await page.getByRole('button', { name: 'Legg til filter' }).click();
-    await page.getByLabel('Velg tjenesteeier').click();
+    await page.locator('#tool-filter-add').locator('button[data-id="org"], button#org').click();
     await page.locator('input[aria-controls="toolbar-filter-menu-listbox"]').fill('Oslo');
     await page.locator('li').filter({ hasText: 'Oslo kommune' }).nth(1).click();
     await page.keyboard.press('Escape');
     await page.getByRole('button', { name: 'Legg til' }).click();
-    await page.getByLabel('Velg status').click();
+    await page.locator('#tool-filter-add').locator('button[data-id="status"], button#status').click();
     await page.locator('#SENT').click();
     await page.keyboard.press('Escape');
 
@@ -119,12 +119,12 @@ test.describe('Saved search', () => {
     await page.getByRole('button', { name: 'Nullstill' }).click();
 
     await page.getByRole('button', { name: 'Legg til filter' }).click();
-    await page.getByLabel('Velg tjenesteeier').click();
+    await page.locator('#tool-filter-add').locator('button[data-id="org"], button#org').click();
     await page.locator('input[aria-controls="toolbar-filter-menu-listbox"]').fill('Oslo');
     await page.locator('li').filter({ hasText: 'Oslo kommune' }).nth(1).click();
     await page.keyboard.press('Escape');
     await page.getByRole('button', { name: 'Legg til' }).click();
-    await page.getByLabel('Velg status').click();
+    await page.locator('#tool-filter-add').locator('button[data-id="status"], button#status').click();
     await page.locator('#SENT').click();
     await page.keyboard.press('Escape');
 

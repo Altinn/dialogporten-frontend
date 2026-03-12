@@ -1,5 +1,4 @@
 import {
-  type AvatarProps,
   type FilterProps,
   type FilterState,
   type MenuItemProps,
@@ -219,12 +218,6 @@ const createServiceOwnerFilter = (
           id: org.id ?? '',
           name: FilterCategory.ORG,
           title: localizedOrg?.name ?? '',
-          icon: {
-            name: localizedOrg?.name,
-            imageUrl: localizedOrg?.logo,
-            imageUrlAlt: t('dialog.imageAltURL', { companyName: localizedOrg?.name ?? org?.id }),
-            type: 'company',
-          } as AvatarProps,
           value: org.id ?? '',
           role: 'checkbox',
           groupId: mostRelevantOrgs.includes(org.id ?? '') ? 'most-relevant' : 'service-owners',

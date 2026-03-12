@@ -9,11 +9,7 @@ test.describe('Testing filter bar', () => {
 
     const toolbar = page.getByTestId('inbox-toolbar');
     await toolbar.getByRole('button', { name: /legg til/i }).click();
-    await toolbar
-      .locator('#tool-filter-add')
-      .getByRole('menuitem', { name: /velg tjenesteeier/i })
-      .locator('button[data-id="org"], button#org')
-      .click();
+    await toolbar.locator('#tool-filter-add').locator('button[data-id="org"], button#org').click();
     await page
       .getByRole('menuitemcheckbox', { name: 'Skatteetaten' })
       .or(page.getByRole('checkbox', { name: 'Skatteetaten' }))
@@ -43,7 +39,6 @@ test.describe('Testing filter bar', () => {
     await page
       .getByTestId('inbox-toolbar')
       .locator('#tool-filter-add')
-      .getByRole('menuitem', { name: /velg status/i })
       .locator('button[data-id="status"], button#status')
       .click();
     const statusMenu = page.getByTestId('filter-base-toolbar-filter-status');

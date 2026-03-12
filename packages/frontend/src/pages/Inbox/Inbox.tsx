@@ -358,14 +358,17 @@ export const Inbox = ({ viewType }: InboxProps) => {
               submitLabel={t('filter.show_all_results')}
               removeLabel={t('filter_bar.remove_filter')}
             />
-            <SaveSearchButton viewType={viewType} disabled={savedSearchDisabled} filterState={savedSearchFilterState} />
           </Toolbar>
         ) : null}
       </div>
       <AlertBanner showAlertBanner={isAlertBannerEnabled && !!alertBannerContent} />
       {isAltinn2MessagesEnabled && <Altinn2ActiveSchemasNotification selectedAccountId={selectedParties?.[0]?.party} />}
       {dialogsSuccess && !dialogItems.length && !isLoading && !isLimitReached && (
-        <EmptyState query={enteredSearchValue} viewType={viewType} searchMode={searchMode} />
+        <EmptyState
+          viewType={viewType}
+          searchMode={searchMode}
+          saveSearchButtonProps={{ viewType, disabled: savedSearchDisabled, filterState: savedSearchFilterState }}
+        />
       )}
       {isLimitReached && (
         <Notice title={limitReachedNoticeContent.title} description={limitReachedNoticeContent.description} />
@@ -373,7 +376,23 @@ export const Inbox = ({ viewType }: InboxProps) => {
       <>
         <DialogList
           items={dialogItems}
-          groups={groups}
+          groups={{
+            ...groups,
+            collapsed: {
+              title: (
+                <span style={{ display: 'flex', alignItems: 'center', columnGap: '0.25rem' }}>
+                  {groups.collapsed?.title}
+                  <span style={{ margin: '-0.5rem 0' }}>
+                    <SaveSearchButton
+                      viewType={viewType}
+                      disabled={savedSearchDisabled}
+                      filterState={savedSearchFilterState}
+                    />
+                  </span>
+                </span>
+              ),
+            },
+          }}
           sortGroupBy={([aKey], [bKey]) => (groups[bKey]?.orderIndex ?? 0) - (groups[aKey]?.orderIndex ?? 0)}
           isLoading={isLoading}
           highlightWords={searchMode ? [enteredSearchValue] : undefined}
