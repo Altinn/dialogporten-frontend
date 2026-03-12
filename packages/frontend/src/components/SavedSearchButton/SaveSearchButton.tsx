@@ -8,14 +8,21 @@ import { buildCurrentStateURL, findMatchingSavedSearch } from '../../pages/Saved
 import { useSavedSearches } from '../../pages/SavedSearches/useSavedSearches.tsx';
 import { useSearchString } from '../PageLayout/Search';
 
-type SaveSearchButtonProps = {
+export type SaveSearchButtonProps = {
   disabled?: boolean;
   viewType: InboxViewType;
   filterState: FilterState;
+  variant?: 'ghost' | 'outline';
 } & ButtonHTMLAttributes<HTMLButtonElement> &
   RefAttributes<HTMLButtonElement>;
 
-export const SaveSearchButton = ({ disabled, className, filterState, viewType }: SaveSearchButtonProps) => {
+export const SaveSearchButton = ({
+  disabled,
+  className,
+  filterState,
+  viewType,
+  variant = 'ghost',
+}: SaveSearchButtonProps) => {
   const { t } = useTranslation();
   const { selectedPartyIds } = useParties();
   const { enteredSearchValue } = useSearchString();
@@ -40,7 +47,7 @@ export const SaveSearchButton = ({ disabled, className, filterState, viewType }:
         className={className}
         onClick={() => onDeleteSavedSearch(matchingSavedSearch.id.toString())}
         loading={isCTALoading}
-        variant="ghost"
+        variant={variant}
         aria-label={t('filter_bar.saved_search')}
       >
         <BookmarkFillIcon />
@@ -56,7 +63,7 @@ export const SaveSearchButton = ({ disabled, className, filterState, viewType }:
       onClick={() =>
         saveSearch({ filters: filterState, selectedParties: selectedPartyIds, enteredSearchValue, viewType })
       }
-      variant="ghost"
+      variant={variant}
       loading={isCTALoading}
       aria-label={t('filter_bar.save_search')}
     >

@@ -16,10 +16,7 @@ test.describe('Sent and Awaiting status', () => {
     await toolbar.getByRole('button', { name: /legg til/i }).click();
     const addMenu = toolbar.locator('#tool-filter-add');
 
-    await addMenu
-      .getByRole('menuitem', { name: /velg status/i })
-      .locator('button[data-id="status"], button#status')
-      .click();
+    await addMenu.locator('button[data-id="status"], button#status').click();
     await page
       .getByRole('menuitemcheckbox', { name: /til behandling/i })
       .or(page.getByRole('checkbox', { name: /til behandling/i }))
@@ -33,11 +30,7 @@ test.describe('Sent and Awaiting status', () => {
   test('Can filter to show only awaiting status dialogs', async ({ page }) => {
     const toolbar = page.getByTestId('inbox-toolbar');
     await toolbar.getByRole('button', { name: /legg til/i }).click();
-    await toolbar
-      .locator('#tool-filter-add')
-      .getByRole('menuitem', { name: /velg status/i })
-      .locator('button[data-id="status"], button#status')
-      .click();
+    await toolbar.locator('#tool-filter-add').locator('button[data-id="status"], button#status').click();
     await page
       .getByRole('menuitemcheckbox', { name: /til behandling/i })
       .or(page.getByRole('checkbox', { name: /til behandling/i }))

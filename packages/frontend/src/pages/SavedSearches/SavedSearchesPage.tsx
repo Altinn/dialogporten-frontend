@@ -69,7 +69,7 @@ export const SavedSearchesPage = () => {
       </Heading>
       <BookmarkModal
         onClose={onCloseSavedSearch}
-        title={!openedSavedSearch ? t('savedSearches.edit_title') : ''}
+        title={t('savedSearches.edit_title')}
         open={!!openedSavedSearch}
         params={currentSearch?.params}
         buttons={[

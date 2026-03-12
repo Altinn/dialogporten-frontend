@@ -20,10 +20,7 @@ test.describe('Date filter, system date set 2024', () => {
     const toolbar = page.getByTestId('inbox-toolbar');
     await toolbar.getByRole('button', { name: /legg til/i }).click();
     const addMenu = toolbar.locator('#tool-filter-add');
-    await addMenu
-      .getByRole('menuitem', { name: /velg dato/i })
-      .locator('button[data-id="updated"]')
-      .click();
+    await addMenu.locator('button[data-id="updated"]').click();
 
     const item = page.getByRole('radio', { name: 'I dag' });
     await expect(item.first()).toBeVisible();
