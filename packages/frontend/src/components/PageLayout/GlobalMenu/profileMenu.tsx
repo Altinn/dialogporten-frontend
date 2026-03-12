@@ -192,7 +192,7 @@ export function buildProfileMenu({
       selected: false,
       icon: PadlockLockedFillIcon,
       as: 'a',
-      href: getAccessAMUILink(currentPartyUuid),
+      href: getAccessAMUILink(currentPartyUuid, true),
       title: t('altinn.access_management'),
       badge: {
         label: t('word.beta'),

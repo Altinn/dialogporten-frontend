@@ -241,7 +241,7 @@ export function buildInboxMenu({
         size: 'lg',
         icon: PadlockLockedFillIcon,
         as: 'a',
-        href: getAccessAMUILink(currentPartyUuid),
+        href: getAccessAMUILink(currentPartyUuid, true),
         title: t('altinn.access_management'),
         selected: false,
         badge: {

@@ -1,0 +1,18 @@
+query dialogLookup($instanceRef: String!) {
+  dialogLookup(instanceRef: $instanceRef) {
+    lookup {
+      ...dialogLookupPayload
+    }
+    errors {
+      message
+    }
+  }
+}
+
+fragment dialogLookupPayload on DialogLookup {
+  instanceRef
+  serviceResource {
+    id
+    isDelegable
+  }
+}

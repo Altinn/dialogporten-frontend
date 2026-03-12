@@ -18,6 +18,7 @@
   "activity.status.transmission_opened": "{transmission} opened by {actor}.",
   "additional_info.title": "More information",
   "altinn.access_management": "Access management",
+  "altinn.delegate_access": "Share and give access",
   "altinn.beta.exit": "Go to old Altinn",
   "altinn.beta.inbox": "Inbox Beta",
   "altinn.beta.try": "Try the new inbox",

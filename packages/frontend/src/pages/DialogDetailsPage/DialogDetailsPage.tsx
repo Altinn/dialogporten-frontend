@@ -1,5 +1,11 @@
-import { type Color, type ContextMenuProps, DialogLayout, type PageMenuProps } from '@altinn/altinn-components';
-import { ClockDashedIcon } from '@navikt/aksel-icons';
+import {
+  type Color,
+  type ContextMenuProps,
+  DialogLayout,
+  type MenuItemProps,
+  type PageMenuProps,
+} from '@altinn/altinn-components';
+import { ArrowRedoIcon, ClockDashedIcon } from '@navikt/aksel-icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +16,7 @@ import { useParties } from '../../api/hooks/useParties.ts';
 import { DialogDetails } from '../../components';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
+import { useDelegation } from './useDelegation.tsx';
 import { useDialogActions } from './useDialogActions.tsx';
 
 export const DialogDetailsPage = () => {
@@ -29,19 +36,33 @@ export const DialogDetailsPage = () => {
   } = useDialogById(parties, dialogId);
   const isLoading = isLoadingDialog || (!isSuccess && !isError);
   const displayDialogActions = !!(dialogId && dialog && !isLoading);
+  const { delegationHref } = useDelegation(dialogId);
 
   usePageTitle({ baseTitle: dialog?.title || '' });
   const createLabelUpdateActions = useDialogActions();
+  const delegationLink = delegationHref
+    ? ([
+        {
+          id: 'delegation-link',
+          groupId: 'logs',
+          title: t('altinn.delegate_access'),
+          as: 'a',
+          icon: ArrowRedoIcon,
+          href: delegationHref,
+        },
+      ] as MenuItemProps[])
+    : [];
   const contextMenu: ContextMenuProps = {
     id: 'dialog-context-menu',
     placement: 'right',
     'aria-label': t('dialog.context_menu.label', { title: dialog?.title }),
     items: [
+      ...delegationLink,
       ...(dialogId && dialog ? createLabelUpdateActions(dialogId, dialog?.label ?? [], dialog?.unread) : []),
       {
         id: 'activity-log',
-        groupId: 'logs',
-        label: t('dialog.activity_log.title'),
+        groupId: 'activity-logs',
+        title: t('dialog.activity_log.title'),
         as: 'button',
         icon: ClockDashedIcon,
         onClick: () => setIsActivityLogOpen(true),
@@ -85,7 +106,9 @@ export const DialogDetailsPage = () => {
         label: t('word.back'),
         as: (props: LinkProps) => <Link {...props} to={previousPath} state={{ scrollToId: dialogId }} />,
       }}
-      pageMenu={{ items: displayDialogActions ? labelActions : [] } as PageMenuProps}
+      pageMenu={
+        { items: displayDialogActions ? [...delegationLink, ...labelActions] : delegationLink } as PageMenuProps
+      }
       contextMenu={displayDialogActions ? contextMenu : undefined}
     >
       <DialogDetails

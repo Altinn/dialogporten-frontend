@@ -15,6 +15,7 @@ export const featureFlagDefinitions = [
   { key: 'filters.enableServiceFilter', type: 'boolean', default: false },
   { key: 'filters.enableSubAccountsMenu', type: 'boolean', default: false },
   { key: 'profile.enableResendVerificationCode', type: 'boolean', default: false },
+  { key: 'auth.enableDelegationLink', type: 'boolean', default: false },
 ] as const satisfies readonly FeatureFlagDefinition[];
 
 export type FeatureFlagKey = (typeof featureFlagDefinitions)[number]['key'];
