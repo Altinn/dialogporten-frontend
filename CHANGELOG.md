@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.128.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.128.0...v1.128.1) (2026-03-11)
+
+
+### Bug Fixes
+
+* saved searches with subunits werent loading properly and query blocks didnt show ([#3834](https://github.com/Altinn/dialogporten-frontend/issues/3834)) ([00a8090](https://github.com/Altinn/dialogporten-frontend/commit/00a8090c0fc8d02f744247fbd6d3148eaabf2a97))
+
 ## [1.128.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.127.1...v1.128.0) (2026-03-11)
 
 
