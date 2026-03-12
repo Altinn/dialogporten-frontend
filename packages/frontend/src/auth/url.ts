@@ -100,7 +100,7 @@ export const createChangeReporteeAndRedirect = (currentPartyUuid?: string, goTo?
   return url.toString();
 };
 
-export const getAccessAMUILink = (currentPartyUuid?: string) => {
+export const getAccessAMUILink = (currentPartyUuid?: string, changeReporteeAndRedirect?: boolean) => {
   const hostMap: Record<hostEnv, string> = {
     local: 'https://am.ui.at23.altinn.cloud/accessmanagement/ui',
     at23: 'https://am.ui.at23.altinn.cloud/accessmanagement/ui',
@@ -108,7 +108,12 @@ export const getAccessAMUILink = (currentPartyUuid?: string) => {
     yt: 'https://am.ui.at23.altinn.cloud/accessmanagement/ui', // there is no am ui in yt
     prod: 'https://am.ui.altinn.no/accessmanagement/ui',
   };
-  return createChangeReporteeAndRedirect(currentPartyUuid, hostMap[getEnvByHost()]);
+
+  if (changeReporteeAndRedirect) {
+    return createChangeReporteeAndRedirect(currentPartyUuid, hostMap[getEnvByHost()]);
+  }
+
+  return hostMap[getEnvByHost()];
 };
 
 const INFO_PORTAL_HOST_MAP: Record<hostEnv, string> = {

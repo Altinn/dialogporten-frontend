@@ -36,8 +36,8 @@ importers:
         specifier: 2.2.0
         version: 2.2.0(@azure/core-client@1.10.1)
       '@digdir/dialogporten-schema':
-        specifier: 1.106.2-23c0423
-        version: 1.106.2-23c0423
+        specifier: 1.106.2-8e2d8e5
+        version: 1.106.2-8e2d8e5
       '@fastify/cookie':
         specifier: ^11.0.2
         version: 11.0.2
@@ -1776,8 +1776,8 @@ packages:
   '@digdir/designsystemet-types@1.11.1':
     resolution: {integrity: sha512-sCPTFx1FplAfFIO8LMP68ts3HeUFgw/5Py9D+d5y4CPFJzxYk05/Bk7fHiKbVr57ZhbkKO4C88o7B2s63bOTlg==}
 
-  '@digdir/dialogporten-schema@1.106.2-23c0423':
-    resolution: {integrity: sha512-33qr7xcaQ+nJ5/rtXggT8MkFGvVLwjuGkzcPijuFWGz71/a7MjoQ/OYin0kdyFZ1kCbPlvqqxKgw17Rwn7SuBg==}
+  '@digdir/dialogporten-schema@1.106.2-8e2d8e5':
+    resolution: {integrity: sha512-dVEOzjwhcIU3E8OtBXTMkclYLRkoCRvAPEbmPo+5wt4xOh6hrK58PPDmzwjsnPSswTbkIG8zD/MlJclBH+HGYg==}
     engines: {node: '24'}
 
   '@discoveryjs/json-ext@0.5.7':
@@ -12002,7 +12002,7 @@ snapshots:
 
   '@digdir/designsystemet-types@1.11.1': {}
 
-  '@digdir/dialogporten-schema@1.106.2-23c0423': {}
+  '@digdir/dialogporten-schema@1.106.2-8e2d8e5': {}
 
   '@discoveryjs/json-ext@0.5.7': {}
 

@@ -16,6 +16,7 @@ const defaultFeatureFlags: Record<string, boolean | number | string> = {
   'filters.enableServiceFilter': false,
   'filters.enableSubAccountsMenu': false,
   'profile.enableResendVerificationCode': false,
+  'auth.enableDelegationLink': false,
 };
 
 /* Fore more details, cf. https://learn.microsoft.com/en-us/azure/azure-app-configuration/quickstart-feature-flag-javascript?tabs=entra-id */

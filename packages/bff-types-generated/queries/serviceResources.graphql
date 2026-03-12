@@ -7,6 +7,5 @@ query getServiceResources($ids: [String!], $resourceType: [String], $org: [Strin
       en
     }
     org
-    delegable
   }
 }
