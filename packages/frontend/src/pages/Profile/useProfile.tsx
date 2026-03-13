@@ -3,20 +3,38 @@ import type { GroupObject, ProfileQuery, User } from 'bff-types-generated';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  addFavoriteParty as addFavoritePartyRaw,
-  addFavoritePartyToGroup as addFavoritePartyToGroupRaw,
-  deleteFavoriteParty as deleteFavoritePartyRaw,
+  addFavoriteParty,
+  deleteFavoriteParty,
   getNotificationsettingsForCurrentUser,
   profile,
-  setPreSelectedParty as setPreSelectedPartyRaw,
-  updateProfileSettingPreference as updateProfileSettingPreferenceRaw,
+  setPreSelectedParty,
+  setShouldShowSubEntities,
+  setShowClientUnits,
 } from '../../api/queries.ts';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useGlobalState, useGlobalStringState } from '../../useGlobalState.ts';
 import type { PreselectedPartyOperationType } from './PartiesOverviewPage/PartiesOverviewPage.tsx';
 
-export const useProfile = (disabled?: boolean) => {
+interface UseProfileOutput {
+  profile: ProfileQuery['profile'] | undefined;
+  user: User;
+  groups: GroupObject[];
+  favoritesGroup: GroupObject | undefined;
+  isLoading: boolean;
+  isSuccess: boolean;
+  language: string;
+  shouldShowDeletedEntities: boolean | undefined | null;
+  addFavoriteParty: (partyId: string) => Promise<void>;
+  deleteFavoriteParty: (partyId: string) => Promise<void>;
+  setPreSelectedParty: (partyId: string, operationType: PreselectedPartyOperationType) => Promise<void>;
+  setShowClientUnits: (showClientUnits: boolean) => Promise<void>;
+  updateShowDeletedEntities: (shouldShow: boolean) => Promise<void>;
+  updateProfileLanguage: (language: string) => void;
+  getNotificationsettingsForCurrentUser: typeof getNotificationsettingsForCurrentUser;
+}
+
+export const useProfile = (disabled?: boolean): UseProfileOutput => {
   const { data, isLoading, isSuccess } = useAuthenticatedQuery<ProfileQuery>({
     queryKey: [QUERY_KEYS.PROFILE],
     staleTime: 10 * 1000 * 30,
@@ -45,18 +63,13 @@ export const useProfile = (disabled?: boolean) => {
     }
   }, [language]);
 
-  const deleteFavoriteParty = (partyId: string) =>
-    deleteFavoritePartyRaw(partyId).then(() => {
-      void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PROFILE] });
-    });
+  const handleDeleteFavoriteParty = async (partyId: string) => {
+    await deleteFavoriteParty(partyId);
+    void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PROFILE] });
+  };
 
-  const addFavoriteParty = (partyId: string) =>
-    addFavoritePartyRaw(partyId).then(() => {
-      void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PROFILE] });
-    });
-
-  const addFavoritePartyToGroup = async (partyId: string, groupName: string) => {
-    await addFavoritePartyToGroupRaw(partyId, groupName);
+  const handleAddFavoriteParty = async (partyId: string) => {
+    await addFavoriteParty(partyId);
     void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PROFILE] });
   };
 
@@ -64,18 +77,23 @@ export const useProfile = (disabled?: boolean) => {
   const serverShowDeletedEntities = data?.profile?.user?.profileSettingPreference?.shouldShowDeletedEntities;
   const shouldShowDeletedEntities = localShowDeletedEntities ?? serverShowDeletedEntities;
 
-  const updateShowDeletedEntities = async (shouldShow: boolean) => {
+  const handleSetShowDeletedEntities = async (shouldShow: boolean) => {
     setLocalShowDeletedEntities(shouldShow);
     try {
-      await updateProfileSettingPreferenceRaw(shouldShow);
+      await setShouldShowSubEntities(shouldShow);
     } catch {
       setLocalShowDeletedEntities(null);
       void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PROFILE] });
     }
   };
 
-  const setPreSelectedParty = async (partyId: string, operationType: PreselectedPartyOperationType) => {
-    await setPreSelectedPartyRaw(partyId, operationType);
+  const handleSetPreSelectedParty = async (partyId: string, operationType: PreselectedPartyOperationType) => {
+    await setPreSelectedParty(partyId, operationType);
+    void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PROFILE] });
+  };
+
+  const handleSetShowClientUnits = async (showClientUnits: boolean) => {
+    await setShowClientUnits(showClientUnits);
     void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PROFILE] });
   };
 
@@ -88,12 +106,12 @@ export const useProfile = (disabled?: boolean) => {
     favoritesGroup,
     isSuccess,
     getNotificationsettingsForCurrentUser,
-    deleteFavoriteParty,
-    addFavoriteParty,
-    addFavoritePartyToGroup,
-    setPreSelectedParty,
+    deleteFavoriteParty: handleDeleteFavoriteParty,
+    addFavoriteParty: handleAddFavoriteParty,
+    setPreSelectedParty: handleSetPreSelectedParty,
+    updateShowDeletedEntities: handleSetShowDeletedEntities,
+    setShowClientUnits: handleSetShowClientUnits,
     updateProfileLanguage,
     shouldShowDeletedEntities,
-    updateShowDeletedEntities,
   };
 };

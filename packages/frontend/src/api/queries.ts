@@ -15,10 +15,11 @@ import {
   type SavedSearchInput,
   type SavedSearchesQuery,
   type SetPreSelectedPartyMutation,
+  type SetShouldShowSubEntitiesMutation,
+  type SetShowClientUnitsMutation,
   type SystemLabel,
   type UpdateLanguageMutation,
   type UpdateNotificationSettingMutation,
-  type UpdateProfileSettingPreferenceMutation,
   type UpdateSavedSearchMutation,
   type UpdateSystemLabelMutation,
   type VerifiedAddressesQuery,
@@ -236,10 +237,12 @@ export const fetchServiceResources = (
   variables?: GetServiceResourcesQueryVariables,
 ): Promise<GetServiceResourcesQuery> => graphQLSDK.getServiceResources(variables);
 
-export const updateProfileSettingPreference = (
+export const setShouldShowSubEntities = (
   shouldShowDeletedEntities: boolean,
-): Promise<UpdateProfileSettingPreferenceMutation> =>
-  graphQLSDK.UpdateProfileSettingPreference({ shouldShowDeletedEntities });
+): Promise<SetShouldShowSubEntitiesMutation> => graphQLSDK.setShouldShowSubEntities({ shouldShowDeletedEntities });
+
+export const setShowClientUnits = (shouldShowClientUnits: boolean): Promise<SetShowClientUnitsMutation> =>
+  graphQLSDK.setShowClientUnits({ shouldShowClientUnits });
 
 export const getVerifiedAddresses = (): Promise<VerifiedAddressesQuery> => graphQLSDK.verifiedAddresses();
 

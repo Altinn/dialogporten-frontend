@@ -10,7 +10,8 @@ import {
   setPreSelectedParty,
   updateLanguage,
   updateNotificationsSetting,
-  updateProfileSettingPreference,
+  updateShowClientUnits,
+  updateShowDeletedEntities,
   verifyAddress,
 } from '../functions/profile.ts';
 import { createSavedSearch, deleteSavedSearch, updateSavedSearch } from '../functions/savedsearch.ts';
@@ -236,17 +237,38 @@ export const UpdateLanguage = extendType({
   },
 });
 
-export const UpdateProfileSettingPreference = extendType({
+export const setShouldShowSubEntities = extendType({
   type: 'Mutation',
   definition(t) {
-    t.field('updateProfileSettingPreference', {
+    t.field('setShouldShowSubEntities', {
       type: Response,
       args: {
         shouldShowDeletedEntities: booleanArg(),
       },
       resolve: async (_, { shouldShowDeletedEntities }, ctx) => {
         try {
-          await updateProfileSettingPreference(ctx, shouldShowDeletedEntities);
+          await updateShowDeletedEntities(ctx, shouldShowDeletedEntities);
+          return { success: true };
+        } catch (error) {
+          logger.error(error, 'Failed to update profile setting preference:');
+          return { success: false, message: 'Failed to update profile setting preference' };
+        }
+      },
+    });
+  },
+});
+
+export const setShowClientUnits = extendType({
+  type: 'Mutation',
+  definition(t) {
+    t.field('setShowClientUnits', {
+      type: Response,
+      args: {
+        shouldShowClientUnits: booleanArg(),
+      },
+      resolve: async (_, { shouldShowClientUnits }, ctx) => {
+        try {
+          await updateShowClientUnits(ctx, shouldShowClientUnits);
           return { success: true };
         } catch (error) {
           logger.error(error, 'Failed to update profile setting preference:');

@@ -1,6 +1,5 @@
 import { logger } from '@altinn/dialogporten-node-logger';
 import axios from 'axios';
-import type { FastifyRequest } from 'fastify';
 import config from '../../config.ts';
 import { GroupRepository, PartyRepository, ProfileRepository } from '../../db.ts';
 import { Group, Party, ProfileTable } from '../../entities.ts';
@@ -225,42 +224,17 @@ export const setPreSelectedParty = async (
   partyUuid: string,
   operationType: PreselectedPartyOperationType,
 ) => {
-  if (!partyUuid) {
-    logger.error('partyUuid is required');
+  if (operationType === 'set' && !partyUuid) {
     throw new Error('partyUuid is required');
   }
-  const token = await exchangeToken(context);
-  if (!token) {
-    logger.error('No token found in session');
-    throw new Error('No token found in session');
-  }
-  try {
-    const json = { preSelectedPartyUuid: operationType === 'set' ? partyUuid : null };
-    const response = await axios.patch(`${platformProfileAPI_url}users/current/profilesettings`, json, {
-      timeout: 30000,
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-    });
-    return response.data;
-  } catch (error) {
-    if (error && typeof error === 'object' && 'response' in error) {
-      const axiosError = error as { response?: { status?: number; data?: unknown } };
-      const responseData = axiosError.response?.data;
-      logger.error(
-        {
-          status: axiosError.response?.status,
-          responseData,
-          partyUuid,
-          url: `${platformProfileAPI_url}users/current/profilesettings`,
-        },
-        'Platform API error response:',
-      );
-    }
-    throw error;
-  }
+
+  return patchProfileSettings(context, {
+    preSelectedPartyUuid: operationType === 'set' ? partyUuid : null,
+  });
+};
+
+export const updateShowClientUnits = async (context: Context, value: boolean) => {
+  return patchProfileSettings(context, { showClientUnits: value });
 };
 
 export const getFavoritesFromCore = async (token: string) => {
@@ -317,6 +291,33 @@ export const getNotificationsettingsForCurrentUser = async (context: Context) =>
     }
   }
   return;
+};
+
+const patchProfileSettings = async (context: Context, payload: Record<string, unknown>) => {
+  const token = await exchangeToken(context);
+  if (!token) {
+    throw new Error('No token found in session');
+  }
+  try {
+    const response = await axios.patch(`${platformProfileAPI_url}users/current/profilesettings`, payload, {
+      timeout: 30000,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    if (error && typeof error === 'object' && 'response' in error) {
+      const axiosError = error as { response?: { status?: number; data?: unknown } };
+      logger.error(
+        { status: axiosError.response?.status, responseData: axiosError.response?.data },
+        'Platform API error patching profilesettings:',
+      );
+    }
+    throw error;
+  }
 };
 
 export const updateNotificationsSetting = async (
@@ -427,31 +428,8 @@ export const getNotificationAddressByOrgNumber = async (orgnr: string, context: 
   return data;
 };
 
-export const updateProfileSettingPreference = async (context: Context, shouldShowDeletedEntities: boolean) => {
-  const newToken = await exchangeToken(context);
-  if (!newToken) {
-    logger.error('No new token received');
-    throw new Error('Unable to exchange token');
-  }
-
-  try {
-    const { data } = await axios.patch(
-      `${platformProfileAPI_url}users/current/profilesettings`,
-      { shouldShowDeletedEntities },
-      {
-        timeout: 30000,
-        headers: {
-          Authorization: `Bearer ${newToken}`,
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-      },
-    );
-    return data;
-  } catch (error) {
-    logger.error(error, 'Error updating profile setting preference:');
-    throw new Error('Failed to update profile setting preference');
-  }
+export const updateShowDeletedEntities = async (context: Context, shouldShowDeletedEntities: boolean) => {
+  return patchProfileSettings(context, { shouldShowDeletedEntities });
 };
 
 export const verifyAddress = async (data: VerifyAddressInputData, context: Context) => {
