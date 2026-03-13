@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.129.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.128.1...v1.129.0) (2026-03-13)
+
+
+### Features
+
+* instance delegation to am ui ([#3836](https://github.com/Altinn/dialogporten-frontend/issues/3836)) ([cd3c856](https://github.com/Altinn/dialogporten-frontend/commit/cd3c856f067e1de4b33803bce2fc8af275c2a97c))
+* support instance delegation for dialog ([cd3c856](https://github.com/Altinn/dialogporten-frontend/commit/cd3c856f067e1de4b33803bce2fc8af275c2a97c))
+
+
+### Bug Fixes
+
+* Move save search button to search result/list ([#3838](https://github.com/Altinn/dialogporten-frontend/issues/3838)) ([b4db37c](https://github.com/Altinn/dialogporten-frontend/commit/b4db37cc79dbc2e9a0ba9529d0c8f6b50df6b810))
+* **profile:** refactor mutation endpoints for clarity and add mutation for updating showClientUnits ([#3844](https://github.com/Altinn/dialogporten-frontend/issues/3844)) ([6fc697f](https://github.com/Altinn/dialogporten-frontend/commit/6fc697f3df45cb11d23ef617818e1565f7c87b25))
+
 ## [1.128.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.128.0...v1.128.1) (2026-03-11)
 
 
