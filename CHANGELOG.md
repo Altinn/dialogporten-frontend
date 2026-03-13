@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.130.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.129.0...v1.130.0) (2026-03-13)
+
+
+### Features
+
+* add support for toggling showClientUnits in profile settings ([#3847](https://github.com/Altinn/dialogporten-frontend/issues/3847)) ([7c22ade](https://github.com/Altinn/dialogporten-frontend/commit/7c22ade17c254e6ec5940fdcabe7bad2536d4152))
+
+
+### Bug Fixes
+
+* **ServiceResourceNotificationsModal:** minor refactoring for ui optimization ([#3848](https://github.com/Altinn/dialogporten-frontend/issues/3848)) ([2a88ce2](https://github.com/Altinn/dialogporten-frontend/commit/2a88ce2e7ded3521406d2a80985f5ee4711c5487))
+
 ## [1.129.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.128.1...v1.129.0) (2026-03-13)
 
 
