@@ -10,7 +10,15 @@ import {
   type UsedByLogItemProps,
 } from '@altinn/altinn-components';
 import type { SettingsItemVariant } from '@altinn/altinn-components/dist/types/lib/components/Settings/SettingsItem';
-import { BellIcon, HouseHeartIcon, MobileIcon, PaperplaneIcon, PersonRectangleIcon } from '@navikt/aksel-icons';
+import {
+  BellIcon,
+  BriefcaseIcon,
+  HouseHeartIcon,
+  MobileIcon,
+  PaperplaneIcon,
+  PersonRectangleIcon,
+  TrashIcon,
+} from '@navikt/aksel-icons';
 import { type ChangeEvent, type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParties } from '../../../api/hooks/useParties.ts';
@@ -29,6 +37,7 @@ export enum SettingsType {
   primary = 'primary',
   profiles = 'profiles',
   favorites = 'favorites',
+  other = 'other',
 }
 
 interface UseSettingsOptions {
@@ -58,6 +67,7 @@ const getDefaultGroups = (t: (key: string) => string) => ({
   [SettingsType.persons]: { title: t('profile.settings.person_notifications') },
   [SettingsType.primary]: { title: t('profile.settings.favorite_notifications') },
   [SettingsType.profiles]: { title: t('profile.settings.alternative_addresses') },
+  [SettingsType.other]: { title: t('profile.settings.other') },
 });
 
 const getDefaultOptions = (t: (key: string) => string) => ({
@@ -97,7 +107,8 @@ export const useSettings = ({
   disabled = false,
 }: UseSettingsInput = {}): UseSettingsOutput => {
   const { isLoading: isLoadingParties, parties, selectedParties, allOrganizationsSelected } = useParties();
-  const { user } = useProfile();
+  const { user, showClientUnits, setShowClientUnits, shouldShowDeletedEntities, updateShowDeletedEntities } =
+    useProfile();
   const { t } = useTranslation();
   const [searchString, setSearchString] = useState<string>('');
   const { partiesWithNotificationSettings, uniqueEmailAddresses, uniquePhoneNumbers } =
@@ -393,12 +404,46 @@ export const useSettings = ({
     },
   ];
 
+  const otherSettings: SettingsItemProps[] = [
+    {
+      id: 'other-settings-deleted-units',
+      checked: shouldShowDeletedEntities ?? false,
+      value: 'shouldShowDeletedEntities',
+      onChange: (event: ChangeEvent<HTMLInputElement>) => {
+        void updateShowDeletedEntities(event.target.checked);
+      },
+      groupId: SettingsType.other,
+      variant: 'switch',
+      description: shouldShowDeletedEntities
+        ? t('profile.settings.show_deleted_units.enabled')
+        : t('profile.settings.show_deleted_units.disabled'),
+      icon: TrashIcon,
+      title: t('profile.settings.show_deleted_units.title'),
+    },
+    {
+      id: 'other-settings-show-client-units',
+      value: 'showClientUnits',
+      onChange: (event: ChangeEvent<HTMLInputElement>) => {
+        void setShowClientUnits(event.target.checked);
+      },
+      checked: showClientUnits ?? false,
+      groupId: SettingsType.other,
+      variant: 'switch',
+      description: showClientUnits
+        ? t('profile.settings.show_client_units.enabled')
+        : t('profile.settings.show_client_units.disabled'),
+      title: t('profile.settings.show_client_units.title'),
+      icon: BriefcaseIcon,
+    },
+  ];
+
   const allSettings = [
     ...contactSettings,
     ...alertSettings,
     ...contactProfilePhoneSettings,
     ...contactProfileEmailSettings,
     ...accountAlertSettings,
+    ...otherSettings,
   ].map((item) => (disabled ? { ...item, disabled: true } : item));
 
   const settings = allSettings.filter((item) => {

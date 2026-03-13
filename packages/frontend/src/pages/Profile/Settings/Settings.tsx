@@ -17,7 +17,7 @@ export const Settings = () => {
     isSelfIdentifiedUser,
     disabled: isSelfIdentifiedUser,
     options: {
-      includeGroups: [SettingsType.contact],
+      includeGroups: [SettingsType.contact, SettingsType.other],
     },
   });
 

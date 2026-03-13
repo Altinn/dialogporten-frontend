@@ -25,6 +25,7 @@ interface UseProfileOutput {
   isSuccess: boolean;
   language: string;
   shouldShowDeletedEntities: boolean | undefined | null;
+  showClientUnits: boolean | undefined | null;
   addFavoriteParty: (partyId: string) => Promise<void>;
   deleteFavoriteParty: (partyId: string) => Promise<void>;
   setPreSelectedParty: (partyId: string, operationType: PreselectedPartyOperationType) => Promise<void>;
@@ -75,6 +76,7 @@ export const useProfile = (disabled?: boolean): UseProfileOutput => {
 
   // Use local state if set, otherwise fall back to server value
   const serverShowDeletedEntities = data?.profile?.user?.profileSettingPreference?.shouldShowDeletedEntities;
+  const showClientUnits = data?.profile?.user?.profileSettingPreference?.showClientUnits;
   const shouldShowDeletedEntities = localShowDeletedEntities ?? serverShowDeletedEntities;
 
   const handleSetShowDeletedEntities = async (shouldShow: boolean) => {
@@ -113,5 +115,6 @@ export const useProfile = (disabled?: boolean): UseProfileOutput => {
     setShowClientUnits: handleSetShowClientUnits,
     updateProfileLanguage,
     shouldShowDeletedEntities,
+    showClientUnits,
   };
 };
