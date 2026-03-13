@@ -1,0 +1,6 @@
+mutation setShouldShowSubEntities($shouldShowDeletedEntities: Boolean!) {
+  setShouldShowSubEntities(shouldShowDeletedEntities: $shouldShowDeletedEntities) {
+    success
+    message
+  }
+}

@@ -1,6 +1,0 @@
-mutation UpdateProfileSettingPreference($shouldShowDeletedEntities: Boolean!) {
-  updateProfileSettingPreference(shouldShowDeletedEntities: $shouldShowDeletedEntities) {
-    success
-    message
-  }
-}

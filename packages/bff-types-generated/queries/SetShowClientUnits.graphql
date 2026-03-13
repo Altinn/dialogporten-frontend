@@ -1,0 +1,6 @@
+mutation setShowClientUnits($shouldShowClientUnits: Boolean!) {
+  setShowClientUnits(shouldShowClientUnits: $shouldShowClientUnits) {
+    success
+    message
+  }
+}
