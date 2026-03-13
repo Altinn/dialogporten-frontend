@@ -9,10 +9,9 @@ interface TransformedServiceResource {
   title: LocalizedText;
   org: string;
   resourceType: string;
-  delegable: boolean;
 }
 
-const serviceResourcesRedisKey = 'arbeidsflate-service-resources:v4';
+const serviceResourcesRedisKey = 'arbeidsflate-service-resources:v5';
 let refreshTimer: NodeJS.Timeout | null = null;
 
 async function fetchServiceResources(): Promise<Resource[]> {
@@ -156,7 +155,6 @@ export async function storeServiceResourcesInRedis(filters?: ResourceFilters): P
         ''
       ).toLowerCase(),
       resourceType: resource.resourceType,
-      delegable: resource.delegable,
     }));
 
     await redisClient.set(serviceResourcesRedisKey, JSON.stringify(transformedResources), 'EX', 60 * 60 * 24); // Store for 24 hours
@@ -292,13 +290,6 @@ export const ServiceResource = objectType({
       description: 'Localized title of the service resource',
       resolve: (resource) => {
         return resource.title;
-      },
-    });
-    t.field('delegable', {
-      type: 'Boolean',
-      description: 'Whether the service resource is delegable',
-      resolve: (resource) => {
-        return resource.delegable;
       },
     });
     t.string('org', {

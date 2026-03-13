@@ -21,7 +21,6 @@ export const useServiceResource = (props: UseServiceResourceProps = {}): UseServ
   const { resourceType, ids } = props;
   const { selectedParties } = useParties();
   const isServiceFilterEnabled = useFeatureFlag<boolean>('filters.enableServiceFilter');
-
   const normalizedIds = useMemo(() => (ids?.length ? [...ids].sort((a, b) => a.localeCompare(b)) : undefined), [ids]);
 
   const variables = useMemo<GetServiceResourcesQueryVariables | undefined>(() => {
@@ -42,6 +41,7 @@ export const useServiceResource = (props: UseServiceResourceProps = {}): UseServ
     queryFn: () => fetchServiceResources(variables),
     retry: 3,
     staleTime: 1000 * 60 * 20,
+    structuralSharing: false,
     enabled,
   });
 
