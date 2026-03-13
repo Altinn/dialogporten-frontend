@@ -310,6 +310,7 @@ export const ProfileSettingPreference = objectType({
     });
     t.boolean('doNotPromptForParty', { resolve: (obj) => obj.doNotPromptForParty });
     t.nullable.boolean('shouldShowDeletedEntities', { resolve: (obj) => obj.shouldShowDeletedEntities });
+    t.nullable.boolean('showClientUnits', { resolve: (obj) => obj.showClientUnits });
   },
 });
 

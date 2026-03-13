@@ -39,7 +39,7 @@ export const NotificationsPage = () => {
     isSelfIdentifiedUser,
     disabled: isSelfIdentifiedUser,
     options: {
-      excludeGroups: [SettingsType.contact, SettingsType.primary, SettingsType.favorites],
+      excludeGroups: [SettingsType.contact, SettingsType.primary, SettingsType.favorites, SettingsType.other],
       groups: {
         [SettingsType.alerts]: {
           title: t('profile.settings.notification_addresses'),
