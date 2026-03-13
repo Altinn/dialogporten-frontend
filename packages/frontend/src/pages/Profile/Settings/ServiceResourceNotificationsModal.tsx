@@ -13,11 +13,11 @@ import {
   useSnackbar,
 } from '@altinn/altinn-components';
 import { useQueryClient } from '@tanstack/react-query';
-import type { GetServiceResourcesQuery, ServiceResource, ServiceResourceTitle } from 'bff-types-generated';
-import { useState } from 'react';
+import type { ServiceResource, ServiceResourceTitle } from 'bff-types-generated';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { fetchServiceResources, updateNotificationsetting } from '../../../api/queries.ts';
-import { useAuthenticatedQuery } from '../../../auth/useAuthenticatedQuery.tsx';
+import { useServiceResource } from '../../../api/hooks/useServiceResource.ts';
+import { updateNotificationsetting } from '../../../api/queries.ts';
 import { QUERY_KEYS } from '../../../constants/queryKeys.ts';
 import { useErrorLogger } from '../../../hooks/useErrorLogger.ts';
 import type { NotificationAccountsType } from '../NotificationsPage/NotificationsPage.tsx';
@@ -38,42 +38,39 @@ export const ServiceResourceNotificationsModal = ({
   const { openSnackbar } = useSnackbar();
   const { logError } = useErrorLogger();
   const queryClient = useQueryClient();
+  const { serviceResources } = useServiceResource();
 
   const notificationSetting = notificationParty?.notificationSettings;
 
   // list empty -> all enabled, otherwise only those in the list are enabled
   // [] (empty) -> notifications for ALL services
   // [id1, id2] -> notifications ONLY for id1 and id2
-
   const [enabledResources, setEnabledResources] = useState<string[]>(
     (notificationSetting?.resourceIncludeList ?? []).filter((r): r is string => r !== null),
   );
   const [searchQuery, setSearchQuery] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
-  const { data: serviceResourcesData } = useAuthenticatedQuery<GetServiceResourcesQuery>({
-    queryKey: [QUERY_KEYS.SERVICE_RESOURCES, {}],
-    queryFn: () => fetchServiceResources(),
-    staleTime: 1000 * 60 * 20,
-  });
-
-  const serviceResources = (serviceResourcesData?.serviceResources ?? []).filter(
-    (r): r is ServiceResource => r !== null && r !== undefined,
-  );
-
   const getTitle = (resource: { title?: ServiceResourceTitle | null }) => {
     const lang = i18n.language as 'nb' | 'nn' | 'en';
     return resource.title?.[lang] || resource.title?.nb || '';
   };
 
-  const filteredResources = serviceResources.filter((resource) => {
-    const title = getTitle(resource);
-    return title.toLowerCase().includes(searchQuery.toLowerCase());
-  });
+  const searchQueryLower = searchQuery.toLowerCase();
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  const filteredResources = useMemo(
+    () =>
+      serviceResources.filter((resource) => {
+        const title = getTitle(resource);
+        return title.toLowerCase().includes(searchQueryLower);
+      }),
+    [serviceResources, searchQueryLower],
+  );
 
-  const allServiceUrns = serviceResources
-    .filter((r): r is ServiceResource & { id: string } => Boolean(r.id))
-    .map((r) => toUrn(r.id));
+  const allServiceUrns = useMemo(
+    () => serviceResources.filter((r): r is ServiceResource & { id: string } => Boolean(r.id)).map((r) => toUrn(r.id)),
+    [serviceResources],
+  );
 
   const isChecked = (rawId: string) => {
     const urn = toUrn(rawId);

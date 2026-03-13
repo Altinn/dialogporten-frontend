@@ -17,7 +17,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { deleteNotificationsetting, updateNotificationsetting, verifyAddress } from '../../../api/queries.ts';
 import { QUERY_KEYS } from '../../../constants/queryKeys.ts';
-import { useFeatureFlag } from '../../../featureFlags/useFeatureFlag.ts';
+import { useFeatureFlag } from '../../../featureFlags';
 import { useErrorLogger } from '../../../hooks/useErrorLogger.ts';
 import type { NotificationAccountsType } from '../NotificationsPage/NotificationsPage.tsx';
 import { useProfile } from '../useProfile.tsx';
