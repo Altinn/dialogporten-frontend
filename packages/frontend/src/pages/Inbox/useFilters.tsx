@@ -8,7 +8,7 @@ import { useServiceResource } from '../../api/hooks/useServiceResource.ts';
 import { getOrganization } from '../../api/utils/organizations.ts';
 import { useFeatureFlag } from '../../featureFlags';
 import { useDateFnsLocale } from '../../i18n/useDateFnsLocale.tsx';
-import { FilterCategory, formatDateRange, getFilters, readFiltersFromURLQuery } from './filters';
+import { FilterCategory, createServiceFilter, formatDateRange, getFilters, readFiltersFromURLQuery } from './filters';
 import { useOrganizations } from './useOrganizations.ts';
 
 interface UseFiltersOutput {
@@ -50,17 +50,29 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
     return normalizedFilters;
   }, [params]);
 
+  const serviceFilterValues = currentFilters.service;
+  const serviceFilter = useMemo(
+    () =>
+      enableServiceFilter
+        ? createServiceFilter({
+            serviceResources,
+            currentFilters: { service: serviceFilterValues },
+            allOrganizations: organizations,
+          })
+        : undefined,
+    [serviceResources, serviceFilterValues, organizations, enableServiceFilter],
+  );
+
   const filters: FilterProps[] = useMemo(
     () =>
       getFilters({
         allDialogs: dialogsForRecommendations,
         allOrganizations: organizations,
         viewType,
-        serviceResources,
-        currentFilters,
         enableServiceFilter,
+        prebuiltServiceFilter: serviceFilter,
       }),
-    [dialogsForRecommendations, organizations, viewType, currentFilters, enableServiceFilter, serviceResources],
+    [dialogsForRecommendations, organizations, viewType, enableServiceFilter, serviceFilter],
   );
 
   const getFilterLabel = (

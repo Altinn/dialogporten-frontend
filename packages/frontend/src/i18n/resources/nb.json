@@ -311,6 +311,7 @@
   "profile.account_alerts.single_service_notifications": "Sett opp varsling for enkelttjenester",
   "profile.service_notifications.title": "Varsling for enkelttjenester",
   "profile.service_notifications.search_placeholder": "Søk i tjenester",
+  "profile.service_notifications.loading": "Laster tjenester",
   "profile.service_notifications.no_results": "Ingen treff.",
   "profile.service_notifications.save": "Lagre",
   "profile.service_notifications.cancel": "Avbryt",

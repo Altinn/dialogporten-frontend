@@ -311,6 +311,7 @@
   "profile.account_alerts.single_service_notifications": "Set up notifications for individual services",
   "profile.service_notifications.title": "Notifications for individual services",
   "profile.service_notifications.search_placeholder": "Search services",
+  "profile.service_notifications.loading": "Loading services",
   "profile.service_notifications.no_results": "No results.",
   "profile.service_notifications.save": "Save",
   "profile.service_notifications.cancel": "Cancel",

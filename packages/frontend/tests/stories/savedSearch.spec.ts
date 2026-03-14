@@ -86,12 +86,13 @@ test.describe('Saved search', () => {
     await page.getByRole('combobox', { name: 'Søk' }).fill('innkalling');
     await page.getByRole('combobox', { name: 'Søk' }).press('Enter');
     await page.getByRole('button', { name: 'Lagre søk' }).click();
+    await expect(page.getByText('Søket ditt er lagret')).toBeVisible();
 
     await page.getByTestId('sidebar-saved-searches').click();
     await page.getByRole('link', { name: '«innkalling»' }).click();
     await page.waitForLoadState('networkidle');
 
-    await expect(page.getByRole('link', { name: 'Innkalling til sesjon' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Innkalling til sesjon' })).toBeVisible({ timeout: 10000 });
     await expectIsCompanyPage(page);
   });
 

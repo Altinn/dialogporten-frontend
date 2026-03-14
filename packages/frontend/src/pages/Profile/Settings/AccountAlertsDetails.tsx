@@ -373,11 +373,13 @@ export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetails
           </ButtonGroup>
         </Section>
       </form>
-      <ServiceResourceNotificationsModal
-        open={isServiceModalOpen}
-        onClose={() => setIsServiceModalOpen(false)}
-        notificationParty={notificationParty}
-      />
+      {isServiceModalOpen && (
+        <ServiceResourceNotificationsModal
+          open
+          onClose={() => setIsServiceModalOpen(false)}
+          notificationParty={notificationParty}
+        />
+      )}
     </>
   );
 };
