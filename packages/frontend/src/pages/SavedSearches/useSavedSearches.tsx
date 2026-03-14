@@ -147,7 +147,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
   const [isCTALoading, setIsCTALoading] = useState<boolean>(false);
   const [openedSavedSearch, setOpenedSavedSearch] = useState<string | null>(null);
   const { organizations } = useOrganizations();
-  const { serviceResources } = useServiceResource({});
+  const { serviceResources } = useServiceResource();
   const { locale } = useDateFnsLocale();
   const navigate = useNavigate();
 

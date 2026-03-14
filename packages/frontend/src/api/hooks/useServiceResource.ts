@@ -1,4 +1,4 @@
-import type { GetServiceResourcesQuery, GetServiceResourcesQueryVariables, ServiceResource } from 'bff-types-generated';
+import type { GetServiceResourcesQuery, ServiceResource } from 'bff-types-generated';
 import { useMemo } from 'react';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
@@ -12,45 +12,34 @@ interface UseServiceResourceOutput {
   isLoading: boolean;
 }
 
-interface UseServiceResourceProps {
-  resourceType?: string;
-  ids?: string[];
-}
-
-export const useServiceResource = (props: UseServiceResourceProps = {}): UseServiceResourceOutput => {
-  const { resourceType, ids } = props;
+export const useServiceResource = (): UseServiceResourceOutput => {
   const { selectedParties } = useParties();
   const isServiceFilterEnabled = useFeatureFlag<boolean>('filters.enableServiceFilter');
-  const normalizedIds = useMemo(() => (ids?.length ? [...ids].sort((a, b) => a.localeCompare(b)) : undefined), [ids]);
-
-  const variables = useMemo<GetServiceResourcesQueryVariables | undefined>(() => {
-    if (!resourceType && !normalizedIds?.length) {
-      return undefined;
-    }
-
-    return {
-      ...(resourceType && { resourceType }),
-      ...(normalizedIds?.length && { ids: normalizedIds }),
-    };
-  }, [resourceType, normalizedIds]);
-
   const enabled = isServiceFilterEnabled && selectedParties.length > 0;
 
   const { data, isLoading, isSuccess } = useAuthenticatedQuery<GetServiceResourcesQuery>({
-    queryKey: [QUERY_KEYS.SERVICE_RESOURCES, { resourceType: resourceType ?? null, ids: normalizedIds ?? null }],
-    queryFn: () => fetchServiceResources(variables),
+    queryKey: [QUERY_KEYS.SERVICE_RESOURCES],
+    queryFn: () => fetchServiceResources({}),
     retry: 3,
-    staleTime: 1000 * 60 * 20,
-    structuralSharing: false,
+    staleTime: Number.POSITIVE_INFINITY,
+    gcTime: Number.POSITIVE_INFINITY,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
     enabled,
   });
-
   const serviceResources = useMemo(
     () =>
-      (data?.serviceResources ?? []).map((item) => ({
-        ...item,
-        id: `urn:altinn:resource:${item?.id ?? ''}`,
-      })) as ServiceResource[],
+      ((data?.serviceResources ?? []) as ServiceResource[])
+        .map((item) => ({
+          ...item,
+          id: `urn:altinn:resource:${item?.id ?? ''}`,
+        }))
+        .sort((a, b) => {
+          const titleA = a.title?.nb || a.title?.en || a.title?.nn || '';
+          const titleB = b.title?.nb || b.title?.en || b.title?.nn || '';
+          return titleA.localeCompare(titleB, undefined, { sensitivity: 'base' });
+        }),
     [data?.serviceResources],
   );
 

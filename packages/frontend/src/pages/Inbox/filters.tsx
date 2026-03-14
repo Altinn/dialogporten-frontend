@@ -337,7 +337,7 @@ const createUpdatedAtFilter = (): FilterProps => {
   };
 };
 
-const createServiceFilter = ({
+export const createServiceFilter = ({
   serviceResources,
   currentFilters = {},
   allOrganizations,
@@ -360,9 +360,7 @@ const createServiceFilter = ({
       const ga = groupOrder[a.groupId] ?? Number.MAX_SAFE_INTEGER;
       const gb = groupOrder[b.groupId] ?? Number.MAX_SAFE_INTEGER;
 
-      if (ga !== gb) return ga - gb;
-
-      return (a.title ?? '').localeCompare(b.title ?? '', undefined, { sensitivity: 'base' });
+      return ga - gb;
     });
 
   return {
@@ -417,25 +415,18 @@ export const getFilters = ({
   allDialogs,
   allOrganizations,
   viewType,
-  serviceResources = [],
-  currentFilters,
   enableServiceFilter,
+  prebuiltServiceFilter,
 }: {
   allDialogs: CountableDialogFieldsFragment[];
   allOrganizations: OrganizationFieldsFragment[];
   viewType: InboxViewType;
-  serviceResources?: ServiceResource[];
-  currentFilters?: FilterState;
   enableServiceFilter?: boolean;
+  prebuiltServiceFilter?: FilterProps;
 }): ToolbarFilterProps['filters'] => {
   const senderOrgFilter = createServiceOwnerFilter(allDialogs, allOrganizations ?? []);
   const statusFilter = createStatusFilter();
   const updatedAtFilter = createUpdatedAtFilter();
-  const serviceFilter = createServiceFilter({
-    serviceResources,
-    currentFilters,
-    allOrganizations,
-  });
 
   const filters = [];
 
@@ -446,8 +437,8 @@ export const getFilters = ({
   filters.push(updatedAtFilter);
   filters.push(senderOrgFilter);
 
-  if (enableServiceFilter) {
-    filters.push(serviceFilter);
+  if (enableServiceFilter && prebuiltServiceFilter) {
+    filters.push(prebuiltServiceFilter);
   }
 
   return filters.filter((filter) => {
