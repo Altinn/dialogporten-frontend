@@ -15,7 +15,7 @@ import {
 } from '@altinn/altinn-components';
 import { useQueryClient } from '@tanstack/react-query';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import type { ServiceResource, ServiceResourceTitle } from 'bff-types-generated';
+import type { ServiceResource } from 'bff-types-generated';
 import { useDeferredValue, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useServiceResource } from '../../../api/hooks/useServiceResource.ts';
@@ -35,7 +35,7 @@ export const ServiceResourceNotificationsModal = ({
   onClose,
   notificationParty,
 }: ServiceResourceNotificationsModalProps) => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { openSnackbar } = useSnackbar();
   const { logError } = useErrorLogger();
   const queryClient = useQueryClient();
@@ -52,20 +52,14 @@ export const ServiceResourceNotificationsModal = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
-  const getTitle = (resource: { title?: ServiceResourceTitle | null }) => {
-    const lang = i18n.language as 'nb' | 'nn' | 'en';
-    return resource.title?.[lang] || resource.title?.nb || '';
-  };
-
   const deferredSearchQuery = useDeferredValue(searchQuery);
   const searchQueryLower = deferredSearchQuery.toLowerCase();
-  // biome-ignore lint/correctness/useExhaustiveDependencies: getTitle depends on i18n.language which is stable during render
+
   const filteredResources = useMemo(
     () =>
       serviceResources.filter((resource) => {
         if (!resource.id) return false;
-        const title = getTitle(resource);
-        return title.toLowerCase().includes(searchQueryLower);
+        return (resource.title ?? '').toLowerCase().includes(searchQueryLower);
       }),
     [serviceResources, searchQueryLower],
   );
@@ -171,7 +165,7 @@ export const ServiceResourceNotificationsModal = ({
                       data-index={virtualRow.index}
                     >
                       <Switch
-                        label={getTitle(resource) || resource.id}
+                        label={resource.title || resource.id}
                         name={id!}
                         value={id!}
                         checked={isChecked(id!)}

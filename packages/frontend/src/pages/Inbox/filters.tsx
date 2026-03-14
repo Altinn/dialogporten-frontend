@@ -28,7 +28,7 @@ import {
   subYears,
 } from 'date-fns';
 import type { Locale } from 'date-fns/locale';
-import i18n, { t } from 'i18next';
+import { t } from 'i18next';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { getOrganization } from '../../api/utils/organizations.ts';
 import { getEnvByHost } from '../../auth';
@@ -348,7 +348,7 @@ export const createServiceFilter = ({
       id: s.id!,
       name: s.id!,
       items: [],
-      title: s.title?.[i18n.language as keyof typeof s.title] ?? '',
+      title: s.title ?? '',
       groupId: suggestedServiceIds?.includes(s.id!) ? 'most-relevant' : 'services',
       description: getOrganization(allOrganizations, s.org ?? '')?.name || '',
     }))

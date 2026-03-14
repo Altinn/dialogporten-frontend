@@ -11,8 +11,41 @@ interface TransformedServiceResource {
   resourceType: string;
 }
 
+interface ServiceResourceResponseDTO extends Omit<TransformedServiceResource, 'title'> {
+  title: string;
+}
+
 const serviceResourcesRedisKey = 'arbeidsflate-service-resources:v5';
 let refreshTimer: NodeJS.Timeout | null = null;
+
+function getSupportedLanguage(defaultLanguage: 'nb' | 'nn' | 'en', language?: string): string[] {
+  const supportedLanguages = ['nb', 'nn', 'en'];
+  const preferredMapping: Record<string, string[]> = {
+    nb: ['nb', 'nn', 'en'],
+    nn: ['nn', 'nb', 'en'],
+    en: ['en', 'nb', 'nn'],
+  };
+  if (!language) {
+    return preferredMapping[defaultLanguage];
+  }
+
+  if (!supportedLanguages.includes(language)) {
+    return preferredMapping.nb;
+  }
+  return preferredMapping[language];
+}
+
+function getLocalizedTitle(title: LocalizedText, langs: string[]): string {
+  for (const lang of langs) {
+    const value = title[lang as keyof LocalizedText];
+    if (value) {
+      return value;
+    }
+  }
+  // Fallback: return the first available value, or empty string
+  const values = Object.values(title).filter(Boolean);
+  return values[0] || '';
+}
 
 async function fetchServiceResources(): Promise<Resource[]> {
   try {
@@ -167,11 +200,14 @@ export async function storeServiceResourcesInRedis(filters?: ResourceFilters): P
   }
 }
 
-export async function getServiceResourcesFromRedis(filters?: {
-  resourceType?: string[];
-  ids?: string[];
-  org?: string[];
-}): Promise<TransformedServiceResource[]> {
+export async function getServiceResourcesFromRedis(
+  langs: string[],
+  filters?: {
+    resourceType?: string[];
+    ids?: string[];
+    org?: string[];
+  },
+): Promise<ServiceResourceResponseDTO[]> {
   try {
     const { default: redisClient } = await import('../../../redisClient.ts');
     const data = await redisClient.get(serviceResourcesRedisKey);
@@ -200,7 +236,10 @@ export async function getServiceResourcesFromRedis(filters?: {
       }
     }
 
-    return resources;
+    return resources.map((r) => ({
+      ...r,
+      title: getLocalizedTitle(r.title, langs),
+    }));
   } catch (error) {
     logger.error(error, 'Error retrieving service resources from Redis:');
     return [];
@@ -252,30 +291,6 @@ export function stopServiceResourcesRefresh(): void {
   }
 }
 
-export const ServiceResourceTitle = objectType({
-  name: 'ServiceResourceTitle',
-  definition(t) {
-    t.string('en', {
-      description: 'English title of the service resource',
-      resolve: (title) => {
-        return title.en;
-      },
-    });
-    t.string('nb', {
-      description: 'Norwegian bokmål title of the service resource',
-      resolve: (title) => {
-        return title.nb || title['nb-no'];
-      },
-    });
-    t.string('nn', {
-      description: 'Norwegian nynorsk title of the service resource',
-      resolve: (title) => {
-        return title.nn || title['nn-no'];
-      },
-    });
-  },
-});
-
 export const ServiceResource = objectType({
   name: 'ServiceResource',
   definition(t) {
@@ -285,8 +300,7 @@ export const ServiceResource = objectType({
         return resource.id;
       },
     });
-    t.field('title', {
-      type: 'ServiceResourceTitle',
+    t.string('title', {
       description: 'Localized title of the service resource',
       resolve: (resource) => {
         return resource.title;
@@ -329,8 +343,11 @@ export const ServiceResourceQuery = extendType({
             description: 'Filter by organization codes',
           }),
         ),
+        lang: stringArg({ description: 'Preferred language for title', default: 'nb' }),
       },
       resolve: async (_, args) => {
+        const preferredLangs = getSupportedLanguage('nb', args.lang);
+
         const filters: {
           resourceType?: string[];
           ids?: string[];
@@ -355,7 +372,10 @@ export const ServiceResourceQuery = extendType({
           );
         }
 
-        return await getServiceResourcesFromRedis(Object.keys(filters).length > 0 ? filters : undefined);
+        return await getServiceResourcesFromRedis(
+          preferredLangs,
+          Object.keys(filters).length > 0 ? filters : undefined,
+        );
       },
     });
   },

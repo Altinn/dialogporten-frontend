@@ -1,11 +1,7 @@
-query getServiceResources($ids: [String!], $resourceType: [String], $org: [String]) {
-  serviceResources(resourceType: $resourceType, ids: $ids, org: $org) {
+query getServiceResources($ids: [String!], $resourceType: [String], $org: [String], $lang: String) {
+  serviceResources(resourceType: $resourceType, ids: $ids, org: $org, lang: $lang) {
     id
-    title {
-      nb
-      nn
-      en
-    }
+    title
     org
   }
 }

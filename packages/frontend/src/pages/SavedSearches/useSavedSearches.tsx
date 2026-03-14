@@ -338,12 +338,10 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
 
         if (filter?.id === 'service') {
           const service = serviceResources.find((sr) => sr.id === filter.value);
-          const serviceTitle =
-            service?.title?.nb || service?.title?.en || service?.title?.nn || service?.id || filter.value;
           return {
             id: 'serivce' + service?.id,
             type: 'filter' as QueryItemType,
-            label: serviceTitle ?? '',
+            label: service?.title ?? '',
           };
         }
 
