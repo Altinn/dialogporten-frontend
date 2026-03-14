@@ -16,10 +16,10 @@
     "@graphql-typed-document-node/core": "^3.2.0",
     "@tsconfig/node22": "^22.0.2",
     "bff": "workspace:*",
-    "graphql": "^16.11.0",
+    "graphql": "^16.12.0",
     "graphql-request": "^7.2.0",
     "graphql-tag": "^2.12.6",
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.11"
   },
   "devDependencies": {
     "@graphql-codegen/typescript": "^4.1.6",
