@@ -23,13 +23,12 @@ import {
 } from '@altinn/altinn-components';
 import type { ActivityLogSegmentProps } from '@altinn/altinn-components/dist/types/lib/components';
 import { DialogEventType, DialogStatus } from 'bff-types-generated';
-import { type ReactElement, useEffect, useMemo, useState } from 'react';
+import { type ReactElement, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Analytics } from '../../analytics/analytics.ts';
 import { ANALYTICS_EVENTS } from '../../analytics/analyticsEvents.ts';
 import type { DialogByIdDetails } from '../../api/hooks/useDialogById.tsx';
 import type { DialogEventData } from '../../api/hooks/useDialogByIdSubscription.ts';
-import { graphQLSDK } from '../../api/queries.ts';
 import type { TimelineSegmentWithTransmissions } from '../../api/utils/transmissions.ts';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
@@ -244,18 +243,6 @@ export const DialogDetails = ({
   const [actionIdUpdating, setActionIdUpdating] = useState<string>('');
   const [showAllTransmissions, setShowAllTransmissions] = useState<boolean>(false);
   const format = useFormat();
-
-  useEffect(() => {
-    if (dialog?.id) {
-      graphQLSDK
-        .dialogLookup({
-          instanceRef: 'urn:altinn:dialog-id:' + dialog?.id,
-        })
-        .then((response) => {
-          console.info(response);
-        });
-    }
-  }, [dialog?.id]);
 
   onMessageEvent((eventData: DialogEventData) => {
     if (

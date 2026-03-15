@@ -22,12 +22,11 @@ import { getPartyIds, mapDialogToToInboxItems, mergeDialogItems } from '../utils
 import { useParties } from './useParties.ts';
 
 export type InboxViewType = 'inbox' | 'drafts' | 'sent' | 'archive' | 'bin';
-export type DialogsByView = { [key in InboxViewType]: InboxItemInput[] };
 
 interface UseDialogsProps {
-  viewType?: InboxViewType;
   filterState?: FilterState;
   search?: string;
+  viewType: InboxViewType;
   serviceResources?: string[];
   partyIdsOverride?: string[];
 }
@@ -35,7 +34,6 @@ interface UseDialogsProps {
 interface UseDialogsOutput {
   dialogs: InboxItemInput[];
   dialogCountInconclusive: boolean;
-  dialogsByView: DialogsByView;
   isSuccess: boolean;
   isLoading: boolean;
   isError: boolean;
@@ -183,13 +181,6 @@ export const useDialogs = ({
     isError,
     fetchNextPage,
     dialogs,
-    dialogsByView: {
-      inbox: dialogs.filter((dialog) => dialog.viewType === 'inbox'),
-      drafts: dialogs.filter((dialog) => dialog.viewType === 'drafts'),
-      sent: dialogs.filter((dialog) => dialog.viewType === 'sent'),
-      archive: dialogs.filter((dialog) => dialog.viewType === 'archive'),
-      bin: dialogs.filter((dialog) => dialog.viewType === 'bin'),
-    },
     dialogCountInconclusive,
     hasNextPage: data?.pages?.[data?.pages.length - 1]?.searchDialogs?.hasNextPage ?? false,
     isFetchingNextPage,
