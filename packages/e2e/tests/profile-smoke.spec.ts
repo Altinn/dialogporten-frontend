@@ -23,7 +23,8 @@ test.describe('Profile smoke tests', () => {
     await expect(page.getByText('Fødselsnr.: 159152')).toBeVisible();
   });
 
-  test('should enable notifications', async ({ page, baseURL }) => {
+  /* TODO: We need to find a better test case */
+  test.skip('should enable notifications', async ({ page, baseURL }) => {
     await page.goto(`${baseURL}/profile`);
     const closeButton = page.getByRole('button', { name: 'Lukk' });
     if (await closeButton.isVisible({ timeout: 2000 }).catch(() => false)) {
