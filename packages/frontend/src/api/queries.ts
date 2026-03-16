@@ -12,6 +12,8 @@ import {
   type NotificationSettingsInput,
   type NotificationsettingsForCurrentUserQuery,
   type OrganizationsQuery,
+  type ResendVerificationCodeMutation,
+  type ResendVerificationCodeMutationVariables,
   type SavedSearchInput,
   type SavedSearchesQuery,
   type SetPreSelectedPartyMutation,
@@ -248,3 +250,7 @@ export const getVerifiedAddresses = (): Promise<VerifiedAddressesQuery> => graph
 
 export const verifyAddress = (data: VerifyAddressMutationVariables['data']): Promise<VerifyAddressMutation> =>
   graphQLSDK.verifyAddress({ data });
+
+export const resendVerificationCode = (
+  data: ResendVerificationCodeMutationVariables['data'],
+): Promise<ResendVerificationCodeMutation> => graphQLSDK.ResendVerificationCode({ data });

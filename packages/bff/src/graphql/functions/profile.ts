@@ -4,7 +4,11 @@ import config from '../../config.ts';
 import { GroupRepository, PartyRepository, ProfileRepository } from '../../db.ts';
 import { Group, Party, ProfileTable } from '../../entities.ts';
 import type { PreselectedPartyOperationType } from '../types/mutation.ts';
-import type { NotificationSettingsInputData, VerifyAddressInputData } from '../types/profile.ts';
+import type {
+  NotificationSettingsInputData,
+  ResendVerificationCodeInputData,
+  VerifyAddressInputData,
+} from '../types/profile.ts';
 
 const { platformBaseURL } = config;
 
@@ -456,6 +460,28 @@ export const verifyAddress = async (data: VerifyAddressInputData, context: Conte
       }
     }
     logger.error(error, 'Error verifying address:');
+    throw error;
+  }
+};
+
+export const resendVerificationCode = async (data: ResendVerificationCodeInputData, context: Context) => {
+  const newToken = await exchangeToken(context);
+  try {
+    await axios.post(
+      `${platformProfileAPI_url}users/current/verification/resend`,
+      { value: data.value, type: data.type },
+      {
+        timeout: 30000,
+        headers: {
+          Authorization: `Bearer ${newToken}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+      },
+    );
+    return { success: true };
+  } catch (error) {
+    logger.error(error, 'Error resending verification code:');
     throw error;
   }
 };

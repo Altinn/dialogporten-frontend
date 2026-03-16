@@ -404,6 +404,7 @@
   "profile.verification.code_label": "Code (6 digits)",
   "profile.verification.confirm_button": "Verify code",
   "profile.verification.resend_code": "Resend code",
+  "profile.verification.resend_code_cooldown": "Resend code ({seconds}s)",
   "profile.verification.verify_address_title": "Verify address",
   "profile.verification.status_legacy": "Legacy",
   "profile.verification.status_new_address": "New address",

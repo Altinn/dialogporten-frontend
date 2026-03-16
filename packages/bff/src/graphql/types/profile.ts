@@ -300,6 +300,19 @@ export interface VerifyAddressInputData {
   verificationCode: string;
 }
 
+export const ResendVerificationCodeInput = inputObjectType({
+  name: 'ResendVerificationCodeInput',
+  definition(t) {
+    t.string('value');
+    t.string('type');
+  },
+});
+
+export interface ResendVerificationCodeInputData {
+  value: string;
+  type: 'Email' | 'Sms';
+}
+
 export const ProfileSettingPreference = objectType({
   name: 'ProfileSettingPreference',
   definition(t) {

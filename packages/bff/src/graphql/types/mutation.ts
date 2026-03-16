@@ -7,6 +7,7 @@ import {
   deleteFavoriteParty,
   deleteNotificationsSetting,
   getOrCreateProfile,
+  resendVerificationCode,
   setPreSelectedParty,
   updateLanguage,
   updateNotificationsSetting,
@@ -16,7 +17,14 @@ import {
 } from '../functions/profile.ts';
 import { createSavedSearch, deleteSavedSearch, updateSavedSearch } from '../functions/savedsearch.ts';
 import { languageCodes, updateAltinnPersistentContextValue } from './cookie.js';
-import { NotificationSettingsInput, Response, SavedSearchInput, SavedSearches, VerifyAddressInput } from './index.ts';
+import {
+  NotificationSettingsInput,
+  ResendVerificationCodeInput,
+  Response,
+  SavedSearchInput,
+  SavedSearches,
+  VerifyAddressInput,
+} from './index.ts';
 
 export const Mutation = extendType({
   type: 'Mutation',
@@ -294,6 +302,26 @@ export const VerifyAddress = extendType({
         } catch (error) {
           logger.error(error, 'Failed to verify address:');
           return { success: false, message: 'Failed to verify address' };
+        }
+      },
+    });
+  },
+});
+
+export const ResendVerificationCode = extendType({
+  type: 'Mutation',
+  definition(t) {
+    t.field('resendVerificationCode', {
+      type: Response,
+      args: {
+        data: ResendVerificationCodeInput,
+      },
+      resolve: async (_, { data }, ctx) => {
+        try {
+          return await resendVerificationCode(data, ctx);
+        } catch (error) {
+          logger.error(error, 'Failed to resend verification code:');
+          return { success: false, message: 'Failed to resend verification code' };
         }
       },
     });
