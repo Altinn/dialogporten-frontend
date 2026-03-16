@@ -13,9 +13,14 @@ import {
   useSnackbar,
 } from '@altinn/altinn-components';
 import { useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { deleteNotificationsetting, updateNotificationsetting, verifyAddress } from '../../../api/queries.ts';
+import {
+  deleteNotificationsetting,
+  resendVerificationCode,
+  updateNotificationsetting,
+  verifyAddress,
+} from '../../../api/queries.ts';
 import { QUERY_KEYS } from '../../../constants/queryKeys.ts';
 import { useFeatureFlag } from '../../../featureFlags';
 import { useErrorLogger } from '../../../hooks/useErrorLogger.ts';
@@ -63,6 +68,17 @@ export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetails
   const [codeError, setCodeError] = useState('');
   const [isSendingCode, setIsSendingCode] = useState(false);
   const [isConfirmingCode, setIsConfirmingCode] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const timer = setTimeout(() => setResendCooldown((c) => c - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [resendCooldown]);
+
+  useEffect(() => {
+    if (verificationState) setResendCooldown(60);
+  }, [verificationState]);
 
   const isAnotherPerson = notificationParty?.partyType === 'Person' && !notificationParty.isCurrentEndUser;
   const isCompany = notificationParty?.partyType === 'Organization';
@@ -156,24 +172,14 @@ export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetails
     if (!verificationState) return;
     setIsSendingCode(true);
     try {
-      if (verificationState.step === 'awaiting_email_code') {
-        await updateNotificationsetting({
-          partyUuid,
-          emailAddress: verificationState.address,
-          generateVerificationCode: true,
-        });
-      } else {
-        await updateNotificationsetting({
-          partyUuid,
-          phoneNumber: verificationState.address,
-          generateVerificationCode: true,
-        });
-      }
+      const type = verificationState.step === 'awaiting_email_code' ? 'Email' : 'Sms';
+      await resendVerificationCode({ value: verificationState.address, type });
     } catch (err) {
       logError(err as Error, { context: 'AccountAlertsDetails.handleResend' }, 'Error resending verification code');
       openSnackbar({ message: t('profile.account_alerts.snackbar.error'), color: 'danger' });
     } finally {
       setIsSendingCode(false);
+      setResendCooldown(60);
     }
   };
 
@@ -251,8 +257,15 @@ export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetails
             {t('profile.verification.confirm_button')}
           </Button>
           {enableResendVerificationCode && (
-            <Button type="button" variant="outline" onClick={handleResend} disabled={isSendingCode}>
-              {t('profile.verification.resend_code')}
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleResend}
+              disabled={isSendingCode || resendCooldown > 0}
+            >
+              {resendCooldown > 0
+                ? t('profile.verification.resend_code_cooldown', { seconds: resendCooldown })
+                : t('profile.verification.resend_code')}
             </Button>
           )}
           <Button type="button" variant="outline" onClick={() => setVerificationState(null)}>

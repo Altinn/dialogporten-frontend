@@ -404,6 +404,7 @@
   "profile.verification.code_label": "Kode (6 siffer)",
   "profile.verification.confirm_button": "Verifiser kode",
   "profile.verification.resend_code": "Send ny kode",
+  "profile.verification.resend_code_cooldown": "Send ny kode ({seconds}s)",
   "profile.verification.verify_address_title": "Verifiser adresse",
   "profile.verification.status_legacy": "Eldre",
   "profile.verification.status_new_address": "Ny adresse",
