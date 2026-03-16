@@ -17,13 +17,13 @@ test.describe('Move dialogs between archive and bin', () => {
 
     await archiveLink.click();
     await page.waitForLoadState('networkidle');
-    await expect(page.getByRole('heading', { name: title })).toBeVisible();
+    await expect(page.getByRole('heading', { name: title }).first()).toBeVisible();
 
     const { menuRoot: archivedRoot } = await openContextMenuForDialog(page, title);
     await archivedRoot.locator('button[role="menuitem"][aria-label="Flytt til papirkurven"]').click();
     const binLink = getSidebarMenuItem(page, PageRoutes.bin);
     await binLink.click();
 
-    await expect(page.getByRole('heading', { name: title })).toBeVisible();
+    await expect(page.getByRole('heading', { name: title }).first()).toBeVisible();
   });
 });

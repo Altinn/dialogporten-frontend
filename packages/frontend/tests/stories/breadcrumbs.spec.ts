@@ -10,12 +10,15 @@ test.describe('Breadcrumbs', () => {
     await expect(page.getByRole('navigation', { name: 'Du er her:' })).toBeVisible();
 
     await getSidebarMenuItem(page, PageRoutes.drafts).click();
+    await page.waitForURL(/\/drafts/);
     await expect(page.getByRole('link', { name: 'Utkast' })).toBeVisible();
 
     await getSidebarMenuItem(page, PageRoutes.sent).click();
+    await page.waitForURL(/\/sent/);
     await expect(page.getByRole('link', { name: 'Sendt' })).toBeVisible();
 
     await getSidebarMenuItem(page, PageRoutes.savedSearches).click();
+    await page.waitForURL(/\/saved-searches/);
     await expect(page.getByRole('link', { name: 'Lagrede søk' })).toBeVisible();
 
     await getSidebarMenuItem(page, PageRoutes.inbox).click();

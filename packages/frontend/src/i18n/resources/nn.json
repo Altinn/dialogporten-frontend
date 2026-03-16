@@ -311,6 +311,7 @@
   "profile.account_alerts.single_service_notifications": "Set opp varsling for enkelttenester",
   "profile.service_notifications.title": "Varsling for enkelttenester",
   "profile.service_notifications.search_placeholder": "Søk i tenester",
+  "profile.service_notifications.loading": "Lastar tenester",
   "profile.service_notifications.no_results": "Ingen treff.",
   "profile.service_notifications.save": "Lagre",
   "profile.service_notifications.cancel": "Avbryt",
