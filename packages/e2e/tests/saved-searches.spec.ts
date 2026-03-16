@@ -12,14 +12,13 @@ test.describe('Saved Searches', () => {
 
   test('should save, edit, and delete a search', async ({ page, baseURL }) => {
     const toolbarArea = page.getByTestId('inbox-toolbar');
-
     // Step 1: Open the add filter dropdown
     const addButton = toolbarArea.getByRole('button', { name: /legg til/i });
     await expect(addButton).toBeVisible();
     await addButton.click();
 
     // Step 2: Select sender filter option
-    const senderOption = toolbarArea.getByRole('menuitem', { name: /velg (tjenesteeier|avsender)/i }).first();
+    const senderOption = toolbarArea.getByRole('menuitem', { name: /(Tjenesteeier|Avsender)/i }).first();
     await expect(senderOption).toBeVisible();
     await senderOption.click();
 
@@ -32,9 +31,9 @@ test.describe('Saved Searches', () => {
     await page.keyboard.press('Escape');
 
     // Wait for save button to appear (indicates filter state has updated)
-    const saveButton = toolbarArea.getByRole('button', { name: 'Lagre søk' });
+    const saveButton = page.getByRole('button', { name: 'Lagre søk' });
     // Wait for save button to appear (indicates filter state has updated)
-    const undoSaveButton = toolbarArea.getByRole('button', { name: 'Lagret søk' });
+    const undoSaveButton = page.getByRole('button', { name: 'Lagret søk' });
 
     // Step 5: Check button state and handle accordingly
     try {
