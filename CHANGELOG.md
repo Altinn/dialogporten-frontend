@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.130.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.130.0...v1.130.1) (2026-03-16)
+
+
+### Bug Fixes
+
+* optimize service resource rendering for 6000+ items ([#3856](https://github.com/Altinn/dialogporten-frontend/issues/3856)) ([7d81356](https://github.com/Altinn/dialogporten-frontend/commit/7d81356239c89e68f09a74fa059ce3528cd48582))
+* use unread calculation as dot indicator instead of hasUnopenedContent ([#3857](https://github.com/Altinn/dialogporten-frontend/issues/3857)) ([acd5b1c](https://github.com/Altinn/dialogporten-frontend/commit/acd5b1c696e1483bdf0ac84d72947fc79b2165fa))
+
 ## [1.130.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.129.0...v1.130.0) (2026-03-13)
 
 
