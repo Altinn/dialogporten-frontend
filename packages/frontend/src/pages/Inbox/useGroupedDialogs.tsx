@@ -88,7 +88,7 @@ const getDialogState = (viewType: InboxViewType): DialogListItemState => {
   }
 };
 
-const getItemBadge = (viewType: InboxViewType, hasUnopenedContent: boolean, t: (key: string) => string) => {
+const getItemBadge = (viewType: InboxViewType, unread: boolean, t: (key: string) => string) => {
   if (viewType === 'bin' || viewType === 'archive') {
     return {
       color: 'neutral' as BadgeColor,
@@ -97,7 +97,7 @@ const getItemBadge = (viewType: InboxViewType, hasUnopenedContent: boolean, t: (
       variant: 'subtle' as BadgeVariant,
     };
   }
-  if (hasUnopenedContent) {
+  if (unread) {
     return {
       label: t('word.unread'),
       size: 'xs' as BadgeSize,
@@ -159,7 +159,7 @@ const useGroupedDialogs = ({
     return {
       groupId,
       title: item.title,
-      badge: getItemBadge(item.viewType, item.hasUnopenedContent, t),
+      badge: getItemBadge(item.viewType, item.unread, t),
       id: item.id,
       recipientLabel: t('word.to'),
       sender: item.sender,
