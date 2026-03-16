@@ -16,6 +16,7 @@ const defaultFeatureFlags: Record<string, boolean | number | string> = {
   'filters.enableServiceFilter': false,
   'filters.enableSubAccountsMenu': false,
   'profile.enableResendVerificationCode': false,
+  'profile.enableSingleServiceNotifications': false,
   'auth.enableDelegationLink': false,
 };
 

@@ -7,4 +7,5 @@ export const features = {
   "filters.enableSubAccountsMenu": true,
   "filters.enableServiceFilter": true,
   "profile.enableResendVerificationCode": true,
+  "profile.enableSingleServiceNotifications": true,
 }

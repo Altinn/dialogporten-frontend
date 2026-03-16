@@ -84,6 +84,7 @@ export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetails
   const isCompany = notificationParty?.partyType === 'Organization';
 
   const enableResendVerificationCode = useFeatureFlag<boolean>('profile.enableResendVerificationCode');
+  const enableSingleServiceNotifications = useFeatureFlag<boolean>('profile.enableSingleServiceNotifications');
 
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
 
@@ -344,7 +345,7 @@ export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetails
           </Fieldset>
           <Typography size="sm">
             {isAnotherPerson && <p>{t('profile.notifications.personal_for_person')}</p>}
-            {isCompany && (
+            {isCompany && enableSingleServiceNotifications && (
               <p>
                 {t('profile.notifications.personal_explanation')}{' '}
                 <button type="button" className={styles.linkButton} onClick={() => setIsServiceModalOpen(true)}>
