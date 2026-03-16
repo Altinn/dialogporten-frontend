@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.130.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.130.2...v1.130.3) (2026-03-16)
+
+
+### Bug Fixes
+
+* Add feature flag for profile single service settings ([#3862](https://github.com/Altinn/dialogporten-frontend/issues/3862)) ([fb2805f](https://github.com/Altinn/dialogporten-frontend/commit/fb2805fb83336b1fb574b0a2e8c9eaec7cc0b11c))
+
 ## [1.130.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.130.1...v1.130.2) (2026-03-16)
 
 
