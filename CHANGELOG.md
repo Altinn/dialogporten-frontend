@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.130.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.130.1...v1.130.2) (2026-03-16)
+
+
+### Bug Fixes
+
+* Hit correct re-send API point, add debounce ([#3860](https://github.com/Altinn/dialogporten-frontend/issues/3860)) ([01a3705](https://github.com/Altinn/dialogporten-frontend/commit/01a3705790ec76e764cb32854e87ed713a4d82c4))
+
 ## [1.130.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.130.0...v1.130.1) (2026-03-16)
 
 
