@@ -4,12 +4,17 @@ import { isSavedSearchDisabled } from './savedSearchEnabled.ts';
 
 describe('save bookmark url', () => {
   it('should be disabled when there are no keys in filter state and no enteredSearchValue', () => {
-    const disabled = isSavedSearchDisabled({}, '');
+    const disabled = isSavedSearchDisabled({}, [], '');
     expect(disabled).toEqual(true);
   });
 
   it('should be enabled when there are no keys in filter state but there is an enteredSearchValue', () => {
-    const disabled = isSavedSearchDisabled({}, 'hello');
+    const disabled = isSavedSearchDisabled({}, [], 'hello');
+    expect(disabled).toEqual(false);
+  });
+
+  it('should be enabled when there is partyIdsOverriden', () => {
+    const disabled = isSavedSearchDisabled({}, ['sub-account1', 'sub-account2'], '');
     expect(disabled).toEqual(false);
   });
 
@@ -17,7 +22,7 @@ describe('save bookmark url', () => {
     const activeState: FilterState = {
       sender: [],
     };
-    const disabled = isSavedSearchDisabled(activeState, '');
+    const disabled = isSavedSearchDisabled(activeState, [], '');
     expect(disabled).toEqual(true);
   });
 
@@ -25,7 +30,7 @@ describe('save bookmark url', () => {
     const activeState = {
       sender: undefined,
     };
-    const disabled = isSavedSearchDisabled(activeState, '');
+    const disabled = isSavedSearchDisabled(activeState, [], '');
     expect(disabled).toEqual(true);
   });
 
@@ -34,7 +39,7 @@ describe('save bookmark url', () => {
       sender: ['Digitaliseringsdirektoratet', 'digitaliseringsdirektoratet', 'Skatteetaten'],
       status: ['NEW'],
     };
-    const disabled = isSavedSearchDisabled(activeState, '');
+    const disabled = isSavedSearchDisabled(activeState, [], '');
     expect(disabled).toEqual(false);
   });
 
@@ -42,7 +47,7 @@ describe('save bookmark url', () => {
     const activeState = {
       sender: ['Skatteetaten'],
     } as unknown as FilterState;
-    const disabled = isSavedSearchDisabled(activeState, '');
+    const disabled = isSavedSearchDisabled(activeState, [], '');
     expect(disabled).toEqual(false);
   });
 });

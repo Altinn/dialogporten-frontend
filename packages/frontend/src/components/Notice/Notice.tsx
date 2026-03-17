@@ -1,4 +1,4 @@
-import { Heading, Section, Typography } from '@altinn/altinn-components';
+import { Heading, Typography } from '@altinn/altinn-components';
 import styles from './notice.module.css';
 
 interface NoticeProps {
@@ -12,16 +12,14 @@ interface NoticeProps {
 
 export const Notice = ({ title, description, link }: NoticeProps) => {
   return (
-    <Section spacing={3} margin="section">
+    <Typography size="sm">
       <Heading size="lg">{title}</Heading>
-      <Typography size="sm">
-        {description && <p>{description}</p>}
-        {link && (
-          <a className={styles.link} href={link.href}>
-            {link.label}
-          </a>
-        )}
-      </Typography>
-    </Section>
+      {description && <p>{description}</p>}
+      {link && (
+        <a className={styles.link} href={link.href}>
+          {link.label}
+        </a>
+      )}
+    </Typography>
   );
 };

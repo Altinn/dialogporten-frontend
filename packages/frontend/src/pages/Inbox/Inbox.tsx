@@ -34,6 +34,7 @@ import { PageRoutes } from '../routes.ts';
 import { AlertBanner } from './AlertBanner.tsx';
 import { Altinn2ActiveSchemasNotification } from './Altinn2ActiveSchemasNotification.tsx';
 import { FilterCategory, hasValidFilters, readFiltersFromURLQuery } from './filters';
+import styles from './inbox.module.css';
 import { FixedGlobalQueryParams, encodeSubAccountIds } from './queryParams.ts';
 import { useFilters } from './useFilters.tsx';
 import useGroupedDialogs from './useGroupedDialogs.tsx';
@@ -151,9 +152,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
 
   const { enteredSearchValue } = useSearchString();
   const validSearchString = enteredSearchValue.length > 2 ? enteredSearchValue : undefined;
-
-  const searchMode = hasValidFilters(filterState) || !!validSearchString;
-
   const selectedServices = (filterState.service ?? []) as string[];
   const selectedServicesCount = selectedServices.length;
   const serviceLimitReached = selectedServicesCount > 20;
@@ -178,6 +176,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     selectedParties,
     allOrganizationsSelected,
   });
+  const searchMode = hasValidFilters(filterState) || !!validSearchString;
   const showSubAccountsMenu = isSubAccountsMenuEnabled && subAccounts.length > 0;
   const isSubPartiesLimitReached =
     isSubAccountsMenuEnabled && ((subAccounts.length > 20 && !partyIdsOverride.length) || partyIdsOverride.length > 20);
@@ -216,7 +215,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     };
   }, [filterState, subAccountsParamForSave]);
 
-  const savedSearchDisabled = isSavedSearchDisabled(savedSearchFilterState, enteredSearchValue);
+  const savedSearchDisabled = isSavedSearchDisabled(savedSearchFilterState, partyIdsOverride, enteredSearchValue);
 
   const {
     dialogs,
@@ -366,7 +365,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
       {dialogsSuccess && !dialogItems.length && !isLoading && !isLimitReached && (
         <EmptyState
           viewType={viewType}
-          searchMode={searchMode}
+          savable={searchMode || !!(partyIdsOverride?.length ?? 0)}
           saveSearchButtonProps={{ viewType, disabled: savedSearchDisabled, filterState: savedSearchFilterState }}
         />
       )}
@@ -378,10 +377,10 @@ export const Inbox = ({ viewType }: InboxProps) => {
           items={dialogItems}
           groups={{
             ...groups,
-            collapsed: {
+            [Object.keys(groups)[0]]: {
               title: (
-                <span style={{ display: 'flex', alignItems: 'center', columnGap: '0.25rem' }}>
-                  {groups.collapsed?.title}
+                <span className={styles.searchButtonWrapper}>
+                  {Object.values(groups)[0]?.title}
                   <span style={{ margin: '-0.5rem 0' }}>
                     <SaveSearchButton
                       viewType={viewType}

@@ -1,7 +1,15 @@
 import type { FilterState } from '@altinn/altinn-components';
 
-export const isSavedSearchDisabled = (filterState: FilterState, enteredSearchValue: string) => {
+export const isSavedSearchDisabled = (
+  filterState: FilterState,
+  partyIdsOverride: string[],
+  enteredSearchValue: string,
+) => {
   if (enteredSearchValue.length > 0) {
+    return false;
+  }
+
+  if (partyIdsOverride?.length > 0) {
     return false;
   }
 

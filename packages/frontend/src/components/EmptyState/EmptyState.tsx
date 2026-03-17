@@ -8,14 +8,14 @@ import { SaveSearchButton, type SaveSearchButtonProps } from '../SavedSearchButt
 
 interface EmptyStateProps {
   viewType: InboxViewType;
-  searchMode: boolean;
+  savable: boolean;
   saveSearchButtonProps: SaveSearchButtonProps;
 }
 
-export const EmptyState = ({ viewType, searchMode, saveSearchButtonProps }: EmptyStateProps) => {
+export const EmptyState = ({ viewType, savable, saveSearchButtonProps }: EmptyStateProps) => {
   const { t } = useTranslation();
   const { currentPartyUuid } = useParties();
-  if (searchMode) {
+  if (savable) {
     return (
       <Typography size="sm">
         <Heading size="lg">{t('emptyState.noHits.title')}</Heading>
