@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.131.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.130.3...v1.131.0) (2026-03-17)
+
+
+### Features
+
+* **instanceDelegation:** add partyUuid to link to am ui for instance delegation ([#3869](https://github.com/Altinn/dialogporten-frontend/issues/3869)) ([848ef1e](https://github.com/Altinn/dialogporten-frontend/commit/848ef1e74439376b246800d7741c225d078b6ee7))
+* support saving search with only subunits applied ([#3867](https://github.com/Altinn/dialogporten-frontend/issues/3867)) ([81d2554](https://github.com/Altinn/dialogporten-frontend/commit/81d25548128047ae60fa9c123447ef229da4eb80))
+
+
+### Bug Fixes
+
+* **profile:** update misleading text and conditions for validating existings address ([#3873](https://github.com/Altinn/dialogporten-frontend/issues/3873)) ([48c6991](https://github.com/Altinn/dialogporten-frontend/commit/48c6991ddaa536b48941748abe3f902aee72030d))
+
 ## [1.130.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.130.2...v1.130.3) (2026-03-16)
 
 
