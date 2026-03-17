@@ -48,6 +48,8 @@ export interface EmbeddedContent {
 export interface DialogByIdDetails {
   /* id of dialog */
   id: string;
+  /* party with access to dialog */
+  party: string;
   /* serviceResourceType (source) */
   serviceResourceType: string;
   /* summary of dialog by locale,sorted by preference */
@@ -80,7 +82,6 @@ export interface DialogByIdDetails {
   transmissions: TimelineSegmentWithTransmissions[];
   /* a map of all content references for all content reference for transmission, used to dynamically embed content in the frontend from an external URL. */
   contentReferenceForTransmissions: Record<string, EmbeddedContent>;
-
   /* dialog status */
   status: DialogStatus;
   /* extended dialog status */
@@ -242,6 +243,7 @@ export function mapDialogToToInboxItem(
 
   return {
     id: item.id,
+    party: item.party,
     serviceResourceType: item.serviceResourceType,
     title: getPreferredPropertyByLocale(titleObj)?.value ?? '',
     status: item.status,
