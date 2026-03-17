@@ -42,7 +42,7 @@ interface UseSavedSearchesOutput {
   isCTALoading: boolean;
   isLoading: boolean;
   currentPartySavedSearches: SavedSearchesFieldsFragment[] | undefined;
-  saveSearch: (props: HandleSaveSearchProps) => Promise<void>;
+  saveSearch: (props: HandleSaveSearchProps) => Promise<string | undefined>;
   onDeleteSavedSearch: (id: string) => Promise<void>;
   title: string;
   items: BookmarkSettingsListProps['items'];
@@ -174,7 +174,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
     selectedParties,
     enteredSearchValue,
     viewType,
-  }: HandleSaveSearchProps): Promise<void> => {
+  }: HandleSaveSearchProps): Promise<string | undefined> => {
     try {
       setIsCTALoading(true);
       const data: SavedSearchData = {
@@ -183,7 +183,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
         searchString: enteredSearchValue,
         fromView: PageRoutes[viewType],
       };
-      await createSavedSearch('', data);
+      const result = await createSavedSearch('', data);
 
       Analytics.trackEvent(ANALYTICS_EVENTS.SAVED_SEARCH_CREATE_SUCCESS, {
         'search.viewType': viewType,
@@ -197,6 +197,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
         message: t('savedSearches.saved_success'),
         color: 'company',
       });
+      return result.createSavedSearch?.id.toString();
     } catch (error) {
       openSnackbar({
         message: t('savedSearches.saved_error'),

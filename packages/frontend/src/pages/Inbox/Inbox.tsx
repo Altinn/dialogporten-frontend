@@ -1,5 +1,6 @@
 import { type FilterState, ToolbarFilter, ToolbarSearch } from '@altinn/altinn-components';
 import {
+  BookmarkModal,
   Button,
   DialogList,
   DsAlert,
@@ -30,12 +31,14 @@ import { useFeatureFlag } from '../../featureFlags';
 import { useAlertBanner } from '../../hooks/useAlertBanner.ts';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
 import { useInboxOnboarding } from '../../onboardingTour';
+import { useSavedSearches } from '../SavedSearches/useSavedSearches.tsx';
 import { PageRoutes } from '../routes.ts';
 import { AlertBanner } from './AlertBanner.tsx';
 import { Altinn2ActiveSchemasNotification } from './Altinn2ActiveSchemasNotification.tsx';
 import { FilterCategory, hasValidFilters, readFiltersFromURLQuery } from './filters';
 import styles from './inbox.module.css';
 import { FixedGlobalQueryParams, encodeSubAccountIds } from './queryParams.ts';
+import { useBookmarkModal } from './useBookmarkModal.tsx';
 import { useFilters } from './useFilters.tsx';
 import useGroupedDialogs from './useGroupedDialogs.tsx';
 import { useMockError } from './useMockError.tsx';
@@ -115,6 +118,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
 
   const {
     selectedParties,
+    selectedPartyIds,
     allOrganizationsSelected,
     parties,
     partiesEmptyList,
@@ -122,6 +126,9 @@ export const Inbox = ({ viewType }: InboxProps) => {
     isLoading: isLoadingParties,
     organizationLimitReached,
   } = useParties();
+
+  const { items: savedSearchItems, onSaveSearch, onCloseSavedSearch } = useSavedSearches(selectedPartyIds);
+  const { bookmarkModalProps, onSaveSuccess } = useBookmarkModal(savedSearchItems, onSaveSearch, onCloseSavedSearch);
 
   const location = useLocation();
   const [filterState, setFilterState] = useState<FilterState>(readFiltersFromURLQuery(location.search));
@@ -366,7 +373,12 @@ export const Inbox = ({ viewType }: InboxProps) => {
         <EmptyState
           viewType={viewType}
           savable={searchMode || !!(partyIdsOverride?.length ?? 0)}
-          saveSearchButtonProps={{ viewType, disabled: savedSearchDisabled, filterState: savedSearchFilterState }}
+          saveSearchButtonProps={{
+            viewType,
+            disabled: savedSearchDisabled,
+            filterState: savedSearchFilterState,
+            onSaveSuccess,
+          }}
         />
       )}
       {isLimitReached && (
@@ -386,6 +398,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
                       viewType={viewType}
                       disabled={savedSearchDisabled}
                       filterState={savedSearchFilterState}
+                      onSaveSuccess={onSaveSuccess}
                     />
                   </span>
                 </span>
@@ -408,6 +421,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
         isOpen={!!currentSeenByLogModal}
         onClose={() => setCurrentSeenByLogModal(null)}
       />
+      <BookmarkModal {...bookmarkModalProps} />
     </PageBase>
   );
 };

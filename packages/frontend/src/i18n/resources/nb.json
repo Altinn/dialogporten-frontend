@@ -418,6 +418,7 @@
   "savedSearches.bookmark.item_input_label": "Tittel",
   "savedSearches.bookmark.item_input_placeholder": "Uten tittel",
   "savedSearches.bookmark.untitled": "Gi søket et navn",
+  "savedSearches.cancel": "Avbryt",
   "savedSearches.delete_failed": "Kunne ikke slette søket ditt",
   "savedSearches.delete_search": "Slett",
   "savedSearches.delete_search_menu": "Slett søk",

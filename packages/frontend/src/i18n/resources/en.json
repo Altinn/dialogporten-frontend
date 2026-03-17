@@ -418,6 +418,7 @@
   "savedSearches.bookmark.item_input_label": "Title",
   "savedSearches.bookmark.item_input_placeholder": "No title",
   "savedSearches.bookmark.untitled": "Give saved search a name",
+  "savedSearches.cancel": "Cancel",
   "savedSearches.delete_failed": "Could not delete search",
   "savedSearches.delete_search": "Delete saved search",
   "savedSearches.delete_search_menu": "Delete search",
