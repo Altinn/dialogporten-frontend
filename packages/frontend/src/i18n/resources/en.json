@@ -305,7 +305,7 @@
   "profile.account_alerts.snackbar.error": "An error occurred, notifications were not changed",
   "profile.account_alerts.snackbar.success": "Notifications were changed",
   "profile.account_alerts.switch_email_value": "Email",
-  "profile.account_alerts.new_addresses_must_verify": "New addresses must be verified before you can receive notifications.",
+  "profile.account_alerts.new_addresses_must_verify": "New addresses must be verified before you can receive notifications, and only new addresses can be verified.",
   "profile.account_alerts.verify_email": "Verify email",
   "profile.account_alerts.verify_sms": "Verify SMS",
   "profile.account_alerts.single_service_notifications": "Set up notifications for individual services",

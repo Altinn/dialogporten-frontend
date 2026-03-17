@@ -305,7 +305,7 @@
   "profile.account_alerts.snackbar.error": "Det skjedde en feil, varslinger ble ikke endret",
   "profile.account_alerts.snackbar.success": "Varslinger ble endret",
   "profile.account_alerts.switch_email_value": "E-post",
-  "profile.account_alerts.new_addresses_must_verify": "Nye adresser må verifiseres før du kan motta varsler.",
+  "profile.account_alerts.new_addresses_must_verify": "Nye adresser må verifiseres før du kan motta varsler, og kun nye adresser kan verifiseres.",
   "profile.account_alerts.verify_email": "Verifiser e-post",
   "profile.account_alerts.verify_sms": "Verifiser SMS",
   "profile.account_alerts.single_service_notifications": "Sett opp varsling for enkelttjenester",

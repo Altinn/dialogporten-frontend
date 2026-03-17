@@ -92,9 +92,11 @@ export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetails
     document.activeElement?.closest('dialog')?.close();
   };
 
+  const isEmailDirty = alertEmailAddressState.trim() !== alertEmailAddress.trim();
+  const isPhoneNumberDirty = alertPhoneNumberState.trim() !== alertPhoneNumber.trim();
   const isDirty =
-    (enablePhoneNotifications && alertPhoneNumberState !== alertPhoneNumber) ||
-    (enableEmailNotifications && alertEmailAddressState !== alertEmailAddress) ||
+    (enablePhoneNotifications && isPhoneNumberDirty) ||
+    (enableEmailNotifications && isEmailDirty) ||
     enablePhoneNotifications !== (!!notificationSetting?.phoneNumber && alertPhoneNumber.length > 0) ||
     enableEmailNotifications !== (!!notificationSetting?.emailAddress && alertEmailAddress.length > 0);
 
@@ -300,12 +302,10 @@ export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetails
                     placeholder={t('profile.account_alerts.phone_placeholder')}
                     autoComplete="tel"
                   />
-                  {alertPhoneNumberState && (
+                  {alertPhoneNumberState && isPhoneVerified && (
                     <span data-size="sm" className={styles.badgeOverlay}>
                       <Badge color={isPhoneVerified ? 'success' : 'company'}>
-                        {isPhoneVerified
-                          ? t('profile.verification.status_verified')
-                          : t('profile.verification.status_new_sms')}
+                        {t('profile.verification.status_verified')}
                       </Badge>
                     </span>
                   )}
@@ -330,12 +330,10 @@ export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetails
                     placeholder={t('profile.account_alerts.email_placeholder')}
                     autoComplete="email"
                   />
-                  {alertEmailAddressState && (
+                  {alertEmailAddressState && isEmailVerified && (
                     <span data-size="sm" className={styles.badgeOverlay}>
                       <Badge color={isEmailVerified ? 'success' : 'company'}>
-                        {isEmailVerified
-                          ? t('profile.verification.status_verified')
-                          : t('profile.verification.status_new_address')}
+                        {t('profile.verification.status_verified')}
                       </Badge>
                     </span>
                   )}
@@ -365,7 +363,7 @@ export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetails
                 type="button"
                 variant="tinted"
                 onClick={() => handleTriggerVerification('email')}
-                disabled={isSendingCode}
+                disabled={isSendingCode || !isEmailDirty}
               >
                 {t('profile.account_alerts.verify_email')}
               </Button>
@@ -375,7 +373,7 @@ export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetails
                 type="button"
                 variant="tinted"
                 onClick={() => handleTriggerVerification('sms')}
-                disabled={isSendingCode}
+                disabled={isSendingCode || !isPhoneNumberDirty}
               >
                 {t('profile.account_alerts.verify_sms')}
               </Button>
