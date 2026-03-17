@@ -15,6 +15,7 @@ export const getPageRouteTitle = (route: PageRoutes): string => {
     [PageRoutes.notifications]: 'notifications',
     [PageRoutes.settings]: 'settings',
     [PageRoutes.error]: 'error',
+    [PageRoutes.redirect]: 'redirect',
   };
   if (routeMap[route]) {
     return t('route.titles.' + routeMap[route]);
