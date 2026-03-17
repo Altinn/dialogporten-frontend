@@ -36,7 +36,7 @@ export const DialogDetailsPage = () => {
   } = useDialogById(parties, dialogId);
   const isLoading = isLoadingDialog || (!isSuccess && !isError);
   const displayDialogActions = !!(dialogId && dialog && !isLoading);
-  const { delegationHref } = useDelegation(dialogId);
+  const { delegationHref } = useDelegation(dialogId, dialog?.party);
 
   usePageTitle({ baseTitle: dialog?.title || '' });
   const createLabelUpdateActions = useDialogActions();
