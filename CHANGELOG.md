@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.132.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.131.0...v1.132.0) (2026-03-18)
+
+
+### Features
+
+* Add inbox bookmarks modal, add tests ([#3871](https://github.com/Altinn/dialogporten-frontend/issues/3871)) ([c1d9e34](https://github.com/Altinn/dialogporten-frontend/commit/c1d9e3434ffe5bfe68135033daf0c2b013f75224))
+* add redirect route for return navigation from AM-UI ([#3840](https://github.com/Altinn/dialogporten-frontend/issues/3840)) ([#3875](https://github.com/Altinn/dialogporten-frontend/issues/3875)) ([b2b912e](https://github.com/Altinn/dialogporten-frontend/commit/b2b912e8662c8c2c6f9eda0c5cd522713442bd1c))
+
+
+### Bug Fixes
+
+* **accountSelector:** unable to select end user with pre selected account ([#3883](https://github.com/Altinn/dialogporten-frontend/issues/3883)) ([cdd5784](https://github.com/Altinn/dialogporten-frontend/commit/cdd5784fce6e16d0a76400464708c03f4d059cc1))
+* **profile:** include existing validated addressed in verification request ([#3884](https://github.com/Altinn/dialogporten-frontend/issues/3884)) ([319c0f3](https://github.com/Altinn/dialogporten-frontend/commit/319c0f3ca7940d76fc18003e70abbd210d2725aa))
+* skip empty breadcrumb when navigating directly to dialog URL ([#3877](https://github.com/Altinn/dialogporten-frontend/issues/3877)) ([85303e4](https://github.com/Altinn/dialogporten-frontend/commit/85303e451e3432877549cad56dbfc943aafffa35))
+
 ## [1.131.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.130.3...v1.131.0) (2026-03-17)
 
 
