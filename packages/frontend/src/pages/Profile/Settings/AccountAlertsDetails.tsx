@@ -103,7 +103,8 @@ export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetails
   const hasPhoneChangedFromProfile = notificationSetting?.phoneNumber?.trim() !== alertPhoneNumberState.trim();
   const allowedToVerifyEmail =
     notificationSetting?.emailVerificationStatus === 'Legacy' ? hasEmailChangedFromProfile : true;
-  const allowedToVerifyPhone = notificationSetting?.phoneNumber === 'Legacy' ? hasPhoneChangedFromProfile : true;
+  const allowedToVerifyPhone =
+    notificationSetting?.smsVerificationStatus === 'Legacy' ? hasPhoneChangedFromProfile : true;
 
   const invalidateQueries = () => {
     void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.VERIFIED_ADDRESSES] });
@@ -129,12 +130,11 @@ export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetails
         });
         setVerificationState({ step: 'awaiting_email_code', address: alertEmailAddressState });
       } else {
-        const shouldIncludeEmail = isAlreadyVerified(alertEmailAddressState, 'Sms') && enableEmailNotifications;
+        const shouldIncludeEmail = isAlreadyVerified(alertEmailAddressState, 'Email') && enableEmailNotifications;
         await updateNotificationsetting({
           partyUuid,
           phoneNumber: alertPhoneNumberState,
           ...(shouldIncludeEmail ? { emailAddress: alertEmailAddressState } : {}),
-          emailAddress: alertEmailAddressState,
           generateVerificationCode: true,
         });
         setVerificationState({ step: 'awaiting_sms_code', address: alertPhoneNumberState });
@@ -198,6 +198,7 @@ export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetails
 
   const handleUpdateNotificationSettings = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (needsVerification) return;
     const updatedSettings = {
       partyUuid,
       userId: notificationSetting?.userId,

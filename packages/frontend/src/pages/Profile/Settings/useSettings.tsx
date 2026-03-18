@@ -221,7 +221,7 @@ export const useSettings = ({
     return {
       id: account?.id ?? id,
       color: (account?.type ?? 'neutral') as SettingsItemProps['color'],
-      value: [email, phoneNumber].filter(Boolean).join(email && phoneNumber ? ' og ' : ''),
+      value: [email, phoneNumber].filter(Boolean).join(email && phoneNumber ? t('profile.settings.and') : ''),
       groupId: String(account?.groupId ?? ''),
       title: account?.name,
       icon: account?.icon,
