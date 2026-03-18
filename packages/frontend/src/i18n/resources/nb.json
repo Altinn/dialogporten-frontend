@@ -18,6 +18,7 @@
   "activity.status.transmission_opened": "{transmission} åpnet av {actor}.",
   "additional_info.title": "Mer informasjon",
   "altinn.delegate_access": "Del og gi tilgang",
+  "altinn.dialogporten.loading_lookup": "Henter dialogens id",
   "altinn.access_management": "Tilgangsstyring",
   "altinn.beta.exit": "Gå til gamle Altinn",
   "altinn.beta.inbox": "Innboks beta",

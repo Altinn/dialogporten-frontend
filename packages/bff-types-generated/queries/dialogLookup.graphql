@@ -11,6 +11,7 @@ query dialogLookup($instanceRef: String!) {
 
 fragment dialogLookupPayload on DialogLookup {
   instanceRef
+  dialogId
   serviceResource {
     id
     isDelegable
