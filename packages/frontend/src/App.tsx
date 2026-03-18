@@ -27,7 +27,7 @@ function App() {
   useEffect(() => {
     const partyUuidFromCookie = getPartyFromCookie('AltinnPartyUuid');
     if (partyUuidFromCookie) {
-      setCookiePartyUuid(getPartyFromCookie('AltinnPartyUuid') ?? '');
+      setCookiePartyUuid(partyUuidFromCookie ?? '');
     }
   }, []);
 

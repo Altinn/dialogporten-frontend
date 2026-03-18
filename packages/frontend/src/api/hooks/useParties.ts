@@ -1,10 +1,9 @@
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import { useEffect, useMemo } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
-import { getCookieDomain } from '../../auth';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
-import { type PartyCookieName, getPartyFromCookie } from '../../cookie.ts';
+import { updatePartyCookies } from '../../cookie.ts';
 import {
   FixedGlobalQueryParams,
   getSelectedAllPartiesFromQueryParams,
@@ -119,7 +118,16 @@ export const useParties = (): UsePartiesOutput => {
       handleChangSearchParams(params);
     }
 
-    handleSetSelectedParties(data?.filter((party) => partyIds.includes(party.party)) ?? []);
+    const matchedParties = data?.filter((party) => partyIds.includes(party.party)) ?? [];
+    handleSetSelectedParties(matchedParties);
+
+    const selectedParty = matchedParties[0];
+    if (selectedParty?.partyUuid) {
+      updatePartyCookies({
+        partyUuid: selectedParty.partyUuid,
+        partyId: selectedParty.partyId,
+      });
+    }
   };
 
   const selectAllOrganizations = () => {
@@ -228,26 +236,6 @@ export const useParties = (): UsePartiesOutput => {
   const currentPartyUuid = useMemo(() => {
     return allOrganizationsSelected ? currentEndUser?.partyUuid : selectedParties[0]?.partyUuid;
   }, [selectedParties, currentEndUser, allOrganizationsSelected]);
-
-  const currentA2PartyId = useMemo(() => {
-    return allOrganizationsSelected ? currentEndUser?.partyId : selectedParties[0]?.partyId;
-  }, [selectedParties, currentEndUser, allOrganizationsSelected]);
-
-  useEffect(() => {
-    if (!currentPartyUuid || currentA2PartyId == null) return;
-
-    const domain = getCookieDomain();
-
-    const ensureCookie = (key: PartyCookieName, value: string) => {
-      const existing = getPartyFromCookie(key);
-      if (existing !== value) {
-        document.cookie = `${key}=${value}; Path=/; Domain=${domain}`;
-      }
-    };
-
-    ensureCookie('AltinnPartyUuid', currentPartyUuid);
-    ensureCookie('AltinnPartyId', String(currentA2PartyId));
-  }, [currentPartyUuid, currentA2PartyId]);
 
   return {
     isLoading,
