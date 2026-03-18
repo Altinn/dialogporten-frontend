@@ -13,6 +13,7 @@ export type SaveSearchButtonProps = {
   viewType: InboxViewType;
   filterState: FilterState;
   variant?: 'ghost' | 'outline';
+  onSaveSuccess?: (savedSearchId: string) => void;
 } & ButtonHTMLAttributes<HTMLButtonElement> &
   RefAttributes<HTMLButtonElement>;
 
@@ -22,6 +23,7 @@ export const SaveSearchButton = ({
   filterState,
   viewType,
   variant = 'ghost',
+  onSaveSuccess,
 }: SaveSearchButtonProps) => {
   const { t } = useTranslation();
   const { selectedPartyIds } = useParties();
@@ -60,9 +62,15 @@ export const SaveSearchButton = ({
     <Button
       size="xs"
       className={className}
-      onClick={() =>
-        saveSearch({ filters: filterState, selectedParties: selectedPartyIds, enteredSearchValue, viewType })
-      }
+      onClick={async () => {
+        const id = await saveSearch({
+          filters: filterState,
+          selectedParties: selectedPartyIds,
+          enteredSearchValue,
+          viewType,
+        });
+        if (id) onSaveSuccess?.(id);
+      }}
       variant={variant}
       loading={isCTALoading}
       aria-label={t('filter_bar.save_search')}

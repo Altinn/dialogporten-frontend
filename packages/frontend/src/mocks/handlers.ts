@@ -260,6 +260,18 @@ const getProfileMock = graphql.query('profile', async () => {
   });
 });
 
+const mutateUpdateSavedSearchMock = graphql.mutation('UpdateSavedSearch', (req) => {
+  const { id, name } = req.variables;
+  inMemoryStore.savedSearches = inMemoryStore.savedSearches?.map((savedSearch) =>
+    savedSearch.id === id ? { ...savedSearch, name, updatedAt: new Date().toISOString() } : savedSearch,
+  );
+  return HttpResponse.json({
+    data: {
+      updateSavedSearch: { success: true, message: 'Saved search updated successfully' },
+    },
+  });
+});
+
 const mutateSavedSearchMock = graphql.mutation('CreateSavedSearch', (req) => {
   const { name, data } = req.variables;
   const savedSearch: SavedSearchesFieldsFragment = {
@@ -272,7 +284,7 @@ const mutateSavedSearchMock = graphql.mutation('CreateSavedSearch', (req) => {
   inMemoryStore.savedSearches?.push(savedSearch);
   return HttpResponse.json({
     data: {
-      CreateSavedSearch: savedSearch,
+      createSavedSearch: savedSearch,
     },
   });
 });
@@ -429,6 +441,7 @@ export const handlers = [
   getSavedSearchesMock,
   getProfileMock,
   mutateSavedSearchMock,
+  mutateUpdateSavedSearchMock,
   mutateUpdateSystemLabelMock,
   deleteSavedSearchMock,
   getOrganizationsMock,

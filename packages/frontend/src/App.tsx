@@ -9,6 +9,7 @@ import { NotificationsPage } from './pages/Profile/NotificationsPage/Notificatio
 import { PartiesOverviewPage } from './pages/Profile/PartiesOverviewPage/PartiesOverviewPage.tsx';
 import { Profile } from './pages/Profile/Profile.tsx';
 import { Settings } from './pages/Profile/Settings/Settings.tsx';
+import { RedirectPage } from './pages/RedirectPage/RedirectPage.tsx';
 import { SavedSearchesPage } from './pages/SavedSearches';
 import { PageRoutes } from './pages/routes.ts';
 import './app.css';
@@ -58,6 +59,7 @@ function App() {
           <Route path={PageRoutes.bin} element={withErrorBoundary(<Inbox key="bin" viewType={'bin'} />, 'Bin')} />
           <Route path={PageRoutes.inboxItem} element={withErrorBoundary(<DialogDetailsPage />, 'Inbox Item')} />
           <Route path={PageRoutes.savedSearches} element={withErrorBoundary(<SavedSearchesPage />, 'Saved Searches')} />
+          <Route path={PageRoutes.redirect} element={<RedirectPage />} />
           <Route path={PageRoutes.error} element={<ErrorPage />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Route>
