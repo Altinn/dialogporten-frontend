@@ -50,18 +50,18 @@ export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetails
   const { verifiedAddresses } = useVerifiedAddresses();
 
   const notificationSetting = notificationParty?.notificationSettings;
-  const alertPhoneNumber = notificationSetting?.phoneNumber || user?.phoneNumber || '';
-  const alertEmailAddress = notificationSetting?.emailAddress || user?.email || '';
+  const defaultPhoneNumber = notificationSetting?.phoneNumber || user?.phoneNumber || '';
+  const defaultEmail = notificationSetting?.emailAddress || user?.email || '';
   const partyUuid = notificationSetting?.partyUuid || notificationParty?.partyUuid || '';
 
   const [enablePhoneNotifications, setEnablePhoneNotifications] = useState<boolean>(
-    !!notificationSetting?.phoneNumber && alertPhoneNumber.length > 0,
+    !!notificationSetting?.phoneNumber && defaultPhoneNumber.length > 0,
   );
   const [enableEmailNotifications, setEnableEmailNotifications] = useState<boolean>(
-    !!notificationSetting?.emailAddress && alertEmailAddress.length > 0,
+    !!notificationSetting?.emailAddress && defaultEmail.length > 0,
   );
-  const [alertEmailAddressState, setAlertEmailAddressState] = useState<string>(alertEmailAddress);
-  const [alertPhoneNumberState, setAlertPhoneNumberState] = useState<string>(alertPhoneNumber);
+  const [alertEmailAddressState, setAlertEmailAddressState] = useState<string>(defaultEmail);
+  const [alertPhoneNumberState, setAlertPhoneNumberState] = useState<string>(defaultPhoneNumber);
 
   const [verificationState, setVerificationState] = useState<PendingVerification | null>(null);
   const [codeInput, setCodeInput] = useState('');
@@ -92,13 +92,18 @@ export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetails
     document.activeElement?.closest('dialog')?.close();
   };
 
-  const isEmailDirty = alertEmailAddressState.trim() !== alertEmailAddress.trim();
-  const isPhoneNumberDirty = alertPhoneNumberState.trim() !== alertPhoneNumber.trim();
+  const isEmailDirty = alertEmailAddressState.trim() !== defaultEmail.trim();
+  const isPhoneNumberDirty = alertPhoneNumberState.trim() !== defaultPhoneNumber.trim();
   const isDirty =
     (enablePhoneNotifications && isPhoneNumberDirty) ||
     (enableEmailNotifications && isEmailDirty) ||
-    enablePhoneNotifications !== (!!notificationSetting?.phoneNumber && alertPhoneNumber.length > 0) ||
-    enableEmailNotifications !== (!!notificationSetting?.emailAddress && alertEmailAddress.length > 0);
+    enablePhoneNotifications !== (!!notificationSetting?.phoneNumber && defaultPhoneNumber.length > 0) ||
+    enableEmailNotifications !== (!!notificationSetting?.emailAddress && defaultEmail.length > 0);
+  const hasEmailChangedFromProfile = notificationSetting?.emailAddress?.trim() !== alertEmailAddressState.trim();
+  const hasPhoneChangedFromProfile = notificationSetting?.phoneNumber?.trim() !== alertPhoneNumberState.trim();
+  const allowedToVerifyEmail =
+    notificationSetting?.emailVerificationStatus === 'Legacy' ? hasEmailChangedFromProfile : true;
+  const allowedToVerifyPhone = notificationSetting?.phoneNumber === 'Legacy' ? hasPhoneChangedFromProfile : true;
 
   const invalidateQueries = () => {
     void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.VERIFIED_ADDRESSES] });
@@ -115,16 +120,21 @@ export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetails
     setIsSendingCode(true);
     try {
       if (type === 'email') {
+        const shouldIncludePhoneNumber = isAlreadyVerified(alertPhoneNumberState, 'Sms') && enablePhoneNotifications;
         await updateNotificationsetting({
           partyUuid,
           emailAddress: alertEmailAddressState,
+          ...(shouldIncludePhoneNumber ? { phoneNumber: alertPhoneNumberState } : {}),
           generateVerificationCode: true,
         });
         setVerificationState({ step: 'awaiting_email_code', address: alertEmailAddressState });
       } else {
+        const shouldIncludeEmail = isAlreadyVerified(alertEmailAddressState, 'Sms') && enableEmailNotifications;
         await updateNotificationsetting({
           partyUuid,
           phoneNumber: alertPhoneNumberState,
+          ...(shouldIncludeEmail ? { emailAddress: alertEmailAddressState } : {}),
+          emailAddress: alertEmailAddressState,
           generateVerificationCode: true,
         });
         setVerificationState({ step: 'awaiting_sms_code', address: alertPhoneNumberState });
@@ -363,7 +373,7 @@ export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetails
                 type="button"
                 variant="tinted"
                 onClick={() => handleTriggerVerification('email')}
-                disabled={isSendingCode || !isEmailDirty}
+                disabled={isSendingCode || !allowedToVerifyEmail}
               >
                 {t('profile.account_alerts.verify_email')}
               </Button>
@@ -373,7 +383,7 @@ export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetails
                 type="button"
                 variant="tinted"
                 onClick={() => handleTriggerVerification('sms')}
-                disabled={isSendingCode || !isPhoneNumberDirty}
+                disabled={isSendingCode || !allowedToVerifyPhone}
               >
                 {t('profile.account_alerts.verify_sms')}
               </Button>
