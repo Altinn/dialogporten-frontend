@@ -117,7 +117,7 @@ export const PageLayout: React.FC = () => {
 
       if (location.pathname !== PageRoutes.inbox) {
         if (isDialogDetails && fromView === PageRoutes.inbox) {
-        } else {
+        } else if (pageRouteTitle) {
           steps.push({
             label: pageRouteTitle,
             as: (props) => (
