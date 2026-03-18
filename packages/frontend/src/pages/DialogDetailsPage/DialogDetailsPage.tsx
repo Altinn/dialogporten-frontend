@@ -87,10 +87,7 @@ export const DialogDetailsPage = () => {
         queryKey: [QUERY_KEYS.MAIN_CONTENT_REFERENCE, dialogId, dialogId],
         exact: false,
       });
-      qc.removeQueries({
-        queryKey: [QUERY_KEYS.CURRENT_DIALOG_TITLE],
-        exact: false,
-      });
+      qc.setQueryData([QUERY_KEYS.CURRENT_DIALOG_TITLE], '');
     };
   }, [qc, dialogId]);
 

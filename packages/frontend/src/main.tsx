@@ -7,7 +7,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import App from './App.tsx';
 import { AuthProvider } from './components/Login/AuthContext.tsx';
+import { QUERY_KEYS } from './constants/queryKeys.ts';
 import { LoggerContextProvider } from './contexts/LoggerContext.tsx';
+import { getPartyFromCookie } from './cookie.ts';
 import { FeatureFlagProvider, loadFeatureFlags } from './featureFlags';
 import { OnboardingTourProvider } from './onboardingTour';
 
@@ -50,6 +52,8 @@ const RootProvider = ({ children }: { children: React.ReactNode }) => {
 if (element) {
   const root = ReactDOM.createRoot(element);
   const queryClient = new QueryClient();
+  queryClient.setQueryData([QUERY_KEYS.ALTINN_COOKIE], getPartyFromCookie('AltinnPartyUuid') ?? '');
+
   Promise.all([enableMocking(), loadFeatures()]).then(([_, initialFlags]) => {
     root.render(
       <React.StrictMode>

@@ -1,5 +1,6 @@
 import type { AttachmentLinkProps, AvatarProps, SeenByLogProps } from '@altinn/altinn-components';
 import { formatDisplayName } from '@altinn/altinn-components';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   type Actor,
   ActorType,
@@ -22,7 +23,6 @@ import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
 import { type Locale, useDateFnsLocale, useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { getIsUnread } from '../../pages/Inbox/status.ts';
 import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
-import { useGlobalState } from '../../useGlobalState.ts';
 import { graphQLSDK } from '../queries.ts';
 import { type ActivityLogEntry, getActivityHistory } from '../utils/activities.tsx';
 import { createExpiryBadge, mediaTypeToExt } from '../utils/attachments.ts';
@@ -330,7 +330,7 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
   const format = useFormat();
   const { locale } = useDateFnsLocale();
   const { organizations, isLoading: isOrganizationsLoading } = useOrganizations();
-  const [_, setCurrentDialogTitle] = useGlobalState(QUERY_KEYS.CURRENT_DIALOG_TITLE, '');
+  const queryClient = useQueryClient();
   const disableFlipNamesPatch = useFeatureFlag<boolean>('dialogporten.disableFlipNamesPatch');
   const { selectedProfile } = useParties();
   const partyURIs = parties.map((party) => party.party);
@@ -351,7 +351,7 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
       const dialogTitle = getPreferredPropertyByLocale(dialogTitles)?.value;
 
       if (dialogTitle) {
-        setCurrentDialogTitle(dialogTitle);
+        queryClient.setQueryData([QUERY_KEYS.CURRENT_DIALOG_TITLE], dialogTitle);
       }
 
       return response;

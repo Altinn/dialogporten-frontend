@@ -1,6 +1,7 @@
+import { useQueryClient } from '@tanstack/react-query';
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import { useEffect, useMemo } from 'react';
-import { useLocation, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { updatePartyCookies } from '../../cookie.ts';
@@ -9,7 +10,7 @@ import {
   getSelectedAllPartiesFromQueryParams,
   getSelectedPartyFromQueryParams,
 } from '../../pages/Inbox/queryParams.ts';
-import { useGlobalState, useGlobalStringState } from '../../useGlobalState.ts';
+import { useGlobalState } from '../../useGlobalState.ts';
 import { graphQLSDK } from '../queries.ts';
 import { normalizeFlattenParties } from '../utils/normalizeFlattenParties.ts';
 
@@ -55,12 +56,9 @@ const createPartyParams = (searchParamString: string, key: string, value: string
 };
 
 export const useParties = (): UsePartiesOutput => {
-  const location = useLocation();
-  const [cookiePartyUuid] = useGlobalStringState(QUERY_KEYS.ALTINN_COOKIE, '');
-  const [hasInitializedFromCookie, setHasInitializedFromCookie] = useGlobalState<boolean>(
-    'hasInitializedFromCookie',
-    false,
-  );
+  const queryClient = useQueryClient();
+  const [cookiePartyUuid] = useGlobalState(QUERY_KEYS.ALTINN_COOKIE, '');
+
   const [searchParams, setSearchParams] = useSearchParams();
   const [allOrganizationsSelected, setAllOrganizationsSelected] = useGlobalState<boolean>(
     QUERY_KEYS.ALL_ORGANIZATIONS_SELECTED,
@@ -73,10 +71,10 @@ export const useParties = (): UsePartiesOutput => {
     false,
   );
 
-  const handleChangSearchParams = (searchParams: URLSearchParams) => {
-    /* Avoid setting search params if they are the same as the current ones */
-    if (searchParams.toString() !== new URLSearchParams(location.search).toString()) {
-      setSearchParams(searchParams, { replace: true });
+  const handleChangSearchParams = (newParams: URLSearchParams) => {
+    /* Compare against actual current URL to avoid redundant updates */
+    if (newParams.toString() !== new URLSearchParams(window.location.search).toString()) {
+      setSearchParams(newParams, { replace: true });
     }
   };
 
@@ -145,49 +143,36 @@ export const useParties = (): UsePartiesOutput => {
     return undefined;
   };
 
-  const getEndUserParty = () => {
-    return data?.find((party) => party.isCurrentEndUser);
-  };
+  const currentEndUser = useMemo(() => data?.find((party) => party.isCurrentEndUser), [data]);
 
   const initializePartySelection = () => {
-    if (getSelectedAllPartiesFromQueryParams(searchParams)) {
-      selectAllOrganizations();
-      setHasInitializedFromCookie(true);
+    // Synchronous guard — prevents multiple hook instances from initializing
+    if (queryClient.getQueryData(['hasInitializedPartySelection'])) {
       return;
     }
+    queryClient.setQueryData(['hasInitializedPartySelection'], true);
 
-    const partyFromCookie = data?.find((party) => party.partyUuid === cookiePartyUuid);
-
-    // Cookie override – applied only once
-    if (!hasInitializedFromCookie && cookiePartyUuid && data?.length) {
-      if (partyFromCookie) {
-        const partyFromQuery = getSelectedPartyFromQueryParams(searchParams);
-        if (!partyFromQuery) {
-          setSelectedPartyIds([partyFromCookie.party], false);
-        }
-      }
-      setHasInitializedFromCookie(true);
-    }
-
-    const orgFromURL = getPartyFromURL();
-    const currentEndUser = getEndUserParty();
-    const selectedPartyIsPerson = selectedParties.some((party) => party.party.includes('person'));
-
-    if (orgFromURL) {
-      setSelectedPartyIds([orgFromURL.party], false);
-    } else if (selectedPartyIsPerson) {
-      setSelectedPartyIds(
-        selectedParties.map((party) => party.party),
-        false,
-      );
-    } else if (currentEndUser) {
-      if (cookiePartyUuid && partyFromCookie?.party && currentEndUser?.partyUuid !== cookiePartyUuid) {
-        setSelectedPartyIds([partyFromCookie.party], false);
-      } else {
-        setSelectedPartyIds([currentEndUser.party], false);
-      }
+    if (getSelectedAllPartiesFromQueryParams(searchParams)) {
+      selectAllOrganizations();
     } else {
-      console.warn('No current end user found, unable to select default parties.');
+      const partyFromQuery = getSelectedPartyFromQueryParams(searchParams);
+      const partyFromCookie = cookiePartyUuid ? data?.find((party) => party.partyUuid === cookiePartyUuid) : undefined;
+
+      if (partyFromQuery) {
+        // URL takes highest precedence
+        const orgFromURL = getPartyFromURL();
+        if (orgFromURL) {
+          setSelectedPartyIds([orgFromURL.party], false);
+        }
+      } else if (partyFromCookie) {
+        // Cookie takes precedence over default
+        setSelectedPartyIds([partyFromCookie.party], false);
+      } else if (currentEndUser) {
+        // Fallback to logged-in user
+        setSelectedPartyIds([currentEndUser.party], false);
+      } else {
+        console.warn('No current end user found, unable to select default parties.');
+      }
     }
   };
 
@@ -210,7 +195,29 @@ export const useParties = (): UsePartiesOutput => {
         setIsSelfIdentifiedUser(true);
       }
     }
-  }, [isSuccess, data, location.search]);
+  }, [isSuccess, data]);
+
+  // Handle URL-driven account switching (after initialization)
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Only react to searchParams changes
+  useEffect(() => {
+    if (!isSuccess || !data?.length || !queryClient.getQueryData(['hasInitializedPartySelection'])) {
+      return;
+    }
+
+    // Read actual current URL to avoid acting on stale searchParams from closure
+    const currentParams = new URLSearchParams(window.location.search);
+    const allPartiesParam = currentParams.get(FixedGlobalQueryParams.allParties) === 'true';
+    const partyParam = currentParams.get(FixedGlobalQueryParams.party);
+
+    if (allPartiesParam) {
+      selectAllOrganizations();
+    } else if (partyParam) {
+      const party = data?.find((p) => p.party === partyParam);
+      if (party) {
+        setSelectedPartyIds([party.party], false);
+      }
+    }
+  }, [searchParams]);
 
   const isCompanyProfile =
     isCompanyFromParams || allOrganizationsSelected || selectedParties?.[0]?.partyType === 'Organization';
@@ -226,11 +233,6 @@ export const useParties = (): UsePartiesOutput => {
         parentId: party.partyUuid,
       })) ?? []),
     ]) as FlattenedParty[];
-  }, [data]);
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  const currentEndUser = useMemo(() => {
-    return getEndUserParty();
   }, [data]);
 
   const currentPartyUuid = useMemo(() => {
