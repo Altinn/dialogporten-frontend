@@ -1,0 +1,60 @@
+import { defaultAppURL } from '../';
+import { expect, test } from '../fixtures';
+
+test.describe('Inbox BookmarkModal', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto(defaultAppURL);
+    await page.waitForLoadState('networkidle');
+    await page.evaluate(() => {
+      localStorage.setItem('arbeidsflate:inbox-onboarding-displayed', 'true');
+      localStorage.setItem('arbeidsflate:beta-modal-displayed', 'true');
+      localStorage.setItem('arbeidsflate:profile-main-onboarding-completed', 'true');
+      localStorage.setItem('arbeidsflate:profile-parties-onboarding-completed', 'true');
+    });
+  });
+
+  test('Save search from Inbox: open modal, change title, save', async ({ page, isMobile }) => {
+    const toolbarArea = page.getByTestId('inbox-toolbar');
+    await toolbarArea.getByRole('button', { name: /legg til/i }).click();
+    await toolbarArea.locator('#tool-filter-add').locator('button[data-id="org"], button#org').click();
+    await page.locator('li').filter({ hasText: 'Oslo kommune' }).nth(1).click();
+
+    if (isMobile) {
+      await page.getByRole('button', { name: 'Vis alle resultater' }).click();
+    } else {
+      await page.keyboard.press('Escape');
+    }
+
+    await page.getByRole('button', { name: 'Lagre søk' }).click();
+    await expect(page.getByText('Søket ditt er lagret')).toBeVisible();
+    await expect(page.getByRole('dialog')).toBeVisible();
+    await expect(page.getByRole('dialog').getByRole('heading', { name: 'Lagre søk' })).toBeVisible();
+
+    await page.getByLabel('Tittel').fill('Mitt test-søk');
+    await page.getByRole('dialog').getByRole('button', { name: 'Lagre søk' }).click();
+
+    await expect(page.getByText('Søket ditt er oppdatert')).toBeVisible();
+    await expect(page.getByRole('dialog')).not.toBeVisible();
+  });
+
+  test('Save search from Inbox: cancel closes modal without deleting', async ({ page, isMobile }) => {
+    const toolbarArea = page.getByTestId('inbox-toolbar');
+    await toolbarArea.getByRole('button', { name: /legg til/i }).click();
+    await toolbarArea.locator('#tool-filter-add').locator('button[data-id="org"], button#org').click();
+    await page.locator('li').filter({ hasText: 'Oslo kommune' }).nth(1).click();
+
+    if (isMobile) {
+      await page.getByRole('button', { name: 'Vis alle resultater' }).click();
+    } else {
+      await page.keyboard.press('Escape');
+    }
+
+    await page.getByRole('button', { name: 'Lagre søk' }).click();
+    await expect(page.getByRole('dialog')).toBeVisible();
+
+    await page.getByRole('button', { name: 'Avbryt' }).click();
+
+    await expect(page.getByRole('dialog')).not.toBeVisible();
+    await expect(page.getByRole('button', { name: 'Lagret søk' })).toBeVisible();
+  });
+});

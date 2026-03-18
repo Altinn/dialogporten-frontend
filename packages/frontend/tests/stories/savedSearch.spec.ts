@@ -30,6 +30,7 @@ test.describe('Saved search', () => {
 
     await page.getByRole('button', { name: 'Lagre søk' }).click();
     await expect(page.getByText('Søket ditt er lagret')).toBeVisible();
+    await page.getByRole('button', { name: 'Avbryt' }).click();
 
     if (isMobile) {
       await page.getByRole('button', { name: 'Meny' }).click();
@@ -55,6 +56,7 @@ test.describe('Saved search', () => {
     await performSearch(page, 'skatten', 'enter');
 
     await page.getByRole('button', { name: 'Lagre søk' }).click();
+    await page.getByRole('button', { name: 'Avbryt' }).click();
     await expect(page.getByRole('button', { name: 'Lagret søk' })).toBeVisible();
 
     if (isMobile) {
@@ -87,6 +89,7 @@ test.describe('Saved search', () => {
     await page.getByRole('combobox', { name: 'Søk' }).press('Enter');
     await page.getByRole('button', { name: 'Lagre søk' }).click();
     await expect(page.getByText('Søket ditt er lagret')).toBeVisible();
+    await page.getByRole('button', { name: 'Avbryt' }).click();
 
     await page.getByTestId('sidebar-saved-searches').click();
     await page.getByRole('link', { name: '«innkalling»' }).click();
@@ -116,6 +119,7 @@ test.describe('Saved search', () => {
 
     await page.getByRole('button', { name: 'Lagre søk' }).click();
     await expect(page.getByText('Søket ditt er lagret')).toBeVisible();
+    await page.getByRole('button', { name: 'Avbryt' }).click();
 
     await page.getByRole('button', { name: 'Nullstill' }).click();
 
