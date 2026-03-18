@@ -308,25 +308,29 @@ export const PartiesOverviewPage = () => {
             title: t('profile.go_to_inbox'),
             as: (props) => <Link to={'/?party=' + party.id} {...props} />,
           },
-          party.isPreselectedParty
-            ? {
-                id: party.groupId + 'set-preselected-party',
-                icon: HouseHeartFillIcon,
-                onClick: () =>
-                  setOpenConfirmSetPreselectedActorModal({
-                    party,
-                    operation: 'unset',
-                  }),
-                title: t('profile.unset_preselected_party'),
-                as: 'button' as ElementType,
-              }
-            : {
-                id: party.groupId + 'set-preselected-party',
-                icon: HouseHeartIcon,
-                onClick: () => setOpenConfirmSetPreselectedActorModal({ party, operation: 'set' }),
-                title: t('profile.set_preselected_party'),
-                as: 'button' as ElementType,
-              },
+          ...(!party.isCurrentEndUser
+            ? [
+                party.isPreselectedParty
+                  ? {
+                      id: party.groupId + 'set-preselected-party',
+                      icon: HouseHeartFillIcon,
+                      onClick: () =>
+                        setOpenConfirmSetPreselectedActorModal({
+                          party,
+                          operation: 'unset',
+                        }),
+                      title: t('profile.unset_preselected_party'),
+                      as: 'button' as ElementType,
+                    }
+                  : {
+                      id: party.groupId + 'unset-preselected-party',
+                      icon: HouseHeartIcon,
+                      onClick: () => setOpenConfirmSetPreselectedActorModal({ party, operation: 'set' }),
+                      title: t('profile.set_preselected_party'),
+                      as: 'button' as ElementType,
+                    },
+              ]
+            : []),
         ],
       },
     };
