@@ -20,25 +20,14 @@ test.describe('Saved search', () => {
     const toolbarArea = page.getByTestId('inbox-toolbar');
     await toolbarArea.getByRole('button', { name: /legg til/i }).click();
     await toolbarArea.locator('#tool-filter-add').locator('button[data-id="org"], button#org').click();
-    await page.locator('li').filter({ hasText: 'Oslo kommune' }).nth(1).click();
-
-    if (isMobile) {
-      await page.getByRole('button', { name: 'Vis alle resultater' }).click();
-    } else {
-      await page.keyboard.press('Escape');
-    }
+    await page.locator('#ok').click();
+    await page.locator('#ok').press('Escape');
 
     await page.getByRole('button', { name: 'Lagre søk' }).click();
     await expect(page.getByText('Søket ditt er lagret')).toBeVisible();
     await page.getByRole('button', { name: 'Avbryt' }).click();
 
-    if (isMobile) {
-      await page.getByRole('button', { name: 'Meny' }).click();
-      await page.getByRole('link', { name: 'Lagrede søk' }).click();
-      await page.getByRole('button', { name: 'Meny' }).click();
-    } else {
-      await getSidebarMenuItem(page, PageRoutes.savedSearches).click();
-    }
+    await getSidebarMenuItem(page, PageRoutes.savedSearches).click();
 
     await expect(page.getByRole('main')).toContainText('1 lagret søk');
     await expect(page.locator('a[href*="org=ok"]')).toBeVisible();
@@ -115,7 +104,7 @@ test.describe('Saved search', () => {
     await page.getByRole('button', { name: 'Legg til' }).click();
     await page.locator('#tool-filter-add').locator('button[data-id="status"], button#status').click();
     await page.locator('#SENT').click();
-    await page.keyboard.press('Escape');
+    await page.locator('#SENT').press('Escape');
 
     await page.getByRole('button', { name: 'Lagre søk' }).click();
     await expect(page.getByText('Søket ditt er lagret')).toBeVisible();
@@ -127,11 +116,11 @@ test.describe('Saved search', () => {
     await page.locator('#tool-filter-add').locator('button[data-id="org"], button#org').click();
     await page.locator('input[aria-controls="toolbar-filter-menu-listbox"]').fill('Oslo');
     await page.locator('li').filter({ hasText: 'Oslo kommune' }).nth(1).click();
-    await page.keyboard.press('Escape');
+    await page.locator('li').filter({ hasText: 'Oslo kommune' }).nth(1).press('Escape');
     await page.getByRole('button', { name: 'Legg til' }).click();
     await page.locator('#tool-filter-add').locator('button[data-id="status"], button#status').click();
     await page.locator('#SENT').click();
-    await page.keyboard.press('Escape');
+    await page.locator('#SENT').press('Escape');
 
     /* Navigate to sent folder and add Oslo kommune as filter...
     It should not be possible to save search since a matching search already exists */
