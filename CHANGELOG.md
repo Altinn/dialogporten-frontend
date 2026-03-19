@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.132.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.132.1...v1.132.2) (2026-03-19)
+
+
+### Bug Fixes
+
+* **account:** cookie from initialization only overrides selected account first ([#3888](https://github.com/Altinn/dialogporten-frontend/issues/3888)) ([b4ac781](https://github.com/Altinn/dialogporten-frontend/commit/b4ac781dc6736bac5493d02410e01f951ab3de07))
+* prevent setting end user as pre-selected actor ([#3889](https://github.com/Altinn/dialogporten-frontend/issues/3889)) ([787f12a](https://github.com/Altinn/dialogporten-frontend/commit/787f12a22ccca8edd1ff4989975efbcffdd197a6))
+
 ## [1.132.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.132.0...v1.132.1) (2026-03-18)
 
 
