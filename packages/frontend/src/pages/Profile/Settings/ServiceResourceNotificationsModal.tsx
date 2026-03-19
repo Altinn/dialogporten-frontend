@@ -1,4 +1,5 @@
 import {
+  Alert,
   Button,
   ButtonGroup,
   DsSpinner,
@@ -15,7 +16,6 @@ import {
 } from '@altinn/altinn-components';
 import { useQueryClient } from '@tanstack/react-query';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import type { ServiceResource } from 'bff-types-generated';
 import { useDeferredValue, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useServiceResource } from '../../../api/hooks/useServiceResource.ts';
@@ -64,27 +64,16 @@ export const ServiceResourceNotificationsModal = ({
     [serviceResources, searchQueryLower],
   );
 
-  const allServiceUrns = useMemo(
-    () =>
-      new Set(serviceResources.filter((r): r is ServiceResource & { id: string } => Boolean(r.id)).map((r) => r.id)),
-    [serviceResources],
-  );
-
   const isChecked = (urn: string) => {
-    return enabledResources.size === 0 || enabledResources.has(urn);
+    return enabledResources.has(urn);
   };
 
   const handleToggle = (urn: string, checked: boolean) => {
     setEnabledResources((prev) => {
-      if (checked) {
-        const next = new Set(prev).add(urn);
-        // collapse back to "all enabled" sentinel (empty set) if every service is now checked
-        return next.size === allServiceUrns.size ? new Set<string>() : next;
-      }
-      // expand from "all enabled" sentinel before removing
-      const base = prev.size === 0 ? new Set(allServiceUrns) : new Set(prev);
-      base.delete(urn);
-      return base;
+      const next = new Set(prev);
+      if (checked) next.add(urn);
+      else next.delete(urn);
+      return next;
     });
   };
 
@@ -136,6 +125,19 @@ export const ServiceResourceNotificationsModal = ({
       />
       <ModalBody>
         <Heading size="md">{t('profile.service_notifications.title')}</Heading>
+        {enabledResources.size === 0 ? (
+          <Alert
+            variant="info"
+            heading={t('profile.service_notifications.all_services_info_heading')}
+            message={t('profile.service_notifications.all_services_info_message')}
+          />
+        ) : (
+          <Alert
+            variant="warning"
+            heading={t('profile.service_notifications.custom_list_warning_heading')}
+            message={t('profile.service_notifications.custom_list_warning_message')}
+          />
+        )}
         <div style={{ position: 'sticky', top: '1.5rem', zIndex: 1 }}>
           <SearchField
             placeholder={t('profile.service_notifications.search_placeholder')}
