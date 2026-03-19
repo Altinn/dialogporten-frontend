@@ -7,13 +7,13 @@ import {
   SystemLabel,
 } from 'bff-types-generated';
 import { type TFunction, t } from 'i18next';
-import { getPreferredPropertyByLocale } from '../../i18n/property.ts';
+import { type LocalizationObject, getPreferredPropertyByLocale } from '../../i18n/property.ts';
 import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
 import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
 import { getIsUnread } from '../../pages/Inbox/status.ts';
 import { getActorProps } from '../hooks/useDialogById.tsx';
 import type { InboxViewType } from '../hooks/useDialogs.tsx';
-import { getOrganization } from './organizations.ts';
+import { type OrganizationOutput, getOrganization, getOrganizationByLocale } from './organizations.ts';
 import { getViewTypes } from './viewType.ts';
 
 interface SeenByItem {
@@ -77,7 +77,9 @@ export function mapDialogToToInboxItems(
 
     const actualReceiverParty = dialogReceiverParty ?? dialogReceiverSubParty ?? endUserParty;
     const serviceOwner = getOrganization(organizations || [], item.org);
+    const serviceOwnerNbName = getOrganizationByLocale(organizations || [], item.org, 'nb')?.name;
     const { isSeenByEndUser, seenByOthersCount, seenByLabel } = getSeenByLabel(item.seenSinceLastContentUpdate, t);
+
     return {
       id: item.id,
       party: item.party,
@@ -87,8 +89,11 @@ export function mapDialogToToInboxItems(
       summary: getPreferredPropertyByLocale(summaryObj)?.value ?? '',
       sender: {
         name: getPreferredPropertyByLocale(senderName)?.value || serviceOwner?.name || '',
+        // At dialog level there is no actorType/actorId to determine the sender type.
+        // senderName can refer to a person (e.g. an employee name on a sick leave notice),
+        // but we default to 'company' as a pragmatic choice since the sender is always an org.
         type: 'company',
-        imageUrl: serviceOwner?.logo,
+        imageUrl: getServiceOwnerLogo(senderName, serviceOwner, serviceOwnerNbName),
         imageUrlAlt: t('dialog.imageAltURL', { companyName: getPreferredPropertyByLocale(senderName)?.value }),
       },
       recipient: {
@@ -116,7 +121,13 @@ export function mapDialogToToInboxItems(
         collapsible: true,
         endUserLabel: t('word.you'),
         items: item.seenSinceLastContentUpdate.map((seenBy) => {
-          const { name, type } = getActorProps(seenBy.seenBy, stopReversingPersonNameOrder, serviceOwner);
+          const { name, type } = getActorProps(
+            seenBy.seenBy,
+            stopReversingPersonNameOrder,
+            serviceOwner,
+            senderName,
+            serviceOwnerNbName,
+          );
           return {
             id: seenBy.id,
             name,
@@ -199,4 +210,18 @@ export const mergeDialogItems = (
   }
 
   return Array.from(byId.values());
+};
+
+export const getServiceOwnerLogo = (
+  senderName: LocalizationObject[] | undefined,
+  serviceOwner: OrganizationOutput | undefined,
+  serviceOwnerNbName?: string,
+): string | undefined => {
+  const actualSender = getPreferredPropertyByLocale(senderName, 'nb')?.value?.trim().toLowerCase();
+  const owner = (serviceOwnerNbName ?? serviceOwner?.name)?.trim().toLowerCase();
+
+  if (senderName && actualSender !== owner) {
+    return undefined;
+  }
+  return serviceOwner?.logo || '';
 };

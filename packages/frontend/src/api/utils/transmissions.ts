@@ -6,7 +6,7 @@ import {
   TransmissionType,
 } from 'bff-types-generated';
 import { t } from 'i18next';
-import { getPreferredPropertyByLocale } from '../../i18n/property.ts';
+import { type LocalizationObject, getPreferredPropertyByLocale } from '../../i18n/property.ts';
 import type { FormatFunction, Locale } from '../../i18n/useDateFnsLocale.tsx';
 import { getActorProps, getAttachmentLinks } from '../hooks/useDialogById.tsx';
 import type { ProfileType } from '../hooks/useParties.ts';
@@ -105,17 +105,35 @@ const getClockFormatString = () => {
   return `do MMMM yyyy ${clockPrefix ? `'${clockPrefix}' ` : ''}HH.mm`;
 };
 
-const createTransmissionItem = (
-  transmission: TransmissionFieldsFragment,
-  format: FormatFunction,
-  stopReversingPersonNameOrder: boolean,
-  locale: Locale,
-  activities?: DialogActivityFragment[],
-  serviceOwner?: OrganizationOutput,
-  selectedProfile?: ProfileType,
-): TransmissionProps => {
+const createTransmissionItem = ({
+  transmission,
+  format,
+  stopReversingPersonNameOrder,
+  locale,
+  activities,
+  serviceOwner,
+  selectedProfile,
+  senderName,
+  serviceOwnerNbName,
+}: {
+  transmission: TransmissionFieldsFragment;
+  format: FormatFunction;
+  stopReversingPersonNameOrder: boolean;
+  locale: Locale;
+  activities?: DialogActivityFragment[];
+  serviceOwner?: OrganizationOutput;
+  selectedProfile?: ProfileType;
+  senderName?: LocalizationObject[];
+  serviceOwnerNbName?: string;
+}): TransmissionProps => {
   const formatString = getClockFormatString();
-  const sender = getActorProps(transmission.sender, stopReversingPersonNameOrder, serviceOwner);
+  const sender = getActorProps(
+    transmission.sender,
+    stopReversingPersonNameOrder,
+    serviceOwner,
+    senderName,
+    serviceOwnerNbName,
+  );
   const unread = isTransmissionUnread(transmission.id, transmission.type, activities);
 
   return {
@@ -148,6 +166,8 @@ export const getTransmissions = ({
   stopReversingPersonNameOrder,
   selectedProfile,
   locale,
+  senderName,
+  serviceOwnerNbName,
 }: {
   transmissions: TransmissionFieldsFragment[];
   format: FormatFunction;
@@ -156,12 +176,14 @@ export const getTransmissions = ({
   serviceOwner?: OrganizationOutput;
   selectedProfile?: ProfileType;
   locale: Locale;
+  senderName?: LocalizationObject[];
+  serviceOwnerNbName?: string;
 }): TimelineSegmentWithTransmissions[] => {
   return groupTransmissions(transmissions).map((group) => {
     const sortedGroup = [...group].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     const [lastTransmission] = sortedGroup;
     const items: TransmissionProps[] = sortedGroup.map((transmission) =>
-      createTransmissionItem(
+      createTransmissionItem({
         transmission,
         format,
         stopReversingPersonNameOrder,
@@ -169,7 +191,9 @@ export const getTransmissions = ({
         activities,
         serviceOwner,
         selectedProfile,
-      ),
+        senderName,
+        serviceOwnerNbName,
+      }),
     );
 
     return {

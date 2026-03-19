@@ -18,7 +18,7 @@ import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import type { DialogActionProps } from '../../components';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useFeatureFlag } from '../../featureFlags';
-import { type ValueType, getPreferredPropertyByLocale } from '../../i18n/property.ts';
+import { type LocalizationObject, type ValueType, getPreferredPropertyByLocale } from '../../i18n/property.ts';
 import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
 import { type Locale, useDateFnsLocale, useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { getIsUnread } from '../../pages/Inbox/status.ts';
@@ -26,8 +26,8 @@ import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
 import { graphQLSDK } from '../queries.ts';
 import { type ActivityLogEntry, getActivityHistory } from '../utils/activities.tsx';
 import { createExpiryBadge, mediaTypeToExt } from '../utils/attachments.ts';
-import { getSeenByLabel } from '../utils/dialog.ts';
-import { type OrganizationOutput, getOrganization } from '../utils/organizations.ts';
+import { getSeenByLabel, getServiceOwnerLogo } from '../utils/dialog.ts';
+import { type OrganizationOutput, getOrganization, getOrganizationByLocale } from '../utils/organizations.ts';
 import { type TimelineSegmentWithTransmissions, getTransmissions } from '../utils/transmissions.ts';
 import { getViewTypes } from '../utils/viewType.ts';
 import type { InboxViewType } from './useDialogs.tsx';
@@ -177,6 +177,8 @@ const getMainContentReference = (
  * @param actor        The actor object describing who performed or sent the action.
  * @param stopReversingPersonNameOrder
  * @param serviceOwner Optional service owner metadata used for name/logo fallback.
+ * @param contentSenderName Overridden sender name. If not supplied, assume service owner as the sender name if actor type is Service owner.
+ * @param serviceOwnerNbName
  * @returns Normalized avatar props (`name`, `type`, `imageUrl`, `imageUrlAlt`).
  */
 
@@ -184,6 +186,8 @@ export const getActorProps = (
   actor: Actor,
   stopReversingPersonNameOrder: boolean,
   serviceOwner?: OrganizationOutput,
+  contentSenderName?: LocalizationObject[] | undefined,
+  serviceOwnerNbName?: string,
 ): AvatarProps => {
   const isServiceOwner = actor.actorType === ActorType.ServiceOwner;
   const isSystemUser = actor?.actorId?.includes('urn:altinn:systemuser:');
@@ -194,15 +198,17 @@ export const getActorProps = (
     type,
     reverseNameOrder: stopReversingPersonNameOrder ? false : !isCompany && !isSystemUser,
   });
-  const senderName = actor.actorName ? actorName : isServiceOwner ? serviceOwner?.name || '' : '';
-  const senderLogo = isServiceOwner ? serviceOwner?.logo : undefined;
-  const senderLogoAlt = senderLogo ? t('dialog.imageAltURL', { companyName: senderName }) : undefined;
+  const preferredSenderName = getPreferredPropertyByLocale(contentSenderName)?.value;
+  const serviceOwnerDisplayName = preferredSenderName || serviceOwner?.name || '';
+  const name = actor.actorName ? actorName : isServiceOwner ? serviceOwnerDisplayName : '';
+  const logo = isServiceOwner ? getServiceOwnerLogo(contentSenderName, serviceOwner, serviceOwnerNbName) : undefined;
+  const logoAlt = logo ? t('dialog.imageAltURL', { companyName: name }) : undefined;
 
   return {
-    name: senderName,
+    name,
     type,
-    imageUrl: senderLogo,
-    imageUrlAlt: senderLogoAlt,
+    imageUrl: logo,
+    imageUrlAlt: logoAlt,
   };
 };
 
@@ -228,6 +234,7 @@ export function mapDialogToToInboxItem(
   const dialogRecipientParty = parties?.find((party) => party.party === item.party);
   const actualRecipientParty = dialogRecipientParty ?? endUserParty;
   const serviceOwner = getOrganization(organizations || [], item.org);
+  const serviceOwnerNbName = getOrganizationByLocale(organizations || [], item.org, 'nb')?.name;
   const senderName = item.content.senderName?.value;
   const extendedStatusObj = item.content.extendedStatus?.value;
   const { seenByLabel } = getSeenByLabel(item.seenSinceLastContentUpdate, t);
@@ -239,6 +246,8 @@ export function mapDialogToToInboxItem(
     serviceOwner,
     selectedProfile,
     locale,
+    senderName,
+    serviceOwnerNbName,
   });
 
   return {
@@ -254,7 +263,7 @@ export function mapDialogToToInboxItem(
     sender: {
       name: getPreferredPropertyByLocale(senderName)?.value || serviceOwner?.name || '',
       type: 'company',
-      imageUrl: serviceOwner?.logo,
+      imageUrl: getServiceOwnerLogo(senderName, serviceOwner, serviceOwnerNbName),
       imageUrlAlt: t('dialog.imageAltURL', { companyName: getPreferredPropertyByLocale(senderName)?.value }),
     },
     receiver: {
@@ -296,7 +305,13 @@ export function mapDialogToToInboxItem(
       title: seenByLabel,
       endUserLabel: t('word.you'),
       items: item.seenSinceLastContentUpdate.map((seen) => {
-        const actorProps = getActorProps(seen.seenBy, stopReversingPersonNameOrder, serviceOwner);
+        const actorProps = getActorProps(
+          seen.seenBy,
+          stopReversingPersonNameOrder,
+          serviceOwner,
+          senderName,
+          serviceOwnerNbName,
+        );
         return {
           name: actorProps.name,
           type: actorProps.type,
@@ -315,6 +330,7 @@ export function mapDialogToToInboxItem(
       serviceOwner,
       selectedProfile,
       locale,
+      serviceOwnerNbName,
     }),
     transmissions,
     createdAt: item.createdAt,
@@ -367,7 +383,7 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
     isLoading,
     isSuccess,
     dialog: mapDialogToToInboxItem(
-      data?.dialogById.dialog,
+      data?.dialogById?.dialog,
       parties,
       organizations,
       format,
