@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.132.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.132.0...v1.132.1) (2026-03-18)
+
+
+### Bug Fixes
+
+* Prevent user from saving unverified addresses ([#3887](https://github.com/Altinn/dialogporten-frontend/issues/3887)) ([9bb0c09](https://github.com/Altinn/dialogporten-frontend/commit/9bb0c09d4399aae0b85ff2ade91b485596872173))
+
 ## [1.132.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.131.0...v1.132.0) (2026-03-18)
 
 
