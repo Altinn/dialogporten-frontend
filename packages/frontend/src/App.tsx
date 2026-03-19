@@ -13,24 +13,11 @@ import { RedirectPage } from './pages/RedirectPage/RedirectPage.tsx';
 import { SavedSearchesPage } from './pages/SavedSearches';
 import { PageRoutes } from './pages/routes.ts';
 import './app.css';
-import { useEffect } from 'react';
-import { QUERY_KEYS } from './constants/queryKeys.ts';
-import { getPartyFromCookie } from './cookie.ts';
 import { usePageTracking } from './hooks/usePageTracking.ts';
-import { useGlobalStringState } from './useGlobalState.ts';
 
 function App() {
   // Add page tracking
   usePageTracking();
-  const [_, setCookiePartyUuid] = useGlobalStringState(QUERY_KEYS.ALTINN_COOKIE, '');
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  useEffect(() => {
-    const partyUuidFromCookie = getPartyFromCookie('AltinnPartyUuid');
-    if (partyUuidFromCookie) {
-      setCookiePartyUuid(partyUuidFromCookie ?? '');
-    }
-  }, []);
 
   return (
     <div className="app">

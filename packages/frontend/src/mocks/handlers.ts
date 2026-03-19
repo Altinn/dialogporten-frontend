@@ -347,7 +347,7 @@ const mutateUpdateLanguageMock = graphql.mutation('UpdateLanguage', (req) => {
   });
 });
 
-const mutateUpdateProfileSettingPreferenceMock = graphql.mutation('UpdateProfileSettingPreference', (req) => {
+const mutateUpdateProfileSettingPreferenceMock = graphql.mutation("setShouldShowSubEntities", (req) => {
   const { shouldShowDeletedEntities } = req.variables;
 
   if (inMemoryStore.profile?.user?.profileSettingPreference) {

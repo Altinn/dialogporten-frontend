@@ -41,7 +41,7 @@ export const PageLayout: React.FC = () => {
   const [searchParams] = useSearchParams();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const [docTitle, _] = useGlobalState<string>(QUERY_KEYS.CURRENT_DIALOG_TITLE, '');
+  const [docTitle] = useGlobalState<string>(QUERY_KEYS.CURRENT_DIALOG_TITLE, '');
   const { selectedProfile, selectedParties, allOrganizationsSelected, currentEndUser, currentPartyUuid } = useParties();
   const [isErrorState] = useGlobalState<boolean>(QUERY_KEYS.ERROR_STATE, false);
   const { headerProps } = useHeaderConfig();
