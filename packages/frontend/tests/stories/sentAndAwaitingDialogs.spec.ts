@@ -12,34 +12,10 @@ test.describe('Sent and Awaiting status', () => {
   });
 
   test('Can filter by awaiting status using status filter', async ({ page }) => {
-    const toolbar = page.getByTestId('inbox-toolbar');
-    await toolbar.getByRole('button', { name: /legg til/i }).click();
-    const addMenu = toolbar.locator('#tool-filter-add');
-
-    await addMenu.locator('button[data-id="status"], button#status').click();
-    await page
-      .getByRole('menuitemcheckbox', { name: /til behandling/i })
-      .or(page.getByRole('checkbox', { name: /til behandling/i }))
-      .first()
-      .click();
-    await page.keyboard.press('Escape');
+    await page.getByRole('button', { name: 'Legg til filter' }).click();
+    await page.getByLabel('Status').click();
+    await page.locator('#AWAITING').click();
     expect(new URL(page.url()).searchParams.get('status')).toEqual('AWAITING');
-    await expect(page.getByRole('heading', { name: 'Mock Dialog Awaiting', level: 2 })).toBeVisible();
-  });
-
-  test('Can filter to show only awaiting status dialogs', async ({ page }) => {
-    const toolbar = page.getByTestId('inbox-toolbar');
-    await toolbar.getByRole('button', { name: /legg til/i }).click();
-    await toolbar.locator('#tool-filter-add').locator('button[data-id="status"], button#status').click();
-    await page
-      .getByRole('menuitemcheckbox', { name: /til behandling/i })
-      .or(page.getByRole('checkbox', { name: /til behandling/i }))
-      .first()
-      .click();
-    await page.keyboard.press('Escape');
-
-    expect(new URL(page.url()).searchParams.get('status')).toEqual('AWAITING');
-
     await expect(page.getByRole('heading', { name: 'Mock Dialog Awaiting', level: 2 })).toBeVisible();
   });
 });

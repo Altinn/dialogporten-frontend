@@ -218,9 +218,9 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
       const value = event.target.value;
       if (value === '') {
         onClear();
-        return;
+      } else {
+        setSearchValue(value);
       }
-      setSearchValue(value);
     },
     name: t('word.search'),
     placeholder: t('inbox.search.placeholder'),

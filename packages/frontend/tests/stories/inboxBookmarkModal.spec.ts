@@ -18,12 +18,7 @@ test.describe('Inbox BookmarkModal', () => {
     await toolbarArea.getByRole('button', { name: /legg til/i }).click();
     await toolbarArea.locator('#tool-filter-add').locator('button[data-id="org"], button#org').click();
     await page.locator('li').filter({ hasText: 'Oslo kommune' }).nth(1).click();
-
-    if (isMobile) {
-      await page.getByRole('button', { name: 'Vis alle resultater' }).click();
-    } else {
-      await page.keyboard.press('Escape');
-    }
+    await page.locator('li').filter({ hasText: 'Oslo kommune' }).nth(1).press('Escape');
 
     await page.getByRole('button', { name: 'Lagre søk' }).click();
     await expect(page.getByText('Søket ditt er lagret')).toBeVisible();
@@ -42,12 +37,7 @@ test.describe('Inbox BookmarkModal', () => {
     await toolbarArea.getByRole('button', { name: /legg til/i }).click();
     await toolbarArea.locator('#tool-filter-add').locator('button[data-id="org"], button#org').click();
     await page.locator('li').filter({ hasText: 'Oslo kommune' }).nth(1).click();
-
-    if (isMobile) {
-      await page.getByRole('button', { name: 'Vis alle resultater' }).click();
-    } else {
-      await page.keyboard.press('Escape');
-    }
+    await page.locator('li').filter({ hasText: 'Oslo kommune' }).nth(1).press('Escape');
 
     await page.getByRole('button', { name: 'Lagre søk' }).click();
     await expect(page.getByRole('dialog')).toBeVisible();

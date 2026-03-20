@@ -12,7 +12,7 @@ import {
   ToolbarMenu,
 } from '@altinn/altinn-components';
 import type { TFunction } from 'i18next';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { type InboxViewType, useDialogs } from '../../api/hooks/useDialogs.tsx';
@@ -131,11 +131,19 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const { bookmarkModalProps, onSaveSuccess } = useBookmarkModal(savedSearchItems, onSaveSearch, onCloseSavedSearch);
 
   const location = useLocation();
-  const [filterState, setFilterState] = useState<FilterState>(readFiltersFromURLQuery(location.search));
-  const { inboxSearch } = useHeaderConfig(filterState);
-  const [currentSeenByLogModal, setCurrentSeenByLogModal] = useState<CurrentSeenByLog | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
+  const [currentSeenByLogModal, setCurrentSeenByLogModal] = useState<CurrentSeenByLog | null>(null);
   const subAccountsParam = searchParams.get(FixedGlobalQueryParams.subAccounts) ?? '';
+
+  const [filterState, setFilterState] = useState<FilterState>(() => readFiltersFromURLQuery(searchParams.toString()));
+
+  // Sync URL → filterState for external navigation (back button, link clicks, etc.)
+  // biome-ignore lint/correctness/useExhaustiveDependencies: only sync when URL params change
+  useEffect(() => {
+    setFilterState(readFiltersFromURLQuery(searchParams.toString()));
+  }, [searchParams]);
+
+  const { inboxSearch } = useHeaderConfig(filterState);
 
   const isAltinn2MessagesEnabled = useFeatureFlag<boolean>('inbox.enableAltinn2Messages');
   const isAlertBannerEnabled = useFeatureFlag<boolean>('inbox.enableAlertBanner');
@@ -143,19 +151,22 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const isSubAccountsMenuEnabled = useFeatureFlag<boolean>('filters.enableSubAccountsMenu');
   const alertBannerContent = useAlertBanner();
 
-  const onFiltersChange = (filters: FilterState) => {
-    const currentURL = new URL(window.location.href);
-    const allowedFilters = Object.values(FilterCategory);
-    const updatedURL = createFiltersURLQuery(filters, allowedFilters, currentURL.toString());
-    setSearchParams(updatedURL.searchParams, { replace: true });
-
-    if (!filters?.updated) {
-      const { fromDate, toDate, ...restState } = filters;
-      setFilterState(restState);
-    } else {
+  const onFiltersChange = useCallback(
+    (filters: FilterState) => {
+      // Update state synchronously so ToolbarFilter sees it immediately
       setFilterState(filters);
-    }
-  };
+
+      const allowedFilters = Object.values(FilterCategory);
+      setSearchParams(
+        (prev) => {
+          const baseURL = new URL(`${window.location.origin}${window.location.pathname}?${prev.toString()}`);
+          return createFiltersURLQuery(filters, allowedFilters, baseURL.toString()).searchParams;
+        },
+        { replace: true },
+      );
+    },
+    [setSearchParams],
+  );
 
   const { enteredSearchValue } = useSearchString();
   const validSearchString = enteredSearchValue.length > 2 ? enteredSearchValue : undefined;
@@ -238,13 +249,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
     serviceResources: selectedServices,
     partyIdsOverride: isSubAccountsMenuEnabled && partyIdsOverride?.length ? partyIdsOverride : [],
   });
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  useEffect(() => {
-    if (location.search) {
-      setFilterState(readFiltersFromURLQuery(location.search));
-    }
-  }, [searchParams.toString()]);
 
   const { filters, getFilterLabel } = useFilters({ viewType });
 
