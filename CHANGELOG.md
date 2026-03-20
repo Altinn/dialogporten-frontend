@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.132.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.132.2...v1.132.3) (2026-03-20)
+
+
+### Bug Fixes
+
+* resolve search param and filter state sync issues ([#3897](https://github.com/Altinn/dialogporten-frontend/issues/3897)) ([5fb437e](https://github.com/Altinn/dialogporten-frontend/commit/5fb437e9e7dced0a2868e297e569b6f64a8c04ed))
+* Update logic for enabling single service notification, prevent api overload ([#3893](https://github.com/Altinn/dialogporten-frontend/issues/3893)) ([8ca6348](https://github.com/Altinn/dialogporten-frontend/commit/8ca6348a5776fdc909c5fc9bcebc44f97a1587ef))
+
 ## [1.132.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.132.1...v1.132.2) (2026-03-19)
 
 
