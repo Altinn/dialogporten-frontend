@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.133.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.132.3...v1.133.0) (2026-03-23)
+
+
+### Features
+
+* increase dialog party limit from 20 to 40 and make it configurable ([#3901](https://github.com/Altinn/dialogporten-frontend/issues/3901)) ([283d475](https://github.com/Altinn/dialogporten-frontend/commit/283d475970caeb65ae492ed89b6ed69b2cdc711b))
+
 ## [1.132.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.132.2...v1.132.3) (2026-03-20)
 
 
