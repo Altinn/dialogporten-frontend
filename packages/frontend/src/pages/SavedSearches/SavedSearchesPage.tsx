@@ -1,27 +1,22 @@
-import {
-  BookmarkModal,
-  BookmarkSettingsList,
-  Heading,
-  PageBase,
-  Toolbar,
-  ToolbarMenu,
-} from '@altinn/altinn-components';
-import { t } from 'i18next';
+import { BookmarkModal, BookmarkSettingsList, Heading, PageBase, Toolbar } from '@altinn/altinn-components';
 import { type ChangeEvent, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParties } from '../../api/hooks/useParties.ts';
-import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
 import { getPageRouteTitle } from '../../components/PageLayout/pageRouteToTitle.ts';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
 import { PageRoutes } from '../routes.ts';
+import { filterBookmarksBySearch } from './searchUtils.ts';
 import { useSavedSearches } from './useSavedSearches.tsx';
 
 export const SavedSearchesPage = () => {
+  const { t } = useTranslation();
   usePageTitle({ baseTitle: t('sidebar.saved_searches') });
-
-  const { selectedPartyIds, parties, selectedParties, allOrganizationsSelected } = useParties();
+  const { selectedPartyIds } = useParties();
   const [inputValues, setInputValues] = useState<Record<string, string>>({});
+  const [searchQuery, setSearchQuery] = useState('');
   const {
     items,
+    groups,
     description,
     title,
     isLoading,
@@ -31,39 +26,23 @@ export const SavedSearchesPage = () => {
     onDeleteSavedSearch,
   } = useSavedSearches(selectedPartyIds);
   const currentSearch = useMemo(() => items?.find((item) => item.id === openedSavedSearch), [items, openedSavedSearch]);
-  const { accounts, accountSearch, accountGroups, onSelectAccount, currentAccountName } = useAccounts({
-    parties,
-    selectedParties,
-    allOrganizationsSelected,
-    options: {
-      showGroups: true,
-    },
-  });
+  const filteredItems = filterBookmarksBySearch(items ?? [], searchQuery);
 
   return (
     <PageBase>
       <Heading as="h1" size="xl">
         {t(getPageRouteTitle(PageRoutes.savedSearches))}
       </Heading>
-      {currentAccountName ? (
-        <Toolbar>
-          <ToolbarMenu
-            size="md"
-            items={accounts}
-            search={accountSearch}
-            groups={accountGroups}
-            label={currentAccountName}
-            onSelectId={(id: string) => {
-              onSelectAccount(id, PageRoutes.savedSearches);
-            }}
-            title={t('parties.change_label')}
-            searchable
-            virtualized
-          />
-        </Toolbar>
-      ) : null}
+      <Toolbar
+        search={{
+          value: searchQuery,
+          placeholder: t('savedSearches.search_placeholder'),
+          onChange: (e: ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value),
+          onClear: () => setSearchQuery(''),
+        }}
+      />
       <Heading size="lg">{title}</Heading>
-      {items?.length > 0 && <BookmarkSettingsList items={items} loading={isLoading} />}
+      {filteredItems?.length > 0 && <BookmarkSettingsList items={filteredItems} groups={groups} loading={isLoading} />}
       <Heading size="xs" weight="normal">
         {description}
       </Heading>
