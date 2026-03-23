@@ -13,6 +13,7 @@ import {
 import { useGlobalState } from '../../useGlobalState.ts';
 import { graphQLSDK } from '../queries.ts';
 import { normalizeFlattenParties } from '../utils/normalizeFlattenParties.ts';
+import { MAX_DIALOG_PARTY_SIZE } from './useDialogs.tsx';
 
 export type ProfileType = 'company' | 'person' | 'neutral';
 
@@ -255,6 +256,6 @@ export const useParties = (): UsePartiesOutput => {
     partiesEmptyList,
     currentPartyUuid,
     isSelfIdentifiedUser,
-    organizationLimitReached: selectedParties.length > 20,
+    organizationLimitReached: selectedParties.length > MAX_DIALOG_PARTY_SIZE,
   };
 };
