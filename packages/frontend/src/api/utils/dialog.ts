@@ -20,6 +20,33 @@ interface SeenByItem {
   isCurrentEndUser: boolean;
 }
 
+type PartyLookupValue = Pick<PartyFieldsFragment, 'party' | 'name' | 'partyType' | 'isCurrentEndUser'> & {
+  subParties?: PartyFieldsFragment['subParties'];
+};
+
+const createPartyLookup = (parties: PartyFieldsFragment[]) => {
+  const partyById = new Map<string, PartyLookupValue>();
+  const subPartyById = new Map<string, PartyLookupValue>();
+  let currentEndUser: PartyLookupValue | undefined;
+
+  for (const party of parties) {
+    if (!currentEndUser && party.isCurrentEndUser) {
+      currentEndUser = party;
+    }
+
+    partyById.set(party.party, party);
+
+    for (const subParty of party.subParties ?? []) {
+      subPartyById.set(subParty.party, subParty);
+    }
+  }
+
+  return { currentEndUser, partyById, subPartyById };
+};
+
+const createOrganizationLookup = (organizations: OrganizationFieldsFragment[]) =>
+  new Map(organizations.map((organization) => [organization.id, organization] as const));
+
 export const getPartyIds = (partiesToUse: PartyFieldsFragment[], includeOnlySubPartiesWithSameName?: boolean) => {
   const partyURIs = partiesToUse.filter((party) => !party.hasOnlyAccessToSubParties).map((party) => party.party);
   const subPartyURIs = partiesToUse.flatMap(
@@ -63,20 +90,20 @@ export function mapDialogToToInboxItems(
   format: FormatFunction,
   stopReversingPersonNameOrder: boolean,
 ): InboxItemInput[] {
+  const { currentEndUser, partyById, subPartyById } = createPartyLookup(parties);
+  const organizationById = createOrganizationLookup(organizations);
+
   return input.map((item) => {
     const titleObj = item.content.title.value;
     const summaryObj = item.content.summary?.value;
-    const endUserParty = parties?.find((party) => party.isCurrentEndUser);
     const senderName = item.content.senderName?.value;
     const extendedStatusObj = item.content.extendedStatus?.value;
 
-    const dialogReceiverParty = parties?.find((party) => party.party === item.party);
-    const dialogReceiverSubParty = parties
-      ?.flatMap((party) => party.subParties ?? [])
-      .find((subParty) => subParty.party === item.party);
+    const dialogReceiverParty = partyById.get(item.party);
+    const dialogReceiverSubParty = subPartyById.get(item.party);
 
-    const actualReceiverParty = dialogReceiverParty ?? dialogReceiverSubParty ?? endUserParty;
-    const serviceOwner = getOrganization(organizations || [], item.org);
+    const actualReceiverParty = dialogReceiverParty ?? dialogReceiverSubParty ?? currentEndUser;
+    const serviceOwner = organizationById.get(item.org) ?? getOrganization(organizations || [], item.org);
     const { isSeenByEndUser, seenByOthersCount, seenByLabel } = getSeenByLabel(item.seenSinceLastContentUpdate, t);
     return {
       id: item.id,

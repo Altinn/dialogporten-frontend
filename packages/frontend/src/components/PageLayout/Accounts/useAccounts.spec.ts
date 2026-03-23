@@ -127,6 +127,21 @@ const parties: PartyFieldsFragment[] = [
   },
 ];
 
+const flattenedParties: PartyFieldsFragment[] = parties.flatMap((party) => {
+  if (party.partyType !== 'Organization') {
+    return [party];
+  }
+
+  return [
+    party,
+    ...((party.subParties ?? []).map((subParty) => ({
+      ...subParty,
+      hasOnlyAccessToSubParties: false,
+      subParties: undefined,
+    })) as PartyFieldsFragment[]),
+  ];
+});
+
 describe('useAccounts', () => {
   const mockT = vi.fn((key: string) => key);
   const mockSetSelectedPartyIds = vi.fn();
@@ -260,6 +275,28 @@ describe('useAccounts', () => {
     // When showDescription is false, accounts should not have descriptions
     const accountsWithDescription = result.current.accounts.filter((acc) => acc.description);
     expect(accountsWithDescription.length).toBe(0);
+  });
+
+  it('should preserve parent information for flattened subparties', () => {
+    const selectedParties = [flattenedParties[0]];
+
+    const { result } = renderHook(
+      () =>
+        useAccounts({
+          parties: flattenedParties,
+          selectedParties,
+          allOrganizationsSelected: false,
+          isLoading: false,
+        }),
+      {
+        wrapper: createCustomWrapper(),
+      },
+    );
+
+    const subPartyAccount = result.current.accounts.find((acc) => acc.id === 'urn:altinn:organization:identifier-sub:2');
+    expect(subPartyAccount?.parentId).toBe('urn:altinn:organization:identifier-no:2');
+    expect(subPartyAccount?.parentName).toBe('TESTBEDRIFT AS');
+    expect(subPartyAccount?.isParent).toBe(false);
   });
 });
 
