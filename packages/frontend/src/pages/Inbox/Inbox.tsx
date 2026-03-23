@@ -15,7 +15,7 @@ import type { TFunction } from 'i18next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useSearchParams } from 'react-router-dom';
-import { type InboxViewType, useDialogs } from '../../api/hooks/useDialogs.tsx';
+import { type InboxViewType, MAX_DIALOG_PARTY_SIZE, useDialogs } from '../../api/hooks/useDialogs.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { createFiltersURLQuery } from '../../auth';
 import { EmptyState } from '../../components/EmptyState/EmptyState.tsx';
@@ -83,32 +83,42 @@ const getLimitReachedNoticeContent = ({
         description: t('subAccountsLimitReached.withOrg.description', {
           count: subAccountsCount,
           orgName: currentAccountName,
+          limit: MAX_DIALOG_PARTY_SIZE,
         }),
       };
     }
     return {
       title: t('subAccountsLimitReached.title'),
-      description: t('subAccountsLimitReached.description', { count: subAccountsCount }),
+      description: t('subAccountsLimitReached.description', { count: subAccountsCount, limit: MAX_DIALOG_PARTY_SIZE }),
     };
   }
 
   if (shouldShowSubAccountsNudge) {
     return {
       title: t('organizationLimitReached.subAccounts.title'),
-      description: t('organizationLimitReached.subAccounts.description', { count: selectedPartiesCount }),
+      description: t('organizationLimitReached.subAccounts.description', {
+        count: selectedPartiesCount,
+        limit: MAX_DIALOG_PARTY_SIZE,
+      }),
     };
   }
 
   if (isServiceFilterEnabled) {
     return {
       title: t('organizationLimitReached.serviceFilter.title'),
-      description: t('organizationLimitReached.serviceFilter.description', { count: selectedPartiesCount }),
+      description: t('organizationLimitReached.serviceFilter.description', {
+        count: selectedPartiesCount,
+        limit: MAX_DIALOG_PARTY_SIZE,
+      }),
     };
   }
 
   return {
     title: t('organizationLimitReached.title'),
-    description: t('organizationLimitReached.description', { count: selectedPartiesCount }),
+    description: t('organizationLimitReached.description', {
+      count: selectedPartiesCount,
+      limit: MAX_DIALOG_PARTY_SIZE,
+    }),
   };
 };
 
@@ -138,7 +148,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const [filterState, setFilterState] = useState<FilterState>(() => readFiltersFromURLQuery(searchParams.toString()));
 
   // Sync URL → filterState for external navigation (back button, link clicks, etc.)
-  // biome-ignore lint/correctness/useExhaustiveDependencies: only sync when URL params change
   useEffect(() => {
     setFilterState(readFiltersFromURLQuery(searchParams.toString()));
   }, [searchParams]);

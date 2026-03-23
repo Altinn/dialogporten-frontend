@@ -1,0 +1,78 @@
+import { describe, expect, it } from 'vitest';
+import { MAX_DIALOG_PARTY_SIZE, isDialogCountInconclusive, isDialogQueryEnabled } from './useDialogs.tsx';
+
+const createPartyIds = (count: number): string[] => Array.from({ length: count }, (_, i) => `urn:altinn:party:${i}`);
+
+describe('isDialogQueryEnabled', () => {
+  it('should be enabled when partyIds and queryPartyURIs are within limit', () => {
+    const partyIds = createPartyIds(5);
+    expect(isDialogQueryEnabled({ partyIds, queryPartyURIs: partyIds, serviceResources: [] })).toBe(true);
+  });
+
+  it('should be disabled when partyIds is empty', () => {
+    expect(isDialogQueryEnabled({ partyIds: [], queryPartyURIs: [], serviceResources: [] })).toBe(false);
+  });
+
+  it('should be enabled when partyIds length equals MAX_DIALOG_PARTY_SIZE', () => {
+    const partyIds = createPartyIds(MAX_DIALOG_PARTY_SIZE);
+    expect(isDialogQueryEnabled({ partyIds, queryPartyURIs: partyIds, serviceResources: [] })).toBe(true);
+  });
+
+  it('should be disabled when partyIds exceed MAX_DIALOG_PARTY_SIZE', () => {
+    const partyIds = createPartyIds(MAX_DIALOG_PARTY_SIZE + 1);
+    expect(isDialogQueryEnabled({ partyIds, queryPartyURIs: partyIds, serviceResources: [] })).toBe(false);
+  });
+
+  it('should be enabled when queryPartyURIs exceed limit but serviceResources are empty', () => {
+    const partyIds = createPartyIds(MAX_DIALOG_PARTY_SIZE);
+    const queryPartyURIs = createPartyIds(MAX_DIALOG_PARTY_SIZE + 1);
+    // When serviceResources is empty, the queryPartyURIs size check is bypassed
+    expect(isDialogQueryEnabled({ partyIds, queryPartyURIs, serviceResources: [] })).toBe(true);
+  });
+
+  it('should be disabled when queryPartyURIs exceed limit and serviceResources are present', () => {
+    const partyIds = createPartyIds(MAX_DIALOG_PARTY_SIZE);
+    const queryPartyURIs = createPartyIds(MAX_DIALOG_PARTY_SIZE + 1);
+    expect(
+      isDialogQueryEnabled({ partyIds, queryPartyURIs, serviceResources: ['urn:altinn:resource:some-service'] }),
+    ).toBe(false);
+  });
+
+  it('should be enabled with empty queryPartyURIs when serviceResources are provided', () => {
+    const partyIds = createPartyIds(5);
+    expect(
+      isDialogQueryEnabled({
+        partyIds,
+        queryPartyURIs: [],
+        serviceResources: ['urn:altinn:resource:some-service'],
+      }),
+    ).toBe(true);
+  });
+});
+
+describe('isDialogCountInconclusive', () => {
+  it('should be false when partyIds are under limit and no next page', () => {
+    const partyIds = createPartyIds(5);
+    expect(isDialogCountInconclusive({ partyIds, hasNextPage: false, itemsIsNull: false })).toBe(false);
+  });
+
+  it('should be true when partyIds equal MAX_DIALOG_PARTY_SIZE', () => {
+    const partyIds = createPartyIds(MAX_DIALOG_PARTY_SIZE);
+    expect(isDialogCountInconclusive({ partyIds, hasNextPage: false, itemsIsNull: false })).toBe(true);
+  });
+
+  it('should be true when partyIds exceed MAX_DIALOG_PARTY_SIZE', () => {
+    const partyIds = createPartyIds(MAX_DIALOG_PARTY_SIZE + 1);
+    expect(isDialogCountInconclusive({ partyIds, hasNextPage: false, itemsIsNull: false })).toBe(true);
+  });
+
+  it('should be true when hasNextPage is true regardless of partyIds count', () => {
+    const partyIds = createPartyIds(5);
+    expect(isDialogCountInconclusive({ partyIds, hasNextPage: true, itemsIsNull: false })).toBe(true);
+  });
+
+  it('should be true when items is null regardless of partyIds count', () => {
+    const partyIds = createPartyIds(5);
+    expect(isDialogCountInconclusive({ partyIds, hasNextPage: false, itemsIsNull: true })).toBe(true);
+  });
+});

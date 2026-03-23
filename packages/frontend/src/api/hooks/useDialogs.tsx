@@ -21,7 +21,34 @@ import { graphQLSDK } from '../queries.ts';
 import { getPartyIds, mapDialogToToInboxItems, mergeDialogItems } from '../utils/dialog.ts';
 import { useParties } from './useParties.ts';
 
+/* Number of max parties used to fetch dialogs with party input param from Dialogporten */
+export const MAX_DIALOG_PARTY_SIZE = 40;
+
 export type InboxViewType = 'inbox' | 'drafts' | 'sent' | 'archive' | 'bin';
+
+export const isDialogQueryEnabled = ({
+  partyIds,
+  queryPartyURIs,
+  serviceResources,
+}: {
+  partyIds: string[];
+  queryPartyURIs: string[];
+  serviceResources: string[];
+}): boolean =>
+  partyIds.length > 0 &&
+  partyIds.length <= MAX_DIALOG_PARTY_SIZE &&
+  (queryPartyURIs.length > 0 || serviceResources.length > 0) &&
+  (queryPartyURIs.length <= MAX_DIALOG_PARTY_SIZE || serviceResources.length <= 0);
+
+export const isDialogCountInconclusive = ({
+  partyIds,
+  hasNextPage,
+  itemsIsNull,
+}: {
+  partyIds: string[];
+  hasNextPage: boolean;
+  itemsIsNull: boolean;
+}): boolean => hasNextPage || itemsIsNull || partyIds.length >= MAX_DIALOG_PARTY_SIZE;
 
 interface UseDialogsProps {
   filterState?: FilterState;
@@ -67,12 +94,11 @@ export const useDialogs = ({
   const partyIds = isPartyIdsOverridden ? partyIdsOverride : getPartyIds(partiesToUse, !enableSubAccountsMenu);
   const previousTokensRef = useRef<string>('');
   const viewTypeKey = viewType ?? 'global';
-  const applicableParties =
-    allOrganizationsSelected && !isPartyIdsOverridden && serviceResources?.length ? [] : partyIds;
+  const queryPartyURIs = allOrganizationsSelected && !isPartyIdsOverridden && serviceResources?.length ? [] : partyIds;
 
   const queryVariables = normalizeFilterDefaults({
     filters: {
-      partyURIs: applicableParties,
+      partyURIs: queryPartyURIs,
       status: filterState?.status ? (filterState.status as [DialogStatus]) : undefined,
       org: Array.isArray(filterState?.org) && filterState?.org?.length > 0 ? (filterState?.org as string[]) : undefined,
       systemLabel: filterState?.systemLabel as SystemLabel[] | undefined,
@@ -106,11 +132,7 @@ export const useDialogs = ({
           searchLanguageCode: i18n.language,
         });
       },
-      enabled:
-        partyIds.length > 0 &&
-        partyIds.length <= 20 &&
-        (applicableParties.length > 0 || serviceResources.length > 0) &&
-        (applicableParties.length <= 20 || serviceResources.length <= 0),
+      enabled: isDialogQueryEnabled({ partyIds, queryPartyURIs, serviceResources }),
       getNextPageParam(lastPage: GetAllDialogsForPartiesQuery): unknown | undefined | null {
         const hasNextPage = lastPage?.searchDialogs?.hasNextPage;
         const continuationToken = lastPage?.searchDialogs?.continuationToken;
@@ -167,10 +189,12 @@ export const useDialogs = ({
   }, [data, selectedParties]);
 
   const content = data?.pages.flatMap((page) => page.searchDialogs?.items ?? []) || [];
-  const dialogCountInconclusive =
-    data?.pages?.[data?.pages.length - 1]?.searchDialogs?.hasNextPage === true ||
-    data?.pages?.[data?.pages.length - 1]?.searchDialogs?.items === null ||
-    partyIds.length >= 20;
+  const lastPage = data?.pages?.[data?.pages.length - 1];
+  const dialogCountInconclusive = isDialogCountInconclusive({
+    partyIds,
+    hasNextPage: lastPage?.searchDialogs?.hasNextPage === true,
+    itemsIsNull: lastPage?.searchDialogs?.items === null,
+  });
   const dialogs = mapDialogToToInboxItems(content, allParties, organizations, format, disableFlipNamesPatch);
   /*  isFetching && isPlaceholderData is used to determine if we are fetching the initial data for the query key */
   const isActuallyLoading = isLoading || (isFetching && isPlaceholderData);
