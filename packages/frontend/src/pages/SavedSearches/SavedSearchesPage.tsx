@@ -1,7 +1,7 @@
 import { BookmarkModal, BookmarkSettingsList, Heading, PageBase, Toolbar } from '@altinn/altinn-components';
 import { type ChangeEvent, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParties } from '../../api/hooks/useParties.ts';
+import { useSelectedPartyIds } from '../../api/hooks/usePartiesSelectors.ts';
 import { getPageRouteTitle } from '../../components/PageLayout/pageRouteToTitle.ts';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
 import { PageRoutes } from '../routes.ts';
@@ -11,7 +11,7 @@ import { useSavedSearches } from './useSavedSearches.tsx';
 export const SavedSearchesPage = () => {
   const { t } = useTranslation();
   usePageTitle({ baseTitle: t('sidebar.saved_searches') });
-  const { selectedPartyIds } = useParties();
+  const selectedPartyIds = useSelectedPartyIds();
   const [inputValues, setInputValues] = useState<Record<string, string>>({});
   const [searchQuery, setSearchQuery] = useState('');
   const {
@@ -27,7 +27,6 @@ export const SavedSearchesPage = () => {
   } = useSavedSearches(selectedPartyIds);
   const currentSearch = useMemo(() => items?.find((item) => item.id === openedSavedSearch), [items, openedSavedSearch]);
   const filteredItems = filterBookmarksBySearch(items ?? [], searchQuery);
-
   //set groups priority (for sorting): personal=0, all-organizations=1 and the rest get 2
   const groupOrder: Record<string, number> = { personal: 0, 'all-organizations': 1 };
 

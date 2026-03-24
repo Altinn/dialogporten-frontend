@@ -22,7 +22,7 @@ import { useDialogActions } from './useDialogActions.tsx';
 export const DialogDetailsPage = () => {
   const { id: dialogId } = useParams();
   const [isActivityLogOpen, setIsActivityLogOpen] = useState<boolean>(false);
-  const { parties } = useParties();
+  const { partyGraph } = useParties();
   const { t } = useTranslation();
   const location = useLocation();
   const qc = useQueryClient();
@@ -33,7 +33,7 @@ export const DialogDetailsPage = () => {
     isError,
     isAuthLevelTooLow,
     dataUpdatedAt,
-  } = useDialogById(parties, dialogId);
+  } = useDialogById(partyGraph.parties, dialogId);
   const isLoading = isLoadingDialog || (!isSuccess && !isError);
   const displayDialogActions = !!(dialogId && dialog && !isLoading);
   const { delegationHref } = useDelegation(dialogId, dialog?.party);

@@ -188,13 +188,11 @@ export const PageLayout: React.FC = () => {
   };
 
   return (
-    <>
-      <Layout {...layoutProps} useGlobalHeader>
-        <Outlet />
-        <Snackbar />
-        <BetaModal />
-        <FloatingDropdown />
-      </Layout>
-    </>
+    <Layout {...layoutProps} useGlobalHeader>
+      <Outlet />
+      <Snackbar />
+      <BetaModal />
+      <FloatingDropdown />
+    </Layout>
   );
 };

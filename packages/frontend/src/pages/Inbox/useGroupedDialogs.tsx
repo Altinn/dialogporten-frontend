@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { Trans } from 'react-i18next';
 import { Link, type LinkProps } from 'react-router-dom';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
-import { useParties } from '../../api/hooks/useParties.ts';
+import { useAllOrganizationsSelected } from '../../api/hooks/usePartiesSelectors.ts';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { useDialogActions } from '../DialogDetailsPage/useDialogActions.tsx';
 import type { CurrentSeenByLog } from './Inbox.tsx';
@@ -119,7 +119,7 @@ const useGroupedDialogs = ({
   const { t } = useTranslation();
   const format = useFormat();
   const systemLabelActions = useDialogActions();
-  const { allOrganizationsSelected } = useParties();
+  const allOrganizationsSelected = useAllOrganizationsSelected();
   const collapseGroups = displaySearchResults || (viewType !== 'inbox' && viewType !== 'sent');
   const getCollapsedGroupTitle = (viewType: InboxViewType, count: number, hasNextPage: boolean) =>
     (hasNextPage ? t('word.moreThan') : '') + t(`inbox.heading.title.${viewType}`, { count });

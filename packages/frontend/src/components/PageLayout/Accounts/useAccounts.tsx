@@ -47,7 +47,6 @@ interface UseAccountsProps {
   allOrganizationsSelected: boolean;
   options?: UseAccountOptions;
   isLoading?: boolean;
-  availableParties?: PartyFieldsFragment[];
 }
 
 interface UseAccountsOutput {
@@ -99,18 +98,21 @@ export const useAccounts = ({
   allOrganizationsSelected,
   options: inputOptions,
   isLoading,
-  availableParties: availablePartiesInput,
 }: UseAccountsProps): UseAccountsOutput => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { setSelectedPartyIds } = useParties();
+  const { setSelectedPartyIds, partyGraph } = useParties();
   const { user, favoritesGroup, shouldShowDeletedEntities } = useProfile();
   const isDeletedUnitsFilterEnabled = useFeatureFlag<boolean>('inbox.enableDeletedUnitsFilter');
   const [searchString, setSearchString] = useState<string>('');
   const queryClient = useQueryClient();
   const accountSearchThreshold = 2;
   const showSearch = parties.length > accountSearchThreshold;
-  const availableParties = availablePartiesInput ?? parties;
+
+  const favoriteUuids = useMemo(
+    () => new Set(favoritesGroup?.parties?.filter((uuid): uuid is string => uuid != null) ?? []),
+    [favoritesGroup?.parties],
+  );
 
   const loadingAccountMenuItem: AccountMenuItemProps = {
     id: 'loading-account',
@@ -172,7 +174,7 @@ export const useAccounts = ({
           type: 'person' as AccountMenuItemProps['type'],
           icon: { name: person.name, type: 'person' as AvatarType },
           isDeleted: person.isDeleted,
-          isFavorite: favoritesGroup?.parties?.includes(person.partyUuid) || isPreselectedParty,
+          isFavorite: favoriteUuids.has(person.partyUuid) || isPreselectedParty,
           isPreselectedParty,
           isCurrentEndUser: false,
           uuid: person.partyUuid,
@@ -182,23 +184,22 @@ export const useAccounts = ({
         } as PartyItemProp;
       })
       .sort((a, b) => compareName(a.name, b.name));
-  }, [allOrganizationsSelected, otherPeople, favoritesGroup, options.showDescription, t, selectedParties, user]);
+  }, [allOrganizationsSelected, otherPeople, favoriteUuids, options.showDescription, t, selectedParties, user]);
 
   const organizationAccounts = useMemo<PartyItemProp[]>(() => {
     const mapped = organizations.map((party) => {
-      const isParent = Array.isArray(availableParties.find((p) => p.party === party.party)?.subParties);
+      // O(1) lookup via partyGraph
+      const enriched = partyGraph.partyByUrn.get(party.party);
+      const isParent = enriched?.isParent ?? false;
+      const parentParty = enriched?.parentParty;
       const isPreselectedParty = user?.profileSettingPreference?.preselectedPartyUuid === party.partyUuid;
 
-      const parent = isParent
-        ? undefined
-        : availableParties.find((org) => org?.subParties?.some((sub) => sub.party === party.party));
-
       const description =
-        parent?.name && party?.party
+        parentParty?.name && party?.party
           ? `↳ ${t('word.orgNo')} ${formatNorwegianId(
               party.party,
               false,
-            )}, ${t('profile.account.partOf')} ${parent.name}`
+            )}, ${t('profile.account.partOf')} ${parentParty.name}`
           : `${t('word.orgNo')} ${formatNorwegianId(party.party, false)}`;
       const orgNo = getSSNOrOrgNo(party.party);
       return {
@@ -216,17 +217,17 @@ export const useAccounts = ({
           isDeleted: party.isDeleted,
         },
         isDeleted: party.isDeleted,
-        isFavorite: favoritesGroup?.parties?.includes(party.partyUuid) || isPreselectedParty,
+        isFavorite: favoriteUuids.has(party.partyUuid) || isPreselectedParty,
         isPreselectedParty,
         isCurrentEndUser: false,
         uuid: party.partyUuid,
         disabled: party.hasOnlyAccessToSubParties,
         isParent,
-        parentId: parent?.party,
-        parentName: parent?.name,
+        parentId: parentParty?.party,
+        parentName: parentParty?.name,
         description: options.showDescription ? description : undefined,
         badge: party.isDeleted ? { color: 'neutral', label: t('badge.deleted'), variant: 'subtle' } : undefined,
-        groupId: parent?.party ?? party.party,
+        groupId: parentParty?.party ?? party.party,
       } as PartyItemProp;
     });
 
@@ -258,8 +259,8 @@ export const useAccounts = ({
     selectedParties,
     allOrganizationsSelected,
     organizations,
-    availableParties,
-    favoritesGroup,
+    partyGraph,
+    favoriteUuids,
     options.showDescription,
     t,
     user,
@@ -394,7 +395,7 @@ export const useAccounts = ({
         search.delete(FixedGlobalQueryParams.party);
         search.delete(FixedGlobalQueryParams.subAccounts);
       } else {
-        const party = parties.find((p) => p.party === partyId);
+        const party = partyGraph.partyByUrn.get(partyId);
         if (!party) {
           console.error('Selected party not found:', partyId);
           return;

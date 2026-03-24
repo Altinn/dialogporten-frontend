@@ -44,8 +44,7 @@ export type PreselectedActorModalProps = {
 
 export const PartiesOverviewPage = () => {
   const { t } = useTranslation();
-  const { isSelfIdentifiedUser, parties, selectedParties, allOrganizationsSelected, isLoading, flattenedParties } =
-    useParties();
+  const { isSelfIdentifiedUser, partyGraph, selectedParties, allOrganizationsSelected, isLoading } = useParties();
   const { getAccountAlertSettings, settings } = useSettings({ disabled: isSelfIdentifiedUser, isSelfIdentifiedUser });
   const isDeletedUnitsFilterEnabled = useFeatureFlag<boolean>('inbox.enableDeletedUnitsFilter');
   const {
@@ -64,13 +63,12 @@ export const PartiesOverviewPage = () => {
 
   const { filters, getFilterLabel, filterState, setFilterState, filteredParties, isSearching } = useAccountFilters({
     searchValue,
-    parties,
+    parties: partyGraph.parties,
     includeDeletedParties: true,
   });
 
   const { accounts, accountGroups } = useAccounts({
     parties: filteredParties,
-    availableParties: parties,
     selectedParties,
     allOrganizationsSelected,
     isLoading,
@@ -154,20 +152,22 @@ export const PartiesOverviewPage = () => {
     as: 'span' as ElementType,
   });
 
+  type OrganizationItemInput = {
+    party: string;
+    name: string;
+    isDeleted: boolean;
+    parentParty?: { party: string } | undefined;
+    subParties?: Array<{ party: string; name: string; isDeleted: boolean }>;
+  };
+
   const createOrganizationItem = (
-    item: {
-      party: string;
-      name: string;
-      isDeleted: boolean;
-      parentId?: string;
-      subParties?: Array<{ party: string; name: string; isDeleted: boolean }>;
-    },
+    item: OrganizationItemInput,
     currentParty: { party: string } | undefined,
   ): AccountOrganizationItemProps => ({
     avatar: {
       type: 'company' as AvatarType,
       name: item.name,
-      variant: item.parentId ? ('outline' as AvatarVariant) : undefined,
+      variant: item.parentParty ? ('outline' as AvatarVariant) : undefined,
       isDeleted: item.isDeleted,
     },
     items: item.subParties?.map((subParty) => createSubPartyItem(subParty, item)),
@@ -178,21 +178,14 @@ export const PartiesOverviewPage = () => {
   });
 
   const getOrganizationAccounts = (
-    currentParty: { party: string } | undefined,
-    parentParty: { party: string } | undefined,
-    flattenedParties: Array<{
-      party: string;
-      name: string;
-      isDeleted: boolean;
-      parentId?: string;
-      subParties?: Array<{ party: string; name: string; isDeleted: boolean }>;
-    }>,
+    currentParty: OrganizationItemInput | undefined,
+    parentParty: OrganizationItemInput | undefined,
   ) => {
-    const organizationAccounts = parentParty
-      ? flattenedParties?.filter((item) => item.party.includes(parentParty.party)) || []
-      : flattenedParties?.filter((item) => item.party.includes(currentParty?.party ?? '')) || [];
-
-    return organizationAccounts?.map((item) => createOrganizationItem(item, currentParty));
+    const root = parentParty ?? currentParty;
+    if (!root) return [];
+    return [root, ...(root.subParties ?? []).map((sub) => ({ ...sub, parentParty: root }))].map((item) =>
+      createOrganizationItem(item, currentParty),
+    );
   };
 
   const PartyDetails = ({
@@ -200,23 +193,13 @@ export const PartiesOverviewPage = () => {
     isCurrentEndUser,
     id,
   }: { type: AccountListItemType; isCurrentEndUser: boolean; id: string }) => {
-    const currentParty = flattenedParties?.find((item) => item.party === id);
-    const parentParty = flattenedParties?.find((item) => item.partyUuid === currentParty?.parentId);
+    const enrichedParty = partyGraph.partyByUrn.get(id);
+    const parentParty = enrichedParty?.parentParty;
 
     const organizationAccounts = useMemo(() => {
       if (type !== 'company') return undefined;
-      return getOrganizationAccounts(
-        currentParty,
-        parentParty,
-        flattenedParties as Array<{
-          party: string;
-          isDeleted: boolean;
-          name: string;
-          parentId?: string;
-          subParties?: Array<{ party: string; name: string; isDeleted: boolean }>;
-        }>,
-      );
-    }, [type, currentParty, parentParty]);
+      return getOrganizationAccounts(enrichedParty, parentParty);
+    }, [type, enrichedParty, parentParty]);
 
     if (isCurrentEndUser) {
       const contactSettings = settings.filter((s) => s.groupId === 'contact');

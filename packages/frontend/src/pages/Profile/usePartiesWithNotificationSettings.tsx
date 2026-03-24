@@ -1,5 +1,6 @@
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import { useMemo } from 'react';
+import { usePartyGraph } from '../../api/hooks/usePartiesSelectors.ts';
 import { updateNotificationsetting } from '../../api/queries.ts';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
@@ -33,14 +34,14 @@ export interface GroupedPhoneNumberType {
 }
 
 export const usePartiesWithNotificationSettings = (parties: PartyFieldsFragment[]) => {
+  const partyGraph = usePartyGraph();
   const { notificationSettingsForCurrentUser } = useNotificationSettingsForCurrentUser();
 
   const partiesKey = useMemo(() => {
     if (!parties?.length) return null;
-    return parties
-      .map((party) => party.partyUuid)
-      .sort((a, b) => a.localeCompare(b))
-      .join(',');
+    // Use count as cache key — partyGraph.parties has stable identity via useMemo,
+    // so a length change is the only meaningful signal for invalidation.
+    return `parties:${parties.length}`;
   }, [parties]);
 
   const { data: partiesWithNotificationSettings = [], isLoading: isLoadingNotificationSettings } =
@@ -51,25 +52,28 @@ export const usePartiesWithNotificationSettings = (parties: PartyFieldsFragment[
         partiesKey,
         notificationSettingsForCurrentUser,
       ],
-      queryFn: async () => {
+      queryFn: () => {
         if (!parties?.length) return [];
 
-        const filteredParties = parties.filter((party) => !party.isCurrentEndUser);
-
-        return await Promise.all(
-          filteredParties.map(async (party) => {
-            const notificationSettings =
-              notificationSettingsForCurrentUser?.find((setting) => setting?.partyUuid === party.partyUuid) ??
-              undefined;
-            return { ...party, notificationSettings, key: party.partyUuid };
-          }),
+        // Pre-index notification settings by partyUuid for O(1) lookups
+        const settingsByUuid = new Map(
+          (notificationSettingsForCurrentUser ?? []).filter((s) => s?.partyUuid).map((s) => [s!.partyUuid, s]),
         );
+
+        return parties
+          .filter((party) => !party.isCurrentEndUser)
+          .map((party) => ({
+            ...party,
+            notificationSettings: settingsByUuid.get(party.partyUuid) ?? undefined,
+            key: party.partyUuid,
+          }));
       },
       enabled: !!parties?.length,
       refetchOnWindowFocus: false,
       staleTime: 1000 * 60 * 10,
     });
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const uniqueEmailAddresses: GroupedEmailAddressType[] = useMemo(() => {
     const emailMap = new Map<string, UniqueEmailAddressType[]>();
     const emails = partiesWithNotificationSettings
@@ -80,7 +84,7 @@ export const usePartiesWithNotificationSettings = (parties: PartyFieldsFragment[
             partyUuid: party.partyUuid,
             name: party.name,
             type: party.partyType === 'Organization' ? 'company' : 'person',
-            hasParentParty: !Array.isArray(party.subParties),
+            hasParentParty: !!partyGraph.partyByUrn.get(party.party)?.parentParty,
           }) as UniqueEmailAddressType,
       )
       .filter(
@@ -101,6 +105,7 @@ export const usePartiesWithNotificationSettings = (parties: PartyFieldsFragment[
     }));
   }, [partiesWithNotificationSettings]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const uniquePhoneNumbers: GroupedPhoneNumberType[] = useMemo(() => {
     const phoneNumberMap = new Map<string, UniquePhoneNumberType[]>();
 
@@ -112,7 +117,7 @@ export const usePartiesWithNotificationSettings = (parties: PartyFieldsFragment[
             partyUuid: party.partyUuid,
             name: party.name,
             type: party.partyType === 'Organization' ? 'company' : 'person',
-            hasParentParty: !Array.isArray(party.subParties),
+            hasParentParty: !!partyGraph.partyByUrn.get(party.party)?.parentParty,
           }) as UniquePhoneNumberType,
       )
       .filter(

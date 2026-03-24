@@ -193,7 +193,14 @@ const createServiceOwnerFilter = (
   allDialogs: CountableDialogFieldsFragment[],
   allOrganizations: OrganizationFieldsFragment[],
 ): FilterProps => {
-  const mostRelevantOrgs = Array.from(new Set([...allDialogs.map((d) => d.org)]));
+  const mostRelevantOrgs = new Set(allDialogs.map((d) => d.org));
+
+  // Pre-index for O(1) lookups instead of O(n²) .find() inside .map()
+  const orgById = new Map<string, OrganizationFieldsFragment>();
+  for (const o of allOrganizations ?? []) {
+    if (o.id) orgById.set(o.id, o);
+  }
+
   return {
     id: FilterCategory.ORG,
     icon: MenuHamburgerIcon,
@@ -204,7 +211,7 @@ const createServiceOwnerFilter = (
     removable: true,
     groups: {
       'service-owners': {
-        title: mostRelevantOrgs.length ? '' : t('filter_bar.group.choose_sender'),
+        title: mostRelevantOrgs.size ? '' : t('filter_bar.group.choose_sender'),
       },
       selected: {},
       'most-relevant': {
@@ -213,14 +220,14 @@ const createServiceOwnerFilter = (
     },
     items: allOrganizations
       .map((org) => {
-        const localizedOrg = getOrganization(allOrganizations, org.id ?? '');
+        const localizedOrg = getOrganization(orgById, org.id ?? '');
         return {
           id: org.id ?? '',
           name: FilterCategory.ORG,
           title: localizedOrg?.name ?? '',
           value: org.id ?? '',
           role: 'checkbox',
-          groupId: mostRelevantOrgs.includes(org.id ?? '') ? 'most-relevant' : 'service-owners',
+          groupId: mostRelevantOrgs.has(org.id ?? '') ? 'most-relevant' : 'service-owners',
         };
       })
       .sort((a, b) => {
@@ -342,15 +349,22 @@ export const createServiceFilter = ({
   currentFilters = {},
   allOrganizations,
 }: ServiceFilterProps): FilterProps => {
-  const suggestedServiceIds = getSuggestedServiceIds();
+  const suggestedServiceIds = new Set(getSuggestedServiceIds());
+
+  // Pre-index organizations by id for O(1) lookups (avoids 6,700 × O(n) .find() calls)
+  const orgById = new Map<string, OrganizationFieldsFragment>();
+  for (const o of allOrganizations ?? []) {
+    if (o.id) orgById.set(o.id, o);
+  }
+
   const serviceFilters: FilterProps[] = serviceResources
     .map((s) => ({
       id: s.id!,
       name: s.id!,
       items: [],
       title: s.title ?? '',
-      groupId: suggestedServiceIds?.includes(s.id!) ? 'most-relevant' : 'services',
-      description: getOrganization(allOrganizations, s.org ?? '')?.name || '',
+      groupId: suggestedServiceIds.has(s.id!) ? 'most-relevant' : 'services',
+      description: getOrganization(orgById, s.org ?? '')?.name || '',
     }))
     .sort((a, b) => {
       const groupOrder: Record<string, number> = {

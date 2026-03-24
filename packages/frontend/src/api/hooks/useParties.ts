@@ -13,12 +13,14 @@ import {
 import { useGlobalState } from '../../useGlobalState.ts';
 import { graphQLSDK } from '../queries.ts';
 import { normalizeFlattenParties } from '../utils/normalizeFlattenParties.ts';
+import { type PartyGraph, buildPartyGraph } from '../utils/partyGraph.ts';
 import { MAX_DIALOG_PARTY_SIZE } from './useDialogs.tsx';
+import { stripQueryParamsForPersonParty } from './usePartiesSelectors.ts';
 
 export type ProfileType = 'company' | 'person' | 'neutral';
 
 interface UsePartiesOutput {
-  parties: PartyFieldsFragment[];
+  partyGraph: PartyGraph;
   isSuccess: boolean;
   isError: boolean;
   isLoading: boolean;
@@ -30,23 +32,10 @@ interface UsePartiesOutput {
   allOrganizationsSelected: boolean;
   selectedProfile: ProfileType;
   partiesEmptyList: boolean;
-  flattenedParties: FlattenedParty[];
   currentPartyUuid: string | undefined;
   isSelfIdentifiedUser: boolean;
   organizationLimitReached: boolean;
 }
-
-const stripQueryParamsForPersonParty = (searchParamString: string) => {
-  const params = new URLSearchParams(searchParamString);
-  params.delete(FixedGlobalQueryParams.party);
-  params.delete(FixedGlobalQueryParams.allParties);
-  params.delete(FixedGlobalQueryParams.subAccounts);
-  return params.toString();
-};
-
-type FlattenedParty = PartyFieldsFragment & {
-  parentId?: string;
-};
 
 const createPartyParams = (searchParamString: string, key: string, value: string): URLSearchParams => {
   const params = new URLSearchParams(searchParamString);
@@ -90,6 +79,11 @@ export const useParties = (): UsePartiesOutput => {
     retry: 2,
     retryDelay: 500,
   });
+
+  const partyGraph = useMemo<PartyGraph>(() => {
+    if (!data) return { parties: [], partyByUrn: new Map(), partyByUuid: new Map(), currentEndUser: undefined };
+    return buildPartyGraph(data);
+  }, [data]);
 
   const handleSetSelectedParties = (parties: PartyFieldsFragment[] | null) => {
     if (parties?.length) {
@@ -225,17 +219,6 @@ export const useParties = (): UsePartiesOutput => {
 
   const selectedProfile: ProfileType = allOrganizationsSelected ? 'neutral' : isCompanyProfile ? 'company' : 'person';
 
-  const flattenedParties = useMemo(() => {
-    if (!data) return [];
-    return data.flatMap((party) => [
-      party,
-      ...(party.subParties?.map((subParty) => ({
-        ...subParty,
-        parentId: party.partyUuid,
-      })) ?? []),
-    ]) as FlattenedParty[];
-  }, [data]);
-
   const currentPartyUuid = useMemo(() => {
     return allOrganizationsSelected ? currentEndUser?.partyUuid : selectedParties[0]?.partyUuid;
   }, [selectedParties, currentEndUser, allOrganizationsSelected]);
@@ -244,12 +227,11 @@ export const useParties = (): UsePartiesOutput => {
     isLoading,
     isSuccess,
     isError,
-    flattenedParties,
     selectedParties,
     selectedPartyIds: selectedParties.map((party) => party.party) ?? [],
     setSelectedParties: handleSetSelectedParties,
     setSelectedPartyIds,
-    parties: data ?? [],
+    partyGraph,
     currentEndUser,
     allOrganizationsSelected,
     selectedProfile,

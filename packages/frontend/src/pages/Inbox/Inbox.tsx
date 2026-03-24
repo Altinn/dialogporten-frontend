@@ -130,7 +130,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     selectedParties,
     selectedPartyIds,
     allOrganizationsSelected,
-    parties,
+    partyGraph,
     partiesEmptyList,
     isError: unableToLoadParties,
     isLoading: isLoadingParties,
@@ -184,7 +184,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const serviceLimitReached = selectedServicesCount > 20;
 
   const { accounts, accountSearch, accountGroups, onSelectAccount, currentAccountName } = useAccounts({
-    parties,
+    parties: partyGraph.parties,
     selectedParties,
     allOrganizationsSelected,
     options: {

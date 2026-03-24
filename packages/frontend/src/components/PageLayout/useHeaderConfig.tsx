@@ -7,12 +7,19 @@ import {
   useAccountSelector,
 } from '@altinn/altinn-components';
 import type { ChangeEvent } from 'react';
-import { useCallback } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps, useLocation, useNavigate } from 'react-router-dom';
 import { Analytics } from '../../analytics/analytics.ts';
 import { ANALYTICS_EVENTS } from '../../analytics/analyticsEvents.ts';
-import { useParties } from '../../api/hooks/useParties.ts';
+import {
+  useCurrentEndUser,
+  useCurrentPartyUuid,
+  usePartiesLoading,
+  usePartyGraph,
+  useSelectedParties,
+  useSetSelectedPartyIds,
+} from '../../api/hooks/usePartiesSelectors.ts';
 import { updateLanguage } from '../../api/queries.ts';
 import { createFiltersURLQuery, getFrontPageLink } from '../../auth';
 import { useFeatureFlag } from '../../featureFlags';
@@ -31,12 +38,16 @@ interface UseHeaderConfigOutput {
 }
 
 export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutput => {
-  const { currentEndUser, parties, selectedParties, isLoading, currentPartyUuid, setSelectedPartyIds } = useParties();
+  const currentEndUser = useCurrentEndUser();
+  const partyGraph = usePartyGraph();
+  const selectedParties = useSelectedParties();
+  const isLoading = usePartiesLoading();
+  const currentPartyUuid = useCurrentPartyUuid();
+  const setSelectedPartyIds = useSetSelectedPartyIds();
   const { t, i18n } = useTranslation();
   const { logError } = useErrorLogger();
   const location = useLocation();
   const navigate = useNavigate();
-  const isProfile = location.pathname.includes(PageRoutes.profile);
   const { searchValue, setSearchValue, onClear } = useSearchString();
 
   const isDeletedUnitsFilterEnabled = useFeatureFlag<boolean>('inbox.enableDeletedUnitsFilter');
@@ -50,33 +61,53 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
     updateShowDeletedEntities,
   } = useProfile();
 
-  const handleToggleFavorite = useCallback(
-    async (accountUuid: string) => {
-      const isFavorite = favoritesGroup?.parties?.includes(accountUuid);
-      try {
-        if (isFavorite) {
-          await deleteFavoriteParty(accountUuid);
-        } else {
-          await addFavoriteParty(accountUuid);
-        }
-      } catch (error) {
-        logError(
-          error as Error,
-          {
-            context: 'useHeaderConfig.handleToggleFavorite',
-            accountUuid,
-            action: isFavorite ? 'remove' : 'add',
-          },
-          'Error toggling favorite party',
-        );
-      }
-    },
-    [favoritesGroup?.parties, addFavoriteParty, deleteFavoriteParty, logError],
-  );
+  // Use refs so handleToggleFavorite has a stable identity and doesn't
+  // invalidate useAccountSelector's useMemo (which reprocesses 12k parties).
+  const favoritesRef = useRef(favoritesGroup?.parties);
+  favoritesRef.current = favoritesGroup?.parties;
+  const addFavoriteRef = useRef(addFavoriteParty);
+  addFavoriteRef.current = addFavoriteParty;
+  const deleteFavoriteRef = useRef(deleteFavoriteParty);
+  deleteFavoriteRef.current = deleteFavoriteParty;
+  const logErrorRef = useRef(logError);
+  logErrorRef.current = logError;
 
-  const handleSelectAccount = (accountUuid: string) => {
-    const targetRoute = isProfile ? PageRoutes.profile : PageRoutes.inbox;
-    const party = parties.find((p) => p.partyUuid === accountUuid);
+  const handleToggleFavorite = useCallback(async (accountUuid: string) => {
+    const isFavorite = favoritesRef.current?.includes(accountUuid);
+    try {
+      if (isFavorite) {
+        await deleteFavoriteRef.current(accountUuid);
+      } else {
+        await addFavoriteRef.current(accountUuid);
+      }
+    } catch (error) {
+      logErrorRef.current(
+        error as Error,
+        {
+          context: 'useHeaderConfig.handleToggleFavorite',
+          accountUuid,
+          action: isFavorite ? 'remove' : 'add',
+        },
+        'Error toggling favorite party',
+      );
+    }
+  }, []);
+
+  // Stable ref for handleSelectAccount to avoid invalidating useAccountSelector's memo
+  const partyGraphRef = useRef(partyGraph);
+  partyGraphRef.current = partyGraph;
+  const selectedPartiesRef = useRef(selectedParties);
+  selectedPartiesRef.current = selectedParties;
+  const setSelectedPartyIdsRef = useRef(setSelectedPartyIds);
+  setSelectedPartyIdsRef.current = setSelectedPartyIds;
+  const navigateRef = useRef(navigate);
+  navigateRef.current = navigate;
+
+  const handleSelectAccount = useCallback((accountUuid: string) => {
+    const loc = window.location;
+    const currentIsProfile = loc.pathname.includes(PageRoutes.profile);
+    const targetRoute = currentIsProfile ? PageRoutes.profile : PageRoutes.inbox;
+    const party = partyGraphRef.current.partyByUuid.get(accountUuid);
 
     if (!party) {
       console.error('Selected party not found:', accountUuid);
@@ -84,45 +115,47 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
     }
 
     /* Selected party already selected */
-    if (selectedParties.length === 1 && selectedParties[0].party === party.party) {
+    const sp = selectedPartiesRef.current;
+    if (sp.length === 1 && sp[0].party === party.party) {
       return;
     }
 
     if (party.partyType === 'Person') {
-      setSelectedPartyIds([party.party], false);
+      setSelectedPartyIdsRef.current([party.party], false);
     } else {
-      const search = new URLSearchParams(location.search);
+      const search = new URLSearchParams(loc.search);
       search.set('party', party.party);
       search.delete('allParties');
       search.delete(FixedGlobalQueryParams.subAccounts);
-      navigate(`${targetRoute}?${search.toString()}`, {
-        replace: location.pathname === targetRoute,
+      navigateRef.current(`${targetRoute}?${search.toString()}`, {
+        replace: loc.pathname === targetRoute,
       });
     }
-  };
+  }, []);
 
-  const handleShowDeletedUnitsChange = useCallback(
-    async (shouldShow: boolean) => {
-      try {
-        await updateShowDeletedEntities(shouldShow);
-      } catch (error) {
-        logError(
-          error as Error,
-          {
-            context: 'useHeaderConfig.handleShowDeletedUnitsChange',
-            shouldShow,
-          },
-          'Error updating show deleted units setting',
-        );
-      }
-    },
-    [updateShowDeletedEntities, logError],
-  );
+  const updateShowDeletedEntitiesRef = useRef(updateShowDeletedEntities);
+  updateShowDeletedEntitiesRef.current = updateShowDeletedEntities;
 
-  const partyListDTO = mapPartiesToAuthorizedParties(parties);
+  const handleShowDeletedUnitsChange = useCallback(async (shouldShow: boolean) => {
+    try {
+      await updateShowDeletedEntitiesRef.current(shouldShow);
+    } catch (error) {
+      logErrorRef.current(
+        error as Error,
+        {
+          context: 'useHeaderConfig.handleShowDeletedUnitsChange',
+          shouldShow,
+        },
+        'Error updating show deleted units setting',
+      );
+    }
+  }, []);
 
-  const favoriteAccountUuids = (favoritesGroup?.parties ?? []).filter(
-    (uuid): uuid is string => uuid !== null && uuid !== undefined,
+  const partyListDTO = useMemo(() => mapPartiesToAuthorizedParties(partyGraph.parties, partyGraph), [partyGraph]);
+
+  const favoriteAccountUuids = useMemo(
+    () => (favoritesGroup?.parties ?? []).filter((uuid): uuid is string => uuid !== null && uuid !== undefined),
+    [favoritesGroup?.parties],
   );
 
   const selfAccountUuid = currentEndUser?.partyUuid;

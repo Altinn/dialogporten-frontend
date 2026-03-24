@@ -6,12 +6,19 @@ export interface OrganizationOutput {
   logo: string;
 }
 
+type OrgLookup = OrganizationFieldsFragment[] | Map<string, OrganizationFieldsFragment>;
+
+const findOrg = (organizations: OrgLookup, id: string): OrganizationFieldsFragment | undefined => {
+  if (organizations instanceof Map) return organizations.get(id);
+  return organizations.find((o) => o.id === id);
+};
+
 export const getOrganizationByLocale = (
-  organizations: OrganizationFieldsFragment[],
+  organizations: OrgLookup,
   org: string,
   locale: string,
 ): OrganizationOutput | undefined => {
-  const currentOrg = organizations?.find((o) => o.id === (org as string));
+  const currentOrg = findOrg(organizations, org);
   const name = currentOrg?.name && (currentOrg.name[locale as keyof typeof currentOrg.name] ?? '');
   const logo = currentOrg?.logo ?? '';
   return {
@@ -20,9 +27,6 @@ export const getOrganizationByLocale = (
   };
 };
 
-export const getOrganization = (
-  organizations: OrganizationFieldsFragment[],
-  org: string,
-): OrganizationOutput | undefined => {
+export const getOrganization = (organizations: OrgLookup, org: string): OrganizationOutput | undefined => {
   return getOrganizationByLocale(organizations, org, i18n.language);
 };

@@ -14,6 +14,7 @@ import { getIsUnread } from '../../pages/Inbox/status.ts';
 import { getActorProps } from '../hooks/useDialogById.tsx';
 import type { InboxViewType } from '../hooks/useDialogs.tsx';
 import { type OrganizationOutput, getOrganization, getOrganizationByLocale } from './organizations.ts';
+import type { PartyGraph } from './partyGraph.ts';
 import { getViewTypes } from './viewType.ts';
 
 interface SeenByItem {
@@ -56,27 +57,106 @@ export const getSeenByLabel = (
   return { isSeenByEndUser, seenByOthersCount, seenByLabel };
 };
 
+/** Minimal party shape shared by PartyFieldsFragment, SubPartyFieldsFragment, and Party. */
+interface ResolvedParty {
+  party: string;
+  partyType: string;
+  name: string;
+  subParties?: unknown;
+  parentParty?: unknown;
+}
+
+/**
+ * Resolves the receiver party for a dialog item.
+ *
+ * When a PartyGraph is provided, all lookups are O(1) map gets.
+ * Falls back to linear scans over the PartyFieldsFragment[] array when no graph is available.
+ */
+function resolveReceiverParty(
+  dialogPartyUrn: string,
+  parties: PartyFieldsFragment[],
+  partyGraph?: PartyGraph,
+): {
+  endUserParty: ResolvedParty | undefined;
+  dialogReceiverParty: ResolvedParty | undefined;
+  dialogReceiverSubParty: ResolvedParty | undefined;
+  actualReceiverParty: ResolvedParty | undefined;
+} {
+  if (partyGraph) {
+    const endUserParty = partyGraph.currentEndUser;
+    const resolved = partyGraph.partyByUrn.get(dialogPartyUrn);
+    // A "dialogReceiverParty" is a top-level match; a "dialogReceiverSubParty" is one with a parent.
+    const dialogReceiverParty = resolved && !resolved.parentParty ? resolved : undefined;
+    const dialogReceiverSubParty = resolved?.parentParty ? resolved : undefined;
+    const actualReceiverParty = dialogReceiverParty ?? dialogReceiverSubParty ?? endUserParty;
+    return { endUserParty, dialogReceiverParty, dialogReceiverSubParty, actualReceiverParty };
+  }
+
+  // Legacy path — linear scans
+  const endUserParty = parties?.find((party) => party.isCurrentEndUser);
+  const dialogReceiverParty = parties?.find((party) => party.party === dialogPartyUrn);
+  const dialogReceiverSubParty = parties
+    ?.flatMap((party) => party.subParties ?? [])
+    .find((subParty) => subParty.party === dialogPartyUrn);
+  const actualReceiverParty = dialogReceiverParty ?? dialogReceiverSubParty ?? endUserParty;
+  return { endUserParty, dialogReceiverParty, dialogReceiverSubParty, actualReceiverParty };
+}
+
+/**
+ * Returns true if the receiver should use the "outline" avatar variant.
+ * This happens when the dialog's party is a sub-party (child org), not a parent org.
+ *
+ * Works with both the old PartyFieldsFragment and the new Party type.
+ *
+ * Legacy path: `dialogReceiverParty` is the top-level match; if it exists but has
+ * no `subParties` field, it's a promoted sub-party → outline.
+ *
+ * PartyGraph path: `dialogReceiverSubParty` is set when the resolved party has a parent → outline.
+ */
+function shouldUseOutlineVariant(
+  dialogReceiverParty: ResolvedParty | undefined,
+  dialogReceiverSubParty: ResolvedParty | undefined,
+  actualReceiverParty: ResolvedParty | undefined,
+): boolean {
+  if (actualReceiverParty?.partyType !== 'Organization') return false;
+
+  // PartyGraph path: if the match was classified as a sub-party, use outline
+  if (dialogReceiverSubParty && !dialogReceiverParty) return true;
+
+  // Legacy path: top-level match without subParties field → promoted sub-party
+  if (dialogReceiverParty && !dialogReceiverParty.subParties) return true;
+
+  return false;
+}
+
 export function mapDialogToToInboxItems(
   input: SearchDialogFieldsFragment[],
   parties: PartyFieldsFragment[],
   organizations: OrganizationFieldsFragment[],
   format: FormatFunction,
   stopReversingPersonNameOrder: boolean,
+  partyGraph?: PartyGraph,
 ): InboxItemInput[] {
+  // Pre-index organizations by id for O(1) lookup per dialog item
+  const orgById = new Map<string, OrganizationFieldsFragment>();
+  for (const o of organizations ?? []) {
+    if (o.id) orgById.set(o.id, o);
+  }
+  const getOrgCached = (org: string) => getOrganization(orgById, org);
+
   return input.map((item) => {
     const titleObj = item.content.title.value;
     const summaryObj = item.content.summary?.value;
-    const endUserParty = parties?.find((party) => party.isCurrentEndUser);
     const senderName = item.content.senderName?.value;
     const extendedStatusObj = item.content.extendedStatus?.value;
 
-    const dialogReceiverParty = parties?.find((party) => party.party === item.party);
-    const dialogReceiverSubParty = parties
-      ?.flatMap((party) => party.subParties ?? [])
-      .find((subParty) => subParty.party === item.party);
+    const { dialogReceiverParty, dialogReceiverSubParty, actualReceiverParty } = resolveReceiverParty(
+      item.party,
+      parties,
+      partyGraph,
+    );
 
-    const actualReceiverParty = dialogReceiverParty ?? dialogReceiverSubParty ?? endUserParty;
-    const serviceOwner = getOrganization(organizations || [], item.org);
+    const serviceOwner = getOrgCached(item.org);
     const serviceOwnerNbName = getOrganizationByLocale(organizations || [], item.org, 'nb')?.name;
     const { isSeenByEndUser, seenByOthersCount, seenByLabel } = getSeenByLabel(item.seenSinceLastContentUpdate, t);
 
@@ -99,10 +179,9 @@ export function mapDialogToToInboxItems(
       recipient: {
         name: actualReceiverParty?.name ?? dialogReceiverSubParty?.name ?? '',
         type: actualReceiverParty?.partyType === 'Organization' ? 'company' : 'person',
-        variant:
-          dialogReceiverParty && !dialogReceiverParty.subParties && actualReceiverParty?.partyType === 'Organization'
-            ? 'outline'
-            : 'solid',
+        variant: shouldUseOutlineVariant(dialogReceiverParty, dialogReceiverSubParty, actualReceiverParty)
+          ? 'outline'
+          : 'solid',
       },
       serviceResourceType: item.serviceResourceType,
       color: actualReceiverParty?.partyType === 'Organization' ? 'company' : 'person',

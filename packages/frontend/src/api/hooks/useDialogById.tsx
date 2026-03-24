@@ -28,6 +28,7 @@ import { type ActivityLogEntry, getActivityHistory } from '../utils/activities.t
 import { createExpiryBadge, mediaTypeToExt } from '../utils/attachments.ts';
 import { getSeenByLabel, getServiceOwnerLogo } from '../utils/dialog.ts';
 import { type OrganizationOutput, getOrganization, getOrganizationByLocale } from '../utils/organizations.ts';
+import type { PartyGraph } from '../utils/partyGraph.ts';
 import { type TimelineSegmentWithTransmissions, getTransmissions } from '../utils/transmissions.ts';
 import { getViewTypes } from '../utils/viewType.ts';
 import type { InboxViewType } from './useDialogs.tsx';
@@ -220,6 +221,7 @@ export function mapDialogToToInboxItem(
   stopReversingPersonNameOrder: boolean,
   selectedProfile: ProfileType,
   locale: Locale,
+  partyGraph?: PartyGraph,
 ): DialogByIdDetails | undefined {
   if (!item) {
     return undefined;
@@ -230,8 +232,11 @@ export function mapDialogToToInboxItem(
   const additionalInfoObj = item?.content?.additionalInfo?.value;
   const summaryObj = item?.content?.summary?.value;
   const mainContentReference = item?.content?.mainContentReference;
-  const endUserParty = parties?.find((party) => party.isCurrentEndUser);
-  const dialogRecipientParty = parties?.find((party) => party.party === item.party);
+
+  // Resolve receiver party — O(1) with partyGraph, O(n) legacy fallback
+  const endUserParty = partyGraph?.currentEndUser ?? parties?.find((party) => party.isCurrentEndUser);
+  const dialogRecipientParty =
+    partyGraph?.partyByUrn.get(item.party) ?? parties?.find((party) => party.party === item.party);
   const actualRecipientParty = dialogRecipientParty ?? endUserParty;
   const serviceOwner = getOrganization(organizations || [], item.org);
   const serviceOwnerNbName = getOrganizationByLocale(organizations || [], item.org, 'nb')?.name;
@@ -348,7 +353,7 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
   const { organizations, isLoading: isOrganizationsLoading } = useOrganizations();
   const queryClient = useQueryClient();
   const disableFlipNamesPatch = useFeatureFlag<boolean>('dialogporten.disableFlipNamesPatch');
-  const { selectedProfile } = useParties();
+  const { selectedProfile, partyGraph } = useParties();
   const partyURIs = parties.map((party) => party.party);
   const { data, isSuccess, isLoading, isError, dataUpdatedAt } = useAuthenticatedQuery<GetDialogByIdQuery>({
     queryKey: [QUERY_KEYS.DIALOG_BY_ID, id],
@@ -390,6 +395,7 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
       disableFlipNamesPatch,
       selectedProfile,
       locale,
+      partyGraph,
     ),
     dataUpdatedAt,
     isError,

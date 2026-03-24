@@ -1,7 +1,7 @@
 import type { MenuProps } from '@altinn/altinn-components';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
-import { useParties } from '../../../api/hooks/useParties.ts';
+import { useCurrentEndUser, useCurrentPartyUuid } from '../../../api/hooks/usePartiesSelectors.ts';
 import { PageRoutes } from '../../../pages/routes.ts';
 import { buildInboxMenu } from './inboxMenu.tsx';
 import { buildProfileMenu } from './profileMenu.tsx';
@@ -17,7 +17,8 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
   const isProfile = pathname.includes(PageRoutes.profile);
   const fromView = (state as { fromView?: string })?.fromView;
   const { t } = useTranslation();
-  const { currentEndUser, currentPartyUuid } = useParties();
+  const currentEndUser = useCurrentEndUser();
+  const currentPartyUuid = useCurrentPartyUuid();
 
   const inboxMenus = buildInboxMenu({
     t,

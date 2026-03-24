@@ -81,7 +81,7 @@ export const useDialogs = ({
   const isDeletedUnitsFilterEnabled = useFeatureFlag<boolean>('inbox.enableDeletedUnitsFilter');
   const enableSubAccountsMenu = useFeatureFlag<boolean>('filters.enableSubAccountsMenu');
   const { shouldShowDeletedEntities } = useProfile();
-  const { selectedParties, parties: allParties, allOrganizationsSelected } = useParties();
+  const { selectedParties, partyGraph, allOrganizationsSelected } = useParties();
   const format = useFormat();
 
   const shouldExcludeDeleted = isDeletedUnitsFilterEnabled && !shouldShowDeletedEntities;
@@ -195,7 +195,14 @@ export const useDialogs = ({
     hasNextPage: lastPage?.searchDialogs?.hasNextPage === true,
     itemsIsNull: lastPage?.searchDialogs?.items === null,
   });
-  const dialogs = mapDialogToToInboxItems(content, allParties, organizations, format, disableFlipNamesPatch);
+  const dialogs = mapDialogToToInboxItems(
+    content,
+    partyGraph.parties,
+    organizations,
+    format,
+    disableFlipNamesPatch,
+    partyGraph,
+  );
   /*  isFetching && isPlaceholderData is used to determine if we are fetching the initial data for the query key */
   const isActuallyLoading = isLoading || (isFetching && isPlaceholderData);
 

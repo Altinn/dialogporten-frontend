@@ -106,13 +106,13 @@ export const useSettings = ({
   isSelfIdentifiedUser = false,
   disabled = false,
 }: UseSettingsInput = {}): UseSettingsOutput => {
-  const { isLoading: isLoadingParties, parties, selectedParties, allOrganizationsSelected } = useParties();
+  const { isLoading: isLoadingParties, partyGraph, selectedParties, allOrganizationsSelected } = useParties();
   const { user, showClientUnits, setShowClientUnits, shouldShowDeletedEntities, updateShowDeletedEntities } =
     useProfile();
   const { t } = useTranslation();
   const [searchString, setSearchString] = useState<string>('');
   const { partiesWithNotificationSettings, uniqueEmailAddresses, uniquePhoneNumbers } =
-    usePartiesWithNotificationSettings(parties);
+    usePartiesWithNotificationSettings(partyGraph.parties);
   const { verifiedAddresses } = useVerifiedAddresses();
 
   const isVerifiedAddress = (value: string, type: 'Email' | 'Sms') =>
@@ -168,7 +168,7 @@ export const useSettings = ({
 
   const { accounts, accountGroups } = useAccounts({
     isLoading: isLoadingParties,
-    parties,
+    parties: partyGraph.parties,
     allOrganizationsSelected,
     selectedParties,
     options: {
