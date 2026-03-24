@@ -135,8 +135,10 @@ export const filterBookmarksBySearch = (
 export const getMostRecentSearchDate = (data: SavedSearchesFieldsFragment[]): Date | null => {
   try {
     if (!data?.length) return null;
-    const timestamp = data.reduce((latest, search) =>
-      Number.parseInt(search?.updatedAt!, 10) > Number.parseInt(latest?.updatedAt!, 10) ? search : latest,
+    const timestamp = data.reduce(
+      (latest, search) =>
+        Number.parseInt(search?.updatedAt ?? '0', 10) > Number.parseInt(latest?.updatedAt ?? '0', 10) ? search : latest,
+      data[0],
     ).updatedAt;
     return new Date(Number.parseInt(timestamp, 10));
   } catch (error) {

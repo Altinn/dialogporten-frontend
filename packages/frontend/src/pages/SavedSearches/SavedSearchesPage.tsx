@@ -18,7 +18,6 @@ export const SavedSearchesPage = () => {
     items,
     groups,
     description,
-    title,
     isLoading,
     onCloseSavedSearch,
     onSaveSearch,
@@ -27,6 +26,9 @@ export const SavedSearchesPage = () => {
   } = useSavedSearches(selectedPartyIds);
   const currentSearch = useMemo(() => items?.find((item) => item.id === openedSavedSearch), [items, openedSavedSearch]);
   const filteredItems = filterBookmarksBySearch(items ?? [], searchQuery);
+
+  //set groups priority (for sorting): personal=0, all-organizations=1 and the rest get 2
+  const groupOrder: Record<string, number> = { personal: 0, 'all-organizations': 1 };
 
   return (
     <PageBase>
@@ -41,8 +43,14 @@ export const SavedSearchesPage = () => {
           onClear: () => setSearchQuery(''),
         }}
       />
-      <Heading size="lg">{title}</Heading>
-      {filteredItems?.length > 0 && <BookmarkSettingsList items={filteredItems} groups={groups} loading={isLoading} />}
+      {filteredItems?.length > 0 && (
+        <BookmarkSettingsList
+          items={filteredItems}
+          groups={groups}
+          sortGroupBy={([a], [b]) => (groupOrder[a] ?? 2) - (groupOrder[b] ?? 2)}
+          loading={isLoading}
+        />
+      )}
       <Heading size="xs" weight="normal">
         {description}
       </Heading>
