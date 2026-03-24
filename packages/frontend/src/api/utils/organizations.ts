@@ -20,6 +20,11 @@ export const getOrganizationByLocale = (
   };
 };
 
+export const orgFragmentToOutput = (org: OrganizationFieldsFragment): OrganizationOutput => ({
+  name: org.name?.[i18n.language as keyof typeof org.name] || org.id || '',
+  logo: org.logo ?? '',
+});
+
 export const getOrganization = (
   organizations: OrganizationFieldsFragment[],
   org: string,

@@ -293,7 +293,9 @@ describe('useAccounts', () => {
       },
     );
 
-    const subPartyAccount = result.current.accounts.find((acc) => acc.id === 'urn:altinn:organization:identifier-sub:2');
+    const subPartyAccount = result.current.accounts.find(
+      (acc) => acc.id === 'urn:altinn:organization:identifier-sub:2',
+    );
     expect(subPartyAccount?.parentId).toBe('urn:altinn:organization:identifier-no:2');
     expect(subPartyAccount?.parentName).toBe('TESTBEDRIFT AS');
     expect(subPartyAccount?.isParent).toBe(false);

@@ -13,7 +13,7 @@ import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
 import { getIsUnread } from '../../pages/Inbox/status.ts';
 import { getActorProps } from '../hooks/useDialogById.tsx';
 import type { InboxViewType } from '../hooks/useDialogs.tsx';
-import { getOrganization } from './organizations.ts';
+import { type OrganizationOutput, getOrganization, orgFragmentToOutput } from './organizations.ts';
 import { getViewTypes } from './viewType.ts';
 
 interface SeenByItem {
@@ -44,8 +44,10 @@ const createPartyLookup = (parties: PartyFieldsFragment[]) => {
   return { currentEndUser, partyById, subPartyById };
 };
 
-const createOrganizationLookup = (organizations: OrganizationFieldsFragment[]) =>
-  new Map(organizations.map((organization) => [organization.id, organization] as const));
+const createOrganizationLookup = (
+  organizations: OrganizationFieldsFragment[],
+): Map<string | null | undefined, OrganizationOutput> =>
+  new Map((organizations ?? []).map((org) => [org.id, orgFragmentToOutput(org)] as const));
 
 export const getPartyIds = (partiesToUse: PartyFieldsFragment[], includeOnlySubPartiesWithSameName?: boolean) => {
   const partyURIs = partiesToUse.filter((party) => !party.hasOnlyAccessToSubParties).map((party) => party.party);

@@ -1,4 +1,9 @@
-import type { OrganizationFieldsFragment, PartyFieldsFragment, SearchDialogFieldsFragment } from 'bff-types-generated';
+import {
+  DialogStatus,
+  type OrganizationFieldsFragment,
+  type PartyFieldsFragment,
+  type SearchDialogFieldsFragment,
+} from 'bff-types-generated';
 import { describe, expect, it } from 'vitest';
 import { mapDialogToToInboxItems } from './dialog.ts';
 
@@ -50,7 +55,7 @@ const parties: PartyFieldsFragment[] = [
 const organizations: OrganizationFieldsFragment[] = [
   {
     id: 'ttd',
-    name: 'Test Organization',
+    name: { nb: 'Test Organization', en: 'Test Organization', nn: 'Test Organization' },
     logo: 'logo.png',
     orgnr: '123456789',
     homepage: 'https://example.test',
@@ -65,15 +70,15 @@ const dialogs: SearchDialogFieldsFragment[] = [
     org: 'ttd',
     hasUnopenedContent: false,
     guiAttachmentCount: 0,
-    status: 'Completed',
+    status: DialogStatus.Completed,
     createdAt: '2026-03-23T00:00:00.000Z',
     updatedAt: '2026-03-23T00:00:00.000Z',
     dueAt: null,
     contentUpdatedAt: '2026-03-23T00:00:00.000Z',
     fromServiceOwnerTransmissionsCount: 0,
     fromPartyTransmissionsCount: 0,
-    serviceResourceType: null,
-    serviceResource: null,
+    serviceResourceType: '',
+    serviceResource: '',
     seenSinceLastContentUpdate: [],
     endUserContext: {
       systemLabels: [],
