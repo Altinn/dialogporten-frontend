@@ -1,7 +1,7 @@
 import type { ActivityLogItemProps, AvatarProps, TransmissionProps } from '@altinn/altinn-components';
 import { ActivityType, type DialogActivityFragment, type TransmissionFieldsFragment } from 'bff-types-generated';
 import { t } from 'i18next';
-import { getPreferredPropertyByLocale } from '../../i18n/property.ts';
+import { type LocalizationObject, getPreferredPropertyByLocale } from '../../i18n/property.ts';
 import type { FormatFunction, Locale } from '../../i18n/useDateFnsLocale.tsx';
 import { getActorProps } from '../hooks/useDialogById.tsx';
 import type { ProfileType } from '../hooks/useParties.ts';
@@ -70,6 +70,8 @@ export const getDialogHistoryForActivities = (
   transmissions: TransmissionFieldsFragment[],
   stopReversingPersonNameOrder: boolean,
   serviceOwner?: OrganizationOutput,
+  senderName?: LocalizationObject[] | undefined,
+  serviceOwnerNbName?: string,
 ): ActivityLogItemProps[] => {
   return activities.map((activity) => {
     const clockPrefix = t('word.clock_prefix');
@@ -77,7 +79,13 @@ export const getDialogHistoryForActivities = (
     const description = getPreferredPropertyByLocale(activity.description)?.value;
     const relatedTransmission = transmissions.find((transmission) => transmission.id === activity.transmissionId);
     const transmissionTitle = getPreferredPropertyByLocale(relatedTransmission?.content.title.value)?.value;
-    const actorProps: AvatarProps = getActorProps(activity.performedBy, stopReversingPersonNameOrder, serviceOwner);
+    const actorProps: AvatarProps = getActorProps(
+      activity.performedBy,
+      stopReversingPersonNameOrder,
+      serviceOwner,
+      senderName,
+      serviceOwnerNbName,
+    );
     return {
       id: activity.id,
       summary: getActivityText(activity, actorProps, description, transmissionTitle),
@@ -111,6 +119,7 @@ export type ActivityLogEntry =
  * @param serviceOwner - Optional service owner organization details.
  * @param selectedProfile - Optional selected party profile.
  * @param stopReversingPersonNameOrder
+ * @param senderName
  * @param locale
  * @returns An array of activity and transmission log entries, sorted by date (descending).
  */
@@ -121,7 +130,9 @@ export const getActivityHistory = ({
   serviceOwner,
   selectedProfile,
   stopReversingPersonNameOrder,
+  senderName,
   locale,
+  serviceOwnerNbName,
 }: {
   activities: DialogActivityFragment[];
   transmissions: TransmissionFieldsFragment[];
@@ -129,7 +140,9 @@ export const getActivityHistory = ({
   stopReversingPersonNameOrder: boolean;
   serviceOwner?: OrganizationOutput;
   selectedProfile?: ProfileType;
+  senderName?: LocalizationObject[];
   locale: Locale;
+  serviceOwnerNbName?: string;
 }): ActivityLogEntry[] => {
   const dialogHistoryActivities: ActivityLogEntry[] = getDialogHistoryForActivities(
     activities,
@@ -137,6 +150,8 @@ export const getActivityHistory = ({
     transmissions,
     stopReversingPersonNameOrder,
     serviceOwner,
+    senderName,
+    serviceOwnerNbName,
   ).map((activity) => ({
     id: activity.id ?? '',
     type: 'activity',
@@ -152,6 +167,8 @@ export const getActivityHistory = ({
     serviceOwner,
     selectedProfile,
     locale,
+    senderName,
+    serviceOwnerNbName,
   }).map((transmission) => ({
     id: transmission.id ?? '',
     type: 'transmission',

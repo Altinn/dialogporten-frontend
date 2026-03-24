@@ -1,0 +1,59 @@
+# Sender Name and Service Owner Logo
+
+How Arbeidsflate resolves the display name and logo/avatar for senders across dialog list items, dialog details, transmissions, and activities.
+
+## Dialog level (list and detail views)
+
+| Field | Logic |
+|-------|-------|
+| **Name** | `dialog.content.senderName` → fallback to `serviceOwner.name` from the organization registry (in the user's selected locale) |
+| **Logo** | Shown only if `senderName` is empty OR matches `serviceOwner.name`. Both values are compared using the `nb` locale, trimmed, case-insensitive. When `senderName` differs (i.e. a proxy/custom sender), a first-letter avatar is shown instead. |
+| **Type** | Always `company`. At dialog level there is no `actorType`/`actorId` to determine the sender type, so `company` is a pragmatic default — even though `senderName` may in practice refer to a person (e.g. an employee name on a sick leave notice). |
+
+## Transmission and activity actors (`getActorProps`)
+
+### Actor type resolution
+
+Type is derived from `actorId` URN, not from `actorType` alone:
+
+| `actorId` pattern | Resolved type |
+|---|---|
+| `urn:altinn:systemuser:*` | `system` |
+| `urn:altinn:organization:*` or `actorType = ServiceOwner` | `company` |
+| Everything else | `person` |
+
+### Display name
+
+| Actor type | Name logic |
+|---|---|
+| **ServiceOwner** | `senderName` → fallback `serviceOwner.name`. `actorName`/`actorId` are not permitted when `actorType = ServiceOwner`. |
+| **Other types** | `actorName` (non-localized, e.g. legacy system user or org name that cannot be looked up). Falls back to empty string. |
+
+### Logo
+
+Only shown for `ServiceOwner` actors, using the same gate logic as dialog level:
+
+```
+shouldShowLogo = org.hasLogo && (senderName == null || senderName(nb) == serviceOwner.name(nb))
+```
+
+Background: `senderName` is not associated with a logo, so showing the service owner logo alongside a different sender name would be misleading.
+
+## Other actor types
+
+| Type | Avatar |
+|---|---|
+| Person (party name from registry) | Person icon, no logo |
+| System user | System icon, no logo |
+| Organization without logo in CDN | First-letter avatar, no logo |
+
+## Proxy limitation
+
+`senderName` is set at the dialog level and propagates to all transmissions and activities where `actorType = ServiceOwner`. It is not possible for a service owner (e.g. Skatteetaten) to act as proxy for multiple authorities with different sender names within the same dialog.
+
+## Key source files
+
+- `packages/frontend/src/api/utils/dialog.ts` — `getServiceOwnerLogo`, `mapDialogToToInboxItems`
+- `packages/frontend/src/api/hooks/useDialogById.tsx` — `getActorProps`
+- `packages/frontend/src/api/utils/transmissions.ts` — `createTransmissionItem`
+- `packages/frontend/src/api/utils/activities.tsx` — `createActivityItem`

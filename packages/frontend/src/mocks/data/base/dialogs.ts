@@ -459,7 +459,15 @@ export const dialogs: SearchDialogFieldsFragment[] = [
           },
         ],
       },
-      senderName: null,
+      senderName: {
+        "mediaType": "text/plain",
+        "value": [
+          {
+            "value": "Bilgjengen AS",
+            "languageCode": "nb"
+          }
+        ]
+      },
       extendedStatus: null,
     },
   },
@@ -473,7 +481,11 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     party: 'urn:altinn:person:identifier-no:1',
     org: 'svv',
     progress: null,
-    hasUnopenedContent: false, fromServiceOwnerTransmissionsCount: 0, fromPartyTransmissionsCount: 0, contentUpdatedAt: "2001-04-05T22:00:00.000Z", guiAttachmentCount: 0,
+    hasUnopenedContent: false,
+    fromServiceOwnerTransmissionsCount: 0,
+    fromPartyTransmissionsCount: 0,
+    contentUpdatedAt: "2001-04-05T22:00:00.000Z",
+    guiAttachmentCount: 0,
     status: DialogStatus.Draft,
     createdAt: '2001-04-05T22:00:00.000Z',
     seenSinceLastContentUpdate: [],
