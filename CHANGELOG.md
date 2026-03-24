@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.133.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.133.0...v1.133.1) (2026-03-24)
+
+
+### Bug Fixes
+
+* use senderName as display name for service owner actors and hide logo on mismatch ([#3895](https://github.com/Altinn/dialogporten-frontend/issues/3895)) ([4f0f66e](https://github.com/Altinn/dialogporten-frontend/commit/4f0f66e70a19b942409b9f2839e04d007b98da19))
+
 ## [1.133.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.132.3...v1.133.0) (2026-03-23)
 
 
