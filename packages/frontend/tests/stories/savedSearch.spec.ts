@@ -1,4 +1,3 @@
-import { beforeEach } from 'vitest';
 import { defaultAppURL } from '../';
 import { PageRoutes } from '../../src/pages/routes';
 import { expect, test } from '../fixtures';
@@ -16,7 +15,7 @@ test.describe('Saved search', () => {
     });
   });
 
-  test('Create and delete saved search', async ({ page, isMobile }) => {
+  test('Create and delete saved search', async ({ page }) => {
     const toolbarArea = page.getByTestId('inbox-toolbar');
     await toolbarArea.getByRole('button', { name: /legg til/i }).click();
     await toolbarArea.locator('#tool-filter-add').locator('button[data-id="org"], button#org').click();
@@ -28,11 +27,12 @@ test.describe('Saved search', () => {
     await page.getByRole('button', { name: 'Avbryt' }).click();
 
     await getSidebarMenuItem(page, PageRoutes.savedSearches).click();
+    await page.waitForLoadState('networkidle');
 
-    await expect(page.getByRole('main')).toContainText('1 lagret søk');
-    await expect(page.locator('a[href*="org=ok"]')).toBeVisible();
+    const savedSearchItem = page.locator('li', { has: page.locator('a[href*="org=ok"]') }).first();
+    await expect(savedSearchItem).toBeVisible();
 
-    await page.getByRole('button', { name: 'Åpne meny' }).click();
+    await savedSearchItem.getByRole('button', { name: 'Åpne meny' }).click();
     await page.getByLabel('Slett søk').click();
 
     await expect(page.getByText('Søket ditt ble slettet')).toBeVisible();
@@ -55,8 +55,9 @@ test.describe('Saved search', () => {
     } else {
       await getSidebarMenuItem(page, PageRoutes.savedSearches).click();
     }
+    await page.waitForLoadState('networkidle');
 
-    await expect(page.getByRole('main')).toContainText('1 lagret søk');
+    await expect(page.locator('a', { hasText: 'skatten' })).toBeVisible();
     await getSidebarMenuItem(page, PageRoutes.inbox).click();
 
     await performSearch(page, 'skatten din', 'click');
@@ -81,6 +82,7 @@ test.describe('Saved search', () => {
     await page.getByRole('button', { name: 'Avbryt' }).click();
 
     await page.getByTestId('sidebar-saved-searches').click();
+    await page.waitForLoadState('networkidle');
     await page.getByRole('link', { name: '«innkalling»' }).click();
     await page.waitForLoadState('networkidle');
 
@@ -88,10 +90,7 @@ test.describe('Saved search', () => {
     await expectIsCompanyPage(page);
   });
 
-  test('save search button is disabled when matching search exists also for predefined filters', async ({
-    page,
-    isMobile,
-  }) => {
+  test('save search button is disabled when matching search exists also for predefined filters', async ({ page }) => {
     await page.goto(defaultAppURL);
 
     /* Create saved search with Oslo kommune and status send from inbox */

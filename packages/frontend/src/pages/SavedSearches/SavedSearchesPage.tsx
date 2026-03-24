@@ -18,6 +18,7 @@ export const SavedSearchesPage = () => {
     items,
     groups,
     description,
+    title,
     isLoading,
     onCloseSavedSearch,
     onSaveSearch,
@@ -43,6 +44,7 @@ export const SavedSearchesPage = () => {
           onClear: () => setSearchQuery(''),
         }}
       />
+      {!isLoading && !items?.length && <Heading size="lg">{title}</Heading>}
       {filteredItems?.length > 0 && (
         <BookmarkSettingsList
           items={filteredItems}

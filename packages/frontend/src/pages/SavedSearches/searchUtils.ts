@@ -1,6 +1,11 @@
 import type { BookmarkSettingsItemProps, QueryItemProps } from '@altinn/altinn-components';
-import type { OrganizationFieldsFragment } from 'bff-types-generated';
-import { DialogStatus, type SavedSearchesFieldsFragment, type ServiceResource, SystemLabel } from 'bff-types-generated';
+import {
+  DialogStatus,
+  type OrganizationFieldsFragment,
+  type SavedSearchesFieldsFragment,
+  type ServiceResource,
+  SystemLabel,
+} from 'bff-types-generated';
 import type { Locale } from 'date-fns';
 import type { TFunction } from 'i18next';
 import { logError } from '../../analytics/errorLogger.ts';
