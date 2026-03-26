@@ -10,7 +10,7 @@ import { dialogs as mockedDialogs } from './data/base/dialogs.ts';
 import { parties as mockedParties } from './data/base/parties.ts';
 import { features as mockedFeatures } from "./data/base/features.ts";
 
-const findDataById = async <T>(url: string, type: 'profile' | 'parties' | 'dialogs' | 'features', defaultData: T): Promise<T> => {
+const findDataById = async <T>(url: string, type: 'profile' | 'parties' | 'dialogs' | 'features' | 'searches', defaultData: T): Promise<T> => {
   const urlParams = new URLSearchParams(url);
   const playwrightId = urlParams.get('playwrightId');
   try {
@@ -25,6 +25,7 @@ const findProfileById = (url: string) => findDataById<Profile>(url, 'profile', m
 const findFeaturesById = (url: string) => findDataById<Record<string, boolean>>(url, 'features', mockedFeatures);
 const findPartiesById = (url: string) => findDataById<PartyFieldsFragment[]>(url, 'parties', mockedParties);
 const findDialogsById = (url: string) => findDataById<SearchDialogFieldsFragment[]>(url, 'dialogs', mockedDialogs);
+const findSavedSearchesById = (url: string) => findDataById<SavedSearchesFieldsFragment[]>(url, 'searches', []);
 
 export const getMockedData = async (
   url: string,
@@ -41,8 +42,9 @@ export const getMockedData = async (
   const features = await findFeaturesById(url);
   const parties = await findPartiesById(url);
   const dialogs = await findDialogsById(url);
+  const savedSearches = await findSavedSearchesById(url);
   const { organizations } = await import('./data/base/organizations.ts');
   const { services } = await import('./data/base/services.ts');
 
-  return { profile, dialogs, parties, savedSearches: [], organizations, features, services };
+  return { profile, dialogs, parties, savedSearches, organizations, features, services };
 };

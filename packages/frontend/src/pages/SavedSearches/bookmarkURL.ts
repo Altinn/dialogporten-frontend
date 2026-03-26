@@ -3,7 +3,8 @@ import { type SavedSearchesFieldsFragment, SystemLabel } from 'bff-types-generat
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { FilterCategory, aggregateFilterState } from '../Inbox/filters';
 import { PageRoutes } from '../routes.ts';
-import { convertFiltersToFilterState, fromPathToViewType } from './useSavedSearches.tsx';
+import { fromPathToViewType } from './searchUtils.ts';
+import { convertFiltersToFilterState } from './useSavedSearches.tsx';
 
 /**
  * Builds a URL from the current search state

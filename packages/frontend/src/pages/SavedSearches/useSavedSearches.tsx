@@ -1,20 +1,17 @@
 import {
+  type BookmarkSettingsGroupProps,
   type BookmarkSettingsItemProps,
   type BookmarkSettingsListProps,
   type FilterState,
-  type QueryItemType,
   useSnackbar,
 } from '@altinn/altinn-components';
-import type { QueryItemProps } from '@altinn/altinn-components';
 import { MagnifyingGlassIcon, PencilIcon, TrashIcon } from '@navikt/aksel-icons';
 import { useQueryClient } from '@tanstack/react-query';
-import {
-  DialogStatus,
-  type SavedSearchData,
-  type SavedSearchesFieldsFragment,
-  type SavedSearchesQuery,
-  type SearchDataValueFilter,
-  SystemLabel,
+import type {
+  SavedSearchData,
+  SavedSearchesFieldsFragment,
+  SavedSearchesQuery,
+  SearchDataValueFilter,
 } from 'bff-types-generated';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -22,19 +19,22 @@ import { Link, type LinkProps, useNavigate } from 'react-router-dom';
 import { Analytics } from '../../analytics/analytics.ts';
 import { ANALYTICS_EVENTS } from '../../analytics/analyticsEvents.ts';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
+import { useParties } from '../../api/hooks/useParties.ts';
 import { useServiceResource } from '../../api/hooks/useServiceResource.ts';
 import { createSavedSearch, deleteSavedSearch, fetchSavedSearches, updateSavedSearch } from '../../api/queries.ts';
-import { getOrganization } from '../../api/utils/organizations.ts';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { useDateFnsLocale, useFormatDistance } from '../../i18n/useDateFnsLocale.tsx';
-import { DateFilterOption, formatSingleDate } from '../Inbox/filters';
-import { decodeSubAccountIds } from '../Inbox/queryParams.ts';
 import { useOrganizations } from '../Inbox/useOrganizations.ts';
 import { PageRoutes } from '../routes.ts';
 import { buildCurrentStateURL, buildSavedSearchURL } from './bookmarkURL.ts';
-import { autoFormatRelativeTime, getMostRecentSearchDate } from './searchUtils.ts';
+import {
+  autoFormatRelativeTime,
+  buildFilterParams,
+  fromPathToViewType,
+  getMostRecentSearchDate,
+} from './searchUtils.ts';
 
 interface UseSavedSearchesOutput {
   savedSearches: SavedSearchesFieldsFragment[];
@@ -46,6 +46,7 @@ interface UseSavedSearchesOutput {
   onDeleteSavedSearch: (id: string) => Promise<void>;
   title: string;
   items: BookmarkSettingsListProps['items'];
+  groups: BookmarkSettingsListProps['groups'];
   description?: string;
   openedSavedSearch?: string | null;
   onCloseSavedSearch: () => void;
@@ -63,27 +64,6 @@ const randomString = () => {
   return Math.random()
     .toString(36)
     .slice(2, 2 + Math.floor(Math.random() * 11));
-};
-
-const isPlaceholderValue = (value: string | undefined | null) => {
-  if (value) {
-    const values = [
-      ...Object.values(DateFilterOption),
-      ...Object.values(DialogStatus),
-      ...Object.values(SystemLabel),
-    ] as string[];
-    return value.toUpperCase() === value && values.includes(value);
-  }
-  return false;
-};
-
-export const fromPathToViewType = (path: string | null | undefined): InboxViewType | undefined => {
-  if (!path) {
-    return undefined;
-  }
-
-  const entry = Object.entries(PageRoutes).find(([, route]) => route === path);
-  return entry ? (entry[0] as InboxViewType) : 'inbox';
 };
 
 export const convertFilterStateToFilters = (filters: FilterState): SearchDataValueFilter[] => {
@@ -148,6 +128,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
   const [openedSavedSearch, setOpenedSavedSearch] = useState<string | null>(null);
   const { organizations } = useOrganizations();
   const { serviceResources } = useServiceResource();
+  const { parties, currentEndUser } = useParties();
   const { locale } = useDateFnsLocale();
   const navigate = useNavigate();
 
@@ -275,6 +256,26 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
     }
   };
 
+  const getSavedSearchGroupId = (savedSearch: SavedSearchesFieldsFragment): string => {
+    const urn = savedSearch.data?.urn;
+    if (!urn?.length) return 'personal';
+    if (urn.length === 1 && urn[0] === currentEndUser?.party) return 'personal';
+    if (urn.length === 1) return urn[0]!;
+    return 'all-organizations';
+  };
+
+  const groups: Record<string, BookmarkSettingsGroupProps> = {
+    personal: { title: t('savedSearches.groups.personal') },
+    'all-organizations': { title: t('savedSearches.groups.all_organizations') },
+  };
+
+  for (const savedSearch of endUsersSavedSearches) {
+    const groupId = getSavedSearchGroupId(savedSearch);
+    if (groupId !== 'personal' && groupId !== 'all-organizations' && !groups[groupId]) {
+      groups[groupId] = { title: parties.find((p) => p.party === groupId)?.name ?? groupId };
+    }
+  }
+
   if (isLoading) {
     const items = Array.from({ length: 3 }, (_, i) => ({
       id: 'loading-' + i.toString(),
@@ -283,6 +284,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
     return {
       title: t('savedSearches.loading_saved_searches'),
       items,
+      groups,
       isLoading: true,
       savedSearches: endUsersSavedSearches,
       isSuccess,
@@ -294,12 +296,13 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
     };
   }
 
-  if (isSuccess && !currentPartySavedSearches?.length) {
+  if (isSuccess && !endUsersSavedSearches?.length) {
     return {
       isLoading: false,
       title: t('savedSearches.no_saved_searches'),
       description: t('savedSearches.noSearchesFound'),
       items: [],
+      groups,
       savedSearches: endUsersSavedSearches,
       isSuccess,
       currentPartySavedSearches,
@@ -310,80 +313,19 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
     };
   }
 
-  const items: BookmarkSettingsItemProps[] = currentPartySavedSearches.map((savedSearch) => {
+  const sortedSearches = [...endUsersSavedSearches].sort(
+    (a, b) => Number.parseInt(b.updatedAt ?? '0', 10) - Number.parseInt(a.updatedAt ?? '0', 10),
+  );
+
+  const items: BookmarkSettingsItemProps[] = sortedSearches.map((savedSearch) => {
     const bookmarkLink = buildSavedSearchURL(savedSearch);
     const searchId = savedSearch.id.toString();
-    const hiddenFilters = ['fromAndToDate'];
-
-    const params: QueryItemProps[] = (savedSearch.data?.filters ?? [])
-      .filter((filter) => filter?.value && !hiddenFilters.includes(filter.value))
-      .map((filter) => {
-        if (filter?.id === 'subAccounts') {
-          const subAccountIds = decodeSubAccountIds(filter?.value);
-          if (subAccountIds)
-            return {
-              id: 'subAccounts',
-              type: 'filter' as QueryItemType,
-              label: t('parties.labels.units_count', { count: subAccountIds.length }),
-            };
-        }
-
-        if (filter?.id === 'org') {
-          const org = getOrganization(organizations, filter.value ?? '')?.name || filter.value;
-          return {
-            id: org,
-            type: 'filter' as QueryItemType,
-            label: org ?? '',
-          };
-        }
-
-        if (filter?.id === 'service') {
-          const service = serviceResources.find((sr) => sr.id === filter.value);
-          return {
-            id: 'serivce' + service?.id,
-            type: 'filter' as QueryItemType,
-            label: service?.title ?? '',
-          };
-        }
-
-        if (filter?.id === 'fromDate' && filter?.value) {
-          return {
-            id: 'filter-from',
-            type: 'filter' as QueryItemType,
-            label: t('filter.query.fromDate', { date: formatSingleDate(filter.value, locale) }),
-          };
-        }
-
-        if (filter?.id === 'toDate' && filter?.value) {
-          return {
-            id: 'filter-to',
-            type: 'filter' as QueryItemType,
-            label: t('filter.query.toDate', { date: formatSingleDate(filter.value, locale) }),
-          };
-        }
-
-        return {
-          id: 'filter-' + filter?.value,
-          type: 'filter' as QueryItemType,
-          label: isPlaceholderValue(filter?.value)
-            ? t(`filter.query.${(filter?.value ?? '').toLowerCase()}`)
-            : (filter?.value ?? ''),
-        };
-      });
-
-    if (savedSearch.data?.fromView) {
-      const viewType = fromPathToViewType(savedSearch.data.fromView);
-      if (viewType !== 'inbox') {
-        params.push({ type: 'filter', label: t(`filter.query.${(viewType as string).toLowerCase()}`) });
-      }
-    }
-
-    if (savedSearch.data?.searchString) {
-      params.push({ type: 'search', label: savedSearch.data.searchString });
-    }
+    const groupId = getSavedSearchGroupId(savedSearch);
+    const params = buildFilterParams(savedSearch, { organizations, serviceResources, locale, t });
 
     return {
       id: searchId,
+      groupId,
       title: savedSearch.name || '',
       'aria-label': !savedSearch.name && t('filter_bar.saved_search'),
       as: (props: LinkProps) => <Link {...props} to={bookmarkLink} />,
@@ -432,7 +374,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
   });
 
   return {
-    title: t('savedSearches.title', { count: currentPartySavedSearches?.length }),
+    title: t('savedSearches.title', { count: endUsersSavedSearches?.length }),
     description: lastUpdated
       ? `${t('savedSearches.lastUpdated')}${autoFormatRelativeTime(lastUpdated, formatDistance)}`
       : '',
@@ -444,6 +386,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
     saveSearch,
     onDeleteSavedSearch: onDeleteSavedSearch,
     items,
+    groups,
     onCloseSavedSearch: () => setOpenedSavedSearch(null),
     openedSavedSearch,
     onSaveSearch: handleSaveTitle,

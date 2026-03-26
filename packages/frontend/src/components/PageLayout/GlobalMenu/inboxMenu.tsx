@@ -69,6 +69,17 @@ export function buildInboxMenu({
 
   const shortcuts: MenuItemProps[] = [
     {
+      id: 'saved-searches',
+      'data-testid': 'sidebar-saved-searches',
+      groupId: 'shortcuts',
+      icon: BookmarkIcon,
+      title: t('sidebar.saved_searches'),
+      selected: isRouteSelected(pathname, PageRoutes.savedSearches, fromView),
+      as: createMenuItemComponent({
+        to: PageRoutes.savedSearches + pruneSearchQueryParams(currentSearchQuery),
+      }),
+    },
+    {
       id: 'beta-exit',
       'data-testid': 'sidebar-exit',
       groupId: 'shortcuts',
@@ -164,18 +175,6 @@ export function buildInboxMenu({
           selected: isRouteSelected(pathname, PageRoutes.sent, fromView),
           as: createMenuItemComponent({
             to: PageRoutes.sent + pruneSearchQueryParams(currentSearchQuery),
-          }),
-        },
-        {
-          id: '4',
-          size: 'md',
-          'data-testid': 'sidebar-saved-searches',
-          groupId: '3',
-          icon: BookmarkIcon,
-          title: t('sidebar.saved_searches'),
-          selected: isRouteSelected(pathname, PageRoutes.savedSearches, fromView),
-          as: createMenuItemComponent({
-            to: PageRoutes.savedSearches + pruneSearchQueryParams(currentSearchQuery),
           }),
         },
         {

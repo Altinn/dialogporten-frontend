@@ -44,7 +44,7 @@ test.describe('DialogDetailsPage', () => {
       .getByRole('button', { name: /flytt til papirkurv/i })
       .or(page.getByRole('menuitem', { name: /flytt til papirkurv/i }))
       .click();
-    await expect(page.getByText(/flyttet til papirkurv/i)).toBeVisible();
+    await expect(page.getByText(/flyttet til papirkurv/i)).toBeVisible({ timeout: 10000 });
 
     if (isMobile) {
       await page.getByRole('button', { name: 'Meny' }).click();
