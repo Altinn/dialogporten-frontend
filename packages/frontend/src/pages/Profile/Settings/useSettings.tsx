@@ -404,38 +404,40 @@ export const useSettings = ({
     },
   ];
 
-  const otherSettings: SettingsItemProps[] = [
-    {
-      id: 'other-settings-deleted-units',
-      checked: shouldShowDeletedEntities ?? false,
-      value: 'shouldShowDeletedEntities',
-      onChange: (event: ChangeEvent<HTMLInputElement>) => {
-        void updateShowDeletedEntities(event.target.checked);
-      },
-      groupId: SettingsType.other,
-      variant: 'switch',
-      description: shouldShowDeletedEntities
-        ? t('profile.settings.show_deleted_units.enabled')
-        : t('profile.settings.show_deleted_units.disabled'),
-      icon: TrashIcon,
-      title: t('profile.settings.show_deleted_units.title'),
-    },
-    {
-      id: 'other-settings-show-client-units',
-      value: 'showClientUnits',
-      onChange: (event: ChangeEvent<HTMLInputElement>) => {
-        void setShowClientUnits(event.target.checked);
-      },
-      checked: showClientUnits ?? false,
-      groupId: SettingsType.other,
-      variant: 'switch',
-      description: showClientUnits
-        ? t('profile.settings.show_client_units.enabled')
-        : t('profile.settings.show_client_units.disabled'),
-      title: t('profile.settings.show_client_units.title'),
-      icon: BriefcaseIcon,
-    },
-  ];
+  const otherSettings: SettingsItemProps[] = isSelfIdentifiedUser
+    ? []
+    : [
+        {
+          id: 'other-settings-deleted-units',
+          checked: shouldShowDeletedEntities ?? false,
+          value: 'shouldShowDeletedEntities',
+          onChange: (event: ChangeEvent<HTMLInputElement>) => {
+            void updateShowDeletedEntities(event.target.checked);
+          },
+          groupId: SettingsType.other,
+          variant: 'switch',
+          description: shouldShowDeletedEntities
+            ? t('profile.settings.show_deleted_units.enabled')
+            : t('profile.settings.show_deleted_units.disabled'),
+          icon: TrashIcon,
+          title: t('profile.settings.show_deleted_units.title'),
+        },
+        {
+          id: 'other-settings-show-client-units',
+          value: 'showClientUnits',
+          onChange: (event: ChangeEvent<HTMLInputElement>) => {
+            void setShowClientUnits(event.target.checked);
+          },
+          checked: showClientUnits ?? false,
+          groupId: SettingsType.other,
+          variant: 'switch',
+          description: showClientUnits
+            ? t('profile.settings.show_client_units.enabled')
+            : t('profile.settings.show_client_units.disabled'),
+          title: t('profile.settings.show_client_units.title'),
+          icon: BriefcaseIcon,
+        },
+      ];
 
   const allSettings = [
     ...contactSettings,
