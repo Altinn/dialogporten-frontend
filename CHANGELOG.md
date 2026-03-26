@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.134.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.133.1...v1.134.0) (2026-03-26)
+
+
+### Features
+
+* Redesign saved searches page, move saved search button in sidebar ([#3906](https://github.com/Altinn/dialogporten-frontend/issues/3906)) ([a24c132](https://github.com/Altinn/dialogporten-frontend/commit/a24c1325bf1c4d209ac98bf4412fdbc45ee95243))
+
+
+### Bug Fixes
+
+* improvements to ui performance ([#3919](https://github.com/Altinn/dialogporten-frontend/issues/3919)) ([7d7c448](https://github.com/Altinn/dialogporten-frontend/commit/7d7c448136f68a4cbe1e9a522db34d270d616ae5))
+* Profile SI users - hide other settings ([#3918](https://github.com/Altinn/dialogporten-frontend/issues/3918)) ([c8408fe](https://github.com/Altinn/dialogporten-frontend/commit/c8408fe1899161340dd4c1f8d690a21cc4b1328c))
+* **texts:** update share and delage button label text ([#3914](https://github.com/Altinn/dialogporten-frontend/issues/3914)) ([c1a1550](https://github.com/Altinn/dialogporten-frontend/commit/c1a15501e9c22af6a6ebf690fbbc75a16f0b12bc))
+
 ## [1.133.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.133.0...v1.133.1) (2026-03-24)
 
 
