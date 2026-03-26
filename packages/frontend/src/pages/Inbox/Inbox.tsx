@@ -304,6 +304,40 @@ export const Inbox = ({ viewType }: InboxProps) => {
     return isLimitReached ? [] : groupedDialogs;
   }, [groupedDialogs, isLimitReached]);
 
+  const dialogListGroups = useMemo(() => {
+    const firstKey = Object.keys(groups)[0];
+    if (!firstKey) return groups;
+    return {
+      ...groups,
+      [firstKey]: {
+        title: (
+          <span className={styles.searchButtonWrapper}>
+            {groups[firstKey]?.title}
+            <span style={{ margin: '-0.5rem 0' }}>
+              <SaveSearchButton
+                viewType={viewType}
+                disabled={savedSearchDisabled}
+                filterState={savedSearchFilterState}
+                onSaveSuccess={onSaveSuccess}
+              />
+            </span>
+          </span>
+        ),
+      },
+    };
+  }, [groups, viewType, savedSearchDisabled, savedSearchFilterState, onSaveSuccess]);
+
+  const sortGroupBy = useCallback(
+    ([aKey]: [string, unknown], [bKey]: [string, unknown]) =>
+      (groups[bKey]?.orderIndex ?? 0) - (groups[aKey]?.orderIndex ?? 0),
+    [groups],
+  );
+
+  const highlightWords = useMemo(
+    () => (searchMode ? [enteredSearchValue] : undefined),
+    [searchMode, enteredSearchValue],
+  );
+
   if (unableToLoadParties) {
     return (
       <PageBase>
@@ -400,27 +434,10 @@ export const Inbox = ({ viewType }: InboxProps) => {
       <>
         <DialogList
           items={dialogItems}
-          groups={{
-            ...groups,
-            [Object.keys(groups)[0]]: {
-              title: (
-                <span className={styles.searchButtonWrapper}>
-                  {Object.values(groups)[0]?.title}
-                  <span style={{ margin: '-0.5rem 0' }}>
-                    <SaveSearchButton
-                      viewType={viewType}
-                      disabled={savedSearchDisabled}
-                      filterState={savedSearchFilterState}
-                      onSaveSuccess={onSaveSuccess}
-                    />
-                  </span>
-                </span>
-              ),
-            },
-          }}
-          sortGroupBy={([aKey], [bKey]) => (groups[bKey]?.orderIndex ?? 0) - (groups[aKey]?.orderIndex ?? 0)}
+          groups={dialogListGroups}
+          sortGroupBy={sortGroupBy}
           isLoading={isLoading}
-          highlightWords={searchMode ? [enteredSearchValue] : undefined}
+          highlightWords={highlightWords}
         />
         {hasNextPage && (
           <Button aria-label={t('dialog.aria.fetch_more')} onClick={fetchNextPage} variant="outline" size="lg">

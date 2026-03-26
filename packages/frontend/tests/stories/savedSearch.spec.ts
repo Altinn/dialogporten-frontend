@@ -83,7 +83,7 @@ test.describe('Saved search', () => {
 
     await page.getByTestId('sidebar-saved-searches').click();
     await page.waitForLoadState('networkidle');
-    await page.getByRole('link', { name: '«innkalling»' }).click();
+    await page.getByRole('link', { name: '« innkalling »' }).click();
     await page.waitForLoadState('networkidle');
 
     await expect(page.getByRole('link', { name: 'Innkalling til sesjon' })).toBeVisible({ timeout: 10000 });

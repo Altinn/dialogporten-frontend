@@ -1,6 +1,6 @@
 import {ServiceResource} from "bff-types-generated";
 
-export const services: ServiceResource[] = [
+export const baseServices: ServiceResource[] = [
   {
     "id": "app_nav_barnehagelister",
     "title": "Barnehagelister",
@@ -1207,3 +1207,24 @@ export const services: ServiceResource[] = [
     "org": "hdir"
   }
 ]
+
+const generateServices = (): ServiceResource[] => {
+  const targetCount = 600;
+  const result = [...baseServices];
+  let index = 0;
+
+  while (result.length < targetCount) {
+    const base = baseServices[index % baseServices.length];
+    const variant = Math.floor(index / baseServices.length) + 1;
+    result.push({
+      id: `${base.id}-v${variant}`,
+      title: `${base.title} (${variant})`,
+      org: base.org,
+    });
+    index++;
+  }
+
+  return result;
+};
+
+export const services = generateServices();
