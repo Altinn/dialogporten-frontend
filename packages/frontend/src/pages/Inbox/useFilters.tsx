@@ -1,5 +1,5 @@
 import type { FilterProps, FilterState } from '@altinn/altinn-components';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
@@ -75,58 +75,57 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
     [dialogsForRecommendations, organizations, viewType, enableServiceFilter, serviceFilter],
   );
 
-  const getFilterLabel = (
-    name: string,
-    value: (string | number)[] | undefined,
-    filterState?: FilterState,
-  ): string | undefined => {
-    const filter = filters.find((f) => f.name === name);
+  const getFilterLabel = useCallback(
+    (name: string, value: (string | number)[] | undefined, filterState?: FilterState): string | undefined => {
+      const filter = filters.find((f) => f.name === name);
 
-    if (filter && !value?.length) {
-      if (typeof filter.title === 'string' || typeof filter.label === 'string') {
-        return filter.title;
-      }
-    }
-
-    if (!filter || !value?.length) {
-      return undefined;
-    }
-
-    if (name === FilterCategory.STATUS) {
-      if (value?.length > 2) {
-        return t('inbox.filter.multiple.status', { count: value?.length });
-      }
-      return value.map((v) => t(`status.${v.toString().toLowerCase()}`)).join(', ');
-    }
-
-    if (name === FilterCategory.UPDATED) {
-      if (value[0] === 'fromAndToDate') {
-        const dateDate = formatDateRange(filterState?.fromDate?.[0], filterState?.toDate?.[0], locale);
-        if (dateDate) {
-          return dateDate;
+      if (filter && !value?.length) {
+        if (typeof filter.title === 'string' || typeof filter.label === 'string') {
+          return filter.title;
         }
       }
 
-      return value.map((v) => t(`filter.date.${v.toString().toLowerCase()}`)).join(', ');
-    }
-
-    if (name === FilterCategory.ORG) {
-      if (value?.length === 1) {
-        const serviceOwner = getOrganization(organizations, String(value[0]));
-        return serviceOwner?.name || '';
+      if (!filter || !value?.length) {
+        return undefined;
       }
-      return t('inbox.filter.multiple.sender', { count: value?.length });
-    }
 
-    if (name === FilterCategory.SERVICE) {
-      if (value?.length === 1) {
-        return t('inbox.filter.single.service');
+      if (name === FilterCategory.STATUS) {
+        if (value?.length > 2) {
+          return t('inbox.filter.multiple.status', { count: value?.length });
+        }
+        return value.map((v) => t(`status.${v.toString().toLowerCase()}`)).join(', ');
       }
-      return t('inbox.filter.multiple.service', { count: value?.length });
-    }
 
-    return undefined;
-  };
+      if (name === FilterCategory.UPDATED) {
+        if (value[0] === 'fromAndToDate') {
+          const dateDate = formatDateRange(filterState?.fromDate?.[0], filterState?.toDate?.[0], locale);
+          if (dateDate) {
+            return dateDate;
+          }
+        }
+
+        return value.map((v) => t(`filter.date.${v.toString().toLowerCase()}`)).join(', ');
+      }
+
+      if (name === FilterCategory.ORG) {
+        if (value?.length === 1) {
+          const serviceOwner = getOrganization(organizations, String(value[0]));
+          return serviceOwner?.name || '';
+        }
+        return t('inbox.filter.multiple.sender', { count: value?.length });
+      }
+
+      if (name === FilterCategory.SERVICE) {
+        if (value?.length === 1) {
+          return t('inbox.filter.single.service');
+        }
+        return t('inbox.filter.multiple.service', { count: value?.length });
+      }
+
+      return undefined;
+    },
+    [filters, t, organizations, locale],
+  );
 
   return { filters, getFilterLabel };
 };
