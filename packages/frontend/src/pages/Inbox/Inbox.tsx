@@ -206,10 +206,12 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const searchMode = hasValidFilters(filterState) || !!validSearchString;
   const showSubAccountsMenu = isSubAccountsMenuEnabled && subAccounts.length > 0;
   const isSubPartiesLimitReached =
-    isSubAccountsMenuEnabled && ((subAccounts.length > 20 && !partyIdsOverride.length) || partyIdsOverride.length > 20);
+    isSubAccountsMenuEnabled &&
+    ((subAccounts.length > MAX_DIALOG_PARTY_SIZE && !partyIdsOverride.length) ||
+      partyIdsOverride.length > MAX_DIALOG_PARTY_SIZE);
   const subAccountsCount = Math.max(subAccounts.length - 1, 0);
   const hasSubAccountOverrideWithinLimit =
-    isSubAccountsMenuEnabled && !!partyIdsOverride?.length && partyIdsOverride.length <= 20;
+    isSubAccountsMenuEnabled && !!partyIdsOverride?.length && partyIdsOverride.length <= MAX_DIALOG_PARTY_SIZE;
   const shouldShowSubAccountsNudge = isSubAccountsMenuEnabled && (!partyIdsOverride || partyIdsOverride.length === 0);
   const organizationLimitApplies = organizationLimitReached && !hasSubAccountOverrideWithinLimit;
 

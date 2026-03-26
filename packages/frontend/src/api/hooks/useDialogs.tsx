@@ -206,7 +206,10 @@ export const useDialogs = ({
     fetchNextPage,
     dialogs,
     dialogCountInconclusive,
-    hasNextPage: data?.pages?.[data?.pages.length - 1]?.searchDialogs?.hasNextPage ?? false,
+    hasNextPage:
+      partyIds.length >= MAX_DIALOG_PARTY_SIZE
+        ? false
+        : (data?.pages?.[data?.pages.length - 1]?.searchDialogs?.hasNextPage ?? false),
     isFetchingNextPage,
   };
 };
