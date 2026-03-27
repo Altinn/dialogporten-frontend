@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.134.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.134.0...v1.134.1) (2026-03-27)
+
+
+### Bug Fixes
+
+* use MAX_DIALOG_PARTY_SIZE consistently for sub-accounts limit checks ([#3920](https://github.com/Altinn/dialogporten-frontend/issues/3920)) ([d1465f4](https://github.com/Altinn/dialogporten-frontend/commit/d1465f49803e43d440efae5bc69b71253ca90839))
+
 ## [1.134.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.133.1...v1.134.0) (2026-03-26)
 
 
