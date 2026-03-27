@@ -239,10 +239,10 @@ export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetails
   const needsVerification = hasUnverifiedEmail || hasUnverifiedSms;
 
   const hideSingleServiceNotificationOption =
-    (enablePhoneNotifications || enableEmailNotifications) &&
     isCompany &&
     !needsVerification &&
-    enableSingleServiceNotifications;
+    enableSingleServiceNotifications &&
+    ((enableEmailNotifications && isEmailVerified) || (enablePhoneNotifications && isPhoneVerified));
 
   if (verificationState) {
     const isEmail = verificationState.step === 'awaiting_email_code';
@@ -361,14 +361,14 @@ export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetails
           <Typography size="sm">
             {isAnotherPerson && <p>{t('profile.notifications.personal_for_person')}</p>}
             {needsVerification && <p>{t('profile.account_alerts.new_addresses_must_verify')}</p>}
-            {hideSingleServiceNotificationOption && (
-              <p>
-                {t('profile.notifications.personal_explanation')}{' '}
+            <p>
+              {t('profile.notifications.personal_explanation')}{' '}
+              {hideSingleServiceNotificationOption && (
                 <button type="button" className={styles.linkButton} onClick={() => setIsServiceModalOpen(true)}>
                   {t('profile.account_alerts.single_service_notifications')}
                 </button>
-              </p>
-            )}
+              )}
+            </p>
           </Typography>
 
           <ButtonGroup>
