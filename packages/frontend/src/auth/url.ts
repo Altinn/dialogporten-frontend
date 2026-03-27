@@ -207,6 +207,18 @@ export const getNotificationSettingsLink = (language?: string) => {
   );
 };
 
+export const getAlternativeLoginLink = (currentPartyUuid?: string, language?: string) => {
+  return createInfoPortalLink(
+    {
+      nb: '/hjelp/innlogging/logg-inn-uten-f-d-nr/',
+      en: '/nn/hjelp/innlogging/alternativ-innlogging-i-altinn/',
+      nn: '/en/help/logging-in/altinn-alternative-log-in-methods/',
+    },
+    currentPartyUuid,
+    language,
+  );
+};
+
 export const getStartNewBusinessLink = (currentPartyUuid?: string, language?: string) => {
   return createInfoPortalLink(
     {
