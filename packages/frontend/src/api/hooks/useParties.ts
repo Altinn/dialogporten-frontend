@@ -16,6 +16,7 @@ import { normalizeFlattenParties } from '../utils/normalizeFlattenParties.ts';
 import { MAX_DIALOG_PARTY_SIZE } from './useDialogs.tsx';
 
 export type ProfileType = 'company' | 'person' | 'neutral';
+export type SelfIdentifiedUserType = 'None' | 'Email' | 'Legacy';
 
 interface UsePartiesOutput {
   parties: PartyFieldsFragment[];
@@ -33,6 +34,7 @@ interface UsePartiesOutput {
   flattenedParties: FlattenedParty[];
   currentPartyUuid: string | undefined;
   isSelfIdentifiedUser: boolean;
+  selfIdentifiedUserType: SelfIdentifiedUserType;
   organizationLimitReached: boolean;
 }
 
@@ -240,6 +242,15 @@ export const useParties = (): UsePartiesOutput => {
     return allOrganizationsSelected ? currentEndUser?.partyUuid : selectedParties[0]?.partyUuid;
   }, [selectedParties, currentEndUser, allOrganizationsSelected]);
 
+  const selfIdentifiedUserType: SelfIdentifiedUserType = useMemo(() => {
+    if (!currentEndUser || currentEndUser.partyType !== 'SelfIdentified') return 'None';
+
+    if (currentEndUser.party.includes('urn:altinn:person:idporten-email:')) return 'Email';
+    if (currentEndUser.party.includes('urn:altinn:person:legacy-selfidentified:')) return 'Legacy';
+
+    return 'None';
+  }, [currentEndUser]);
+
   return {
     isLoading,
     isSuccess,
@@ -257,5 +268,6 @@ export const useParties = (): UsePartiesOutput => {
     currentPartyUuid,
     isSelfIdentifiedUser,
     organizationLimitReached: selectedParties.length > MAX_DIALOG_PARTY_SIZE,
+    selfIdentifiedUserType,
   };
 };
