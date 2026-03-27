@@ -17,6 +17,9 @@ param sshPublicKey string
 @description('The object ID of the group to assign the Admin Login role for SSH Jumper')
 param adminLoginGroupObjectId string
 
+@description('The VM size for the SSH Jumper virtual machine')
+param vmSize string = 'Standard_B1s'
+
 var name = '${namePrefix}-ssh-jumper'
 
 resource publicIp 'Microsoft.Network/publicIPAddresses@2023-11-01' = {
@@ -85,7 +88,7 @@ module virtualMachine '../../modules/virtualMachine/main.bicep' = {
     adminLoginGroupObjectId: adminLoginGroupObjectId
     enableJit: true
     hardwareProfile: {
-      vmSize: 'Standard_B1s'
+      vmSize: vmSize
     }
     additionalCapabilities: {
       hibernationEnabled: false
