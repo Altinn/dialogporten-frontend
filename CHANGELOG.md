@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.134.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.134.2...v1.134.3) (2026-03-27)
+
+
+### Bug Fixes
+
+* Hide single services option if addresses are switched off ([#3929](https://github.com/Altinn/dialogporten-frontend/issues/3929)) ([9297a8b](https://github.com/Altinn/dialogporten-frontend/commit/9297a8bc252118c075e0b454a302be2c6f568b7c))
+
 ## [1.134.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.134.1...v1.134.2) (2026-03-27)
 
 
