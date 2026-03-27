@@ -160,13 +160,11 @@ export const useParties = (): UsePartiesOutput => {
     } else {
       const partyFromQuery = getSelectedPartyFromQueryParams(searchParams);
       const partyFromCookie = cookiePartyUuid ? data?.find((party) => party.partyUuid === cookiePartyUuid) : undefined;
+      // URL takes highest precedence
+      const orgFromURL = getPartyFromURL();
 
-      if (partyFromQuery) {
-        // URL takes highest precedence
-        const orgFromURL = getPartyFromURL();
-        if (orgFromURL) {
-          setSelectedPartyIds([orgFromURL.party], false);
-        }
+      if (partyFromQuery && orgFromURL) {
+        setSelectedPartyIds([orgFromURL.party], false);
       } else if (partyFromCookie) {
         // Cookie takes precedence over default
         setSelectedPartyIds([partyFromCookie.party], false);
