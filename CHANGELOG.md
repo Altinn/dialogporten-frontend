@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.134.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.134.1...v1.134.2) (2026-03-27)
+
+
+### Bug Fixes
+
+* exclude browser extension DOM manipulation errors from analytics ([#3925](https://github.com/Altinn/dialogporten-frontend/issues/3925)) ([4d8b122](https://github.com/Altinn/dialogporten-frontend/commit/4d8b1228fa03f62ef2f2707386a861edb45e7536))
+* place save search button fixe in toolbar ([#3927](https://github.com/Altinn/dialogporten-frontend/issues/3927)) ([4b2354e](https://github.com/Altinn/dialogporten-frontend/commit/4b2354e44113709dbbf1e6b7b246136996fd3ea7))
+* Single services, enabled only for verified addresses ([#3928](https://github.com/Altinn/dialogporten-frontend/issues/3928)) ([07c8471](https://github.com/Altinn/dialogporten-frontend/commit/07c8471e8c3ad7a1334b1bdb60942ae52b2bfe62))
+
 ## [1.134.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.134.0...v1.134.1) (2026-03-27)
 
 
