@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.135.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.134.3...v1.135.0) (2026-03-27)
+
+
+### Features
+
+* warn si users about lacking content and more info ([#3933](https://github.com/Altinn/dialogporten-frontend/issues/3933)) ([56d43f7](https://github.com/Altinn/dialogporten-frontend/commit/56d43f7d8bdf7424b6175f19e4f80c7d7582be28))
+
+
+### Bug Fixes
+
+* Make notifications information always visible ([#3932](https://github.com/Altinn/dialogporten-frontend/issues/3932)) ([f4aa4c2](https://github.com/Altinn/dialogporten-frontend/commit/f4aa4c27ea0021a116e4d0d85ed696c750ef1a2d))
+* Saved search missing info about selected party ([#3931](https://github.com/Altinn/dialogporten-frontend/issues/3931)) ([b73e21c](https://github.com/Altinn/dialogporten-frontend/commit/b73e21ccbe1e76ed489254d81a909ad7447d1488))
+
 ## [1.134.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.134.2...v1.134.3) (2026-03-27)
 
 
