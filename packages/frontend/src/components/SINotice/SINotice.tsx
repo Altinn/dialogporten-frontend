@@ -1,4 +1,4 @@
-import { Alert } from '@altinn/altinn-components';
+import { Alert, Flex } from '@altinn/altinn-components';
 import { useTranslation } from 'react-i18next';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { getAlternativeLoginLink } from '../../auth';
@@ -10,22 +10,18 @@ export const SINotice = () => {
     case 'Email':
       return (
         <Alert variant="info" heading={t('inbox.si_notice.email.title')}>
-          {t('inbox.si_notice.email.body')}
-          <p>
+          <Flex direction="col">
+            {t('inbox.si_notice.email.body')}
             <a href={getAlternativeLoginLink(i18n.language, currentPartyUuid)}>
               {t('inbox.si_notice.email.link_text')}
             </a>
-          </p>
+          </Flex>
         </Alert>
       );
     case 'Legacy':
       return (
         <Alert variant="info" heading={t('inbox.si_notice.legacy.title')}>
-          <p>
-            <a href={getAlternativeLoginLink(i18n.language, currentPartyUuid)}>
-              {t('inbox.si_notice.legacy.link_text')}
-            </a>
-          </p>
+          <a href={getAlternativeLoginLink(i18n.language, currentPartyUuid)}>{t('inbox.si_notice.legacy.link_text')}</a>
         </Alert>
       );
     default:
