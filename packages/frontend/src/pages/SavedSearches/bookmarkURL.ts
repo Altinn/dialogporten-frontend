@@ -54,14 +54,22 @@ export const buildCurrentStateURL = (
  */
 export const buildSavedSearchURL = (savedSearch: SavedSearchesFieldsFragment) => {
   const { searchString, filters } = savedSearch.data;
-  const urlParams = new URLSearchParams(window.location.search);
-  const allPartiesInURL = urlParams.get('allParties');
+  const urn = savedSearch.data.urn;
+
+  let partyParam: string | null = null;
+  let allPartiesParam: string | null = null;
+
+  if (urn && urn.length > 1) {
+    allPartiesParam = 'true';
+  } else if (urn?.length === 1 && !urn[0]?.includes('person')) {
+    partyParam = urn[0] ?? null;
+  }
 
   const queryParams = new URLSearchParams(
     Object.entries({
       search: searchString,
-      party: allPartiesInURL ? null : urlParams.get('party'),
-      allParties: allPartiesInURL,
+      party: allPartiesParam ? null : partyParam,
+      allParties: allPartiesParam,
     }).reduce(
       (acc, [key, value]) => {
         if (value) acc[key] = value;

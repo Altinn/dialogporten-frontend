@@ -128,7 +128,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
   const [openedSavedSearch, setOpenedSavedSearch] = useState<string | null>(null);
   const { organizations } = useOrganizations();
   const { serviceResources } = useServiceResource();
-  const { parties, currentEndUser } = useParties();
+  const { parties, currentEndUser, setSelectedPartyIds } = useParties();
   const { locale } = useDateFnsLocale();
   const navigate = useNavigate();
 
@@ -322,12 +322,19 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
     const searchId = savedSearch.id.toString();
     const groupId = getSavedSearchGroupId(savedSearch);
     const params = buildFilterParams(savedSearch, { organizations, serviceResources, locale, t });
-
+    /* PartyId for person users cannot be exposed in url because in risk of leaking sensitive info */
+    const isPersonBookmark =
+      savedSearch?.data?.urn?.length === 1 && savedSearch.data?.urn[0]?.includes('urn:altinn:person:identifier-no:');
     return {
       id: searchId,
       groupId,
       title: savedSearch.name || '',
       'aria-label': !savedSearch.name && t('filter_bar.saved_search'),
+      onClick: () => {
+        if (isPersonBookmark && savedSearch?.data?.urn?.[0]) {
+          setSelectedPartyIds([savedSearch?.data?.urn?.[0]], false);
+        }
+      },
       as: (props: LinkProps) => <Link {...props} to={bookmarkLink} />,
       contextMenu: {
         id: `menu-saved-search-${savedSearch.id}`,
@@ -338,6 +345,9 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
             title: t('inbox.search.placeholder'),
             icon: MagnifyingGlassIcon,
             onClick: () => {
+              if (isPersonBookmark && savedSearch?.data?.urn?.[0]) {
+                setSelectedPartyIds([savedSearch?.data?.urn?.[0]], false);
+              }
               navigate(
                 `${buildCurrentStateURL(convertFiltersToFilterState(savedSearch.data?.filters ?? []), savedSearch.data?.searchString ?? '', fromPathToViewType(savedSearch.data?.fromView ?? '') ?? 'inbox')}`,
               );
