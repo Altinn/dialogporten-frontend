@@ -24,6 +24,7 @@ import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.ts
 import { useSearchString } from '../../components/PageLayout/Search/';
 import { getPageRouteTitle } from '../../components/PageLayout/pageRouteToTitle.ts';
 import { useHeaderConfig } from '../../components/PageLayout/useHeaderConfig.tsx';
+import { SINotice } from '../../components/SINotice/SINotice.tsx';
 import { SaveSearchButton } from '../../components/SavedSearchButton/SaveSearchButton.tsx';
 import { isSavedSearchDisabled } from '../../components/SavedSearchButton/savedSearchEnabled.ts';
 import { SeenByModal } from '../../components/SeenByModal/SeenByModal.tsx';
@@ -410,6 +411,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
           </Toolbar>
         ) : null}
       </div>
+      <SINotice />
       <AlertBanner showAlertBanner={isAlertBannerEnabled && !!alertBannerContent} />
       {isAltinn2MessagesEnabled && <Altinn2ActiveSchemasNotification selectedAccountId={selectedParties?.[0]?.party} />}
       {dialogsSuccess && !dialogItems.length && !isLoading && !isLimitReached && (
