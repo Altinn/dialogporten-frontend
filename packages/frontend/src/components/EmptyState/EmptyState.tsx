@@ -4,25 +4,19 @@ import { Link } from 'react-router-dom';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { createMessageBoxLink } from '../../auth';
-import { SaveSearchButton, type SaveSearchButtonProps } from '../SavedSearchButton/SaveSearchButton.tsx';
 
 interface EmptyStateProps {
   viewType: InboxViewType;
   savable: boolean;
-  saveSearchButtonProps: SaveSearchButtonProps;
 }
 
-export const EmptyState = ({ viewType, savable, saveSearchButtonProps }: EmptyStateProps) => {
+export const EmptyState = ({ viewType, savable }: EmptyStateProps) => {
   const { t } = useTranslation();
   const { currentPartyUuid } = useParties();
   if (savable) {
     return (
       <Typography size="sm">
         <Heading size="lg">{t('emptyState.noHits.title')}</Heading>
-        <p>{t('emptyState.saveSearch.button.info')}</p>
-        <p>
-          <SaveSearchButton {...saveSearchButtonProps} variant="outline" />
-        </p>
       </Typography>
     );
   }

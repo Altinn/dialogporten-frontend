@@ -312,19 +312,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     return {
       ...groups,
       [firstKey]: {
-        title: (
-          <span className={styles.searchButtonWrapper}>
-            {groups[firstKey]?.title}
-            <span style={{ margin: '-0.5rem 0' }}>
-              <SaveSearchButton
-                viewType={viewType}
-                disabled={savedSearchDisabled}
-                filterState={savedSearchFilterState}
-                onSaveSuccess={onSaveSuccess}
-              />
-            </span>
-          </span>
-        ),
+        title: <span className={styles.searchButtonWrapper}>{groups[firstKey]?.title}</span>,
       },
     };
   }, [groups, viewType, savedSearchDisabled, savedSearchFilterState, onSaveSuccess]);
@@ -413,22 +401,19 @@ export const Inbox = ({ viewType }: InboxProps) => {
               submitLabel={t('filter.show_all_results')}
               removeLabel={t('filter_bar.remove_filter')}
             />
+            <SaveSearchButton
+              viewType={viewType}
+              disabled={savedSearchDisabled}
+              filterState={savedSearchFilterState}
+              onSaveSuccess={onSaveSuccess}
+            />
           </Toolbar>
         ) : null}
       </div>
       <AlertBanner showAlertBanner={isAlertBannerEnabled && !!alertBannerContent} />
       {isAltinn2MessagesEnabled && <Altinn2ActiveSchemasNotification selectedAccountId={selectedParties?.[0]?.party} />}
       {dialogsSuccess && !dialogItems.length && !isLoading && !isLimitReached && (
-        <EmptyState
-          viewType={viewType}
-          savable={searchMode || !!(partyIdsOverride?.length ?? 0)}
-          saveSearchButtonProps={{
-            viewType,
-            disabled: savedSearchDisabled,
-            filterState: savedSearchFilterState,
-            onSaveSuccess,
-          }}
-        />
+        <EmptyState viewType={viewType} savable={searchMode || !!(partyIdsOverride?.length ?? 0)} />
       )}
       {isLimitReached && (
         <Notice title={limitReachedNoticeContent.title} description={limitReachedNoticeContent.description} />
