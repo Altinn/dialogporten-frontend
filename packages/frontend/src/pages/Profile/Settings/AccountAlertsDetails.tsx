@@ -354,7 +354,8 @@ export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetails
           </Fieldset>
           <Typography size="sm">
             {isAnotherPerson && <p>{t('profile.notifications.personal_for_person')}</p>}
-            {isCompany && enableSingleServiceNotifications && (
+            {needsVerification && <p>{t('profile.account_alerts.new_addresses_must_verify')}</p>}
+            {isCompany && !needsVerification && enableSingleServiceNotifications && (
               <p>
                 {t('profile.notifications.personal_explanation')}{' '}
                 <button type="button" className={styles.linkButton} onClick={() => setIsServiceModalOpen(true)}>
@@ -363,11 +364,7 @@ export const AccountAlertsDetails = ({ notificationParty }: AccountAlertsDetails
               </p>
             )}
           </Typography>
-          {needsVerification && (
-            <Typography size="sm">
-              <p>{t('profile.account_alerts.new_addresses_must_verify')}</p>
-            </Typography>
-          )}
+
           <ButtonGroup>
             {hasUnverifiedEmail && (
               <Button
