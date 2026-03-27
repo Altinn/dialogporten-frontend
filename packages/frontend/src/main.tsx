@@ -40,6 +40,7 @@ async function loadFeatures() {
     return {};
   }
 }
+
 const element = document.getElementById('root');
 
 const RootProvider = ({ children }: { children: React.ReactNode }) => {

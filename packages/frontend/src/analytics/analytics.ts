@@ -204,9 +204,30 @@ if (applicationInsightsEnabled) {
             return false;
           }
 
-          // Check all exception details for extension URLs
+          const ignoreMessages = [
+            'Script Error.',
+            'Script Error',
+            'ErrorEvent: Script error.',
+            'EventSource connection error',
+            "NotFoundError: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
+            'NotFoundError: The object can not be found here',
+          ];
+          if (
+            ignoreMessages.some(
+              (text) => propertyMessage === text || baseDataMessage.includes(text) || propertyMessage.includes(text),
+            )
+          ) {
+            return false;
+          }
+
+          // Check all exception details for extension URLs and ignored messages
           for (const exception of exceptions) {
-            // Check parsed stack frames
+            const exceptionMessage = exception.message || '';
+            if (ignoreMessages.some((text) => exceptionMessage.includes(text))) {
+              return false;
+            }
+
+            // Check parsed stack frames for extension URLs
             if (exception.parsedStack && Array.isArray(exception.parsedStack)) {
               for (const frame of exception.parsedStack) {
                 if (frame.fileName && extensionUrlPattern.test(frame.fileName)) {
@@ -214,16 +235,6 @@ if (applicationInsightsEnabled) {
                 }
               }
             }
-          }
-
-          const ignoreMessages = [
-            'Script Error.',
-            'Script Error',
-            'ErrorEvent: Script error.',
-            'EventSource connection error',
-          ];
-          if (ignoreMessages.some((text) => propertyMessage === text)) {
-            return false;
           }
           break;
         }
