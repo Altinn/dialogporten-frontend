@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { type Mock, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createCustomWrapper } from '../../../../utils/test-utils.tsx';
 import { useParties } from '../../../api/hooks/useParties.ts';
+import { buildPartyGraph } from '../../../api/utils/partyGraph.ts';
 import { useProfile } from '../../../pages/Profile';
 import { formatNorwegianId, formatSSN, useAccounts } from './useAccounts.tsx';
 
@@ -135,7 +136,10 @@ describe('useAccounts', () => {
     vi.clearAllMocks();
 
     (useTranslation as Mock).mockReturnValue({ t: mockT });
-    (useParties as Mock).mockReturnValue({ setSelectedPartyIds: mockSetSelectedPartyIds });
+    (useParties as Mock).mockReturnValue({
+      setSelectedPartyIds: mockSetSelectedPartyIds,
+      partyGraph: buildPartyGraph(parties),
+    });
     (useProfile as Mock).mockReturnValue({ favoritesGroup: { parties: [] } });
   });
 

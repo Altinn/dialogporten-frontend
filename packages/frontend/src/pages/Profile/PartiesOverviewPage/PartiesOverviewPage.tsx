@@ -16,7 +16,8 @@ import {
 } from '@altinn/altinn-components';
 import type { AccountListItemType } from '@altinn/altinn-components/dist/types/lib/components/Account/AccountListItem';
 import { BellIcon, HashtagIcon, HouseHeartFillIcon, HouseHeartIcon, InboxIcon } from '@navikt/aksel-icons';
-import { type ElementType, useMemo, useState } from 'react';
+import type { PartyFieldsFragment } from 'bff-types-generated';
+import { type ElementType, useDeferredValue, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps } from 'react-router-dom';
 import { useProfile } from '..';
@@ -44,7 +45,7 @@ export type PreselectedActorModalProps = {
 
 export const PartiesOverviewPage = () => {
   const { t } = useTranslation();
-  const { isSelfIdentifiedUser, parties, selectedParties, allOrganizationsSelected, isLoading, flattenedParties } =
+  const { isSelfIdentifiedUser, parties, selectedParties, allOrganizationsSelected, isLoading, partyGraph } =
     useParties();
   const { getAccountAlertSettings, settings } = useSettings({ disabled: isSelfIdentifiedUser, isSelfIdentifiedUser });
   const isDeletedUnitsFilterEnabled = useFeatureFlag<boolean>('inbox.enableDeletedUnitsFilter');
@@ -58,12 +59,13 @@ export const PartiesOverviewPage = () => {
   const [openConfirmSetPreselectedActorModal, setOpenConfirmSetPreselectedActorModal] =
     useState<PreselectedActorModalProps | null>(null);
   const [searchValue, setSearchValue] = useState<string>('');
+  const deferredSearchValue = useDeferredValue(searchValue);
   const [expandedItem, setExpandedItem] = useState<string>('');
 
   const includeDeletedParties = isDeletedUnitsFilterEnabled ? (shouldShowDeletedEntities ?? false) : true;
 
   const { filters, getFilterLabel, filterState, setFilterState, filteredParties, isSearching } = useAccountFilters({
-    searchValue,
+    searchValue: deferredSearchValue,
     parties,
     includeDeletedParties: true,
   });
@@ -74,6 +76,7 @@ export const PartiesOverviewPage = () => {
     selectedParties,
     allOrganizationsSelected,
     isLoading,
+    partyGraph,
     options: {
       showFavorites: !isSearching,
     },
@@ -179,20 +182,27 @@ export const PartiesOverviewPage = () => {
 
   const getOrganizationAccounts = (
     currentParty: { party: string } | undefined,
-    parentParty: { party: string } | undefined,
-    flattenedParties: Array<{
-      party: string;
-      name: string;
-      isDeleted: boolean;
-      parentId?: string;
-      subParties?: Array<{ party: string; name: string; isDeleted: boolean }>;
-    }>,
+    parentParty: PartyFieldsFragment | undefined,
   ) => {
-    const organizationAccounts = parentParty
-      ? flattenedParties?.filter((item) => item.party.includes(parentParty.party)) || []
-      : flattenedParties?.filter((item) => item.party.includes(currentParty?.party ?? '')) || [];
+    const rootParty = parentParty ?? partyGraph.partyByUrn.get(currentParty?.party ?? '');
+    if (!rootParty) return [];
 
-    return organizationAccounts?.map((item) => createOrganizationItem(item, currentParty));
+    const items = [rootParty, ...(rootParty.subParties ?? [])].map((item) => ({
+      party: item.party,
+      name: item.name,
+      isDeleted: item.isDeleted,
+      parentId: rootParty.party !== item.party ? rootParty.partyUuid : undefined,
+      subParties:
+        'subParties' in item
+          ? ((item as PartyFieldsFragment).subParties ?? []).map((sp) => ({
+              party: sp.party,
+              name: sp.name,
+              isDeleted: sp.isDeleted,
+            }))
+          : undefined,
+    }));
+
+    return items.map((item) => createOrganizationItem(item, currentParty));
   };
 
   const PartyDetails = ({
@@ -200,22 +210,12 @@ export const PartiesOverviewPage = () => {
     isCurrentEndUser,
     id,
   }: { type: AccountListItemType; isCurrentEndUser: boolean; id: string }) => {
-    const currentParty = flattenedParties?.find((item) => item.party === id);
-    const parentParty = flattenedParties?.find((item) => item.partyUuid === currentParty?.parentId);
+    const currentParty = partyGraph.partyByUrn.get(id);
+    const parentParty = partyGraph.parentByChildUrn.get(id);
 
     const organizationAccounts = useMemo(() => {
       if (type !== 'company') return undefined;
-      return getOrganizationAccounts(
-        currentParty,
-        parentParty,
-        flattenedParties as Array<{
-          party: string;
-          isDeleted: boolean;
-          name: string;
-          parentId?: string;
-          subParties?: Array<{ party: string; name: string; isDeleted: boolean }>;
-        }>,
-      );
+      return getOrganizationAccounts(currentParty, parentParty);
     }, [type, currentParty, parentParty]);
 
     if (isCurrentEndUser) {
@@ -340,12 +340,14 @@ export const PartiesOverviewPage = () => {
   const accountListItems = useMemo(() => accounts.map(mapAccountToPartyListItem), [accounts]);
 
   const displayHits = useMemo(() => {
+    if (!isSearching) return accountListItems;
     return accountListItems.map((a) => ({ ...a, groupId: 'search' }));
-  }, [accountListItems]);
+  }, [accountListItems, isSearching]);
 
-  const searchGroup = {
-    search: { title: t('search.hits', { count: displayHits.length }) },
-  };
+  const searchGroup = useMemo(
+    () => ({ search: { title: t('search.hits', { count: displayHits.length }) } }),
+    [displayHits.length, t],
+  );
 
   return (
     <PageBase color="person">

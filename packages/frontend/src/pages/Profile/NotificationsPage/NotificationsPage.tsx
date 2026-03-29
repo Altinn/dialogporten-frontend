@@ -2,6 +2,7 @@ import { Heading, ListItemLabel, PageBase, SettingsList, Toolbar } from '@altinn
 import type { NotificationSettingsResponse, PartyFieldsFragment } from 'bff-types-generated';
 import { useTranslation } from 'react-i18next';
 import { useParties } from '../../../api/hooks/useParties.ts';
+import { useIsSelfIdentifiedUser } from '../../../api/hooks/usePartiesSelectors.ts';
 import { getNotificationSettingsLink } from '../../../auth';
 import { usePageTitle } from '../../../hooks/usePageTitle';
 import { SettingsType, useSettings } from '../Settings/useSettings.tsx';
@@ -16,7 +17,8 @@ export interface NotificationAccountsType extends PartyFieldsFragment {
 export const NotificationsPage = () => {
   const { t, i18n } = useTranslation();
   const { isLoading: isLoadingUser } = useProfile();
-  const { isLoading: isLoadingParties, isSelfIdentifiedUser } = useParties();
+  const { isLoading: isLoadingParties } = useParties();
+  const isSelfIdentifiedUser = useIsSelfIdentifiedUser();
   const notificationSettingsUrl = getNotificationSettingsLink(i18n.language);
 
   usePageTitle({ baseTitle: t('component.notifications') });

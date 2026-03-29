@@ -1,4 +1,22 @@
 import { type Locator, type Page, expect } from '@playwright/test';
+import { baseURL } from '../';
+
+/**
+ * Sets the AltinnPartyUuid cookie before page load so the app
+ * initializes with the given party pre-selected (simulating a
+ * returning user whose last-used party was persisted in a cookie).
+ */
+export async function setPartyCookie(page: Page, partyUuid: string) {
+  const url = new URL(baseURL);
+  await page.context().addCookies([
+    {
+      name: 'AltinnPartyUuid',
+      value: partyUuid,
+      domain: url.hostname,
+      path: '/',
+    },
+  ]);
+}
 
 export const getSidebar = (page: Page) => page.locator('aside');
 export const getSidebarMenuItem = (page: Page, route: string) => getSidebar(page).locator(`a[href*="${route}?"]`);

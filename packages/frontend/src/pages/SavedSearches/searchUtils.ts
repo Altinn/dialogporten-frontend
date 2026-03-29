@@ -1,15 +1,10 @@
 import type { BookmarkSettingsItemProps, QueryItemProps } from '@altinn/altinn-components';
-import {
-  DialogStatus,
-  type OrganizationFieldsFragment,
-  type SavedSearchesFieldsFragment,
-  type ServiceResource,
-  SystemLabel,
-} from 'bff-types-generated';
+import { DialogStatus, type SavedSearchesFieldsFragment, type ServiceResource, SystemLabel } from 'bff-types-generated';
 import type { Locale } from 'date-fns';
 import type { TFunction } from 'i18next';
 import { logError } from '../../analytics/errorLogger.ts';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
+import type { OrganizationLookup } from '../../api/utils/organizations.ts';
 import { getOrganization } from '../../api/utils/organizations.ts';
 import type { FormatDistanceFunction } from '../../i18n/useDateFnsLocale.tsx';
 import { DateFilterOption, formatDateRange, formatSingleDate } from '../Inbox/filters';
@@ -37,13 +32,13 @@ export const isPlaceholderValue = (value: string | undefined | null): boolean =>
 export const buildFilterParams = (
   savedSearch: SavedSearchesFieldsFragment,
   deps: {
-    organizations: OrganizationFieldsFragment[];
-    serviceResources: ServiceResource[];
+    organizations: OrganizationLookup;
+    serviceResourceById: Map<string, ServiceResource>;
     locale: Locale;
     t: TFunction;
   },
 ): QueryItemProps[] => {
-  const { organizations, serviceResources, locale, t } = deps;
+  const { organizations, serviceResourceById, locale, t } = deps;
   const filters = savedSearch.data?.filters ?? [];
 
   const fromDateFilter = filters.find((f) => f?.id === 'fromDate');
@@ -71,7 +66,7 @@ export const buildFilterParams = (
       }
 
       if (filter?.id === 'service') {
-        const service = serviceResources.find((sr) => sr.id === filter.value);
+        const service = serviceResourceById.get(filter.value ?? '');
         return { type: 'filter', label: service?.title ?? '' };
       }
 

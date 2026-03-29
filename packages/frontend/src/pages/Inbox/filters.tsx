@@ -30,13 +30,14 @@ import {
 import type { Locale } from 'date-fns/locale';
 import { t } from 'i18next';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
-import { getOrganization } from '../../api/utils/organizations.ts';
+import { buildOrganizationMap } from '../../api/utils/organizations.ts';
+import { type OrganizationLookup, getOrganization } from '../../api/utils/organizations.ts';
 import { getEnvByHost } from '../../auth';
 
 interface ServiceFilterProps {
   serviceResources: ServiceResource[];
   currentFilters?: FilterState;
-  allOrganizations: OrganizationFieldsFragment[];
+  allOrganizations: OrganizationLookup;
 }
 
 export enum DateFilterOption {
@@ -192,8 +193,9 @@ const createDateOptions = (): MenuItemProps[] => {
 const createServiceOwnerFilter = (
   allDialogs: CountableDialogFieldsFragment[],
   allOrganizations: OrganizationFieldsFragment[],
+  orgLookup: OrganizationLookup,
 ): FilterProps => {
-  const mostRelevantOrgs = Array.from(new Set([...allDialogs.map((d) => d.org)]));
+  const mostRelevantOrgs = new Set(allDialogs.map((d) => d.org));
   return {
     id: FilterCategory.ORG,
     icon: MenuHamburgerIcon,
@@ -204,7 +206,7 @@ const createServiceOwnerFilter = (
     removable: true,
     groups: {
       'service-owners': {
-        title: mostRelevantOrgs.length ? '' : t('filter_bar.group.choose_sender'),
+        title: mostRelevantOrgs.size ? '' : t('filter_bar.group.choose_sender'),
       },
       selected: {},
       'most-relevant': {
@@ -213,14 +215,14 @@ const createServiceOwnerFilter = (
     },
     items: allOrganizations
       .map((org) => {
-        const localizedOrg = getOrganization(allOrganizations, org.id ?? '');
+        const localizedOrg = getOrganization(orgLookup, org.id ?? '');
         return {
           id: org.id ?? '',
           name: FilterCategory.ORG,
           title: localizedOrg?.name ?? '',
           value: org.id ?? '',
           role: 'checkbox',
-          groupId: mostRelevantOrgs.includes(org.id ?? '') ? 'most-relevant' : 'service-owners',
+          groupId: mostRelevantOrgs.has(org.id ?? '') ? 'most-relevant' : 'service-owners',
         };
       })
       .sort((a, b) => {
@@ -342,14 +344,14 @@ export const createServiceFilter = ({
   currentFilters = {},
   allOrganizations,
 }: ServiceFilterProps): FilterProps => {
-  const suggestedServiceIds = getSuggestedServiceIds();
+  const suggestedServiceIds = new Set(getSuggestedServiceIds());
   const serviceFilters: FilterProps[] = serviceResources
     .map((s) => ({
       id: s.id!,
       name: s.id!,
       items: [],
       title: s.title ?? '',
-      groupId: suggestedServiceIds?.includes(s.id!) ? 'most-relevant' : 'services',
+      groupId: suggestedServiceIds.has(s.id!) ? 'most-relevant' : 'services',
       description: getOrganization(allOrganizations, s.org ?? '')?.name || '',
     }))
     .sort((a, b) => {
@@ -424,7 +426,8 @@ export const getFilters = ({
   enableServiceFilter?: boolean;
   prebuiltServiceFilter?: FilterProps;
 }): ToolbarFilterProps['filters'] => {
-  const senderOrgFilter = createServiceOwnerFilter(allDialogs, allOrganizations ?? []);
+  const orgLookup = buildOrganizationMap(allOrganizations ?? []);
+  const senderOrgFilter = createServiceOwnerFilter(allDialogs, allOrganizations ?? [], orgLookup);
   const statusFilter = createStatusFilter();
   const updatedAtFilter = createUpdatedAtFilter();
 

@@ -6,32 +6,37 @@ type PartyField = PartyFieldsFragment | SubPartyFieldsFragment;
  where name of parent differs from sub parties
  */
 export const normalizeFlattenParties = (parties: PartyFieldsFragment[]): PartyFieldsFragment[] => {
-  const partiesInTitleCase =
-    parties.map((party) => ({
-      ...party,
-      name: formatDisplayName({
-        fullName: party.name,
-        type: party.partyType === 'Person' ? 'person' : 'company',
-      }),
-      subParties: party.subParties?.map((subParty) => ({
+  const result: PartyField[] = [];
+  /* Cache formatted names – many sub-parties share the same name/type combination */
+  const nameCache = new Map<string, string>();
+  const cachedFormat = (fullName: string, type: 'person' | 'company'): string => {
+    const key = `${type}:${fullName}`;
+    let cached = nameCache.get(key);
+    if (cached === undefined) {
+      cached = formatDisplayName({ fullName, type });
+      nameCache.set(key, cached);
+    }
+    return cached;
+  };
+
+  for (const party of parties) {
+    const partyType = party.partyType === 'Person' ? 'person' : 'company';
+    const subParties =
+      party.subParties?.map((subParty) => ({
         ...subParty,
-        name: formatDisplayName({
-          fullName: subParty.name,
-          type: subParty.partyType === 'Person' ? 'person' : 'company',
-        }),
-      })),
-    })) ?? [];
+        name: cachedFormat(subParty.name, subParty.partyType === 'Person' ? 'person' : 'company'),
+      })) ?? [];
 
-  return partiesInTitleCase.reduce<PartyField[]>((acc, party) => {
-    const subParties = party.subParties ?? [];
-
-    acc.push({
+    result.push({
       ...party,
+      name: cachedFormat(party.name, partyType),
       subParties,
     });
-    // Promote others
-    acc.push(...subParties);
 
-    return acc;
-  }, []) as PartyFieldsFragment[];
+    for (const sub of subParties) {
+      result.push(sub);
+    }
+  }
+
+  return result as PartyFieldsFragment[];
 };

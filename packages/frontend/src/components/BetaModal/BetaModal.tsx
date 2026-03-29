@@ -2,7 +2,7 @@ import { Button, Checkbox, Modal, Typography } from '@altinn/altinn-components';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useParties } from '../../api/hooks/useParties';
+import { useCurrentPartyUuid } from '../../api/hooks/usePartiesSelectors';
 import { getAboutNewAltinnLink } from '../../auth';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { pruneSearchQueryParams } from '../../pages/Inbox/queryParams.ts';
@@ -18,7 +18,7 @@ const PROFILE_PARTIES_ONBOARDING_KEY = 'arbeidsflate:profile-parties-onboarding-
 export const BetaModal = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const { currentPartyUuid } = useParties();
+  const currentPartyUuid = useCurrentPartyUuid();
   const searchParams = new URLSearchParams(window.location.search);
   const isMock = searchParams.get('mock') === 'true';
   const [isOpen, setIsOpen] = useState<boolean>(localStorage.getItem(betaKey) === null);

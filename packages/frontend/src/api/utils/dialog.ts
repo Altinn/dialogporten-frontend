@@ -1,7 +1,6 @@
 import {
   DialogStatus,
   type GetAllDialogsForPartiesQueryVariables,
-  type OrganizationFieldsFragment,
   type PartyFieldsFragment,
   type SearchDialogFieldsFragment,
   SystemLabel,
@@ -13,7 +12,13 @@ import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
 import { getIsUnread } from '../../pages/Inbox/status.ts';
 import { getActorProps } from '../hooks/useDialogById.tsx';
 import type { InboxViewType } from '../hooks/useDialogs.tsx';
-import { type OrganizationOutput, getOrganization, getOrganizationByLocale } from './organizations.ts';
+import {
+  type OrganizationLookup,
+  type OrganizationOutput,
+  getOrganization,
+  getOrganizationByLocale,
+} from './organizations.ts';
+import type { PartyGraph } from './partyGraph.ts';
 import { getViewTypes } from './viewType.ts';
 
 interface SeenByItem {
@@ -58,26 +63,25 @@ export const getSeenByLabel = (
 
 export function mapDialogToToInboxItems(
   input: SearchDialogFieldsFragment[],
-  parties: PartyFieldsFragment[],
-  organizations: OrganizationFieldsFragment[],
+  partyGraph: PartyGraph,
+  organizations: OrganizationLookup,
   format: FormatFunction,
   stopReversingPersonNameOrder: boolean,
 ): InboxItemInput[] {
+  const endUserParty = partyGraph.currentEndUser;
+
   return input.map((item) => {
     const titleObj = item.content.title.value;
     const summaryObj = item.content.summary?.value;
-    const endUserParty = parties?.find((party) => party.isCurrentEndUser);
     const senderName = item.content.senderName?.value;
     const extendedStatusObj = item.content.extendedStatus?.value;
 
-    const dialogReceiverParty = parties?.find((party) => party.party === item.party);
-    const dialogReceiverSubParty = parties
-      ?.flatMap((party) => party.subParties ?? [])
-      .find((subParty) => subParty.party === item.party);
+    const receiverParty = partyGraph.partyByUrn.get(item.party);
+    const isSubParty = partyGraph.parentByChildUrn.has(item.party);
+    const actualReceiverParty = receiverParty ?? endUserParty;
 
-    const actualReceiverParty = dialogReceiverParty ?? dialogReceiverSubParty ?? endUserParty;
-    const serviceOwner = getOrganization(organizations || [], item.org);
-    const serviceOwnerNbName = getOrganizationByLocale(organizations || [], item.org, 'nb')?.name;
+    const serviceOwner = getOrganization(organizations, item.org);
+    const serviceOwnerNbName = getOrganizationByLocale(organizations, item.org, 'nb')?.name;
     const { isSeenByEndUser, seenByOthersCount, seenByLabel } = getSeenByLabel(item.seenSinceLastContentUpdate, t);
 
     return {
@@ -97,12 +101,9 @@ export function mapDialogToToInboxItems(
         imageUrlAlt: t('dialog.imageAltURL', { companyName: getPreferredPropertyByLocale(senderName)?.value }),
       },
       recipient: {
-        name: actualReceiverParty?.name ?? dialogReceiverSubParty?.name ?? '',
+        name: actualReceiverParty?.name ?? '',
         type: actualReceiverParty?.partyType === 'Organization' ? 'company' : 'person',
-        variant:
-          dialogReceiverParty && !dialogReceiverParty.subParties && actualReceiverParty?.partyType === 'Organization'
-            ? 'outline'
-            : 'solid',
+        variant: receiverParty && isSubParty && actualReceiverParty?.partyType === 'Organization' ? 'outline' : 'solid',
       },
       serviceResourceType: item.serviceResourceType,
       color: actualReceiverParty?.partyType === 'Organization' ? 'company' : 'person',

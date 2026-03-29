@@ -31,7 +31,8 @@ import { type OrganizationOutput, getOrganization, getOrganizationByLocale } fro
 import { type TimelineSegmentWithTransmissions, getTransmissions } from '../utils/transmissions.ts';
 import { getViewTypes } from '../utils/viewType.ts';
 import type { InboxViewType } from './useDialogs.tsx';
-import { type ProfileType, useParties } from './useParties.ts';
+import type { ProfileType } from './useParties.ts';
+import { useSelectedProfile } from './usePartiesSelectors.ts';
 
 export enum EmbeddableMediaType {
   markdown = 'application/vnd.dialogporten.frontchannelembed-url;type=text/markdown',
@@ -348,7 +349,7 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
   const { organizations, isLoading: isOrganizationsLoading } = useOrganizations();
   const queryClient = useQueryClient();
   const disableFlipNamesPatch = useFeatureFlag<boolean>('dialogporten.disableFlipNamesPatch');
-  const { selectedProfile } = useParties();
+  const selectedProfile = useSelectedProfile();
   const partyURIs = parties.map((party) => party.party);
   const { data, isSuccess, isLoading, isError, dataUpdatedAt } = useAuthenticatedQuery<GetDialogByIdQuery>({
     queryKey: [QUERY_KEYS.DIALOG_BY_ID, id],

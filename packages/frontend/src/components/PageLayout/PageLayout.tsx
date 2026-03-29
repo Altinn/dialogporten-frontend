@@ -10,11 +10,12 @@ import {
   Snackbar,
 } from '@altinn/altinn-components';
 import { useQueryClient } from '@tanstack/react-query';
+import type { PartyFieldsFragment } from 'bff-types-generated';
 import i18n from 'i18next';
 import { useEffect, useLayoutEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps, Outlet, useLocation, useSearchParams } from 'react-router-dom';
-import { useParties } from '../../api/hooks/useParties.ts';
+import { useCurrentEndUser, useCurrentPartyUuid, useSelectedProfile } from '../../api/hooks/usePartiesSelectors.ts';
 import { getFrontPageLink } from '../../auth';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { getSearchStringFromQueryParams } from '../../pages/Inbox/queryParams.ts';
@@ -42,7 +43,11 @@ export const PageLayout: React.FC = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [docTitle] = useGlobalState<string>(QUERY_KEYS.CURRENT_DIALOG_TITLE, '');
-  const { selectedProfile, selectedParties, allOrganizationsSelected, currentEndUser, currentPartyUuid } = useParties();
+  const selectedProfile = useSelectedProfile();
+  const currentEndUser = useCurrentEndUser();
+  const currentPartyUuid = useCurrentPartyUuid();
+  const [allOrganizationsSelected] = useGlobalState<boolean>(QUERY_KEYS.ALL_ORGANIZATIONS_SELECTED, false);
+  const [selectedParties] = useGlobalState<PartyFieldsFragment[]>(QUERY_KEYS.SELECTED_PARTIES, []);
   const [isErrorState] = useGlobalState<boolean>(QUERY_KEYS.ERROR_STATE, false);
   const { headerProps } = useHeaderConfig();
   const footer: FooterProps = useFooter();

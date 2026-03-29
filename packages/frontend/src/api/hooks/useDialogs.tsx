@@ -8,7 +8,7 @@ import type {
   SystemLabel,
 } from 'bff-types-generated';
 import i18n from 'i18next';
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useAuthenticatedInfiniteQuery } from '../../auth/useAuthenticatedInfiniteQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useFeatureFlag } from '../../featureFlags';
@@ -19,6 +19,7 @@ import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
 import { useProfile } from '../../pages/Profile';
 import { graphQLSDK } from '../queries.ts';
 import { getPartyIds, mapDialogToToInboxItems, mergeDialogItems } from '../utils/dialog.ts';
+import { buildOrganizationMap } from '../utils/organizations.ts';
 import { useParties } from './useParties.ts';
 
 /* Number of max parties used to fetch dialogs with party input param from Dialogporten */
@@ -81,7 +82,7 @@ export const useDialogs = ({
   const isDeletedUnitsFilterEnabled = useFeatureFlag<boolean>('inbox.enableDeletedUnitsFilter');
   const enableSubAccountsMenu = useFeatureFlag<boolean>('filters.enableSubAccountsMenu');
   const { shouldShowDeletedEntities } = useProfile();
-  const { selectedParties, parties: allParties, allOrganizationsSelected } = useParties();
+  const { selectedParties, allOrganizationsSelected, partyGraph } = useParties();
   const format = useFormat();
 
   const shouldExcludeDeleted = isDeletedUnitsFilterEnabled && !shouldShowDeletedEntities;
@@ -195,7 +196,8 @@ export const useDialogs = ({
     hasNextPage: lastPage?.searchDialogs?.hasNextPage === true,
     itemsIsNull: lastPage?.searchDialogs?.items === null,
   });
-  const dialogs = mapDialogToToInboxItems(content, allParties, organizations, format, disableFlipNamesPatch);
+  const orgMap = useMemo(() => buildOrganizationMap(organizations), [organizations]);
+  const dialogs = mapDialogToToInboxItems(content, partyGraph, orgMap, format, disableFlipNamesPatch);
   /*  isFetching && isPlaceholderData is used to determine if we are fetching the initial data for the query key */
   const isActuallyLoading = isLoading || (isFetching && isPlaceholderData);
 

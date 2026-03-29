@@ -10,6 +10,7 @@ import { useParties } from './useParties.ts';
 
 interface UseServiceResourceOutput {
   serviceResources: ServiceResource[];
+  serviceResourceById: Map<string, ServiceResource>;
   isSuccess: boolean;
   isLoading: boolean;
 }
@@ -57,5 +58,13 @@ export const useServiceResource = (): UseServiceResourceOutput => {
     [data?.serviceResources],
   );
 
-  return { serviceResources, isLoading, isSuccess };
+  const serviceResourceById = useMemo(() => {
+    const map = new Map<string, ServiceResource>();
+    for (const sr of serviceResources) {
+      if (sr.id) map.set(sr.id, sr);
+    }
+    return map;
+  }, [serviceResources]);
+
+  return { serviceResources, serviceResourceById, isLoading, isSuccess };
 };

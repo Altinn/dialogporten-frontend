@@ -13,7 +13,7 @@ import type {
   SavedSearchesQuery,
   SearchDataValueFilter,
 } from 'bff-types-generated';
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps, useNavigate } from 'react-router-dom';
 import { Analytics } from '../../analytics/analytics.ts';
@@ -22,6 +22,7 @@ import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { useServiceResource } from '../../api/hooks/useServiceResource.ts';
 import { createSavedSearch, deleteSavedSearch, fetchSavedSearches, updateSavedSearch } from '../../api/queries.ts';
+import { buildOrganizationMap } from '../../api/utils/organizations.ts';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
@@ -127,8 +128,9 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
   const [isCTALoading, setIsCTALoading] = useState<boolean>(false);
   const [openedSavedSearch, setOpenedSavedSearch] = useState<string | null>(null);
   const { organizations } = useOrganizations();
-  const { serviceResources } = useServiceResource();
-  const { parties, currentEndUser, setSelectedPartyIds } = useParties();
+  const orgMap = useMemo(() => buildOrganizationMap(organizations), [organizations]);
+  const { serviceResourceById } = useServiceResource();
+  const { currentEndUser, setSelectedPartyIds, partyGraph } = useParties();
   const { locale } = useDateFnsLocale();
   const navigate = useNavigate();
 
@@ -256,25 +258,31 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
     }
   };
 
-  const getSavedSearchGroupId = (savedSearch: SavedSearchesFieldsFragment): string => {
-    const urn = savedSearch.data?.urn;
-    if (!urn?.length) return 'personal';
-    if (urn.length === 1 && urn[0] === currentEndUser?.party) return 'personal';
-    if (urn.length === 1) return urn[0]!;
-    return 'all-organizations';
-  };
+  const getSavedSearchGroupId = useCallback(
+    (savedSearch: SavedSearchesFieldsFragment): string => {
+      const urn = savedSearch.data?.urn;
+      if (!urn?.length) return 'personal';
+      if (urn.length === 1 && urn[0] === currentEndUser?.party) return 'personal';
+      if (urn.length === 1) return urn[0]!;
+      return 'all-organizations';
+    },
+    [currentEndUser?.party],
+  );
 
-  const groups: Record<string, BookmarkSettingsGroupProps> = {
-    personal: { title: t('savedSearches.groups.personal') },
-    'all-organizations': { title: t('savedSearches.groups.all_organizations') },
-  };
+  const groups: Record<string, BookmarkSettingsGroupProps> = useMemo(() => {
+    const result: Record<string, BookmarkSettingsGroupProps> = {
+      personal: { title: t('savedSearches.groups.personal') },
+      'all-organizations': { title: t('savedSearches.groups.all_organizations') },
+    };
 
-  for (const savedSearch of endUsersSavedSearches) {
-    const groupId = getSavedSearchGroupId(savedSearch);
-    if (groupId !== 'personal' && groupId !== 'all-organizations' && !groups[groupId]) {
-      groups[groupId] = { title: parties.find((p) => p.party === groupId)?.name ?? groupId };
+    for (const savedSearch of endUsersSavedSearches) {
+      const groupId = getSavedSearchGroupId(savedSearch);
+      if (groupId !== 'personal' && groupId !== 'all-organizations' && !result[groupId]) {
+        result[groupId] = { title: partyGraph.partyByUrn.get(groupId)?.name ?? groupId };
+      }
     }
-  }
+    return result;
+  }, [endUsersSavedSearches, getSavedSearchGroupId, partyGraph, t]);
 
   if (isLoading) {
     const items = Array.from({ length: 3 }, (_, i) => ({
@@ -321,7 +329,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
     const bookmarkLink = buildSavedSearchURL(savedSearch);
     const searchId = savedSearch.id.toString();
     const groupId = getSavedSearchGroupId(savedSearch);
-    const params = buildFilterParams(savedSearch, { organizations, serviceResources, locale, t });
+    const params = buildFilterParams(savedSearch, { organizations: orgMap, serviceResourceById, locale, t });
     /* PartyId for person users cannot be exposed in url because in risk of leaking sensitive info */
     const isPersonBookmark =
       savedSearch?.data?.urn?.length === 1 && savedSearch.data?.urn[0]?.includes('urn:altinn:person:identifier-no:');

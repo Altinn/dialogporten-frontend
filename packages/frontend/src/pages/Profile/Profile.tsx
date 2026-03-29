@@ -1,7 +1,7 @@
 import { DashboardHeader, PageBase, SettingsList } from '@altinn/altinn-components';
 import { formatDisplayName } from '@altinn/altinn-components';
 import { t } from 'i18next';
-import { useParties } from '../../api/hooks/useParties.ts';
+import { useCurrentEndUser, useIsSelfIdentifiedUser } from '../../api/hooks/usePartiesSelectors.ts';
 import { formatSSN } from '../../components/PageLayout/Accounts/useAccounts.tsx';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
 import { useProfileOnboarding } from '../../onboardingTour/useProfileOnboarding';
@@ -10,8 +10,8 @@ import { useProfile } from './useProfile';
 
 export const Profile = () => {
   const { user, isLoading } = useProfile();
-  const { currentEndUser } = useParties();
-  const { isSelfIdentifiedUser } = useParties();
+  const currentEndUser = useCurrentEndUser();
+  const isSelfIdentifiedUser = useIsSelfIdentifiedUser();
   const { settings } = useSettings({
     options: {
       includeGroups: [SettingsType.contact],

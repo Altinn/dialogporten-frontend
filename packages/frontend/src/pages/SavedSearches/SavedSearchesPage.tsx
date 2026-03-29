@@ -1,7 +1,7 @@
 import { BookmarkModal, BookmarkSettingsList, Heading, PageBase, Toolbar } from '@altinn/altinn-components';
 import { type ChangeEvent, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParties } from '../../api/hooks/useParties.ts';
+import { useSelectedPartyIds } from '../../api/hooks/usePartiesSelectors.ts';
 import { getPageRouteTitle } from '../../components/PageLayout/pageRouteToTitle.ts';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
 import { PageRoutes } from '../routes.ts';
@@ -11,7 +11,7 @@ import { useSavedSearches } from './useSavedSearches.tsx';
 export const SavedSearchesPage = () => {
   const { t } = useTranslation();
   usePageTitle({ baseTitle: t('sidebar.saved_searches') });
-  const { selectedPartyIds } = useParties();
+  const selectedPartyIds = useSelectedPartyIds();
   const [inputValues, setInputValues] = useState<Record<string, string>>({});
   const [searchQuery, setSearchQuery] = useState('');
   const {

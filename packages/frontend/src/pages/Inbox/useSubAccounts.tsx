@@ -1,6 +1,6 @@
 import type { MenuItemGroups, MenuItemProps } from '@altinn/altinn-components';
 import type { PartyFieldsFragment } from 'bff-types-generated';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import type { PartyItemProp } from '../../components/PageLayout/Accounts/useAccounts.tsx';
@@ -23,14 +23,14 @@ interface UseSubAccountsOutput {
 const ALL_SUB_ACCOUNTS_ID = 'ALL_SUB_ACCOUNTS';
 
 const getUniqueParties = (parties: PartyItemProp[]): PartyItemProp[] => {
-  const uniquePartyIds = new Set<string>();
-  const uniqueParties = new Set<PartyItemProp>();
+  const seen = new Set<string>();
+  const result: PartyItemProp[] = [];
   for (const party of parties) {
-    if (uniquePartyIds.has(party.id)) continue;
-    uniqueParties.add(party);
-    uniquePartyIds.add(party.id);
+    if (seen.has(party.id)) continue;
+    seen.add(party.id);
+    result.push(party);
   }
-  return Array.from(uniqueParties);
+  return result;
 };
 
 export const useSubAccounts = ({
@@ -46,6 +46,9 @@ export const useSubAccounts = ({
     return getSelectedSubAccountsFromQueryParams(searchParams);
   }, [searchParams.get(FixedGlobalQueryParams.subAccounts)]);
 
+  /** Set for O(1) lookups — avoids O(n×m) in .map() and .includes() checks */
+  const selectedSubAccountIdSet = useMemo(() => new Set(selectedSubAccountIds), [selectedSubAccountIds]);
+
   const updateSelectedSubAccountIds = useCallback(
     (ids: string[]) => {
       const nextParams = new URLSearchParams(searchParams.toString());
@@ -60,24 +63,43 @@ export const useSubAccounts = ({
     [searchParams, setSearchParams],
   );
 
+  /** Pre-index accounts by id and parentId for O(1) lookups instead of O(n) .find()/.filter() */
+  const accountIndex = useMemo(() => {
+    const byId = new Map<string, PartyItemProp>();
+    const byParentId = new Map<string, PartyItemProp[]>();
+    const companies: PartyItemProp[] = [];
+
+    for (const account of accounts) {
+      byId.set(account.id, account);
+      if (account.type === 'company' || account.type === 'subunit') {
+        companies.push(account);
+      }
+      if (account.parentId) {
+        let children = byParentId.get(account.parentId);
+        if (!children) {
+          children = [];
+          byParentId.set(account.parentId, children);
+        }
+        children.push(account);
+      }
+    }
+
+    return { byId, byParentId, companies };
+  }, [accounts]);
+
   const selectedPartyId = selectedParties[0]?.party;
-  const selectedAccount = useMemo(
-    () => accounts.find((account) => account.id === selectedPartyId),
-    [accounts, selectedPartyId],
-  );
+  const selectedAccount = useMemo(() => accountIndex.byId.get(selectedPartyId ?? ''), [accountIndex, selectedPartyId]);
   const parentAccount = useMemo(() => {
     return !allOrganizationsSelected && selectedAccount?.isParent ? selectedAccount : undefined;
   }, [allOrganizationsSelected, selectedAccount]);
 
   const subAccountsAndAll = useMemo<PartyItemProp[]>(() => {
     if (allOrganizationsSelected) {
-      return getUniqueParties(
-        accounts.filter((party: PartyItemProp) => party.type === 'company' || party.type === 'subunit'),
-      );
+      return getUniqueParties(accountIndex.companies);
     }
 
     if (parentAccount) {
-      const subUnits = accounts.filter((a) => a.parentId === parentAccount.id);
+      const subUnits = accountIndex.byParentId.get(parentAccount.id) ?? [];
       if (subUnits.length) {
         return getUniqueParties([parentAccount, ...subUnits]);
       }
@@ -85,7 +107,7 @@ export const useSubAccounts = ({
     }
 
     return [];
-  }, [allOrganizationsSelected, accounts, parentAccount]);
+  }, [allOrganizationsSelected, accountIndex, parentAccount]);
 
   const filteredSubAccounts = useMemo(() => {
     return subAccountsAndAll.filter((item) => !item.disabled);
@@ -108,25 +130,32 @@ export const useSubAccounts = ({
     [mainUnitLabel, parentAccount, subUnitLabel],
   );
 
-  const onSelectSubAccount = useCallback(
-    (id: string) => {
-      if (!id || id === ALL_SUB_ACCOUNTS_ID) {
-        updateSelectedSubAccountIds([]);
-        return;
-      }
+  /**
+   * Use a ref for the select handler so the subAccounts memo doesn't depend on selectedSubAccountIds.
+   * This avoids rebuilding the entire menu items array on every sub-account toggle.
+   */
+  const selectedSubAccountIdsRef = useRef(selectedSubAccountIds);
+  selectedSubAccountIdsRef.current = selectedSubAccountIds;
+  const updateRef = useRef(updateSelectedSubAccountIds);
+  updateRef.current = updateSelectedSubAccountIds;
 
-      if (selectedSubAccountIds.includes(id)) {
-        updateSelectedSubAccountIds(selectedSubAccountIds.filter((item: string) => item !== id));
-      } else {
-        updateSelectedSubAccountIds([...selectedSubAccountIds, id]);
-      }
-    },
-    [selectedSubAccountIds, updateSelectedSubAccountIds],
-  );
+  const onSelectSubAccount = useCallback((id: string) => {
+    if (!id || id === ALL_SUB_ACCOUNTS_ID) {
+      updateRef.current([]);
+      return;
+    }
+
+    const current = selectedSubAccountIdsRef.current;
+    if (current.includes(id)) {
+      updateRef.current(current.filter((item: string) => item !== id));
+    } else {
+      updateRef.current([...current, id]);
+    }
+  }, []);
 
   const subAccounts = useMemo<MenuItemProps[]>(() => {
     if (!filteredSubAccounts.length) return [];
-    const items = [...filteredSubAccounts].map((item) => {
+    const items = filteredSubAccounts.map((item) => {
       return {
         id: `subaccount-${item.id}`,
         groupId: item.parentId || item.id,
@@ -138,7 +167,7 @@ export const useSubAccounts = ({
         },
         name: 'subaccount',
         value: item.id,
-        checked: selectedSubAccountIds.includes(item.id),
+        checked: selectedSubAccountIdSet.has(item.id),
         disabled: item.disabled,
         searchWords: item.searchWords,
       } satisfies MenuItemProps;
@@ -152,23 +181,25 @@ export const useSubAccounts = ({
         role: 'radio',
         name: 'subaccount',
         value: 'all',
-        onChange: () => updateSelectedSubAccountIds([]),
-        checked: selectedSubAccountIds.length === 0,
+        onChange: () => updateRef.current([]),
+        checked: selectedSubAccountIdSet.size === 0,
       },
       ...items,
     ];
-  }, [
-    allLabel,
-    filteredSubAccounts,
-    getSubAccountTitle,
-    selectedSubAccountIds,
-    onSelectSubAccount,
-    updateSelectedSubAccountIds,
-  ]);
+  }, [allLabel, filteredSubAccounts, getSubAccountTitle, selectedSubAccountIdSet, onSelectSubAccount]);
+
+  /** Pre-index filteredSubAccounts by id for O(1) label lookup */
+  const filteredSubAccountsById = useMemo(() => {
+    const map = new Map<string, PartyItemProp>();
+    for (const item of filteredSubAccounts) {
+      map.set(item.id, item);
+    }
+    return map;
+  }, [filteredSubAccounts]);
 
   const getSubAccountLabel = useCallback(() => {
     if (selectedSubAccountIds.length === 1) {
-      const selectedSubAccount = filteredSubAccounts.find((item) => item.id === selectedSubAccountIds[0]);
+      const selectedSubAccount = filteredSubAccountsById.get(selectedSubAccountIds[0]);
       return selectedSubAccount ? getSubAccountTitle(selectedSubAccount) : allLabel;
     }
     if (allOrganizationsSelected) {
@@ -184,7 +215,15 @@ export const useSubAccounts = ({
       return t('parties.labels.units_count', { count: selectedSubAccountIds.length });
     }
     return t('parties.labels.units_count', { count: filteredSubAccounts.length });
-  }, [allLabel, filteredSubAccounts, selectedSubAccountIds, t, allOrganizationsSelected, getSubAccountTitle]);
+  }, [
+    allLabel,
+    filteredSubAccounts,
+    filteredSubAccountsById,
+    selectedSubAccountIds,
+    t,
+    allOrganizationsSelected,
+    getSubAccountTitle,
+  ]);
 
   const groups = {
     all: {

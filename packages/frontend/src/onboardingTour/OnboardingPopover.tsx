@@ -3,7 +3,7 @@ import { XMarkIcon } from '@navikt/aksel-icons';
 import { useTour } from '@reactour/tour';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParties } from '../api/hooks/useParties';
+import { useSelectedProfile } from '../api/hooks/usePartiesSelectors';
 import styles from './onboardingPopover.module.css';
 
 interface OnboardingPopoverProps {
@@ -13,7 +13,7 @@ interface OnboardingPopoverProps {
 }
 
 export const OnboardingPopover = ({ titleKey, infoTextKey, hideNextButton }: OnboardingPopoverProps) => {
-  const { selectedProfile } = useParties();
+  const selectedProfile = useSelectedProfile();
   const { t } = useTranslation();
   const { currentStep, steps, setCurrentStep, setIsOpen } = useTour();
   const containerRef = useRef<HTMLDivElement>(null);
