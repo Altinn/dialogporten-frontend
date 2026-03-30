@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.135.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.135.1...v1.135.2) (2026-03-30)
+
+
+### Bug Fixes
+
+* massive improvements to performance for parties calculating and handling ([#3939](https://github.com/Altinn/dialogporten-frontend/issues/3939)) ([4de4325](https://github.com/Altinn/dialogporten-frontend/commit/4de4325e75d658767b2787c60b6a17c013a4a514))
+
 ## [1.135.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.135.0...v1.135.1) (2026-03-27)
 
 
