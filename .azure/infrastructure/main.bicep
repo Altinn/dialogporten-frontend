@@ -54,6 +54,9 @@ param enableMaintenancePage bool = false
 @description('Whether to provision the backup vault storage account + container for PostgreSQL restore backups')
 param enableBackupVault bool = false
 
+@description('The VM size for the SSH Jumper virtual machine')
+param sshJumperVmSize string = 'Standard_B1ms'
+
 // PostgreSQL configuration parameters
 import { Sku as PostgreSQLSku } from '../modules/postgreSql/create.bicep'
 import { StorageConfiguration as PostgreSQLStorageConfiguration } from '../modules/postgreSql/create.bicep'
@@ -282,6 +285,7 @@ module sshJumper '../modules/ssh-jumper/main.bicep' = {
     tags: tags
     sshPublicKey: secrets.sourceKeyVaultSshJumperSshPublicKey
     adminLoginGroupObjectId: entraDevelopersGroupId
+    vmSize: sshJumperVmSize
   }
 }
 
