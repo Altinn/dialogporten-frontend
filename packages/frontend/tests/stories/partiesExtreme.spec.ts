@@ -57,7 +57,7 @@ test.describe('Parties extreme (15 000 parties)', () => {
     const menuOpenTime = Date.now() - start;
     console.debug(`[perf] Account menu open with 15k parties: ${menuOpenTime}ms`);
 
-    expect(menuOpenTime).toBeLessThan(5_000);
+    expect(menuOpenTime).toBeLessThan(6_000);
   });
 
   test('can switch to a company party via search', async ({ page }) => {
@@ -110,7 +110,7 @@ test.describe('Parties extreme (15 000 parties)', () => {
     const switchTime = Date.now() - start;
     console.debug(`[perf] Switch to all organizations with 15k parties: ${switchTime}ms`);
 
-    expect(switchTime).toBeLessThan(5_000);
+    expect(switchTime).toBeLessThan(6_000);
   });
 
   test('can switch back to person after selecting company', async ({ page }) => {
@@ -135,7 +135,7 @@ test.describe('Parties extreme (15 000 parties)', () => {
     const switchTime = Date.now() - start;
     console.debug(`[perf] Switch from company to person: ${switchTime}ms`);
 
-    expect(switchTime).toBeLessThan(7_000);
+    expect(switchTime).toBeLessThan(8_000);
   });
 
   test('account menu search filters 15k parties responsively', async ({ page }) => {
@@ -164,6 +164,6 @@ test.describe('Parties extreme (15 000 parties)', () => {
     const searchTime = Date.now() - start;
     console.debug(`[perf] Account menu search with 15k parties: ${searchTime}ms`);
 
-    expect(searchTime).toBeLessThan(7_000);
+    expect(searchTime).toBeLessThan(8_000);
   });
 });

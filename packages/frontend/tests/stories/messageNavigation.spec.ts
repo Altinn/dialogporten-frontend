@@ -7,36 +7,45 @@ test.describe('Message navigation', () => {
   const pageWithMockOrganizations = appUrlWithPlaywrightId('login-party-context');
 
   test('Back button navigates correctly and saves party', async ({ page }) => {
+    const toolbar = page.locator('#toolbar-menu-root');
+
     await page.goto(pageWithMockOrganizations);
     await expectIsPersonPage(page);
 
-    await expect(page.locator('#toolbar-menu-root')).toContainText('Test Testesen');
+    await expect(toolbar).toContainText('Test Testesen');
     await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).toBeVisible();
     await page.getByRole('link', { name: 'Skatten din for 2022' }).click();
+    await page.waitForURL((url) => url.pathname !== '/');
     await page.getByRole('link', { name: 'Tilbake', exact: true }).click();
-    await expect(page.locator('#toolbar-menu-root')).toContainText('Test Testesen');
+    await page.waitForURL((url) => url.pathname === '/');
+    await expect(toolbar).toContainText('Test Testesen');
 
-    await page.locator('#toolbar-menu-root > button').click();
+    await toolbar.locator('button').first().click();
     await page.locator('button[id="urn:altinn:organization:identifier-no:1"]').click();
 
-    await expect(page.locator('#toolbar-menu-root')).toContainText('Firma AS');
+    await expect(toolbar).toContainText('Firma AS');
     await expect(page.getByRole('link', { name: 'This is a message 1 for Firma AS' })).toBeVisible();
     await page.getByRole('link', { name: 'This is a message 1 for Firma' }).click();
+    await page.waitForURL((url) => url.pathname !== '/' && url.searchParams.has('party'));
     await page.getByRole('link', { name: 'Tilbake', exact: true }).click();
+    await page.waitForURL((url) => url.pathname === '/' && url.searchParams.has('party'));
 
-    await expect(page.locator('#toolbar-menu-root')).toContainText('Firma AS');
+    await expect(toolbar).toContainText('Firma AS');
     await expectIsCompanyPage(page);
 
     expect(new URL(page.url()).searchParams.has('party')).toBe(true);
 
-    await page.locator('#toolbar-menu-root > button').click();
+    await toolbar.locator('button').first().click();
     await page.getByRole('option', { name: 'Alle virksomheter' }).click();
-    await expect(page.locator('#toolbar-menu-root')).toContainText('Alle virksomheter');
+    await expect(toolbar).toContainText('Alle virksomheter');
+    await page.waitForURL((url) => url.searchParams.has('allParties'));
 
     await page.getByRole('link', { name: 'This is a message 1 for Firma' }).click();
+    await page.waitForURL((url) => url.pathname !== '/' && url.searchParams.has('allParties'));
     await page.getByRole('link', { name: 'Tilbake' }).click();
+    await page.waitForURL((url) => url.pathname === '/' && url.searchParams.has('allParties'));
 
-    await expect(page.locator('#toolbar-menu-root')).toContainText('Alle virksomheter');
+    await expect(toolbar).toContainText('Alle virksomheter');
 
     await expectIsPersonPage(page);
     expect(new URL(page.url()).searchParams.has('allParties')).toBe(true);
