@@ -136,6 +136,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     isError: unableToLoadParties,
     isLoading: isLoadingParties,
     organizationLimitReached,
+    partyGraph,
   } = useParties();
 
   const { items: savedSearchItems, onSaveSearch, onCloseSavedSearch } = useSavedSearches(selectedPartyIds);
@@ -188,6 +189,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     parties,
     selectedParties,
     allOrganizationsSelected,
+    partyGraph,
     options: {
       showGroups: true,
     },
@@ -316,7 +318,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
         title: <span className={styles.searchButtonWrapper}>{groups[firstKey]?.title}</span>,
       },
     };
-  }, [groups, viewType, savedSearchDisabled, savedSearchFilterState, onSaveSuccess]);
+  }, [groups]);
 
   const sortGroupBy = useCallback(
     ([aKey]: [string, unknown], [bKey]: [string, unknown]) =>

@@ -1,6 +1,6 @@
 import type { DialogLookupQuery } from 'bff-types-generated';
 import { useMemo } from 'react';
-import { useParties } from '../../api/hooks/useParties.ts';
+import { usePartyGraph } from '../../api/hooks/usePartiesSelectors.ts';
 import { graphQLSDK } from '../../api/queries.ts';
 import { getAccessAMUILink } from '../../auth';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
@@ -23,7 +23,7 @@ const getDelegationHref = (instanceUrn: string, resourceId: string, dialogId: st
 };
 
 export const useDelegation = (dialogId?: string, party?: string): UseDelegationOutput => {
-  const { parties } = useParties();
+  const partyGraph = usePartyGraph();
   const instanceRef = `urn:altinn:dialog-id:${dialogId}`;
   const enableDelegationLink = useFeatureFlag('auth.enableDelegationLink');
   const { data, isSuccess } = useAuthenticatedQuery<DialogLookupQuery>({
@@ -37,8 +37,8 @@ export const useDelegation = (dialogId?: string, party?: string): UseDelegationO
   });
 
   const partyUuid = useMemo(() => {
-    return parties.find((p) => p.party === party)?.partyUuid;
-  }, [parties, party]);
+    return party ? partyGraph.partyByUrn.get(party)?.partyUuid : undefined;
+  }, [partyGraph, party]);
 
   if (!enableDelegationLink) {
     return {

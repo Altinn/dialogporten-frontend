@@ -89,35 +89,34 @@ export const useAccountFilters = ({
 
   const filteredParties = useMemo(() => {
     const filters = filterState?.partyScope ?? [];
-    let result = includeDeletedParties ? parties : parties.filter((party) => !party.isDeleted);
+    const filterSet = new Set(filters);
+    const isAllParties = filterSet.has(FilterStateEnum.ALL_PARTIES);
+    const includeCompanies = isAllParties || filterSet.has(FilterStateEnum.COMPANIES);
+    const includePersons = isAllParties || filterSet.has(FilterStateEnum.PERSONS);
 
-    if (searchValue.length > 0) {
-      const search = searchValue.toLowerCase();
-      const normalized = search.trim().toLowerCase();
-      const parts = normalized.split(/\s+/);
+    const hasSearch = searchValue.length > 0;
+    const normalized = hasSearch ? searchValue.trim().toLowerCase() : '';
+    const parts = hasSearch ? normalized.split(/\s+/) : [];
 
-      result = result.filter((s) => {
-        const name = (s.name ?? '').toString().toLowerCase();
-        const party = (s.party ?? '').toString().toLowerCase();
-        return (
-          parts.some((part) => name.includes(part) || party.includes(part)) ||
+    const result: PartyFieldsFragment[] = [];
+
+    for (const party of parties) {
+      if (!includeDeletedParties && party.isDeleted) continue;
+
+      if (party.partyType === 'Organization' ? !includeCompanies : !includePersons) continue;
+
+      if (hasSearch) {
+        const name = (party.name ?? '').toLowerCase();
+        const urn = (party.party ?? '').toLowerCase();
+        const matches =
+          parts.some((part) => name.includes(part) || urn.includes(part)) ||
           name.includes(normalized) ||
-          party.includes(normalized)
-        );
-      });
+          urn.includes(normalized);
+        if (!matches) continue;
+      }
+
+      result.push(party);
     }
-
-    result = result.filter((party) => {
-      if (filters.includes(FilterStateEnum.ALL_PARTIES)) {
-        return true;
-      }
-
-      if (filters.includes(FilterStateEnum.COMPANIES) && party.partyType === 'Organization') {
-        return true;
-      }
-
-      return filters.includes(FilterStateEnum.PERSONS) && party.partyType === 'Person';
-    });
 
     return result;
   }, [parties, filterState, searchValue, includeDeletedParties]);

@@ -7,7 +7,7 @@ import {
   useAccountSelector,
 } from '@altinn/altinn-components';
 import type { ChangeEvent } from 'react';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps, useLocation, useNavigate } from 'react-router-dom';
 import { Analytics } from '../../analytics/analytics.ts';
@@ -31,7 +31,8 @@ interface UseHeaderConfigOutput {
 }
 
 export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutput => {
-  const { currentEndUser, parties, selectedParties, isLoading, currentPartyUuid, setSelectedPartyIds } = useParties();
+  const { currentEndUser, parties, selectedParties, isLoading, currentPartyUuid, setSelectedPartyIds, partyGraph } =
+    useParties();
   const { t, i18n } = useTranslation();
   const { logError } = useErrorLogger();
   const location = useLocation();
@@ -76,7 +77,7 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
 
   const handleSelectAccount = (accountUuid: string) => {
     const targetRoute = isProfile ? PageRoutes.profile : PageRoutes.inbox;
-    const party = parties.find((p) => p.partyUuid === accountUuid);
+    const party = partyGraph.partyByUuid.get(accountUuid);
 
     if (!party) {
       console.error('Selected party not found:', accountUuid);
@@ -119,7 +120,7 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
     [updateShowDeletedEntities, logError],
   );
 
-  const partyListDTO = mapPartiesToAuthorizedParties(parties);
+  const partyListDTO = useMemo(() => mapPartiesToAuthorizedParties(parties), [parties]);
 
   const favoriteAccountUuids = (favoritesGroup?.parties ?? []).filter(
     (uuid): uuid is string => uuid !== null && uuid !== undefined,

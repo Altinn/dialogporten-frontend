@@ -3,7 +3,7 @@ import { BookmarkFillIcon, BookmarkIcon } from '@navikt/aksel-icons';
 import type { ButtonHTMLAttributes, RefAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
-import { useParties } from '../../api/hooks/useParties.ts';
+import { useSelectedPartyIds } from '../../api/hooks/usePartiesSelectors.ts';
 import { buildCurrentStateURL, findMatchingSavedSearch } from '../../pages/SavedSearches';
 import { useSavedSearches } from '../../pages/SavedSearches/useSavedSearches.tsx';
 import { useSearchString } from '../PageLayout/Search';
@@ -26,7 +26,7 @@ export const SaveSearchButton = ({
   onSaveSuccess,
 }: SaveSearchButtonProps) => {
   const { t } = useTranslation();
-  const { selectedPartyIds } = useParties();
+  const selectedPartyIds = useSelectedPartyIds();
   const { enteredSearchValue } = useSearchString();
   const {
     currentPartySavedSearches: savedSearches,

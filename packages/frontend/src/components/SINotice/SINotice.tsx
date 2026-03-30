@@ -1,11 +1,12 @@
 import { Alert, Flex } from '@altinn/altinn-components';
 import { useTranslation } from 'react-i18next';
-import { useParties } from '../../api/hooks/useParties.ts';
+import { useCurrentPartyUuid, useSelfIdentifiedUserType } from '../../api/hooks/usePartiesSelectors.ts';
 import { getAlternativeLoginLink } from '../../auth';
 
 export const SINotice = () => {
   const { t, i18n } = useTranslation();
-  const { currentPartyUuid, selfIdentifiedUserType } = useParties();
+  const currentPartyUuid = useCurrentPartyUuid();
+  const selfIdentifiedUserType = useSelfIdentifiedUserType();
   switch (selfIdentifiedUserType) {
     case 'Email':
       return (

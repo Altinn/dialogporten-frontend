@@ -2,13 +2,15 @@ import { Heading, PageBase, SettingsList, Toolbar } from '@altinn/altinn-compone
 import { useTranslation } from 'react-i18next';
 import { useProfile } from '..';
 import { useParties } from '../../../api/hooks/useParties';
+import { useIsSelfIdentifiedUser } from '../../../api/hooks/usePartiesSelectors';
 import { usePageTitle } from '../../../hooks/usePageTitle';
 import { SettingsType, useSettings } from './useSettings.tsx';
 
 export const Settings = () => {
   const { t } = useTranslation();
   const { isLoading: isLoadingUser } = useProfile();
-  const { isLoading: isLoadingParties, isSelfIdentifiedUser } = useParties();
+  const { isLoading: isLoadingParties } = useParties();
+  const isSelfIdentifiedUser = useIsSelfIdentifiedUser();
 
   usePageTitle({ baseTitle: t('component.settings') });
 

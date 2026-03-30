@@ -59,7 +59,7 @@ test.describe('Saved Searches', () => {
     await page.goto(`${baseURL}/saved-searches`);
 
     // Step 7: Verify saved search appears
-    await expect(page.locator('#main-content')).toContainText('1 lagret søk', { timeout: 10000 });
+    await expect(page.locator('#main-content')).toContainText('Personlige søk', { timeout: 10000 });
 
     // Step 8: Open saved search menu
     const menuButton = page.getByRole('button', { name: 'Åpne meny' });

@@ -2,7 +2,7 @@ import { Heading, Typography } from '@altinn/altinn-components';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
-import { useParties } from '../../api/hooks/useParties.ts';
+import { useCurrentPartyUuid } from '../../api/hooks/usePartiesSelectors.ts';
 import { createMessageBoxLink } from '../../auth';
 
 interface EmptyStateProps {
@@ -12,7 +12,7 @@ interface EmptyStateProps {
 
 export const EmptyState = ({ viewType, savable }: EmptyStateProps) => {
   const { t } = useTranslation();
-  const { currentPartyUuid } = useParties();
+  const currentPartyUuid = useCurrentPartyUuid();
   if (savable) {
     return (
       <Typography size="sm">
