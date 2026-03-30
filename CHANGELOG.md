@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.135.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.135.0...v1.135.1) (2026-03-27)
+
+
+### Bug Fixes
+
+* reduce padding in si info banners ([#3936](https://github.com/Altinn/dialogporten-frontend/issues/3936)) ([a09c650](https://github.com/Altinn/dialogporten-frontend/commit/a09c650a4c91d3a356d99d11a54f7b525ec54260))
+
 ## [1.135.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.134.3...v1.135.0) (2026-03-27)
 
 
