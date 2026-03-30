@@ -55,7 +55,7 @@ param enableMaintenancePage bool = false
 param enableBackupVault bool = false
 
 @description('The VM size for the SSH Jumper virtual machine')
-param sshJumperVmSize string = 'Standard_B1s'
+param sshJumperVmSize string = 'Standard_B1ms'
 
 // PostgreSQL configuration parameters
 import { Sku as PostgreSQLSku } from '../modules/postgreSql/create.bicep'

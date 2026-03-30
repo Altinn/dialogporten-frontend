@@ -74,8 +74,5 @@ param containerAppEnvWorkloadProfiles = [
 // Altinn Product Dialogporten: Developers Dev
 param entraDevelopersGroupId = 'c12e51e3-5cbd-4229-8a31-5394c423fb5f'
 
-// SSH Jumper VM Size
-param sshJumperVmSize = 'Standard_B1ms'
-
 // Maintenance Mode
 param enableMaintenancePage = false

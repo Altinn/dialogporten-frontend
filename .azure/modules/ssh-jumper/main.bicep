@@ -18,7 +18,7 @@ param sshPublicKey string
 param adminLoginGroupObjectId string
 
 @description('The VM size for the SSH Jumper virtual machine')
-param vmSize string = 'Standard_B1s'
+param vmSize string = 'Standard_B1ms'
 
 var name = '${namePrefix}-ssh-jumper'
 
