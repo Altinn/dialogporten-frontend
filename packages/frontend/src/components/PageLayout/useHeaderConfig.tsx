@@ -91,6 +91,9 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
 
     if (party.partyType === 'Person') {
       setSelectedPartyIds([party.party], false);
+      if (location.pathname.startsWith('/inbox/')) {
+        navigate(PageRoutes.inbox);
+      }
     } else {
       const search = new URLSearchParams(location.search);
       search.set('party', party.party);
