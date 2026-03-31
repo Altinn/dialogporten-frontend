@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.136.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.135.3...v1.136.0) (2026-03-31)
+
+
+### Features
+
+* add string-array support to feature flags + auth.orgsNotReadyToDealWithDelegations flag ([#3949](https://github.com/Altinn/dialogporten-frontend/issues/3949)) ([faef946](https://github.com/Altinn/dialogporten-frontend/commit/faef94663abba24feeae13a625f31fa0ad928f8b))
+
 ## [1.135.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.135.2...v1.135.3) (2026-03-31)
 
 
