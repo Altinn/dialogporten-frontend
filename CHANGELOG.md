@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.135.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.135.2...v1.135.3) (2026-03-31)
+
+
+### Bug Fixes
+
+* refactor inbox navigation from parties overview to use correct party data and set selected party ([#3947](https://github.com/Altinn/dialogporten-frontend/issues/3947)) ([c101742](https://github.com/Altinn/dialogporten-frontend/commit/c10174202b13238dcda07c3e75ece61a055b4960))
+
 ## [1.135.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.135.1...v1.135.2) (2026-03-30)
 
 
