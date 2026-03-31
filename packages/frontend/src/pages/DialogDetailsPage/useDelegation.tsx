@@ -22,10 +22,11 @@ const getDelegationHref = (instanceUrn: string, resourceId: string, dialogId: st
   return `${base}/poa-overview/instance?${params.toString()}`;
 };
 
-export const useDelegation = (dialogId?: string, party?: string): UseDelegationOutput => {
+export const useDelegation = (dialogId?: string, party?: string, org?: string): UseDelegationOutput => {
   const partyGraph = usePartyGraph();
   const instanceRef = `urn:altinn:dialog-id:${dialogId}`;
   const enableDelegationLink = useFeatureFlag('auth.enableDelegationLink');
+  const orgsNotReadyToDealWithDelegations = useFeatureFlag<string[]>('auth.orgsNotReadyToDealWithDelegations');
   const { data, isSuccess } = useAuthenticatedQuery<DialogLookupQuery>({
     queryKey: [QUERY_KEYS.DIALOG_DELEGATION_LOOKUP, dialogId],
     staleTime: 0,
@@ -46,9 +47,11 @@ export const useDelegation = (dialogId?: string, party?: string): UseDelegationO
     };
   }
 
-  const isDelagable = data?.dialogLookup?.lookup?.serviceResource?.isDelegable ?? false;
+  const isDelegable = data?.dialogLookup?.lookup?.serviceResource?.isDelegable
+    ? !orgsNotReadyToDealWithDelegations?.includes(org ?? '')
+    : false;
 
-  if (isSuccess && isDelagable) {
+  if (isSuccess && isDelegable) {
     const instanceRef = data?.dialogLookup?.lookup?.instanceRef;
     const serviceResourceId = data?.dialogLookup?.lookup?.serviceResource.id;
     if (instanceRef && serviceResourceId && dialogId && partyUuid) {

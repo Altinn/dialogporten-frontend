@@ -1,9 +1,9 @@
-export type FeatureFlagType = 'boolean' | 'number' | 'string';
+export type FeatureFlagType = 'boolean' | 'number' | 'string' | 'string-array';
 
 export interface FeatureFlagDefinition {
   key: string; // dot-notation key
   type: FeatureFlagType; // type of value
-  default: boolean | number | string; // fallback value
+  default: boolean | number | string | string[]; // fallback value
 }
 
 export const featureFlagDefinitions = [
@@ -17,6 +17,9 @@ export const featureFlagDefinitions = [
   { key: 'profile.enableResendVerificationCode', type: 'boolean', default: false },
   { key: 'profile.enableSingleServiceNotifications', type: 'boolean', default: false },
   { key: 'auth.enableDelegationLink', type: 'boolean', default: false },
+  { key: 'auth.enableDelegationLink', type: 'boolean', default: false },
+  { key: 'auth.enableDelegationLink', type: 'boolean', default: false },
+  { key: 'auth.orgsNotReadyToDealWithDelegations', type: 'string-array', default: [] },
 ] as const satisfies readonly FeatureFlagDefinition[];
 
 export type FeatureFlagKey = (typeof featureFlagDefinitions)[number]['key'];
@@ -24,7 +27,7 @@ export type FeatureFlagKey = (typeof featureFlagDefinitions)[number]['key'];
 export function getFeatureFlag(
   key: string,
   overrides: Record<string, unknown> = {},
-): boolean | number | string | undefined {
+): boolean | number | string | string[] | undefined {
   const def = featureFlagDefinitions.find((f) => f.key === key);
   if (!def) return undefined;
 
@@ -45,6 +48,11 @@ export function getFeatureFlag(
 
       case 'string':
         return String(value);
+
+      case 'string-array':
+        if (Array.isArray(value)) return value.map(String);
+        if (typeof value === 'string') return value.split(',').map((s) => s.trim());
+        return def.default;
 
       default:
         return def.default;

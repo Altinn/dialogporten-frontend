@@ -3,7 +3,7 @@ import { useErrorLogger } from '../hooks/useErrorLogger';
 import type { FeatureFlagKey } from './FeatureFlags.ts';
 import { FeatureFlagContext } from './FeatureFlagsProvider';
 
-export function useFeatureFlag<T = boolean | number | string>(flag: FeatureFlagKey, fallback?: T): T {
+export function useFeatureFlag<T = boolean | number | string | string[]>(flag: FeatureFlagKey, fallback?: T): T {
   const context = useContext(FeatureFlagContext);
   const { logError } = useErrorLogger();
 
