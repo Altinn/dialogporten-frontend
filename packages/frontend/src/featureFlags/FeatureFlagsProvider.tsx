@@ -4,7 +4,7 @@ import { type ReactNode, createContext } from 'react';
 import { Analytics } from '../analytics/analytics.ts';
 import { featureFlagDefinitions, getFeatureFlag } from './FeatureFlags';
 
-export type FeatureFlagValues = Record<string, boolean | number | string | undefined>;
+export type FeatureFlagValues = Record<string, boolean | number | string | string[] | undefined>;
 
 export const FeatureFlagContext = createContext<FeatureFlagValues | undefined>(undefined);
 
