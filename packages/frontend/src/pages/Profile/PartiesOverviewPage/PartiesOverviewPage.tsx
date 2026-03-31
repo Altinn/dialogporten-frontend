@@ -36,6 +36,70 @@ import { useAccountFilters } from '../useAccountFilters.tsx';
 import { ConfirmSetPreselectedActorModal } from './ConfirmSetPreselectedActorModal.tsx';
 import styles from './partiesOverviewPage.module.css';
 
+interface PartyDetailsProps {
+  type: AccountListItemType;
+  currentParty: PartyFieldsFragment;
+  settings: SettingsItemProps[];
+  getGoToInboxButton: (party: { party: string; isCurrentEndUser: boolean }) => {
+    label: string;
+    [key: string]: unknown;
+  };
+  getCompanySettings: (id: string) => SettingsItemProps[];
+  getPersonSettings: (id: string, isCurrentEndUser: boolean) => SettingsItemProps[];
+  getOrganizationAccounts: (
+    currentParty: { party: string } | undefined,
+    parentParty: PartyFieldsFragment | undefined,
+  ) => AccountOrganizationItemProps[];
+  parentParty: PartyFieldsFragment | undefined;
+}
+
+const PartyDetails = ({
+  type,
+  currentParty,
+  settings,
+  getGoToInboxButton,
+  getCompanySettings,
+  getPersonSettings,
+  getOrganizationAccounts,
+  parentParty,
+}: PartyDetailsProps) => {
+  const organizationAccounts = useMemo(() => {
+    if (type !== 'company') return undefined;
+    return getOrganizationAccounts(currentParty, parentParty);
+  }, [type, currentParty, parentParty, getOrganizationAccounts]);
+
+  if (currentParty.isCurrentEndUser) {
+    const contactSettings = settings.filter((s) => s.groupId === 'contact');
+    return (
+      <AccountListItemDetails color="person" buttons={[getGoToInboxButton(currentParty)]} settings={contactSettings} />
+    );
+  }
+
+  if (type === 'company') {
+    const companySettings = getCompanySettings(currentParty.party);
+    return (
+      <AccountListItemDetails
+        color="company"
+        settings={companySettings}
+        buttons={[getGoToInboxButton(currentParty)]}
+        organization={organizationAccounts}
+      />
+    );
+  }
+
+  if (type === 'person') {
+    return (
+      <AccountListItemDetails
+        color="person"
+        settings={getPersonSettings(currentParty.party, currentParty.isCurrentEndUser)}
+        buttons={[getGoToInboxButton(currentParty)]}
+      />
+    );
+  }
+
+  return null;
+};
+
 export type PreselectedPartyOperationType = 'set' | 'unset';
 
 export type PreselectedActorModalProps = {
@@ -45,8 +109,15 @@ export type PreselectedActorModalProps = {
 
 export const PartiesOverviewPage = () => {
   const { t } = useTranslation();
-  const { isSelfIdentifiedUser, parties, selectedParties, allOrganizationsSelected, isLoading, partyGraph } =
-    useParties();
+  const {
+    isSelfIdentifiedUser,
+    parties,
+    selectedParties,
+    allOrganizationsSelected,
+    isLoading,
+    partyGraph,
+    setSelectedPartyIds,
+  } = useParties();
   const { getAccountAlertSettings, settings } = useSettings({ disabled: isSelfIdentifiedUser, isSelfIdentifiedUser });
   const isDeletedUnitsFilterEnabled = useFeatureFlag<boolean>('inbox.enableDeletedUnitsFilter');
   const {
@@ -95,9 +166,23 @@ export const PartiesOverviewPage = () => {
     }
   };
 
-  const getPartyButtons = (isCurrentEndUser: boolean, partyId: string) => {
-    const inboxLink = PageRoutes.inbox + (isCurrentEndUser ? '' : `?party=${partyId}`);
-    return [{ label: t('parties.go_to_inbox'), as: (props: LinkProps) => <Link {...props} to={inboxLink} /> }];
+  const getGoToInboxButton = (party: { party: string; isCurrentEndUser: boolean }) => {
+    const isOrg = !party.isCurrentEndUser && party.party.includes('urn:altinn:organization');
+    const to = PageRoutes.inbox + (isOrg ? `?party=${party.party}` : '');
+    return {
+      label: t('parties.go_to_inbox'),
+      as: (props: LinkProps) => (
+        <Link
+          {...props}
+          onClick={() => {
+            if (!isOrg) {
+              setSelectedPartyIds([party.party], false);
+            }
+          }}
+          to={to}
+        />
+      ),
+    };
   };
 
   const getPartyNotificationsSettings = (id: string): SettingsItemProps[] => {
@@ -205,55 +290,6 @@ export const PartiesOverviewPage = () => {
     return items.map((item) => createOrganizationItem(item, currentParty));
   };
 
-  const PartyDetails = ({
-    type,
-    isCurrentEndUser,
-    id,
-  }: { type: AccountListItemType; isCurrentEndUser: boolean; id: string }) => {
-    const currentParty = partyGraph.partyByUrn.get(id);
-    const parentParty = partyGraph.parentByChildUrn.get(id);
-
-    const organizationAccounts = useMemo(() => {
-      if (type !== 'company') return undefined;
-      return getOrganizationAccounts(currentParty, parentParty);
-    }, [type, currentParty, parentParty]);
-
-    if (isCurrentEndUser) {
-      const contactSettings = settings.filter((s) => s.groupId === 'contact');
-      return (
-        <AccountListItemDetails
-          color="person"
-          buttons={getPartyButtons(isCurrentEndUser, id)}
-          settings={contactSettings}
-        />
-      );
-    }
-
-    if (type === 'company') {
-      const companySettings = getCompanySettings(id);
-      return (
-        <AccountListItemDetails
-          color="company"
-          settings={companySettings}
-          buttons={getPartyButtons(isCurrentEndUser, id)}
-          organization={organizationAccounts}
-        />
-      );
-    }
-
-    if (type === 'person') {
-      return (
-        <AccountListItemDetails
-          color="person"
-          settings={getPersonSettings(id, isCurrentEndUser)}
-          buttons={getPartyButtons(isCurrentEndUser, id)}
-        />
-      );
-    }
-
-    return null;
-  };
-
   const mapAccountToPartyListItem = (account: PartyItemProp): AccountListItemProps => {
     const { label: _, variant: __, ...party } = account;
     const itemId = account.id + account.groupId;
@@ -274,13 +310,18 @@ export const PartiesOverviewPage = () => {
       as: 'button' as ElementType,
       title: party.name,
       onToggleFavourite: () => onToggleFavourite(party.uuid, party.isFavorite),
-      children: (
+      children: partyGraph.partyByUrn.get(party.id) ? (
         <PartyDetails
           type={accountType as AccountListItemType}
-          isCurrentEndUser={party.isCurrentEndUser ?? false}
-          id={party.id}
+          currentParty={partyGraph.partyByUrn.get(party.id) as PartyFieldsFragment}
+          settings={settings}
+          getGoToInboxButton={getGoToInboxButton}
+          getCompanySettings={getCompanySettings}
+          getPersonSettings={getPersonSettings}
+          getOrganizationAccounts={getOrganizationAccounts}
+          parentParty={partyGraph.parentByChildUrn.get(party.id)}
         />
-      ),
+      ) : null,
       badge: (
         <>
           {party.badge && <Badge {...party.badge} />}
@@ -305,8 +346,10 @@ export const PartiesOverviewPage = () => {
             id: party.groupId + 'inbox',
             groupId: 'inbox',
             icon: InboxIcon,
-            title: t('profile.go_to_inbox'),
-            as: (props) => <Link to={'/?party=' + party.id} {...props} />,
+            ...getGoToInboxButton({
+              party: party.id,
+              isCurrentEndUser: party.isCurrentEndUser ?? false,
+            }),
           },
           ...(!party.isCurrentEndUser
             ? [
