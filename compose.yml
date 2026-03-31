@@ -130,10 +130,6 @@ services:
       HOSTNAME: https://app.localhost
       DIALOGPORTEN_URL: ${DIALOGPORTEN_URL}
       PLATFORM_BASEURL: ${PLATFORM_BASEURL}
-      LOGOUT_REDIRECT_URI: ${LOGOUT_REDIRECT_URI}
-      ENABLE_NEW_OIDC: ${ENABLE_NEW_OIDC}
-      CLIENT_ID: ${CLIENT_ID}
-      CLIENT_SECRET: ${CLIENT_SECRET}
       OIDC_PLATFORM_URL: ${OIDC_PLATFORM_URL}
       OIDC_URL: ${OIDC_URL}
       OIDC_CLIENT_ID: ${OIDC_CLIENT_ID}
@@ -208,7 +204,6 @@ services:
     environment:
       DB_CONNECTION_STRING: postgres://postgres:mysecretpassword@db:5432/dialogporten
       HOSTNAME: https://app.localhost
-      ENABLE_NEW_OIDC: ${ENABLE_NEW_OIDC}
       OIDC_CLIENT_ID: ${OIDC_CLIENT_ID}
       OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET}
       CLIENT_ID: ${CLIENT_ID}

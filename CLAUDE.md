@@ -122,7 +122,6 @@ Requires Node 22+, pnpm, and Docker. Create `.env` in root with:
 ```
 OIDC_CLIENT_ID=<value>
 OIDC_CLIENT_SECRET=<value>
-ENABLE_NEW_OIDC='true'
 OCP_APIM_SUBSCRIPTION_KEY=<value>
 APP_CONFIG_CONNECTION_STRING=<value>
 AUTH_CONTEXT_COOKIE_DOMAIN='localhost'

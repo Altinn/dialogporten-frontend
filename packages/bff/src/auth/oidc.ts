@@ -130,22 +130,12 @@ const buildAuthorizationUrl = (config: OpenIDConfig, params: Record<string, stri
 
 export const handleLogout = async (request: FastifyRequest, reply: FastifyReply, providerConfig: ProviderConfig) => {
   const token = request.session.get('token') as SessionStorageToken | undefined;
-  const { enableNewOIDC, logoutRedirectUri } = config;
 
   if (!token?.id_token) {
     return reply.code(401).send('Unauthorized: No token found');
   }
 
-  const baseUrl = providerConfig.end_session_endpoint;
-  const params = new URLSearchParams({
-    id_token_hint: token.id_token,
-  });
-
-  if (!enableNewOIDC) {
-    params.set('post_logout_redirect_uri', logoutRedirectUri);
-  }
-
-  const logoutUrl = `${baseUrl}?${params.toString()}`;
+  const logoutUrl = `${providerConfig.end_session_endpoint}?${new URLSearchParams({ id_token_hint: token.id_token })}`;
 
   await request.session.destroy();
   return reply.redirect(logoutUrl);

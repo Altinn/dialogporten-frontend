@@ -12,7 +12,6 @@ import type {
 
 const { platformBaseURL } = config;
 
-const platformExchangeTokenEndpointURL = platformBaseURL + '/authentication/api/v1/exchange/id-porten';
 const platformProfileAPI_url = platformBaseURL + '/profile/api/v1/';
 
 export type TokenType = {
@@ -38,33 +37,9 @@ export interface Context {
   };
 }
 
-export const exchangeToken = async (context: Context): Promise<string> => {
-  const { enableNewOIDC } = config;
-  const token = typeof context.session.get('token') === 'object' ? (context.session.get('token') as TokenType) : null;
-
-  if (!token) {
-    logger.error('exchangeToken: Unable to find token');
-    return '';
-  }
-
-  if (enableNewOIDC) {
-    return token.access_token;
-  }
-
-  try {
-    const { data: newToken } = await axios.get(platformExchangeTokenEndpointURL, {
-      timeout: 30000,
-      headers: {
-        Authorization: `Bearer ${token?.access_token}`,
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-    });
-    return newToken;
-  } catch (error) {
-    logger.error(error, 'exchangeToken: Error fetching new token:');
-  }
-  return '';
+const getSessionToken = (context: Context): TokenType | null => {
+  const token = context.session.get('token');
+  return typeof token === 'object' ? token : null;
 };
 
 export const getOrCreateProfile = async (context: Context): Promise<ProfileTable> => {
@@ -78,8 +53,8 @@ export const getOrCreateProfile = async (context: Context): Promise<ProfileTable
   }
 
   const profile = await ProfileRepository!.createQueryBuilder('profile').where('profile.pid = :pid', { pid }).getOne();
-  const exchangedToken = await exchangeToken(context);
-  const groups = await getFavoritesFromCore(exchangedToken);
+  const token = getSessionToken(context);
+  const groups = token ? await getFavoritesFromCore(token.access_token) : [];
 
   if (!profile) {
     const newProfile = new ProfileTable();
@@ -103,12 +78,11 @@ export const getOrCreateProfile = async (context: Context): Promise<ProfileTable
 };
 
 export const addFavoriteParty = async (context: Context, partyUuid: string) => {
-  const token = context.session.get('token');
+  const token = getSessionToken(context);
   if (!token) {
     logger.error('No token found in session');
     return [];
   }
-  const newToken = await exchangeToken(context);
 
   try {
     const response = await axios.put(
@@ -117,7 +91,7 @@ export const addFavoriteParty = async (context: Context, partyUuid: string) => {
       {
         timeout: 30000,
         headers: {
-          Authorization: `Bearer ${newToken}`,
+          Authorization: `Bearer ${token.access_token}`,
           'Content-Type': 'application/json',
           Accept: 'application/json',
         },
@@ -179,18 +153,17 @@ export const addFavoritePartyToGroup = async (pid: string, partyId: string, cate
 };
 
 export const deleteFavoriteParty = async (context: Context, partyUuid: string) => {
-  const token = context.session.get('token');
+  const token = getSessionToken(context);
   if (!token) {
     logger.error('No token found in session');
     return [];
   }
-  const newToken = await exchangeToken(context);
 
   return await axios
     .delete(`${platformProfileAPI_url}users/current/party-groups/favorites/${partyUuid}`, {
       timeout: 30000,
       headers: {
-        Authorization: `Bearer ${newToken}`,
+        Authorization: `Bearer ${token.access_token}`,
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
@@ -202,12 +175,16 @@ export const deleteFavoriteParty = async (context: Context, partyUuid: string) =
 };
 
 export const getUserFromCore = async (context: Context) => {
+  const token = getSessionToken(context);
+  if (!token) {
+    logger.error('No token found in session');
+    return;
+  }
   try {
-    const token = await exchangeToken(context);
     const { data } = await axios.get(`${platformProfileAPI_url}users/current`, {
       timeout: 30000,
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token.access_token}`,
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
@@ -241,12 +218,12 @@ export const updateShowClientUnits = async (context: Context, value: boolean) =>
   return patchProfileSettings(context, { showClientUnits: value });
 };
 
-export const getFavoritesFromCore = async (token: string) => {
+export const getFavoritesFromCore = async (accessToken: string) => {
   try {
     const { data } = await axios.get(`${platformProfileAPI_url}users/current/party-groups/favorites`, {
       timeout: 30000,
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
@@ -259,9 +236,9 @@ export const getFavoritesFromCore = async (token: string) => {
 };
 
 export const getNotificationsettingsForCurrentUser = async (context: Context) => {
-  const newToken = await exchangeToken(context);
-  if (!newToken) {
-    logger.error('No new token received');
+  const token = getSessionToken(context);
+  if (!token) {
+    logger.error('No token found in session');
     return;
   }
 
@@ -270,7 +247,7 @@ export const getNotificationsettingsForCurrentUser = async (context: Context) =>
     const response = await axios.get(`${platformProfileAPI_url}users/current/notificationsettings/parties`, {
       timeout: 30000,
       headers: {
-        Authorization: `Bearer ${newToken}`,
+        Authorization: `Bearer ${token.access_token}`,
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
@@ -298,7 +275,7 @@ export const getNotificationsettingsForCurrentUser = async (context: Context) =>
 };
 
 const patchProfileSettings = async (context: Context, payload: Record<string, unknown>) => {
-  const token = await exchangeToken(context);
+  const token = getSessionToken(context);
   if (!token) {
     throw new Error('No token found in session');
   }
@@ -306,7 +283,7 @@ const patchProfileSettings = async (context: Context, payload: Record<string, un
     const response = await axios.patch(`${platformProfileAPI_url}users/current/profilesettings`, payload, {
       timeout: 30000,
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token.access_token}`,
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
@@ -329,24 +306,23 @@ export const updateNotificationsSetting = async (
   context: Context,
 ) => {
   const { partyUuid } = notificationSettingsInput;
+  if (!partyUuid) {
+    logger.error('No uuid found in data');
+    return;
+  }
+  const token = getSessionToken(context);
+  if (!token) {
+    logger.error('No token found in session');
+    return;
+  }
   try {
-    if (!partyUuid) {
-      logger.error('No uuid found in data');
-      return;
-    }
-    const newToken = await exchangeToken(context);
-
-    if (!newToken) {
-      logger.error('No new token received');
-      return;
-    }
     const response = await axios.put(
       `${platformProfileAPI_url}users/current/notificationsettings/parties/${partyUuid}`,
       notificationSettingsInput,
       {
         timeout: 30000,
         headers: {
-          Authorization: `Bearer ${newToken}`,
+          Authorization: `Bearer ${token.access_token}`,
           'Content-Type': 'application/json',
           Accept: 'application/json',
         },
@@ -365,23 +341,22 @@ export const updateNotificationsSetting = async (
 };
 
 export const deleteNotificationsSetting = async (partyUuid: string, context: Context) => {
+  if (!partyUuid) {
+    logger.error('No uuid found in data');
+    return;
+  }
+  const token = getSessionToken(context);
+  if (!token) {
+    logger.error('No token found in session');
+    return;
+  }
   try {
-    if (!partyUuid) {
-      logger.error('No uuid found in data');
-      return;
-    }
-    const newToken = await exchangeToken(context);
-
-    if (!newToken) {
-      logger.error('No new token received');
-      return;
-    }
     const response = await axios.delete(
       `${platformProfileAPI_url}users/current/notificationsettings/parties/${partyUuid}`,
       {
         timeout: 30000,
         headers: {
-          Authorization: `Bearer ${newToken}`,
+          Authorization: `Bearer ${token.access_token}`,
           'Content-Type': 'application/json',
           Accept: 'application/json',
         },
@@ -398,25 +373,20 @@ export const deleteNotificationsSetting = async (partyUuid: string, context: Con
 };
 
 export const getNotificationAddressByOrgNumber = async (orgnr: string, context: Context) => {
-  const token = context.session.get('token');
-  if (!token) {
-    logger.error('No token found in session');
-    return;
-  }
   if (!orgnr) {
     logger.error('No orgnr provided');
     return;
   }
-  const newToken = await exchangeToken(context);
-  if (!newToken) {
-    logger.error('No new token received');
+  const token = getSessionToken(context);
+  if (!token) {
+    logger.error('No token found in session');
     return;
   }
   const { data, status, statusText } = await axios
     .get(`${platformProfileAPI_url}organizations/${orgnr}/notificationaddresses/mandatory`, {
       timeout: 30000,
       headers: {
-        Authorization: `Bearer ${newToken}`,
+        Authorization: `Bearer ${token.access_token}`,
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
@@ -437,7 +407,10 @@ export const updateShowDeletedEntities = async (context: Context, shouldShowDele
 };
 
 export const verifyAddress = async (data: VerifyAddressInputData, context: Context) => {
-  const newToken = await exchangeToken(context);
+  const token = getSessionToken(context);
+  if (!token) {
+    throw new Error('No token found in session');
+  }
   try {
     await axios.post(
       `${platformProfileAPI_url}users/current/verification/verify`,
@@ -445,7 +418,7 @@ export const verifyAddress = async (data: VerifyAddressInputData, context: Conte
       {
         timeout: 30000,
         headers: {
-          Authorization: `Bearer ${newToken}`,
+          Authorization: `Bearer ${token.access_token}`,
           'Content-Type': 'application/json',
           Accept: 'application/json',
         },
@@ -465,7 +438,10 @@ export const verifyAddress = async (data: VerifyAddressInputData, context: Conte
 };
 
 export const resendVerificationCode = async (data: ResendVerificationCodeInputData, context: Context) => {
-  const newToken = await exchangeToken(context);
+  const token = getSessionToken(context);
+  if (!token) {
+    throw new Error('No token found in session');
+  }
   try {
     await axios.post(
       `${platformProfileAPI_url}users/current/verification/resend`,
@@ -473,7 +449,7 @@ export const resendVerificationCode = async (data: ResendVerificationCodeInputDa
       {
         timeout: 30000,
         headers: {
-          Authorization: `Bearer ${newToken}`,
+          Authorization: `Bearer ${token.access_token}`,
           'Content-Type': 'application/json',
           Accept: 'application/json',
         },
@@ -487,16 +463,15 @@ export const resendVerificationCode = async (data: ResendVerificationCodeInputDa
 };
 
 export const getVerifiedAddresses = async (context: Context) => {
-  const newToken = await exchangeToken(context);
-  if (!newToken) {
-    logger.error('No new token received');
-    throw new Error('Unable to exchange token');
+  const token = getSessionToken(context);
+  if (!token) {
+    throw new Error('No token found in session');
   }
   try {
     const response = await axios.get(`${platformProfileAPI_url}users/current/verification/verified-addresses`, {
       timeout: 30000,
       headers: {
-        Authorization: `Bearer ${newToken}`,
+        Authorization: `Bearer ${token.access_token}`,
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },

@@ -155,14 +155,6 @@ var containerAppEnvVars = concat(
       value: hostName
     }
     {
-      name: 'CLIENT_ID'
-      secretRef: idPortenClientIdSecret.name
-    }
-    {
-      name: 'CLIENT_SECRET'
-      secretRef: idPortenClientSecretSecret.name
-    }
-    {
       name: 'OIDC_URL'
       value: oicdUrl
     }
@@ -213,10 +205,6 @@ var containerAppEnvVars = concat(
     {
       name: 'OCP_APIM_SUBSCRIPTION_KEY'
       value: ocPApimSubscriptionKey
-    }
-    {
-        name: 'LOGOUT_REDIRECT_URI'
-        value: logoutRedirectUri
     }
     {
         name: 'APP_CONFIG_CONNECTION_STRING'

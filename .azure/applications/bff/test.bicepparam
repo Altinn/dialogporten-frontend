@@ -33,10 +33,6 @@ param additionalEnvironmentVariables = [
     value: 'false'
   }
   {
-    name: 'ENABLE_NEW_OIDC'
-    value: 'true'
-  }
-  {
     name: 'OTEL_TRACES_SAMPLER_ARG'
     value: '0.05'
   }

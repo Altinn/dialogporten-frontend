@@ -27,10 +27,6 @@ param containerAppEnvironmentName = readEnvironmentVariable('CONTAINER_APP_ENVIR
 
 param additionalEnvironmentVariables = [
   {
-    name: 'ENABLE_NEW_OIDC'
-    value: 'true'
-  }
-  {
     name: 'APPLICATIONINSIGHTS_ENABLED'
     value: 'false'
   }
