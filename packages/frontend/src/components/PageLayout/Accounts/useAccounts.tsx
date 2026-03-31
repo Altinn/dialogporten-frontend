@@ -31,6 +31,7 @@ interface UseAccountOptions {
 
 export interface PartyItemProp extends AccountMenuItemProps {
   uuid: string;
+  altinnId: number;
   isPreselectedParty?: boolean;
   isDeleted?: boolean;
   parentId?: string | undefined;
@@ -90,15 +91,15 @@ export const formatNorwegianId = (partyId: string, isCurrentEndUser: boolean) =>
   return [ssnOrOrgNo.slice(0, 3), ssnOrOrgNo.slice(3, 6), ssnOrOrgNo.slice(6, 9)].join('\u2009');
 };
 
-/** Reuse a single Intl.Collator per language – ~10-50x faster than localeCompare per call */
-let _collatorLang = '';
-let _collator: Intl.Collator;
+/** Reuse a single Intl.Collator per language – much faster than localeCompare per call */
+let collatorLang = '';
+let collator: Intl.Collator;
 const getCollator = (): Intl.Collator => {
-  if (_collatorLang !== i18n.language) {
-    _collatorLang = i18n.language;
-    _collator = new Intl.Collator(i18n.language, { sensitivity: 'base' });
+  if (collatorLang !== i18n.language) {
+    collatorLang = i18n.language;
+    collator = new Intl.Collator(i18n.language, { sensitivity: 'base' });
   }
-  return _collator;
+  return collator;
 };
 const compareName = (a: string, b: string) => getCollator().compare(a, b);
 
@@ -181,6 +182,7 @@ export const useAccounts = ({
           isPreselectedParty,
           isCurrentEndUser: false,
           uuid: person.partyUuid,
+          altinnId: person.partyId,
           description: options.showDescription ? description : undefined,
           badge: person.isDeleted ? { color: 'neutral', label: t('badge.deleted'), variant: 'subtle' } : undefined,
           groupId: 'persons',
@@ -309,6 +311,7 @@ export const useAccounts = ({
           icon: { name: currentEndUser.name ?? '', type: 'person' as AvatarType },
           isCurrentEndUser: true,
           uuid: currentEndUser.partyUuid ?? '',
+          altinnId: currentEndUser.partyId ?? 0,
           description: options.showDescription ? desc : undefined,
           badge: { color: 'person', label: t('badge.you') },
         }
@@ -334,6 +337,7 @@ export const useAccounts = ({
 
     const allOrganizationsAccount: PartyItemProp = {
       uuid: 'N/A',
+      altinnId: -1,
       selected: allOrganizationsSelected,
       id: 'ALL',
       name: t('parties.labels.all_organizations'),
