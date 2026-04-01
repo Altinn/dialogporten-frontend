@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.136.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.136.0...v1.136.1) (2026-04-01)
+
+
+### Bug Fixes
+
+* navigation after deleting dialog from bin ([#3953](https://github.com/Altinn/dialogporten-frontend/issues/3953)) ([f43aa89](https://github.com/Altinn/dialogporten-frontend/commit/f43aa89bcb76586945aa856cc10f4e4c3370a09f))
+* redirect to inbox when switching person while viewing dialog details ([#3951](https://github.com/Altinn/dialogporten-frontend/issues/3951)) ([a07d946](https://github.com/Altinn/dialogporten-frontend/commit/a07d9465104e104e27a898ee7bff0b0e8dd41f88))
+
 ## [1.136.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.135.3...v1.136.0) (2026-03-31)
 
 
