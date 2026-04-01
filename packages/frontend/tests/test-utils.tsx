@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { type RenderOptions, render } from '@testing-library/react';
 import type { ReactElement } from 'react';
 import { MemoryRouter } from 'react-router-dom';
-import { SelectedDialogsContainer } from '..';
+import { SelectedDialogsContainer } from '../index';
 import { FeatureFlagProvider } from '../src/featureFlags';
 import '../src/i18n/config.ts';
 import { RootProvider } from '@altinn/altinn-components';

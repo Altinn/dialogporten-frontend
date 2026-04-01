@@ -10,6 +10,7 @@ import { getDialogMoveEvent } from '../../analytics/analyticsEvents.ts';
 import { updateSystemLabel } from '../../api/queries';
 import { QUERY_KEYS } from '../../constants/queryKeys';
 import { useGlobalState } from '../../useGlobalState.ts';
+import { getNavigationOrigin } from '../../utils/viewType.ts';
 import { pruneSearchQueryParams } from '../Inbox/queryParams.ts';
 import { PageRoutes } from '../routes.ts';
 
@@ -78,16 +79,18 @@ export const useDialogActions = () => {
             !(
               [PageRoutes.bin, PageRoutes.inbox, PageRoutes.drafts, PageRoutes.archive, PageRoutes.sent] as string[]
             ).includes(location.pathname)
-          )
+          ) {
             // Escape before a subscription of dialog cases a refetch and removes the label
-            navigate(state.fromView || PageRoutes.inbox + pruneSearchQueryParams(search.toString()));
-          void handleUpdateLabel(
-            dialogId,
-            SystemLabel.MarkedAsUnopened,
-            'dialog.toolbar.toast.mark_as_unread_success',
-            'dialog.toolbar.toast.mark_as_unread_failed',
-            setDeleteLoading,
-          );
+            const navigationOrigin = getNavigationOrigin(state);
+            navigate(navigationOrigin + pruneSearchQueryParams(search.toString()));
+            void handleUpdateLabel(
+              dialogId,
+              SystemLabel.MarkedAsUnopened,
+              'dialog.toolbar.toast.mark_as_unread_success',
+              'dialog.toolbar.toast.mark_as_unread_failed',
+              setDeleteLoading,
+            );
+          }
         },
         disabled: undoLoading,
       });

@@ -6,12 +6,12 @@ import {
   SystemLabel,
 } from 'bff-types-generated';
 import { type TFunction, t } from 'i18next';
-import { type LocalizationObject, getPreferredPropertyByLocale } from '../../i18n/property.ts';
-import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
-import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
-import { getIsUnread } from '../../pages/Inbox/status.ts';
-import { getActorProps } from '../hooks/useDialogById.tsx';
-import type { InboxViewType } from '../hooks/useDialogs.tsx';
+import { getActorProps } from '../api/hooks/useDialogById.tsx';
+import type { InboxViewType } from '../api/hooks/useDialogs.tsx';
+import { type LocalizationObject, getPreferredPropertyByLocale } from '../i18n/property.ts';
+import type { FormatFunction } from '../i18n/useDateFnsLocale.tsx';
+import type { InboxItemInput } from '../pages/Inbox/InboxItemInput.ts';
+import { getIsUnread } from '../pages/Inbox/status.ts';
 import {
   type OrganizationLookup,
   type OrganizationOutput,

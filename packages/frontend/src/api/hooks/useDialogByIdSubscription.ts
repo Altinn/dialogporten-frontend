@@ -8,7 +8,7 @@ import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useFeatureFlag } from '../../featureFlags';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { pruneSearchQueryParams } from '../../pages/Inbox/queryParams.ts';
-import { PageRoutes } from '../../pages/routes.ts';
+import { getNavigationOrigin } from '../../utils/viewType.ts';
 import { getSubscriptionQuery } from '../subscription.ts';
 
 type EventSourceEvent = Error & {
@@ -25,6 +25,7 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
   const disableSubscriptions = useFeatureFlag<boolean>('dialogporten.disableSubscriptions');
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const location = useLocation();
   const searchParams = new URLSearchParams(window.location.search);
   const isMock = searchParams.get('mock') === 'true';
   const { search } = useLocation();
@@ -83,7 +84,9 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
 
           onMessageRef.current?.(jsonPayload, event);
           if (updatedType === DialogEventType.DialogDeleted) {
-            navigate(PageRoutes.inbox + pruneSearchQueryParams(search.toString()));
+            /* Redirect user to the folder they came from, or default to inbox */
+            const navigationOrigin = getNavigationOrigin(location.state);
+            navigate(navigationOrigin + pruneSearchQueryParams(search.toString()));
           } else if (updatedType === DialogEventType.DialogUpdated) {
             void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.DIALOG_BY_ID] });
             void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.DIALOGS] });

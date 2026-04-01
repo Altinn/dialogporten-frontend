@@ -2,7 +2,7 @@ import { renderHook } from '@testing-library/react';
 import { type DialogStatus, SystemLabel } from 'bff-types-generated';
 import { useTranslation } from 'react-i18next';
 import { type Mock, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createCustomWrapper } from '../../../utils/test-utils.tsx';
+import { createCustomWrapper } from '../../../tests/test-utils.tsx';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import type { InboxItemInput } from './InboxItemInput.ts';

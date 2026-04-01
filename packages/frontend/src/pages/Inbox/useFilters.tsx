@@ -5,9 +5,9 @@ import { useSearchParams } from 'react-router-dom';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { useDialogsForRecommendations } from '../../api/hooks/useDialogsForRecommendations.tsx';
 import { useServiceResource } from '../../api/hooks/useServiceResource.ts';
-import { getOrganization } from '../../api/utils/organizations.ts';
 import { useFeatureFlag } from '../../featureFlags';
 import { useDateFnsLocale } from '../../i18n/useDateFnsLocale.tsx';
+import { getOrganization } from '../../utils/organizations.ts';
 import { FilterCategory, createServiceFilter, formatDateRange, getFilters, readFiltersFromURLQuery } from './filters';
 import { useOrganizations } from './useOrganizations.ts';
 

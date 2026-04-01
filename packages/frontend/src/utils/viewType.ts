@@ -1,5 +1,6 @@
 import { DialogStatus, type EndUserContext, SystemLabel } from 'bff-types-generated';
-import type { InboxViewType } from '../hooks/useDialogs.tsx';
+import type { InboxViewType } from '../api/hooks/useDialogs.tsx';
+import { PageRoutes } from '../pages/routes.ts';
 
 type viewTypeDerivable = {
   systemLabel: EndUserContext['systemLabels'] | undefined;
@@ -44,3 +45,13 @@ export const getViewTypes = (dialog: viewTypeDerivable, includeInbox = true): In
     return indexA - indexB;
   });
 };
+
+interface LocationState {
+  fromView?: string;
+}
+
+export function getNavigationOrigin(state: LocationState | null): string {
+  return Object.values(PageRoutes).includes(state?.fromView as PageRoutes)
+    ? (state!.fromView as PageRoutes)
+    : PageRoutes.inbox;
+}
