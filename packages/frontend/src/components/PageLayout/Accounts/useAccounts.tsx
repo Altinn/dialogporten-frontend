@@ -13,13 +13,13 @@ import { type ChangeEvent, type ReactNode, useCallback, useMemo, useState } from
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useParties } from '../../../api/hooks/useParties.ts';
-import type { PartyGraph } from '../../../api/utils/partyGraph.ts';
 import { QUERY_KEYS } from '../../../constants/queryKeys.ts';
 import { useFeatureFlag } from '../../../featureFlags';
 import { FixedGlobalQueryParams } from '../../../pages/Inbox/queryParams.ts';
 import { useProfile } from '../../../pages/Profile';
 import { SettingsType } from '../../../pages/Profile/Settings/useSettings.tsx';
 import type { PageRoutes } from '../../../pages/routes.ts';
+import type { PartyGraph } from '../../../utils/partyGraph.ts';
 
 interface UseAccountOptions {
   showDescription?: boolean;

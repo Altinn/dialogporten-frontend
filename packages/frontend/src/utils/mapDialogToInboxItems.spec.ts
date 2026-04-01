@@ -4,9 +4,14 @@ import { mapDialogToToInboxItems } from './dialog.ts';
 import { buildOrganizationMap } from './organizations.ts';
 import { buildPartyGraph } from './partyGraph.ts';
 
-vi.mock('i18next', () => ({
-  t: (key: string) => key,
-}));
+vi.mock('i18next', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('i18next')>();
+  return {
+    ...actual,
+    default: { ...actual.default, language: 'nb' },
+    t: (key: string) => key,
+  };
+});
 
 vi.mock('../../i18n/property.ts', () => ({
   getPreferredPropertyByLocale: (obj: { languageCode: string; value: string }[] | undefined) => obj?.[0],

@@ -1,10 +1,10 @@
 import type { ActivityLogItemProps, AvatarProps, TransmissionProps } from '@altinn/altinn-components';
 import { ActivityType, type DialogActivityFragment, type TransmissionFieldsFragment } from 'bff-types-generated';
 import { t } from 'i18next';
-import { type LocalizationObject, getPreferredPropertyByLocale } from '../../i18n/property.ts';
-import type { FormatFunction, Locale } from '../../i18n/useDateFnsLocale.tsx';
-import { getActorProps } from '../hooks/useDialogById.tsx';
-import type { ProfileType } from '../hooks/useParties.ts';
+import { getActorProps } from '../api/hooks/useDialogById.tsx';
+import type { ProfileType } from '../api/hooks/useParties.ts';
+import { type LocalizationObject, getPreferredPropertyByLocale } from '../i18n/property.ts';
+import type { FormatFunction, Locale } from '../i18n/useDateFnsLocale.tsx';
 import type { OrganizationOutput } from './organizations.ts';
 import { getTransmissions } from './transmissions.ts';
 

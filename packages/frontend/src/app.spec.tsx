@@ -1,6 +1,6 @@
 import 'web-streams-polyfill/es6';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
-import { customRender } from '../utils/test-utils.tsx';
+import { customRender } from '../tests/test-utils.tsx';
 import App from './App.tsx';
 import { server } from './mocks/node.ts';
 

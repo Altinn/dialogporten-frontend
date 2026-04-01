@@ -17,9 +17,9 @@ import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
 import { normalizeFilterDefaults, removeUndefinedValues } from '../../pages/Inbox/filters';
 import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
 import { useProfile } from '../../pages/Profile';
+import { getPartyIds, mapDialogToToInboxItems, mergeDialogItems } from '../../utils/dialog.ts';
+import { buildOrganizationMap } from '../../utils/organizations.ts';
 import { graphQLSDK } from '../queries.ts';
-import { getPartyIds, mapDialogToToInboxItems, mergeDialogItems } from '../utils/dialog.ts';
-import { buildOrganizationMap } from '../utils/organizations.ts';
 import { useParties } from './useParties.ts';
 
 /* Number of max parties used to fetch dialogs with party input param from Dialogporten */

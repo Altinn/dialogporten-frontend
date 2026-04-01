@@ -1,5 +1,5 @@
 import type { OrganizationFieldsFragment } from 'bff-types-generated';
-import { i18n } from '../../i18n/config.ts';
+import { i18n } from '../i18n/config.ts';
 
 export interface OrganizationOutput {
   name: string;

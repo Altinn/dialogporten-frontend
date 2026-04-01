@@ -2,8 +2,8 @@ import { useQuery } from '@tanstack/react-query';
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import { useSearchParams } from 'react-router-dom';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
-import type { PartyGraph } from '../utils/partyGraph.ts';
-import { EMPTY_PARTY_GRAPH, buildPartyGraph } from '../utils/partyGraph.ts';
+import type { PartyGraph } from '../../utils/partyGraph.ts';
+import { EMPTY_PARTY_GRAPH, buildPartyGraph } from '../../utils/partyGraph.ts';
 import type { ProfileType, SelfIdentifiedUserType } from './useParties.ts';
 
 /**

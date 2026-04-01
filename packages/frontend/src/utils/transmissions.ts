@@ -6,10 +6,10 @@ import {
   TransmissionType,
 } from 'bff-types-generated';
 import { t } from 'i18next';
-import { type LocalizationObject, getPreferredPropertyByLocale } from '../../i18n/property.ts';
-import type { FormatFunction, Locale } from '../../i18n/useDateFnsLocale.tsx';
-import { getActorProps, getAttachmentLinks } from '../hooks/useDialogById.tsx';
-import type { ProfileType } from '../hooks/useParties.ts';
+import { getActorProps, getAttachmentLinks } from '../api/hooks/useDialogById.tsx';
+import type { ProfileType } from '../api/hooks/useParties.ts';
+import { type LocalizationObject, getPreferredPropertyByLocale } from '../i18n/property.ts';
+import type { FormatFunction, Locale } from '../i18n/useDateFnsLocale.tsx';
 import type { OrganizationOutput } from './organizations.ts';
 
 export interface TimelineSegmentWithTransmissions extends TimelineSegmentProps {

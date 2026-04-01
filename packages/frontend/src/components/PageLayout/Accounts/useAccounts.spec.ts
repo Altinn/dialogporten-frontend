@@ -2,10 +2,10 @@ import { renderHook } from '@testing-library/react';
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import { useTranslation } from 'react-i18next';
 import { type Mock, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createCustomWrapper } from '../../../../utils/test-utils.tsx';
+import { createCustomWrapper } from '../../../../tests/test-utils.tsx';
 import { useParties } from '../../../api/hooks/useParties.ts';
-import { buildPartyGraph } from '../../../api/utils/partyGraph.ts';
 import { useProfile } from '../../../pages/Profile';
+import { buildPartyGraph } from '../../../utils/partyGraph.ts';
 import { formatNorwegianId, formatSSN, useAccounts } from './useAccounts.tsx';
 
 // Mock dependencies

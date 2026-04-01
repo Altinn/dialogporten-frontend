@@ -121,8 +121,9 @@ export const PageLayout: React.FC = () => {
       });
 
       if (location.pathname !== PageRoutes.inbox) {
-        if (isDialogDetails && fromView === PageRoutes.inbox) {
-        } else if (pageRouteTitle) {
+        const shouldSkip = isDialogDetails && fromView === PageRoutes.inbox;
+
+        if (!shouldSkip && pageRouteTitle) {
           steps.push({
             label: pageRouteTitle,
             as: (props) => (

@@ -11,9 +11,9 @@ import {
   getSelectedPartyFromQueryParams,
 } from '../../pages/Inbox/queryParams.ts';
 import { useGlobalState } from '../../useGlobalState.ts';
+import { normalizeFlattenParties } from '../../utils/normalizeFlattenParties.ts';
+import { EMPTY_PARTY_GRAPH, type PartyGraph, buildPartyGraph } from '../../utils/partyGraph.ts';
 import { graphQLSDK } from '../queries.ts';
-import { normalizeFlattenParties } from '../utils/normalizeFlattenParties.ts';
-import { EMPTY_PARTY_GRAPH, type PartyGraph, buildPartyGraph } from '../utils/partyGraph.ts';
 import { MAX_DIALOG_PARTY_SIZE } from './useDialogs.tsx';
 
 export type ProfileType = 'company' | 'person' | 'neutral';
