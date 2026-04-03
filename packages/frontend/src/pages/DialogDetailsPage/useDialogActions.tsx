@@ -12,8 +12,6 @@ import { QUERY_KEYS } from '../../constants/queryKeys';
 import { useGlobalState } from '../../useGlobalState.ts';
 import { getNavigationOrigin } from '../../utils/viewType.ts';
 import { pruneSearchQueryParams } from '../Inbox/queryParams.ts';
-import { PageRoutes } from '../routes.ts';
-
 export const useDialogActions = () => {
   const { t } = useTranslation();
   const { openSnackbar } = useSnackbar();
@@ -75,22 +73,18 @@ export const useDialogActions = () => {
         'aria-label': t('dialog.toolbar.mark_as_unread'),
         as: 'button',
         onClick: () => {
-          if (
-            !(
-              [PageRoutes.bin, PageRoutes.inbox, PageRoutes.drafts, PageRoutes.archive, PageRoutes.sent] as string[]
-            ).includes(location.pathname)
-          ) {
+          if (location.pathname.startsWith('/inbox/')) {
             // Escape before a subscription of dialog cases a refetch and removes the label
             const navigationOrigin = getNavigationOrigin(state);
             navigate(navigationOrigin + pruneSearchQueryParams(search.toString()));
-            void handleUpdateLabel(
-              dialogId,
-              SystemLabel.MarkedAsUnopened,
-              'dialog.toolbar.toast.mark_as_unread_success',
-              'dialog.toolbar.toast.mark_as_unread_failed',
-              setDeleteLoading,
-            );
           }
+          void handleUpdateLabel(
+            dialogId,
+            SystemLabel.MarkedAsUnopened,
+            'dialog.toolbar.toast.mark_as_unread_success',
+            'dialog.toolbar.toast.mark_as_unread_failed',
+            setDeleteLoading,
+          );
         },
         disabled: undoLoading,
       });

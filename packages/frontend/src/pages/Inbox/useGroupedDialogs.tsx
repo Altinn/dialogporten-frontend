@@ -6,7 +6,6 @@ import {
   type ContextMenuProps,
   type DialogListGroupProps,
   type DialogListItemProps,
-  type DialogListItemState,
   type FilterState,
 } from '@altinn/altinn-components';
 import { useMemo } from 'react';
@@ -76,17 +75,6 @@ const renderLoadingItems = (size: number): DialogListItemProps[] => {
       loading: true,
     };
   });
-};
-
-const getDialogState = (viewType: InboxViewType): DialogListItemState => {
-  switch (viewType) {
-    case 'archive':
-      return 'archived';
-    case 'bin':
-      return 'trashed';
-    default:
-      return 'normal';
-  }
 };
 
 const getItemBadge = (viewType: InboxViewType, unread: boolean, t: (key: string) => string) => {
@@ -165,7 +153,6 @@ const useGroupedDialogs = ({
       recipientLabel: t('word.to'),
       sender: item.sender,
       summary: item.viewType === 'inbox' ? item.summary : undefined,
-      state: getDialogState(item.viewType),
       recipient: item.recipient,
       color: item.recipient.type?.toLowerCase() as 'person' | 'company',
       grouped: allOrganizationsSelected,
