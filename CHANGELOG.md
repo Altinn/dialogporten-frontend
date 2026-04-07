@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.136.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.136.1...v1.136.2) (2026-04-07)
+
+
+### Bug Fixes
+
+* dialogs not properly marked as unread ([#3956](https://github.com/Altinn/dialogporten-frontend/issues/3956)) ([eb01a12](https://github.com/Altinn/dialogporten-frontend/commit/eb01a12034cfcdcfb50fac8a78c79ecd34aa2c58))
+
 ## [1.136.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.136.0...v1.136.1) (2026-04-01)
 
 
