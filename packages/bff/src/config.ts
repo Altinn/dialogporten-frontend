@@ -36,7 +36,7 @@ const envVariables = z.object({
   ALTINN2_BASE_URL: z.string().default('https://at23.altinn.cloud'),
   ALTINN2_API_KEY: z.string().default(''),
   MIGRATION_RUN: z.preprocess(stringToBoolean, z.boolean().default(false)),
-  DIALOGPORTEN_URL: z.string().default('https://platform.at23.altinn.cloud/dialogporten'),
+  DIALOGPORTEN_URL: z.string().default('https://discore-at22-s79uoo-apim.azure-api.net/dialogporten'),
   CONTAINER_APP_REPLICA_NAME: z.string().default(''),
   ENABLE_GRAPHIQL: z.preprocess(stringToBoolean, z.boolean().default(true)),
   ENABLE_INIT_SESSION_ENDPOINT: z.preprocess(stringToBoolean, z.boolean().default(false)),

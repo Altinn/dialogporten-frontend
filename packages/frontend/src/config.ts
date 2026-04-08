@@ -11,6 +11,6 @@ export const config = {
   applicationInsightsDisableDependencyTracking:
     window.applicationInsightsDisableDependencyTracking?.toLowerCase() === 'true',
   dialogportenStreamUrl: import.meta.env.DEV
-    ? 'https://platform.at23.altinn.cloud/dialogporten/graphql/stream'
+    ? 'https://discore-at22-s79uoo-apim.azure-api.net/dialogporten/graphql/stream'
     : window.dialogportenStreamUrl,
 };
