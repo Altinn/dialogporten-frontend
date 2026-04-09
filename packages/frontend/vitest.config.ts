@@ -5,17 +5,14 @@ export default defineConfig({
   plugins: [react()],
   define: process.env.VITEST ? {} : { global: 'window' },
   test: {
-    deps: {
-      optimizer: {
-        web: {
-          include: ['react-router-dom'],
-          enabled: true,
-        },
+    server: {
+      deps: {
+        inline: [/react-router-dom/, /@altinn\/altinn-components/],
       },
     },
     exclude: ['node_modules', 'tests'], // tests for Playwright
     environment: 'jsdom',
-    pool: 'vmThreads',
+    pool: 'threads',
     sequence: {
       setupFiles: 'list',
     },

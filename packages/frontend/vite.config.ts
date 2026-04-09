@@ -20,13 +20,14 @@ export default () => {
     },
     build: {
       sourcemap: 'hidden',
-      rollupOptions: {
+      rolldownOptions: {
         output: {
           // Use version-based naming when BUILD_VERSION is set, otherwise use hash
           entryFileNames: process.env.BUILD_VERSION ? `assets/[name].${buildVersion}.js` : 'assets/[name].[hash].js',
           chunkFileNames: process.env.BUILD_VERSION ? `assets/[name].${buildVersion}.js` : 'assets/[name].[hash].js',
           assetFileNames: (assetInfo) => {
-            const info = assetInfo.name.split('.');
+            const name = assetInfo.name ?? '';
+            const info = name.split('.');
             const ext = info[info.length - 1];
             const fileName = process.env.BUILD_VERSION ? `[name].${buildVersion}.${ext}` : `[name].[hash].${ext}`;
 
