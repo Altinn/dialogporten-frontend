@@ -18,14 +18,24 @@ const ORG_1_URN_ENCODED = encodeURIComponent(ORG_1_URN);
 const ORG_2_URN_ENCODED = encodeURIComponent(ORG_2_URN);
 
 async function saveSearchAndDismiss(page: Page, searchTerm: string) {
+  const toolbar = page.getByTestId('inbox-toolbar');
+  const saveButton = toolbar.getByRole('button', { name: 'Lagre søk' });
+  const savedButton = toolbar.getByRole('button', { name: 'Lagret søk' });
+
   await performSearch(page, searchTerm);
   // Ensure the exact term is in the URL before saving (performSearch only checks has('search'))
   await page.waitForURL((url) => url.searchParams.get('search') === searchTerm);
-  // Wait for React to re-render with the new URL params, so SaveSearchButton's
-  // enteredSearchValue closure captures the correct (updated) search term.
-  await page.waitForLoadState('networkidle');
-  await page.getByRole('button', { name: 'Lagre søk' }).click();
-  await expect(page.getByText('Søket ditt er lagret').first()).toBeVisible();
+  // Before clicking, assert the button is actually in "Lagre søk" state for
+  // the CURRENT (party, searchTerm) combination. This also forces Playwright
+  // to wait for React to re-render with the new URL params, so the onClick
+  // closure captures the correct enteredSearchValue and selectedPartyIds.
+  await expect(saveButton).toBeVisible();
+  await saveButton.click();
+
+  // Use the button's own state transition as the success signal instead of
+  // the snackbar — the snackbar lingers across saves and matching its first
+  // occurrence is unreliable (it can match a prior save's toast).
+  await expect(savedButton).toBeVisible();
   await page.getByRole('button', { name: 'Avbryt' }).click();
 }
 
@@ -38,6 +48,14 @@ async function switchParty(page: Page, partyName: string) {
   } else {
     await selectPartyFromToolbar(page, partyName);
   }
+  // Wait for the toolbar to actually reflect the new party. This is critical:
+  // useParties updates `selectedPartyIds` asynchronously via a useEffect watching
+  // the URL, so there's a window after navigate() where the URL has the new party
+  // but `selectedPartyIds` in the React Query cache is still stale. If we let a
+  // subsequent saveSearch click happen during that window, the SaveSearchButton's
+  // onClick closure captures the stale party list and the saved search ends up
+  // attached to the wrong URN(s).
+  await expect(page.locator('#toolbar-menu-root')).toContainText(partyName);
   await page.waitForLoadState('networkidle');
 }
 

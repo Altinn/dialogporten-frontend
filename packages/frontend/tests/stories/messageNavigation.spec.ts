@@ -39,10 +39,16 @@ test.describe('Message navigation', () => {
     await page.getByRole('option', { name: 'Alle virksomheter' }).click();
     await expect(toolbar).toContainText('Alle virksomheter');
     await page.waitForURL((url) => url.searchParams.has('allParties'));
+    // The dialog list refetches when switching to all-parties view. Wait for
+    // the new list to settle before clicking so we don't hit a link that gets
+    // unmounted mid-click by the incoming render.
+    await page.waitForLoadState('networkidle');
 
-    await page.getByRole('link', { name: 'This is a message 1 for Firma' }).click();
+    const messageLink = page.getByRole('link', { name: 'This is a message 1 for Firma' }).first();
+    await expect(messageLink).toBeVisible();
+    await messageLink.click();
     await page.waitForURL((url) => url.pathname !== '/' && url.searchParams.has('allParties'));
-    await page.getByRole('link', { name: 'Tilbake' }).click();
+    await page.getByRole('link', { name: 'Tilbake', exact: true }).click();
     await page.waitForURL((url) => url.pathname === '/' && url.searchParams.has('allParties'));
 
     await expect(toolbar).toContainText('Alle virksomheter');

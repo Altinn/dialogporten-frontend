@@ -11,8 +11,10 @@ test.describe('Error Boundary', () => {
     await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).toBeVisible();
 
     await page.goto(defaultAppURL + `&simulateError=true`);
+    // Wait for the SPA error routing to complete before asserting what's gone —
+    // otherwise the previous inbox DOM can still be mounted while we race the render.
+    await expect(page).toHaveURL(/.*error/);
     await expect(getSidebarMenuItem(page, PageRoutes.inbox)).not.toBeVisible();
     await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).not.toBeVisible();
-    await expect(page).toHaveURL(/.*error/);
   });
 });

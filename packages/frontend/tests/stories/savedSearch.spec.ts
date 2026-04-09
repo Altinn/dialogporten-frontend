@@ -72,21 +72,31 @@ test.describe('Saved search', () => {
     await page.goto(defaultAppURL);
     await page.waitForLoadState('networkidle');
 
-    await page.getByTestId('inbox-toolbar').getByRole('button', { name: 'Test Testesen' }).click();
+    const toolbar = page.getByTestId('inbox-toolbar');
+    await toolbar.getByRole('button', { name: 'Test Testesen' }).click();
     await page.getByRole('option', { name: 'Testbedrift As Avd Oslo' }).click();
-    await page.getByRole('combobox', { name: 'Søk' }).click();
-    await page.getByRole('combobox', { name: 'Søk' }).fill('innkalling');
-    await page.getByRole('combobox', { name: 'Søk' }).press('Enter');
+    // Assert the party switch actually took effect before saving the search —
+    // otherwise the save can race with the party's navigate() and capture the
+    // previous (person) party in the saved search URL.
+    await expect(toolbar.getByRole('button', { name: /Testbedrift As Avd Oslo/ })).toBeVisible();
+
+    const searchbar = toolbar.getByRole('combobox', { name: 'Søk' });
+    await searchbar.click();
+    await searchbar.fill('innkalling');
+    await searchbar.press('Enter');
+    // Wait for the search term to be committed to the URL before saving.
+    await page.waitForURL((url) => url.searchParams.get('search') === 'innkalling');
+
     await page.getByRole('button', { name: 'Lagre søk' }).click();
     await expect(page.getByText('Søket ditt er lagret')).toBeVisible();
     await page.getByRole('button', { name: 'Avbryt' }).click();
 
     await page.getByTestId('sidebar-saved-searches').click();
-    await page.waitForLoadState('networkidle');
+    await page.waitForURL((url) => url.pathname.includes('/saved-searches'));
     await page.getByRole('link', { name: '« innkalling »' }).click();
-    await page.waitForLoadState('networkidle');
+    await page.waitForURL((url) => url.searchParams.get('search') === 'innkalling');
 
-    await expect(page.getByRole('link', { name: 'Innkalling til sesjon' })).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole('link', { name: 'Innkalling til sesjon' })).toBeVisible();
     await expectIsCompanyPage(page);
   });
 
