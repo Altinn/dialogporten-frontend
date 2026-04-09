@@ -29,9 +29,9 @@ export const useDelegation = (dialogId?: string, party?: string, org?: string): 
   const orgsNotReadyToDealWithDelegations = useFeatureFlag<string[]>('auth.orgsNotReadyToDealWithDelegations');
   const { data, isSuccess } = useAuthenticatedQuery<DialogLookupQuery>({
     queryKey: [QUERY_KEYS.DIALOG_DELEGATION_LOOKUP, dialogId],
-    staleTime: 0,
+    staleTime: 600_000,
     refetchInterval: 1_200_000,
-    refetchOnMount: 'always',
+    refetchOnMount: false,
     retry: 3,
     queryFn: async () => graphQLSDK.dialogLookup({ instanceRef: instanceRef }),
     enabled: !!dialogId && !!enableDelegationLink,
