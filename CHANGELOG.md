@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.136.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.136.2...v1.136.3) (2026-04-09)
+
+
+### Bug Fixes
+
+* change URL to DIS Core Dialogporten for at23 ([#3963](https://github.com/Altinn/dialogporten-frontend/issues/3963)) ([38327e7](https://github.com/Altinn/dialogporten-frontend/commit/38327e76616d5d62253824c5893def62b3dc6394))
+* Transmission GUI action button should be visible but disabled if not allowed ([#3967](https://github.com/Altinn/dialogporten-frontend/issues/3967)) ([8cf237a](https://github.com/Altinn/dialogporten-frontend/commit/8cf237a5fd0a50d033f46e12b7cfd9ecd0ce3100))
+* **useParties:** update cookie with current when all organizations selected, first party ([#3970](https://github.com/Altinn/dialogporten-frontend/issues/3970)) ([816590a](https://github.com/Altinn/dialogporten-frontend/commit/816590ab0f3f2e15d4bfde3973139dfc671a3062))
+
 ## [1.136.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.136.1...v1.136.2) (2026-04-07)
 
 
