@@ -12,6 +12,7 @@ import { QUERY_KEYS } from '../../constants/queryKeys';
 import { useGlobalState } from '../../useGlobalState.ts';
 import { getNavigationOrigin } from '../../utils/viewType.ts';
 import { pruneSearchQueryParams } from '../Inbox/queryParams.ts';
+
 export const useDialogActions = () => {
   const { t } = useTranslation();
   const { openSnackbar } = useSnackbar();

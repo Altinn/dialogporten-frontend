@@ -7,13 +7,16 @@ import {
   type DialogListGroupProps,
   type DialogListItemProps,
   type FilterState,
+  ItemSelect,
 } from '@altinn/altinn-components';
+import { CheckmarkIcon } from '@navikt/aksel-icons';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Trans } from 'react-i18next';
 import { Link, type LinkProps } from 'react-router-dom';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
+import { useFeatureFlag } from '../../featureFlags';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { useGlobalState } from '../../useGlobalState.ts';
 import { useDialogActions } from '../DialogDetailsPage/useDialogActions.tsx';
@@ -107,8 +110,11 @@ const useGroupedDialogs = ({
 }: UseGroupedDialogsProps): UseGroupedDialogsOutput => {
   const { t } = useTranslation();
   const format = useFormat();
+  const enabledBulkMode = useFeatureFlag<boolean>('inbox.enableBulkMode');
   const systemLabelActions = useDialogActions();
   const [allOrganizationsSelected] = useGlobalState<boolean>(QUERY_KEYS.ALL_ORGANIZATIONS_SELECTED, false);
+  const [bulkMode, setBulkMode] = useGlobalState<boolean>(QUERY_KEYS.BULK_MODE, false);
+  const [bulkedIds, setBulkedIds] = useGlobalState<string[]>(QUERY_KEYS.BULK_MODE_SELECTED_IDS, []);
   const collapseGroups = displaySearchResults || (viewType !== 'inbox' && viewType !== 'sent');
   const getCollapsedGroupTitle = (viewType: InboxViewType, count: number, hasNextPage: boolean) =>
     (hasNextPage ? t('word.moreThan') : '') + t(`inbox.heading.title.${viewType}`, { count });
@@ -118,18 +124,45 @@ const useGroupedDialogs = ({
   const allWithinSameYear = items.every((d) => new Date(d.contentUpdatedAt).getFullYear() === new Date().getFullYear());
   const useDateGrouping = viewType === 'inbox' || viewType === 'sent';
 
+  const onToggleBulkId = (id: string) => {
+    if (bulkedIds?.includes(id)) {
+      const newBulkedIds = bulkedIds.filter((bulkedId) => bulkedId !== id);
+      setBulkedIds(newBulkedIds);
+      if (!newBulkedIds.length) {
+        setBulkMode(false);
+      }
+    } else {
+      setBulkedIds([...bulkedIds, id]);
+    }
+  };
+
   const formatDialogItem = (item: InboxItemInput, groupId: string): DialogListItemProps => {
     const contextMenu: ContextMenuProps = {
       id: 'dialog-context-menu-' + item.id,
       placement: 'right',
+      color: item.recipient.type === 'person' ? 'person' : 'company',
       items: [
+        ...(enabledBulkMode
+          ? [
+              {
+                id: 'select-multiple',
+                groupId: 'mark-as',
+                title: t('bulk_action.select_multiple'),
+                icon: CheckmarkIcon,
+                onClick: () => {
+                  setBulkMode(true);
+                  setBulkedIds([item.id]);
+                },
+              },
+            ]
+          : []),
         ...(item ? systemLabelActions(item.id, item.label, item.unread) : []),
         ...(item.seenByLabel
           ? [
               {
                 id: 'seenby-log',
                 groupId: 'logs',
-                label: item.seenByLabel,
+                title: item.seenByLabel,
                 icon: item.seenByLog,
                 onClick: () => {
                   onSeenByLogModalChange({
@@ -159,9 +192,16 @@ const useGroupedDialogs = ({
       attachmentsCount: item.guiAttachmentCount,
       seenByLog: item.seenByLog,
       unread: item.unread,
+      selectable: bulkMode,
+      tabIndex: bulkMode ? 0 : undefined,
+      selected: bulkedIds?.includes(item.id),
+      controls: bulkMode ? (
+        <ItemSelect checked={bulkedIds?.includes(item.id)} onClick={() => onToggleBulkId(item.id)} />
+      ) : (
+        <ContextMenu {...contextMenu} />
+      ),
       status: getDialogStatus(item.status, t),
       extendedStatusLabel: item.extendedStatus,
-      controls: <ContextMenu {...contextMenu} />,
       updatedAt: item.contentUpdatedAt,
       updatedAtLabel: format(item.contentUpdatedAt, formatString),
       dueAtLabel: item.dueAt ? t('dialog.due_at', { date: format(item.dueAt, formatString) }) : undefined,
@@ -169,9 +209,12 @@ const useGroupedDialogs = ({
       sentCount: item.fromPartyTransmissionsCount ?? 0,
       receivedCount: item.fromServiceOwnerTransmissionsCount ?? 0,
       ariaLabel: item.title,
-      as: (props: LinkProps) => (
-        <Link state={{ fromView: location.pathname }} {...props} to={`/inbox/${item.id}/${location.search}`} />
-      ),
+      ...(bulkMode ? { onClick: () => onToggleBulkId(item.id) } : {}),
+      as: bulkMode
+        ? 'button'
+        : (props: LinkProps) => (
+            <Link state={{ fromView: location.pathname }} {...props} to={`/inbox/${item.id}/${location.search}`} />
+          ),
     };
   };
 
