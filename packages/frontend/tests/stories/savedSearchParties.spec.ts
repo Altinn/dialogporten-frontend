@@ -45,7 +45,6 @@ test.describe('Saved search — party URL verification', () => {
   test('Saves for both person, all parties and single organizations parties and verifies full navigation flow', async ({
     page,
   }) => {
-    test.setTimeout(60000);
     await page.goto(BASE_URL);
     await page.waitForLoadState('networkidle');
     await saveSearchAndDismiss(page, 'person1test');
@@ -109,14 +108,11 @@ test.describe('Saved search — party URL verification', () => {
     );
     await page.waitForLoadState('networkidle');
 
-    const goToSavedSearches = async () => {
-      await page.getByTestId('sidebar-saved-searches').click({ force: true });
-      await page.waitForLoadState('networkidle');
-    };
+    const goToSavedSearches = () => page.locator('aside a[href*="/saved-searches"]').click();
 
     // org1test → Firma AS
     await goToSavedSearches();
-    await expect(linkOrg1).toBeVisible();
+    await page.waitForLoadState('networkidle');
     await linkOrg1.click();
     await page.waitForURL((url) => url.searchParams.has('search'));
     await page.waitForLoadState('networkidle');
@@ -125,7 +121,7 @@ test.describe('Saved search — party URL verification', () => {
 
     // org2test → Testbedrift AS
     await goToSavedSearches();
-    await expect(linkOrg2).toBeVisible();
+    await page.waitForLoadState('networkidle');
     await linkOrg2.click();
     await page.waitForURL((url) => url.searchParams.has('search'));
     await page.waitForLoadState('networkidle');
@@ -134,7 +130,7 @@ test.describe('Saved search — party URL verification', () => {
 
     // From single org (Testbedrift AS) → person1test (Test Testesen)
     await goToSavedSearches();
-    await expect(link1).toBeVisible();
+    await page.waitForLoadState('networkidle');
     await link1.click();
     await page.waitForURL((url) => url.searchParams.get('search') === 'person1test');
     await page.waitForLoadState('networkidle');
@@ -143,12 +139,12 @@ test.describe('Saved search — party URL verification', () => {
 
     // From Alle virksomheter → person1test (Test Testesen)
     await goToSavedSearches();
-    await expect(linkAllOrgs).toBeVisible();
+    await page.waitForLoadState('networkidle');
     await linkAllOrgs.click();
     await page.waitForURL((url) => url.searchParams.get('allParties') === 'true');
     await page.waitForLoadState('networkidle');
     await goToSavedSearches();
-    await expect(link1).toBeVisible();
+    await page.waitForLoadState('networkidle');
     await link1.click();
     await page.waitForURL((url) => url.searchParams.get('search') === 'person1test');
     await page.waitForLoadState('networkidle');
