@@ -120,11 +120,11 @@ export const useParties = (): UsePartiesOutput => {
     const matchedParties = data?.filter((party) => partyIdSet.has(party.party)) ?? [];
     handleSetSelectedParties(matchedParties);
 
-    const selectedParty = matchedParties[0];
-    if (selectedParty?.partyUuid) {
+    const partyForCookie = allOrgSelected ? currentEndUser : matchedParties[0];
+    if (partyForCookie?.partyUuid) {
       updatePartyCookies({
-        partyUuid: selectedParty.partyUuid,
-        partyId: selectedParty.partyId,
+        partyUuid: partyForCookie.partyUuid,
+        partyId: partyForCookie.partyId,
       });
     }
   };
