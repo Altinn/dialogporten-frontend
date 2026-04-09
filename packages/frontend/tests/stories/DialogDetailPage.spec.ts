@@ -5,6 +5,14 @@ import { expect, test } from '../fixtures';
 import { getSidebarMenuItem } from './common';
 
 test.describe('DialogDetailsPage', () => {
+  test('GUI action with isAuthorized=false is visible but disabled', async ({ page }) => {
+    await page.goto(defaultAppURL);
+    await page.getByRole('link', { name: 'Skatten din for 2022' }).click();
+    const button = page.getByRole('button', { name: 'Til skjema' });
+    await expect(button).toBeVisible();
+    await expect(button).toBeDisabled();
+  });
+
   test('Check message opening, archiving and deleting', async ({
     page,
     isMobile,
