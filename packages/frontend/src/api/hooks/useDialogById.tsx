@@ -281,9 +281,7 @@ export function mapDialogToToInboxItem(
     guiActions: item.guiActions.map((guiAction) => ({
       id: guiAction.id,
       url: guiAction.url,
-      hidden:
-        !guiAction.isAuthorized ||
-        (guiAction.isDeleteDialogAction && !item.endUserContext?.systemLabels.includes(SystemLabel.Bin)),
+      hidden: guiAction.isDeleteDialogAction && !item.endUserContext?.systemLabels.includes(SystemLabel.Bin),
       priority: guiAction.priority,
       httpMethod: guiAction.httpMethod,
       title: getPreferredPropertyByLocale(guiAction.title)?.value ?? '',
