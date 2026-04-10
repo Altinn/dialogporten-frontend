@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.136.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.136.3...v1.136.4) (2026-04-10)
+
+
+### Bug Fixes
+
+* **useDialogByIdSubscription:** add backoff and visibility-aware reconnect ([#3971](https://github.com/Altinn/dialogporten-frontend/issues/3971)) ([ec44d8a](https://github.com/Altinn/dialogporten-frontend/commit/ec44d8acb549d678392f33fd9c90a73adbb7bc76))
+
 ## [1.136.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.136.2...v1.136.3) (2026-04-09)
 
 
