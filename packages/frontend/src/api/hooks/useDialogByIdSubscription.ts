@@ -49,16 +49,44 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
     if (!dialogId || !dialogToken || isMock) return;
 
     let cancelled = false;
+    let retryAttempt = 0;
+    let retryTimeout: ReturnType<typeof setTimeout> | null = null;
 
-    const connect = () => {
-      if (cancelled) return;
-      if (!navigator.onLine) return;
+    const clearRetry = () => {
+      if (retryTimeout !== null) {
+        clearTimeout(retryTimeout);
+        retryTimeout = null;
+      }
+    };
 
-      // Close existing connection before creating a new one
+    const closeConnection = () => {
       if (eventSourceRef.current) {
         eventSourceRef.current.close();
         eventSourceRef.current = null;
       }
+    };
+
+    const scheduleReconnect = () => {
+      clearRetry();
+      // Exponential backoff with full jitter: base 1s, max 30s.
+      // Prevents retry storms when many clients reconnect after a transient outage.
+      const base = 1000;
+      const max = 30000;
+      const exp = Math.min(max, base * 2 ** retryAttempt);
+      const delay = Math.random() * exp;
+      retryAttempt = Math.min(retryAttempt + 1, 10);
+      retryTimeout = setTimeout(connect, delay);
+    };
+
+    // Lifecycle: opens on mount / tab becoming visible / network coming online,
+    // closes on unmount / tab hidden, and reconnects with exponential backoff on error.
+    const connect = () => {
+      if (cancelled) return;
+      if (document.hidden) return;
+      if (!navigator.onLine) return;
+
+      clearRetry();
+      closeConnection();
 
       const eventSource = new SSE(config.dialogportenStreamUrl, {
         method: 'POST',
@@ -75,6 +103,11 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
       });
 
       eventSourceRef.current = eventSource;
+
+      eventSource.addEventListener('open', () => {
+        if (cancelled) return;
+        retryAttempt = 0;
+      });
 
       eventSource.addEventListener('next', (event: MessageEvent) => {
         if (cancelled) return;
@@ -107,25 +140,36 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
       eventSource.addEventListener('error', (err: EventSourceEvent) => {
         if (cancelled) return;
         if (err.responseCode === 0) {
-          eventSource.close();
+          closeConnection();
           return;
         }
         logError(err, { context: 'useDialogByIdSubscription.onError', dialogId }, 'EventSource connection error');
-        eventSource.close();
-        setTimeout(connect, 500);
+        closeConnection();
+        scheduleReconnect();
       });
+    };
+
+    const handleVisibilityChange = () => {
+      if (cancelled) return;
+      if (document.hidden) {
+        clearRetry();
+        closeConnection();
+      } else {
+        retryAttempt = 0;
+        connect();
+      }
     };
 
     connect();
     window.addEventListener('online', connect);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
       cancelled = true;
+      clearRetry();
       window.removeEventListener('online', connect);
-      if (eventSourceRef.current) {
-        eventSourceRef.current.close();
-        eventSourceRef.current = null;
-      }
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      closeConnection();
     };
   }, [dialogId, dialogToken, search, isMock, disableSubscriptions]);
 
