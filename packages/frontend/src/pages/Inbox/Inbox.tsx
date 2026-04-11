@@ -130,6 +130,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const {
     selectedParties,
     selectedPartyIds,
+    setSelectedPartyIds,
     allOrganizationsSelected,
     parties,
     partiesEmptyList,
@@ -190,6 +191,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     selectedParties,
     allOrganizationsSelected,
     partyGraph,
+    setSelectedPartyIds,
     options: {
       showGroups: true,
     },

@@ -12,7 +12,6 @@ import i18n from 'i18next';
 import { type ChangeEvent, type ReactNode, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { useParties } from '../../../api/hooks/useParties.ts';
 import { QUERY_KEYS } from '../../../constants/queryKeys.ts';
 import { useFeatureFlag } from '../../../featureFlags';
 import { FixedGlobalQueryParams } from '../../../pages/Inbox/queryParams.ts';
@@ -50,8 +49,8 @@ interface UseAccountsProps {
   options?: UseAccountOptions;
   isLoading?: boolean;
   availableParties?: PartyFieldsFragment[];
-  /** Pre-built party graph to avoid duplicate O(n) graph construction. Falls back to useParties().partyGraph */
-  partyGraph?: PartyGraph;
+  partyGraph: PartyGraph;
+  setSelectedPartyIds: (parties: string[], allOrganizationsSelected: boolean) => void;
 }
 
 interface UseAccountsOutput {
@@ -110,11 +109,11 @@ export const useAccounts = ({
   options: inputOptions,
   isLoading,
   availableParties: _availableParties,
-  partyGraph: externalPartyGraph,
+  partyGraph,
+  setSelectedPartyIds,
 }: UseAccountsProps): UseAccountsOutput => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { setSelectedPartyIds, partyGraph: hookPartyGraph } = useParties();
   const { user, favoritesGroup, shouldShowDeletedEntities } = useProfile();
   const isDeletedUnitsFilterEnabled = useFeatureFlag<boolean>('inbox.enableDeletedUnitsFilter');
   const [searchString, setSearchString] = useState<string>('');
@@ -170,7 +169,6 @@ export const useAccounts = ({
         const ssnOrOrgNo = getSSNOrOrgNo(person.party);
         return {
           id: person.party,
-          selected: !allOrganizationsSelected && person.party === selectedParties[0]?.party,
           searchWords: [person.name, ssnOrOrgNo],
           ssnOrOrgNo,
           name: person.name,
@@ -189,19 +187,17 @@ export const useAccounts = ({
         } as PartyItemProp;
       })
       .sort((a, b) => compareName(a.name, b.name));
-  }, [allOrganizationsSelected, otherPeople, favoritesSet, options.showDescription, t, selectedParties, user]);
+  }, [otherPeople, favoritesSet, options.showDescription, t, user]);
 
-  const availablePartiesGraph = externalPartyGraph ?? hookPartyGraph;
-
-  const currentEndUser = availablePartiesGraph.currentEndUser;
+  const currentEndUser = partyGraph.currentEndUser;
 
   const organizationAccounts = useMemo<PartyItemProp[]>(() => {
     const mapped = organizations.map((party) => {
-      const matchInAvailable = availablePartiesGraph.partyByUrn.get(party.party);
+      const matchInAvailable = partyGraph.partyByUrn.get(party.party);
       const isParent = Array.isArray(matchInAvailable?.subParties);
       const isPreselectedParty = user?.profileSettingPreference?.preselectedPartyUuid === party.partyUuid;
 
-      const parent = isParent ? undefined : availablePartiesGraph.parentByChildUrn.get(party.party);
+      const parent = isParent ? undefined : partyGraph.parentByChildUrn.get(party.party);
 
       const description =
         parent?.name && party?.party
@@ -213,7 +209,6 @@ export const useAccounts = ({
       const orgNo = getSSNOrOrgNo(party.party);
       return {
         id: party.party,
-        selected: !allOrganizationsSelected && party.party === selectedParties[0]?.party,
         searchWords: [orgNo, party.name],
         ssnOrOrgNo: orgNo,
         name: party.name,
@@ -264,16 +259,7 @@ export const useAccounts = ({
     const grouped = parents.flatMap((p) => [p, ...(childrenByParentId.get(p.id) ?? [])]);
 
     return [...grouped, ...children];
-  }, [
-    selectedParties,
-    allOrganizationsSelected,
-    organizations,
-    availablePartiesGraph,
-    favoritesSet,
-    options.showDescription,
-    t,
-    user,
-  ]);
+  }, [organizations, partyGraph, favoritesSet, options.showDescription, t, user]);
 
   /** deleted units filtering - FF: "inbox.enableDeletedUnitsFilter"
    * FF off -> always include deleted parties
@@ -351,12 +337,14 @@ export const useAccounts = ({
       } as AvatarGroupProps,
     };
 
+    const selectedUrn = allOrganizationsSelected ? null : (selectedParties[0]?.party ?? null);
+
     const favorites: PartyItemProp[] = [];
     for (const a of organizationAccounts) {
-      if (a.isFavorite) favorites.push({ ...a, groupId: SettingsType.favorites });
+      if (a.isFavorite) favorites.push({ ...a, groupId: SettingsType.favorites, selected: a.id === selectedUrn });
     }
     for (const a of otherPeopleAccounts) {
-      if (a.isFavorite) favorites.push({ ...a, groupId: SettingsType.favorites });
+      if (a.isFavorite) favorites.push({ ...a, groupId: SettingsType.favorites, selected: a.id === selectedUrn });
     }
 
     const result: PartyItemProp[] = [];
@@ -365,8 +353,12 @@ export const useAccounts = ({
       for (const f of favorites) result.push(f);
     }
     if (options.showGroups && organizationAccounts.length > 1) result.push(allOrganizationsAccount);
-    for (const a of otherPeopleAccounts) result.push(a);
-    for (const a of organizationAccounts) result.push(a);
+    for (const a of otherPeopleAccounts) {
+      result.push(a.id === selectedUrn ? { ...a, selected: true } : a);
+    }
+    for (const a of organizationAccounts) {
+      result.push(a.id === selectedUrn ? { ...a, selected: true } : a);
+    }
 
     let finalAccounts = result;
     if (shouldExcludeDeleted && !includeDeletedParties) {
@@ -411,7 +403,7 @@ export const useAccounts = ({
           search.delete(FixedGlobalQueryParams.party);
           search.delete(FixedGlobalQueryParams.subAccounts);
         } else {
-          const party = availablePartiesGraph.partyByUrn.get(partyId);
+          const party = partyGraph.partyByUrn.get(partyId);
           if (!party) {
             console.error('Selected party not found:', partyId);
             return;
@@ -423,7 +415,7 @@ export const useAccounts = ({
         navigate(`${route}?${search.toString()}`, { replace: true });
       }
     },
-    [selectedParties, queryClient, setSelectedPartyIds, availablePartiesGraph, navigate],
+    [selectedParties, queryClient, setSelectedPartyIds, partyGraph, navigate],
   );
 
   const accountSearch = useMemo(

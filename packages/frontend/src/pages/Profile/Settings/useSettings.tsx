@@ -106,7 +106,14 @@ export const useSettings = ({
   isSelfIdentifiedUser = false,
   disabled = false,
 }: UseSettingsInput = {}): UseSettingsOutput => {
-  const { isLoading: isLoadingParties, parties, selectedParties, allOrganizationsSelected, partyGraph } = useParties();
+  const {
+    isLoading: isLoadingParties,
+    parties,
+    selectedParties,
+    allOrganizationsSelected,
+    partyGraph,
+    setSelectedPartyIds,
+  } = useParties();
   const { user, showClientUnits, setShowClientUnits, shouldShowDeletedEntities, updateShowDeletedEntities } =
     useProfile();
   const { t } = useTranslation();
@@ -172,6 +179,7 @@ export const useSettings = ({
     allOrganizationsSelected,
     selectedParties,
     partyGraph,
+    setSelectedPartyIds,
     options: {
       groups: options?.groups,
       showDescription: true,

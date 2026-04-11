@@ -116,8 +116,11 @@ export const useParties = (): UsePartiesOutput => {
       handleChangSearchParams(params);
     }
 
-    const partyIdSet = new Set(partyIds);
-    const matchedParties = data?.filter((party) => partyIdSet.has(party.party)) ?? [];
+    const matchedParties: PartyFieldsFragment[] = [];
+    for (const id of partyIds) {
+      const p = partyGraph.partyByUrn.get(id);
+      if (p) matchedParties.push(p);
+    }
     handleSetSelectedParties(matchedParties);
 
     const partyForCookie = allOrgSelected ? currentEndUser : matchedParties[0];

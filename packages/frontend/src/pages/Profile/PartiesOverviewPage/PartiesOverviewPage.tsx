@@ -148,6 +148,7 @@ export const PartiesOverviewPage = () => {
     allOrganizationsSelected,
     isLoading,
     partyGraph,
+    setSelectedPartyIds,
     options: {
       showFavorites: !isSearching,
     },
