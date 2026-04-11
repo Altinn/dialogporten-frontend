@@ -14,6 +14,7 @@ import {
   SystemLabel,
 } from 'bff-types-generated';
 import { type TFunction, t } from 'i18next';
+import { useCallback } from 'react';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import type { DialogActionProps } from '../../components';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
@@ -110,6 +111,7 @@ interface UseDialogByIdOutput {
   dataUpdatedAt: number;
   dialog?: DialogByIdDetails;
   isAuthLevelTooLow?: boolean;
+  refreshDialogToken: () => Promise<string | undefined>;
 }
 export const getDialogsById = (id: string): Promise<GetDialogByIdQuery> =>
   graphQLSDK.getDialogById({
@@ -356,12 +358,7 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
     queryKey: [QUERY_KEYS.DIALOG_BY_ID, id],
     staleTime: 0,
     refetchInterval: 1000 * 60 * 9,
-    refetchOnMount: 'always',
-    refetchOnWindowFocus: (query) => {
-      if (!query.state.dataUpdatedAt) return true;
-      const NINE_MIN = 9 * 60 * 1000;
-      return Date.now() - query.state.dataUpdatedAt > NINE_MIN;
-    },
+    refetchOnWindowFocus: 'always',
     retry: 3,
     queryFn: async () => {
       const response = await getDialogsById(id!);
@@ -377,8 +374,15 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
     enabled: typeof id !== 'undefined' && partyURIs.length > 0,
   });
 
+  const refreshDialogToken = useCallback(async (): Promise<string | undefined> => {
+    if (!id) return undefined;
+    await queryClient.refetchQueries({ queryKey: [QUERY_KEYS.DIALOG_BY_ID, id] });
+    const freshData = queryClient.getQueryData<GetDialogByIdQuery>([QUERY_KEYS.DIALOG_BY_ID, id]);
+    return freshData?.dialogById?.dialog?.dialogToken ?? undefined;
+  }, [queryClient, id]);
+
   if (isOrganizationsLoading) {
-    return { isLoading: true, isError: false, isSuccess: false, dataUpdatedAt: Date.now() };
+    return { isLoading: true, isError: false, isSuccess: false, dataUpdatedAt: Date.now(), refreshDialogToken };
   }
 
   return {
@@ -397,5 +401,6 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
     isError,
     isAuthLevelTooLow:
       data?.dialogById?.errors?.some((error) => error.__typename === 'DialogByIdForbiddenAuthLevelTooLow') ?? false,
+    refreshDialogToken,
   };
 };
