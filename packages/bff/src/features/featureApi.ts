@@ -18,7 +18,7 @@ const defaultFeatureFlags: Record<string, boolean> = {
   'profile.enableResendVerificationCode': false,
   'profile.enableSingleServiceNotifications': false,
   'auth.enableDelegationLink': false,
-  'inbox.enabledBulkMode': false,
+  'inbox.enableBulkMode': false,
 };
 
 const defaultAppConfigValues: Record<string, string[]> = {
