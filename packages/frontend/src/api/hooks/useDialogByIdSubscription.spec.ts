@@ -46,6 +46,8 @@ import { createCustomWrapper } from '../../../tests/test-utils';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useDialogByIdSubscription } from './useDialogByIdSubscription';
 
+const mockRefreshDialogToken = vi.fn().mockResolvedValue('fresh-tok');
+
 describe('useDialogByIdSubscription', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -60,8 +62,8 @@ describe('useDialogByIdSubscription', () => {
     document.dispatchEvent(new Event('visibilitychange'));
   };
 
-  it('closes connection when tab is hidden and reconnects when visible', () => {
-    const { rerender } = renderHook(({ id, token }) => useDialogByIdSubscription(id, token), {
+  it('closes connection when tab is hidden and reconnects when visible', async () => {
+    const { rerender } = renderHook(({ id, token }) => useDialogByIdSubscription(id, token, mockRefreshDialogToken), {
       wrapper: createCustomWrapper(),
       initialProps: { id: undefined as string | undefined, token: undefined as string | undefined },
     });
@@ -75,17 +77,16 @@ describe('useDialogByIdSubscription', () => {
     act(() => setHidden(true));
     expect(mockClose).toHaveBeenCalledTimes(1);
 
-    // tab visible → reconnects
-    act(() => setHidden(false));
+    // tab visible → refreshes token then reconnects
+    await act(async () => setHidden(false));
     expect(mockSSECtor).toHaveBeenCalledTimes(2);
   });
 
   it('invalidates queries on DialogUpdated', () => {
-    const { rerender } = renderHook(({ id, token }) => useDialogByIdSubscription(id, token), {
+    const { rerender } = renderHook(({ id, token }) => useDialogByIdSubscription(id, token, mockRefreshDialogToken), {
       wrapper: createCustomWrapper(),
       initialProps: { id: undefined as string | undefined, token: undefined as string | undefined },
     });
-    // flip args to trigger the effect past isFirstRender
     rerender({ id: 'dialog-1', token: 'tok' });
 
     expect(mockSSECtor).toHaveBeenCalledOnce();
@@ -104,7 +105,7 @@ describe('useDialogByIdSubscription', () => {
 
   it('does not connect when mock=true', () => {
     window.history.replaceState({}, '', '/?mock=true');
-    renderHook(() => useDialogByIdSubscription('d', 't'), { wrapper: createCustomWrapper() });
+    renderHook(() => useDialogByIdSubscription('d', 't', mockRefreshDialogToken), { wrapper: createCustomWrapper() });
     expect(mockSSECtor).not.toHaveBeenCalled();
   });
 });

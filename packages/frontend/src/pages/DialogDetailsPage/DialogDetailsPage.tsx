@@ -33,6 +33,7 @@ export const DialogDetailsPage = () => {
     isError,
     isAuthLevelTooLow,
     dataUpdatedAt,
+    refreshDialogToken,
   } = useDialogById(parties, dialogId);
   const isLoading = isLoadingDialog || (!isSuccess && !isError);
   const displayDialogActions = !!(dialogId && dialog && !isLoading);
@@ -92,7 +93,7 @@ export const DialogDetailsPage = () => {
   }, [qc, dialogId]);
 
   const dialogTokenIsFreshAfterMount = dataUpdatedAt > mountAtRef.current ? dialog?.dialogToken : undefined;
-  const { onMessageEvent } = useDialogByIdSubscription(dialog?.id, dialogTokenIsFreshAfterMount);
+  const { onMessageEvent } = useDialogByIdSubscription(dialog?.id, dialogTokenIsFreshAfterMount, refreshDialogToken);
   const previousPath = (location?.state?.fromView ?? '/') + location.search;
   const labelActions = dialogId && dialog ? createLabelUpdateActions(dialogId, dialog.label, dialog.unread) : [];
 
