@@ -332,6 +332,45 @@ const mutateUpdateSystemLabelMock = graphql.mutation('updateSystemLabel', (req) 
 });
 
 
+const mutateBulkUpdateSystemLabelMock = graphql.mutation('bulkUpdateSystemLabels', (req) => {
+  const { dialogs, addLabels, removeLabels } = req.variables;
+  const EXCLUSIVE_LABELS = [SystemLabel.Archive, SystemLabel.Bin, SystemLabel.Default];
+  const dialogIds = (dialogs as { dialogId: string }[]).map((d) => d.dialogId);
+
+  inMemoryStore.dialogs = inMemoryStore.dialogs?.map((dialog) => {
+    if (!dialogIds.includes(dialog.id)) return dialog;
+
+    const existingLabels = dialog.endUserContext?.systemLabels || [];
+    let updatedLabels = existingLabels.filter(
+      (label) => !Array.isArray(removeLabels) || !removeLabels.includes(label),
+    );
+
+    const labelsToAdd = [addLabels].flat();
+    const exclusiveLabelsToAdd = labelsToAdd.filter((label) => EXCLUSIVE_LABELS.includes(label));
+    const nonExclusiveLabelsToAdd = labelsToAdd.filter((label) => !EXCLUSIVE_LABELS.includes(label));
+
+    if (exclusiveLabelsToAdd.length > 0) {
+      updatedLabels = updatedLabels.filter((label) => !EXCLUSIVE_LABELS.includes(label));
+      updatedLabels.push(exclusiveLabelsToAdd[exclusiveLabelsToAdd.length - 1]);
+    }
+
+    for (const label of nonExclusiveLabelsToAdd) {
+      if (!updatedLabels.includes(label)) {
+        updatedLabels.push(label);
+      }
+    }
+
+    dialog.endUserContext = { systemLabels: updatedLabels };
+    return dialog;
+  });
+
+  return HttpResponse.json({
+    data: {
+      bulkSetSystemLabels: { success: true },
+    },
+  });
+});
+
 const mutateUpdateLanguageMock = graphql.mutation('UpdateLanguage', (req) => {
   const { language } = req.variables;
 
@@ -443,6 +482,7 @@ export const handlers = [
   mutateSavedSearchMock,
   mutateUpdateSavedSearchMock,
   mutateUpdateSystemLabelMock,
+  mutateBulkUpdateSystemLabelMock,
   deleteSavedSearchMock,
   getOrganizationsMock,
   getContentMarkdownMock,

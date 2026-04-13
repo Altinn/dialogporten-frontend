@@ -1,4 +1,4 @@
-import { type FilterState, ToolbarFilter, ToolbarSearch } from '@altinn/altinn-components';
+import { BulkFooter, BulkHeader, type FilterState, ToolbarFilter, ToolbarSearch } from '@altinn/altinn-components';
 import {
   BookmarkModal,
   Button,
@@ -15,6 +15,7 @@ import type { TFunction } from 'i18next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useSearchParams } from 'react-router-dom';
+import { useBulkActions } from '../../api/hooks/useBulkActions.tsx';
 import { type InboxViewType, MAX_DIALOG_PARTY_SIZE, useDialogs } from '../../api/hooks/useDialogs.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { createFiltersURLQuery } from '../../auth';
@@ -28,10 +29,12 @@ import { SINotice } from '../../components/SINotice/SINotice.tsx';
 import { SaveSearchButton } from '../../components/SavedSearchButton/SaveSearchButton.tsx';
 import { isSavedSearchDisabled } from '../../components/SavedSearchButton/savedSearchEnabled.ts';
 import { SeenByModal } from '../../components/SeenByModal/SeenByModal.tsx';
+import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useFeatureFlag } from '../../featureFlags';
 import { useAlertBanner } from '../../hooks/useAlertBanner.ts';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
 import { useInboxOnboarding } from '../../onboardingTour';
+import { useGlobalState } from '../../useGlobalState.ts';
 import { useSavedSearches } from '../SavedSearches/useSavedSearches.tsx';
 import { PageRoutes } from '../routes.ts';
 import { AlertBanner } from './AlertBanner.tsx';
@@ -141,7 +144,8 @@ export const Inbox = ({ viewType }: InboxProps) => {
 
   const { items: savedSearchItems, onSaveSearch, onCloseSavedSearch } = useSavedSearches(selectedPartyIds);
   const { bookmarkModalProps, onSaveSuccess } = useBookmarkModal(savedSearchItems, onSaveSearch, onCloseSavedSearch);
-
+  const [bulkMode, setBulkMode] = useGlobalState<boolean>(QUERY_KEYS.BULK_MODE, false);
+  const [bulkedIds, setBulkedIds] = useGlobalState<string[]>(QUERY_KEYS.BULK_MODE_SELECTED_IDS, []);
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentSeenByLogModal, setCurrentSeenByLogModal] = useState<CurrentSeenByLog | null>(null);
@@ -264,6 +268,22 @@ export const Inbox = ({ viewType }: InboxProps) => {
     partyIdsOverride: isSubAccountsMenuEnabled && partyIdsOverride?.length ? partyIdsOverride : [],
   });
 
+  const onCloseBulkMode = useCallback(() => {
+    setBulkMode(false);
+    setBulkedIds([]);
+  }, [setBulkMode, setBulkedIds]);
+
+  const onSelectAll = useCallback(() => {
+    setBulkedIds(dialogs.map((d) => d.id));
+  }, [dialogs, setBulkedIds]);
+
+  const { footerActions, headerActions } = useBulkActions({
+    selectedDialogIds: bulkedIds,
+    allDialogs: dialogs,
+    onSelectAll,
+    onDismiss: onCloseBulkMode,
+  });
+
   const { filters, getFilterLabel } = useFilters({ viewType });
 
   usePageTitle({
@@ -361,6 +381,13 @@ export const Inbox = ({ viewType }: InboxProps) => {
 
   return (
     <PageBase>
+      <BulkHeader
+        hidden={!bulkMode}
+        title={t('bulk_action.header.selected', { count: bulkedIds?.length ?? 0 })}
+        options={headerActions}
+        dismissable={true}
+        onDismiss={onCloseBulkMode}
+      />
       <Heading as="h1" size="xl">
         {t(getPageRouteTitle(PageRoutes[viewType]))}
       </Heading>
@@ -368,6 +395,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
         {currentAccountName ? (
           <Toolbar>
             <ToolbarMenu
+              disabled={bulkMode}
               size="md"
               items={accounts}
               search={accountSearch}
@@ -382,6 +410,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
             />
             {showSubAccountsMenu && (
               <ToolbarMenu
+                disabled={bulkMode}
                 id="toolbarmenu-subAccounts"
                 items={subAccounts}
                 groups={subAccountGroups}
@@ -390,8 +419,9 @@ export const Inbox = ({ viewType }: InboxProps) => {
                 virtualized
               />
             )}
-            <ToolbarSearch {...inboxSearch} />
+            <ToolbarSearch {...inboxSearch} disabled={bulkMode} />
             <ToolbarFilter
+              disabled={bulkMode}
               filters={filters}
               filterState={filterState}
               onFilterStateChange={onFiltersChange}
@@ -443,6 +473,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
         onClose={() => setCurrentSeenByLogModal(null)}
       />
       <BookmarkModal {...bookmarkModalProps} />
+      {footerActions.length > 0 && <BulkFooter hidden={!bulkMode} actions={footerActions} />}
     </PageBase>
   );
 };

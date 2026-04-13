@@ -43,6 +43,7 @@ export const PageLayout: React.FC = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [docTitle] = useGlobalState<string>(QUERY_KEYS.CURRENT_DIALOG_TITLE, '');
+  const [bulkMode, setBulkMode] = useGlobalState<boolean>(QUERY_KEYS.BULK_MODE, false);
   const selectedProfile = useSelectedProfile();
   const currentEndUser = useCurrentEndUser();
   const currentPartyUuid = useCurrentPartyUuid();
@@ -63,6 +64,9 @@ export const PageLayout: React.FC = () => {
   // biome-ignore lint/correctness/useExhaustiveDependencies: runs synchronously after DOM mutations but before the browser paints.
   useLayoutEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    if (bulkMode) {
+      setBulkMode(false);
+    }
   }, [location.pathname]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: Full control of what triggers this code is needed
@@ -184,7 +188,7 @@ export const PageLayout: React.FC = () => {
     sidebar: {
       sticky: true,
       menu: sidebarMenu,
-      hidden: isErrorState,
+      hidden: isErrorState || bulkMode,
       footer: <Badge label={t('word.beta')} variant="base" color="neutral" size="sm" />,
     },
     breadcrumbs: {

@@ -8,4 +8,5 @@ export const features = {
   "filters.enableServiceFilter": true,
   "profile.enableResendVerificationCode": true,
   "profile.enableSingleServiceNotifications": true,
+  "inbox.enableBulkMode": true,
 }

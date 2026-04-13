@@ -33,4 +33,6 @@ export const QUERY_KEYS = {
   SELECTED_SUB_ACCOUNTS: 'selectedSubAccounts',
   DIALOG_DELEGATION_LOOKUP: 'dialogDelegationLookup',
   DIALOG_REDIRECT_LOOKUP: 'dialogRedirectLookup',
+  BULK_MODE: 'bulkMode',
+  BULK_MODE_SELECTED_IDS: 'bulkModeSelectedIds',
 };
