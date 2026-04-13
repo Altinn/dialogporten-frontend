@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.137.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.137.0...v1.137.1) (2026-04-13)
+
+
+### Bug Fixes
+
+* **bff:** rename property inbox.enabledBulkMode to inbox.enableBulkMode ([#3996](https://github.com/Altinn/dialogporten-frontend/issues/3996)) ([d4cf742](https://github.com/Altinn/dialogporten-frontend/commit/d4cf742f740e0f8478efc698803e96bd00c53fcc))
+
 ## [1.137.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.136.5...v1.137.0) (2026-04-13)
 
 
