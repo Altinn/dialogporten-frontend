@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.136.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.136.4...v1.136.5) (2026-04-13)
+
+
+### Bug Fixes
+
+* **bff:** update axios to 1.15.0 to patch critical SSRF vulnerabilities ([#3991](https://github.com/Altinn/dialogporten-frontend/issues/3991)) ([bec3cff](https://github.com/Altinn/dialogporten-frontend/commit/bec3cffe72884998805335c27610f66430e3353f))
+* **useDialogByIdSubscription:** ensure dialog is refetched on window focus to sync missed updates ([#3993](https://github.com/Altinn/dialogporten-frontend/issues/3993)) ([da97733](https://github.com/Altinn/dialogporten-frontend/commit/da9773339ddc99339618bc42afd5439b51f41fb5))
+
 ## [1.136.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.136.3...v1.136.4) (2026-04-10)
 
 
