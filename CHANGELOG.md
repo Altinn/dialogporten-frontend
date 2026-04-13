@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.137.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.136.5...v1.137.0) (2026-04-13)
+
+
+### Features
+
+* bulk mode ([#3969](https://github.com/Altinn/dialogporten-frontend/issues/3969)) ([038ccaa](https://github.com/Altinn/dialogporten-frontend/commit/038ccaa99b268303d7449ffd2aa2de69d4c1f337))
+
 ## [1.136.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.136.4...v1.136.5) (2026-04-13)
 
 
