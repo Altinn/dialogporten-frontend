@@ -1,5 +1,5 @@
 import { type MenuItemProps, type SnackbarColor, SnackbarDuration, useSnackbar } from '@altinn/altinn-components';
-import { ArchiveIcon, EyeClosedIcon, InboxFillIcon, TrashIcon } from '@navikt/aksel-icons';
+import { ArchiveIcon, EyeClosedIcon, InboxIcon, TrashIcon } from '@navikt/aksel-icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { SystemLabel } from 'bff-types-generated';
 import { useCallback } from 'react';
@@ -95,7 +95,7 @@ export const useDialogActions = () => {
       items.push({
         id: 'undo',
         groupId: 'system-labels',
-        icon: InboxFillIcon,
+        icon: InboxIcon,
         title: t('dialog.toolbar.move_undo'),
         'aria-label': t('dialog.toolbar.move_undo'),
         as: 'button',
