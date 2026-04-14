@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.137.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.137.1...v1.137.2) (2026-04-14)
+
+
+### Bug Fixes
+
+* **bulk:** missing actions for selected items in sent and draft folder ([#4001](https://github.com/Altinn/dialogporten-frontend/issues/4001)) ([8a82d6f](https://github.com/Altinn/dialogporten-frontend/commit/8a82d6f1e73a283581d8dd34171ead7ee8a05426))
+
+
+### Performance Improvements
+
+* **useAccounts:** avoid re-mapping 15k parties on every party switch ([#3992](https://github.com/Altinn/dialogporten-frontend/issues/3992)) ([496b701](https://github.com/Altinn/dialogporten-frontend/commit/496b7010d0cbe5e321b7cc83c1c1ee461e880c9a))
+
 ## [1.137.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.137.0...v1.137.1) (2026-04-13)
 
 
