@@ -19,23 +19,30 @@ export const isDraftDialog = (dialog: viewTypeDerivable): boolean =>
 export const isSentDialog = (dialog: viewTypeDerivable): boolean =>
   dialog.systemLabel?.includes(SystemLabel.Sent) ?? false;
 
-export const getViewTypes = (dialog: viewTypeDerivable, includeInbox = true): InboxViewType[] => {
+export const getViewTypes = (dialog: viewTypeDerivable): InboxViewType[] => {
   const viewTypes: InboxViewType[] = [];
-  if (isDraftDialog(dialog)) {
-    viewTypes.push('drafts');
-  }
+
+  /* Can either be archived, bin or in inbox (neither) - these are mutually exclusive */
   if (isArchivedDialog(dialog)) {
     viewTypes.push('archive');
   }
-  if (isSentDialog(dialog)) {
-    viewTypes.push('sent');
-  }
+
   if (isBinDialog(dialog)) {
     viewTypes.push('bin');
   }
 
-  if (includeInbox && !viewTypes.length) {
+  if (!viewTypes.length) {
     viewTypes.push('inbox');
+  }
+
+  /* Can also be in draft or sent -- not mutually exclusive */
+
+  if (isDraftDialog(dialog)) {
+    viewTypes.push('drafts');
+  }
+
+  if (isSentDialog(dialog)) {
+    viewTypes.push('sent');
   }
 
   const priorityViewTypes = ['archive', 'bin', 'sent', 'drafts', 'inbox'];

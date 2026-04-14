@@ -185,7 +185,7 @@ const useGroupedDialogs = ({
       id: item.id,
       recipientLabel: t('word.to'),
       sender: item.sender,
-      summary: item.viewType === 'inbox' ? item.summary : undefined,
+      summary: item.summary,
       recipient: item.recipient,
       color: item.recipient.type?.toLowerCase() as 'person' | 'company',
       grouped: allOrganizationsSelected,

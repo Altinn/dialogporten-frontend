@@ -83,6 +83,7 @@ export function mapDialogToToInboxItems(
     const serviceOwner = getOrganization(organizations, item.org);
     const serviceOwnerNbName = getOrganizationByLocale(organizations, item.org, 'nb')?.name;
     const { isSeenByEndUser, seenByOthersCount, seenByLabel } = getSeenByLabel(item.seenSinceLastContentUpdate, t);
+    const viewTypes = getViewTypes({ status: item.status, systemLabel: item.endUserContext?.systemLabels });
 
     return {
       id: item.id,
@@ -139,7 +140,8 @@ export function mapDialogToToInboxItems(
           };
         }),
       },
-      viewType: getViewTypes({ status: item.status, systemLabel: item.endUserContext?.systemLabels }, true)?.[0],
+      viewType: viewTypes?.[0],
+      viewTypes: viewTypes,
       fromServiceOwnerTransmissionsCount: item.fromServiceOwnerTransmissionsCount ?? 0,
       fromPartyTransmissionsCount: item.fromPartyTransmissionsCount ?? 0,
       serviceResource: item.serviceResource,

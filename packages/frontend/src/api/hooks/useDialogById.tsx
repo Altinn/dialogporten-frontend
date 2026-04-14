@@ -340,7 +340,7 @@ export function mapDialogToToInboxItem(
     createdAt: item.createdAt,
     updatedAt: item.contentUpdatedAt,
     label: item.endUserContext?.systemLabels,
-    viewType: getViewTypes({ status: item.status, systemLabel: item.endUserContext?.systemLabels }, true)?.[0],
+    viewType: getViewTypes({ status: item.status, systemLabel: item.endUserContext?.systemLabels })?.[0],
     dueAt: item.dueAt,
     unread: getIsUnread(item),
   };

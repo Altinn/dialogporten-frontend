@@ -22,7 +22,9 @@ export interface InboxItemInput {
   fromPartyTransmissionsCount: number;
   unread: boolean;
   seenByLabel?: string;
+  // Pre-calculated view type that takes precedence (determines which folder it belongs to)
   viewType: InboxViewType;
+  viewTypes: InboxViewType[];
   seenByLog: SeenByLogProps;
   dueAt?: string;
   seenSinceLastContentUpdate: SeenLogFieldsFragment[];
