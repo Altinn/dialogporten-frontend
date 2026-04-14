@@ -54,8 +54,9 @@ const plugin: FastifyPluginAsync = async (fastify) => {
     '/api/graphql',
     {
       preHandler: (request, reply, callback) => {
-        const shouldVerifyToken = request.headers.referer?.includes('/api/graphiql') ?? false;
-        return fastify.verifyToken(shouldVerifyToken)(request, reply, callback);
+        /* Allow graphiql session to renew token since there will no be race conditions in the flow, with multiple requests */
+        const shouldRefreshToken = request.headers.referer?.includes('/api/graphiql') ?? false;
+        return fastify.verifyToken(shouldRefreshToken)(request, reply, callback);
       },
     },
     async (request, reply) => {
