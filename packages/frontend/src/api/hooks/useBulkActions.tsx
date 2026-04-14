@@ -76,10 +76,16 @@ export const useBulkActions = ({
     }
   };
 
-  const hasUnreadFalse = selectedDialogs.some((d) => !d.unread);
-  const hasBinOrInbox = selectedDialogs.some((d) => d.viewType === 'bin' || d.viewType === 'inbox');
-  const hasArchiveOrInbox = selectedDialogs.some((d) => d.viewType === 'archive' || d.viewType === 'inbox');
-  const hasBinOrArchive = selectedDialogs.some((d) => d.viewType === 'archive' || d.viewType === 'bin');
+  const hasUnreadFalse = selectedDialogs.some(({ unread }) => !unread);
+  const hasBinOrInbox = selectedDialogs.some(
+    ({ viewTypes }) => viewTypes.includes('bin') || viewTypes.includes('inbox'),
+  );
+  const hasArchiveOrInbox = selectedDialogs.some(
+    ({ viewTypes }) => viewTypes.includes('archive') || viewTypes.includes('inbox'),
+  );
+  const hasBinOrArchive = selectedDialogs.some(
+    ({ viewTypes }) => viewTypes.includes('archive') || viewTypes.includes('bin'),
+  );
 
   const footerActions: BulkButtonProps[] = [
     ...(hasUnreadFalse

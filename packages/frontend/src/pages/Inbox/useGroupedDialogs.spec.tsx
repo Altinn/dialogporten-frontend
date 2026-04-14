@@ -54,6 +54,7 @@ const mockData: InboxItemInput[] = [
     seenByLabel: 'Sett av deg',
     seenByOthersCount: 0,
     viewType: 'inbox' as InboxViewType,
+    viewTypes: ['inbox'],
     seenByLog: {
       collapsible: true,
       endUserLabel: 'Sett av deg',
@@ -95,6 +96,7 @@ const mockData: InboxItemInput[] = [
     seenByLabel: 'Sett av deg',
     seenByOthersCount: 0,
     viewType: 'inbox' as InboxViewType,
+    viewTypes: ['inbox'],
     seenByLog: {
       collapsible: true,
       endUserLabel: 'Sett av deg',
@@ -136,6 +138,7 @@ const mockData: InboxItemInput[] = [
     seenByLabel: 'Sett av deg',
     seenByOthersCount: 0,
     viewType: 'inbox' as InboxViewType,
+    viewTypes: ['inbox'],
     seenByLog: {
       collapsible: true,
       endUserLabel: 'Sett av deg',
@@ -177,6 +180,7 @@ const mockData: InboxItemInput[] = [
     seenByLabel: 'Sett av deg',
     seenByOthersCount: 0,
     viewType: 'inbox' as InboxViewType,
+    viewTypes: ['inbox'],
     seenByLog: {
       collapsible: true,
       endUserLabel: 'Sett av deg',
@@ -218,6 +222,7 @@ const mockData: InboxItemInput[] = [
     seenByLabel: 'Sett av deg',
     seenByOthersCount: 0,
     viewType: 'inbox' as InboxViewType,
+    viewTypes: ['inbox'],
     seenByLog: {
       collapsible: true,
       endUserLabel: 'Sett av deg',
@@ -260,6 +265,7 @@ const mockData: InboxItemInput[] = [
     seenByLabel: 'Sett av deg',
     seenByOthersCount: 0,
     viewType: 'inbox' as InboxViewType,
+    viewTypes: ['inbox'],
     seenByLog: {
       collapsible: true,
       endUserLabel: 'Sett av deg',
@@ -302,6 +308,7 @@ const mockData: InboxItemInput[] = [
     seenByLabel: 'Sett av deg',
     seenByOthersCount: 0,
     viewType: 'inbox' as InboxViewType,
+    viewTypes: ['inbox'],
     seenByLog: {
       collapsible: true,
       endUserLabel: 'Sett av deg',
