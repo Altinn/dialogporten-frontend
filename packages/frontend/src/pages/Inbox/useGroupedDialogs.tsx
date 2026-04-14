@@ -1,5 +1,4 @@
 import {
-  type BadgeColor,
   type BadgeSize,
   type BadgeVariant,
   ContextMenu,
@@ -83,16 +82,15 @@ const renderLoadingItems = (size: number): DialogListItemProps[] => {
 const getItemBadge = (viewType: InboxViewType, unread: boolean, t: (key: string) => string) => {
   if (viewType === 'bin' || viewType === 'archive') {
     return {
-      color: 'neutral' as BadgeColor,
       label: t(`status.${viewType}`),
       size: 'sm' as BadgeSize,
-      variant: 'subtle' as BadgeVariant,
+      variant: 'outline' as BadgeVariant,
     };
   }
   if (unread) {
     return {
       label: t('word.unread'),
-      size: 'xs' as BadgeSize,
+      size: 'sm' as BadgeSize,
       variant: 'tinted' as BadgeVariant,
     };
   }
