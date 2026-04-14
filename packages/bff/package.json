@@ -77,7 +77,7 @@
     "@types/node": "^22.15.21",
     "concurrently": "^8.2.2",
     "mprocs": "^0.8.0",
-    "nodemon": "^3.1.10",
+    "nodemon": "^3.1.14",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "tslib": "^2.8.1",
