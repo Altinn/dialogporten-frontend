@@ -37,14 +37,14 @@ export const removeStoredURL = () => {
   sessionStorage.removeItem(LOGIN_REDIRECT_STORAGE_KEY);
 };
 
-const PARTY_BEFORE_REDIRECT_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const PARTY_BEFORE_REDIRECT_TTL_MS = 1_000;
 
-export const savePartyBeforeRedirect = (partyUuid: string, endUserUuid: string) => {
-  const entry = JSON.stringify({ partyUuid, endUserUuid, savedAt: Date.now() });
+export const savePartyBeforeRedirect = (partyUuid: string) => {
+  const entry = JSON.stringify({ partyUuid, savedAt: Date.now() });
   sessionStorage.setItem(PARTY_BEFORE_REDIRECT_KEY, entry);
 };
 
-export const consumePartyBeforeRedirect = (): { partyUuid: string; endUserUuid: string } | null => {
+export const x = (): string | null => {
   const raw = sessionStorage.getItem(PARTY_BEFORE_REDIRECT_KEY);
   sessionStorage.removeItem(PARTY_BEFORE_REDIRECT_KEY);
 
@@ -53,11 +53,11 @@ export const consumePartyBeforeRedirect = (): { partyUuid: string; endUserUuid: 
   }
 
   try {
-    const { partyUuid, endUserUuid, savedAt } = JSON.parse(raw);
-    if (!partyUuid || !endUserUuid || Date.now() - savedAt > PARTY_BEFORE_REDIRECT_TTL_MS) {
-      return null;
+    const { partyUuid, savedAt } = JSON.parse(raw);
+    if (partyUuid && savedAt && new Date(savedAt).getTime() + PARTY_BEFORE_REDIRECT_TTL_MS > Date.now()) {
+      return partyUuid;
     }
-    return { partyUuid, endUserUuid };
+    return null;
   } catch {
     return null;
   }

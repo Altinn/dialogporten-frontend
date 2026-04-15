@@ -2,10 +2,10 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import { useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { consumePartyBeforeRedirect } from '../../auth';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { updatePartyCookies } from '../../cookie.ts';
-import { consumePartyBeforeRedirect } from '../../auth';
 import {
   FixedGlobalQueryParams,
   getSelectedAllPartiesFromQueryParams,
@@ -169,19 +169,12 @@ export const useParties = (): UsePartiesOutput => {
       // during re-authentication, so this saved value takes precedence over the cookie.
       // The end user UUID is verified to prevent cross-user contamination on shared computers.
       const savedEntry = consumePartyBeforeRedirect();
-      const savedParty =
-        savedEntry && savedEntry.endUserUuid === currentEndUser?.partyUuid
-          ? partyGraph.partyByUuid.get(savedEntry.partyUuid)
-          : undefined;
-
+      const savedParty = savedEntry ? partyGraph.partyByUuid.get(savedEntry.partyUuid) : undefined;
       const partyFromCookie = cookiePartyUuid ? partyGraph.partyByUuid.get(cookiePartyUuid) : undefined;
 
       if (partyFromQuery && orgFromURL) {
         setSelectedPartyIds([orgFromURL.party], false);
-      } else if (savedParty) {
-        // Saved party from before re-login takes precedence over cookie
-        setSelectedPartyIds([savedParty.party], false);
-      } else if (partyFromCookie) {
+      } else if (partyFromCookie && !savedParty) {
         // Cookie takes precedence over default
         setSelectedPartyIds([partyFromCookie.party], false);
       } else if (currentEndUser) {

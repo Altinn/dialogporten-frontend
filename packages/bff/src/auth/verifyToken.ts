@@ -29,11 +29,6 @@ export const refreshToken = async (request: FastifyRequest, providerconfig: Prov
     },
   });
 
-  const setCookieHeaders = refreshResponse?.headers?.['set-cookie'];
-  if (setCookieHeaders) {
-    logger.warn({ setCookieHeaders }, 'OIDC token endpoint returned set-cookie headers during refresh');
-  }
-
   const updatedToken: IdPortenUpdatedToken = refreshResponse?.data;
 
   if (updatedToken) {
