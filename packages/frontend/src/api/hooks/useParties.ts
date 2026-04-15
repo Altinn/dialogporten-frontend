@@ -5,6 +5,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { updatePartyCookies } from '../../cookie.ts';
+import { consumePartyBeforeRedirect } from '../../auth';
 import {
   FixedGlobalQueryParams,
   getSelectedAllPartiesFromQueryParams,
@@ -160,12 +161,26 @@ export const useParties = (): UsePartiesOutput => {
       selectAllOrganizations();
     } else {
       const partyFromQuery = getSelectedPartyFromQueryParams(searchParams);
-      const partyFromCookie = cookiePartyUuid ? partyGraph.partyByUuid.get(cookiePartyUuid) : undefined;
       // URL takes highest precedence
       const orgFromURL = partyFromQuery ? partyGraph.partyByUrn.get(partyFromQuery) : undefined;
 
+      // Restore the party the user had selected before a re-login redirect.
+      // The OIDC provider overwrites AltinnPartyUuid with the preselected actor
+      // during re-authentication, so this saved value takes precedence over the cookie.
+      // The end user UUID is verified to prevent cross-user contamination on shared computers.
+      const savedEntry = consumePartyBeforeRedirect();
+      const savedParty =
+        savedEntry && savedEntry.endUserUuid === currentEndUser?.partyUuid
+          ? partyGraph.partyByUuid.get(savedEntry.partyUuid)
+          : undefined;
+
+      const partyFromCookie = cookiePartyUuid ? partyGraph.partyByUuid.get(cookiePartyUuid) : undefined;
+
       if (partyFromQuery && orgFromURL) {
         setSelectedPartyIds([orgFromURL.party], false);
+      } else if (savedParty) {
+        // Saved party from before re-login takes precedence over cookie
+        setSelectedPartyIds([savedParty.party], false);
       } else if (partyFromCookie) {
         // Cookie takes precedence over default
         setSelectedPartyIds([partyFromCookie.party], false);

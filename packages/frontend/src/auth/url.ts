@@ -1,6 +1,7 @@
 import type { FilterState } from '@altinn/altinn-components';
 
 const LOGIN_REDIRECT_STORAGE_KEY = 'arbeidsflate:referrer';
+const PARTY_BEFORE_REDIRECT_KEY = 'arbeidsflate:partyBeforeRedirect';
 
 export const createFiltersURLQuery = (activeFilters: FilterState, allFilterKeys: string[], baseURL: string): URL => {
   const url = new URL(baseURL);
@@ -34,6 +35,32 @@ export const saveURL = () => {
 
 export const removeStoredURL = () => {
   sessionStorage.removeItem(LOGIN_REDIRECT_STORAGE_KEY);
+};
+
+const PARTY_BEFORE_REDIRECT_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+export const savePartyBeforeRedirect = (partyUuid: string, endUserUuid: string) => {
+  const entry = JSON.stringify({ partyUuid, endUserUuid, savedAt: Date.now() });
+  sessionStorage.setItem(PARTY_BEFORE_REDIRECT_KEY, entry);
+};
+
+export const consumePartyBeforeRedirect = (): { partyUuid: string; endUserUuid: string } | null => {
+  const raw = sessionStorage.getItem(PARTY_BEFORE_REDIRECT_KEY);
+  sessionStorage.removeItem(PARTY_BEFORE_REDIRECT_KEY);
+
+  if (!raw) {
+    return null;
+  }
+
+  try {
+    const { partyUuid, endUserUuid, savedAt } = JSON.parse(raw);
+    if (!partyUuid || !endUserUuid || Date.now() - savedAt > PARTY_BEFORE_REDIRECT_TTL_MS) {
+      return null;
+    }
+    return { partyUuid, endUserUuid };
+  } catch {
+    return null;
+  }
 };
 
 export const getCurrentURL = () => window.location.pathname + window.location.search;

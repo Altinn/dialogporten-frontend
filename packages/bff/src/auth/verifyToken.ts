@@ -3,7 +3,7 @@ import axios from 'axios';
 import type { FastifyPluginAsync, FastifyReply, FastifyRequest, IdPortenUpdatedToken, ProviderConfig } from 'fastify';
 import fp from 'fastify-plugin';
 import config from '../config.ts';
-import { type SessionStorageToken, fetchOpenIDConfig, handleLogout } from './oidc.ts';
+import { type SessionStorageToken, fetchOpenIDConfig } from './oidc.ts';
 
 export const refreshToken = async (request: FastifyRequest, providerconfig: ProviderConfig) => {
   const token: SessionStorageToken | undefined = request.session.get('token');
@@ -29,6 +29,11 @@ export const refreshToken = async (request: FastifyRequest, providerconfig: Prov
     },
   });
 
+  const setCookieHeaders = refreshResponse?.headers?.['set-cookie'];
+  if (setCookieHeaders) {
+    logger.warn({ setCookieHeaders }, 'OIDC token endpoint returned set-cookie headers during refresh');
+  }
+
   const updatedToken: IdPortenUpdatedToken = refreshResponse?.data;
 
   if (updatedToken) {
@@ -49,21 +54,12 @@ export const refreshToken = async (request: FastifyRequest, providerconfig: Prov
   }
 };
 
-type ValidationStatus =
-  | 'refresh_token_expired'
-  | 'refreshed'
-  | 'missing_token'
-  | 'access_token_valid'
-  | 'access_token_invalid';
+type ValidationStatus = 'missing_token' | 'access_token_valid' | 'access_token_invalid';
 
 /**
  * Checks the validity of the session token in the request and optionally refreshes the token if necessary.
- *
- * @param {FastifyRequest} request - The Fastify request object containing the session token.
- * @param {boolean} allowTokenRefresh - Flag indicating whether the function should attempt to refresh tokens if the access token has expired.
- * @param providerConfig
- * @returns {Promise<boolean>} - Returns `true` if the access token is still valid or if it has been successfully refreshed.
- *                               Returns `false` if the token is invalid or cannot be refreshed.
+ * If the access token is about to expire and refresh is allowed, a refresh is attempted as a side effect.
+ * The final validity is always determined by re-reading the (potentially refreshed) token from the session.
  */
 const getIsTokenValid = async (
   request: FastifyRequest,
@@ -79,26 +75,24 @@ const getIsTokenValid = async (
   const now = new Date();
   const accessTokenExpiresAt = new Date(token.access_token_expires_at);
   const isRefreshTokenValid = new Date(token.refresh_token_expires_at) > now;
-  // Check if the access token expires in less than 60 seconds for now
   const accessTokenExpiresSoon = accessTokenExpiresAt.getTime() - now.getTime() < 60 * 1000;
-  const isAccessTokenValid = accessTokenExpiresAt > now;
 
   if (accessTokenExpiresSoon && allowTokenRefresh && isRefreshTokenValid) {
     try {
       await refreshToken(request, providerConfig);
-      // Ensure that the token has been updated and valid after the refresh
-      const updatedToken: SessionStorageToken | undefined = request.session.get('token');
-      const updatedAccessTokenExpiresAt = new Date(updatedToken?.access_token_expires_at || '');
-      if (updatedAccessTokenExpiresAt > now) {
-        return 'refreshed';
-      }
-      return 'refresh_token_expired';
     } catch (error) {
       logger.error(error, 'Unable to refresh token');
-      return 'refresh_token_expired';
     }
   }
-  return isAccessTokenValid ? 'access_token_valid' : 'access_token_invalid';
+
+  // Always check the (potentially refreshed) token
+  const currentToken: SessionStorageToken | undefined = request.session.get('token');
+  if (!currentToken) {
+    return 'missing_token';
+  }
+
+  const currentExpiry = new Date(currentToken.access_token_expires_at);
+  return currentExpiry > now ? 'access_token_valid' : 'access_token_invalid';
 };
 
 const plugin: FastifyPluginAsync = async (fastify, _) => {
@@ -110,11 +104,7 @@ const plugin: FastifyPluginAsync = async (fastify, _) => {
     return async (request: FastifyRequest, reply: FastifyReply) => {
       try {
         const validationStatus: ValidationStatus = await getIsTokenValid(request, allowTokenRefresh, providerConfig);
-        if (validationStatus === 'refresh_token_expired' || validationStatus === 'missing_token') {
-          // Redirect to force a new login if the refresh token has expired or if the token is missing
-          return handleLogout(request, reply, providerConfig);
-        }
-        request.tokenIsValid = validationStatus === 'access_token_valid' || validationStatus === 'refreshed';
+        request.tokenIsValid = validationStatus === 'access_token_valid';
       } catch (e) {
         logger.error(e, 'Unable to verify token');
         request.tokenIsValid = false;

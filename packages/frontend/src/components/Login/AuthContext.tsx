@@ -1,7 +1,10 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import type { PartyFieldsFragment } from 'bff-types-generated';
 import type React from 'react';
 import { createContext, useContext, useEffect } from 'react';
-import { getCurrentURL, getIsAuthenticated, getStoredURL, removeStoredURL, saveURL } from '../../auth';
+import { getCurrentURL, getIsAuthenticated, getStoredURL, removeStoredURL, savePartyBeforeRedirect, saveURL } from '../../auth';
+import { QUERY_KEYS } from '../../constants/queryKeys.ts';
+import { getPartyFromCookie } from '../../cookie.ts';
 
 interface AuthContextProps {
   isAuthenticated: boolean;
@@ -10,6 +13,7 @@ interface AuthContextProps {
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const queryClient = useQueryClient();
   const { data: isAuthenticated, isFetchedAfterMount } = useQuery({
     queryKey: ['isAuthenticated'],
     queryFn: async () => getIsAuthenticated(),
@@ -19,8 +23,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     if (!isAuthenticated && isFetchedAfterMount) {
-      // besides it's also an indicator of a deliberate logout
       saveURL();
+      // Save the current party selection before redirect — the OIDC provider
+      // overwrites the AltinnPartyUuid cookie with the preselected actor during
+      // re-login, so we need to restore the user's actual selection afterward.
+      // The end user UUID is included so we can verify the same user is logging
+      // back in (prevents cross-user contamination on shared computers).
+      const currentParty = getPartyFromCookie('AltinnPartyUuid');
+      const parties = queryClient.getQueryData<PartyFieldsFragment[]>([QUERY_KEYS.PARTIES]);
+      const endUserUuid = parties?.find((p) => p.isCurrentEndUser)?.partyUuid;
+      if (currentParty && endUserUuid) {
+        savePartyBeforeRedirect(currentParty, endUserUuid);
+      }
       window.location.assign('/api/login');
     }
 
