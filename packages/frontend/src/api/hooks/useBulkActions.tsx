@@ -1,5 +1,5 @@
 import { type BulkButtonProps, type SnackbarColor, SnackbarDuration, useSnackbar } from '@altinn/altinn-components';
-import { ArchiveIcon, CheckmarkIcon, EyeClosedIcon, InboxFillIcon, TrashIcon } from '@navikt/aksel-icons';
+import { ArchiveIcon, CheckmarkIcon, EyeClosedIcon, InboxIcon, TrashIcon } from '@navikt/aksel-icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { SystemLabel } from 'bff-types-generated';
 import { useState } from 'react';
@@ -107,7 +107,7 @@ export const useBulkActions = ({
     ...(hasBinOrArchive
       ? [
           {
-            icon: InboxFillIcon,
+            icon: InboxIcon,
             loading,
             label: t('dialog.toolbar.move_undo'),
             onClick: () => {

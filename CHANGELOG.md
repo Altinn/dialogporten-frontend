@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.137.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.137.2...v1.137.3) (2026-04-14)
+
+
+### Bug Fixes
+
+* bump altinn-components to 0.58.2, update verification labels and badge styling for unread messages ([#4004](https://github.com/Altinn/dialogporten-frontend/issues/4004)) ([93120e5](https://github.com/Altinn/dialogporten-frontend/commit/93120e5438fc272ef091883422ef40017c16b04d))
+
 ## [1.137.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.137.1...v1.137.2) (2026-04-14)
 
 
