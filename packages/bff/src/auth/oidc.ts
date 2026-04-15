@@ -334,28 +334,18 @@ const plugin: FastifyPluginAsync = async (fastify) => {
     };
 
     const authUrl = buildAuthorizationUrl(providerConfig, parameters);
-    console.info('Redirecting to OIDC provider:', authUrl);
 
     const redirectTo: URL = new URL(authUrl);
     return reply.redirect(redirectTo.href);
   };
 
   fastify.get('/api/login', async (request: FastifyRequest, reply: FastifyReply) => {
-    const altinnPartyCookie = request.cookies?.['AltinnPartyUuid'];
-    logger.info(
-      { AltinnPartyUuid: altinnPartyCookie ?? 'not set' },
-      'AltinnPartyUuid cookie on /api/login (before auth flow)',
-    );
     return redirectToAuthorizationURI(request, reply);
   });
 
   /* Post login: retrieves token, stores values to user session and redirects to client */
   fastify.get('/api/cb', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const altinnPartyCookie = request.cookies?.['AltinnPartyUuid'];
-      if (altinnPartyCookie) {
-        logger.info({ AltinnPartyUuid: altinnPartyCookie }, 'AltinnPartyUuid cookie on /api/cb');
-      }
       const storedStateTruth = request.session.get('state') || '';
       const receivedState = (request.query as { state: string }).state || '';
       const stateIsAMatch = storedStateTruth === receivedState && storedStateTruth !== '';
