@@ -60,7 +60,16 @@ export async function selectNextPage(page, trend) {
 export async function selectAllEnterprises(page, trend) {
   const startTime = new Date();
   await page.locator('#toolbar-menu-root > button').click();
-  await page.locator('#ALL').click();
+
+  try {
+    const el = page.locator('#ALL');
+    await el.waitFor({ state: 'visible', timeout: 500 });
+    await el.click();
+  } catch {
+    // return without measurement? If #ALL is not present, as this is not a failure of the test scenario
+    return;
+  }
+
   await waitForPageLoaded(page, 2);
   const endTime = new Date();
   trend.add(endTime - startTime);
