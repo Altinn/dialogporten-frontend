@@ -36,6 +36,7 @@ import type { TimelineSegmentWithTransmissions } from '../../utils/transmissions
 import { ActivityLogModal } from '../ActivityLog/activityLogModal.tsx';
 import { AdditionalInfoContent } from '../AdditonalInfoContent';
 import { MainContentReference } from '../MainContentReference';
+import { DialogHelp } from './DialogHelp.tsx';
 
 interface DialogDetailsProps {
   dialog: DialogByIdDetails | undefined | null;
@@ -481,6 +482,7 @@ export const DialogDetails = ({
           {t('dialog.transmission.collapseLabel')}
         </Button>
       )}
+      <DialogHelp contactButtons={dialog.contactButtons} />
       {dialog.additionalInfo?.value && (
         <>
           <Divider />

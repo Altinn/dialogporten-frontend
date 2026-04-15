@@ -1,4 +1,4 @@
-import type { AttachmentLinkProps, AvatarProps, SeenByLogProps } from '@altinn/altinn-components';
+import type { AttachmentLinkProps, AvatarProps, ContactButtonProps, SeenByLogProps } from '@altinn/altinn-components';
 import { formatDisplayName } from '@altinn/altinn-components';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -50,7 +50,7 @@ export interface EmbeddedContent {
 export interface DialogByIdDetails {
   /* id of dialog */
   id: string;
-  /* servide owner of dialog */
+  /* service owner of dialog */
   org: string;
   /* party with access to dialog */
   party: string;
@@ -102,6 +102,8 @@ export interface DialogByIdDetails {
   receivedCount?: number;
   /* Unread or not, determined by label, logs and/or hasUnOpenedContent */
   unread: boolean;
+  /* contact buttons derived from contactInfo and sender name */
+  contactButtons: ContactButtonProps[];
 }
 
 interface UseDialogByIdOutput {
@@ -217,7 +219,27 @@ export const getActorProps = (
   };
 };
 
-export function mapDialogToToInboxItem(
+const getContactButtons = (
+  contactInfo: OrganizationOutput['contact'] | undefined | null,
+  senderName: string,
+): ContactButtonProps[] => {
+  const buttons: ContactButtonProps[] = [];
+  if (contactInfo?.url || contactInfo?.email) {
+    buttons.push({
+      label: t('dialog.help.contact_sender', { name: senderName }),
+      href: contactInfo.url ?? `mailto:${contactInfo.email}`,
+    });
+  }
+  if (contactInfo?.phone) {
+    buttons.push({
+      label: t('dialog.help.phone', { number: contactInfo.phone }),
+      href: `tel:${contactInfo.phone}`,
+    });
+  }
+  return buttons;
+};
+
+export function mapDialogToInboxItem(
   item: DialogByIdFieldsFragment | null | undefined,
   parties: PartyFieldsFragment[],
   organizations: OrganizationFieldsFragment[],
@@ -343,6 +365,10 @@ export function mapDialogToToInboxItem(
     viewType: getViewTypes({ status: item.status, systemLabel: item.endUserContext?.systemLabels })?.[0],
     dueAt: item.dueAt,
     unread: getIsUnread(item),
+    contactButtons: getContactButtons(
+      serviceOwner?.contact,
+      getPreferredPropertyByLocale(senderName)?.value || serviceOwner?.name || '',
+    ),
   };
 }
 
@@ -388,7 +414,7 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
   return {
     isLoading,
     isSuccess,
-    dialog: mapDialogToToInboxItem(
+    dialog: mapDialogToInboxItem(
       data?.dialogById?.dialog,
       parties,
       organizations,

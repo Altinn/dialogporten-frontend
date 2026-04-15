@@ -138,6 +138,7 @@ const createTransmissionItem = ({
 
   return {
     id: transmission.id,
+    disabled: !transmission.isAuthorized,
     byline: transmission?.createdAt ? `${sender.name}, ${format(transmission.createdAt, getClockFormatString())}` : '',
     title: getPreferredPropertyByLocale(transmission.content.title.value)?.value ?? '',
     summary: getPreferredPropertyByLocale(transmission.content.summary?.value)?.value ?? '',

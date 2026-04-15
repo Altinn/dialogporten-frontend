@@ -30,6 +30,12 @@ interface OrganizationNames {
   nn: string;
 }
 
+interface OrganizationContact {
+  email?: string;
+  phone?: string;
+  url?: string;
+}
+
 interface TransformedOrganization {
   id: string;
   name: OrganizationNames;
@@ -37,6 +43,7 @@ interface TransformedOrganization {
   orgnr: string;
   homepage: string;
   environments: string[];
+  contact?: OrganizationContact;
 }
 
 const organizationsRedisKey = 'arbeidsflate-organizations:v1';
@@ -99,7 +106,7 @@ export async function getOrganizationsFromRedis(): Promise<TransformedOrganizati
 function convertOrgsToJson(orgs: Orgs): TransformedOrganization[] {
   const result: TransformedOrganization[] = [];
   for (const [id, details] of Object.entries(orgs)) {
-    const { name, logo, orgnr, homepage, environments, emblem } = details;
+    const { name, logo, orgnr, homepage, environments, emblem, contact } = details;
     result.push({
       id,
       name,
@@ -107,10 +114,29 @@ function convertOrgsToJson(orgs: Orgs): TransformedOrganization[] {
       orgnr,
       homepage,
       environments,
+      contact,
     });
   }
   return result;
 }
+
+export const OrganizationContactType = objectType({
+  name: 'OrganizationContact',
+  definition(t) {
+    t.nullable.string('email', {
+      description: 'Contact email address of the organization',
+      resolve: (contact) => contact.email ?? null,
+    });
+    t.nullable.string('phone', {
+      description: 'Contact phone number of the organization',
+      resolve: (contact) => contact.phone ?? null,
+    });
+    t.nullable.string('url', {
+      description: 'Contact URL of the organization',
+      resolve: (contact) => contact.url ?? null,
+    });
+  },
+});
 
 export const OrganizationNames = objectType({
   name: 'OrganizationNames',
@@ -175,6 +201,11 @@ export const Organization = objectType({
       resolve: (organization) => {
         return organization.environments;
       },
+    });
+    t.nullable.field('contact', {
+      type: 'OrganizationContact',
+      description: 'Contact information for the organization',
+      resolve: (organization) => organization.contact ?? null,
     });
   },
 });

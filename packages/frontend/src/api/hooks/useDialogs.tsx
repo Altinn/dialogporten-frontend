@@ -17,7 +17,7 @@ import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
 import { normalizeFilterDefaults, removeUndefinedValues } from '../../pages/Inbox/filters';
 import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
 import { useProfile } from '../../pages/Profile';
-import { getPartyIds, mapDialogToToInboxItems, mergeDialogItems } from '../../utils/dialog.ts';
+import { getPartyIds, mapDialogToInboxItems, mergeDialogItems } from '../../utils/dialog.ts';
 import { buildOrganizationMap } from '../../utils/organizations.ts';
 import { graphQLSDK } from '../queries.ts';
 import { useParties } from './useParties.ts';
@@ -197,7 +197,7 @@ export const useDialogs = ({
     itemsIsNull: lastPage?.searchDialogs?.items === null,
   });
   const orgMap = useMemo(() => buildOrganizationMap(organizations), [organizations]);
-  const dialogs = mapDialogToToInboxItems(content, partyGraph, orgMap, format, disableFlipNamesPatch);
+  const dialogs = mapDialogToInboxItems(content, partyGraph, orgMap, format, disableFlipNamesPatch);
   /*  isFetching && isPlaceholderData is used to determine if we are fetching the initial data for the query key */
   const isActuallyLoading = isLoading || (isFetching && isPlaceholderData);
 
