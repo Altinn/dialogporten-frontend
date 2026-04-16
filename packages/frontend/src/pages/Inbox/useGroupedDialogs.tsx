@@ -13,6 +13,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Trans } from 'react-i18next';
 import { Link, type LinkProps } from 'react-router-dom';
+import { MAX_COUNT_BULK_DIALOGS } from '../../api/hooks/useBulkActions.tsx';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useFeatureFlag } from '../../featureFlags';
@@ -176,6 +177,8 @@ const useGroupedDialogs = ({
       'aria-label': t('dialog.context_menu.label', { title: item.title }),
     };
 
+    const disabledBulkItem = bulkMode && bulkedIds.length >= MAX_COUNT_BULK_DIALOGS && !bulkedIds.includes(item.id);
+
     return {
       groupId,
       title: item.title,
@@ -194,7 +197,11 @@ const useGroupedDialogs = ({
       tabIndex: bulkMode ? 0 : undefined,
       selected: bulkedIds?.includes(item.id),
       controls: bulkMode ? (
-        <ItemSelect checked={bulkedIds?.includes(item.id)} onClick={() => onToggleBulkId(item.id)} />
+        <ItemSelect
+          checked={bulkedIds?.includes(item.id)}
+          onClick={() => onToggleBulkId(item.id)}
+          disabled={disabledBulkItem}
+        />
       ) : (
         <ContextMenu {...contextMenu} />
       ),
@@ -208,6 +215,7 @@ const useGroupedDialogs = ({
       receivedCount: item.fromServiceOwnerTransmissionsCount ?? 0,
       ariaLabel: item.title,
       ...(bulkMode ? { onClick: () => onToggleBulkId(item.id) } : {}),
+      disabled: disabledBulkItem,
       as: bulkMode
         ? 'button'
         : (props: LinkProps) => (

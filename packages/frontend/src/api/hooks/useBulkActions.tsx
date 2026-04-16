@@ -10,6 +10,9 @@ import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
 import { bulkUpdateSystemLabels } from '../queries.ts';
 
+/* Dialogporten only allows 100 dialogs to be bulked per request */
+export const MAX_COUNT_BULK_DIALOGS = 100;
+
 interface UseBulkActionsProps {
   selectedDialogIds: string[];
   allDialogs: InboxItemInput[];
@@ -142,7 +145,7 @@ export const useBulkActions = ({
   ];
 
   return {
-    footerActions,
-    headerActions,
+    footerActions: selectedDialogIds.length > MAX_COUNT_BULK_DIALOGS ? [] : footerActions,
+    headerActions: selectedDialogIds.length >= MAX_COUNT_BULK_DIALOGS ? [] : headerActions,
   };
 };

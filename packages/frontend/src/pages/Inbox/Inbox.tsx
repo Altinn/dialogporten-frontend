@@ -15,7 +15,7 @@ import type { TFunction } from 'i18next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useSearchParams } from 'react-router-dom';
-import { useBulkActions } from '../../api/hooks/useBulkActions.tsx';
+import { MAX_COUNT_BULK_DIALOGS, useBulkActions } from '../../api/hooks/useBulkActions.tsx';
 import { type InboxViewType, MAX_DIALOG_PARTY_SIZE, useDialogs } from '../../api/hooks/useDialogs.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { createFiltersURLQuery } from '../../auth';
@@ -276,7 +276,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
   }, [setBulkMode, setBulkedIds]);
 
   const onSelectAll = useCallback(() => {
-    setBulkedIds(dialogs.map((d) => d.id));
+    setBulkedIds(dialogs.map((d) => d.id).slice(0, MAX_COUNT_BULK_DIALOGS));
   }, [dialogs, setBulkedIds]);
 
   const { footerActions, headerActions } = useBulkActions({
@@ -385,10 +385,16 @@ export const Inbox = ({ viewType }: InboxProps) => {
     <PageBase>
       <BulkHeader
         hidden={!bulkMode}
-        title={t('bulk_action.header.selected', { count: bulkedIds?.length ?? 0 })}
+        title={t(
+          bulkedIds?.length >= MAX_COUNT_BULK_DIALOGS
+            ? 'bulk_action.header.selected_max_reached'
+            : 'bulk_action.header.selected',
+          { count: bulkedIds?.length ?? 0 },
+        )}
         options={headerActions}
         dismissable={true}
         onDismiss={onCloseBulkMode}
+        color={bulkedIds.length >= MAX_COUNT_BULK_DIALOGS ? 'warning' : 'company'}
       />
       <Heading as="h1" size="xl">
         {t(getPageRouteTitle(PageRoutes[viewType]))}

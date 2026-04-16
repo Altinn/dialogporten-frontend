@@ -81,6 +81,7 @@
   "bulk_action.bin.failure": "Flytting til papirkorg feila",
   "bulk_action.bin.success": "{count, plural, =1 {Flytta # element til papirkorg} other {Flytta # element til papirkorg}}",
   "bulk_action.header.selected": "{count, plural, =1 {# vald} other {# valde}}",
+  "bulk_action.header.selected_max_reached": "Maksgrense nådd – {count, plural, =1 {# vald} other {# valde}}",
   "bulk_action.inbox.failure": "Flytting til innboks feila",
   "bulk_action.inbox.success": "{count, plural, =1 {Flytta # element til innboks} other {Flytta # element til innboks}}",
   "bulk_action.mark_as_unread.failure": "Markering som ulest feila",

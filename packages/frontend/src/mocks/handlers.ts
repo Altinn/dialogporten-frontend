@@ -106,10 +106,14 @@ const getAllDialogsforCountMock = graphql.query('getAllDialogsForCount', ({ vari
     status: variables.status,
   });
 
+  const sortedItems = items
+    ?.slice()
+    .sort((a, b) => new Date(b.contentUpdatedAt).getTime() - new Date(a.contentUpdatedAt).getTime());
+
   return HttpResponse.json({
     data: {
       searchDialogs: {
-        items: items?.map((item) => ({
+        items: sortedItems?.map((item) => ({
           id: item.id,
           org: item.org,
           party: item.party,
@@ -137,10 +141,14 @@ const getAllDialogsForPartiesMock = graphql.query('getAllDialogsForParties', ({ 
     updatedBefore: variables.updatedBefore,
   });
 
+  const sortedItems = items
+    ?.slice()
+    .sort((a, b) => new Date(b.contentUpdatedAt).getTime() - new Date(a.contentUpdatedAt).getTime());
+
   return HttpResponse.json({
     data: {
       searchDialogs: {
-        items: items ?? null,
+        items: sortedItems ?? null,
       },
     },
   });
