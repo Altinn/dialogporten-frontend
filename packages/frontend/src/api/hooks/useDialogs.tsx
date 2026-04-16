@@ -23,7 +23,7 @@ import { graphQLSDK } from '../queries.ts';
 import { useParties } from './useParties.ts';
 
 /* Number of max parties used to fetch dialogs with party input param from Dialogporten */
-export const MAX_DIALOG_PARTY_SIZE = 40;
+export const MAX_DIALOG_PARTY_SIZE = 100;
 
 export type InboxViewType = 'inbox' | 'drafts' | 'sent' | 'archive' | 'bin';
 
