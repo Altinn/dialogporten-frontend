@@ -12,6 +12,7 @@ import i18n from 'i18next';
 import { type ChangeEvent, type ReactNode, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { MAX_DIALOG_PARTY_SIZE } from '../../../api/hooks/useDialogs.tsx';
 import { QUERY_KEYS } from '../../../constants/queryKeys.ts';
 import { useFeatureFlag } from '../../../featureFlags';
 import { FixedGlobalQueryParams } from '../../../pages/Inbox/queryParams.ts';
@@ -269,6 +270,25 @@ export const useAccounts = ({
   const shouldExcludeDeleted = options.excludeDeleted ?? true;
   const includeDeletedParties = isDeletedUnitsFilterEnabled ? (shouldShowDeletedEntities ?? false) : true;
 
+  // Memoize org count and avatar group items separately — avoids recomputation when only selection changes
+  const { orgCount, avatarGroupItems } = useMemo(() => {
+    const filtered = organizationAccounts.filter((org) => {
+      if (org.disabled) return false;
+      if (shouldExcludeDeleted && !includeDeletedParties && org.isDeleted) return false;
+      return true;
+    });
+
+    return {
+      orgCount: filtered.length,
+      avatarGroupItems: filtered.slice(0, MAX_DIALOG_PARTY_SIZE).map((party) => ({
+        id: party.id,
+        name: party.name,
+        type: 'company' as AccountMenuItemProps['type'],
+        variant: party.isParent ? 'solid' : 'outline',
+      })),
+    };
+  }, [organizationAccounts, shouldExcludeDeleted, includeDeletedParties]);
+
   // Memoize the full account assembly to avoid O(n) work on every render
   const { assembledAccounts, accountGroups } = useMemo(() => {
     if (!selectedParties?.length) {
@@ -302,24 +322,6 @@ export const useAccounts = ({
           badge: { color: 'person', label: t('badge.you') },
         }
       : undefined;
-
-    const orgCount =
-      shouldExcludeDeleted && !includeDeletedParties
-        ? organizationAccounts.reduce((n, org) => n + (org.isDeleted ? 0 : 1), 0)
-        : organizationAccounts.length;
-
-    /* Only map the first few items for the avatar group icon – the rest are never visible */
-    const AVATAR_GROUP_LIMIT = 10;
-    const avatarGroupSource =
-      shouldExcludeDeleted && !includeDeletedParties
-        ? organizationAccounts.filter((org) => !org.isDeleted)
-        : organizationAccounts;
-    const avatarGroupItems = avatarGroupSource.slice(0, AVATAR_GROUP_LIMIT).map((party) => ({
-      id: party.id,
-      name: party.name,
-      type: 'company' as AccountMenuItemProps['type'],
-      variant: party.isParent ? 'solid' : 'outline',
-    }));
 
     const allOrganizationsAccount: PartyItemProp = {
       uuid: 'N/A',
@@ -381,6 +383,8 @@ export const useAccounts = ({
     options.showGroups,
     shouldExcludeDeleted,
     includeDeletedParties,
+    orgCount,
+    avatarGroupItems,
     t,
   ]);
 
