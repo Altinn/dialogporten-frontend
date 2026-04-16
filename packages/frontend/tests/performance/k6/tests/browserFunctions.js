@@ -6,19 +6,23 @@
  */
 export async function selectSideMenuElement(page, locator, trend) {
   const startTime = new Date();
-  const elem = await page.getByTestId(locator);
+  const elems = page.getByTestId(locator);
+  const count = await elems.count();
 
-  await Promise.all([
-    elem.click().catch(() => {
-      console.info(`click failed for the element with locator ${locator}`);
-    }),
-  ]);
-
-  // Wait for the page to load after clicking the menu element
-  await waitForPageLoaded(page, 2);
-  // Track the time taken for the action
-  const endTime = new Date();
-  trend.add(endTime - startTime);
+  for (let i = 0; i < count; i++) {
+    const el = elems.nth(i);
+    const visible = await el.isVisible();
+    const enabled = await el.isEnabled();
+    if (visible && enabled) {
+      await el.click();
+      // Wait for the page to load after clicking the menu element
+      await waitForPageLoaded(page, 2);
+      // Track the time taken for the action
+      const endTime = new Date();
+      trend.add(endTime - startTime);
+      return;
+    }
+  }
 }
 
 /**
@@ -47,23 +51,28 @@ export async function selectNextPage(page, trend) {
   }
 }
 
+/**
+ * Async function to select all enterprises in the dialog list.
+ * @param {object} page - The page object to interact with.
+ * @param {object} trend - Trend metric to track the action duration.
+ * @return {Promise<void>} - A promise that resolves when all enterprises are selected.
+ */
 export async function selectAllEnterprises(page, trend) {
-  const menuElement = await page.getByTestId('account-menu-button', { exact: true });
-  await Promise.all([menuElement.click()]);
-  const alle = await page.getByText(/Alle virksomheter|Alle verksemder|All organizations/, {
-    timeout: 100,
-    exact: true,
-  });
-  for (let i = 0; i < (await alle.count({ timeout: 100 })); i++) {
-    if (await alle.nth(i).isVisible()) {
-      const startTime = new Date();
-      await Promise.all([alle.nth(i).click()]);
-      await waitForPageLoaded(page, 2);
-      const endTime = new Date();
-      trend.add(endTime - startTime);
-      break;
-    }
+  const startTime = new Date();
+  await page.locator('#toolbar-menu-root > button').click();
+
+  try {
+    const el = page.locator('#ALL');
+    await el.waitFor({ state: 'visible', timeout: 500 });
+    await el.click();
+  } catch {
+    // return without measurement? If #ALL is not present, as this is not a failure of the test scenario
+    return;
   }
+
+  await waitForPageLoaded(page, 2);
+  const endTime = new Date();
+  trend.add(endTime - startTime);
 }
 
 /**
