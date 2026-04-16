@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.138.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.137.5...v1.138.0) (2026-04-16)
+
+
+### Features
+
+* Add contact info and helper box for transmissions disable elements if not authorised ([#4006](https://github.com/Altinn/dialogporten-frontend/issues/4006)) ([4caa983](https://github.com/Altinn/dialogporten-frontend/commit/4caa98305f62ccfd33bd01c9df8163b1765e0ae1))
+
 ## [1.137.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.137.4...v1.137.5) (2026-04-16)
 
 
