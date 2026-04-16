@@ -81,6 +81,7 @@
   "bulk_action.bin.failure": "Kunne ikke flytte til papirkurven",
   "bulk_action.bin.success": "{count, plural, =1 {Flyttet # element til papirkurven} other {Flyttet # elementer til papirkurven}}",
   "bulk_action.header.selected": "{count, plural, =1 {# valgt} other {# valgt}}",
+  "bulk_action.header.selected_max_reached": "Maksgrense nådd – {count, plural, =1 {# valgt} other {# valgt}}",
   "bulk_action.inbox.failure": "Kunne ikke flytte til innboksen",
   "bulk_action.inbox.success": "{count, plural, =1 {Flyttet # element til innboksen} other {Flyttet # elementer til innboksen}}",
   "bulk_action.mark_as_unread.failure": "Kunne ikke markere som ulest",
