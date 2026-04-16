@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.137.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.137.3...v1.137.4) (2026-04-16)
+
+
+### Bug Fixes
+
+* **bulk:** limit dialogs in a single bulk operation to max 100 because of API limitation ([#4012](https://github.com/Altinn/dialogporten-frontend/issues/4012)) ([59e6668](https://github.com/Altinn/dialogporten-frontend/commit/59e6668b16623a7e9138a13b21794275c6664afa))
+
 ## [1.137.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.137.2...v1.137.3) (2026-04-14)
 
 
