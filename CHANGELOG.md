@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.138.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.138.1...v1.138.2) (2026-04-16)
+
+
+### Bug Fixes
+
+* **account:** users with preselected party are randomly switched from person to the preselected one ([#4023](https://github.com/Altinn/dialogporten-frontend/issues/4023)) ([abac507](https://github.com/Altinn/dialogporten-frontend/commit/abac507b9831138cbe629ed27e0e751f04f7aa0a))
+* **deps:** update dependency fastify to v5.8.5 [security] ([#3810](https://github.com/Altinn/dialogporten-frontend/issues/3810)) ([d87b7a0](https://github.com/Altinn/dialogporten-frontend/commit/d87b7a0029a67c969085da2c7706a1733fb58c3f))
+
 ## [1.138.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.138.0...v1.138.1) (2026-04-16)
 
 
