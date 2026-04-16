@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.137.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.137.4...v1.137.5) (2026-04-16)
+
+
+### Bug Fixes
+
+* **inbox:** increase limit of all parties from 40 to 100 ([#4015](https://github.com/Altinn/dialogporten-frontend/issues/4015)) ([27981e7](https://github.com/Altinn/dialogporten-frontend/commit/27981e706f8ff230452e66d9e4316af66a252271))
+
 ## [1.137.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.137.3...v1.137.4) (2026-04-16)
 
 
