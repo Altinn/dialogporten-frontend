@@ -1,6 +1,6 @@
 import type { OrganizationFieldsFragment, PartyFieldsFragment, SearchDialogFieldsFragment } from 'bff-types-generated';
 import { describe, expect, it, vi } from 'vitest';
-import { mapDialogToToInboxItems } from './dialog.ts';
+import { mapDialogToInboxItems } from './dialog.ts';
 import { buildOrganizationMap } from './organizations.ts';
 import { buildPartyGraph } from './partyGraph.ts';
 
@@ -117,7 +117,7 @@ const createDialog = (overrides: Partial<SearchDialogFieldsFragment> = {}): Sear
 
 describe('mapDialogToToInboxItems', () => {
   it('should map a dialog to an inbox item with correct receiver', () => {
-    const result = mapDialogToToInboxItems([createDialog()], partyGraph, orgMap, mockFormat, false);
+    const result = mapDialogToInboxItems([createDialog()], partyGraph, orgMap, mockFormat, false);
 
     expect(result).toHaveLength(1);
     expect(result[0].id).toBe('dialog-1');
@@ -128,7 +128,7 @@ describe('mapDialogToToInboxItems', () => {
 
   it('should set outline variant for sub-party receivers', () => {
     const dialog = createDialog({ party: promotedSubParty.party });
-    const result = mapDialogToToInboxItems([dialog], partyGraph, orgMap, mockFormat, false);
+    const result = mapDialogToInboxItems([dialog], partyGraph, orgMap, mockFormat, false);
 
     expect(result[0].recipient.name).toBe('Sub Org');
     expect(result[0].recipient.variant).toBe('outline');
@@ -136,20 +136,20 @@ describe('mapDialogToToInboxItems', () => {
 
   it('should fall back to end user party when dialog party is not found', () => {
     const dialog = createDialog({ party: 'urn:altinn:unknown:123' });
-    const result = mapDialogToToInboxItems([dialog], partyGraph, orgMap, mockFormat, false);
+    const result = mapDialogToInboxItems([dialog], partyGraph, orgMap, mockFormat, false);
 
     expect(result[0].recipient.name).toBe('Test User');
     expect(result[0].recipient.type).toBe('person');
   });
 
   it('should resolve organization name from orgMap', () => {
-    const result = mapDialogToToInboxItems([createDialog()], partyGraph, orgMap, mockFormat, false);
+    const result = mapDialogToInboxItems([createDialog()], partyGraph, orgMap, mockFormat, false);
 
     expect(result[0].org).toBe('org-1');
   });
 
   it('should handle empty input array', () => {
-    const result = mapDialogToToInboxItems([], partyGraph, orgMap, mockFormat, false);
+    const result = mapDialogToInboxItems([], partyGraph, orgMap, mockFormat, false);
     expect(result).toHaveLength(0);
   });
 
@@ -157,7 +157,7 @@ describe('mapDialogToToInboxItems', () => {
     const dialogs = Array.from({ length: 1000 }, (_, i) => createDialog({ id: `dialog-${i}` }));
 
     const start = performance.now();
-    const result = mapDialogToToInboxItems(dialogs, partyGraph, orgMap, mockFormat, false);
+    const result = mapDialogToInboxItems(dialogs, partyGraph, orgMap, mockFormat, false);
     const elapsed = performance.now() - start;
 
     expect(result).toHaveLength(1000);

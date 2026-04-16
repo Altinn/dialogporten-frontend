@@ -695,7 +695,11 @@ export const organizations: OrganizationFieldsFragment[] = [
       "homepage": "https://www.oslo.kommune.no/",
       "environments": [
         "tt02"
-      ]
+      ],
+      "contact": {
+        "phone": "21 80 21 80",
+        "url": "https://www.oslo.kommune.no/kontakt-oss/"
+      }
     },
     {
       "id": "oko",

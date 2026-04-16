@@ -61,7 +61,7 @@ export const getSeenByLabel = (
   return { isSeenByEndUser, seenByOthersCount, seenByLabel };
 };
 
-export function mapDialogToToInboxItems(
+export function mapDialogToInboxItems(
   input: SearchDialogFieldsFragment[],
   partyGraph: PartyGraph,
   organizations: OrganizationLookup,
