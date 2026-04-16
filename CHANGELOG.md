@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.138.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.138.0...v1.138.1) (2026-04-16)
+
+
+### Bug Fixes
+
+* **accounts:** count of all companies in account menu should represent number of selectable parties ([#4020](https://github.com/Altinn/dialogporten-frontend/issues/4020)) ([da4e7f3](https://github.com/Altinn/dialogporten-frontend/commit/da4e7f39dba8543251666959ec0cfa962deb7896))
+
 ## [1.138.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.137.5...v1.138.0) (2026-04-16)
 
 
