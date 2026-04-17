@@ -4,13 +4,14 @@ import config from '../../config.js';
 import { SavedSearchRepository } from '../../db.ts';
 import { getAltinn2messages } from '../functions/altinn2messages.ts';
 import {
+  coreToFrontendLang,
   getNotificationAddressByOrgNumber,
   getNotificationsettingsForCurrentUser,
   getOrCreateProfile,
   getUserFromCore,
   getVerifiedAddresses,
 } from '../functions/profile.ts';
-import { getLanguageFromAltinnContext, languageCodes, updateAltinnPersistentContextValue } from './cookie.js';
+import { languageCodes, updateAltinnPersistentContextValue } from './cookie.js';
 import { getOrganizationsFromRedis } from './organization.ts';
 import { OrganizationResponse } from './profile.ts';
 
@@ -22,30 +23,29 @@ export const Query = objectType({
       resolve: async (_source, _args, ctx) => {
         const profile = await getOrCreateProfile(ctx);
         const user = await getUserFromCore(ctx);
-        const { language, groups, updatedAt } = profile;
-        const languageFromAltinnContext = getLanguageFromAltinnContext(
-          ctx.request.raw.cookies?.altinnPersistentContext,
-        );
+        const { groups, updatedAt } = profile;
 
-        // ensure the cookie uses the preferred language
-        if (!languageFromAltinnContext) {
-          const ul = languageCodes[language];
-          if (ul) {
-            const current = ctx.request.raw.cookies?.altinnPersistentContext;
-            const value = updateAltinnPersistentContextValue(current, ul);
-            ctx.request.context.reply.setCookie('altinnPersistentContext', value, {
-              path: '/',
-              expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
-              httpOnly: true,
-              secure: true,
-              domain: config.authContextCookieDomain,
-              encode: (v: string) => v,
-            });
-          }
+        // Read language from Core API via GET /users/current (profileSettingPreference.language)
+        const coreLanguage = user?.profileSettingPreference?.language;
+        const language = (coreLanguage ? (coreToFrontendLang[coreLanguage] ?? coreLanguage) : undefined) ?? 'nb';
+
+        //user language
+        const ul = languageCodes[language];
+        if (ul) {
+          const current = ctx.request.raw.cookies?.altinnPersistentContext;
+          const value = updateAltinnPersistentContextValue(current, ul);
+          ctx.request.context.reply.setCookie('altinnPersistentContext', value, {
+            path: '/',
+            expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+            httpOnly: true,
+            secure: true,
+            domain: config.authContextCookieDomain,
+            encode: (v: string) => v,
+          });
         }
 
         return {
-          language: languageFromAltinnContext || language,
+          language,
           updatedAt,
           groups,
           user,
