@@ -420,7 +420,6 @@
   "profile.settings.show_deleted_units.title": "Show deleted units",
   "profile.settings.sms": "SMS",
   "profile.settings.sms_notifications": "SMS notifications",
-  "profile.settings.where_individual_services_notifications": "Where are notifications only for individual services?",
   "profile.unset_preselected_party": "Remove as preselected actor",
   "profile.verification.code_hint_email": "Enter the code you received by email to verify the address.",
   "profile.verification.code_hint_sms": "Enter the code you received by SMS to verify the number.",
