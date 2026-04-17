@@ -1,12 +1,5 @@
 {
   "extends": "@tsconfig/node22/tsconfig.json",
-
-  "ts-node": {
-    "transpileOnly": true,
-
-    "files": true
-  },
-
   "compilerOptions": {
     "outDir": "./dist",
     "allowImportingTsExtensions": true,
