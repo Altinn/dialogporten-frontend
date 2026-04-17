@@ -420,7 +420,6 @@
   "profile.settings.show_deleted_units.title": "Vis sletta einingar",
   "profile.settings.sms": "SMS",
   "profile.settings.sms_notifications": "Varslingar på SMS",
-  "profile.settings.where_individual_services_notifications": "Kvar er varsling berre for enkelttenester?",
   "profile.unset_preselected_party": "Fjern som førehandsvald aktør",
   "profile.verification.code_hint_email": "Oppgi koden du fekk på e-post for å verifisere adressa.",
   "profile.verification.code_hint_sms": "Oppgi koden du fekk på SMS for å verifisere nummeret.",
