@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.138.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.138.2...v1.138.3) (2026-04-17)
+
+
+### Bug Fixes
+
+* **profile:** remove the link 'Where is notification only for a single service?' ([#4024](https://github.com/Altinn/dialogporten-frontend/issues/4024)) ([7fa8ae5](https://github.com/Altinn/dialogporten-frontend/commit/7fa8ae5d827253f4d71ff703ea06bcf885d1c7bf))
+
 ## [1.138.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.138.1...v1.138.2) (2026-04-16)
 
 
