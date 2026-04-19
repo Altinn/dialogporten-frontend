@@ -44,54 +44,78 @@ export const buildFilterParams = (
   const fromDateFilter = filters.find((f) => f?.id === 'fromDate');
   const toDateFilter = filters.find((f) => f?.id === 'toDate');
 
-  const params: QueryItemProps[] = filters
+  // Matches the toolbar filter order in getFilters() in pages/Inbox/filters.tsx.
+  const filterOrder: Record<string, number> = {
+    subAccounts: 0,
+    systemLabel: 1,
+    status: 2,
+    updated: 3,
+    org: 4,
+    service: 5,
+  };
+  const orderOf = (id: string | null | undefined): number => filterOrder[id ?? ''] ?? Number.MAX_SAFE_INTEGER;
+
+  const mapped: { order: number; item: QueryItemProps }[] = filters
     .filter(
       (filter) =>
         filter?.value && !['fromDate', 'toDate'].includes(filter?.id ?? '') && filter?.value !== 'fromAndToDate',
     )
-    .map((filter): QueryItemProps => {
+    .map((filter) => {
+      const order = orderOf(filter?.id);
+
       if (filter?.id === 'subAccounts') {
         const subAccountIds = decodeSubAccountIds(filter?.value);
         if (subAccountIds) {
           return {
-            type: 'filter',
-            label: t('parties.labels.units_count', { count: subAccountIds.length }),
+            order,
+            item: { type: 'filter', label: t('parties.labels.units_count', { count: subAccountIds.length }) },
           };
         }
       }
 
       if (filter?.id === 'org') {
         const orgName = getOrganization(organizations, filter.value ?? '')?.name || filter.value || '';
-        return { type: 'filter', label: orgName };
+        return { order, item: { type: 'filter', label: orgName } };
       }
 
       if (filter?.id === 'service') {
         const service = serviceResourceById.get(filter.value ?? '');
-        return { type: 'filter', label: service?.title ?? '' };
+        return { order, item: { type: 'filter', label: service?.title ?? '' } };
       }
 
       return {
-        type: 'filter',
-        label: isPlaceholderValue(filter?.value)
-          ? t(`filter.query.${(filter?.value ?? '').toLowerCase()}`)
-          : (filter?.value ?? ''),
+        order,
+        item: {
+          type: 'filter',
+          label: isPlaceholderValue(filter?.value)
+            ? t(`filter.query.${(filter?.value ?? '').toLowerCase()}`)
+            : (filter?.value ?? ''),
+        },
       };
     });
 
   const dateLabel = formatDateRange(fromDateFilter?.value ?? undefined, toDateFilter?.value ?? undefined, locale);
   if (dateLabel) {
-    params.push({ type: 'filter', label: dateLabel });
+    mapped.push({ order: orderOf('updated'), item: { type: 'filter', label: dateLabel } });
   } else if (fromDateFilter?.value) {
-    params.push({
-      type: 'filter',
-      label: t('filter.query.fromDate', { date: formatSingleDate(fromDateFilter.value, locale) }),
+    mapped.push({
+      order: orderOf('updated'),
+      item: {
+        type: 'filter',
+        label: t('filter.query.fromDate', { date: formatSingleDate(fromDateFilter.value, locale) }),
+      },
     });
   } else if (toDateFilter?.value) {
-    params.push({
-      type: 'filter',
-      label: t('filter.query.toDate', { date: formatSingleDate(toDateFilter.value, locale) }),
+    mapped.push({
+      order: orderOf('updated'),
+      item: {
+        type: 'filter',
+        label: t('filter.query.toDate', { date: formatSingleDate(toDateFilter.value, locale) }),
+      },
     });
   }
+
+  const params: QueryItemProps[] = mapped.sort((a, b) => a.order - b.order).map((entry) => entry.item);
 
   if (savedSearch.data?.fromView) {
     const viewType = fromPathToViewType(savedSearch.data.fromView);
