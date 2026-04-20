@@ -6,6 +6,7 @@ settings:
 
 overrides:
   mdast-util-gfm-autolink-literal: 2.0.0
+  protobufjs: '>=8.0.1'
 
 importers:
 
@@ -422,8 +423,8 @@ importers:
   packages/frontend:
     dependencies:
       '@altinn/altinn-components':
-        specifier: 0.58.4
-        version: 0.58.4(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        specifier: 0.58.6
+        version: 0.58.6(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@microsoft/applicationinsights-react-js':
         specifier: 19.3.7
         version: 19.3.7(history@4.10.1)(react@19.2.3)(tslib@2.8.1)
@@ -640,8 +641,8 @@ packages:
     resolution: {integrity: sha512-ZgxV2+5qt3NLeUYBTsi6PLyHcENQWC0iFppFZekHSEDA2wcLdTUjnaJzimTEULHIvJuLRCkUs4JABdhuJktEag==}
     engines: {node: '>= 14.0.0'}
 
-  '@altinn/altinn-components@0.58.4':
-    resolution: {integrity: sha512-E7EzPX5zW1u6t+/bto6ihRm5lDHt5yUc/QmfuGS1z2DGpJWkPtI0pJrdl6WayJCJO6edbYStbyd2wrYw/hx8VQ==}
+  '@altinn/altinn-components@0.58.6':
+    resolution: {integrity: sha512-1mXLEgH3h/0heyhTDdsjnB2bb1m2E6mxmZ4LLnip+QbkOXgGSTODdE5gT8jrPg6x8k0S4CTXSAkaVr8VIoR9Nw==}
     peerDependencies:
       react: '>=18.3.1 || ^19.0.0'
       react-dom: '>=18.3.1 || ^19.0.0'
@@ -8895,12 +8896,8 @@ packages:
   proto-list@1.2.4:
     resolution: {integrity: sha512-vtK/94akxsTMhe0/cbfpR+syPuszcuwhqVjJq26CuNDgFGj682oRBXOP5MJpv2r7JtE8MsiepGIqvvOTBwn2vA==}
 
-  protobufjs@7.5.4:
-    resolution: {integrity: sha512-CvexbZtbov6jW2eXAvLukXjXUW1TzFaivC46BpWc/3BpcCysb5Vffu+B3XHMm8lVEuy2Mm4XGex8hBSg1yapPg==}
-    engines: {node: '>=12.0.0'}
-
-  protobufjs@8.0.0:
-    resolution: {integrity: sha512-jx6+sE9h/UryaCZhsJWbJtTEy47yXoGNYI4z8ZaRncM0zBKeRqjO2JEcOUYwrYGb1WLhXM1FfMzW3annvFv0rw==}
+  protobufjs@8.0.1:
+    resolution: {integrity: sha512-NWWCCscLjs+cOKF/s/XVNFRW7Yih0fdH+9brffR5NZCy8k42yRdl5KlWKMVXuI1vfCoy4o1z80XR/W/QUb3V3w==}
     engines: {node: '>=12.0.0'}
 
   proxy-addr@2.0.7:
@@ -10797,7 +10794,7 @@ snapshots:
     dependencies:
       '@algolia/client-common': 5.48.0
 
-  '@altinn/altinn-components@0.58.4(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+  '@altinn/altinn-components@0.58.6(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@digdir/designsystemet-css': 1.11.1
       '@digdir/designsystemet-react': 1.11.1(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -12281,7 +12278,7 @@ snapshots:
       '@babel/preset-env': 7.29.0(@babel/core@7.29.0)
       '@babel/preset-react': 7.28.5(@babel/core@7.29.0)
       '@babel/preset-typescript': 7.28.5(@babel/core@7.29.0)
-      '@babel/runtime': 7.28.6
+      '@babel/runtime': 7.29.2
       '@babel/runtime-corejs3': 7.29.0
       '@babel/traverse': 7.29.0
       '@docusaurus/logger': 3.9.2
@@ -13932,7 +13929,7 @@ snapshots:
     dependencies:
       lodash.camelcase: 4.3.0
       long: 5.3.2
-      protobufjs: 7.5.4
+      protobufjs: 8.0.1
       yargs: 17.7.2
 
   '@hapi/hoek@9.3.0': {}
@@ -14802,7 +14799,7 @@ snapshots:
       '@opentelemetry/sdk-logs': 0.206.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/sdk-metrics': 2.1.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/sdk-trace-base': 2.1.0(@opentelemetry/api@1.9.0)
-      protobufjs: 7.5.4
+      protobufjs: 8.0.1
 
   '@opentelemetry/otlp-transformer@0.208.0(@opentelemetry/api@1.9.0)':
     dependencies:
@@ -14813,7 +14810,7 @@ snapshots:
       '@opentelemetry/sdk-logs': 0.208.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/sdk-metrics': 2.2.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/sdk-trace-base': 2.2.0(@opentelemetry/api@1.9.0)
-      protobufjs: 7.5.4
+      protobufjs: 8.0.1
 
   '@opentelemetry/otlp-transformer@0.210.0(@opentelemetry/api@1.9.0)':
     dependencies:
@@ -14824,7 +14821,7 @@ snapshots:
       '@opentelemetry/sdk-logs': 0.210.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/sdk-metrics': 2.4.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/sdk-trace-base': 2.4.0(@opentelemetry/api@1.9.0)
-      protobufjs: 8.0.0
+      protobufjs: 8.0.1
 
   '@opentelemetry/propagator-b3@2.1.0(@opentelemetry/api@1.9.0)':
     dependencies:
@@ -21188,7 +21185,7 @@ snapshots:
 
   proto-list@1.2.4: {}
 
-  protobufjs@7.5.4:
+  protobufjs@8.0.1:
     dependencies:
       '@protobufjs/aspromise': 1.1.2
       '@protobufjs/base64': 1.1.2
@@ -21200,22 +21197,7 @@ snapshots:
       '@protobufjs/path': 1.1.2
       '@protobufjs/pool': 1.1.0
       '@protobufjs/utf8': 1.1.0
-      '@types/node': 22.19.9
-      long: 5.3.2
-
-  protobufjs@8.0.0:
-    dependencies:
-      '@protobufjs/aspromise': 1.1.2
-      '@protobufjs/base64': 1.1.2
-      '@protobufjs/codegen': 2.0.4
-      '@protobufjs/eventemitter': 1.1.0
-      '@protobufjs/fetch': 1.1.0
-      '@protobufjs/float': 1.0.2
-      '@protobufjs/inquire': 1.1.0
-      '@protobufjs/path': 1.1.2
-      '@protobufjs/pool': 1.1.0
-      '@protobufjs/utf8': 1.1.0
-      '@types/node': 22.19.9
+      '@types/node': 24.10.11
       long: 5.3.2
 
   proxy-addr@2.0.7:
@@ -21305,19 +21287,19 @@ snapshots:
 
   react-loadable-ssr-addon-v5-slorber@1.0.1(@docusaurus/react-loadable@6.0.0(react@19.2.3))(webpack@5.105.0(@swc/core@1.15.11)):
     dependencies:
-      '@babel/runtime': 7.28.6
+      '@babel/runtime': 7.29.2
       react-loadable: '@docusaurus/react-loadable@6.0.0(react@19.2.3)'
       webpack: 5.105.0(@swc/core@1.15.11)
 
   react-router-config@5.1.1(react-router@5.3.4(react@19.2.3))(react@19.2.3):
     dependencies:
-      '@babel/runtime': 7.28.6
+      '@babel/runtime': 7.29.2
       react: 19.2.3
       react-router: 5.3.4(react@19.2.3)
 
   react-router-dom@5.3.4(react@19.2.3):
     dependencies:
-      '@babel/runtime': 7.28.6
+      '@babel/runtime': 7.29.2
       history: 4.10.1
       loose-envify: 1.4.0
       prop-types: 15.8.1
@@ -21334,7 +21316,7 @@ snapshots:
 
   react-router@5.3.4(react@19.2.3):
     dependencies:
-      '@babel/runtime': 7.28.6
+      '@babel/runtime': 7.29.2
       history: 4.10.1
       hoist-non-react-statics: 3.3.2
       loose-envify: 1.4.0

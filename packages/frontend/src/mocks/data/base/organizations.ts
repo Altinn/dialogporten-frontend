@@ -624,7 +624,7 @@ export const organizations: OrganizationFieldsFragment[] = [
       "homepage": "https://www.nav.no",
       "environments": [
         "tt02"
-      ]
+      ],
     },
     {
       "id": "npd",
