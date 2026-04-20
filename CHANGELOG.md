@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.138.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.138.4...v1.138.5) (2026-04-20)
+
+
+### Bug Fixes
+
+* **contact:** wrap contact buttons for overflow issues on mobile ([#4034](https://github.com/Altinn/dialogporten-frontend/issues/4034)) ([5df3836](https://github.com/Altinn/dialogporten-frontend/commit/5df3836b2061bcbd246b7912c214c3481ff031cb))
+* **test:** playwright test failing for transmissions because of incorrect mock data ([#4036](https://github.com/Altinn/dialogporten-frontend/issues/4036)) ([b854224](https://github.com/Altinn/dialogporten-frontend/commit/b8542244859a879e02b58841c99057398ec81c94))
+
 ## [1.138.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.138.3...v1.138.4) (2026-04-20)
 
 
