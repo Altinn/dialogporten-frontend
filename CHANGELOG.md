@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.138.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.138.3...v1.138.4) (2026-04-20)
+
+
+### Bug Fixes
+
+* **bff:** patch critical protobufjs arbitrary code execution vulnerability ([#4029](https://github.com/Altinn/dialogporten-frontend/issues/4029)) ([30e9532](https://github.com/Altinn/dialogporten-frontend/commit/30e9532a9dd8eb59036eb0588f0e4432b3ba6a03))
+* **toolbar:** missing padding-bottom on last element in lists when virtualized ([#4033](https://github.com/Altinn/dialogporten-frontend/issues/4033)) ([af84863](https://github.com/Altinn/dialogporten-frontend/commit/af84863438bac9d41473e14b78dbca30d01f4760))
+
 ## [1.138.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.138.2...v1.138.3) (2026-04-17)
 
 
