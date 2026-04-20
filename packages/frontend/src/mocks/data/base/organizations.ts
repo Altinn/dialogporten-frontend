@@ -625,10 +625,6 @@ export const organizations: OrganizationFieldsFragment[] = [
       "environments": [
         "tt02"
       ],
-      "contact": {
-        "phone": "+4755553333",
-        "url": "https://www.nav.no/kontaktoss"
-      }
     },
     {
       "id": "npd",
