@@ -21,17 +21,24 @@ export const DialogHelp = ({ contactButtons }: DialogHelpProps): ReactElement =>
           <Typography size="sm">
             <p>{t('dialog.help.description')}</p>
           </Typography>
-          <ButtonGroup>
+          <ButtonGroup wrap>
             {contactButtons.map((btn) => (
-              //@ts-expect-error target is not in Button props but is valid for anchor elements
-              <Button key={btn.href} as="a" href={btn.href} target="_blank" rel="noreferrer" variant="outline">
+              <Button
+                key={btn.href}
+                as="a"
+                href={btn.href}
+                //@ts-ignore-error target is not in Button props but is valid for anchor elements
+                target="_blank"
+                rel="noreferrer"
+                variant="outline"
+                className={styles.contactInfoBtn}
+              >
                 {btn.label}
               </Button>
             ))}
           </ButtonGroup>
         </>
       )}
-
       <Typography size="sm">
         <a href="https://info.altinn.no/hjelp/ny-innboks-beta/" className={styles.helpLink}>
           <QuestionmarkCircleFillIcon className={styles.helpIcon} />
