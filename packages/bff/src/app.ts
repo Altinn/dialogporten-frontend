@@ -1,4 +1,4 @@
-#!/usr/bin/env -S node --no-warnings=ExperimentalWarning --loader ts-node/esm
+#!/usr/bin/env -S node --import @swc-node/register/esm-register
 import 'reflect-metadata';
 import { logger } from '@altinn/dialogporten-node-logger';
 import config from './config.ts';
