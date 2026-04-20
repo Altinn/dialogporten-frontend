@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.139.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.138.5...v1.139.0) (2026-04-20)
+
+
+### Features
+
+* **inbox:** split folder (systemLabel) filter from status with the options of the mutually exclusive labels: archive, bin, default and none ([#4031](https://github.com/Altinn/dialogporten-frontend/issues/4031)) ([4d308d1](https://github.com/Altinn/dialogporten-frontend/commit/4d308d1ccab8a13e8954d8f3c13f32ed90709882))
+
 ## [1.138.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.138.4...v1.138.5) (2026-04-20)
 
 
