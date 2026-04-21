@@ -297,6 +297,12 @@ const createStatusFilter = (): FilterProps => {
         groupId: 'status-draft',
         value: DialogStatus.Draft,
       },
+      {
+        id: SystemLabel.Sent,
+        title: t('status.sent'),
+        groupId: 'status-history',
+        value: SystemLabel.Sent,
+      },
     ].map((item) => ({
       ...item,
       role: 'checkbox',
