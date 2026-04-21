@@ -3,14 +3,19 @@ import type {
   PartyFieldsFragment,
   Profile,
   SavedSearchesFieldsFragment,
-  SearchDialogFieldsFragment, ServiceResource,
+  SearchDialogFieldsFragment,
+  ServiceResource,
 } from 'bff-types-generated';
-import { profile as mockedProfile } from './data/base/profile.ts';
 import { dialogs as mockedDialogs } from './data/base/dialogs.ts';
+import { features as mockedFeatures } from './data/base/features.ts';
 import { parties as mockedParties } from './data/base/parties.ts';
-import { features as mockedFeatures } from "./data/base/features.ts";
+import { profile as mockedProfile } from './data/base/profile.ts';
 
-const findDataById = async <T>(url: string, type: 'profile' | 'parties' | 'dialogs' | 'features' | 'searches', defaultData: T): Promise<T> => {
+const findDataById = async <T>(
+  url: string,
+  type: 'profile' | 'parties' | 'dialogs' | 'features' | 'searches',
+  defaultData: T,
+): Promise<T> => {
   const urlParams = new URLSearchParams(url);
   const playwrightId = urlParams.get('playwrightId');
   try {
@@ -35,8 +40,8 @@ export const getMockedData = async (
   parties: PartyFieldsFragment[];
   savedSearches: SavedSearchesFieldsFragment[];
   organizations: OrganizationFieldsFragment[];
-  features: Record<string, boolean>
-  services: ServiceResource[]
+  features: Record<string, boolean>;
+  services: ServiceResource[];
 }> => {
   const profile = await findProfileById(url);
   const features = await findFeaturesById(url);

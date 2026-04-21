@@ -2,7 +2,6 @@ import type { FilterState } from '@altinn/altinn-components';
 import { keepPreviousData, useQueryClient } from '@tanstack/react-query';
 import type {
   DialogStatus,
-  GetAllDialogsForCountQuery,
   GetAllDialogsForPartiesQuery,
   SearchDialogFieldsFragment,
   SystemLabel,
@@ -103,6 +102,7 @@ export const useDialogs = ({
       status: filterState?.status ? (filterState.status as [DialogStatus]) : undefined,
       org: Array.isArray(filterState?.org) && filterState?.org?.length > 0 ? (filterState?.org as string[]) : undefined,
       systemLabel: filterState?.systemLabel as SystemLabel[] | undefined,
+      isContentSeen: filterState?.isContentSeen as string[] | undefined,
       updatedAfter: filterState?.updated,
       fromDate: filterState?.fromDate,
       toDate: filterState?.toDate,
@@ -157,12 +157,14 @@ export const useDialogs = ({
     const partyIds = selectedParties.map((party) => party.party);
     const selectedPartiesChanged =
       !previousPartyIdsRef.current.length || partyIds.join(',') !== previousPartyIdsRef.current.join(',');
-    const currentData = queryClient.getQueryData<GetAllDialogsForCountQuery>([QUERY_KEYS.DIALOGS_FOR_RECOMMENDATIONS]);
+    const currentData = queryClient.getQueryData<GetAllDialogsForPartiesQuery>([
+      QUERY_KEYS.DIALOGS_FOR_RECOMMENDATIONS,
+    ]);
     const allNewItems: SearchDialogFieldsFragment[] =
       data.pages.flatMap((page) => page.searchDialogs?.items ?? []) ?? [];
 
     if (selectedPartiesChanged) {
-      queryClient.setQueryData<GetAllDialogsForCountQuery>([QUERY_KEYS.DIALOGS_FOR_RECOMMENDATIONS], {
+      queryClient.setQueryData<GetAllDialogsForPartiesQuery>([QUERY_KEYS.DIALOGS_FOR_RECOMMENDATIONS], {
         searchDialogs: {
           items: allNewItems,
           hasNextPage: false,
@@ -179,7 +181,7 @@ export const useDialogs = ({
       const mergedItems = mergeDialogItems(existingItems, allNewItems);
       const hasNextPage = data.pages[data.pages.length - 1]?.searchDialogs?.hasNextPage ?? false;
 
-      queryClient.setQueryData<GetAllDialogsForCountQuery>([QUERY_KEYS.DIALOGS_FOR_RECOMMENDATIONS], {
+      queryClient.setQueryData<GetAllDialogsForPartiesQuery>([QUERY_KEYS.DIALOGS_FOR_RECOMMENDATIONS], {
         searchDialogs: {
           items: mergedItems,
           hasNextPage,

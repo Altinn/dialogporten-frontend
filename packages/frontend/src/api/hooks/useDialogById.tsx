@@ -22,7 +22,6 @@ import { useFeatureFlag } from '../../featureFlags';
 import { type LocalizationObject, type ValueType, getPreferredPropertyByLocale } from '../../i18n/property.ts';
 import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
 import { type Locale, useDateFnsLocale, useFormat } from '../../i18n/useDateFnsLocale.tsx';
-import { getIsUnread } from '../../pages/Inbox/status.ts';
 import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
 import { type ActivityLogEntry, getActivityHistory } from '../../utils/activities.tsx';
 import { createExpiryBadge, mediaTypeToExt } from '../../utils/attachments.ts';
@@ -364,7 +363,7 @@ export function mapDialogToInboxItem(
     label: item.endUserContext?.systemLabels,
     viewType: getViewTypes({ status: item.status, systemLabel: item.endUserContext?.systemLabels })?.[0],
     dueAt: item.dueAt,
-    unread: getIsUnread(item),
+    unread: !item.isContentSeen,
     contactButtons: getContactButtons(
       serviceOwner?.contact,
       getPreferredPropertyByLocale(senderName)?.value || serviceOwner?.name || '',

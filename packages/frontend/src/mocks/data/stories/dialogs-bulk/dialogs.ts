@@ -94,7 +94,7 @@ function generateDialog(index: number): SearchDialogFieldsFragment {
     party: 'urn:altinn:person:identifier-no:1',
     org,
     progress: null,
-    hasUnopenedContent: index % 4 === 0,
+    isContentSeen: index % 4 !== 0,
     fromServiceOwnerTransmissionsCount: 0,
     fromPartyTransmissionsCount: 0,
     contentUpdatedAt: updatedDate.toISOString(),

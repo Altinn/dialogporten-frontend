@@ -8,7 +8,7 @@ export const parties: PartyFieldsFragment[] = [
     name: 'TEST TESTESEN',
     isCurrentEndUser: true,
     isDeleted: false,
-    hasOnlyAccessToSubParties: false,   
+    hasOnlyAccessToSubParties: false,
     partyUuid: 'urn:altinn:person:identifier-no:1337',
     partyId: 1,
   },
@@ -19,7 +19,8 @@ export const parties: PartyFieldsFragment[] = [
     name: 'Firma AS',
     isCurrentEndUser: true,
     isDeleted: false,
-    hasOnlyAccessToSubParties: false,   partyUuid: 'urn:altinn:person:identifier-no:1337',
+    hasOnlyAccessToSubParties: false,
+    partyUuid: 'urn:altinn:person:identifier-no:1337',
     partyId: 2,
   },
   {

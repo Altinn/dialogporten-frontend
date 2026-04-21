@@ -100,6 +100,10 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
         return value.map((v) => t(`status.${v.toString().toLowerCase()}`)).join(', ');
       }
 
+      if (name === FilterCategory.IS_CONTENT_SEEN) {
+        return value.map((v) => t(`filter.is_content_seen.${v.toString().toLowerCase()}`)).join(', ');
+      }
+
       if (name === FilterCategory.UPDATED) {
         if (value[0] === 'fromAndToDate') {
           const dateDate = formatDateRange(filterState?.fromDate?.[0], filterState?.toDate?.[0], locale);

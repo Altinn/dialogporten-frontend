@@ -12,7 +12,7 @@ export interface InboxItemInput {
   createdAt: string;
   status: DialogStatus;
   extendedStatus?: string;
-  hasUnopenedContent: boolean;
+  isContentSeen: boolean;
   contentUpdatedAt: string;
   label: SystemLabel[];
   org: string;
