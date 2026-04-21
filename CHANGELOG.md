@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.139.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.139.0...v1.139.1) (2026-04-21)
+
+
+### Bug Fixes
+
+* **filters:** re-add sent to status - removed by mistake ([#4043](https://github.com/Altinn/dialogporten-frontend/issues/4043)) ([3364a40](https://github.com/Altinn/dialogporten-frontend/commit/3364a40151950e83a975742055c051ecdcda8afb))
+
 ## [1.139.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.138.5...v1.139.0) (2026-04-20)
 
 
