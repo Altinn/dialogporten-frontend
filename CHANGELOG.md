@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.140.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.139.1...v1.140.0) (2026-04-22)
+
+
+### Features
+
+* **dialog:** remove service owner contact section and move 'Trenger du hjelp?' below additionalInfo ([#4048](https://github.com/Altinn/dialogporten-frontend/issues/4048)) ([611b8a7](https://github.com/Altinn/dialogporten-frontend/commit/611b8a7624a70c4c90f75a811d332d3c7d05c279))
+
+
+### Bug Fixes
+
+* revert apim host for dialogporten url ([#4041](https://github.com/Altinn/dialogporten-frontend/issues/4041)) ([ab99b46](https://github.com/Altinn/dialogporten-frontend/commit/ab99b46754d78f4d8c949ae950748e15d9ce05b7))
+* **unread:** always show unread badge for unread messages, move archive and bin label to metadata for dialog ([#4046](https://github.com/Altinn/dialogporten-frontend/issues/4046)) ([f14a757](https://github.com/Altinn/dialogporten-frontend/commit/f14a757c6ef510804fdf48c2b5c702fbdb6feff6))
+
 ## [1.139.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.139.0...v1.139.1) (2026-04-21)
 
 
