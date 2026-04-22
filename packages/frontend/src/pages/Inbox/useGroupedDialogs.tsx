@@ -1,6 +1,4 @@
 import {
-  type BadgeSize,
-  type BadgeVariant,
   ContextMenu,
   type ContextMenuProps,
   type DialogListGroupProps,
@@ -78,24 +76,6 @@ const renderLoadingItems = (size: number): DialogListItemProps[] => {
       loading: true,
     };
   });
-};
-
-const getItemBadge = (viewType: InboxViewType, unread: boolean, t: (key: string) => string) => {
-  if (viewType === 'bin' || viewType === 'archive') {
-    return {
-      label: t(`status.${viewType}`),
-      size: 'sm' as BadgeSize,
-      variant: 'outline' as BadgeVariant,
-    };
-  }
-  if (unread) {
-    return {
-      label: t('word.unread'),
-      size: 'sm' as BadgeSize,
-      variant: 'tinted' as BadgeVariant,
-    };
-  }
-  return undefined;
 };
 
 const useGroupedDialogs = ({
@@ -182,9 +162,10 @@ const useGroupedDialogs = ({
     return {
       groupId,
       title: item.title,
-      badge: getItemBadge(item.viewType, item.unread, t),
       id: item.id,
       recipientLabel: t('word.to'),
+      archivedAtLabel: item.viewType === 'archive' ? t(`status.archive`) : '',
+      trashedAtLabel: item.viewType === 'bin' ? t(`status.bin`) : '',
       sender: item.sender,
       summary: item.summary,
       recipient: item.recipient,
@@ -193,6 +174,7 @@ const useGroupedDialogs = ({
       attachmentsCount: item.guiAttachmentCount,
       seenByLog: item.seenByLog,
       unread: item.unread,
+      unreadLabel: t('word.unread'),
       selectable: bulkMode,
       tabIndex: bulkMode ? 0 : undefined,
       selected: bulkedIds?.includes(item.id),
