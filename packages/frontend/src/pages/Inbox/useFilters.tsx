@@ -8,14 +8,7 @@ import { useServiceResource } from '../../api/hooks/useServiceResource.ts';
 import { useFeatureFlag } from '../../featureFlags';
 import { useDateFnsLocale } from '../../i18n/useDateFnsLocale.tsx';
 import { getOrganization } from '../../utils/organizations.ts';
-import {
-  ALL_FOLDERS_VALUE,
-  FilterCategory,
-  createServiceFilter,
-  formatDateRange,
-  getFilters,
-  readFiltersFromURLQuery,
-} from './filters';
+import { FilterCategory, createServiceFilter, formatDateRange, getFilters, readFiltersFromURLQuery } from './filters';
 import { useOrganizations } from './useOrganizations.ts';
 
 interface UseFiltersOutput {
@@ -104,9 +97,7 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
       }
 
       if (name === FilterCategory.SYSTEM_LABEL) {
-        return value
-          .map((v) => (v === ALL_FOLDERS_VALUE ? t('filter.folder.all') : t(`status.${v.toString().toLowerCase()}`)))
-          .join(', ');
+        return value.map((v) => t(`status.${v.toString().toLowerCase()}`)).join(', ');
       }
 
       if (name === FilterCategory.UPDATED) {

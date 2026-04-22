@@ -137,8 +137,6 @@ export enum FilterCategory {
 
 const SYSTEM_LABEL_FOLDER_VALUES = [SystemLabel.Default, SystemLabel.Archive, SystemLabel.Bin] as string[];
 
-export const ALL_FOLDERS_VALUE = 'ALL';
-
 const createDateOptions = (): MenuItemProps[] => {
   const options = [
     {
@@ -323,7 +321,6 @@ const createSystemLabelFilter = (): FilterProps => {
       folder: {
         title: t('filter_bar.group.choose_folder'),
       },
-      'folder-all': {},
     },
     items: [
       {
@@ -343,12 +340,6 @@ const createSystemLabelFilter = (): FilterProps => {
         title: t('status.bin'),
         value: SystemLabel.Bin,
         groupId: 'folder',
-      },
-      {
-        id: ALL_FOLDERS_VALUE,
-        title: t('filter.folder.all'),
-        value: ALL_FOLDERS_VALUE,
-        groupId: 'folder-all',
       },
     ].map((item) => ({
       ...item,
@@ -653,17 +644,12 @@ export const normalizeFilterDefaults = ({
   const systemLabelsInStatus = normalizedStatus.filter((s) => SYSTEM_LABEL_STATUSES.includes(s)) as SystemLabel[];
   const remainingStatus = normalizedStatus.filter((s) => !SYSTEM_LABEL_STATUSES.includes(s)) as DialogStatus[];
 
-  const rawSystemLabels = Array.isArray(systemLabel) ? (systemLabel as string[]) : [];
-  const allFoldersSelected = rawSystemLabels.includes(ALL_FOLDERS_VALUE);
-  const userSystemLabels = rawSystemLabels.filter((v) => v !== ALL_FOLDERS_VALUE) as SystemLabel[];
+  const userSystemLabels = (Array.isArray(systemLabel) ? (systemLabel as string[]) : []) as SystemLabel[];
   const combinedLabels = Array.from(new Set([...userSystemLabels, ...systemLabelsInStatus]));
   const hasExplicitLabels = combinedLabels.length > 0;
-  const userOverridesLabel = allFoldersSelected || hasExplicitLabels;
 
   if (hasExplicitLabels) {
     normalized.label = combinedLabels;
-  } else if (allFoldersSelected) {
-    normalized.label = undefined;
   }
   normalized.status = remainingStatus.length > 0 ? remainingStatus : undefined;
 
@@ -673,8 +659,8 @@ export const normalizeFilterDefaults = ({
 
   const merged = mergeFilterDefaults(normalized, viewType);
   // User-selected folder labels must override preset defaults (e.g. inbox's DEFAULT).
-  if (userOverridesLabel) {
-    merged.label = hasExplicitLabels ? combinedLabels : undefined;
+  if (hasExplicitLabels) {
+    merged.label = combinedLabels;
   }
   return applyViewLocks(merged, viewType);
 };
