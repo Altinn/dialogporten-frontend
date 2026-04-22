@@ -1,44 +1,15 @@
-import { Button, ButtonGroup, type ContactButtonProps, Heading, Typography } from '@altinn/altinn-components';
+import { Heading, Typography } from '@altinn/altinn-components';
 import { QuestionmarkCircleFillIcon } from '@navikt/aksel-icons';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './DialogHelp.module.css';
 
-interface DialogHelpProps {
-  contactButtons?: ContactButtonProps[];
-}
-
-export const DialogHelp = ({ contactButtons }: DialogHelpProps): ReactElement => {
+export const DialogHelp = (): ReactElement => {
   const { t } = useTranslation();
-
-  const hasContactButtons = contactButtons && contactButtons.length > 0;
 
   return (
     <section className={styles.section}>
       <Heading size="lg">{t('dialog.help.title')}</Heading>
-      {hasContactButtons && (
-        <>
-          <Typography size="sm">
-            <p>{t('dialog.help.description')}</p>
-          </Typography>
-          <ButtonGroup wrap>
-            {contactButtons.map((btn) => (
-              <Button
-                key={btn.href}
-                as="a"
-                href={btn.href}
-                //@ts-ignore-error target is not in Button props but is valid for anchor elements
-                target="_blank"
-                rel="noreferrer"
-                variant="outline"
-                className={styles.contactInfoBtn}
-              >
-                {btn.label}
-              </Button>
-            ))}
-          </ButtonGroup>
-        </>
-      )}
       <Typography size="sm">
         <a href="https://info.altinn.no/hjelp/ny-innboks-beta/" className={styles.helpLink}>
           <QuestionmarkCircleFillIcon className={styles.helpIcon} />

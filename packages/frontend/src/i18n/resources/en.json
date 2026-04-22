@@ -103,7 +103,6 @@
   "dialog.transmission.collapseLabel": "Hide",
   "dialog.transmission.expandLabel": "Show",
   "dialog.help.title": "Need help?",
-  "dialog.help.description": "Questions about the content must be directed to the person who sent you the message.",
   "dialog.help.contact_sender": "Contact {name}",
   "dialog.help.phone": "Call {number}",
   "dialog.help.understand_link": "Help me understand the message",
