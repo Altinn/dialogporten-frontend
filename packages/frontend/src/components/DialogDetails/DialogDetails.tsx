@@ -9,7 +9,6 @@ import {
   DialogBody,
   type DialogButtonPriority,
   DialogHeader,
-  Divider,
   DsAlert,
   DsParagraph,
   Heading,
@@ -482,13 +481,10 @@ export const DialogDetails = ({
           {t('dialog.transmission.collapseLabel')}
         </Button>
       )}
-      <DialogHelp contactButtons={dialog.contactButtons} />
       {dialog.additionalInfo?.value && (
-        <>
-          <Divider />
-          <AdditionalInfoContent mediaType={dialog.additionalInfo.mediaType} value={dialog.additionalInfo.value} />
-        </>
+        <AdditionalInfoContent mediaType={dialog.additionalInfo.mediaType} value={dialog.additionalInfo.value} />
       )}
+      <DialogHelp />
       <ActivityLogModal
         title={dialog.title}
         items={activityHistoryItems}

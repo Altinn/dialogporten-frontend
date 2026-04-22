@@ -20,29 +20,10 @@ test.describe('Transmissions and dialog history', () => {
     await page.getByRole('button', { name: 'Tittel 4' }).click();
   });
 
-  test('help section - no contact buttons when org has no contact info', async ({ page }) => {
+  test('help section should show', async ({ page }) => {
     await page.goto(appUrlWithPlaywrightId('transmissions'));
-    // nav org has no contact info in mock data
     await page.getByRole('link', { name: 'This has no sender name' }).click();
-
     await expect(page.getByRole('heading', { name: 'Trenger du hjelp?' })).toBeVisible();
-    await expect(page.getByText('Spørsmål om innholdet')).not.toBeVisible();
-    await expect(page.getByRole('link', { name: 'Kontakt avsender' })).not.toBeVisible();
-    await expect(page.getByRole('link', { name: 'Hjelp meg å forstå meldingen' })).toBeVisible();
-  });
-
-  test('help section - shows contact buttons when org has contact info', async ({ page }) => {
-    await page.goto(appUrlWithPlaywrightId('transmissions'));
-    // ok (Oslo kommune) org has contact phone + url in mock data
-    await page.getByRole('link', { name: 'This has a sender name' }).click();
-
-    await expect(page.getByRole('heading', { name: 'Trenger du hjelp?' })).toBeVisible();
-    await expect(
-      page.getByText('Spørsmål om innholdet må du stille til den som har sendt deg meldingen.'),
-    ).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Kontakt SENDER NAME Oslo Kommune' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Ring 21 80 21 80' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Hjelp meg å forstå meldingen' })).toBeVisible();
   });
 
   test('unauthorized transmission is shown as disabled and cannot be expanded', async ({ page }) => {

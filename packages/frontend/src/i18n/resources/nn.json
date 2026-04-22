@@ -103,7 +103,6 @@
   "dialog.transmission.collapseLabel": "Vis mindre",
   "dialog.transmission.expandLabel": "Vis meir",
   "dialog.help.title": "Treng du hjelp?",
-  "dialog.help.description": "Spørsmål om innhaldet må du stille til den som sende deg meldinga.",
   "dialog.help.contact_sender": "Kontakt {name}",
   "dialog.help.phone": "Ring {number}",
   "dialog.help.understand_link": "Hjelp meg å forstå meldinga",
