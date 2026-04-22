@@ -396,9 +396,9 @@ export const Inbox = ({ viewType }: InboxProps) => {
         onDismiss={onCloseBulkMode}
         color={bulkedIds.length >= MAX_COUNT_BULK_DIALOGS ? 'warning' : 'company'}
       />
-      <Heading as="h1" size="xl">
+      {!searchMode && <Heading as="h1" size="xl">
         {t(getPageRouteTitle(PageRoutes[viewType]))}
-      </Heading>
+      </Heading>}
       <div data-testid="inbox-toolbar">
         {currentAccountName ? (
           <Toolbar>
