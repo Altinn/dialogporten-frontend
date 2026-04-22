@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.140.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.140.0...v1.140.1) (2026-04-22)
+
+
+### Bug Fixes
+
+* **filters:** remove all folders option from folder filter ([#4049](https://github.com/Altinn/dialogporten-frontend/issues/4049)) ([d59976d](https://github.com/Altinn/dialogporten-frontend/commit/d59976dc9b4a7e8a25f643f4c7a22bddaf19bb1e))
+
 ## [1.140.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.139.1...v1.140.0) (2026-04-22)
 
 
