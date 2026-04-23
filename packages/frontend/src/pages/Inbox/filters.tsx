@@ -5,7 +5,14 @@ import {
   SelectDateFilter,
   type ToolbarFilterProps,
 } from '@altinn/altinn-components';
-import { CalendarIcon, FolderIcon, InformationSquareIcon, MenuGridIcon, MenuHamburgerIcon } from '@navikt/aksel-icons';
+import {
+  CalendarIcon,
+  EyeIcon,
+  FolderIcon,
+  InformationSquareIcon,
+  MenuGridIcon,
+  MenuHamburgerIcon,
+} from '@navikt/aksel-icons';
 import {
   type CountableDialogFieldsFragment,
   DialogStatus,
@@ -129,6 +136,7 @@ export enum FilterCategory {
   ORG = 'org',
   STATUS = 'status',
   SYSTEM_LABEL = 'systemLabel',
+  IS_CONTENT_SEEN = 'isContentSeen',
   UPDATED = 'updated',
   SERVICE = 'service',
   FROM_DATE = 'fromDate',
@@ -136,6 +144,11 @@ export enum FilterCategory {
 }
 
 const SYSTEM_LABEL_FOLDER_VALUES = [SystemLabel.Default, SystemLabel.Archive, SystemLabel.Bin] as string[];
+
+export enum IsContentSeenFilterValue {
+  UNREAD = 'unread',
+  READ = 'read',
+}
 
 const createDateOptions = (): MenuItemProps[] => {
   const options = [
@@ -349,6 +362,40 @@ const createSystemLabelFilter = (): FilterProps => {
   };
 };
 
+const createIsContentSeenFilter = (): FilterProps => {
+  return {
+    id: FilterCategory.IS_CONTENT_SEEN,
+    title: t('filter_bar.label.is_content_seen'),
+    groupId: 'status-date',
+    icon: EyeIcon,
+    name: FilterCategory.IS_CONTENT_SEEN,
+    removable: true,
+    groups: {
+      'is-content-seen': {
+        title: t('filter_bar.group.choose_is_content_seen'),
+      },
+    },
+    items: [
+      {
+        id: IsContentSeenFilterValue.UNREAD,
+        title: t('filter.is_content_seen.unread'),
+        value: IsContentSeenFilterValue.UNREAD,
+        groupId: 'is-content-seen',
+      },
+      {
+        id: IsContentSeenFilterValue.READ,
+        title: t('filter.is_content_seen.read'),
+        value: IsContentSeenFilterValue.READ,
+        groupId: 'is-content-seen',
+      },
+    ].map((item) => ({
+      ...item,
+      role: 'radio',
+      name: FilterCategory.IS_CONTENT_SEEN,
+    })),
+  };
+};
+
 const createUpdatedAtFilter = (): FilterProps => {
   return {
     title: t('filter_bar.label.updated'),
@@ -460,6 +507,7 @@ export const getFilters = ({
   const senderOrgFilter = createServiceOwnerFilter(allDialogs, allOrganizations ?? [], orgLookup);
   const statusFilter = createStatusFilter();
   const systemLabelFilter = createSystemLabelFilter();
+  const isContentSeenFilter = createIsContentSeenFilter();
   const updatedAtFilter = createUpdatedAtFilter();
 
   const filters = [];
@@ -472,6 +520,7 @@ export const getFilters = ({
     filters.push(statusFilter);
   }
 
+  filters.push(isContentSeenFilter);
   filters.push(updatedAtFilter);
   filters.push(senderOrgFilter);
 
@@ -611,12 +660,21 @@ export const normalizeFilterDefaults = ({
   searchQuery,
 }: NormalizeFilterDefaults): GetAllDialogsForPartiesQueryVariables => {
   const SYSTEM_LABEL_STATUSES = [SystemLabel.Bin, SystemLabel.Archive, SystemLabel.Sent] as string[];
-  const { updatedAfter, fromDate, toDate, systemLabel, ...baseFilters } = filters;
+  const { updatedAfter, fromDate, toDate, systemLabel, isContentSeen, ...baseFilters } = filters;
   const { status, org, serviceResources } = baseFilters;
   // `systemLabel` is a filter-state key only; the query uses `label`.
   const normalized: GetAllDialogsForPartiesQueryVariables = { ...baseFilters };
 
-  const hasFilters = [status, org, systemLabel, updatedAfter, serviceResources].some((f) => {
+  const rawIsContentSeen = Array.isArray(isContentSeen) ? (isContentSeen[0] as string | undefined) : undefined;
+  if (rawIsContentSeen === IsContentSeenFilterValue.UNREAD) {
+    normalized.isContentSeen = false;
+  } else if (rawIsContentSeen === IsContentSeenFilterValue.READ) {
+    normalized.isContentSeen = true;
+  } else {
+    normalized.isContentSeen = undefined;
+  }
+
+  const hasFilters = [status, org, systemLabel, isContentSeen, updatedAfter, serviceResources].some((f) => {
     // Special case for date filters: if "fromAndToDate" is selected, both fromDate and toDate must be provided to be valid
     if (
       typeof f?.[0] === 'string' &&

@@ -1,16 +1,17 @@
-import { graphql, http, HttpResponse } from 'msw';
 import { formatDisplayName } from '@altinn/altinn-components';
 import {
-  SavedSearchesFieldsFragment,
-  DialogByIdFieldsFragment,
-  Profile,
-  SearchDialogFieldsFragment,
-  PartyFieldsFragment,
-  OrganizationFieldsFragment,
-  SystemLabel, ServiceResource,
+  type DialogByIdFieldsFragment,
+  type OrganizationFieldsFragment,
+  type PartyFieldsFragment,
+  type Profile,
+  type SavedSearchesFieldsFragment,
+  type SearchDialogFieldsFragment,
+  type ServiceResource,
+  SystemLabel,
 } from 'bff-types-generated';
-import { convertToDialogByIdTemplate, filterDialogs } from './data/base/helper.ts';
+import { http, HttpResponse, graphql } from 'msw';
 import { getMockedData } from './data.ts';
+import { convertToDialogByIdTemplate, filterDialogs } from './data/base/helper.ts';
 
 const data = await getMockedData(window.location.href);
 export type InMemoryStore = {
@@ -19,11 +20,11 @@ export type InMemoryStore = {
   dialogs?: SearchDialogFieldsFragment[] | null;
   parties?: PartyFieldsFragment[];
   organizations?: OrganizationFieldsFragment[];
-  features?: Record<string, boolean>
+  features?: Record<string, boolean>;
   services?: ServiceResource[];
 };
 
-let inMemoryStore: InMemoryStore = {
+const inMemoryStore: InMemoryStore = {
   savedSearches: data.savedSearches,
   profile: data.profile,
   dialogs: data.dialogs,
@@ -43,30 +44,30 @@ const featuresMock = http.get('/api/features', () => {
 
 const alertBannerMock = http.get('/api/alert-banner', () => {
   return HttpResponse.json({
-    "nb": {
-      "title": "Ustabilitet",
-      "description": "Vi opplever noe ustabilitet og jobber på saken.",
-      "link": {
-        "text": "Du kan fortsatt bruke den gamle innboksen."
-      }
+    nb: {
+      title: 'Ustabilitet',
+      description: 'Vi opplever noe ustabilitet og jobber på saken.',
+      link: {
+        text: 'Du kan fortsatt bruke den gamle innboksen.',
+      },
     },
-    "nn": {
-      "title": "Teknisk feil",
-      "description": "Pga ein teknisk feil blir ein del historiske meldingar viste med feil dato i den nye innboksen. Vi jobbar med å rette dette. Inntil vidare kan den gamle innboksen nyttast."
+    nn: {
+      title: 'Teknisk feil',
+      description:
+        'Pga ein teknisk feil blir ein del historiske meldingar viste med feil dato i den nye innboksen. Vi jobbar med å rette dette. Inntil vidare kan den gamle innboksen nyttast.',
     },
-    "en": {
-      "title": "Test Technical Error",
-      "description": "Due to a technical issue, some historical messages are displayed with incorrect dates in the new inbox. We are working to fix this. In the meantime, the old inbox can be used."
-    }
-  })
-})
+    en: {
+      title: 'Test Technical Error',
+      description:
+        'Due to a technical issue, some historical messages are displayed with incorrect dates in the new inbox. We are working to fix this. In the meantime, the old inbox can be used.',
+    },
+  });
+});
 
 export const streamMock = http.get('/api/graphql/stream', async () => {
   const stream = new ReadableStream({
-    start({
-      /* Create a readable stream that sends events if needed for testing in the future and remember to close stream controller */
-    }) {
-    }
+    //ts-ignore
+    start() {},
   });
 
   return new Response(stream, {
@@ -77,7 +78,6 @@ export const streamMock = http.get('/api/graphql/stream', async () => {
     },
   });
 });
-
 
 const mockAltinn2Messages = graphql.query('altinn2messages', () => {
   return HttpResponse.json({
@@ -94,7 +94,6 @@ const mockNotificationsettingsForCurrentUser = graphql.query('notificationsettin
     },
   });
 });
-
 
 const getAllDialogsforCountMock = graphql.query('getAllDialogsForCount', ({ variables }) => {
   const items = filterDialogs({
@@ -113,17 +112,18 @@ const getAllDialogsforCountMock = graphql.query('getAllDialogsForCount', ({ vari
   return HttpResponse.json({
     data: {
       searchDialogs: {
-        items: sortedItems?.map((item) => ({
-          id: item.id,
-          org: item.org,
-          party: item.party,
-          contentUpdatedAt: item.contentUpdatedAt,
-          status: item.status,
-          endUserContext: {
-            systemLabels: item.endUserContext?.systemLabels ?? [],
-          },
-          seenSinceLastContentUpdate: item.seenSinceLastContentUpdate,
-        })) ?? null,
+        items:
+          sortedItems?.map((item) => ({
+            id: item.id,
+            org: item.org,
+            party: item.party,
+            contentUpdatedAt: item.contentUpdatedAt,
+            status: item.status,
+            endUserContext: {
+              systemLabels: item.endUserContext?.systemLabels ?? [],
+            },
+            seenSinceLastContentUpdate: item.seenSinceLastContentUpdate,
+          })) ?? null,
       },
     },
   });
@@ -139,6 +139,7 @@ const getAllDialogsForPartiesMock = graphql.query('getAllDialogsForParties', ({ 
     status: variables.status,
     updatedAfter: variables.updatedAfter,
     updatedBefore: variables.updatedBefore,
+    isContentSeen: variables.isContentSeen,
   });
 
   const sortedItems = items
@@ -154,14 +155,20 @@ const getAllDialogsForPartiesMock = graphql.query('getAllDialogsForParties', ({ 
   });
 });
 
-
 const getDialogByIdMock = graphql.query('getDialogById', (options) => {
   const {
     variables: { id },
   } = options;
-  const dialog = inMemoryStore.dialogs?.find(d => d.id === id);
-  if (dialog && !dialog.seenSinceLastContentUpdate.some(d => d.isCurrentEndUser)) {
-    const party = inMemoryStore.parties?.find(p => p.isCurrentEndUser);
+  const dialog = inMemoryStore.dialogs?.find((d) => d.id === id);
+  if (dialog?.endUserContext?.systemLabels?.includes(SystemLabel.MarkedAsUnopened)) {
+    dialog.endUserContext = {
+      ...dialog.endUserContext,
+      systemLabels: dialog.endUserContext.systemLabels.filter((l) => l !== SystemLabel.MarkedAsUnopened),
+    };
+    dialog.isContentSeen = true;
+  }
+  if (dialog && !dialog.seenSinceLastContentUpdate.some((d) => d.isCurrentEndUser)) {
+    const party = inMemoryStore.parties?.find((p) => p.isCurrentEndUser);
 
     dialog.seenSinceLastContentUpdate = [
       {
@@ -174,7 +181,7 @@ const getDialogByIdMock = graphql.query('getDialogById', (options) => {
             fullName: party?.name ?? '',
             type: 'person',
             reverseNameOrder: true,
-          })
+          }),
         },
         isCurrentEndUser: true,
       },
@@ -182,7 +189,7 @@ const getDialogByIdMock = graphql.query('getDialogById', (options) => {
   }
 
   const dialogDetails: DialogByIdFieldsFragment | null = dialog
-    ? convertToDialogByIdTemplate(dialog) as DialogByIdFieldsFragment
+    ? (convertToDialogByIdTemplate(dialog) as DialogByIdFieldsFragment)
     : null;
 
   return HttpResponse.json({
@@ -214,15 +221,18 @@ Dette er HTML som er generert fra markdown.
 `);
 });
 
-const getContentMarkdownMock = http.get('https://dialogporten-serviceprovider.net/fce-markdown-transmission', ({ request }) => {
-  const url = new URL(request.url)
-  const id = url.searchParams.get('id')
-  return HttpResponse.text(`# Info i markdown for transmission (id=${id})`);
-});
+const getContentMarkdownMock = http.get(
+  'https://dialogporten-serviceprovider.net/fce-markdown-transmission',
+  ({ request }) => {
+    const url = new URL(request.url);
+    const id = url.searchParams.get('id');
+    return HttpResponse.text(`# Info i markdown for transmission (id=${id})`);
+  },
+);
 
-const getMainContentHtmlMock = http.get('https://dialogporten-serviceprovider.net/fce-html', ({request}) => {
-  const url = new URL(request.url)
-  const id = url.searchParams.get('id')
+const getMainContentHtmlMock = http.get('https://dialogporten-serviceprovider.net/fce-html', ({ request }) => {
+  const url = new URL(request.url);
+  const id = url.searchParams.get('id');
   return HttpResponse.text(`<html><body><h1>Tittel i arvet HTML</h1><p>Brødtekst! ${id}</p></body></html>`);
 });
 
@@ -305,17 +315,17 @@ const mutateUpdateSystemLabelMock = graphql.mutation('updateSystemLabel', (req) 
       const existingLabels = dialog.endUserContext?.systemLabels || [];
       const EXCLUSIVE_LABELS = [SystemLabel.Archive, SystemLabel.Bin, SystemLabel.Default];
 
-      let updatedLabels = existingLabels.filter(label =>
-        !Array.isArray(removeLabels) || !removeLabels.includes(label)
+      let updatedLabels = existingLabels.filter(
+        (label) => !Array.isArray(removeLabels) || !removeLabels.includes(label),
       );
 
       const labelsToAdd = [addLabels].flat();
 
-      const exclusiveLabelsToAdd = labelsToAdd.filter(label => EXCLUSIVE_LABELS.includes(label));
-      const nonExclusiveLabelsToAdd = labelsToAdd.filter(label => !EXCLUSIVE_LABELS.includes(label));
+      const exclusiveLabelsToAdd = labelsToAdd.filter((label) => EXCLUSIVE_LABELS.includes(label));
+      const nonExclusiveLabelsToAdd = labelsToAdd.filter((label) => !EXCLUSIVE_LABELS.includes(label));
 
       if (exclusiveLabelsToAdd.length > 0) {
-        updatedLabels = updatedLabels.filter(label => !EXCLUSIVE_LABELS.includes(label));
+        updatedLabels = updatedLabels.filter((label) => !EXCLUSIVE_LABELS.includes(label));
         updatedLabels.push(exclusiveLabelsToAdd[exclusiveLabelsToAdd.length - 1]);
       }
 
@@ -326,7 +336,11 @@ const mutateUpdateSystemLabelMock = graphql.mutation('updateSystemLabel', (req) 
       }
 
       dialog.endUserContext = {
-        systemLabels: updatedLabels
+        systemLabels: updatedLabels,
+      };
+
+      if (labelsToAdd.includes(SystemLabel.MarkedAsUnopened)) {
+        dialog.isContentSeen = false;
       }
     }
     return dialog;
@@ -334,11 +348,10 @@ const mutateUpdateSystemLabelMock = graphql.mutation('updateSystemLabel', (req) 
 
   return HttpResponse.json({
     data: {
-      setSystemLabel: { success: true }
+      setSystemLabel: { success: true },
     },
   });
 });
-
 
 const mutateBulkUpdateSystemLabelMock = graphql.mutation('bulkUpdateSystemLabels', (req) => {
   const { dialogs, addLabels, removeLabels } = req.variables;
@@ -349,9 +362,7 @@ const mutateBulkUpdateSystemLabelMock = graphql.mutation('bulkUpdateSystemLabels
     if (!dialogIds.includes(dialog.id)) return dialog;
 
     const existingLabels = dialog.endUserContext?.systemLabels || [];
-    let updatedLabels = existingLabels.filter(
-      (label) => !Array.isArray(removeLabels) || !removeLabels.includes(label),
-    );
+    let updatedLabels = existingLabels.filter((label) => !Array.isArray(removeLabels) || !removeLabels.includes(label));
 
     const labelsToAdd = [addLabels].flat();
     const exclusiveLabelsToAdd = labelsToAdd.filter((label) => EXCLUSIVE_LABELS.includes(label));
@@ -369,6 +380,11 @@ const mutateBulkUpdateSystemLabelMock = graphql.mutation('bulkUpdateSystemLabels
     }
 
     dialog.endUserContext = { systemLabels: updatedLabels };
+
+    if (labelsToAdd.includes(SystemLabel.MarkedAsUnopened)) {
+      dialog.isContentSeen = false;
+    }
+
     return dialog;
   });
 
@@ -394,7 +410,7 @@ const mutateUpdateLanguageMock = graphql.mutation('UpdateLanguage', (req) => {
   });
 });
 
-const mutateUpdateProfileSettingPreferenceMock = graphql.mutation("setShouldShowSubEntities", (req) => {
+const mutateUpdateProfileSettingPreferenceMock = graphql.mutation('setShouldShowSubEntities', (req) => {
   const { shouldShowDeletedEntities } = req.variables;
 
   if (inMemoryStore.profile?.user?.profileSettingPreference) {
@@ -505,5 +521,5 @@ export const handlers = [
   mockAltinn2Messages,
   mockNotificationsettingsForCurrentUser,
   featuresMock,
-  alertBannerMock
+  alertBannerMock,
 ];

@@ -100,7 +100,7 @@ const createDialog = (overrides: Partial<SearchDialogFieldsFragment> = {}): Sear
     guiAttachmentCount: 0,
     serviceResourceType: 'GenericAccessResource',
     dueAt: null,
-    hasUnopenedContent: false,
+    isContentSeen: true,
     fromServiceOwnerTransmissionsCount: 0,
     fromPartyTransmissionsCount: 0,
     serviceResource: 'urn:altinn:resource:test',

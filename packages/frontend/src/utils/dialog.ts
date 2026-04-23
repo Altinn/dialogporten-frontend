@@ -1,17 +1,9 @@
-import {
-  DialogStatus,
-  type GetAllDialogsForPartiesQueryVariables,
-  type PartyFieldsFragment,
-  type SearchDialogFieldsFragment,
-  SystemLabel,
-} from 'bff-types-generated';
+import type { PartyFieldsFragment, SearchDialogFieldsFragment } from 'bff-types-generated';
 import { type TFunction, t } from 'i18next';
 import { getActorProps } from '../api/hooks/useDialogById.tsx';
-import type { InboxViewType } from '../api/hooks/useDialogs.tsx';
 import { type LocalizationObject, getPreferredPropertyByLocale } from '../i18n/property.ts';
 import type { FormatFunction } from '../i18n/useDateFnsLocale.tsx';
 import type { InboxItemInput } from '../pages/Inbox/InboxItemInput.ts';
-import { getIsUnread } from '../pages/Inbox/status.ts';
 import {
   type OrganizationLookup,
   type OrganizationOutput,
@@ -88,7 +80,7 @@ export function mapDialogToInboxItems(
     return {
       id: item.id,
       party: item.party,
-      hasUnopenedContent: item.hasUnopenedContent,
+      isContentSeen: item.isContentSeen,
       title: getPreferredPropertyByLocale(titleObj)?.value ?? '',
       dueAt: item.dueAt,
       summary: getPreferredPropertyByLocale(summaryObj)?.value ?? '',
@@ -145,54 +137,10 @@ export function mapDialogToInboxItems(
       fromServiceOwnerTransmissionsCount: item.fromServiceOwnerTransmissionsCount ?? 0,
       fromPartyTransmissionsCount: item.fromPartyTransmissionsCount ?? 0,
       serviceResource: item.serviceResource,
-      unread: getIsUnread(item),
+      unread: !item.isContentSeen,
     };
   });
 }
-
-interface QueryVariablesInput {
-  viewType?: InboxViewType;
-  variables?: Partial<GetAllDialogsForPartiesQueryVariables>;
-  continuationToken?: string;
-}
-
-const viewTypeQueryMap: Record<InboxViewType, Record<string, string[] | string | number>> = {
-  inbox: {
-    status: [
-      DialogStatus.NotApplicable,
-      DialogStatus.InProgress,
-      DialogStatus.RequiresAttention,
-      DialogStatus.Completed,
-    ],
-    label: SystemLabel.Default,
-  },
-  drafts: {
-    status: [DialogStatus.Draft],
-    label: SystemLabel.Default,
-  },
-  sent: {
-    label: [SystemLabel.Sent],
-  },
-  archive: {
-    label: SystemLabel.Archive,
-  },
-  bin: {
-    label: SystemLabel.Bin,
-  },
-};
-
-export const getQueryVariables = ({
-  viewType,
-  continuationToken,
-  variables,
-}: QueryVariablesInput): Partial<GetAllDialogsForPartiesQueryVariables> => {
-  const viewTypeQueries = viewType ? viewTypeQueryMap[viewType] || {} : {};
-  return {
-    ...viewTypeQueries,
-    continuationToken,
-    ...variables,
-  };
-};
 
 export const mergeDialogItems = (
   existingItems: SearchDialogFieldsFragment[] = [],

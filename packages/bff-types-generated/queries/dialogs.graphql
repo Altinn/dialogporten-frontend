@@ -10,6 +10,7 @@ query getAllDialogsForParties(
   $updatedBefore: DateTime
   $searchLanguageCode: String
   $serviceResources: [String!]
+  $isContentSeen: Boolean
 ) {
   searchDialogs(
     input: {
@@ -26,6 +27,7 @@ query getAllDialogsForParties(
       excludeApiOnly: true
       searchLanguageCode: $searchLanguageCode
       serviceResource: $serviceResources
+      isContentSeen: $isContentSeen
     }
   ) {
     items {
@@ -33,38 +35,5 @@ query getAllDialogsForParties(
     }
     hasNextPage
     continuationToken
-  }
-}
-
-query getAllDialogsForCount(
-  $partyURIs: [String!]
-  $search: String
-  $org: [String!]
-  $status: [DialogStatus!]
-  $label: [SystemLabel!]
-  $updatedAfter: DateTime
-  $updatedBefore: DateTime
-  $limit: Int
-  $searchLanguageCode: String
-) {
-  searchDialogs(
-    input: {
-      party: $partyURIs
-      search: $search
-      org: $org
-      status: $status
-      orderBy: { createdAt: null, updatedAt: null, dueAt: null, contentUpdatedAt: DESC }
-      systemLabel: $label
-      updatedAfter: $updatedAfter
-      updatedBefore: $updatedBefore
-      limit: $limit
-      excludeApiOnly: true
-      searchLanguageCode: $searchLanguageCode
-    }
-  ) {
-    items {
-      ...CountableDialogFields
-    }
-    hasNextPage
   }
 }
