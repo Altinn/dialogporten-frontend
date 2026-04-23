@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.141.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.140.1...v1.141.0) (2026-04-23)
+
+
+### Features
+
+* filter by seen/unseen content ([#4042](https://github.com/Altinn/dialogporten-frontend/issues/4042)) ([8984959](https://github.com/Altinn/dialogporten-frontend/commit/8984959adb51a7228fc645b7b8af10fa433f659f))
+
 ## [1.140.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.140.0...v1.140.1) (2026-04-22)
 
 
