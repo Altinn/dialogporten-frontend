@@ -10,7 +10,7 @@ import { CheckmarkIcon } from '@navikt/aksel-icons';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Trans } from 'react-i18next';
-import { Link, type LinkProps } from 'react-router-dom';
+import {Link, type LinkProps, useSearchParams} from 'react-router-dom';
 import { MAX_COUNT_BULK_DIALOGS } from '../../api/hooks/useBulkActions.tsx';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
@@ -37,6 +37,7 @@ interface DialogListGroupPropsSort extends DialogListGroupProps {
 interface UseGroupedDialogsOutput {
   groupedDialogs: DialogListItemProps[];
   groups: Record<string, DialogListGroupPropsSort>;
+  title?: string;
 }
 
 interface UseGroupedDialogsProps {
@@ -78,6 +79,8 @@ const renderLoadingItems = (size: number): DialogListItemProps[] => {
   });
 };
 
+type FilterScope = 'DEFAULT' | 'ARCHIVE' | 'BIN' | 'ALL'
+
 const useGroupedDialogs = ({
   items,
   displaySearchResults,
@@ -89,14 +92,16 @@ const useGroupedDialogs = ({
 }: UseGroupedDialogsProps): UseGroupedDialogsOutput => {
   const { t } = useTranslation();
   const format = useFormat();
+  const [searchParams] = useSearchParams();
   const enabledBulkMode = useFeatureFlag<boolean>('inbox.enableBulkMode');
   const systemLabelActions = useDialogActions();
   const [allOrganizationsSelected] = useGlobalState<boolean>(QUERY_KEYS.ALL_ORGANIZATIONS_SELECTED, false);
   const [bulkMode, setBulkMode] = useGlobalState<boolean>(QUERY_KEYS.BULK_MODE, false);
   const [bulkedIds, setBulkedIds] = useGlobalState<string[]>(QUERY_KEYS.BULK_MODE_SELECTED_IDS, []);
   const collapseGroups = displaySearchResults || (viewType !== 'inbox' && viewType !== 'sent');
-  const getCollapsedGroupTitle = (viewType: InboxViewType, count: number, hasNextPage: boolean) =>
-    (hasNextPage ? t('word.moreThan') : '') + t(`inbox.heading.title.${viewType}`, { count });
+  const filterScope = (searchParams.get('systemLabel') || 'ALL') as FilterScope;
+  const getSearchTitle = (viewType: InboxViewType, count: number, hasNextPage: boolean, filterScope: FilterScope) =>
+    (hasNextPage ? t('word.moreThan') : '') + t(`inbox.heading.title.${viewType}`, { count }) + (filterScope ? t(`inbox.heading.scope.${filterScope}`) : '');
 
   const clockPrefix = t('word.clock_prefix');
   const formatString = `do MMMM yyyy ${clockPrefix ? `'${clockPrefix}' ` : ''}HH.mm`;
@@ -234,7 +239,6 @@ const useGroupedDialogs = ({
       }
 
       groups[viewType] = {
-        title: getCollapsedGroupTitle(viewType, regularItems.length, hasNextPage),
         description: <Trans i18nKey={`inbox.heading.description.${viewType}`} components={{ strong: <strong /> }} />,
         orderIndex: null,
       };
@@ -247,26 +251,27 @@ const useGroupedDialogs = ({
       return {
         groupedDialogs,
         groups,
+        title: getSearchTitle(viewType, items.length, hasNextPage, filterScope),
       };
     }
 
     const groupedItems: GroupedItem[] = [];
-
     const bankruptcyDialogs = items.filter((item) => item.serviceResource === BANKRUPTCY_SERVICE_RESOURCE);
     const regularDialogs = items.filter((item) => item.serviceResource !== BANKRUPTCY_SERVICE_RESOURCE);
+    const title =  getSearchTitle(viewType, regularDialogs.length, hasNextPage, filterScope);
 
     if (bankruptcyDialogs.length > 0) {
       groupedItems.push({
         id: 'bankruptcy',
         items: bankruptcyDialogs,
-        orderIndex: 9999, //put on top
+        // Konkurs dialogs should always be in top
+        orderIndex: 9999,
       });
     }
 
     if (collapseGroups) {
       groupedItems.push({
         id: 'collapsed',
-        title: getCollapsedGroupTitle(viewType, regularDialogs.length, hasNextPage),
         description: t('search.results.description'),
         items: regularDialogs,
         orderIndex: null,
@@ -322,7 +327,7 @@ const useGroupedDialogs = ({
       groupedDialogs.push(...renderLoadingItems(1));
     }
 
-    return { groupedDialogs, groups };
+    return { groupedDialogs, groups, title };
   }, [items, displaySearchResults, t, format, viewType, allWithinSameYear, isLoading, isFetchingNextPage]);
 };
 

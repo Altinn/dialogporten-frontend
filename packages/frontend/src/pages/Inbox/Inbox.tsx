@@ -316,7 +316,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     viewType,
   });
 
-  const { groupedDialogs, groups } = useGroupedDialogs({
+  const { groupedDialogs, groups, title } = useGroupedDialogs({
     onSeenByLogModalChange: setCurrentSeenByLogModal,
     items: dialogs,
     hasNextPage,
@@ -461,6 +461,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
         <Notice title={limitReachedNoticeContent.title} description={limitReachedNoticeContent.description} />
       )}
       <>
+      {title && searchMode && <Heading as="h1" size="lg">{title}</Heading>}
         <DialogList
           items={dialogItems}
           groups={dialogListGroups}
