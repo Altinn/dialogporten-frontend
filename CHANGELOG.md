@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.141.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.141.1...v1.141.2) (2026-04-23)
+
+
+### Bug Fixes
+
+* update comment in Readme to force new version ([#4063](https://github.com/Altinn/dialogporten-frontend/issues/4063)) ([a94c15f](https://github.com/Altinn/dialogporten-frontend/commit/a94c15fbf345348d15b59da9f6bd4f44708c7510))
+
 ## [1.141.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.141.0...v1.141.1) (2026-04-23)
 
 
