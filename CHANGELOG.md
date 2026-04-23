@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.141.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.141.0...v1.141.1) (2026-04-23)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @easyops-cn/docusaurus-search-local to v0.55.1 ([#4055](https://github.com/Altinn/dialogporten-frontend/issues/4055)) ([656b8a6](https://github.com/Altinn/dialogporten-frontend/commit/656b8a6f887b257fc4cf7def8268501bafcc2d2b))
+
 ## [1.141.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.140.1...v1.141.0) (2026-04-23)
 
 
