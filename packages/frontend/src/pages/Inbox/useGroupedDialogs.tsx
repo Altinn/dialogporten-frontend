@@ -1,4 +1,5 @@
 import {
+  Button,
   ContextMenu,
   type ContextMenuProps,
   type DialogListGroupProps,
@@ -6,12 +7,16 @@ import {
   type FilterState,
   ItemSelect,
 } from '@altinn/altinn-components';
+import { SystemLabel } from 'bff-types-generated';
+import type { TFunction } from 'i18next';
+import type { ReactNode } from 'react';
 import { CheckmarkIcon } from '@navikt/aksel-icons';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Trans } from 'react-i18next';
-import {Link, type LinkProps, useSearchParams} from 'react-router-dom';
+import { Link, type LinkProps, useSearchParams } from 'react-router-dom';
 import { MAX_COUNT_BULK_DIALOGS } from '../../api/hooks/useBulkActions.tsx';
+import { useSearchString } from '../../components/PageLayout/Search/';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useFeatureFlag } from '../../featureFlags';
@@ -34,10 +39,13 @@ interface DialogListGroupPropsSort extends DialogListGroupProps {
   orderIndex?: number | null;
 }
 
+type FilterScope = 'DEFAULT' | 'ARCHIVE' | 'BIN' | 'ALL';
+
 interface UseGroupedDialogsOutput {
   groupedDialogs: DialogListItemProps[];
   groups: Record<string, DialogListGroupPropsSort>;
   title?: string;
+  description?: ReactNode;
 }
 
 interface UseGroupedDialogsProps {
@@ -47,6 +55,8 @@ interface UseGroupedDialogsProps {
   hasNextPage: boolean;
   isLoading: boolean;
   filters?: FilterState;
+  filterState?: FilterState;
+  onFiltersChange?: (filters: FilterState) => void;
   isFetchingNextPage?: boolean;
   /* true if the search results are displayed */
   displaySearchResults?: boolean;
@@ -54,10 +64,87 @@ interface UseGroupedDialogsProps {
   onSeenByLogModalChange: (input: CurrentSeenByLog) => void;
 }
 
+const SCOPE_TO_SYSTEM_LABEL: Record<Exclude<FilterScope, 'ALL'>, SystemLabel> = {
+  DEFAULT: SystemLabel.Default,
+  ARCHIVE: SystemLabel.Archive,
+  BIN: SystemLabel.Bin,
+};
+
+const getDialogListDescription = ({
+  t,
+  viewType,
+  viewIsEmpty,
+  displaySearchResults,
+  filterScope,
+  hasSearchString,
+  hasNoResults,
+  onScopeChange,
+  onClearSearch,
+}: {
+  t: TFunction;
+  viewType: InboxViewType;
+  viewIsEmpty: boolean;
+  displaySearchResults: boolean;
+  filterScope: FilterScope;
+  hasSearchString: boolean;
+  hasNoResults: boolean;
+  onScopeChange: (scope: FilterScope) => void;
+  onClearSearch: () => void;
+}): ReactNode | undefined => {
+  if (viewIsEmpty) {
+    return <p>{t(`inbox.heading.no_results.${viewType}`)}</p>;
+  }
+
+  if (!displaySearchResults) return undefined;
+
+  if (filterScope === 'ALL' && (hasSearchString || hasNoResults)) {
+    return (
+      <Button variant="outline" size="mini" onClick={onClearSearch}>
+        {t('word.reset_all')}
+      </Button>
+    );
+  }
+
+  if (filterScope === 'ALL') {
+    return (
+      <>
+        {t('inbox.heading.narrow_scope')}{' '}
+        <Button variant="tinted" size="mini" onClick={() => onScopeChange('DEFAULT')}>
+          {t('status.default')}
+        </Button>{' '}
+        <Button variant="tinted" size="mini" onClick={() => onScopeChange('ARCHIVE')}>
+          {t('status.archive')}
+        </Button>{' '}
+        {t('word.or')}{' '}
+        <Button variant="tinted" size="mini" onClick={() => onScopeChange('BIN')}>
+          {t('status.bin')}
+        </Button>
+      </>
+    );
+  }
+
+  return (
+    <>
+      {t('inbox.heading.expand_scope')}{' '}
+      <Button variant="tinted" size="mini" onClick={() => onScopeChange('ALL')}>
+        {t('inbox.heading.scope.all_folders')}
+      </Button>
+    </>
+  );
+};
+
 const BANKRUPTCY_SERVICE_RESOURCE = 'urn:altinn:resource:app_brg_konkursbehandling';
 
 const sortGroupedDialogs = (arr: DialogListItemProps[]) => {
   return arr.sort((a, b) => new Date(b.updatedAt ?? 0).getTime() - new Date(a.updatedAt ?? 0).getTime());
+};
+
+const stripTitlelessSingleGroup = (
+  groups: Record<string, DialogListGroupPropsSort>,
+): Record<string, DialogListGroupPropsSort> => {
+  const keys = Object.keys(groups);
+  if (keys.length === 1 && !groups[keys[0]]?.title) return {};
+  return groups;
 };
 
 const renderLoadingItems = (size: number): DialogListItemProps[] => {
@@ -79,8 +166,6 @@ const renderLoadingItems = (size: number): DialogListItemProps[] => {
   });
 };
 
-type FilterScope = 'DEFAULT' | 'ARCHIVE' | 'BIN' | 'ALL'
-
 const useGroupedDialogs = ({
   items,
   displaySearchResults,
@@ -89,10 +174,13 @@ const useGroupedDialogs = ({
   isFetchingNextPage,
   onSeenByLogModalChange,
   hasNextPage,
+  filterState,
+  onFiltersChange,
 }: UseGroupedDialogsProps): UseGroupedDialogsOutput => {
   const { t } = useTranslation();
   const format = useFormat();
   const [searchParams] = useSearchParams();
+  const { enteredSearchValue, onClear: onClearSearch } = useSearchString();
   const enabledBulkMode = useFeatureFlag<boolean>('inbox.enableBulkMode');
   const systemLabelActions = useDialogActions();
   const [allOrganizationsSelected] = useGlobalState<boolean>(QUERY_KEYS.ALL_ORGANIZATIONS_SELECTED, false);
@@ -101,7 +189,33 @@ const useGroupedDialogs = ({
   const collapseGroups = displaySearchResults || (viewType !== 'inbox' && viewType !== 'sent');
   const filterScope = (searchParams.get('systemLabel') || 'ALL') as FilterScope;
   const getSearchTitle = (viewType: InboxViewType, count: number, hasNextPage: boolean, filterScope: FilterScope) =>
-    (hasNextPage ? t('word.moreThan') : '') + t(`inbox.heading.title.${viewType}`, { count }) + (filterScope ? t(`inbox.heading.scope.${filterScope}`) : '');
+    (hasNextPage ? t('word.moreThan') : '') +
+    t(`inbox.heading.title.${viewType}`, { count }) +
+    (count > 0 ? t(`inbox.heading.scope.${filterScope}`) : '');
+
+  const onScopeChange = (scope: FilterScope) => {
+    if (!onFiltersChange || !filterState) return;
+    const next: FilterState = { ...filterState };
+    if (scope === 'ALL') {
+      next.systemLabel = [];
+    } else {
+      next.systemLabel = [SCOPE_TO_SYSTEM_LABEL[scope]];
+    }
+    onFiltersChange(next);
+  };
+
+  const viewIsEmpty = !isLoading && items.length === 0 && !displaySearchResults;
+  const description = getDialogListDescription({
+    t,
+    viewType,
+    viewIsEmpty,
+    displaySearchResults: !!displaySearchResults,
+    filterScope,
+    hasSearchString: !!enteredSearchValue,
+    hasNoResults: !isLoading && items.length === 0,
+    onScopeChange,
+    onClearSearch,
+  });
 
   const clockPrefix = t('word.clock_prefix');
   const formatString = `do MMMM yyyy ${clockPrefix ? `'${clockPrefix}' ` : ''}HH.mm`;
@@ -212,7 +326,7 @@ const useGroupedDialogs = ({
   };
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: This hook does not specify all of its dependencies
-  return useMemo(() => {
+  const grouped = useMemo((): UseGroupedDialogsOutput => {
     if (isLoading) {
       return {
         groupedDialogs: renderLoadingItems(5),
@@ -250,7 +364,7 @@ const useGroupedDialogs = ({
       }
       return {
         groupedDialogs,
-        groups,
+        groups: stripTitlelessSingleGroup(groups),
         title: getSearchTitle(viewType, items.length, hasNextPage, filterScope),
       };
     }
@@ -327,8 +441,10 @@ const useGroupedDialogs = ({
       groupedDialogs.push(...renderLoadingItems(1));
     }
 
-    return { groupedDialogs, groups, title };
+    return { groupedDialogs, groups: stripTitlelessSingleGroup(groups), title };
   }, [items, displaySearchResults, t, format, viewType, allWithinSameYear, isLoading, isFetchingNextPage]);
+
+  return { ...grouped, description };
 };
 
 export default useGroupedDialogs;

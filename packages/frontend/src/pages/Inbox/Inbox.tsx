@@ -19,7 +19,6 @@ import { MAX_COUNT_BULK_DIALOGS, useBulkActions } from '../../api/hooks/useBulkA
 import { type InboxViewType, MAX_DIALOG_PARTY_SIZE, useDialogs } from '../../api/hooks/useDialogs.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { createFiltersURLQuery } from '../../auth';
-import { EmptyState } from '../../components/EmptyState/EmptyState.tsx';
 import { Notice } from '../../components/Notice';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
 import { useSearchString } from '../../components/PageLayout/Search/';
@@ -316,12 +315,14 @@ export const Inbox = ({ viewType }: InboxProps) => {
     viewType,
   });
 
-  const { groupedDialogs, groups, title } = useGroupedDialogs({
+  const { groupedDialogs, groups, title, description } = useGroupedDialogs({
     onSeenByLogModalChange: setCurrentSeenByLogModal,
     items: dialogs,
     hasNextPage,
     displaySearchResults: searchMode,
     filters: filterState,
+    filterState,
+    onFiltersChange,
     viewType,
     isLoading,
     isFetchingNextPage,
@@ -454,20 +455,18 @@ export const Inbox = ({ viewType }: InboxProps) => {
       <SINotice />
       <AlertBanner showAlertBanner={isAlertBannerEnabled && !!alertBannerContent} />
       {isAltinn2MessagesEnabled && <Altinn2ActiveSchemasNotification selectedAccountId={selectedParties?.[0]?.party} />}
-      {dialogsSuccess && !dialogItems.length && !isLoading && !isLimitReached && (
-        <EmptyState viewType={viewType} savable={searchMode || !!(partyIdsOverride?.length ?? 0)} />
-      )}
       {isLimitReached && (
         <Notice title={limitReachedNoticeContent.title} description={limitReachedNoticeContent.description} />
       )}
       <>
-      {title && searchMode && <Heading as="h1" size="lg">{title}</Heading>}
         <DialogList
           items={dialogItems}
           groups={dialogListGroups}
           sortGroupBy={sortGroupBy}
           isLoading={isLoading}
           highlightWords={highlightWords}
+          title={searchMode ? title : undefined}
+          description={description}
         />
         {hasNextPage && (
           <Button aria-label={t('dialog.aria.fetch_more')} onClick={fetchNextPage} variant="outline" size="lg">
