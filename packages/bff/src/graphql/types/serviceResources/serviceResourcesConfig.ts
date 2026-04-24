@@ -10,7 +10,7 @@ import type { ResourceFilters } from './serviceResources.js';
  */
 export const sharedConfig: ResourceFilters = {
   excludeOrgCodes: ['acn', 'bft', 'ttd'],
-  includeResourceTypes: ['GenericAccessResource', 'AltinnApp', 'CorrespondenceService'],
+  includeResourceTypes: ['GenericAccessResource', 'AltinnApp', 'MigratedApp', 'CorrespondenceService'],
   onlyVisible: true,
   onlyDelegable: true,
 };

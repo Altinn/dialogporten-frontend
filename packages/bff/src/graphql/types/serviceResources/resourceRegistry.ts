@@ -4,6 +4,7 @@ export type LocalizedText = Partial<Record<LangCode, string>>;
 export type ResourceType =
   | 'Altinn2Service'
   | 'AltinnApp'
+  | 'MigratedApp'
   | 'MaskinportenSchema'
   | 'GenericAccessResource'
   | 'CorrespondenceService'
