@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.141.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.141.2...v1.141.3) (2026-04-24)
+
+
+### Bug Fixes
+
+* **bff:** include MigratedApp in service resource filtering ([#4070](https://github.com/Altinn/dialogporten-frontend/issues/4070)) ([a44a2d4](https://github.com/Altinn/dialogporten-frontend/commit/a44a2d48ff0ace732f2e87ad037beef48e0944d0))
+
 ## [1.141.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.141.1...v1.141.2) (2026-04-23)
 
 
