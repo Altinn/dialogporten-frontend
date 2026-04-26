@@ -7,16 +7,15 @@ import {
   type FilterState,
   ItemSelect,
 } from '@altinn/altinn-components';
+import { CheckmarkIcon } from '@navikt/aksel-icons';
 import { SystemLabel } from 'bff-types-generated';
 import type { TFunction } from 'i18next';
 import type { ReactNode } from 'react';
-import { CheckmarkIcon } from '@navikt/aksel-icons';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Trans } from 'react-i18next';
 import { Link, type LinkProps, useSearchParams } from 'react-router-dom';
 import { MAX_COUNT_BULK_DIALOGS } from '../../api/hooks/useBulkActions.tsx';
-import { useSearchString } from '../../components/PageLayout/Search/';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useFeatureFlag } from '../../featureFlags';
@@ -76,20 +75,16 @@ const getDialogListDescription = ({
   viewIsEmpty,
   displaySearchResults,
   filterScope,
-  hasSearchString,
   hasNoResults,
   onScopeChange,
-  onClearSearch,
 }: {
   t: TFunction;
   viewType: InboxViewType;
   viewIsEmpty: boolean;
   displaySearchResults: boolean;
   filterScope: FilterScope;
-  hasSearchString: boolean;
   hasNoResults: boolean;
   onScopeChange: (scope: FilterScope) => void;
-  onClearSearch: () => void;
 }): ReactNode | undefined => {
   if (viewIsEmpty) {
     return <p>{t(`inbox.heading.no_results.${viewType}`)}</p>;
@@ -97,12 +92,8 @@ const getDialogListDescription = ({
 
   if (!displaySearchResults) return undefined;
 
-  if (filterScope === 'ALL' && (hasSearchString || hasNoResults)) {
-    return (
-      <Button variant="outline" size="mini" onClick={onClearSearch}>
-        {t('word.reset_all')}
-      </Button>
-    );
+  if (filterScope === 'ALL' && hasNoResults) {
+    return '';
   }
 
   if (filterScope === 'ALL') {
@@ -180,18 +171,19 @@ const useGroupedDialogs = ({
   const { t } = useTranslation();
   const format = useFormat();
   const [searchParams] = useSearchParams();
-  const { enteredSearchValue, onClear: onClearSearch } = useSearchString();
   const enabledBulkMode = useFeatureFlag<boolean>('inbox.enableBulkMode');
   const systemLabelActions = useDialogActions();
   const [allOrganizationsSelected] = useGlobalState<boolean>(QUERY_KEYS.ALL_ORGANIZATIONS_SELECTED, false);
   const [bulkMode, setBulkMode] = useGlobalState<boolean>(QUERY_KEYS.BULK_MODE, false);
   const [bulkedIds, setBulkedIds] = useGlobalState<string[]>(QUERY_KEYS.BULK_MODE_SELECTED_IDS, []);
-  const collapseGroups = displaySearchResults || (viewType !== 'inbox' && viewType !== 'sent');
+  const collapseGroups = !!displaySearchResults;
   const filterScope = (searchParams.get('systemLabel') || 'ALL') as FilterScope;
   const getSearchTitle = (viewType: InboxViewType, count: number, hasNextPage: boolean, filterScope: FilterScope) =>
     (hasNextPage ? t('word.moreThan') : '') +
     t(`inbox.heading.title.${viewType}`, { count }) +
-    (count > 0 ? t(`inbox.heading.scope.${filterScope}`) : '');
+    (viewType !== 'archive' && viewType !== 'bin' && filterScope !== 'ALL'
+      ? t(`inbox.heading.scope.${filterScope}`)
+      : '');
 
   const onScopeChange = (scope: FilterScope) => {
     if (!onFiltersChange || !filterState) return;
@@ -211,16 +203,14 @@ const useGroupedDialogs = ({
     viewIsEmpty,
     displaySearchResults: !!displaySearchResults,
     filterScope,
-    hasSearchString: !!enteredSearchValue,
     hasNoResults: !isLoading && items.length === 0,
     onScopeChange,
-    onClearSearch,
   });
 
   const clockPrefix = t('word.clock_prefix');
   const formatString = `do MMMM yyyy ${clockPrefix ? `'${clockPrefix}' ` : ''}HH.mm`;
   const allWithinSameYear = items.every((d) => new Date(d.contentUpdatedAt).getFullYear() === new Date().getFullYear());
-  const useDateGrouping = viewType === 'inbox' || viewType === 'sent';
+  const useDateGrouping = !displaySearchResults;
 
   const onToggleBulkId = (id: string) => {
     if (bulkedIds?.includes(id)) {
@@ -372,7 +362,7 @@ const useGroupedDialogs = ({
     const groupedItems: GroupedItem[] = [];
     const bankruptcyDialogs = items.filter((item) => item.serviceResource === BANKRUPTCY_SERVICE_RESOURCE);
     const regularDialogs = items.filter((item) => item.serviceResource !== BANKRUPTCY_SERVICE_RESOURCE);
-    const title =  getSearchTitle(viewType, regularDialogs.length, hasNextPage, filterScope);
+    const title = getSearchTitle(viewType, regularDialogs.length, hasNextPage, filterScope);
 
     if (bankruptcyDialogs.length > 0) {
       groupedItems.push({

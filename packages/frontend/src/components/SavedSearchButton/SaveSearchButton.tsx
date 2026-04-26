@@ -9,7 +9,7 @@ import { useSavedSearches } from '../../pages/SavedSearches/useSavedSearches.tsx
 import { useSearchString } from '../PageLayout/Search';
 
 export type SaveSearchButtonProps = {
-  disabled?: boolean;
+  hidden?: boolean;
   viewType: InboxViewType;
   filterState: FilterState;
   variant?: 'ghost' | 'outline';
@@ -18,7 +18,7 @@ export type SaveSearchButtonProps = {
   RefAttributes<HTMLButtonElement>;
 
 export const SaveSearchButton = ({
-  disabled,
+  hidden,
   className,
   filterState,
   viewType,
@@ -35,7 +35,7 @@ export const SaveSearchButton = ({
     onDeleteSavedSearch,
   } = useSavedSearches(selectedPartyIds);
 
-  if (disabled) {
+  if (hidden) {
     return null;
   }
 

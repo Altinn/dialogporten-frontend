@@ -41,7 +41,7 @@ test.describe('Sidebar menu', () => {
     } else {
       await getSidebarMenuItem(page, PageRoutes.archive).click();
     }
-    await expect(page.getByRole('heading', { name: 'Arkivet er tomt' })).toBeVisible();
+    await expect(page.getByText('Arkivet er tomt')).toBeVisible();
 
     if (isMobile) {
       await page.getByRole('button', { name: 'Meny' }).click();
@@ -50,7 +50,7 @@ test.describe('Sidebar menu', () => {
     } else {
       await getSidebarMenuItem(page, PageRoutes.bin).click();
     }
-    await expect(page.getByRole('heading', { name: 'Papirkurven er tom' })).toBeVisible();
+    await expect(page.getByText('Papirkurven er tom')).toBeVisible();
 
     if (isMobile) {
       await page.getByRole('button', { name: 'Meny' }).click();
