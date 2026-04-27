@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.141.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.141.3...v1.141.4) (2026-04-27)
+
+
+### Bug Fixes
+
+* title headers for empty state, search mode and group titles ([#4074](https://github.com/Altinn/dialogporten-frontend/issues/4074)) ([f157286](https://github.com/Altinn/dialogporten-frontend/commit/f1572864f91235be8378ea065363f9971d2970db))
+
 ## [1.141.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.141.2...v1.141.3) (2026-04-24)
 
 
