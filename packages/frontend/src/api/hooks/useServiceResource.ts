@@ -4,7 +4,6 @@ import { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
-import { useFeatureFlag } from '../../featureFlags';
 import { fetchServiceResources } from '../queries.ts';
 import { useParties } from './useParties.ts';
 
@@ -17,8 +16,7 @@ interface UseServiceResourceOutput {
 
 export const useServiceResource = (): UseServiceResourceOutput => {
   const { selectedParties } = useParties();
-  const isServiceFilterEnabled = useFeatureFlag<boolean>('filters.enableServiceFilter');
-  const enabled = isServiceFilterEnabled && selectedParties.length > 0;
+  const enabled = selectedParties.length > 0;
   const { i18n } = useTranslation();
   const queryClient = useQueryClient();
   const prevLanguageRef = useRef(i18n.language);

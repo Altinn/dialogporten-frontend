@@ -486,7 +486,6 @@ export const createServiceFilter = ({
  * @param orgsFromSearchState
  * @param serviceResources
  * @param currentFilters - The current filter state to calculate accurate counts
- * @param enableServiceFilter
  * @returns {Array} - The array of filter settings.
  */
 
@@ -494,13 +493,11 @@ export const getFilters = ({
   allDialogs,
   allOrganizations,
   viewType,
-  enableServiceFilter,
   prebuiltServiceFilter,
 }: {
   allDialogs: CountableDialogFieldsFragment[];
   allOrganizations: OrganizationFieldsFragment[];
   viewType: InboxViewType;
-  enableServiceFilter?: boolean;
   prebuiltServiceFilter?: FilterProps;
 }): ToolbarFilterProps['filters'] => {
   const orgLookup = buildOrganizationMap(allOrganizations ?? []);
@@ -524,7 +521,7 @@ export const getFilters = ({
   filters.push(updatedAtFilter);
   filters.push(senderOrgFilter);
 
-  if (enableServiceFilter && prebuiltServiceFilter) {
+  if (prebuiltServiceFilter) {
     filters.push(prebuiltServiceFilter);
   }
 

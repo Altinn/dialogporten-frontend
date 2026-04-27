@@ -13,8 +13,6 @@ const defaultFeatureFlags: Record<string, boolean> = {
   'inbox.enableAlertBanner': false,
   'dialogporten.disableSubscriptions': false,
   'inbox.enableDeletedUnitsFilter': false,
-  'filters.enableServiceFilter': false,
-  'filters.enableSubAccountsMenu': false,
   'profile.enableResendVerificationCode': false,
   'profile.enableSingleServiceNotifications': false,
   'auth.enableDelegationLink': false,

@@ -79,7 +79,6 @@ export const useDialogs = ({
   const { organizations } = useOrganizations();
   const disableFlipNamesPatch = useFeatureFlag<boolean>('dialogporten.disableFlipNamesPatch');
   const isDeletedUnitsFilterEnabled = useFeatureFlag<boolean>('inbox.enableDeletedUnitsFilter');
-  const enableSubAccountsMenu = useFeatureFlag<boolean>('filters.enableSubAccountsMenu');
   const { shouldShowDeletedEntities } = useProfile();
   const { selectedParties, allOrganizationsSelected, partyGraph } = useParties();
   const format = useFormat();
@@ -91,7 +90,7 @@ export const useDialogs = ({
       : selectedParties;
 
   const isPartyIdsOverridden = partyIdsOverride.length > 0;
-  const partyIds = isPartyIdsOverridden ? partyIdsOverride : getPartyIds(partiesToUse, !enableSubAccountsMenu);
+  const partyIds = isPartyIdsOverridden ? partyIdsOverride : getPartyIds(partiesToUse);
   const previousTokensRef = useRef<string>('');
   const viewTypeKey = viewType ?? 'global';
   const queryPartyURIs = allOrganizationsSelected && !isPartyIdsOverridden && serviceResources?.length ? [] : partyIds;

@@ -5,7 +5,6 @@ import { useSearchParams } from 'react-router-dom';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { useDialogsForRecommendations } from '../../api/hooks/useDialogsForRecommendations.tsx';
 import { useServiceResource } from '../../api/hooks/useServiceResource.ts';
-import { useFeatureFlag } from '../../featureFlags';
 import { useDateFnsLocale } from '../../i18n/useDateFnsLocale.tsx';
 import { getOrganization } from '../../utils/organizations.ts';
 import { FilterCategory, createServiceFilter, formatDateRange, getFilters, readFiltersFromURLQuery } from './filters';
@@ -28,7 +27,6 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
   const { t } = useTranslation();
   const dialogsForRecommendations = useDialogsForRecommendations();
   const { locale } = useDateFnsLocale();
-  const enableServiceFilter = useFeatureFlag<boolean>('filters.enableServiceFilter');
   const { organizations } = useOrganizations();
   const { serviceResources } = useServiceResource();
   const [params] = useSearchParams();
@@ -53,14 +51,12 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
   const serviceFilterValues = currentFilters.service;
   const serviceFilter = useMemo(
     () =>
-      enableServiceFilter
-        ? createServiceFilter({
-            serviceResources,
-            currentFilters: { service: serviceFilterValues },
-            allOrganizations: organizations,
-          })
-        : undefined,
-    [serviceResources, serviceFilterValues, organizations, enableServiceFilter],
+      createServiceFilter({
+        serviceResources,
+        currentFilters: { service: serviceFilterValues },
+        allOrganizations: organizations,
+      }),
+    [serviceResources, serviceFilterValues, organizations],
   );
 
   const filters: FilterProps[] = useMemo(
@@ -69,10 +65,9 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
         allDialogs: dialogsForRecommendations,
         allOrganizations: organizations,
         viewType,
-        enableServiceFilter,
         prebuiltServiceFilter: serviceFilter,
       }),
-    [dialogsForRecommendations, organizations, viewType, enableServiceFilter, serviceFilter],
+    [dialogsForRecommendations, organizations, viewType, serviceFilter],
   );
 
   const getFilterLabel = useCallback(
