@@ -32,7 +32,6 @@ import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useFeatureFlag } from '../../featureFlags';
 import { useAlertBanner } from '../../hooks/useAlertBanner.ts';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
-import { useInboxOnboarding } from '../../onboardingTour';
 import { useGlobalState } from '../../useGlobalState.ts';
 import { useSavedSearches } from '../SavedSearches/useSavedSearches.tsx';
 import { PageRoutes } from '../routes.ts';
@@ -181,7 +180,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const {
     dialogs,
     isLoading: isLoadingDialogs,
-    isSuccess: dialogsSuccess,
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
@@ -230,14 +228,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
       }
     }
   }, [isLoading]);
-
-  useInboxOnboarding({
-    isLoadingParties,
-    isLoadingDialogs,
-    dialogsSuccess,
-    dialog: dialogs[0] || null,
-    viewType,
-  });
 
   const { groupedDialogs, groups, title, description } = useGroupedDialogs({
     onSeenByLogModalChange: setCurrentSeenByLogModal,
@@ -396,11 +386,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
       {isAltinn2MessagesEnabled && <Altinn2ActiveSchemasNotification selectedAccountId={selectedParties?.[0]?.party} />}
       <>
         <DialogList
-          items={dialogItems}
-          groups={dialogListGroups}
-          sortGroupBy={sortGroupBy}
-          isLoading={isLoading}
-          highlightWords={highlightWords}
           title={
             isLimitReached ? undefined : searchMode ? (
               isLoading ? (
@@ -412,6 +397,11 @@ export const Inbox = ({ viewType }: InboxProps) => {
               )
             ) : undefined
           }
+          items={dialogItems}
+          groups={dialogListGroups}
+          sortGroupBy={sortGroupBy}
+          isLoading={isLoading}
+          highlightWords={highlightWords}
           description={
             isLimitReached ? t('inbox.limit_reached.description', { count: MAX_DIALOG_PARTY_SIZE }) : description
           }

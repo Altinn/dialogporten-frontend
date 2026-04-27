@@ -11,7 +11,6 @@ import { QUERY_KEYS } from './constants/queryKeys.ts';
 import { LoggerContextProvider } from './contexts/LoggerContext.tsx';
 import { getPartyFromCookie } from './cookie.ts';
 import { FeatureFlagProvider, loadFeatureFlags } from './featureFlags';
-import { OnboardingTourProvider } from './onboardingTour';
 
 declare const __APP_VERSION__: string;
 console.info('App Version:', __APP_VERSION__);
@@ -64,9 +63,7 @@ if (element) {
               <FeatureFlagProvider initialFlags={isEnableMocking ? undefined : initialFlags}>
                 <AuthProvider>
                   <RootProvider>
-                    <OnboardingTourProvider>
-                      <App />
-                    </OnboardingTourProvider>
+                    <App />
                   </RootProvider>
                 </AuthProvider>
               </FeatureFlagProvider>

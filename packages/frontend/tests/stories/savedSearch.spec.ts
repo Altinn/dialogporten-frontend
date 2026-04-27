@@ -7,12 +7,6 @@ test.describe('Saved search', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(defaultAppURL);
     await page.waitForLoadState('networkidle');
-    await page.evaluate(() => {
-      localStorage.setItem('arbeidsflate:inbox-onboarding-displayed', 'true');
-      localStorage.setItem('arbeidsflate:beta-modal-displayed', 'true');
-      localStorage.setItem('arbeidsflate:profile-main-onboarding-completed', 'true');
-      localStorage.setItem('arbeidsflate:profile-parties-onboarding-completed', 'true');
-    });
   });
 
   test('Create and delete saved search', async ({ page }) => {
