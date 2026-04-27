@@ -4,7 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import type { PartyGraph } from '../../utils/partyGraph.ts';
 import { EMPTY_PARTY_GRAPH, buildPartyGraph } from '../../utils/partyGraph.ts';
-import type { ProfileType, SelfIdentifiedUserType } from './useParties.ts';
+import type { SelfIdentifiedUserType } from './useParties.ts';
 
 /**
  * These selector hooks use React Query's `select` option to narrow subscriptions.
@@ -75,12 +75,12 @@ export const useCurrentPartyUuid = (): string | undefined => {
  * Returns the selected profile type ('company' | 'person' | 'neutral').
  * Uses `select` on SELECTED_PARTIES to extract only the partyType.
  */
-export const useSelectedProfile = (): ProfileType => {
+export const useSelectedProfile = (): 'person' | 'company' => {
   const { data: allOrganizationsSelected = false } = useQuery(allOrgsQueryOptions);
   const { data: firstPartyType } = useQuery({ ...selectedPartiesQueryOptions, select: selectFirstPartyType });
   const [searchParams] = useSearchParams();
 
-  if (allOrganizationsSelected) return 'neutral';
+  if (allOrganizationsSelected) return 'person';
 
   const party = searchParams.get('party');
   const allParties = searchParams.get('allParties');

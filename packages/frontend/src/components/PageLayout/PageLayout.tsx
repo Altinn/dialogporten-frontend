@@ -154,29 +154,9 @@ export const PageLayout: React.FC = () => {
     return steps;
   }, [currentPartyUuid, location.pathname, fromView, docTitle]);
 
-  let color: LayoutColor = 'neutral';
-  let theme: LayoutTheme = 'default';
-
-  const isSinglePartyMatchingCurrentUser =
-    selectedProfile === 'person' && selectedParties.length === 1 && selectedParties[0].party === currentEndUser?.party;
-
-  if (isSinglePartyMatchingCurrentUser) {
-    color = 'person';
-    theme = 'subtle';
-  } else if (isProfile || allOrganizationsSelected) {
-    color = 'person';
-    theme = 'neutral';
-  } else {
-    color = selectedProfile === 'company' ? 'company' : 'person';
-    theme = 'subtle';
-  }
-
   const layoutProps: LayoutProps = {
-    theme,
-    color,
-    content: {
-      color: isProfile ? 'person' : undefined,
-    },
+    theme: 'inbox',
+    color: isProfile ? 'person' : selectedProfile,
     skipLink: {
       href: '#main-content',
       color: 'inherit' as Color,
