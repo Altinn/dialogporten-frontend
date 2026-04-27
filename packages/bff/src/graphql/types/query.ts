@@ -11,7 +11,7 @@ import {
   getUserFromCore,
   getVerifiedAddresses,
 } from '../functions/profile.ts';
-import { languageCodes, updateAltinnPersistentContextValue } from './cookie.js';
+import { getLanguageFromAltinnContext, languageCodes, updateAltinnPersistentContextValue } from './cookie.js';
 import { getOrganizationsFromRedis } from './organization.ts';
 import { OrganizationResponse } from './profile.ts';
 
@@ -25,11 +25,17 @@ export const Query = objectType({
         const user = await getUserFromCore(ctx);
         const { groups, updatedAt } = profile;
 
-        // Read language from Core API via GET /users/current (profileSettingPreference.language)
-        const coreLanguage = user?.profileSettingPreference?.language;
-        const language = (coreLanguage ? (coreToFrontendLang[coreLanguage] ?? coreLanguage) : undefined) ?? 'nb';
+        const currentCookieLang = getLanguageFromAltinnContext(ctx.request.raw.cookies?.altinnPersistentContext);
 
-        //user language
+        if (!user) {
+          return { language: currentCookieLang ?? 'nb', updatedAt, groups, user };
+        }
+
+        const coreLanguage = user.profileSettingPreference?.language;
+        const language = coreLanguage
+          ? (coreToFrontendLang[coreLanguage] ?? coreLanguage)
+          : (currentCookieLang ?? 'nb');
+
         const ul = languageCodes[language];
         if (ul) {
           const current = ctx.request.raw.cookies?.altinnPersistentContext;
@@ -44,12 +50,7 @@ export const Query = objectType({
           });
         }
 
-        return {
-          language,
-          updatedAt,
-          groups,
-          user,
-        };
+        return { language, updatedAt, groups, user };
       },
     });
     t.field('altinn2messages', {
