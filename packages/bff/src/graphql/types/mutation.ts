@@ -9,7 +9,7 @@ import {
   getOrCreateProfile,
   resendVerificationCode,
   setPreSelectedParty,
-  updateLanguage,
+  updateLanguageInCore,
   updateNotificationsSetting,
   updateShowClientUnits,
   updateShowDeletedEntities,
@@ -218,8 +218,7 @@ export const UpdateLanguage = extendType({
       },
       resolve: async (_, { language }, ctx) => {
         try {
-          const pid = ctx.session.get('pid');
-          await updateLanguage(pid, language);
+          await updateLanguageInCore(ctx, language);
           const ul = languageCodes[language];
 
           if (ul) {
