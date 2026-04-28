@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.142.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.141.4...v1.142.0) (2026-04-28)
+
+
+### Features
+
+* Remove onboarding tour and deps ([#4077](https://github.com/Altinn/dialogporten-frontend/issues/4077)) ([d1dce0a](https://github.com/Altinn/dialogporten-frontend/commit/d1dce0a1dfca0a83542c35024de480fd1c967be4))
+* Use core API as a source of truth for language ([#4030](https://github.com/Altinn/dialogporten-frontend/issues/4030)) ([8ce57b2](https://github.com/Altinn/dialogporten-frontend/commit/8ce57b2ad8f041ddb6dff30766e1508afa598746))
+
 ## [1.141.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.141.3...v1.141.4) (2026-04-27)
 
 
