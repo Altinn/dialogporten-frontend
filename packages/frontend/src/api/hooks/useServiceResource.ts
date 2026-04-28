@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import type { GetServiceResourcesQuery, ServiceResource } from 'bff-types-generated';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
@@ -19,18 +19,17 @@ export const useServiceResource = (): UseServiceResourceOutput => {
   const enabled = selectedParties.length > 0;
   const { i18n } = useTranslation();
   const queryClient = useQueryClient();
-  const prevLanguageRef = useRef(i18n.language);
 
+  /* Drop cache entries for other languages — the dataset is large (~6.5k entries),
+     so keep only the active language. */
   useEffect(() => {
-    if (prevLanguageRef.current !== i18n.language) {
-      prevLanguageRef.current = i18n.language;
-      void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.SERVICE_RESOURCES] });
-    }
+    queryClient.removeQueries({
+      predicate: (query) => query.queryKey[0] === QUERY_KEYS.SERVICE_RESOURCES && query.queryKey[1] !== i18n.language,
+    });
   }, [i18n.language, queryClient]);
 
   const { data, isLoading, isSuccess } = useAuthenticatedQuery<GetServiceResourcesQuery>({
-    /* i18n is not added as key to prevent multiple caches */
-    queryKey: [QUERY_KEYS.SERVICE_RESOURCES],
+    queryKey: [QUERY_KEYS.SERVICE_RESOURCES, i18n.language],
     queryFn: () => fetchServiceResources({ lang: i18n.language }),
     retry: 3,
     staleTime: Number.POSITIVE_INFINITY,
