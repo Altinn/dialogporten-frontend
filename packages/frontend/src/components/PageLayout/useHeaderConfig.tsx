@@ -150,6 +150,11 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
   const { mobileMenu, desktopMenu } = useGlobalMenu();
 
   const handleUpdateLanguage = async (language: string) => {
+    if (language === i18n.language) return;
+    /* Update locally first so duplicate onSelect calls from the library
+       (desktop + mobile LocaleSwitchers) short-circuit on the guard above. */
+    updateProfileLanguage(language);
+    void i18n.changeLanguage(language);
     try {
       await updateLanguage(language);
     } catch (error) {
@@ -161,10 +166,6 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
         },
         'Error updating language',
       );
-    } finally {
-      /* Keep this optimistically to avoid refetching profile in order update state */
-      updateProfileLanguage(language);
-      void i18n.changeLanguage(language);
     }
   };
 
