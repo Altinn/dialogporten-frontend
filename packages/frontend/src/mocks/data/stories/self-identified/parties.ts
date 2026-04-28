@@ -13,4 +13,3 @@ export const parties: PartyFieldsFragment[] = [
     partyId: 1,
   },
 ];
-

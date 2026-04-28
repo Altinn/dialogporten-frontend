@@ -1,4 +1,4 @@
-# Dialogporten frontend
+# Dialogporten-frontend / Arbeidsflate
 
 ## Developer setup
 

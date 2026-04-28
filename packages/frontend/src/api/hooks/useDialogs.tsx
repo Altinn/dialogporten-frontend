@@ -2,7 +2,6 @@ import type { FilterState } from '@altinn/altinn-components';
 import { keepPreviousData, useQueryClient } from '@tanstack/react-query';
 import type {
   DialogStatus,
-  GetAllDialogsForCountQuery,
   GetAllDialogsForPartiesQuery,
   SearchDialogFieldsFragment,
   SystemLabel,
@@ -17,13 +16,13 @@ import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
 import { normalizeFilterDefaults, removeUndefinedValues } from '../../pages/Inbox/filters';
 import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
 import { useProfile } from '../../pages/Profile';
-import { getPartyIds, mapDialogToToInboxItems, mergeDialogItems } from '../../utils/dialog.ts';
+import { getPartyIds, mapDialogToInboxItems, mergeDialogItems } from '../../utils/dialog.ts';
 import { buildOrganizationMap } from '../../utils/organizations.ts';
 import { graphQLSDK } from '../queries.ts';
 import { useParties } from './useParties.ts';
 
 /* Number of max parties used to fetch dialogs with party input param from Dialogporten */
-export const MAX_DIALOG_PARTY_SIZE = 40;
+export const MAX_DIALOG_PARTY_SIZE = 100;
 
 export type InboxViewType = 'inbox' | 'drafts' | 'sent' | 'archive' | 'bin';
 
@@ -80,7 +79,6 @@ export const useDialogs = ({
   const { organizations } = useOrganizations();
   const disableFlipNamesPatch = useFeatureFlag<boolean>('dialogporten.disableFlipNamesPatch');
   const isDeletedUnitsFilterEnabled = useFeatureFlag<boolean>('inbox.enableDeletedUnitsFilter');
-  const enableSubAccountsMenu = useFeatureFlag<boolean>('filters.enableSubAccountsMenu');
   const { shouldShowDeletedEntities } = useProfile();
   const { selectedParties, allOrganizationsSelected, partyGraph } = useParties();
   const format = useFormat();
@@ -92,7 +90,7 @@ export const useDialogs = ({
       : selectedParties;
 
   const isPartyIdsOverridden = partyIdsOverride.length > 0;
-  const partyIds = isPartyIdsOverridden ? partyIdsOverride : getPartyIds(partiesToUse, !enableSubAccountsMenu);
+  const partyIds = isPartyIdsOverridden ? partyIdsOverride : getPartyIds(partiesToUse);
   const previousTokensRef = useRef<string>('');
   const viewTypeKey = viewType ?? 'global';
   const queryPartyURIs = allOrganizationsSelected && !isPartyIdsOverridden && serviceResources?.length ? [] : partyIds;
@@ -103,6 +101,7 @@ export const useDialogs = ({
       status: filterState?.status ? (filterState.status as [DialogStatus]) : undefined,
       org: Array.isArray(filterState?.org) && filterState?.org?.length > 0 ? (filterState?.org as string[]) : undefined,
       systemLabel: filterState?.systemLabel as SystemLabel[] | undefined,
+      isContentSeen: filterState?.isContentSeen as string[] | undefined,
       updatedAfter: filterState?.updated,
       fromDate: filterState?.fromDate,
       toDate: filterState?.toDate,
@@ -157,12 +156,14 @@ export const useDialogs = ({
     const partyIds = selectedParties.map((party) => party.party);
     const selectedPartiesChanged =
       !previousPartyIdsRef.current.length || partyIds.join(',') !== previousPartyIdsRef.current.join(',');
-    const currentData = queryClient.getQueryData<GetAllDialogsForCountQuery>([QUERY_KEYS.DIALOGS_FOR_RECOMMENDATIONS]);
+    const currentData = queryClient.getQueryData<GetAllDialogsForPartiesQuery>([
+      QUERY_KEYS.DIALOGS_FOR_RECOMMENDATIONS,
+    ]);
     const allNewItems: SearchDialogFieldsFragment[] =
       data.pages.flatMap((page) => page.searchDialogs?.items ?? []) ?? [];
 
     if (selectedPartiesChanged) {
-      queryClient.setQueryData<GetAllDialogsForCountQuery>([QUERY_KEYS.DIALOGS_FOR_RECOMMENDATIONS], {
+      queryClient.setQueryData<GetAllDialogsForPartiesQuery>([QUERY_KEYS.DIALOGS_FOR_RECOMMENDATIONS], {
         searchDialogs: {
           items: allNewItems,
           hasNextPage: false,
@@ -179,7 +180,7 @@ export const useDialogs = ({
       const mergedItems = mergeDialogItems(existingItems, allNewItems);
       const hasNextPage = data.pages[data.pages.length - 1]?.searchDialogs?.hasNextPage ?? false;
 
-      queryClient.setQueryData<GetAllDialogsForCountQuery>([QUERY_KEYS.DIALOGS_FOR_RECOMMENDATIONS], {
+      queryClient.setQueryData<GetAllDialogsForPartiesQuery>([QUERY_KEYS.DIALOGS_FOR_RECOMMENDATIONS], {
         searchDialogs: {
           items: mergedItems,
           hasNextPage,
@@ -197,7 +198,7 @@ export const useDialogs = ({
     itemsIsNull: lastPage?.searchDialogs?.items === null,
   });
   const orgMap = useMemo(() => buildOrganizationMap(organizations), [organizations]);
-  const dialogs = mapDialogToToInboxItems(content, partyGraph, orgMap, format, disableFlipNamesPatch);
+  const dialogs = mapDialogToInboxItems(content, partyGraph, orgMap, format, disableFlipNamesPatch);
   /*  isFetching && isPlaceholderData is used to determine if we are fetching the initial data for the query key */
   const isActuallyLoading = isLoading || (isFetching && isPlaceholderData);
 

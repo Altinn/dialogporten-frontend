@@ -21,7 +21,27 @@ export type DialogEventData = {
   };
 };
 
-export const useDialogByIdSubscription = (dialogId: string | undefined, dialogToken: string | undefined) => {
+/**
+ * Manages a Server-Sent Events (SSE) subscription for real-time dialog updates.
+ *
+ * SSE lifecycle:
+ * 1. Dialog details opened -> SSE connection established with the current dialogToken.
+ * 2. While on the dialog — periodic refetches (every 9 min) silently update the token
+ *    via a ref without tearing down the active SSE connection. TTL for token is 10 minutes.
+ * 3. Tab hidden -> SSE connection closed. Nothing runs in the background.
+ * 4. Tab visible -> dialog is refetched first (fresh data + fresh token), then SSE
+ *    reconnects with the new token. One fetch, one connection, no 401 risk.
+ * 5. Navigating away -> component unmounts, SSE closed, listeners removed.
+ *
+ * The dialogToken is stored in a ref (not an effect dependency) so that token
+ * refreshes from React Query (refetchOnWindowFocus, refetchInterval) never cause
+ * unnecessary SSE reconnections. Only dialogId changes trigger effect re-runs.
+ */
+export const useDialogByIdSubscription = (
+  dialogId: string | undefined,
+  dialogToken: string | undefined,
+  refreshDialogToken: () => Promise<string | undefined>,
+) => {
   const disableSubscriptions = useFeatureFlag<boolean>('dialogporten.disableSubscriptions');
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -32,40 +52,73 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
   const { logError } = useErrorLogger();
 
   const eventSourceRef = useRef<SSE | null>(null);
-  const isFirstRender = useRef(true);
   const onMessageRef = useRef<((eventData: DialogEventData, rawEvent: MessageEvent) => void) | undefined>(undefined);
+  const dialogTokenRef = useRef(dialogToken);
+  dialogTokenRef.current = dialogToken;
+  const refreshDialogTokenRef = useRef(refreshDialogToken);
+  refreshDialogTokenRef.current = refreshDialogToken;
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  // Flips false→true once when the fresh token arrives, but stays true on subsequent refreshes.
+  // This triggers the effect exactly once for initial connection without reconnecting on every token change.
+  const hasToken = !!dialogToken;
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Token tracked via ref to avoid unnecessary reconnections
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-
     if (disableSubscriptions) {
       return;
     }
 
-    if (!dialogId || !dialogToken || isMock) return;
+    if (!dialogId || !dialogTokenRef.current || isMock) return;
 
     let cancelled = false;
+    let retryAttempt = 0;
+    let retryTimeout: ReturnType<typeof setTimeout> | null = null;
 
-    const connect = () => {
-      if (cancelled) return;
-      if (!navigator.onLine) return;
+    const clearRetry = () => {
+      if (retryTimeout !== null) {
+        clearTimeout(retryTimeout);
+        retryTimeout = null;
+      }
+    };
 
-      // Close existing connection before creating a new one
+    const closeConnection = () => {
       if (eventSourceRef.current) {
         eventSourceRef.current.close();
         eventSourceRef.current = null;
       }
+    };
+
+    const scheduleReconnect = () => {
+      clearRetry();
+      // Exponential backoff with full jitter: base 1s, max 30s.
+      // Prevents retry storms when many clients reconnect after a transient outage.
+      const base = 1000;
+      const max = 30000;
+      const exp = Math.min(max, base * 2 ** retryAttempt);
+      const delay = Math.random() * exp;
+      retryAttempt = Math.min(retryAttempt + 1, 10);
+      retryTimeout = setTimeout(connect, delay);
+    };
+
+    // Lifecycle: opens on mount / tab becoming visible / network coming online,
+    // closes on unmount / tab hidden, and reconnects with exponential backoff on error.
+    const connect = () => {
+      if (cancelled) return;
+      if (document.hidden) return;
+      if (!navigator.onLine) return;
+
+      const token = dialogTokenRef.current;
+      if (!token) return;
+
+      clearRetry();
+      closeConnection();
 
       const eventSource = new SSE(config.dialogportenStreamUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json; charset=utf-8',
           Accept: 'text/event-stream',
-          Authorization: `Bearer ${dialogToken}`,
+          Authorization: `Bearer ${token}`,
         },
         payload: JSON.stringify({
           query: getSubscriptionQuery(dialogId),
@@ -75,6 +128,11 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
       });
 
       eventSourceRef.current = eventSource;
+
+      eventSource.addEventListener('open', () => {
+        if (cancelled) return;
+        retryAttempt = 0;
+      });
 
       eventSource.addEventListener('next', (event: MessageEvent) => {
         if (cancelled) return;
@@ -107,27 +165,61 @@ export const useDialogByIdSubscription = (dialogId: string | undefined, dialogTo
       eventSource.addEventListener('error', (err: EventSourceEvent) => {
         if (cancelled) return;
         if (err.responseCode === 0) {
-          eventSource.close();
+          closeConnection();
           return;
         }
         logError(err, { context: 'useDialogByIdSubscription.onError', dialogId }, 'EventSource connection error');
-        eventSource.close();
-        setTimeout(connect, 500);
+        closeConnection();
+        scheduleReconnect();
       });
     };
 
+    const refreshAndConnect = () => {
+      refreshDialogTokenRef
+        .current()
+        .then((freshToken) => {
+          if (freshToken) {
+            dialogTokenRef.current = freshToken;
+          }
+        })
+        .catch(() => {
+          // Token refresh failed, will attempt connection with existing token
+        })
+        .finally(() => {
+          if (!cancelled) {
+            connect();
+          }
+        });
+    };
+
+    const handleVisibilityChange = () => {
+      if (cancelled) return;
+      if (document.hidden) {
+        clearRetry();
+        closeConnection();
+      } else {
+        retryAttempt = 0;
+        refreshAndConnect();
+      }
+    };
+
+    const handleOnline = () => {
+      if (cancelled || document.hidden) return;
+      refreshAndConnect();
+    };
+
     connect();
-    window.addEventListener('online', connect);
+    window.addEventListener('online', handleOnline);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
       cancelled = true;
-      window.removeEventListener('online', connect);
-      if (eventSourceRef.current) {
-        eventSourceRef.current.close();
-        eventSourceRef.current = null;
-      }
+      clearRetry();
+      window.removeEventListener('online', handleOnline);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      closeConnection();
     };
-  }, [dialogId, dialogToken, search, isMock, disableSubscriptions]);
+  }, [dialogId, hasToken, search, isMock, disableSubscriptions]);
 
   const onMessageEvent = useCallback((handler: (eventData: DialogEventData, rawEvent: MessageEvent) => void) => {
     onMessageRef.current = handler;

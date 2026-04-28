@@ -22,8 +22,6 @@ export const QUERY_KEYS = {
   SET_DELETE_LABEL_LOADING: 'setDeleteLabelLoading',
   SET_UNDO_LABEL_LOADING: 'setUndoLabelLoading',
   ERROR_STATE: 'errorState',
-  SHOW_TOUR: 'showTour',
-  SHOW_PROFILE_TOUR: 'showProfileTour',
   IS_SELF_IDENTIFIED_USER: 'isSelfIdentifiedUser',
   ALERT_BANNER: 'alertBanner',
   ALTINN_COOKIE: 'altinnCookie',
@@ -33,4 +31,7 @@ export const QUERY_KEYS = {
   SELECTED_SUB_ACCOUNTS: 'selectedSubAccounts',
   DIALOG_DELEGATION_LOOKUP: 'dialogDelegationLookup',
   DIALOG_REDIRECT_LOOKUP: 'dialogRedirectLookup',
+  BULK_MODE: 'bulkMode',
+  BULK_MODE_SELECTED_IDS: 'bulkModeSelectedIds',
+  HAS_INITIALIZED_PARTY_SELECTION: 'hasInitializedPartySelection',
 };

@@ -7,12 +7,6 @@ test.describe('Saved search', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(defaultAppURL);
     await page.waitForLoadState('networkidle');
-    await page.evaluate(() => {
-      localStorage.setItem('arbeidsflate:inbox-onboarding-displayed', 'true');
-      localStorage.setItem('arbeidsflate:beta-modal-displayed', 'true');
-      localStorage.setItem('arbeidsflate:profile-main-onboarding-completed', 'true');
-      localStorage.setItem('arbeidsflate:profile-parties-onboarding-completed', 'true');
-    });
   });
 
   test('Create and delete saved search', async ({ page }) => {
@@ -103,7 +97,7 @@ test.describe('Saved search', () => {
   test('save search button is disabled when matching search exists also for predefined filters', async ({ page }) => {
     await page.goto(defaultAppURL);
 
-    /* Create saved search with Oslo kommune and status send from inbox */
+    /* Create saved search with Oslo kommune and folder=Archive (systemLabel) from inbox */
 
     await page.getByRole('button', { name: 'Legg til filter' }).click();
     await page.locator('#tool-filter-add').locator('button[data-id="org"], button#org').click();
@@ -111,9 +105,9 @@ test.describe('Saved search', () => {
     await page.locator('li').filter({ hasText: 'Oslo kommune' }).nth(1).click();
     await page.keyboard.press('Escape');
     await page.getByRole('button', { name: 'Legg til' }).click();
-    await page.locator('#tool-filter-add').locator('button[data-id="status"], button#status').click();
-    await page.locator('#SENT').click();
-    await page.locator('#SENT').press('Escape');
+    await page.locator('#tool-filter-add').locator('button[data-id="systemLabel"], button#systemLabel').click();
+    await page.locator('#ARCHIVE').click();
+    await page.locator('#ARCHIVE').press('Escape');
 
     await page.getByRole('button', { name: 'Lagre søk' }).click();
     await expect(page.getByText('Søket ditt er lagret')).toBeVisible();
@@ -127,9 +121,9 @@ test.describe('Saved search', () => {
     await page.locator('li').filter({ hasText: 'Oslo kommune' }).nth(1).click();
     await page.locator('li').filter({ hasText: 'Oslo kommune' }).nth(1).press('Escape');
     await page.getByRole('button', { name: 'Legg til' }).click();
-    await page.locator('#tool-filter-add').locator('button[data-id="status"], button#status').click();
-    await page.locator('#SENT').click();
-    await page.locator('#SENT').press('Escape');
+    await page.locator('#tool-filter-add').locator('button[data-id="systemLabel"], button#systemLabel').click();
+    await page.locator('#ARCHIVE').click();
+    await page.locator('#ARCHIVE').press('Escape');
 
     /* Navigate to sent folder and add Oslo kommune as filter...
     It should not be possible to save search since a matching search already exists */

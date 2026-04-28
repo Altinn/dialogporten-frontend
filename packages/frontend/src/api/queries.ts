@@ -2,6 +2,7 @@ import {
   type AddFavoritePartyMutation,
   type AddFavoritePartyToGroupMutation,
   type Altinn2messagesQuery,
+  type BulkUpdateSystemLabelsMutation,
   type CreateSavedSearchMutation,
   type DeleteFavoritePartyMutation,
   type DeleteNotificationSettingMutation,
@@ -220,6 +221,20 @@ export const updateSystemLabel = (
     addLabels,
     removeLabels,
   });
+
+export const bulkUpdateSystemLabels = (
+  dialogIds: string[],
+  addLabels: SystemLabel | SystemLabel[],
+  removeLabels: SystemLabel | SystemLabel[] = [],
+): Promise<BulkUpdateSystemLabelsMutation> =>
+  graphQLSDK.bulkUpdateSystemLabels({
+    dialogs: dialogIds.map((id) => ({
+      dialogId: id,
+    })),
+    addLabels,
+    removeLabels,
+  });
+
 export const searchDialogs = (
   partyURIs: string[],
   search: string | undefined,

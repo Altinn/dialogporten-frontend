@@ -2,14 +2,16 @@ import {
   ActivityType,
   ActorType,
   AttachmentUrlConsumer,
-  DialogByIdFieldsFragment,
+  type DialogByIdFieldsFragment,
   GuiActionPriority,
-  HttpVerb, PartyFieldsFragment,
-  SearchDialogFieldsFragment,
+  HttpVerb,
+  type PartyFieldsFragment,
+  type SearchDialogFieldsFragment,
+  SystemLabel,
   TransmissionType,
 } from 'bff-types-generated';
-import { naiveSearchFilter } from "../../filters";
-import { InMemoryStore } from "../../handlers.ts";
+import { naiveSearchFilter } from '../../filters';
+import type { InMemoryStore } from '../../handlers.ts';
 
 export const filterDialogs = ({
   inMemoryStore,
@@ -20,6 +22,7 @@ export const filterDialogs = ({
   status,
   updatedAfter,
   updatedBefore,
+  isContentSeen,
 }: {
   inMemoryStore: InMemoryStore;
   partyURIs: string[];
@@ -29,8 +32,8 @@ export const filterDialogs = ({
   status?: string | string[];
   updatedBefore?: string;
   updatedAfter?: string;
+  isContentSeen?: boolean | null;
 }) => {
-
   if (!inMemoryStore.dialogs) return null;
 
   const allowedPartyIds = inMemoryStore.parties?.flatMap((party: PartyFieldsFragment) => [
@@ -58,13 +61,24 @@ export const filterDialogs = ({
 
     const matchesOrg = !org?.length || org.includes(dialog.org);
 
-    const matchesLabels = !labels.length ||
-      dialog.endUserContext?.systemLabels?.some(dialogLabel => labels.includes(dialogLabel));
+    const matchesLabels =
+      !labels.length || dialog.endUserContext?.systemLabels?.some((dialogLabel) => labels.includes(dialogLabel));
     const matchesStatus = !statuses.length || statuses.includes(dialog.status);
     const matchesSearch = naiveSearchFilter(dialog, search);
+    const hasMarkedAsUnopened = dialog.endUserContext?.systemLabels?.includes(SystemLabel.MarkedAsUnopened) ?? false;
+    const effectiveIsContentSeen = hasMarkedAsUnopened ? false : dialog.isContentSeen;
+    const matchesIsContentSeen =
+      isContentSeen === undefined || isContentSeen === null || effectiveIsContentSeen === isContentSeen;
 
-    return matchesParty && matchesTimeRange && matchesOrg &&
-      matchesLabels && matchesStatus && matchesSearch;
+    return (
+      matchesParty &&
+      matchesTimeRange &&
+      matchesOrg &&
+      matchesLabels &&
+      matchesStatus &&
+      matchesSearch &&
+      matchesIsContentSeen
+    );
   });
 };
 
@@ -120,9 +134,9 @@ export const getMockedUnauthorizedFCEContent = () => {
       },
     ],
   };
-}
+};
 
-export const getMockedActivities = ( id: string): DialogByIdFieldsFragment['activities'] => {
+export const getMockedActivities = (id: string): DialogByIdFieldsFragment['activities'] => {
   if (id === '019241f7-8218-7756-be82-123qwe456rtA') {
     return [
       {
@@ -136,7 +150,7 @@ export const getMockedActivities = ( id: string): DialogByIdFieldsFragment['acti
           {
             value: 'Meldingen ble sendt.',
             languageCode: 'nb',
-          }
+          },
         ],
         type: ActivityType.Information,
         createdAt: '2023-12-03T10:45:00.000Z',
@@ -152,7 +166,7 @@ export const getMockedActivities = ( id: string): DialogByIdFieldsFragment['acti
           {
             value: 'Meldingen ble åpnet.',
             languageCode: 'nb',
-          }
+          },
         ],
         type: ActivityType.Information,
         createdAt: '2023-12-04T10:45:00.000Z',
@@ -168,7 +182,7 @@ export const getMockedActivities = ( id: string): DialogByIdFieldsFragment['acti
           {
             value: 'Denne meldingen er utløpt.',
             languageCode: 'nb',
-          }
+          },
         ],
         type: ActivityType.Information,
         createdAt: '2025-12-31T10:45:00.000Z',
@@ -185,7 +199,7 @@ export const getMockedActivities = ( id: string): DialogByIdFieldsFragment['acti
         description: [],
         createdAt: '2025-12-31T10:45:00.000Z',
       },
-    ]
+    ];
   }
   return [
     {
@@ -199,194 +213,217 @@ export const getMockedActivities = ( id: string): DialogByIdFieldsFragment['acti
       type: ActivityType.Information,
       createdAt: new Date().toISOString(),
     },
-  ]
-
-}
+  ];
+};
 
 export const getMockedTransmissions = (dialogId: string) => {
   const dialogWithTransmissions = '019241f7-8218-7756-be82-123qwe456rtA';
   if (dialogId === dialogWithTransmissions) {
     return [
       {
-        "id": "transmission-1",
-        "createdAt": "2024-07-30T18:12:54.233Z",
+        id: 'transmission-1',
+        createdAt: '2024-07-30T18:12:54.233Z',
         isAuthorized: true,
-        "type": TransmissionType.Information,
-        "sender": {
-          "actorType": ActorType.ServiceOwner,
-          "actorId": null,
-          "actorName": null
+        type: TransmissionType.Information,
+        sender: {
+          actorType: ActorType.ServiceOwner,
+          actorId: null,
+          actorName: null,
         },
-        "content": {
-          "title": {
-            "value": [{
-              value: 'Tittel',
-              languageCode: 'nb',
-            }],
-            "mediaType": "text/plain"
+        content: {
+          title: {
+            value: [
+              {
+                value: 'Tittel',
+                languageCode: 'nb',
+              },
+            ],
+            mediaType: 'text/plain',
           },
-          "summary": {
-            "value": [{
-              value: 'Oppsummering',
-              languageCode: 'nb',
-            }],
-            "mediaType": "text/plain"
+          summary: {
+            value: [
+              {
+                value: 'Oppsummering',
+                languageCode: 'nb',
+              },
+            ],
+            mediaType: 'text/plain',
           },
-          "contentReference": getMockedFCEContent('transmission-1'),
+          contentReference: getMockedFCEContent('transmission-1'),
         },
-        "attachments": []
+        attachments: [],
       },
       {
-        "id": "transmission-2",
+        id: 'transmission-2',
         relatedTransmissionId: 'transmission-1',
         isAuthorized: true,
-        "createdAt": "2024-07-31T18:12:54.233Z",
-        "type": TransmissionType.Information,
-        "sender": {
-          "actorType": ActorType.PartyRepresentative,
-          "actorId": null,
-          "actorName": 'NORDMANN KARI'
+        createdAt: '2024-07-31T18:12:54.233Z',
+        type: TransmissionType.Information,
+        sender: {
+          actorType: ActorType.PartyRepresentative,
+          actorId: null,
+          actorName: 'NORDMANN KARI',
         },
-        "content": {
-          "title": {
-            "value": [{
-              value: 'Tittel 2',
-              languageCode: 'nb',
-            }],
-            "mediaType": "text/pla  in"
+        content: {
+          title: {
+            value: [
+              {
+                value: 'Tittel 2',
+                languageCode: 'nb',
+              },
+            ],
+            mediaType: 'text/pla  in',
           },
-          "summary": {
-            "value": [{
-              value: 'Oppsummering 2',
-              languageCode: 'nb',
-            }],
-            "mediaType": "text/plain"
+          summary: {
+            value: [
+              {
+                value: 'Oppsummering 2',
+                languageCode: 'nb',
+              },
+            ],
+            mediaType: 'text/plain',
           },
-          "contentReference": getMockedFCEContent('transmission-2'),
+          contentReference: getMockedFCEContent('transmission-2'),
         },
-        "attachments": []
+        attachments: [],
       },
       {
-        "id": "transmission-3",
-        "createdAt": "2024-07-31T18:12:54.233Z",
+        id: 'transmission-3',
+        createdAt: '2024-07-31T18:12:54.233Z',
         isAuthorized: false,
-        "type": TransmissionType.Information,
-        "sender": {
-          "actorType": ActorType.PartyRepresentative,
-          "actorId": null,
-          "actorName": 'NORDMANN PER'
+        type: TransmissionType.Information,
+        sender: {
+          actorType: ActorType.PartyRepresentative,
+          actorId: null,
+          actorName: 'NORDMANN PER',
         },
-        "content": {
-          "title": {
-            "value": [{
-              value: 'Tittel 3',
-              languageCode: 'nb',
-            }],
-            "mediaType": "text/plain"
+        content: {
+          title: {
+            value: [
+              {
+                value: 'Tittel 3',
+                languageCode: 'nb',
+              },
+            ],
+            mediaType: 'text/plain',
           },
-          "contentReference": getMockedUnauthorizedFCEContent(),
-          "summary": {
-            "value": [{
-              value: 'Oppsummering 3',
-              languageCode: 'n  b',
-            }],
-            "mediaType": "text/plain"
+          contentReference: getMockedUnauthorizedFCEContent(),
+          summary: {
+            value: [
+              {
+                value: 'Oppsummering 3',
+                languageCode: 'n  b',
+              },
+            ],
+            mediaType: 'text/plain',
           },
         },
-        "attachments": []
+        attachments: [],
       },
       {
-        "id": "transmission-999",
-        "createdAt": "2024-07-31T11:12:54.233Z",
+        id: 'transmission-999',
+        createdAt: '2024-07-31T11:12:54.233Z',
         isAuthorized: true,
-        "type": TransmissionType.Information,
-        "sender": {
-          "actorType": ActorType.PartyRepresentative,
-          "actorId": null,
-          "actorName": 'NORDMANN PER'
+        type: TransmissionType.Information,
+        sender: {
+          actorType: ActorType.PartyRepresentative,
+          actorId: null,
+          actorName: 'NORDMANN PER',
         },
-        "content": {
-          "title": {
-            "value": [{
-              value: 'Inneholder HTML',
-              languageCode: 'nb',
-            }],
-            "mediaType": "text/plain"
+        content: {
+          title: {
+            value: [
+              {
+                value: 'Inneholder HTML',
+                languageCode: 'nb',
+              },
+            ],
+            mediaType: 'text/plain',
           },
-          "contentReference": getMockedHTMLFCEContent('HTML'),
-          "summary": {
-            "value": [{
-              value: 'Oppsummering HTML',
-              languageCode: 'nb',
-            }],
-            "mediaType": "text/plain"
+          contentReference: getMockedHTMLFCEContent('HTML'),
+          summary: {
+            value: [
+              {
+                value: 'Oppsummering HTML',
+                languageCode: 'nb',
+              },
+            ],
+            mediaType: 'text/plain',
           },
         },
-        "attachments": []
+        attachments: [],
       },
       {
-        "id": "transmission-4",
+        id: 'transmission-4',
         relatedTransmissionId: 'transmission-2',
         isAuthorized: true,
-        "createdAt": "2024-08-13T12:12:54.233Z",
-        "type": TransmissionType.Information,
-        "sender": {
-          "actorType": ActorType.PartyRepresentative,
-          "actorId": null,
-          "actorName": 'NORDMANN PER'
+        createdAt: '2024-08-13T12:12:54.233Z',
+        type: TransmissionType.Information,
+        sender: {
+          actorType: ActorType.PartyRepresentative,
+          actorId: null,
+          actorName: 'NORDMANN PER',
         },
-        "content": {
-          "title": {
-            "value": [{
-              value: 'Tittel 4',
-              languageCode: 'nb',
-            }],
-            "mediaType": "text/plain"
+        content: {
+          title: {
+            value: [
+              {
+                value: 'Tittel 4',
+                languageCode: 'nb',
+              },
+            ],
+            mediaType: 'text/plain',
           },
-          "contentReference": getMockedFCEContent('transmission-4'),
-          "summary": {
-            "value": [{
-              value: 'Oppsummering 4',
-              languageCode: 'nb',
-            }],
-            "mediaType": "text/plain"
+          contentReference: getMockedFCEContent('transmission-4'),
+          summary: {
+            value: [
+              {
+                value: 'Oppsummering 4',
+                languageCode: 'nb',
+              },
+            ],
+            mediaType: 'text/plain',
           },
         },
-        "attachments": []
+        attachments: [],
       },
       {
-        "id": "transmission-system",
+        id: 'transmission-system',
         isAuthorized: true,
-        "createdAt": "2024-08-13T12:12:54.233Z",
-        "type": TransmissionType.Information,
-        "sender": {
-          "actorType": ActorType.PartyRepresentative,
-          "actorId": 'urn:altinn:systemuser:uuid:321',
-          "actorName": 'SKEPTISK KOMMUNE'
+        createdAt: '2024-08-13T12:12:54.233Z',
+        type: TransmissionType.Information,
+        sender: {
+          actorType: ActorType.PartyRepresentative,
+          actorId: 'urn:altinn:systemuser:uuid:321',
+          actorName: 'SKEPTISK KOMMUNE',
         },
-        "content": {
-          "title": {
-            "value": [{
-              value: 'Sendt inn av systembruker',
-              languageCode: 'nb',
-            }],
-            "mediaType": "text/plain"
+        content: {
+          title: {
+            value: [
+              {
+                value: 'Sendt inn av systembruker',
+                languageCode: 'nb',
+              },
+            ],
+            mediaType: 'text/plain',
           },
-          "contentReference": null,
-          "summary": {
-            "value": [{
-              value: 'Oppsummering 4',
-              languageCode: 'nb',
-            }],
-            "mediaType": "text/plain"
+          contentReference: null,
+          summary: {
+            value: [
+              {
+                value: 'Oppsummering 4',
+                languageCode: 'nb',
+              },
+            ],
+            mediaType: 'text/plain',
           },
         },
-        "attachments": []
-      }
-    ]
+        attachments: [],
+      },
+    ];
   }
   return [];
-}
+};
 
 export const convertToDialogByIdTemplate = (input: SearchDialogFieldsFragment): DialogByIdFieldsFragment => {
   return {
@@ -400,7 +437,7 @@ export const convertToDialogByIdTemplate = (input: SearchDialogFieldsFragment): 
     attachments: [
       {
         id: input.id,
-        expiresAt: new Date(new Date().getTime() + 60_000*1000).toISOString(),
+        expiresAt: new Date(new Date().getTime() + 60_000 * 1000).toISOString(),
         displayName: [
           {
             value: 'kvittering.pdf',
@@ -420,7 +457,7 @@ export const convertToDialogByIdTemplate = (input: SearchDialogFieldsFragment): 
     activities: getMockedActivities(input.id),
     transmissions: getMockedTransmissions(input.id),
     fromServiceOwnerTransmissionsCount: 3,
-    fromPartyTransmissionsCount:4,
+    fromPartyTransmissionsCount: 4,
     guiActions: [
       {
         id: input.id,
@@ -444,7 +481,9 @@ export const convertToDialogByIdTemplate = (input: SearchDialogFieldsFragment): 
     status: input.status,
     createdAt: input.createdAt,
     contentUpdatedAt: input.contentUpdatedAt,
-    hasUnopenedContent: false,
+    isContentSeen: input.endUserContext?.systemLabels?.includes(SystemLabel.MarkedAsUnopened)
+      ? false
+      : (input.isContentSeen ?? true),
     content: {
       title: input.content.title,
       summary: input.content.summary,

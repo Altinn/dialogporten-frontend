@@ -29,7 +29,6 @@ import {
 } from '../../../components/PageLayout/Accounts/useAccounts';
 import { useFeatureFlag } from '../../../featureFlags';
 import { usePageTitle } from '../../../hooks/usePageTitle';
-import { useProfileOnboarding } from '../../../onboardingTour/useProfileOnboarding';
 import { PageRoutes } from '../../routes.ts';
 import { useSettings } from '../Settings/useSettings.tsx';
 import { useAccountFilters } from '../useAccountFilters.tsx';
@@ -148,13 +147,13 @@ export const PartiesOverviewPage = () => {
     allOrganizationsSelected,
     isLoading,
     partyGraph,
+    setSelectedPartyIds,
     options: {
       showFavorites: !isSearching,
     },
   });
 
   usePageTitle({ baseTitle: t('component.parties_settings') });
-  useProfileOnboarding({ isLoading, pageType: 'parties' });
 
   const toggleExpanded = (id: string) => setExpandedItem((currentId) => (currentId === id ? '' : id));
 

@@ -9,7 +9,6 @@ import {
   DialogBody,
   type DialogButtonPriority,
   DialogHeader,
-  Divider,
   DsAlert,
   DsParagraph,
   Heading,
@@ -36,6 +35,7 @@ import type { TimelineSegmentWithTransmissions } from '../../utils/transmissions
 import { ActivityLogModal } from '../ActivityLog/activityLogModal.tsx';
 import { AdditionalInfoContent } from '../AdditonalInfoContent';
 import { MainContentReference } from '../MainContentReference';
+import { DialogHelp } from './DialogHelp.tsx';
 
 interface DialogDetailsProps {
   dialog: DialogByIdDetails | undefined | null;
@@ -482,11 +482,9 @@ export const DialogDetails = ({
         </Button>
       )}
       {dialog.additionalInfo?.value && (
-        <>
-          <Divider />
-          <AdditionalInfoContent mediaType={dialog.additionalInfo.mediaType} value={dialog.additionalInfo.value} />
-        </>
+        <AdditionalInfoContent mediaType={dialog.additionalInfo.mediaType} value={dialog.additionalInfo.value} />
       )}
+      <DialogHelp />
       <ActivityLogModal
         title={dialog.title}
         items={activityHistoryItems}

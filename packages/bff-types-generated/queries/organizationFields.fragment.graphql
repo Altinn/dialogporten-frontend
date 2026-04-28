@@ -9,4 +9,9 @@ fragment OrganizationFields on Organization {
   orgnr
   homepage
   environments
+  contact {
+    email
+    phone
+    url
+  }
 }

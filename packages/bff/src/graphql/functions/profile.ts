@@ -14,6 +14,9 @@ const { platformBaseURL } = config;
 
 const platformProfileAPI_url = platformBaseURL + '/profile/api/v1/';
 
+const frontendToCoreLang: Record<string, string> = { nb: 'no', nn: 'nn', en: 'en' };
+export const coreToFrontendLang: Record<string, string> = { no: 'nb', nn: 'nn', en: 'en' };
+
 export type TokenType = {
   access_token: string;
   access_token_expires_at?: number;
@@ -44,8 +47,6 @@ const getSessionToken = (context: Context): TokenType | null => {
 
 export const getOrCreateProfile = async (context: Context): Promise<ProfileTable> => {
   const pid = typeof context.session.get('pid') === 'string' ? (context.session.get('pid') as string) : '';
-  const sessionLocale =
-    typeof context.session.get('locale') === 'string' ? (context.session.get('locale') as string) : '';
 
   if (!pid) {
     logger.error('No pid provided');
@@ -59,7 +60,6 @@ export const getOrCreateProfile = async (context: Context): Promise<ProfileTable
   if (!profile) {
     const newProfile = new ProfileTable();
     newProfile.pid = pid;
-    newProfile.language = sessionLocale || 'nb';
     newProfile.groups = [];
 
     const savedProfile = await ProfileRepository!.save(newProfile);
@@ -70,10 +70,6 @@ export const getOrCreateProfile = async (context: Context): Promise<ProfileTable
   }
 
   profile.groups = groups;
-  if (!profile.language) {
-    profile.language = sessionLocale || 'nb';
-    await ProfileRepository!.save(profile);
-  }
   return profile;
 };
 
@@ -483,19 +479,7 @@ export const getVerifiedAddresses = async (context: Context) => {
   }
 };
 
-export const updateLanguage = async (pid: string, language: string) => {
-  const currentProfile = await ProfileRepository!.findOne({
-    where: { pid },
-  });
-  if (!currentProfile) {
-    throw new Error('Profile not found');
-  }
-  const updatedProfile = await ProfileRepository!.update(pid, {
-    ...currentProfile,
-    language,
-  });
-  if (!updatedProfile) {
-    throw new Error('Failed to update profile');
-  }
-  return updatedProfile;
+export const updateLanguageInCore = async (context: Context, language: string): Promise<void> => {
+  const coreLanguage = frontendToCoreLang[language] ?? language;
+  await patchProfileSettings(context, { language: coreLanguage });
 };

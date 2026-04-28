@@ -106,7 +106,14 @@ export const useSettings = ({
   isSelfIdentifiedUser = false,
   disabled = false,
 }: UseSettingsInput = {}): UseSettingsOutput => {
-  const { isLoading: isLoadingParties, parties, selectedParties, allOrganizationsSelected, partyGraph } = useParties();
+  const {
+    isLoading: isLoadingParties,
+    parties,
+    selectedParties,
+    allOrganizationsSelected,
+    partyGraph,
+    setSelectedPartyIds,
+  } = useParties();
   const { user, showClientUnits, setShowClientUnits, shouldShowDeletedEntities, updateShowDeletedEntities } =
     useProfile();
   const { t } = useTranslation();
@@ -172,6 +179,7 @@ export const useSettings = ({
     allOrganizationsSelected,
     selectedParties,
     partyGraph,
+    setSelectedPartyIds,
     options: {
       groups: options?.groups,
       showDescription: true,
@@ -317,18 +325,21 @@ export const useSettings = ({
     icon: PersonRectangleIcon,
     title: t('profile.settings.notification_profile_email'),
     value: uea.email,
-    badge: (
+    controls: (
       <>
-        <AvatarGroup items={getAvatarGroup(getUsedByEmail(uea.email))} size="lg" />
-        <Badge
-          label={t(
-            isVerifiedAddress(uea.email, 'Email')
-              ? 'profile.verification.status_verified'
-              : 'profile.verification.status_unverified',
-          )}
-          color={isVerifiedAddress(uea.email, 'Email') ? 'success' : 'neutral'}
-          size="sm"
-        />
+        {isVerifiedAddress(uea.email, 'Email') ? (
+          <AvatarGroup items={getAvatarGroup(getUsedByEmail(uea.email))} size="lg" />
+        ) : (
+          <Badge
+            variant="outline"
+            label={t(
+              isVerifiedAddress(uea.email, 'Email')
+                ? 'profile.verification.status_verified'
+                : 'profile.verification.status_unverified',
+            )}
+            size="sm"
+          />
+        )}
       </>
     ),
     variant: 'modal',
@@ -349,18 +360,21 @@ export const useSettings = ({
     icon: PersonRectangleIcon,
     title: t('profile.settings.notification_profile_sms'),
     value: uep.phoneNumber,
-    badge: (
+    controls: (
       <>
-        <AvatarGroup items={getAvatarGroup(getUsedByPhoneNumber(uep.phoneNumber))} size="lg" />
-        <Badge
-          label={t(
-            isVerifiedAddress(uep.phoneNumber, 'Sms')
-              ? 'profile.verification.status_verified'
-              : 'profile.verification.status_unverified',
-          )}
-          color={isVerifiedAddress(uep.phoneNumber, 'Sms') ? 'success' : 'neutral'}
-          size="sm"
-        />
+        {isVerifiedAddress(uep.phoneNumber, 'Sms') ? (
+          <AvatarGroup items={getAvatarGroup(getUsedByPhoneNumber(uep.phoneNumber))} size="lg" />
+        ) : (
+          <Badge
+            variant="outline"
+            label={t(
+              isVerifiedAddress(uep.phoneNumber, 'Sms')
+                ? 'profile.verification.status_verified'
+                : 'profile.verification.status_unverified',
+            )}
+            size="sm"
+          />
+        )}
       </>
     ),
     variant: 'modal',

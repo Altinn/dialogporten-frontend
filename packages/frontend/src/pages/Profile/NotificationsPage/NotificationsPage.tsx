@@ -3,11 +3,9 @@ import type { NotificationSettingsResponse, PartyFieldsFragment } from 'bff-type
 import { useTranslation } from 'react-i18next';
 import { useParties } from '../../../api/hooks/useParties.ts';
 import { useIsSelfIdentifiedUser } from '../../../api/hooks/usePartiesSelectors.ts';
-import { getNotificationSettingsLink } from '../../../auth';
 import { usePageTitle } from '../../../hooks/usePageTitle';
 import { SettingsType, useSettings } from '../Settings/useSettings.tsx';
 import { useProfile } from '../useProfile';
-import styles from './notificationsPage.module.css';
 
 export interface NotificationAccountsType extends PartyFieldsFragment {
   notificationSettings?: NotificationSettingsResponse;
@@ -15,26 +13,12 @@ export interface NotificationAccountsType extends PartyFieldsFragment {
 }
 
 export const NotificationsPage = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { isLoading: isLoadingUser } = useProfile();
   const { isLoading: isLoadingParties } = useParties();
   const isSelfIdentifiedUser = useIsSelfIdentifiedUser();
-  const notificationSettingsUrl = getNotificationSettingsLink(i18n.language);
 
   usePageTitle({ baseTitle: t('component.notifications') });
-
-  const companiesTitle = (
-    <div className={styles.companiesTitle}>
-      <ListItemLabel title={t('profile.settings.company_notifications')}>
-        {t('profile.settings.company_notifications')}
-      </ListItemLabel>
-      <span className={styles.infoText}>
-        <a className={styles.link} href={notificationSettingsUrl}>
-          {t('profile.settings.where_individual_services_notifications')}
-        </a>
-      </span>
-    </div>
-  );
 
   const { settingsGroups, settings, settingsSearch } = useSettings({
     isLoading: isLoadingUser || isLoadingParties,
@@ -53,7 +37,11 @@ export const NotificationsPage = () => {
           title: t('profile.settings.person_notifications'),
         },
         [SettingsType.companies]: {
-          title: companiesTitle,
+          title: (
+            <ListItemLabel title={t('profile.settings.company_notifications')}>
+              {t('profile.settings.company_notifications')}
+            </ListItemLabel>
+          ),
         },
       },
     },

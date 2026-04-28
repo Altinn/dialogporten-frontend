@@ -3,7 +3,6 @@ import type { PartyFieldsFragment } from 'bff-types-generated';
 import { useTranslation } from 'react-i18next';
 import { type Mock, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createCustomWrapper } from '../../../../tests/test-utils.tsx';
-import { useParties } from '../../../api/hooks/useParties.ts';
 import { useProfile } from '../../../pages/Profile';
 import { buildPartyGraph } from '../../../utils/partyGraph.ts';
 import { formatNorwegianId, formatSSN, useAccounts } from './useAccounts.tsx';
@@ -11,10 +10,6 @@ import { formatNorwegianId, formatSSN, useAccounts } from './useAccounts.tsx';
 // Mock dependencies
 vi.mock('react-i18next', () => ({
   useTranslation: vi.fn(),
-}));
-
-vi.mock('../../../api/hooks/useParties.ts', () => ({
-  useParties: vi.fn(),
 }));
 
 vi.mock('../../../pages/Profile', () => ({
@@ -136,10 +131,6 @@ describe('useAccounts', () => {
     vi.clearAllMocks();
 
     (useTranslation as Mock).mockReturnValue({ t: mockT });
-    (useParties as Mock).mockReturnValue({
-      setSelectedPartyIds: mockSetSelectedPartyIds,
-      partyGraph: buildPartyGraph(parties),
-    });
     (useProfile as Mock).mockReturnValue({ favoritesGroup: { parties: [] } });
   });
 
@@ -151,6 +142,8 @@ describe('useAccounts', () => {
           selectedParties: [],
           allOrganizationsSelected: false,
           isLoading: false,
+          partyGraph: buildPartyGraph(parties),
+          setSelectedPartyIds: mockSetSelectedPartyIds,
         }),
       {
         wrapper: createCustomWrapper(),
@@ -172,6 +165,8 @@ describe('useAccounts', () => {
           selectedParties,
           allOrganizationsSelected: false,
           isLoading: false,
+          partyGraph: buildPartyGraph(parties),
+          setSelectedPartyIds: mockSetSelectedPartyIds,
         }),
       {
         wrapper: createCustomWrapper(),
@@ -198,6 +193,8 @@ describe('useAccounts', () => {
           selectedParties,
           allOrganizationsSelected: false,
           isLoading: false,
+          partyGraph: buildPartyGraph(parties),
+          setSelectedPartyIds: mockSetSelectedPartyIds,
         }),
       {
         wrapper: createCustomWrapper(),
@@ -224,6 +221,8 @@ describe('useAccounts', () => {
           selectedParties,
           allOrganizationsSelected: false,
           isLoading: false,
+          partyGraph: buildPartyGraph(parties),
+          setSelectedPartyIds: mockSetSelectedPartyIds,
         }),
       {
         wrapper: createCustomWrapper(),
@@ -254,6 +253,8 @@ describe('useAccounts', () => {
           selectedParties,
           allOrganizationsSelected: false,
           isLoading: false,
+          partyGraph: buildPartyGraph(parties),
+          setSelectedPartyIds: mockSetSelectedPartyIds,
           options,
         }),
       {
