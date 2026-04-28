@@ -7,4 +7,5 @@ export const features = {
   'profile.enableResendVerificationCode': true,
   'profile.enableSingleServiceNotifications': true,
   'inbox.enableBulkMode': true,
+  'inbox.accountNavigatorEnabled': true,
 };
