@@ -22,7 +22,6 @@ import { getSearchStringFromQueryParams } from '../../pages/Inbox/queryParams.ts
 import { useProfile } from '../../pages/Profile';
 import { PageRoutes } from '../../pages/routes.ts';
 import { useGlobalState } from '../../useGlobalState.ts';
-import { BetaModal } from '../BetaModal';
 import { FloatingDropdown } from '../FloatingDropdown';
 import { useAuth } from '../Login/AuthContext.tsx';
 import { useFooter } from './Footer';
@@ -202,7 +201,6 @@ export const PageLayout: React.FC = () => {
       <Layout {...layoutProps} useGlobalHeader>
         <Outlet />
         <Snackbar />
-        <BetaModal />
         <FloatingDropdown />
       </Layout>
     </>
