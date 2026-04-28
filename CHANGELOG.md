@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.142.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.142.0...v1.142.1) (2026-04-28)
+
+
+### Bug Fixes
+
+* **i18n:** ensure language only is updated and service resources only are fethed once per language change ([#4082](https://github.com/Altinn/dialogporten-frontend/issues/4082)) ([61f5e8a](https://github.com/Altinn/dialogporten-frontend/commit/61f5e8aeee5f7fbd034c5fe13b0a34dcbbba7437))
+
 ## [1.142.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.141.4...v1.142.0) (2026-04-28)
 
 
