@@ -27,7 +27,7 @@ test.describe('Multiselect subaccounts', () => {
     await page.getByRole('button', { name: 'Alle enheter' }).click();
     await page.getByLabel('Testbedrift As Avd Sub', { exact: true }).click();
     await page.getByLabel('Testbedrift As Avd Sub ↳ Org').press('Escape');
-    await expect(page.getByRole('heading', { name: 'Ingen treff' })).toBeVisible();
+    await expect(page.getByText('Du har ingen meldinger i innboksen')).toBeVisible();
 
     /* Add a subunit with dialog */
     await page.getByRole('button', { name: 'Testbedrift As Avd Sub' }).click();
