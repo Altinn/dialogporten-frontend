@@ -197,7 +197,22 @@ export const useSubAccounts = ({
     return map;
   }, [filteredSubAccounts]);
 
+  const currentPageIndex = useMemo(() => {
+    if (selectedSubAccountIds.length === 0) return -1;
+    const selected = new Set(selectedSubAccountIds);
+    if (selected.size !== selectedSubAccountIds.length) return -1;
+    for (let pageIndex = 0, i = 0; i < filteredSubAccounts.length; i += 100, pageIndex++) {
+      const slice = filteredSubAccounts.slice(i, i + 100);
+      if (slice.length !== selected.size) continue;
+      if (slice.every((item) => selected.has(item.id))) return pageIndex;
+    }
+    return -1;
+  }, [filteredSubAccounts, selectedSubAccountIds]);
+
   const getSubAccountLabel = useCallback(() => {
+    if (currentPageIndex >= 0) {
+      return t('parties.labels.page', { number: currentPageIndex + 1 });
+    }
     if (selectedSubAccountIds.length === 1) {
       const selectedSubAccount = filteredSubAccountsById.get(selectedSubAccountIds[0]);
       return selectedSubAccount ? getSubAccountTitle(selectedSubAccount) : allLabel;
@@ -217,6 +232,7 @@ export const useSubAccounts = ({
     return t('parties.labels.units_count', { count: filteredSubAccounts.length });
   }, [
     allLabel,
+    currentPageIndex,
     filteredSubAccounts,
     filteredSubAccountsById,
     selectedSubAccountIds,
@@ -228,7 +244,12 @@ export const useSubAccounts = ({
   const groups = {
     all: {
       title: allOrganizationsSelected
-        ? t('parties.labels.units_count', { count: filteredSubAccounts.length })
+        ? selectedSubAccountIds.length > 0 && selectedSubAccountIds.length !== filteredSubAccounts.length
+          ? t('parties.labels.units_partial_count', {
+              selected: selectedSubAccountIds.length,
+              total: filteredSubAccounts.length,
+            })
+          : t('parties.labels.units_count', { count: filteredSubAccounts.length })
         : parentAccount?.name,
     },
   };

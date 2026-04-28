@@ -16,6 +16,7 @@ export const featureFlagDefinitions = [
   { key: 'profile.enableSingleServiceNotifications', type: 'boolean', default: false },
   { key: 'auth.enableDelegationLink', type: 'boolean', default: false },
   { key: 'inbox.enableBulkMode', type: 'boolean', default: false },
+  { key: 'inbox.accountNavigatorEnabled', type: 'boolean', default: false },
   { key: 'auth.orgsNotReadyToDealWithDelegations', type: 'string-array', default: [] },
 ] as const satisfies readonly FeatureFlagDefinition[];
 

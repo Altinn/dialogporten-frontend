@@ -9,7 +9,6 @@ const defaultFeatureFlags: Record<string, boolean> = {
   'globalMenu.enabled': false,
   'dialogporten.disableFlipNamesPatch': false,
   'inbox.enableAltinn2Messages': false,
-  'debug.test': false, // only used for debugging,
   'inbox.enableAlertBanner': false,
   'dialogporten.disableSubscriptions': false,
   'inbox.enableDeletedUnitsFilter': false,
@@ -17,6 +16,7 @@ const defaultFeatureFlags: Record<string, boolean> = {
   'profile.enableSingleServiceNotifications': false,
   'auth.enableDelegationLink': false,
   'inbox.enableBulkMode': false,
+  'inbox.accountNavigatorEnabled': false,
 };
 
 const defaultAppConfigValues: Record<string, string[]> = {

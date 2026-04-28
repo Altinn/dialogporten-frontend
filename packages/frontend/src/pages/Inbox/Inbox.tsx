@@ -35,6 +35,7 @@ import { usePageTitle } from '../../hooks/usePageTitle.tsx';
 import { useGlobalState } from '../../useGlobalState.ts';
 import { useSavedSearches } from '../SavedSearches/useSavedSearches.tsx';
 import { PageRoutes } from '../routes.ts';
+import { AccountNavigator } from './AccountNavigator.tsx';
 import { AlertBanner } from './AlertBanner.tsx';
 import { Altinn2ActiveSchemasNotification } from './Altinn2ActiveSchemasNotification.tsx';
 import { FilterCategory, hasValidFilters, readFiltersFromURLQuery } from './filters';
@@ -385,6 +386,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
       <AlertBanner showAlertBanner={isAlertBannerEnabled && !!alertBannerContent} />
       {isAltinn2MessagesEnabled && <Altinn2ActiveSchemasNotification selectedAccountId={selectedParties?.[0]?.party} />}
       <>
+        <AccountNavigator hidden={subAccounts.length < MAX_DIALOG_PARTY_SIZE} />
         <DialogList
           title={
             isLimitReached ? undefined : searchMode ? (
