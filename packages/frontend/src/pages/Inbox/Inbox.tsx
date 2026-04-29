@@ -1,15 +1,20 @@
-import { BulkFooter, BulkHeader, type FilterState, ToolbarFilter, ToolbarSearch } from '@altinn/altinn-components';
 import {
   BookmarkModal,
+  BulkFooter,
+  BulkHeader,
   Button,
   DialogList,
   DsAlert,
   DsParagraph,
+  type FilterState,
   Heading,
   PageBase,
   type SeenByLogItemProps,
   Toolbar,
+  ToolbarFilter,
   ToolbarMenu,
+  ToolbarSearch,
+  Typography,
 } from '@altinn/altinn-components';
 import { XMarkIcon } from '@navikt/aksel-icons';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -40,7 +45,12 @@ import { AlertBanner } from './AlertBanner.tsx';
 import { Altinn2ActiveSchemasNotification } from './Altinn2ActiveSchemasNotification.tsx';
 import { FilterCategory, hasValidFilters, readFiltersFromURLQuery } from './filters';
 import styles from './inbox.module.css';
-import { FixedGlobalQueryParams, VariableGlobalQueryParams, encodeSubAccountIds } from './queryParams.ts';
+import {
+  FixedGlobalQueryParams,
+  VariableGlobalQueryParams,
+  encodeSubAccountIds,
+  getSelectedSubAccountsFromQueryParams,
+} from './queryParams.ts';
 import { useBookmarkModal } from './useBookmarkModal.tsx';
 import { useFilters } from './useFilters.tsx';
 import useGroupedDialogs from './useGroupedDialogs.tsx';
@@ -134,6 +144,10 @@ export const Inbox = ({ viewType }: InboxProps) => {
     },
   });
 
+  const partyIdsFromParams = useMemo(() => getSelectedSubAccountsFromQueryParams(searchParams), [searchParams]);
+  const hasSubAccountOverrideWithinLimit =
+    !!partyIdsFromParams.length && partyIdsFromParams.length <= MAX_DIALOG_PARTY_SIZE;
+  const showPageLabel = !(selectedServicesCount > 0 && !hasSubAccountOverrideWithinLimit);
   const {
     subAccounts,
     getSubAccountLabel,
@@ -144,20 +158,17 @@ export const Inbox = ({ viewType }: InboxProps) => {
     accounts,
     selectedParties,
     allOrganizationsSelected,
+    showPageLabel,
   });
   const searchMode = hasValidFilters(filterState) || !!validSearchString;
   const showSubAccountsMenu = subAccounts.length > 0;
   const isSubPartiesLimitReached =
     (subAccounts.length > MAX_DIALOG_PARTY_SIZE && !partyIdsOverride.length) ||
     partyIdsOverride.length > MAX_DIALOG_PARTY_SIZE;
-  const hasSubAccountOverrideWithinLimit =
-    !!partyIdsOverride?.length && partyIdsOverride.length <= MAX_DIALOG_PARTY_SIZE;
   const organizationLimitApplies = organizationLimitReached && !hasSubAccountOverrideWithinLimit;
 
   const isLimitReached =
-    (organizationLimitApplies && selectedServicesCount === 0) ||
-    (organizationLimitApplies && serviceLimitReached) ||
-    isSubPartiesLimitReached ||
+    (selectedServicesCount === 0 && (organizationLimitApplies || isSubPartiesLimitReached)) ||
     selectedServicesCount > 20;
 
   const subAccountsParamForSave = useMemo(() => {
@@ -173,7 +184,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     };
   }, [filterState, subAccountsParamForSave]);
 
-  const toolbarControlsDisabled = isSavedSearchDisabled(savedSearchFilterState, partyIdsOverride, enteredSearchValue);
+  const savedSearchDisabled = isSavedSearchDisabled(savedSearchFilterState, partyIdsOverride, enteredSearchValue);
   const onResetAllFilter = () => {
     onFiltersChange({}, true);
   };
@@ -361,7 +372,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
               submitLabel={t('filter.show_all_results')}
               removeLabel={t('filter_bar.remove_filter')}
             />
-            {!toolbarControlsDisabled && !bulkMode && (
+            {searchMode && !bulkMode && (
               <Button onClick={onResetAllFilter} variant="ghost">
                 <XMarkIcon aria-hidden="true" />
                 <span>{t('filter_bar.reset_filters')}</span>
@@ -369,7 +380,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
             )}
             <SaveSearchButton
               viewType={viewType}
-              hidden={toolbarControlsDisabled || bulkMode}
+              hidden={savedSearchDisabled || bulkMode}
               filterState={savedSearchFilterState}
               onSaveSuccess={onSaveSuccess}
             />
@@ -386,7 +397,19 @@ export const Inbox = ({ viewType }: InboxProps) => {
       <AlertBanner showAlertBanner={isAlertBannerEnabled && !!alertBannerContent} />
       {isAltinn2MessagesEnabled && <Altinn2ActiveSchemasNotification selectedAccountId={selectedParties?.[0]?.party} />}
       <>
-        <AccountNavigator hidden={subAccounts.length < MAX_DIALOG_PARTY_SIZE} />
+        <AccountNavigator
+          hidden={
+            subAccounts.length < MAX_DIALOG_PARTY_SIZE ||
+            (selectedServicesCount > 0 && !hasSubAccountOverrideWithinLimit)
+          }
+          subAccounts={subAccounts}
+          partyIdsOverride={partyIdsOverride}
+        />
+        {serviceLimitReached && (
+          <Typography variant="subtle" size="sm">
+            <p>{t('inbox.service_limit_reached.description', { count: 20 })} </p>
+          </Typography>
+        )}
         <DialogList
           title={
             isLimitReached ? undefined : searchMode ? (
@@ -404,9 +427,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
           sortGroupBy={sortGroupBy}
           isLoading={isLoading}
           highlightWords={highlightWords}
-          description={
-            isLimitReached ? t('inbox.limit_reached.description', { count: MAX_DIALOG_PARTY_SIZE }) : description
-          }
+          description={isLimitReached ? undefined : description}
         />
         {hasNextPage && (
           <Button aria-label={t('dialog.aria.fetch_more')} onClick={fetchNextPage} variant="outline" size="lg">

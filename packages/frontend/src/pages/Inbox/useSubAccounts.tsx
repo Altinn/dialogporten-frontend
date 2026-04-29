@@ -10,6 +10,7 @@ interface UseSubAccountsProps {
   accounts: PartyItemProp[];
   selectedParties: PartyFieldsFragment[];
   allOrganizationsSelected: boolean;
+  showPageLabel: boolean;
 }
 
 interface UseSubAccountsOutput {
@@ -37,6 +38,7 @@ export const useSubAccounts = ({
   accounts,
   selectedParties,
   allOrganizationsSelected,
+  showPageLabel,
 }: UseSubAccountsProps): UseSubAccountsOutput => {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -210,7 +212,7 @@ export const useSubAccounts = ({
   }, [filteredSubAccounts, selectedSubAccountIds]);
 
   const getSubAccountLabel = useCallback(() => {
-    if (currentPageIndex >= 0) {
+    if (showPageLabel && currentPageIndex >= 0) {
       return t('parties.labels.page', { number: currentPageIndex + 1 });
     }
     if (selectedSubAccountIds.length === 1) {
@@ -239,6 +241,7 @@ export const useSubAccounts = ({
     t,
     allOrganizationsSelected,
     getSubAccountTitle,
+    showPageLabel,
   ]);
 
   const groups = {
