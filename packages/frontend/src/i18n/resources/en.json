@@ -1,5 +1,5 @@
 {
-  "account_navigator.list_intro": "Select up to {max} units or pick a page to view its contents:",
+  "account_navigator.list_intro": "Select up to {max} units, pick a service or pick a page to view its contents:",
   "account_navigator.page_title_range": "Select page {number} – from {first} to {last}",
   "account_navigator.page_title_single": "Select page {number} – {first}",
   "account_navigator.select_page": "Select page",
@@ -244,6 +244,7 @@
   "inbox.heading.title.inbox": "{count, plural, =0 {No results} one {# result} other {# results}}",
   "inbox.heading.title.sent": "{count, plural, =0 {Nothing sent} one {# sent} other {# sent}}",
   "inbox.limit_reached.description": "Select up to {count} units to see the content.",
+  "inbox.service_limit_reached.description": "Select max {count} services to see the content.",
   "inbox.historical_messages_date_warning": "Due to a technical issue, some historical messages are displayed with incorrect dates in the new inbox. We are working to fix this. In the meantime, the old inbox can be used.",
   "inbox.historical_messages_date_warning_link": "Go to old Altinn",
   "inbox.no_parties_found": "No parties found",

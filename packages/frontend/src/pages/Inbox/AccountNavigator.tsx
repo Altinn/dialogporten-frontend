@@ -1,40 +1,22 @@
-import { Button, type ButtonSize, Pagination, Typography } from '@altinn/altinn-components';
+import { Button, type ButtonSize, type MenuItemProps, Pagination, Typography } from '@altinn/altinn-components';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { MAX_DIALOG_PARTY_SIZE } from '../../api/hooks/useDialogs.tsx';
-import { useParties } from '../../api/hooks/useParties.ts';
-import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
 import { useFeatureFlag } from '../../featureFlags';
 import { FixedGlobalQueryParams, encodeSubAccountIds } from './queryParams.ts';
-import { useSubAccounts } from './useSubAccounts.tsx';
 
 type PaginationVariant = 'list' | 'pagination';
 
 interface AccountNavigatorProps {
   hidden?: boolean;
+  subAccounts: MenuItemProps[];
+  partyIdsOverride: string[];
 }
-export const AccountNavigator = ({ hidden }: AccountNavigatorProps) => {
+export const AccountNavigator = ({ hidden, subAccounts, partyIdsOverride }: AccountNavigatorProps) => {
   const { t } = useTranslation();
   const accountNavigatorEnabled = useFeatureFlag<boolean>('inbox.accountNavigatorEnabled');
   const [searchParams, setSearchParams] = useSearchParams();
-  const { selectedParties, allOrganizationsSelected, parties, setSelectedPartyIds, partyGraph } = useParties();
-  const { accounts } = useAccounts({
-    parties,
-    selectedParties,
-    allOrganizationsSelected,
-    partyGraph,
-    setSelectedPartyIds,
-    options: {
-      showGroups: true,
-    },
-  });
-
-  const { subAccounts, partyIdsOverride } = useSubAccounts({
-    accounts,
-    selectedParties,
-    allOrganizationsSelected,
-  });
 
   const variant: PaginationVariant = useMemo(() => {
     return partyIdsOverride.length === 0 || partyIdsOverride?.length > MAX_DIALOG_PARTY_SIZE ? 'list' : 'pagination';

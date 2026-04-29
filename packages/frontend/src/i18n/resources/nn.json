@@ -1,5 +1,5 @@
 {
-  "account_navigator.list_intro": "Vel inntil {max} einingar eller vel side for å sjå innhaldet:",
+  "account_navigator.list_intro": "Vel inntil {max} einingar, vel teneste eller vel side for å sjå innhaldet:",
   "account_navigator.page_title_range": "Vel side {number} – frå {first} til {last}",
   "account_navigator.page_title_single": "Vel side {number} – {first}",
   "account_navigator.select_page": "Vel side",
@@ -244,6 +244,7 @@
   "inbox.heading.title.inbox": "{count, plural, =0 {Ingen treff} one {# treff} other {# treff}}",
   "inbox.heading.title.sent": "{count, plural, =0 {Ingen sendt} one {# sendt} other {# sendt}}",
   "inbox.limit_reached.description": "Vel inntil {count} einingar for å sjå innhaldet.",
+  "inbox.service_limit_reached.description": "Vel maks {count} tenester for å sjå innhaldet.",
   "inbox.historical_messages_date_warning": "På grunn av ein teknisk feil blir ein del historiske meldingar viste med feil dato i den nye innboksen. Vi jobbar med å rette dette. Inntil vidare kan den gamle innboksen nyttast.",
   "inbox.historical_messages_date_warning_link": "Gå til gamle Altinn",
   "inbox.no_parties_found": "Ingen aktørar funne",
