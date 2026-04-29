@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.142.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.142.1...v1.142.2) (2026-04-29)
+
+
+### Bug Fixes
+
+* **filter:** service filter not working properly for users with &gt; 100 companies ([#4085](https://github.com/Altinn/dialogporten-frontend/issues/4085)) ([8229a86](https://github.com/Altinn/dialogporten-frontend/commit/8229a863027913893218c6b8232d532e3bbeac84))
+
 ## [1.142.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.142.0...v1.142.1) (2026-04-28)
 
 
