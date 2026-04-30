@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.142.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.142.2...v1.142.3) (2026-04-30)
+
+
+### Bug Fixes
+
+* **inbox:** enable dialog query when filtering by service resources ([#4094](https://github.com/Altinn/dialogporten-frontend/issues/4094)) ([881100a](https://github.com/Altinn/dialogporten-frontend/commit/881100a0d73f5af3a95ff811c10463384e1f4040))
+
 ## [1.142.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.142.1...v1.142.2) (2026-04-29)
 
 
