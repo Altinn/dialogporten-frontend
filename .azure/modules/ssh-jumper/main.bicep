@@ -20,6 +20,9 @@ param adminLoginGroupObjectId string
 @description('The VM size for the SSH Jumper virtual machine')
 param vmSize string = 'Standard_B1ms'
 
+@description('The address prefix of the default subnet, used to compute a static private IP via cidrHost')
+param defaultSubnetAddressPrefix string
+
 var name = '${namePrefix}-ssh-jumper'
 
 resource publicIp 'Microsoft.Network/publicIPAddresses@2023-11-01' = {
@@ -50,8 +53,8 @@ resource networkInterface 'Microsoft.Network/networkInterfaces@2024-01-01' = {
         name: '${name}-ipconfig'
         type: 'Microsoft.Network/networkInterfaces/ipConfigurations'
         properties: {
-          privateIPAddress: '10.0.0.4'
-          privateIPAllocationMethod: 'Dynamic'
+          privateIPAddress: cidrHost(defaultSubnetAddressPrefix, 4)
+          privateIPAllocationMethod: 'Static'
           publicIPAddress: {
             id: publicIp.id
             properties: {
