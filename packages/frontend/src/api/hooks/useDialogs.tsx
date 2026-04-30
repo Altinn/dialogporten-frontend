@@ -23,22 +23,30 @@ import { useParties } from './useParties.ts';
 
 /* Number of max parties used to fetch dialogs with party input param from Dialogporten */
 export const MAX_DIALOG_PARTY_SIZE = 100;
+export const MAX_SERVICE_RESOURCE_SIZE = 20;
 
 export type InboxViewType = 'inbox' | 'drafts' | 'sent' | 'archive' | 'bin';
 
 export const isDialogQueryEnabled = ({
-  partyIds,
   queryPartyURIs,
   serviceResources,
 }: {
-  partyIds: string[];
   queryPartyURIs: string[];
   serviceResources: string[];
-}): boolean =>
-  partyIds.length > 0 &&
-  partyIds.length <= MAX_DIALOG_PARTY_SIZE &&
-  (queryPartyURIs.length > 0 || serviceResources.length > 0) &&
-  (queryPartyURIs.length <= MAX_DIALOG_PARTY_SIZE || serviceResources.length <= 0);
+}): boolean => {
+  if (serviceResources.length > 0 && serviceResources.length <= MAX_SERVICE_RESOURCE_SIZE) {
+    if (queryPartyURIs.length > MAX_DIALOG_PARTY_SIZE) {
+      return false;
+    }
+    return true;
+  }
+
+  if (queryPartyURIs.length > 0 && queryPartyURIs.length <= MAX_DIALOG_PARTY_SIZE) {
+    return true;
+  }
+
+  return false;
+};
 
 export const isDialogCountInconclusive = ({
   partyIds,
@@ -132,7 +140,7 @@ export const useDialogs = ({
           searchLanguageCode: i18n.language,
         });
       },
-      enabled: isDialogQueryEnabled({ partyIds, queryPartyURIs, serviceResources }),
+      enabled: isDialogQueryEnabled({ queryPartyURIs, serviceResources }),
       getNextPageParam(lastPage: GetAllDialogsForPartiesQuery): unknown | undefined | null {
         const hasNextPage = lastPage?.searchDialogs?.hasNextPage;
         const continuationToken = lastPage?.searchDialogs?.continuationToken;
