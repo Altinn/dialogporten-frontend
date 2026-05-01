@@ -198,7 +198,7 @@ export const PageLayout: React.FC = () => {
 
   return (
     <>
-      <Layout {...layoutProps} useGlobalHeader>
+      <Layout {...layoutProps}>
         <Outlet />
         <Snackbar />
         <FloatingDropdown />
