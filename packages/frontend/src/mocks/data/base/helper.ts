@@ -420,6 +420,167 @@ export const getMockedTransmissions = (dialogId: string) => {
         },
         attachments: [],
       },
+      // Case 1: isAuthorized=false + API-only attachment → A: filter
+      {
+        id: 'case1-filter-unauthorized-api',
+        isAuthorized: false,
+        createdAt: '2024-08-15T01:00:00.000Z',
+        type: TransmissionType.Information,
+        sender: { actorType: ActorType.ServiceOwner, actorId: null, actorName: null },
+        content: {
+          title: {
+            value: [{ value: 'Sak 1: filtreres (isAuthorized=false, kun API-vedlegg)', languageCode: 'nb' }],
+            mediaType: 'text/plain',
+          },
+          contentReference: null,
+          summary: null,
+        },
+        attachments: [
+          {
+            id: 'case1-attachment',
+            displayName: [{ value: 'API data', languageCode: 'nb' }],
+            expiresAt: null,
+            urls: [
+              {
+                id: 'case1-url',
+                url: 'https://api.example.com/data',
+                consumerType: AttachmentUrlConsumer.Api,
+                mediaType: 'application/json',
+              },
+            ],
+          },
+        ],
+      },
+      // Case 2: isAuthorized=false + has GUI attachment → B: disabled
+      {
+        id: 'case2-disabled-unauthorized-gui',
+        isAuthorized: false,
+        createdAt: '2024-08-15T02:00:00.000Z',
+        type: TransmissionType.Information,
+        sender: { actorType: ActorType.ServiceOwner, actorId: null, actorName: null },
+        content: {
+          title: {
+            value: [{ value: 'Sak 2: deaktiveres (isAuthorized=false, GUI-vedlegg)', languageCode: 'nb' }],
+            mediaType: 'text/plain',
+          },
+          contentReference: null,
+          summary: null,
+        },
+        attachments: [
+          {
+            id: 'case2-attachment',
+            displayName: [{ value: 'Dokument', languageCode: 'nb' }],
+            expiresAt: null,
+            urls: [
+              {
+                id: 'case2-url',
+                url: 'https://gui.example.com/dokument.pdf',
+                consumerType: AttachmentUrlConsumer.Gui,
+                mediaType: 'application/pdf',
+              },
+            ],
+          },
+        ],
+      },
+      // Case 3: isAuthorized=true + API-only attachment → A: filter
+      {
+        id: 'case3-filter-authorized-api',
+        isAuthorized: true,
+        createdAt: '2024-08-15T03:00:00.000Z',
+        type: TransmissionType.Information,
+        sender: { actorType: ActorType.ServiceOwner, actorId: null, actorName: null },
+        content: {
+          title: {
+            value: [{ value: 'Sak 3: filtreres (isAuthorized=true, kun API-vedlegg)', languageCode: 'nb' }],
+            mediaType: 'text/plain',
+          },
+          contentReference: null,
+          summary: null,
+        },
+        attachments: [
+          {
+            id: 'case3-attachment',
+            displayName: [{ value: 'API data', languageCode: 'nb' }],
+            expiresAt: null,
+            urls: [
+              {
+                id: 'case3-url',
+                url: 'https://api.example.com/data',
+                consumerType: AttachmentUrlConsumer.Api,
+                mediaType: 'application/json',
+              },
+            ],
+          },
+        ],
+      },
+      // Case 4: isAuthorized=true + visible content → visible
+      {
+        id: 'case4-visible',
+        isAuthorized: true,
+        createdAt: '2024-08-15T04:00:00.000Z',
+        type: TransmissionType.Information,
+        sender: { actorType: ActorType.ServiceOwner, actorId: null, actorName: null },
+        content: {
+          title: {
+            value: [{ value: 'Sak 4: vises (isAuthorized=true, innhold finnes)', languageCode: 'nb' }],
+            mediaType: 'text/plain',
+          },
+          contentReference: null,
+          summary: {
+            value: [{ value: 'Dette er synlig innhold for sluttbruker.', languageCode: 'nb' }],
+            mediaType: 'text/plain',
+          },
+        },
+        attachments: [],
+      },
+      // Case 5: isAuthorized=true + no visible content → C: show empty message
+      {
+        id: 'case5-empty',
+        isAuthorized: true,
+        createdAt: '2024-08-15T05:00:00.000Z',
+        type: TransmissionType.Information,
+        sender: { actorType: ActorType.ServiceOwner, actorId: null, actorName: null },
+        content: {
+          title: {
+            value: [{ value: 'Sak 5: tom melding (isAuthorized=true, ingen innhold)', languageCode: 'nb' }],
+            mediaType: 'text/plain',
+          },
+          contentReference: null,
+          summary: null,
+        },
+        attachments: [],
+      },
+      // Case 6: isAuthorized=true + only a GUI link with isAuthorized=false (sentinel URL) → shows disabled link
+      {
+        id: 'case6-unauthorized-link',
+        isAuthorized: true,
+        createdAt: '2024-08-15T06:00:00.000Z',
+        type: TransmissionType.Information,
+        sender: { actorType: ActorType.ServiceOwner, actorId: null, actorName: null },
+        content: {
+          title: {
+            value: [{ value: 'Sak 6: deaktivert lenke (isAuthorized=true, uautorisert lenke)', languageCode: 'nb' }],
+            mediaType: 'text/plain',
+          },
+          contentReference: null,
+          summary: null,
+        },
+        attachments: [
+          {
+            id: 'case6-attachment',
+            displayName: [{ value: 'Dokument (ikke tilgjengelig)', languageCode: 'nb' }],
+            expiresAt: null,
+            urls: [
+              {
+                id: 'case6-url',
+                url: 'urn:dialogporten:unauthorized',
+                consumerType: AttachmentUrlConsumer.Gui,
+                mediaType: 'application/pdf',
+              },
+            ],
+          },
+        ],
+      },
     ];
   }
   return [];

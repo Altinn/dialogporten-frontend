@@ -21,7 +21,13 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { MAX_COUNT_BULK_DIALOGS, useBulkActions } from '../../api/hooks/useBulkActions.tsx';
-import { type InboxViewType, MAX_DIALOG_PARTY_SIZE, useDialogs } from '../../api/hooks/useDialogs.tsx';
+import {
+  type InboxViewType,
+  MAX_DIALOG_PARTY_SIZE,
+  MAX_SERVICE_RESOURCE_SIZE,
+  isDialogQueryEnabled,
+  useDialogs,
+} from '../../api/hooks/useDialogs.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { createFiltersURLQuery } from '../../auth';
 import { Notice } from '../../components/Notice';
@@ -80,8 +86,8 @@ export const Inbox = ({ viewType }: InboxProps) => {
     partiesEmptyList,
     isError: unableToLoadParties,
     isLoading: isLoadingParties,
-    organizationLimitReached,
     partyGraph,
+    organizationLimitReached,
   } = useParties();
 
   const { items: savedSearchItems, onSaveSearch, onCloseSavedSearch } = useSavedSearches(selectedPartyIds);
@@ -131,7 +137,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const validSearchString = enteredSearchValue.length > 2 ? enteredSearchValue : undefined;
   const selectedServices = (filterState.service ?? []) as string[];
   const selectedServicesCount = selectedServices.length;
-  const serviceLimitReached = selectedServicesCount > 20;
+  const serviceLimitReached = selectedServicesCount > MAX_SERVICE_RESOURCE_SIZE;
 
   const { accounts, accountSearch, accountGroups, onSelectAccount, currentAccountName } = useAccounts({
     parties,
@@ -162,14 +168,12 @@ export const Inbox = ({ viewType }: InboxProps) => {
   });
   const searchMode = hasValidFilters(filterState) || !!validSearchString;
   const showSubAccountsMenu = subAccounts.length > 0;
-  const isSubPartiesLimitReached =
-    (subAccounts.length > MAX_DIALOG_PARTY_SIZE && !partyIdsOverride.length) ||
-    partyIdsOverride.length > MAX_DIALOG_PARTY_SIZE;
-  const organizationLimitApplies = organizationLimitReached && !hasSubAccountOverrideWithinLimit;
+  const allSubAccountsSelected = partyIdsOverride?.length === 0;
 
-  const isLimitReached =
-    (selectedServicesCount === 0 && (organizationLimitApplies || isSubPartiesLimitReached)) ||
-    selectedServicesCount > 20;
+  const isLimitReached = !isDialogQueryEnabled({
+    queryPartyURIs: allSubAccountsSelected ? (organizationLimitReached ? [] : selectedPartyIds) : partyIdsOverride,
+    serviceResources: selectedServices,
+  });
 
   const subAccountsParamForSave = useMemo(() => {
     if (subAccountsParam) return subAccountsParam;
@@ -407,7 +411,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
         />
         {serviceLimitReached && (
           <Typography variant="subtle" size="sm">
-            <p>{t('inbox.service_limit_reached.description', { count: 20 })} </p>
+            <p>{t('inbox.service_limit_reached.description', { count: MAX_SERVICE_RESOURCE_SIZE })} </p>
           </Typography>
         )}
         <DialogList
