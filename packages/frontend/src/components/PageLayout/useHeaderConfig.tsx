@@ -1,7 +1,6 @@
 import {
   type FilterState,
   type GlobalHeaderProps,
-  type HeaderProps,
   QueryLabel,
   type ToolbarSearchProps,
   useAccountSelector,
@@ -26,7 +25,7 @@ import { useSearchString } from './Search';
 import { mapPartiesToAuthorizedParties } from './mapPartyToAuthorizedParty';
 
 interface UseHeaderConfigOutput {
-  headerProps: HeaderProps;
+  headerProps: GlobalHeaderProps;
   inboxSearch: ToolbarSearchProps;
 }
 
