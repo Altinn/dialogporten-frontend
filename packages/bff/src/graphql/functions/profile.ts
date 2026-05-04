@@ -1,12 +1,12 @@
 import { logger } from '@altinn/dialogporten-node-logger';
-import axios from 'axios';
+import axios, { isAxiosError } from 'axios';
 import config from '../../config.ts';
 import { GroupRepository, PartyRepository, ProfileRepository } from '../../db.ts';
 import { Group, Party, ProfileTable } from '../../entities.ts';
 import type { PreselectedPartyOperationType } from '../types/mutation.ts';
 import type {
   NotificationSettingsInputData,
-  ResendVerificationCodeInputData,
+  SendVerificationCodeInputData,
   VerifyAddressInputData,
 } from '../types/profile.ts';
 
@@ -297,11 +297,52 @@ const patchProfileSettings = async (context: Context, payload: Record<string, un
   }
 };
 
-export const updateNotificationsSetting = async (
-  notificationSettingsInput: NotificationSettingsInputData,
-  context: Context,
-) => {
-  const { partyUuid } = notificationSettingsInput;
+export const sendVerificationCode = async (data: SendVerificationCodeInputData, context: Context) => {
+  const token = getSessionToken(context);
+  if (!token) {
+    logger.error('No token found in session');
+    return;
+  }
+
+  try {
+    const response = await axios.post(`${platformProfileAPI_url}users/current/verification/send`, data, {
+      timeout: 30000,
+      headers: {
+        Authorization: `Bearer ${token.access_token}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    });
+
+    return {
+      success: true,
+      message: 'Verification code sent',
+      verificationCode: response.data.verificationCode,
+    };
+  } catch (error) {
+    if (isAxiosError(error) && error.response?.status === 429) {
+      const retryAfterHeader = error.response.headers['retry-after'];
+      return {
+        success: false,
+        message: 'Too many requests, please try again later',
+        retryAfter: retryAfterHeader ? Number.parseInt(retryAfterHeader) : undefined,
+      };
+    }
+
+    logger.error(
+      `Failed to send verification code for ${data.value} with type ${data.type}: ${
+        isAxiosError(error) ? `${error.response?.status ?? ''} ${error.message}` : String(error)
+      }`,
+    );
+    return {
+      success: false,
+      message: 'Failed to send verification code',
+    };
+  }
+};
+
+export const updateNotificationsSetting = async (input: NotificationSettingsInputData, context: Context) => {
+  const { partyUuid, ...payload } = input;
   if (!partyUuid) {
     logger.error('No uuid found in data');
     return;
@@ -312,9 +353,9 @@ export const updateNotificationsSetting = async (
     return;
   }
   try {
-    const response = await axios.put(
+    const response = await axios.patch(
       `${platformProfileAPI_url}users/current/notificationsettings/parties/${partyUuid}`,
-      notificationSettingsInput,
+      payload,
       {
         timeout: 30000,
         headers: {
@@ -422,38 +463,23 @@ export const verifyAddress = async (data: VerifyAddressInputData, context: Conte
     );
     return { success: true };
   } catch (error) {
-    if (typeof error === 'object' && error !== null && 'response' in error) {
-      const axiosError = error as { response?: { status?: number } };
-      if (axiosError.response?.status === 422) {
+    if (isAxiosError(error)) {
+      const status = error.response?.status;
+      const upstreamBody = error.response?.data;
+      logger.error(
+        { status, upstreamBody, value: data.value, type: data.type },
+        'Failed to verify address — upstream error',
+      );
+      if (status === 422 || status === 400) {
         return { success: false, message: 'invalid_code' };
       }
+      return {
+        success: false,
+        message:
+          typeof upstreamBody === 'string' ? upstreamBody : (upstreamBody?.message ?? 'Failed to verify address'),
+      };
     }
     logger.error(error, 'Error verifying address:');
-    throw error;
-  }
-};
-
-export const resendVerificationCode = async (data: ResendVerificationCodeInputData, context: Context) => {
-  const token = getSessionToken(context);
-  if (!token) {
-    throw new Error('No token found in session');
-  }
-  try {
-    await axios.post(
-      `${platformProfileAPI_url}users/current/verification/resend`,
-      { value: data.value, type: data.type },
-      {
-        timeout: 30000,
-        headers: {
-          Authorization: `Bearer ${token.access_token}`,
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-      },
-    );
-    return { success: true };
-  } catch (error) {
-    logger.error(error, 'Error resending verification code:');
     throw error;
   }
 };

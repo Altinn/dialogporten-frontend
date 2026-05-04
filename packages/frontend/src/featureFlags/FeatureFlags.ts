@@ -12,8 +12,6 @@ export const featureFlagDefinitions = [
   { key: 'inbox.enableAlertBanner', type: 'boolean', default: false },
   { key: 'dialogporten.disableSubscriptions', type: 'boolean', default: false },
   { key: 'inbox.enableDeletedUnitsFilter', type: 'boolean', default: false },
-  { key: 'profile.enableResendVerificationCode', type: 'boolean', default: false },
-  { key: 'profile.enableSingleServiceNotifications', type: 'boolean', default: false },
   { key: 'auth.enableDelegationLink', type: 'boolean', default: false },
   { key: 'inbox.enableBulkMode', type: 'boolean', default: false },
   { key: 'inbox.accountNavigatorEnabled', type: 'boolean', default: false },

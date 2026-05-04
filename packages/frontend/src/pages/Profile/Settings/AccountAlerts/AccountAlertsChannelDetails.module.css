@@ -2,6 +2,21 @@
   position: relative;
 }
 
+.phoneRow {
+  display: flex;
+  gap: 0.75rem;
+  align-items: stretch;
+}
+
+.countryCodeInput {
+  flex: 0 0 5rem;
+}
+
+.phoneNumberInput {
+  flex: 1;
+  min-width: 0;
+}
+
 .badgeOverlay {
   position: absolute;
   right: 0;

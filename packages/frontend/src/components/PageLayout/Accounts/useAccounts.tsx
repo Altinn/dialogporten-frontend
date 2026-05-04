@@ -78,9 +78,10 @@ export const getSSNOrOrgNo = (partyId: string) => {
   return ssnOrOrgNo ?? '';
 };
 
-export const formatNorwegianId = (partyId: string, isCurrentEndUser: boolean) => {
+export const formatNorwegianId = (partyId: string, isCurrentEndUser: boolean, includeThinSpace?: boolean) => {
   const ssnOrOrgNo = getSSNOrOrgNo(partyId);
   const isPerson = partyId.includes('person');
+  const thinSpaceIncluded = includeThinSpace ?? true;
 
   if (!ssnOrOrgNo) return '';
 
@@ -88,7 +89,11 @@ export const formatNorwegianId = (partyId: string, isCurrentEndUser: boolean) =>
     return formatSSN(ssnOrOrgNo, !isCurrentEndUser);
   }
 
-  return [ssnOrOrgNo.slice(0, 3), ssnOrOrgNo.slice(3, 6), ssnOrOrgNo.slice(6, 9)].join('\u2009');
+  if (thinSpaceIncluded) {
+    return [ssnOrOrgNo.slice(0, 3), ssnOrOrgNo.slice(3, 6), ssnOrOrgNo.slice(6, 9)].join('\u2009');
+  }
+
+  return ssnOrOrgNo.slice(0, 9);
 };
 
 /** Reuse a single Intl.Collator per language – much faster than localeCompare per call */

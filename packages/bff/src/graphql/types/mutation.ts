@@ -7,7 +7,7 @@ import {
   deleteFavoriteParty,
   deleteNotificationsSetting,
   getOrCreateProfile,
-  resendVerificationCode,
+  sendVerificationCode,
   setPreSelectedParty,
   updateLanguageInCore,
   updateNotificationsSetting,
@@ -19,10 +19,10 @@ import { createSavedSearch, deleteSavedSearch, updateSavedSearch } from '../func
 import { languageCodes, updateAltinnPersistentContextValue } from './cookie.js';
 import {
   NotificationSettingsInput,
-  ResendVerificationCodeInput,
   Response,
   SavedSearchInput,
   SavedSearches,
+  SendVerificationCodeInput,
   VerifyAddressInput,
 } from './index.ts';
 
@@ -286,6 +286,7 @@ export const setShowClientUnits = extendType({
   },
 });
 
+/* This endpoint is responsible for both sending and resending confirmation code */
 export const VerifyAddress = extendType({
   type: 'Mutation',
   definition(t) {
@@ -296,8 +297,7 @@ export const VerifyAddress = extendType({
       },
       resolve: async (_, { data }, ctx) => {
         try {
-          const result = await verifyAddress(data, ctx);
-          return result;
+          return await verifyAddress(data, ctx);
         } catch (error) {
           logger.error(error, 'Failed to verify address:');
           return { success: false, message: 'Failed to verify address' };
@@ -307,20 +307,20 @@ export const VerifyAddress = extendType({
   },
 });
 
-export const ResendVerificationCode = extendType({
+export const SendVerificationCode = extendType({
   type: 'Mutation',
   definition(t) {
-    t.field('resendVerificationCode', {
+    t.field('sendVerificationCode', {
       type: Response,
       args: {
-        data: ResendVerificationCodeInput,
+        data: SendVerificationCodeInput,
       },
       resolve: async (_, { data }, ctx) => {
         try {
-          return await resendVerificationCode(data, ctx);
+          return await sendVerificationCode(data, ctx);
         } catch (error) {
-          logger.error(error, 'Failed to resend verification code:');
-          return { success: false, message: 'Failed to resend verification code' };
+          logger.error(error, 'Failed to send verification code:');
+          return { success: false, message: 'Failed to send verification code' };
         }
       },
     });
