@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.143.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.142.3...v1.143.0) (2026-05-04)
+
+
+### Features
+
+* Transmissions visibility logic ([#4093](https://github.com/Altinn/dialogporten-frontend/issues/4093)) ([6a8b54c](https://github.com/Altinn/dialogporten-frontend/commit/6a8b54cc252476dce931faedf35a9464b44f0deb))
+
 ## [1.142.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.142.2...v1.142.3) (2026-04-30)
 
 
