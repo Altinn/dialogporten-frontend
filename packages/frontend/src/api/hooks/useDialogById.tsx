@@ -128,15 +128,17 @@ export const getAttachmentLinks = (
     .filter((a) => a.urls.filter((url) => url.consumerType === AttachmentUrlConsumer.Gui).length > 0)
     .flatMap((attachment) =>
       attachment.urls
-        .filter((url) => url.url !== 'urn:dialogporten:unauthorized')
         .filter((url) => url.consumerType === AttachmentUrlConsumer.Gui)
-        .map((url) => ({
-          disabled: attachment.expiresAt ? new Date(attachment.expiresAt) <= new Date() : false,
-          label: getPreferredPropertyByLocale(attachment.displayName)?.value || url.url,
-          href: url.url,
-          metadata: mediaTypeToExt(url.mediaType),
-          badge: createExpiryBadge(attachment.expiresAt, locale, t),
-        })),
+        .map((url) => {
+          const isUnauthorized = url.url === 'urn:dialogporten:unauthorized';
+          return {
+            disabled: isUnauthorized || (attachment.expiresAt ? new Date(attachment.expiresAt) <= new Date() : false),
+            label: getPreferredPropertyByLocale(attachment.displayName)?.value || url.url,
+            href: isUnauthorized ? '' : url.url,
+            metadata: mediaTypeToExt(url.mediaType),
+            badge: createExpiryBadge(attachment.expiresAt, locale, t),
+          };
+        }),
     );
 };
 

@@ -1,4 +1,4 @@
-import type { ActivityLogItemProps, AvatarProps, TransmissionProps } from '@altinn/altinn-components';
+import type { ActivityLogItemProps, AvatarProps } from '@altinn/altinn-components';
 import { ActivityType, type DialogActivityFragment, type TransmissionFieldsFragment } from 'bff-types-generated';
 import { t } from 'i18next';
 import { getActorProps } from '../api/hooks/useDialogById.tsx';
@@ -6,7 +6,7 @@ import type { ProfileType } from '../api/hooks/useParties.ts';
 import { type LocalizationObject, getPreferredPropertyByLocale } from '../i18n/property.ts';
 import type { FormatFunction, Locale } from '../i18n/useDateFnsLocale.tsx';
 import type { OrganizationOutput } from './organizations.ts';
-import { getTransmissions } from './transmissions.ts';
+import { type TransmissionItemWithMeta, getTransmissionVisibility, getTransmissions } from './transmissions.ts';
 
 const getActivityText = (
   activity: DialogActivityFragment,
@@ -107,7 +107,7 @@ export type ActivityLogEntry =
       id: string;
       date: string;
       type: 'transmission';
-      items: TransmissionProps[];
+      items: TransmissionItemWithMeta[];
     };
 
 /**
@@ -144,6 +144,9 @@ export const getActivityHistory = ({
   locale: Locale;
   serviceOwnerNbName?: string;
 }): ActivityLogEntry[] => {
+  const clockPrefix = t('word.clock_prefix');
+  const formatString = `do MMMM yyyy ${clockPrefix ? `'${clockPrefix}' ` : ''}HH.mm`;
+
   const dialogHistoryActivities: ActivityLogEntry[] = getDialogHistoryForActivities(
     activities,
     format,
@@ -176,7 +179,25 @@ export const getActivityHistory = ({
     items: transmission.items,
   }));
 
-  return [...dialogHistoryActivities, ...dialogHistoryTransmissions].sort((a, b) => {
+  // A: API-only transmissions shown as plain text entries in the activity log instead of transmission components
+  const apiOnlyTransmissionActivities: ActivityLogEntry[] = transmissions
+    .filter((t) => getTransmissionVisibility(t) === 'filter')
+    .map((transmission) => ({
+      id: transmission.id,
+      date: transmission.createdAt,
+      type: 'activity',
+      items: [
+        {
+          id: transmission.id,
+          summary: <>{t('activity.status.transmission_api_only')}</>,
+          byline: format(transmission.createdAt, formatString),
+          datetime: transmission.createdAt,
+          type: 'activity',
+        },
+      ],
+    }));
+
+  return [...dialogHistoryActivities, ...dialogHistoryTransmissions, ...apiOnlyTransmissionActivities].sort((a, b) => {
     return new Date(b.date).getTime() - new Date(a.date).getTime();
   });
 };
