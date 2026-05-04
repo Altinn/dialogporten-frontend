@@ -1,0 +1,49 @@
+import type { PartyFieldsFragment } from 'bff-types-generated';
+
+// Preview at: ?mock=true&playwrightId=save-search-parties
+export const parties: PartyFieldsFragment[] = [
+  {
+    party: 'urn:altinn:person:identifier-no:1',
+    partyType: 'Person',
+    subParties: [],
+    name: 'TEST TESTESEN',
+    isCurrentEndUser: true,
+    isDeleted: false,
+    partyUuid: 'urn:altinn:person:uuid:test-testesen',
+    partyId: 1,
+    hasOnlyAccessToSubParties: false,
+  },
+  {
+    party: 'urn:altinn:person:identifier-no:2',
+    partyType: 'Person',
+    subParties: [],
+    name: 'ANNE ANDERSEN',
+    isCurrentEndUser: false,
+    isDeleted: false,
+    partyUuid: 'urn:altinn:person:uuid:anne-andersen',
+    partyId: 2,
+    hasOnlyAccessToSubParties: false,
+  },
+  {
+    party: 'urn:altinn:organization:identifier-no:1',
+    partyType: 'Organization',
+    subParties: [],
+    name: 'Firma AS',
+    isCurrentEndUser: false,
+    isDeleted: false,
+    partyUuid: 'urn:altinn:organization:uuid:firma-as',
+    partyId: 3,
+    hasOnlyAccessToSubParties: false,
+  },
+  {
+    party: 'urn:altinn:organization:identifier-no:2',
+    partyType: 'Organization',
+    subParties: [],
+    name: 'Testbedrift AS',
+    isCurrentEndUser: false,
+    isDeleted: false,
+    partyUuid: 'urn:altinn:organization:uuid:testbedrift-as',
+    partyId: 4,
+    hasOnlyAccessToSubParties: false,
+  },
+];
