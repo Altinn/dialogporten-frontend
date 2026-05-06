@@ -208,6 +208,27 @@ describe('getTransmissionVisibility', () => {
     expect(getTransmissionVisibility(t)).toBe('filter');
   });
 
+  it('case 3b — isAuthorized=true, API-only attachment but has summary → shown (not filtered)', () => {
+    const t = makeTransmission({
+      isAuthorized: true,
+      content: {
+        title: { value: [{ value: 'Title', languageCode: 'nb' }], mediaType: 'text/plain' },
+        summary: { value: [{ value: 'A-meldingen er sendt inn.', languageCode: 'nb' }], mediaType: 'text/plain' },
+        contentReference: null,
+      },
+      attachments: [
+        {
+          id: 'a1',
+          displayName: [],
+          urls: [
+            { id: 'u1', url: 'https://api.example.com', consumerType: AttachmentUrlConsumer.Api, mediaType: null },
+          ],
+        },
+      ],
+    });
+    expect(getTransmissionVisibility(t)).toBe('visible');
+  });
+
   it('case 4 — isAuthorized=true, visible content → shown', () => {
     const t = makeTransmission({
       content: {

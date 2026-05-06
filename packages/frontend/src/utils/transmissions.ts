@@ -26,21 +26,22 @@ export interface TimelineSegmentWithTransmissions extends TimelineSegmentProps {
 export type TransmissionVisibility = 'filter' | 'disabled' | 'empty' | 'visible';
 
 export const getTransmissionVisibility = (transmission: TransmissionFieldsFragment): TransmissionVisibility => {
-  // A: has attachments but none are GUI-consumable — irrelevant for GUI users, remove from all lists
   const hasGuiAttachment = transmission.attachments.some((a) =>
     a.urls.some((url) => url.consumerType === AttachmentUrlConsumer.Gui),
   );
-  if (transmission.attachments.length > 0 && !hasGuiAttachment) return 'filter';
+  const hasSummary = !!getPreferredPropertyByLocale(transmission.content.summary?.value)?.value;
+  const hasContentReference =
+    !!transmission.content.contentReference &&
+    !!getPreferredPropertyByLocale(transmission.content.contentReference.value)?.value;
+
+  // A: has attachments but none are GUI-consumable, and no other visible content — irrelevant for GUI users, remove from all lists
+  if (transmission.attachments.length > 0 && !hasGuiAttachment && !hasSummary && !hasContentReference) return 'filter';
 
   // B: unauthorized at top level — show transmission but disable expansion
   if (!transmission.isAuthorized) return 'disabled';
 
   // C: authorized but nothing visible — expand with empty-state explanation
   // hasGuiAttachment covers case 6 too: unauthorized GUI links are shown as disabled links, which counts as visible content
-  const hasSummary = !!getPreferredPropertyByLocale(transmission.content.summary?.value)?.value;
-  const hasContentReference =
-    !!transmission.content.contentReference &&
-    !!getPreferredPropertyByLocale(transmission.content.contentReference.value)?.value;
   if (!hasSummary && !hasContentReference && !hasGuiAttachment) return 'empty';
 
   return 'visible';
