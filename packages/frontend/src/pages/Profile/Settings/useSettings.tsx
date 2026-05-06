@@ -6,10 +6,10 @@ import {
   type BadgeProps,
   type SettingsGroupProps,
   type SettingsItemProps,
+  type SettingsItemVariant,
   type ToolbarSearchProps,
   type UsedByLogItemProps,
 } from '@altinn/altinn-components';
-import type { SettingsItemVariant } from '@altinn/altinn-components/dist/types/lib/components/Settings/SettingsItem';
 import {
   BellIcon,
   BriefcaseIcon,
@@ -26,7 +26,9 @@ import { useAccounts } from '../../../components/PageLayout/Accounts/useAccounts
 import { usePartiesWithNotificationSettings } from '../usePartiesWithNotificationSettings.tsx';
 import { useProfile } from '../useProfile.tsx';
 import { useVerifiedAddresses } from '../useVerifiedAddresses.tsx';
-import { AccountAlertsDetails } from './AccountAlertsDetails.tsx';
+import { AccountAlertsChannelDetails } from './AccountAlerts/AccountAlertsChannelDetails.tsx';
+import { ServiceResourceNotificationsDetails } from './AccountAlerts/ServiceResourceNotificationsDetails.tsx';
+import type { Channel } from './AccountAlerts/common.ts';
 import { ContactProfileDetails } from './ContactProfileDetails.tsx';
 
 export enum SettingsType {
@@ -57,7 +59,7 @@ interface UseSettingsOutput {
   settings: SettingsItemProps[];
   settingsGroups: Record<string, SettingsGroupProps>;
   settingsSearch: ToolbarSearchProps;
-  getAccountAlertSettings?: (id: string) => SettingsItemProps;
+  getAccountAlertSettings?: (id: string) => SettingsItemProps[];
 }
 
 const getDefaultGroups = (t: (key: string) => string) => ({
@@ -217,36 +219,90 @@ export const useSettings = ({
     };
   }
 
-  const getAccountAlertSettings = (id: string): SettingsItemProps => {
+  const getAccountAlertChannelSettings = (id: string, channel: Channel): SettingsItemProps => {
     const account = accounts.find((account) => account.id === id);
     const notificationAccount = partiesWithNotificationSettings.find((p) => p.party === id);
-    const phoneNumber = account?.isCurrentEndUser
-      ? user?.phoneNumber || ''
-      : (notificationAccount?.notificationSettings?.phoneNumber ?? '');
-    const email = account?.isCurrentEndUser
-      ? user?.email || ''
-      : (notificationAccount?.notificationSettings?.emailAddress ?? '');
+    const isEmail = channel === 'Email';
+    const value = account?.isCurrentEndUser
+      ? (isEmail ? user?.email : user?.phoneNumber) || ''
+      : ((isEmail
+          ? notificationAccount?.notificationSettings?.emailAddress
+          : notificationAccount?.notificationSettings?.phoneNumber) ?? '');
 
     return {
-      id: account?.id ?? id,
+      id: `${account?.id ?? id}-${isEmail ? 'email' : 'sms'}`,
       color: (account?.type ?? 'neutral') as SettingsItemProps['color'],
-      value: [email, phoneNumber].filter(Boolean).join(email && phoneNumber ? t('profile.settings.and') : ''),
+      value,
       groupId: String(account?.groupId ?? ''),
-      title: account?.name,
-      icon: account?.icon,
+      title: isEmail ? t('profile.account_alerts.email_dialog_title') : t('profile.account_alerts.sms_dialog_title'),
+      icon: BellIcon,
       variant: 'modal' as SettingsItemVariant,
       modalProps: {
-        icon: account?.icon,
-        title: account?.name,
-        description: account?.description ? String(account?.description) : '',
+        icon: BellIcon,
+        title: isEmail ? t('profile.account_alerts.email_dialog_title') : t('profile.account_alerts.sms_dialog_title'),
       },
-      children: account?.isCurrentEndUser ? (
-        <ContactProfileDetails variant="alerts" phoneNumber={phoneNumber} emailAddress={email} readOnly />
-      ) : (
-        <AccountAlertsDetails notificationParty={notificationAccount} />
-      ),
-      badge: getNotificationsSettingsBadge({ phoneNumber, email, t }),
+      children: <AccountAlertsChannelDetails channel={channel} notificationParty={notificationAccount} />,
+      badge: value
+        ? { label: t('profile.settings.change'), variant: 'text' }
+        : { label: t('profile.settings.add'), variant: 'text' },
     };
+  };
+
+  const getAccountAlertSettings = (id: string): SettingsItemProps[] => {
+    const account = accounts.find((account) => account.id === id);
+    if (account?.isCurrentEndUser) {
+      const phoneNumber = user?.phoneNumber || '';
+      const email = user?.email || '';
+      return [
+        {
+          id: account?.id ?? id,
+          color: (account?.type ?? 'neutral') as SettingsItemProps['color'],
+          value: [email, phoneNumber].filter(Boolean).join(email && phoneNumber ? t('profile.settings.and') : ''),
+          groupId: String(account?.groupId ?? ''),
+          title: account?.name,
+          icon: account?.icon,
+          variant: 'modal' as SettingsItemVariant,
+          modalProps: {
+            icon: account?.icon,
+            title: account?.name,
+            description: account?.description ? String(account?.description) : '',
+          },
+          children: <ContactProfileDetails variant="alerts" phoneNumber={phoneNumber} emailAddress={email} readOnly />,
+          badge: getNotificationsSettingsBadge({ phoneNumber, email, t }),
+        },
+      ];
+    }
+    const notificationAccount = partiesWithNotificationSettings.find((p) => p.party === id);
+    const includedServiceCount = (notificationAccount?.notificationSettings?.resourceIncludeList ?? []).filter(
+      (r): r is string => !!r,
+    ).length;
+    const serviceResourceEntry: SettingsItemProps = {
+      id: `${account?.id ?? id}-services`,
+      color: (account?.type ?? 'neutral') as SettingsItemProps['color'],
+      groupId: String(account?.groupId ?? ''),
+      title: t('profile.service_notifications.title'),
+      description:
+        includedServiceCount === 0
+          ? t('profile.service_notifications.active_for_all')
+          : t('profile.service_notifications.active_for_count', { count: includedServiceCount }),
+      value: 'services',
+      icon: BellIcon,
+      variant: 'modal' as SettingsItemVariant,
+      modalProps: {
+        icon: BellIcon,
+        title: t('profile.service_notifications.title'),
+      },
+      badge: {
+        variant: 'text',
+        label: t('word.change'),
+      },
+      children: <ServiceResourceNotificationsDetails notificationParty={notificationAccount} />,
+    };
+    return [
+      getAccountAlertChannelSettings(id, 'Sms'),
+      getAccountAlertChannelSettings(id, 'Email'),
+      serviceResourceEntry,
+    ];
   };
 
   const accountAlertSettings: SettingsItemProps[] = accounts
@@ -256,7 +312,7 @@ export const useSettings = ({
       }
       return !(options.excludeGroups.includes(SettingsType.companies) && a.type === 'company');
     })
-    .map((a) => getAccountAlertSettings(a.id));
+    .flatMap((a) => getAccountAlertSettings(a.id));
 
   const address = `${user?.party?.person?.mailingAddress}, ${user?.party?.person?.mailingPostalCode} ${user?.party?.person?.mailingPostalCity}`;
 

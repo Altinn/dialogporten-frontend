@@ -5,6 +5,7 @@ export const Response = objectType({
   definition(t) {
     t.nonNull.boolean('success');
     t.string('message');
+    t.nullable.int('retryAfter');
   },
 });
 

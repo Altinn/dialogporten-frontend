@@ -2,6 +2,7 @@ import {
   AccountList,
   AccountListItemDetails,
   type AccountListItemProps,
+  type AccountListItemType,
   type AccountOrganizationItemProps,
   type AvatarType,
   type AvatarVariant,
@@ -11,11 +12,21 @@ import {
   PageBase,
   Section,
   type SettingsItemProps,
+  SnackbarDuration,
   Switch,
   Toolbar,
+  useSnackbar,
 } from '@altinn/altinn-components';
-import type { AccountListItemType } from '@altinn/altinn-components/dist/types/lib/components/Account/AccountListItem';
-import { BellIcon, HashtagIcon, HouseHeartFillIcon, HouseHeartIcon, InboxIcon } from '@navikt/aksel-icons';
+import {
+  BellIcon,
+  FilesIcon,
+  HashtagIcon,
+  HouseHeartFillIcon,
+  HouseHeartIcon,
+  InboxIcon,
+  MobileIcon,
+  PaperplaneIcon,
+} from '@navikt/aksel-icons';
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import { type ElementType, useDeferredValue, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -117,7 +128,10 @@ export const PartiesOverviewPage = () => {
     partyGraph,
     setSelectedPartyIds,
   } = useParties();
-  const { getAccountAlertSettings, settings } = useSettings({ disabled: isSelfIdentifiedUser, isSelfIdentifiedUser });
+  const { getAccountAlertSettings, settings } = useSettings({
+    disabled: isSelfIdentifiedUser,
+    isSelfIdentifiedUser,
+  });
   const isDeletedUnitsFilterEnabled = useFeatureFlag<boolean>('inbox.enableDeletedUnitsFilter');
   const {
     addFavoriteParty,
@@ -131,6 +145,7 @@ export const PartiesOverviewPage = () => {
   const [searchValue, setSearchValue] = useState<string>('');
   const deferredSearchValue = useDeferredValue(searchValue);
   const [expandedItem, setExpandedItem] = useState<string>('');
+  const { openSnackbar } = useSnackbar();
 
   const includeDeletedParties = isDeletedUnitsFilterEnabled ? (shouldShowDeletedEntities ?? false) : true;
 
@@ -184,38 +199,61 @@ export const PartiesOverviewPage = () => {
     };
   };
 
-  const getPartyNotificationsSettings = (id: string): SettingsItemProps[] => {
-    if (id && typeof getAccountAlertSettings === 'function') {
-      const settings = getAccountAlertSettings(id);
+  const getNotificationsSettings = (id: string): SettingsItemProps[] => {
+    if (!id || typeof getAccountAlertSettings !== 'function') return [];
+    const entries = getAccountAlertSettings(id);
+    if (entries.length === 1) {
+      const [combined] = entries;
       return [
         {
-          ...settings,
+          ...combined,
           id: 'mobile',
           icon: BellIcon,
-          title: settings.value
+          title: combined.value
             ? t('profile.notifications.my_notifications')
             : t('profile.notifications.no_notifications'),
         },
       ];
     }
-    return [];
+    const [sms, email, services] = entries;
+    return [
+      { ...sms, id: 'sms', icon: MobileIcon },
+      { ...email, id: 'email', icon: PaperplaneIcon },
+      { ...services, id: 'services', icon: BellIcon },
+    ];
   };
 
   const getCompanySettings = (id: string): SettingsItemProps[] => {
     return [
-      ...getPartyNotificationsSettings(id),
+      ...getNotificationsSettings(id),
       {
         id: 'orgNr',
         icon: HashtagIcon,
+        as: 'button',
         title: t('profile.organization_number'),
+        onClick: () => {
+          void navigator.clipboard.writeText(formatNorwegianId(id, false, false)).then(() => {
+            openSnackbar({
+              message: t('word.copied'),
+              color: 'company',
+              duration: SnackbarDuration.short,
+            });
+          });
+        },
         value: formatNorwegianId(id, false),
+        controls: (
+          <Button as="div" size="xs" variant="ghost">
+            <FilesIcon />
+            <span>{t('word.copy')}</span>
+          </Button>
+        ),
       },
     ];
   };
 
   const getPersonSettings = (id: string, isCurrentEndUser: boolean): SettingsItemProps[] => {
     return [
-      ...getPartyNotificationsSettings(id),
+      ...getNotificationsSettings(id),
       {
         id: 'snr',
         icon: HashtagIcon,
