@@ -171,7 +171,7 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
   const commonProps = {
     logo: {
       as: (props: LinkProps) => {
-        return <Link {...props} to={getFrontPageLink(currentPartyUuid, i18n.language)} />;
+        return <Link {...props} to={getFrontPageLink(i18n.language)} />;
       },
     },
     locale: {

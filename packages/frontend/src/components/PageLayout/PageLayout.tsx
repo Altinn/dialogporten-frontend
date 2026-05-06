@@ -15,7 +15,7 @@ import i18n from 'i18next';
 import { useEffect, useLayoutEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps, Outlet, useLocation, useSearchParams } from 'react-router-dom';
-import { useCurrentEndUser, useCurrentPartyUuid, useSelectedProfile } from '../../api/hooks/usePartiesSelectors.ts';
+import { useCurrentEndUser, useSelectedProfile } from '../../api/hooks/usePartiesSelectors.ts';
 import { getFrontPageLink } from '../../auth';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { getSearchStringFromQueryParams } from '../../pages/Inbox/queryParams.ts';
@@ -45,7 +45,6 @@ export const PageLayout: React.FC = () => {
   const [bulkMode, setBulkMode] = useGlobalState<boolean>(QUERY_KEYS.BULK_MODE, false);
   const selectedProfile = useSelectedProfile();
   const currentEndUser = useCurrentEndUser();
-  const currentPartyUuid = useCurrentPartyUuid();
   const [allOrganizationsSelected] = useGlobalState<boolean>(QUERY_KEYS.ALL_ORGANIZATIONS_SELECTED, false);
   const [selectedParties] = useGlobalState<PartyFieldsFragment[]>(QUERY_KEYS.SELECTED_PARTIES, []);
   const [isErrorState] = useGlobalState<boolean>(QUERY_KEYS.ERROR_STATE, false);
@@ -81,7 +80,7 @@ export const PageLayout: React.FC = () => {
       {
         label: t('route.titles.start'),
         as: (props: LinkProps) => {
-          return <Link {...props} to={getFrontPageLink(currentPartyUuid, i18n.language)} />;
+          return <Link {...props} to={getFrontPageLink(i18n.language)} />;
         },
       },
     ];
@@ -151,7 +150,7 @@ export const PageLayout: React.FC = () => {
     }
 
     return steps;
-  }, [currentPartyUuid, location.pathname, fromView, docTitle]);
+  }, [location.pathname, fromView, docTitle]);
 
   const escalateBannerSeverity = new Date() >= new Date(2026, 5, 2); // Escalate to warning on June 2nd, 2026
   const bannerLink = getBannerLink(i18n.language);

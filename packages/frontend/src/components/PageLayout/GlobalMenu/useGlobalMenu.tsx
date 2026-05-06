@@ -1,7 +1,7 @@
 import type { MenuProps } from '@altinn/altinn-components';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
-import { useCurrentEndUser, useCurrentPartyUuid } from '../../../api/hooks/usePartiesSelectors.ts';
+import { useCurrentEndUser } from '../../../api/hooks/usePartiesSelectors.ts';
 import { PageRoutes } from '../../../pages/routes.ts';
 import { buildInboxMenu } from './inboxMenu.tsx';
 import { buildProfileMenu } from './profileMenu.tsx';
@@ -18,7 +18,6 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
   const fromView = (state as { fromView?: string })?.fromView;
   const { t } = useTranslation();
   const currentEndUser = useCurrentEndUser();
-  const currentPartyUuid = useCurrentPartyUuid();
 
   const inboxMenus = buildInboxMenu({
     t,
@@ -26,7 +25,6 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
     pathname,
     currentSearchQuery,
     fromView,
-    currentPartyUuid,
   });
 
   const profileMenus = buildProfileMenu({
@@ -35,7 +33,6 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
     pathname,
     currentSearchQuery,
     fromView,
-    currentPartyUuid,
   });
 
   return isProfile ? profileMenus : inboxMenus;

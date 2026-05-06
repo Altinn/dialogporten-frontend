@@ -37,14 +37,12 @@ export function buildInboxMenu({
   pathname,
   currentSearchQuery,
   fromView,
-  currentPartyUuid,
 }: {
   t: (key: string, vars?: Record<string, string>) => string;
   currentEndUserName?: string;
   pathname: string;
   currentSearchQuery: string;
   fromView?: string;
-  currentPartyUuid?: string;
 }): UseGlobalMenuProps {
   const menuGroups = {
     shortcuts: {
@@ -86,7 +84,7 @@ export function buildInboxMenu({
       icon: LeaveIcon,
       title: t('altinn.beta.exit'),
       as: createMenuItemComponent({
-        to: createMessageBoxLink(currentPartyUuid),
+        to: createMessageBoxLink(),
       }),
     },
     {
@@ -96,7 +94,7 @@ export function buildInboxMenu({
       icon: PlusIcon,
       title: t('altinn.new_schema'),
       as: createMenuItemComponent({
-        to: getNewFormLink(currentPartyUuid, i18n.language),
+        to: getNewFormLink(i18n.language),
       }),
     },
   ];
@@ -109,7 +107,7 @@ export function buildInboxMenu({
       icon: InformationSquareIcon,
       title: t('global_menu.about_altinn'),
       as: createMenuItemComponent({
-        to: getAboutNewAltinnLink(currentPartyUuid, i18n.language),
+        to: getAboutNewAltinnLink(i18n.language),
       }),
     },
     {
@@ -119,7 +117,7 @@ export function buildInboxMenu({
       icon: Buildings2Icon,
       title: t('global_menu.start_business'),
       as: createMenuItemComponent({
-        to: getStartNewBusinessLink(currentPartyUuid, i18n.language),
+        to: getStartNewBusinessLink(i18n.language),
       }),
     },
     {
@@ -129,7 +127,7 @@ export function buildInboxMenu({
       icon: ChatExclamationmarkIcon,
       title: t('global_menu.need_help'),
       as: createMenuItemComponent({
-        to: getNeedHelpLink(currentPartyUuid, i18n.language),
+        to: getNeedHelpLink(i18n.language),
       }),
     },
   ];
@@ -240,7 +238,7 @@ export function buildInboxMenu({
         size: 'lg',
         icon: PadlockLockedFillIcon,
         as: 'a',
-        href: getAccessAMUILink(currentPartyUuid, true),
+        href: getAccessAMUILink(),
         title: t('altinn.access_management'),
         selected: false,
         badge: {
@@ -256,7 +254,7 @@ export function buildInboxMenu({
         icon: MenuGridIcon,
         title: t('global_menu.all_forms_services'),
         as: createMenuItemComponent({
-          to: getNewFormLink(currentPartyUuid, i18n.language),
+          to: getNewFormLink(i18n.language),
         }),
         selected: false,
       },
@@ -267,7 +265,7 @@ export function buildInboxMenu({
         icon: MagnifyingGlassIcon,
         title: t('global_menu.altinn_search'),
         as: createMenuItemComponent({
-          to: `${getFrontPageLink(currentPartyUuid)}/sok?`,
+          to: `${getFrontPageLink()}/sok?`,
         }),
         selected: false,
       },
