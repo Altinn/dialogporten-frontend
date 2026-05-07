@@ -1,4 +1,5 @@
 import type { BadgeProps } from '@altinn/altinn-components';
+import { FileIcon, FilesIcon } from '@navikt/aksel-icons';
 import { formatDistance } from 'date-fns';
 import type { Locale } from 'date-fns/locale';
 import type { TFunction } from 'i18next';
@@ -30,6 +31,13 @@ const MEDIA_TYPE_TO_EXT: Record<string, string> = {
   'application/ods': 'ODS',
   'application/vnd.ms-excel': 'XLS',
 };
+
+export function mediaTypeToIcon(value: string | null | undefined): React.ComponentType<React.SVGProps<SVGSVGElement>> {
+  if (value === 'application/zip') {
+    return FilesIcon;
+  }
+  return FileIcon;
+}
 
 export function mediaTypeToExt(value: string | null | undefined): string {
   try {
