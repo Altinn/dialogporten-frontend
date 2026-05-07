@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.144.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.144.0...v1.144.1) (2026-05-07)
+
+
+### Bug Fixes
+
+* **attachment:** zip attachments should use FilesIcon instead of FileIcon ([#4115](https://github.com/Altinn/dialogporten-frontend/issues/4115)) ([eb4b7db](https://github.com/Altinn/dialogporten-frontend/commit/eb4b7dba6268ed8c571bba55ebf1331825a320c5))
+* **parties:** sub account limit reached 1 too early becase ALL accounts option was included in calculation ([#4113](https://github.com/Altinn/dialogporten-frontend/issues/4113)) ([3022049](https://github.com/Altinn/dialogporten-frontend/commit/30220497601747b5c56676bdcd729a0866d82a64))
+
 ## [1.144.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.143.0...v1.144.0) (2026-05-07)
 
 
