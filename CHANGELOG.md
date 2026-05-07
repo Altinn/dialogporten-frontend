@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.145.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.144.1...v1.145.0) (2026-05-07)
+
+
+### Features
+
+* reorganize notification settings ([#4118](https://github.com/Altinn/dialogporten-frontend/issues/4118)) ([ef43fc9](https://github.com/Altinn/dialogporten-frontend/commit/ef43fc907a9eab1e2c15fd2321dbd0de7fae4d8e))
+
 ## [1.144.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.144.0...v1.144.1) (2026-05-07)
 
 
