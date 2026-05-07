@@ -24,7 +24,7 @@ import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
 import { type Locale, useDateFnsLocale, useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
 import { type ActivityLogEntry, getActivityHistory } from '../../utils/activities.tsx';
-import { createExpiryBadge, mediaTypeToExt } from '../../utils/attachments.ts';
+import { createExpiryBadge, mediaTypeToExt, mediaTypeToIcon } from '../../utils/attachments.ts';
 import { getSeenByLabel, getServiceOwnerLogo } from '../../utils/dialog.ts';
 import { type OrganizationOutput, getOrganization, getOrganizationByLocale } from '../../utils/organizations.ts';
 import { type TimelineSegmentWithTransmissions, getTransmissions } from '../../utils/transmissions.ts';
@@ -137,6 +137,7 @@ export const getAttachmentLinks = (
             href: isUnauthorized ? '' : url.url,
             metadata: mediaTypeToExt(url.mediaType),
             badge: createExpiryBadge(attachment.expiresAt, locale, t),
+            icon: mediaTypeToIcon(url.mediaType),
           };
         }),
     );
