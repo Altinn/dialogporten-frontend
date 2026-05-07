@@ -1,4 +1,4 @@
-import { Heading, ListItemLabel, PageBase, SettingsList, Toolbar } from '@altinn/altinn-components';
+import { Heading, PageBase, SettingsList, Toolbar } from '@altinn/altinn-components';
 import type { NotificationSettingsResponse, PartyFieldsFragment } from 'bff-types-generated';
 import { useTranslation } from 'react-i18next';
 import { useParties } from '../../../api/hooks/useParties.ts';
@@ -25,23 +25,21 @@ export const NotificationsPage = () => {
     isSelfIdentifiedUser,
     disabled: isSelfIdentifiedUser,
     options: {
-      excludeGroups: [SettingsType.contact, SettingsType.primary, SettingsType.favorites, SettingsType.other],
+      includeGroups: [
+        SettingsType.mobileAlerts,
+        SettingsType.emailAlerts,
+        SettingsType.mobileProfile,
+        SettingsType.emailProfiles,
+      ],
       groups: {
+        [SettingsType.mobileAlerts]: {
+          title: t('profile.settings.sms_notifications'),
+        },
+        [SettingsType.emailAlerts]: {
+          title: t('profile.settings.email_notifications'),
+        },
         [SettingsType.alerts]: {
           title: t('profile.settings.notification_addresses'),
-        },
-        [SettingsType.profiles]: {
-          title: t('profile.settings.notification_profiles'),
-        },
-        [SettingsType.persons]: {
-          title: t('profile.settings.person_notifications'),
-        },
-        [SettingsType.companies]: {
-          title: (
-            <ListItemLabel title={t('profile.settings.company_notifications')}>
-              {t('profile.settings.company_notifications')}
-            </ListItemLabel>
-          ),
         },
       },
     },
