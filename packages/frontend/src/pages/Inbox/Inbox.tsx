@@ -403,7 +403,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
       <>
         <AccountNavigator
           hidden={
-            subAccounts.length < MAX_DIALOG_PARTY_SIZE ||
+            subAccounts.length - 1 < MAX_DIALOG_PARTY_SIZE ||
             (selectedServicesCount > 0 && !hasSubAccountOverrideWithinLimit)
           }
           subAccounts={subAccounts}
