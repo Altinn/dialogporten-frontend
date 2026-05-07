@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.144.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.143.0...v1.144.0) (2026-05-07)
+
+
+### Features
+
+* migrate to new profile patch endpoints for notification address verification and split SMS/email flow into separate dialogs ([#4100](https://github.com/Altinn/dialogporten-frontend/issues/4100)) ([51b49b0](https://github.com/Altinn/dialogporten-frontend/commit/51b49b0fd5db66f7ac22637d0c8be61e48c47b51))
+
+
+### Bug Fixes
+
+* Fix transmission filtering logic to show api-only attachments if summary provided ([#4107](https://github.com/Altinn/dialogporten-frontend/issues/4107)) ([901ca31](https://github.com/Altinn/dialogporten-frontend/commit/901ca3154d7188fef94b72bb3c39aa695e2ad9d1))
+
 ## [1.143.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.142.3...v1.143.0) (2026-05-04)
 
 
