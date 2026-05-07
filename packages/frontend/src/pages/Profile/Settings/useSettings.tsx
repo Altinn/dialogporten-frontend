@@ -34,6 +34,10 @@ import { ContactProfileDetails } from './ContactProfileDetails.tsx';
 export enum SettingsType {
   contact = `contact`,
   alerts = 'alerts',
+  mobileAlerts = 'mobileAlerts',
+  emailAlerts = 'emailAlerts',
+  emailProfiles = 'emailProfiles',
+  mobileProfile = 'mobileProfile',
   companies = 'companies',
   persons = 'persons',
   primary = 'primary',
@@ -64,7 +68,8 @@ interface UseSettingsOutput {
 
 const getDefaultGroups = (t: (key: string) => string) => ({
   [SettingsType.contact]: { title: t('profile.settings.contact_information') },
-  [SettingsType.alerts]: { title: t('profile.settings.notifications') },
+  [SettingsType.emailAlerts]: { title: t('profile.settings.email_notifications') },
+  [SettingsType.mobileAlerts]: { title: t('profile.settings.sms_notifications') },
   [SettingsType.companies]: { title: t('profile.settings.company_notifications') },
   [SettingsType.persons]: { title: t('profile.settings.person_notifications') },
   [SettingsType.primary]: { title: t('profile.settings.favorite_notifications') },
@@ -377,7 +382,7 @@ export const useSettings = ({
 
   const contactProfileEmailSettings: SettingsItemProps[] = uniqueEmailAddresses.map((uea) => ({
     id: 'contact-profile-email-setting-' + uea.email,
-    groupId: SettingsType.profiles,
+    groupId: SettingsType.emailProfiles,
     icon: PersonRectangleIcon,
     title: t('profile.settings.notification_profile_email'),
     value: uea.email,
@@ -412,7 +417,7 @@ export const useSettings = ({
 
   const contactProfilePhoneSettings: SettingsItemProps[] = uniquePhoneNumbers.map((uep) => ({
     id: 'contact-profile-phone-setting-' + uep.phoneNumber,
-    groupId: SettingsType.profiles,
+    groupId: SettingsType.mobileProfile,
     icon: PersonRectangleIcon,
     title: t('profile.settings.notification_profile_sms'),
     value: uep.phoneNumber,
@@ -445,10 +450,10 @@ export const useSettings = ({
     ),
   }));
 
-  const alertSettings: SettingsItemProps[] = [
+  const mobileAlertSettings: SettingsItemProps[] = [
     {
       id: 'alert-mobile',
-      groupId: SettingsType.alerts,
+      groupId: SettingsType.mobileAlerts,
       icon: BellIcon,
       title: t('profile.settings.sms_notifications'),
       value: user?.phoneNumber || '',
@@ -463,9 +468,11 @@ export const useSettings = ({
         />
       ),
     },
+  ];
+  const emailAlertSettings: SettingsItemProps[] = [
     {
       id: 'alert-email',
-      groupId: SettingsType.alerts,
+      groupId: SettingsType.emailAlerts,
       icon: BellIcon,
       title: t('profile.settings.email_notifications'),
       value: user?.email || '',
@@ -512,8 +519,9 @@ export const useSettings = ({
 
   const allSettings = [
     ...contactSettings,
-    ...alertSettings,
+    ...mobileAlertSettings,
     ...contactProfilePhoneSettings,
+    ...emailAlertSettings,
     ...contactProfileEmailSettings,
     ...accountAlertSettings,
     ...otherSettings,
