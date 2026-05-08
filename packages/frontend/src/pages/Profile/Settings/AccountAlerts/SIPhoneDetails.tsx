@@ -12,11 +12,11 @@ import {
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { sendVerificationCode, updateSIPrivatePhoneNumber, verifyAddress } from '../../../../api/queries.ts';
+import { updateSIPrivatePhoneNumber } from '../../../../api/queries.ts';
 import { QUERY_KEYS } from '../../../../constants/queryKeys.ts';
 import styles from './AccountAlertsChannelDetails.module.css';
 import { VerificationCodeStep } from './VerificationCodeStep.tsx';
-import { useIsAlreadyVerified, useResendCooldown } from './common.ts';
+import { useIsAlreadyVerified, useVerificationFlow } from './common.ts';
 import { isValidCountryCodeInput, isValidPhoneNumber, joinPhone, parsePhone } from './phone.ts';
 
 export const SIPhoneDetails = ({ phoneNumber }: { phoneNumber?: string }) => {
@@ -24,16 +24,23 @@ export const SIPhoneDetails = ({ phoneNumber }: { phoneNumber?: string }) => {
   const queryClient = useQueryClient();
   const { openSnackbar } = useSnackbar();
   const isAlreadyVerified = useIsAlreadyVerified();
-  const { cooldown, start: startCooldown } = useResendCooldown();
+  const {
+    isInVerificationFlow,
+    setIsInVerificationFlow,
+    codeInput,
+    setCodeInput,
+    codeError,
+    setCodeError,
+    isSending,
+    isConfirming,
+    cooldown,
+    handleSendCode,
+    handleConfirmCode,
+  } = useVerificationFlow('Sms');
 
   const initialPhone = parsePhone(phoneNumber);
   const [countryCode, setCountryCode] = useState<string>(initialPhone.countryCode);
   const [phoneNumberPart, setPhoneNumberPart] = useState<string>(initialPhone.phoneNumber);
-  const [isInVerificationFlow, setIsInVerificationFlow] = useState(false);
-  const [codeInput, setCodeInput] = useState('');
-  const [codeError, setCodeError] = useState('');
-  const [isSending, setIsSending] = useState(false);
-  const [isConfirming, setIsConfirming] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   const handleClose = (event: React.SyntheticEvent) => {
@@ -46,44 +53,6 @@ export const SIPhoneDetails = ({ phoneNumber }: { phoneNumber?: string }) => {
   const isVerified = !!siPhoneValue && isAlreadyVerified(siPhoneValue, 'Sms');
   const isValueDirty = siPhoneValue.trim() !== (phoneNumber ?? '').trim();
   const needsVerification = !!siPhoneValue && !isVerified;
-
-  const handleSendCode = async () => {
-    setIsSending(true);
-    setCodeInput('');
-    setCodeError('');
-    try {
-      const result = await sendVerificationCode({ value: siPhoneValue, type: 'Sms' });
-      const response = result?.sendVerificationCode;
-      if (response?.success || response?.retryAfter) {
-        setIsInVerificationFlow(true);
-        startCooldown(response.retryAfter ?? undefined);
-      } else {
-        openSnackbar({ message: t('profile.account_alerts.snackbar.error'), color: 'danger' });
-      }
-    } catch {
-      openSnackbar({ message: t('profile.account_alerts.snackbar.error'), color: 'danger' });
-    } finally {
-      setIsSending(false);
-    }
-  };
-
-  const handleConfirmCode = async () => {
-    setIsConfirming(true);
-    setCodeError('');
-    try {
-      const result = await verifyAddress({ value: siPhoneValue, type: 'Sms', verificationCode: codeInput });
-      if (result?.verifyAddress?.success) {
-        void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.VERIFIED_ADDRESSES] });
-        setIsInVerificationFlow(false);
-      } else {
-        setCodeError(t('profile.verification.code_invalid'));
-      }
-    } catch {
-      openSnackbar({ message: t('profile.account_alerts.snackbar.error'), color: 'danger' });
-    } finally {
-      setIsConfirming(false);
-    }
-  };
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -119,8 +88,8 @@ export const SIPhoneDetails = ({ phoneNumber }: { phoneNumber?: string }) => {
           setCodeInput(v);
           setCodeError('');
         }}
-        onConfirm={handleConfirmCode}
-        onResend={handleSendCode}
+        onConfirm={() => handleConfirmCode(siPhoneValue)}
+        onResend={() => handleSendCode(siPhoneValue)}
         onCancel={() => setIsInVerificationFlow(false)}
       />
     );
@@ -171,7 +140,12 @@ export const SIPhoneDetails = ({ phoneNumber }: { phoneNumber?: string }) => {
         )}
         <ButtonGroup>
           {needsVerification && siPhoneValue && (
-            <Button type="button" variant="tinted" onClick={handleSendCode} disabled={isSending || !isPhoneShapeValid}>
+            <Button
+              type="button"
+              variant="tinted"
+              onClick={() => handleSendCode(siPhoneValue)}
+              disabled={isSending || !isPhoneShapeValid}
+            >
               {t('profile.account_alerts.verify_sms')}
             </Button>
           )}
