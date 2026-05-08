@@ -24,6 +24,7 @@ import {
   type UpdateLanguageMutation,
   type UpdateNotificationSettingMutation,
   type UpdateSavedSearchMutation,
+  type UpdateSiPrivatePhoneNumberMutation,
   type UpdateSystemLabelMutation,
   type VerifiedAddressesQuery,
   type VerifyAddressMutation,
@@ -269,3 +270,6 @@ export const verifyAddress = (data: VerifyAddressMutationVariables['data']): Pro
 export const sendVerificationCode = (
   data: SendVerificationCodeMutationVariables['data'],
 ): Promise<SendVerificationCodeMutation> => graphQLSDK.SendVerificationCode({ data });
+
+export const updateSIPrivatePhoneNumber = (value: string | null): Promise<UpdateSiPrivatePhoneNumberMutation> =>
+  graphQLSDK.UpdateSIPrivatePhoneNumber({ value });

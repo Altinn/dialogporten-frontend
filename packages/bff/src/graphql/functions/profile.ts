@@ -14,6 +14,15 @@ const { platformBaseURL } = config;
 
 const platformProfileAPI_url = platformBaseURL + '/profile/api/v1/';
 
+const getAxiosOptions = (token: TokenType) => ({
+  timeout: 30000,
+  headers: {
+    Authorization: `Bearer ${token.access_token}`,
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+  },
+});
+
 const frontendToCoreLang: Record<string, string> = { nb: 'no', nn: 'nn', en: 'en' };
 export const coreToFrontendLang: Record<string, string> = { no: 'nb', nn: 'nn', en: 'en' };
 
@@ -305,14 +314,11 @@ export const sendVerificationCode = async (data: SendVerificationCodeInputData, 
   }
 
   try {
-    const response = await axios.post(`${platformProfileAPI_url}users/current/verification/send`, data, {
-      timeout: 30000,
-      headers: {
-        Authorization: `Bearer ${token.access_token}`,
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-    });
+    const response = await axios.post(
+      `${platformProfileAPI_url}users/current/verification/send`,
+      data,
+      getAxiosOptions(token),
+    );
 
     return {
       success: true,
@@ -356,14 +362,7 @@ export const updateNotificationsSetting = async (input: NotificationSettingsInpu
     const response = await axios.patch(
       `${platformProfileAPI_url}users/current/notificationsettings/parties/${partyUuid}`,
       payload,
-      {
-        timeout: 30000,
-        headers: {
-          Authorization: `Bearer ${token.access_token}`,
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-      },
+      getAxiosOptions(token),
     );
     return response.data;
   } catch (error) {
@@ -390,14 +389,7 @@ export const deleteNotificationsSetting = async (partyUuid: string, context: Con
   try {
     const response = await axios.delete(
       `${platformProfileAPI_url}users/current/notificationsettings/parties/${partyUuid}`,
-      {
-        timeout: 30000,
-        headers: {
-          Authorization: `Bearer ${token.access_token}`,
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-      },
+      getAxiosOptions(token),
     );
     return response.data;
   } catch (error) {
@@ -406,6 +398,32 @@ export const deleteNotificationsSetting = async (partyUuid: string, context: Con
       logger.error(`Failed to delete notificationsSettings: ${err.status ?? ''} ${err.message ?? ''}`);
     }
     return;
+  }
+};
+
+export const updateSIPrivatePhoneNumber = async (value: string | null, context: Context) => {
+  const token = getSessionToken(context);
+  if (!token) {
+    logger.error('No token found in session');
+    return { success: false };
+  }
+  try {
+    await axios.put(
+      `${platformProfileAPI_url}users/current/notificationsettings/private/phonenumber`,
+      { value },
+      getAxiosOptions(token),
+    );
+    return { success: true };
+  } catch (error) {
+    if (isAxiosError(error)) {
+      logger.error(
+        { status: error.response?.status, body: error.response?.data },
+        'Failed to update SI private phone number',
+      );
+    } else {
+      logger.error(error, 'Failed to update SI private phone number');
+    }
+    return { success: false };
   }
 };
 
@@ -420,14 +438,7 @@ export const getNotificationAddressByOrgNumber = async (orgnr: string, context: 
     return;
   }
   const { data, status, statusText } = await axios
-    .get(`${platformProfileAPI_url}organizations/${orgnr}/notificationaddresses/mandatory`, {
-      timeout: 30000,
-      headers: {
-        Authorization: `Bearer ${token.access_token}`,
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-    })
+    .get(`${platformProfileAPI_url}organizations/${orgnr}/notificationaddresses/mandatory`, getAxiosOptions(token))
     .catch((error) => {
       // This fetch call can return 403 if user does not have access to the organization
       // or 404 if no notification addresses are found
@@ -452,14 +463,7 @@ export const verifyAddress = async (data: VerifyAddressInputData, context: Conte
     await axios.post(
       `${platformProfileAPI_url}users/current/verification/verify`,
       { value: data.value, type: data.type, verificationCode: data.verificationCode },
-      {
-        timeout: 30000,
-        headers: {
-          Authorization: `Bearer ${token.access_token}`,
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-      },
+      getAxiosOptions(token),
     );
     return { success: true };
   } catch (error) {
@@ -490,14 +494,10 @@ export const getVerifiedAddresses = async (context: Context) => {
     throw new Error('No token found in session');
   }
   try {
-    const response = await axios.get(`${platformProfileAPI_url}users/current/verification/verified-addresses`, {
-      timeout: 30000,
-      headers: {
-        Authorization: `Bearer ${token.access_token}`,
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-    });
+    const response = await axios.get(
+      `${platformProfileAPI_url}users/current/verification/verified-addresses`,
+      getAxiosOptions(token),
+    );
     return response.data ?? [];
   } catch (error) {
     logger.error(error, 'Error fetching verified addresses for user:');

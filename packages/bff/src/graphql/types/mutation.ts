@@ -11,6 +11,7 @@ import {
   setPreSelectedParty,
   updateLanguageInCore,
   updateNotificationsSetting,
+  updateSIPrivatePhoneNumber,
   updateShowClientUnits,
   updateShowDeletedEntities,
   verifyAddress,
@@ -322,6 +323,25 @@ export const SendVerificationCode = extendType({
           logger.error(error, 'Failed to send verification code:');
           return { success: false, message: 'Failed to send verification code' };
         }
+      },
+    });
+  },
+});
+
+export const UpdateSIPrivatePhoneNumber = extendType({
+  type: 'Mutation',
+  definition(t) {
+    t.field('updateSIPrivatePhoneNumber', {
+      type: Response,
+      args: {
+        value: stringArg(),
+      },
+      resolve: async (_, { value }, ctx) => {
+        const result = await updateSIPrivatePhoneNumber(value ?? null, ctx);
+        if (result?.success) {
+          return { success: true, message: 'Phone number updated successfully' };
+        }
+        return { success: false, message: 'Failed to update phone number' };
       },
     });
   },

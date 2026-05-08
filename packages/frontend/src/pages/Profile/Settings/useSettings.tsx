@@ -328,13 +328,14 @@ export const useSettings = ({
       icon: MobileIcon,
       title: t('profile.settings.mobile_phone'),
       value: user?.phoneNumber || '',
-      badge: isSelfIdentifiedUser ? undefined : getChangeSettingsBadge(user?.phoneNumber || ''),
+      badge: getChangeSettingsBadge(user?.phoneNumber || ''),
       variant: 'modal',
       children: (
         <ContactProfileDetails
           variant="phone"
           phoneNumber={user?.phoneNumber || ''}
           usedByItems={getUsedByPhoneNumber(user?.phoneNumber ?? '')}
+          isSelfIdentifiedUser={isSelfIdentifiedUser}
           readOnly
         />
       ),
@@ -525,7 +526,11 @@ export const useSettings = ({
     ...contactProfileEmailSettings,
     ...accountAlertSettings,
     ...otherSettings,
-  ].map((item) => (disabled ? { ...item, disabled: true } : item));
+  ].map((item) => {
+    if (!disabled) return item;
+    if (isSelfIdentifiedUser && item.id === 'contact-mobile') return item;
+    return { ...item, disabled: true };
+  });
 
   const settings = allSettings.filter((item) => {
     const { includeGroups, excludeGroups } = options;
