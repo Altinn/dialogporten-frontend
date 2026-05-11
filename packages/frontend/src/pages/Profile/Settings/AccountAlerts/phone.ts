@@ -8,7 +8,9 @@ export const isValidCountryCodeInput = (input: string): boolean => /^(\+\d{1,3}|
 export const parsePhone = (value: string | null | undefined): { countryCode: string; phoneNumber: string } => {
   if (!value) return { countryCode: DEFAULT_COUNTRY_CODE, phoneNumber: '' };
   const trimmed = value.trim();
-  const parsed = parsePhoneNumberFromString(trimmed.startsWith('+') ? trimmed : `+${trimmed}`);
+  const parsed = trimmed.startsWith('+')
+    ? parsePhoneNumberFromString(trimmed)
+    : parsePhoneNumberFromString(trimmed, DEFAULT_COUNTRY);
   if (parsed) {
     return {
       countryCode: `+${parsed.countryCallingCode}`,

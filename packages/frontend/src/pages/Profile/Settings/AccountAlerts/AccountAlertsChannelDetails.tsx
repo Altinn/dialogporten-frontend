@@ -37,11 +37,10 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
   const { logError } = useErrorLogger();
   const isAlreadyVerified = useIsAlreadyVerified();
   const { cooldown, start: startCooldown } = useResendCooldown();
-
   const isEmail = channel === 'Email';
   const notificationSettings = notificationParty?.notificationSettings;
   const partyUuid = notificationSettings?.partyUuid || notificationParty?.partyUuid || '';
-
+  const isOrganization = notificationParty?.partyType === 'Organization';
   const persistedValue = isEmail ? notificationSettings?.emailAddress : notificationSettings?.phoneNumber;
   const profileFallback = isEmail ? user?.email : user?.phoneNumber;
   const defaultValue = persistedValue || profileFallback || '';
@@ -80,7 +79,7 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
     void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.NOTIFICATION_SETTINGS_FOR_CURRENT_USER] });
   };
 
-  const buildPatch = (next: string) => ({
+  const buildPatch = (next: string | null) => ({
     partyUuid,
     ...(isEmail ? { emailAddress: next } : { phoneNumber: next }),
   });
@@ -140,7 +139,7 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
     e.preventDefault();
     if (needsVerification) return;
     try {
-      const result = await updateNotificationsetting(buildPatch(enabled ? value : ''));
+      const result = await updateNotificationsetting(buildPatch(enabled ? value : null));
       if (result?.updateNotificationSetting?.success) {
         invalidateQueries();
         handleClose();
@@ -192,7 +191,9 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
           />
           {enabled && isEmail && (
             <Field>
-              <Label size="sm">{t('profile.account_alerts.email_label')}</Label>
+              <Label size="sm" className={styles.hiddenLabel}>
+                {t('profile.account_alerts.email_label')}
+              </Label>
               <div className={styles.fieldWrapper}>
                 <Input
                   name="email"
@@ -212,7 +213,9 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
           )}
           {enabled && !isEmail && (
             <Field>
-              <Label size="sm">{t('profile.account_alerts.phone_label')}</Label>
+              <Label className={styles.hiddenLabel} size="sm">
+                {t('profile.account_alerts.phone_label')}
+              </Label>
               <div className={styles.phoneRow}>
                 <Input
                   name="countryCode"
@@ -248,6 +251,15 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
             </Field>
           )}
         </Fieldset>
+        <Typography size="sm">
+          <p>
+            {t(
+              isOrganization
+                ? 'profile.notifications.personal_explanation'
+                : 'profile.notifications.personal_for_person',
+            )}
+          </p>
+        </Typography>
         {needsVerification && (
           <Typography size="sm">
             <p>{t('profile.account_alerts.new_addresses_must_verify')}</p>
