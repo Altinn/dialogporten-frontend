@@ -5,7 +5,6 @@ import {
   type BulkUpdateSystemLabelsMutation,
   type CreateSavedSearchMutation,
   type DeleteFavoritePartyMutation,
-  type DeleteNotificationSettingMutation,
   type DeleteSavedSearchMutation,
   type GetAllDialogsForPartiesQuery,
   type GetServiceResourcesQuery,
@@ -209,8 +208,6 @@ export const getNotificationsettingsForCurrentUser = (): Promise<Notificationset
 export const updateNotificationsetting = (
   data: NotificationSettingsInput,
 ): Promise<UpdateNotificationSettingMutation> => graphQLSDK.UpdateNotificationSetting({ data });
-export const deleteNotificationsetting = (partyUuid: string): Promise<DeleteNotificationSettingMutation> =>
-  graphQLSDK.DeleteNotificationSetting({ partyUuid });
 export const updateSystemLabel = (
   dialogId: string,
   addLabels: SystemLabel | SystemLabel[],
