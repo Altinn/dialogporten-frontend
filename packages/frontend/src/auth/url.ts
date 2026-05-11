@@ -47,8 +47,8 @@ export const getStoredURL = (): string | null => {
   return null;
 };
 
-export const createMessageBoxLink = () => {
-  return getFrontPageURL() + '/ui/Messagebox/';
+export const createMessageBoxLink = (partyUuid?: string) => {
+  return createChangePartyAndRedirect(partyUuid, getFrontPageURL() + '/ui/Messagebox/');
 };
 
 export type hostEnv = 'local' | 'at23' | 'tt02' | 'yt' | 'prod';

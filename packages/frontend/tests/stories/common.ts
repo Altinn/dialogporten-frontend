@@ -19,7 +19,7 @@ export async function setPartyCookie(page: Page, partyUuid: string) {
 }
 
 export const getSidebar = (page: Page) => page.locator('aside');
-export const getSidebarMenuItem = (page: Page, route: string) => getSidebar(page).locator(`a[href*="${route}?"]`);
+export const getSidebarMenuItem = (page: Page, route: string) => getSidebar(page).locator(`a[href^="${route}?"]`);
 export const getSearchbarInput = (page: Page) => page.locator("[name='Søk']");
 
 export async function performSearch(page: Page, query: string, action?: 'clear' | 'click' | 'enter') {

@@ -37,12 +37,14 @@ export function buildInboxMenu({
   pathname,
   currentSearchQuery,
   fromView,
+  currentPartyUuid,
 }: {
   t: (key: string, vars?: Record<string, string>) => string;
   currentEndUserName?: string;
   pathname: string;
   currentSearchQuery: string;
   fromView?: string;
+  currentPartyUuid?: string;
 }): UseGlobalMenuProps {
   const menuGroups = {
     shortcuts: {
@@ -84,7 +86,7 @@ export function buildInboxMenu({
       icon: LeaveIcon,
       title: t('altinn.beta.exit'),
       as: createMenuItemComponent({
-        to: createMessageBoxLink(),
+        to: createMessageBoxLink(currentPartyUuid),
       }),
     },
     {

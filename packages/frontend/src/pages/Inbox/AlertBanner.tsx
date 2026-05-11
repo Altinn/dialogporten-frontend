@@ -1,6 +1,7 @@
 import { DsAlert, DsParagraph, Heading } from '@altinn/altinn-components';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import { useCurrentPartyUuid } from '../../api/hooks/usePartiesSelectors.ts';
 import { createMessageBoxLink } from '../../auth';
 import { useAlertBanner } from '../../hooks/useAlertBanner.ts';
 
@@ -10,8 +11,9 @@ interface AlertBannerProps {
 
 export const AlertBanner = ({ showAlertBanner }: AlertBannerProps) => {
   const { t } = useTranslation();
+  const currentPartyUuid = useCurrentPartyUuid();
   const alertBannerContent = useAlertBanner();
-  const linkUrl = alertBannerContent?.link?.url || createMessageBoxLink();
+  const linkUrl = alertBannerContent?.link?.url || createMessageBoxLink(currentPartyUuid);
   const linkText = alertBannerContent?.link?.text || t('inbox.historical_messages_date_warning_link');
   const isExternal = linkUrl.startsWith('http://') || linkUrl.startsWith('https://');
 
