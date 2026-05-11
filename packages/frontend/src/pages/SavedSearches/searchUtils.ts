@@ -2,9 +2,7 @@ import type { BookmarkSettingsItemProps, QueryItemProps } from '@altinn/altinn-c
 import { DialogStatus, type SavedSearchesFieldsFragment, type ServiceResource, SystemLabel } from 'bff-types-generated';
 import type { Locale } from 'date-fns';
 import type { TFunction } from 'i18next';
-import { logError } from '../../analytics/errorLogger.ts';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
-import type { FormatDistanceFunction } from '../../i18n/useDateFnsLocale.tsx';
 import type { OrganizationLookup } from '../../utils/organizations.ts';
 import { getOrganization } from '../../utils/organizations.ts';
 import { DateFilterOption, formatDateRange, formatSingleDate } from '../Inbox/filters';
@@ -131,19 +129,6 @@ export const buildFilterParams = (
   return params;
 };
 
-export const autoFormatRelativeTime = (date: Date, formatDistance: FormatDistanceFunction): string => {
-  try {
-    return formatDistance(new Date(date), new Date(), { addSuffix: true });
-  } catch (error) {
-    logError(
-      error as Error,
-      { context: 'searchUtils.autoFormatRelativeTime', date: date.toISOString() },
-      'Error formatting relative time',
-    );
-    return '';
-  }
-};
-
 export const filterBookmarksBySearch = (
   items: BookmarkSettingsItemProps[],
   query: string,
@@ -154,23 +139,4 @@ export const filterBookmarksBySearch = (
     (item) =>
       item.title?.toLowerCase().includes(lower) || item.params?.some((p) => p.label?.toLowerCase().includes(lower)),
   );
-};
-
-export const getMostRecentSearchDate = (data: SavedSearchesFieldsFragment[]): Date | null => {
-  try {
-    if (!data?.length) return null;
-    const timestamp = data.reduce(
-      (latest, search) =>
-        Number.parseInt(search?.updatedAt ?? '0', 10) > Number.parseInt(latest?.updatedAt ?? '0', 10) ? search : latest,
-      data[0],
-    ).updatedAt;
-    return new Date(Number.parseInt(timestamp, 10));
-  } catch (error) {
-    logError(
-      error as Error,
-      { context: 'searchUtils.getMostRecentSearchDate', dataLength: data?.length || 0 },
-      'Error getting most recent search date',
-    );
-    return null;
-  }
 };

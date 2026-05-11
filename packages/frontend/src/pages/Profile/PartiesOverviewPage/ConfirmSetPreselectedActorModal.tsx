@@ -44,13 +44,13 @@ export const ConfirmSetPreselectedActorModal = ({
       </Typography>
 
       <div className={styles.buttonGroupContainer}>
-        <Button onClick={onClose} variant="outline" disabled={isSubmitting} type="button">
-          {t('profile.parties.cancel')}
-        </Button>
         <Button onClick={handleConfirm} disabled={isSubmitting} type="button">
           {showActor.operation === 'set'
             ? t('profile.parties.confirm_set_preselected_actor_button')
             : t('profile.parties.confirm_unset_preselected_actor_button')}
+        </Button>
+        <Button onClick={onClose} variant="outline" disabled={isSubmitting} type="button">
+          {t('profile.parties.cancel')}
         </Button>
       </div>
     </Modal>
