@@ -153,6 +153,9 @@ export const PageLayout: React.FC = () => {
     return steps;
   }, [currentPartyUuid, location.pathname, fromView, docTitle]);
 
+  const escalateBannerSeverity = new Date() >= new Date(2026, 5, 2); // Escalate to warning on June 2nd, 2026
+  const bannerLink = getBannerLink(i18n.language);
+
   let color: LayoutColor = 'neutral';
   let theme: LayoutTheme = 'default';
 
@@ -173,6 +176,12 @@ export const PageLayout: React.FC = () => {
   const layoutProps: LayoutProps = {
     theme,
     color,
+    banner: {
+      title: t('altinn_shutdown_banner.title'),
+      link: { label: t('altinn_shutdown_banner.link'), href: bannerLink },
+      color: escalateBannerSeverity ? 'warning' : undefined,
+      variant: escalateBannerSeverity ? 'alert' : undefined,
+    },
     content: {
       color: isProfile ? 'person' : undefined,
     },
@@ -205,4 +214,15 @@ export const PageLayout: React.FC = () => {
       </Layout>
     </>
   );
+};
+
+const getBannerLink = (languageCode: string) => {
+  switch (languageCode) {
+    case 'en':
+      return 'https://info.altinn.no/en/news/check-if-you-need-to-take-action-before-we-shut-down-the-old-altinn/';
+    case 'nn':
+      return 'https://info.altinn.no/nn/nyheiter/sjekk-om-du-ma-gjere-noko-for-vi-slar-av-gamle-altinn/';
+    default:
+      return 'https://info.altinn.no/nyheter/sjekk-om-du-ma-gjore-noe-for-vi-slar-av-gamle-altinn/';
+  }
 };
