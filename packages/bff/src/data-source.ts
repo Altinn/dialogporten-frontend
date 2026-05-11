@@ -42,7 +42,8 @@ export const connectionOptions: DataSourceOptions = config.postgresql.useAadAuth
       logging: false,
       entities: ['src/entities.ts'],
       migrations: [__dirname + '/migrations/**/*.ts'],
-      ...sslExtra,
+      // Azure PostgreSQL always requires TLS regardless of ENABLE_HTTPS (which controls the BFF's own server)
+      extra: { ssl: { rejectUnauthorized: false } },
     } as unknown as DataSourceOptions)
   : {
       type: 'postgres',
