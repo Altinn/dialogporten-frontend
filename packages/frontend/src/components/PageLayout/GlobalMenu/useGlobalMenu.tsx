@@ -35,7 +35,6 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
     pathname,
     currentSearchQuery,
     fromView,
-    currentPartyUuid,
   });
 
   return isProfile ? profileMenus : inboxMenus;

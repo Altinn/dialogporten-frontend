@@ -1,63 +1,23 @@
 import { FloatingDropdown as FloatingDropdownAc } from '@altinn/altinn-components';
 import { ExternalLinkIcon, LeaveIcon, QuestionmarkIcon } from '@navikt/aksel-icons';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useCurrentPartyUuid } from '../../api/hooks/usePartiesSelectors';
+import { useCurrentPartyUuid } from '../../api/hooks/usePartiesSelectors.ts';
 import { createMessageBoxLink, getNeedHelpLink } from '../../auth';
-import { QUERY_KEYS } from '../../constants/queryKeys';
 import { i18n } from '../../i18n/config';
-import { pruneSearchQueryParams } from '../../pages/Inbox/queryParams.ts';
-import { PageRoutes } from '../../pages/routes';
-import { useGlobalState } from '../../useGlobalState';
-
-// Hide "vis nye funksjoner" (onboarding) on pages:
-const TOUR_BLACKLISTED_PAGES = [PageRoutes.notifications, PageRoutes.settings];
 
 export const FloatingDropdown = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { search } = location;
-  const [_, setShowTour] = useGlobalState<boolean>(QUERY_KEYS.SHOW_TOUR, false);
-  const [__, setShowProfileTour] = useGlobalState<boolean>(QUERY_KEYS.SHOW_PROFILE_TOUR, false);
-
   const currentPartyUuid = useCurrentPartyUuid();
-
-  const isTourBlacklisted = TOUR_BLACKLISTED_PAGES.includes(location.pathname as PageRoutes);
-
-  const handleStartTour = () => {
-    const isProfilePage = location.pathname.includes(PageRoutes.profile);
-    const isInboxPage = location.pathname === PageRoutes.inbox;
-
-    if (isProfilePage) {
-      setShowProfileTour(true);
-    } else if (isInboxPage) {
-      setShowTour(true);
-    } else {
-      // I.e. other folders or inbox details. We need to navigate to main view to show the tour properly first
-      navigate(PageRoutes.inbox + pruneSearchQueryParams(search));
-      setShowTour(true);
-    }
-  };
 
   const handleGoBack = () => {
     window.location.href = createMessageBoxLink(currentPartyUuid);
   };
 
   const handleGoToHelp = () => {
-    window.location.href = getNeedHelpLink(currentPartyUuid, i18n.language);
+    window.location.href = getNeedHelpLink(i18n.language);
   };
 
   const items = [
-    ...(!isTourBlacklisted
-      ? [
-          {
-            icon: QuestionmarkIcon,
-            title: t('floating_dropdown.show_new_functionality'),
-            onClick: handleStartTour,
-          },
-        ]
-      : []),
     {
       icon: ExternalLinkIcon,
       title: t('floating_dropdown.help_pages'),

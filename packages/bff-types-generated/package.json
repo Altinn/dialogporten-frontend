@@ -6,7 +6,7 @@
     "dev": "pnpm build:watch",
     "build": "pnpm generate:types-gql",
     "build:watch": "nodemon --watch 'src/**' --watch 'queries' --ext 'ts,graphql' --exec 'pnpm build'",
-    "generate:types-gql": "NODE_OPTIONS=\"--loader ts-node/esm --no-warnings=ExperimentalWarning\" graphql-codegen-esm --config codegen.ts",
+    "generate:types-gql": "NODE_OPTIONS='--import @swc-node/register/esm-register' graphql-codegen-esm --config codegen.ts",
     "test": "vitest run"
   },
   "dependencies": {
@@ -19,14 +19,14 @@
     "graphql": "^16.11.0",
     "graphql-request": "^7.2.0",
     "graphql-tag": "^2.12.6",
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.14"
   },
   "devDependencies": {
     "@graphql-codegen/typescript": "^4.1.6",
     "@graphql-codegen/typescript-graphql-request": "^6.3.0",
     "@graphql-codegen/typescript-resolvers": "^4.5.1",
     "@parcel/watcher": "^2.5.1",
-    "ts-node": "^10.9.2",
+    "@swc-node/register": "^1.10.10",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4"
   },

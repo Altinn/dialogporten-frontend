@@ -6,10 +6,10 @@ import {
   type BadgeProps,
   type SettingsGroupProps,
   type SettingsItemProps,
+  type SettingsItemVariant,
   type ToolbarSearchProps,
   type UsedByLogItemProps,
 } from '@altinn/altinn-components';
-import type { SettingsItemVariant } from '@altinn/altinn-components/dist/types/lib/components/Settings/SettingsItem';
 import {
   BellIcon,
   BriefcaseIcon,
@@ -26,12 +26,18 @@ import { useAccounts } from '../../../components/PageLayout/Accounts/useAccounts
 import { usePartiesWithNotificationSettings } from '../usePartiesWithNotificationSettings.tsx';
 import { useProfile } from '../useProfile.tsx';
 import { useVerifiedAddresses } from '../useVerifiedAddresses.tsx';
-import { AccountAlertsDetails } from './AccountAlertsDetails.tsx';
+import { AccountAlertsChannelDetails } from './AccountAlerts/AccountAlertsChannelDetails.tsx';
+import { ServiceResourceNotificationsDetails } from './AccountAlerts/ServiceResourceNotificationsDetails.tsx';
+import type { Channel } from './AccountAlerts/common.ts';
 import { ContactProfileDetails } from './ContactProfileDetails.tsx';
 
 export enum SettingsType {
   contact = `contact`,
   alerts = 'alerts',
+  mobileAlerts = 'mobileAlerts',
+  emailAlerts = 'emailAlerts',
+  emailProfiles = 'emailProfiles',
+  mobileProfile = 'mobileProfile',
   companies = 'companies',
   persons = 'persons',
   primary = 'primary',
@@ -57,12 +63,13 @@ interface UseSettingsOutput {
   settings: SettingsItemProps[];
   settingsGroups: Record<string, SettingsGroupProps>;
   settingsSearch: ToolbarSearchProps;
-  getAccountAlertSettings?: (id: string) => SettingsItemProps;
+  getAccountAlertSettings?: (id: string) => SettingsItemProps[];
 }
 
 const getDefaultGroups = (t: (key: string) => string) => ({
   [SettingsType.contact]: { title: t('profile.settings.contact_information') },
-  [SettingsType.alerts]: { title: t('profile.settings.notifications') },
+  [SettingsType.emailAlerts]: { title: t('profile.settings.email_notifications') },
+  [SettingsType.mobileAlerts]: { title: t('profile.settings.sms_notifications') },
   [SettingsType.companies]: { title: t('profile.settings.company_notifications') },
   [SettingsType.persons]: { title: t('profile.settings.person_notifications') },
   [SettingsType.primary]: { title: t('profile.settings.favorite_notifications') },
@@ -106,7 +113,14 @@ export const useSettings = ({
   isSelfIdentifiedUser = false,
   disabled = false,
 }: UseSettingsInput = {}): UseSettingsOutput => {
-  const { isLoading: isLoadingParties, parties, selectedParties, allOrganizationsSelected, partyGraph } = useParties();
+  const {
+    isLoading: isLoadingParties,
+    parties,
+    selectedParties,
+    allOrganizationsSelected,
+    partyGraph,
+    setSelectedPartyIds,
+  } = useParties();
   const { user, showClientUnits, setShowClientUnits, shouldShowDeletedEntities, updateShowDeletedEntities } =
     useProfile();
   const { t } = useTranslation();
@@ -172,6 +186,7 @@ export const useSettings = ({
     allOrganizationsSelected,
     selectedParties,
     partyGraph,
+    setSelectedPartyIds,
     options: {
       groups: options?.groups,
       showDescription: true,
@@ -209,36 +224,90 @@ export const useSettings = ({
     };
   }
 
-  const getAccountAlertSettings = (id: string): SettingsItemProps => {
+  const getAccountAlertChannelSettings = (id: string, channel: Channel): SettingsItemProps => {
     const account = accounts.find((account) => account.id === id);
     const notificationAccount = partiesWithNotificationSettings.find((p) => p.party === id);
-    const phoneNumber = account?.isCurrentEndUser
-      ? user?.phoneNumber || ''
-      : (notificationAccount?.notificationSettings?.phoneNumber ?? '');
-    const email = account?.isCurrentEndUser
-      ? user?.email || ''
-      : (notificationAccount?.notificationSettings?.emailAddress ?? '');
+    const isEmail = channel === 'Email';
+    const value = account?.isCurrentEndUser
+      ? (isEmail ? user?.email : user?.phoneNumber) || ''
+      : ((isEmail
+          ? notificationAccount?.notificationSettings?.emailAddress
+          : notificationAccount?.notificationSettings?.phoneNumber) ?? '');
 
     return {
-      id: account?.id ?? id,
+      id: `${account?.id ?? id}-${isEmail ? 'email' : 'sms'}`,
       color: (account?.type ?? 'neutral') as SettingsItemProps['color'],
-      value: [email, phoneNumber].filter(Boolean).join(email && phoneNumber ? t('profile.settings.and') : ''),
+      value,
       groupId: String(account?.groupId ?? ''),
-      title: account?.name,
-      icon: account?.icon,
+      title: isEmail ? t('profile.account_alerts.email_dialog_title') : t('profile.account_alerts.sms_dialog_title'),
+      icon: BellIcon,
       variant: 'modal' as SettingsItemVariant,
       modalProps: {
-        icon: account?.icon,
-        title: account?.name,
-        description: account?.description ? String(account?.description) : '',
+        icon: BellIcon,
+        title: isEmail ? t('profile.account_alerts.email_dialog_title') : t('profile.account_alerts.sms_dialog_title'),
       },
-      children: account?.isCurrentEndUser ? (
-        <ContactProfileDetails variant="alerts" phoneNumber={phoneNumber} emailAddress={email} readOnly />
-      ) : (
-        <AccountAlertsDetails notificationParty={notificationAccount} />
-      ),
-      badge: getNotificationsSettingsBadge({ phoneNumber, email, t }),
+      children: <AccountAlertsChannelDetails channel={channel} notificationParty={notificationAccount} />,
+      badge: value
+        ? { label: t('profile.settings.change'), variant: 'text' }
+        : { label: t('profile.settings.add'), variant: 'text' },
     };
+  };
+
+  const getAccountAlertSettings = (id: string): SettingsItemProps[] => {
+    const account = accounts.find((account) => account.id === id);
+    if (account?.isCurrentEndUser) {
+      const phoneNumber = user?.phoneNumber || '';
+      const email = user?.email || '';
+      return [
+        {
+          id: account?.id ?? id,
+          color: (account?.type ?? 'neutral') as SettingsItemProps['color'],
+          value: [email, phoneNumber].filter(Boolean).join(email && phoneNumber ? t('profile.settings.and') : ''),
+          groupId: String(account?.groupId ?? ''),
+          title: account?.name,
+          icon: account?.icon,
+          variant: 'modal' as SettingsItemVariant,
+          modalProps: {
+            icon: account?.icon,
+            title: account?.name,
+            description: account?.description ? String(account?.description) : '',
+          },
+          children: <ContactProfileDetails variant="alerts" phoneNumber={phoneNumber} emailAddress={email} readOnly />,
+          badge: getNotificationsSettingsBadge({ phoneNumber, email, t }),
+        },
+      ];
+    }
+    const notificationAccount = partiesWithNotificationSettings.find((p) => p.party === id);
+    const includedServiceCount = (notificationAccount?.notificationSettings?.resourceIncludeList ?? []).filter(
+      (r): r is string => !!r,
+    ).length;
+    const serviceResourceEntry: SettingsItemProps = {
+      id: `${account?.id ?? id}-services`,
+      color: (account?.type ?? 'neutral') as SettingsItemProps['color'],
+      groupId: String(account?.groupId ?? ''),
+      title: t('profile.service_notifications.title'),
+      description:
+        includedServiceCount === 0
+          ? t('profile.service_notifications.active_for_all')
+          : t('profile.service_notifications.active_for_count', { count: includedServiceCount }),
+      value: 'services',
+      icon: BellIcon,
+      variant: 'modal' as SettingsItemVariant,
+      modalProps: {
+        icon: BellIcon,
+        title: t('profile.service_notifications.title'),
+      },
+      badge: {
+        variant: 'text',
+        label: t('word.change'),
+      },
+      children: <ServiceResourceNotificationsDetails notificationParty={notificationAccount} />,
+    };
+    return [
+      getAccountAlertChannelSettings(id, 'Sms'),
+      getAccountAlertChannelSettings(id, 'Email'),
+      serviceResourceEntry,
+    ];
   };
 
   const accountAlertSettings: SettingsItemProps[] = accounts
@@ -248,7 +317,7 @@ export const useSettings = ({
       }
       return !(options.excludeGroups.includes(SettingsType.companies) && a.type === 'company');
     })
-    .map((a) => getAccountAlertSettings(a.id));
+    .flatMap((a) => getAccountAlertSettings(a.id));
 
   const address = `${user?.party?.person?.mailingAddress}, ${user?.party?.person?.mailingPostalCode} ${user?.party?.person?.mailingPostalCity}`;
 
@@ -313,22 +382,25 @@ export const useSettings = ({
 
   const contactProfileEmailSettings: SettingsItemProps[] = uniqueEmailAddresses.map((uea) => ({
     id: 'contact-profile-email-setting-' + uea.email,
-    groupId: SettingsType.profiles,
+    groupId: SettingsType.emailProfiles,
     icon: PersonRectangleIcon,
     title: t('profile.settings.notification_profile_email'),
     value: uea.email,
-    badge: (
+    controls: (
       <>
-        <AvatarGroup items={getAvatarGroup(getUsedByEmail(uea.email))} size="lg" />
-        <Badge
-          label={t(
-            isVerifiedAddress(uea.email, 'Email')
-              ? 'profile.verification.status_verified'
-              : 'profile.verification.status_unverified',
-          )}
-          color={isVerifiedAddress(uea.email, 'Email') ? 'success' : 'neutral'}
-          size="sm"
-        />
+        {isVerifiedAddress(uea.email, 'Email') ? (
+          <AvatarGroup items={getAvatarGroup(getUsedByEmail(uea.email))} size="lg" />
+        ) : (
+          <Badge
+            variant="outline"
+            label={t(
+              isVerifiedAddress(uea.email, 'Email')
+                ? 'profile.verification.status_verified'
+                : 'profile.verification.status_unverified',
+            )}
+            size="sm"
+          />
+        )}
       </>
     ),
     variant: 'modal',
@@ -345,22 +417,25 @@ export const useSettings = ({
 
   const contactProfilePhoneSettings: SettingsItemProps[] = uniquePhoneNumbers.map((uep) => ({
     id: 'contact-profile-phone-setting-' + uep.phoneNumber,
-    groupId: SettingsType.profiles,
+    groupId: SettingsType.mobileProfile,
     icon: PersonRectangleIcon,
     title: t('profile.settings.notification_profile_sms'),
     value: uep.phoneNumber,
-    badge: (
+    controls: (
       <>
-        <AvatarGroup items={getAvatarGroup(getUsedByPhoneNumber(uep.phoneNumber))} size="lg" />
-        <Badge
-          label={t(
-            isVerifiedAddress(uep.phoneNumber, 'Sms')
-              ? 'profile.verification.status_verified'
-              : 'profile.verification.status_unverified',
-          )}
-          color={isVerifiedAddress(uep.phoneNumber, 'Sms') ? 'success' : 'neutral'}
-          size="sm"
-        />
+        {isVerifiedAddress(uep.phoneNumber, 'Sms') ? (
+          <AvatarGroup items={getAvatarGroup(getUsedByPhoneNumber(uep.phoneNumber))} size="lg" />
+        ) : (
+          <Badge
+            variant="outline"
+            label={t(
+              isVerifiedAddress(uep.phoneNumber, 'Sms')
+                ? 'profile.verification.status_verified'
+                : 'profile.verification.status_unverified',
+            )}
+            size="sm"
+          />
+        )}
       </>
     ),
     variant: 'modal',
@@ -375,10 +450,10 @@ export const useSettings = ({
     ),
   }));
 
-  const alertSettings: SettingsItemProps[] = [
+  const mobileAlertSettings: SettingsItemProps[] = [
     {
       id: 'alert-mobile',
-      groupId: SettingsType.alerts,
+      groupId: SettingsType.mobileAlerts,
       icon: BellIcon,
       title: t('profile.settings.sms_notifications'),
       value: user?.phoneNumber || '',
@@ -393,9 +468,11 @@ export const useSettings = ({
         />
       ),
     },
+  ];
+  const emailAlertSettings: SettingsItemProps[] = [
     {
       id: 'alert-email',
-      groupId: SettingsType.alerts,
+      groupId: SettingsType.emailAlerts,
       icon: BellIcon,
       title: t('profile.settings.email_notifications'),
       value: user?.email || '',
@@ -442,8 +519,9 @@ export const useSettings = ({
 
   const allSettings = [
     ...contactSettings,
-    ...alertSettings,
+    ...mobileAlertSettings,
     ...contactProfilePhoneSettings,
+    ...emailAlertSettings,
     ...contactProfileEmailSettings,
     ...accountAlertSettings,
     ...otherSettings,

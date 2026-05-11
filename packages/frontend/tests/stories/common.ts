@@ -19,12 +19,12 @@ export async function setPartyCookie(page: Page, partyUuid: string) {
 }
 
 export const getSidebar = (page: Page) => page.locator('aside');
-export const getSidebarMenuItem = (page: Page, route: string) => getSidebar(page).locator(`a[href*="${route}?"]`);
+export const getSidebarMenuItem = (page: Page, route: string) => getSidebar(page).locator(`a[href^="${route}?"]`);
 export const getSearchbarInput = (page: Page) => page.locator("[name='Søk']");
 
 export async function performSearch(page: Page, query: string, action?: 'clear' | 'click' | 'enter') {
   const endGameAction = action || 'click';
-  const searchbarInput = page.getByTestId('inbox-toolbar').getByPlaceholder('Søk ...');
+  const searchbarInput = page.getByTestId('inbox-toolbar').getByRole('combobox', { name: 'Søk' });
   await searchbarInput.click();
   await expect(searchbarInput).toBeVisible();
   await searchbarInput.fill(query);

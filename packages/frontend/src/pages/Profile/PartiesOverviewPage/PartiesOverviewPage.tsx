@@ -1,22 +1,39 @@
 import {
-  AccountList,
-  AccountListItemDetails,
-  type AccountListItemProps,
+  type AccountListItemType,
+  AccountOrganization,
   type AccountOrganizationItemProps,
   type AvatarType,
   type AvatarVariant,
   Badge,
   Button,
+  ButtonGroup,
+  ContextMenu,
+  type ContextMenuProps,
   Heading,
   PageBase,
   Section,
   type SettingsItemProps,
+  SettingsList,
+  type SettingsListProps,
+  SnackbarDuration,
   Switch,
   Toolbar,
+  useSnackbar,
 } from '@altinn/altinn-components';
-import type { AccountListItemType } from '@altinn/altinn-components/dist/types/lib/components/Account/AccountListItem';
-import { BellIcon, HashtagIcon, HouseHeartFillIcon, HouseHeartIcon, InboxIcon } from '@navikt/aksel-icons';
+import {
+  BellIcon,
+  FilesIcon,
+  HashtagIcon,
+  HeartFillIcon,
+  HeartIcon,
+  HouseHeartFillIcon,
+  HouseHeartIcon,
+  InboxIcon,
+  MobileIcon,
+  PaperplaneIcon,
+} from '@navikt/aksel-icons';
 import type { PartyFieldsFragment } from 'bff-types-generated';
+import { t } from 'i18next';
 import { type ElementType, useDeferredValue, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps } from 'react-router-dom';
@@ -29,7 +46,6 @@ import {
 } from '../../../components/PageLayout/Accounts/useAccounts';
 import { useFeatureFlag } from '../../../featureFlags';
 import { usePageTitle } from '../../../hooks/usePageTitle';
-import { useProfileOnboarding } from '../../../onboardingTour/useProfileOnboarding';
 import { PageRoutes } from '../../routes.ts';
 import { useSettings } from '../Settings/useSettings.tsx';
 import { useAccountFilters } from '../useAccountFilters.tsx';
@@ -44,7 +60,7 @@ interface PartyDetailsProps {
     label: string;
     [key: string]: unknown;
   };
-  getCompanySettings: (id: string) => SettingsItemProps[];
+  getCompanySettings: (id: string) => SettingsListProps['items'];
   getPersonSettings: (id: string, isCurrentEndUser: boolean) => SettingsItemProps[];
   getOrganizationAccounts: (
     currentParty: { party: string } | undefined,
@@ -63,37 +79,83 @@ const PartyDetails = ({
   getOrganizationAccounts,
   parentParty,
 }: PartyDetailsProps) => {
-  const organizationAccounts = useMemo(() => {
-    if (type !== 'company') return undefined;
+  const organizationAccounts = useMemo((): AccountOrganizationItemProps[] => {
+    if (type !== 'company') return [];
     return getOrganizationAccounts(currentParty, parentParty);
   }, [type, currentParty, parentParty, getOrganizationAccounts]);
+  const buttons = [getGoToInboxButton(currentParty)];
 
   if (currentParty.isCurrentEndUser) {
     const contactSettings = settings.filter((s) => s.groupId === 'contact');
     return (
-      <AccountListItemDetails color="person" buttons={[getGoToInboxButton(currentParty)]} settings={contactSettings} />
+      <Section spacing={3} color="person">
+        {buttons && (
+          <ButtonGroup size="sm">
+            {buttons.map((button) => {
+              const { variant, label, ...buttonProps } = button;
+              return (
+                <Button {...buttonProps} variant="outline" key={button.label}>
+                  {label}
+                </Button>
+              );
+            })}
+          </ButtonGroup>
+        )}
+        {contactSettings?.length > 0 && <SettingsList items={contactSettings} variant="menu" />}
+      </Section>
     );
   }
 
   if (type === 'company') {
     const companySettings = getCompanySettings(currentParty.party);
     return (
-      <AccountListItemDetails
-        color="company"
-        settings={companySettings}
-        buttons={[getGoToInboxButton(currentParty)]}
-        organization={organizationAccounts}
-      />
+      <Section spacing={3} color="company">
+        {buttons && (
+          <ButtonGroup size="sm">
+            {buttons.map((button) => {
+              const { variant, label, ...buttonProps } = button;
+              return (
+                <Button {...buttonProps} variant="outline" key={button.label}>
+                  {label}
+                </Button>
+              );
+            })}
+          </ButtonGroup>
+        )}
+        {companySettings && (
+          <SettingsList
+            items={companySettings}
+            groups={{
+              orgNr: {
+                title: t('profile.settings.organization_information'),
+              },
+            }}
+            variant="menu"
+          />
+        )}
+        {(organizationAccounts?.length ?? 0) > 0 && <AccountOrganization items={organizationAccounts} />}
+      </Section>
     );
   }
 
   if (type === 'person') {
+    const settings = getPersonSettings(currentParty.party, currentParty.isCurrentEndUser);
     return (
-      <AccountListItemDetails
-        color="person"
-        settings={getPersonSettings(currentParty.party, currentParty.isCurrentEndUser)}
-        buttons={[getGoToInboxButton(currentParty)]}
-      />
+      <Section spacing={3} color="person">
+        {buttons && (
+          <ButtonGroup size="sm">
+            {buttons.map((button) => {
+              const { variant, label, ...buttonProps } = button;
+              return (
+                <Button {...buttonProps} variant="outline" key={button.label}>
+                  {label}
+                </Button>
+              );
+            })}
+          </ButtonGroup>
+        )}
+        {settings?.length > 0 && <SettingsList items={settings} variant="menu" />}
+      </Section>
     );
   }
 
@@ -118,7 +180,10 @@ export const PartiesOverviewPage = () => {
     partyGraph,
     setSelectedPartyIds,
   } = useParties();
-  const { getAccountAlertSettings, settings } = useSettings({ disabled: isSelfIdentifiedUser, isSelfIdentifiedUser });
+  const { getAccountAlertSettings, settings } = useSettings({
+    disabled: isSelfIdentifiedUser,
+    isSelfIdentifiedUser,
+  });
   const isDeletedUnitsFilterEnabled = useFeatureFlag<boolean>('inbox.enableDeletedUnitsFilter');
   const {
     addFavoriteParty,
@@ -132,6 +197,7 @@ export const PartiesOverviewPage = () => {
   const [searchValue, setSearchValue] = useState<string>('');
   const deferredSearchValue = useDeferredValue(searchValue);
   const [expandedItem, setExpandedItem] = useState<string>('');
+  const { openSnackbar } = useSnackbar();
 
   const includeDeletedParties = isDeletedUnitsFilterEnabled ? (shouldShowDeletedEntities ?? false) : true;
 
@@ -148,13 +214,13 @@ export const PartiesOverviewPage = () => {
     allOrganizationsSelected,
     isLoading,
     partyGraph,
+    setSelectedPartyIds,
     options: {
       showFavorites: !isSearching,
     },
   });
 
   usePageTitle({ baseTitle: t('component.parties_settings') });
-  useProfileOnboarding({ isLoading, pageType: 'parties' });
 
   const toggleExpanded = (id: string) => setExpandedItem((currentId) => (currentId === id ? '' : id));
 
@@ -185,38 +251,66 @@ export const PartiesOverviewPage = () => {
     };
   };
 
-  const getPartyNotificationsSettings = (id: string): SettingsItemProps[] => {
-    if (id && typeof getAccountAlertSettings === 'function') {
-      const settings = getAccountAlertSettings(id);
+  const getNotificationsSettings = (id: string): SettingsItemProps[] => {
+    if (!id || typeof getAccountAlertSettings !== 'function') return [];
+    const entries = getAccountAlertSettings(id);
+    if (entries.length === 1) {
+      const [combined] = entries;
       return [
         {
-          ...settings,
+          ...combined,
           id: 'mobile',
           icon: BellIcon,
-          title: settings.value
+          title: combined.value
             ? t('profile.notifications.my_notifications')
             : t('profile.notifications.no_notifications'),
         },
       ];
     }
-    return [];
+    const [sms, email, services] = entries;
+    return [
+      { ...sms, id: 'sms', icon: MobileIcon },
+      { ...email, id: 'email', icon: PaperplaneIcon },
+      { ...services, id: 'services', icon: BellIcon },
+    ];
   };
 
   const getCompanySettings = (id: string): SettingsItemProps[] => {
     return [
-      ...getPartyNotificationsSettings(id),
+      ...getNotificationsSettings(id),
       {
         id: 'orgNr',
+        groupId: 'orgNr',
         icon: HashtagIcon,
+        as: 'div',
         title: t('profile.organization_number'),
         value: formatNorwegianId(id, false),
+        controls: (
+          <Button
+            as="button"
+            size="xs"
+            variant="ghost"
+            onClick={() => {
+              void navigator.clipboard.writeText(formatNorwegianId(id, false, false)).then(() => {
+                openSnackbar({
+                  message: t('word.copied'),
+                  color: 'company',
+                  duration: SnackbarDuration.short,
+                });
+              });
+            }}
+          >
+            <FilesIcon />
+            <span>{t('word.copy')}</span>
+          </Button>
+        ),
       },
     ];
   };
 
   const getPersonSettings = (id: string, isCurrentEndUser: boolean): SettingsItemProps[] => {
     return [
-      ...getPartyNotificationsSettings(id),
+      ...getNotificationsSettings(id),
       {
         id: 'snr',
         icon: HashtagIcon,
@@ -290,26 +384,62 @@ export const PartiesOverviewPage = () => {
     return items.map((item) => createOrganizationItem(item, currentParty));
   };
 
-  const mapAccountToPartyListItem = (account: PartyItemProp): AccountListItemProps => {
+  const mapAccountToPartyListItem = (account: PartyItemProp): SettingsItemProps => {
     const { label: _, variant: __, ...party } = account;
     const itemId = account.id + account.groupId;
     const accountType = party.type === 'subunit' ? 'company' : party.type;
+    const contextMenuProps: ContextMenuProps = {
+      placement: 'right',
+      id: party.groupId + party.id + '-menu',
+      items: [
+        {
+          id: party.groupId + 'inbox',
+          groupId: 'inbox',
+          icon: InboxIcon,
+          ...getGoToInboxButton({
+            party: party.id,
+            isCurrentEndUser: party.isCurrentEndUser ?? false,
+          }),
+        },
+        ...(!party.isCurrentEndUser
+          ? [
+              party.isPreselectedParty
+                ? {
+                    id: party.groupId + 'set-preselected-party',
+                    icon: HouseHeartFillIcon,
+                    onClick: () =>
+                      setOpenConfirmSetPreselectedActorModal({
+                        party,
+                        operation: 'unset',
+                      }),
+                    title: t('profile.unset_preselected_party'),
+                    as: 'button' as ElementType,
+                  }
+                : {
+                    id: party.groupId + 'unset-preselected-party',
+                    icon: HouseHeartIcon,
+                    onClick: () => setOpenConfirmSetPreselectedActorModal({ party, operation: 'set' }),
+                    title: t('profile.set_preselected_party'),
+                    as: 'button' as ElementType,
+                  },
+            ]
+          : []),
+      ],
+    };
 
     return {
-      ...party,
-      isPreselectedParty: party.isPreselectedParty ?? false,
-      type: accountType as AccountListItemType,
-      favourite: party.isFavorite,
+      id: party.id,
+      icon: party.icon,
+      description: expandedItem === itemId ? undefined : party.description,
+      variant: 'accordion',
       groupId: String(party.groupId),
-      isCurrentEndUser: party.isCurrentEndUser,
-      isDeleted: party.isDeleted,
       collapsible: true,
       expanded: expandedItem === itemId,
       onClick: () => toggleExpanded(itemId),
+      badge: undefined,
       highlightWords: (searchValue ?? '').split(' '),
       as: 'button' as ElementType,
       title: party.name,
-      onToggleFavourite: () => onToggleFavourite(party.uuid, party.isFavorite),
       children: partyGraph.partyByUrn.get(party.id) ? (
         <PartyDetails
           type={accountType as AccountListItemType}
@@ -322,10 +452,10 @@ export const PartiesOverviewPage = () => {
           parentParty={partyGraph.parentByChildUrn.get(party.id)}
         />
       ) : null,
-      badge: (
+      controls: (
         <>
-          {party.badge && <Badge {...party.badge} />}
-          {party.isPreselectedParty && (
+          {party.isCurrentEndUser && party?.badge && <Badge {...party.badge} />}
+          {!party.isCurrentEndUser && party.isPreselectedParty && (
             <Button
               size="xs"
               variant="ghost"
@@ -336,53 +466,34 @@ export const PartiesOverviewPage = () => {
               <HouseHeartFillIcon />
             </Button>
           )}
+          {!party.isCurrentEndUser && !party.isPreselectedParty && (
+            <Button
+              size="xs"
+              variant="ghost"
+              rounded
+              aria-label={
+                party.isFavorite
+                  ? t('profile.remove_favorite', { name: party.name })
+                  : t('profile.add_favorite', { name: party.name })
+              }
+              onClick={() => onToggleFavourite(party.uuid, party.isFavorite)}
+            >
+              {party.isFavorite ? <HeartFillIcon /> : <HeartIcon />}
+            </Button>
+          )}
+          <ContextMenu {...contextMenuProps} />
         </>
       ),
-      contextMenu: {
-        placement: 'right',
-        id: party.groupId + party.id + '-menu',
-        items: [
-          {
-            id: party.groupId + 'inbox',
-            groupId: 'inbox',
-            icon: InboxIcon,
-            ...getGoToInboxButton({
-              party: party.id,
-              isCurrentEndUser: party.isCurrentEndUser ?? false,
-            }),
-          },
-          ...(!party.isCurrentEndUser
-            ? [
-                party.isPreselectedParty
-                  ? {
-                      id: party.groupId + 'set-preselected-party',
-                      icon: HouseHeartFillIcon,
-                      onClick: () =>
-                        setOpenConfirmSetPreselectedActorModal({
-                          party,
-                          operation: 'unset',
-                        }),
-                      title: t('profile.unset_preselected_party'),
-                      as: 'button' as ElementType,
-                    }
-                  : {
-                      id: party.groupId + 'unset-preselected-party',
-                      icon: HouseHeartIcon,
-                      onClick: () => setOpenConfirmSetPreselectedActorModal({ party, operation: 'set' }),
-                      title: t('profile.set_preselected_party'),
-                      as: 'button' as ElementType,
-                    },
-              ]
-            : []),
-        ],
-      },
     };
   };
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  const accountListItems = useMemo(() => accounts.map(mapAccountToPartyListItem), [accounts]);
+  const accountListItems = useMemo(
+    (): SettingsListProps['items'] => accounts.map(mapAccountToPartyListItem),
+    [accounts],
+  );
 
-  const displayHits = useMemo(() => {
+  const displayHits = useMemo((): SettingsListProps['items'] => {
     if (!isSearching) return accountListItems;
     return accountListItems.map((a) => ({ ...a, groupId: 'search' }));
   }, [accountListItems, isSearching]);
@@ -423,7 +534,7 @@ export const PartiesOverviewPage = () => {
           )}
         </Toolbar>
         {isSearching && displayHits.length === 0 && <Heading size="lg">{t('profile.settings.no_results')}</Heading>}
-        <AccountList
+        <SettingsList
           virtualized
           groups={isSearching ? searchGroup : accountGroups}
           items={isSearching ? displayHits : accountListItems}

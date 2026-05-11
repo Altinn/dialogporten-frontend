@@ -9,7 +9,6 @@ import {
   DialogBody,
   type DialogButtonPriority,
   DialogHeader,
-  Divider,
   DsAlert,
   DsParagraph,
   Heading,
@@ -36,6 +35,7 @@ import type { TimelineSegmentWithTransmissions } from '../../utils/transmissions
 import { ActivityLogModal } from '../ActivityLog/activityLogModal.tsx';
 import { AdditionalInfoContent } from '../AdditonalInfoContent';
 import { MainContentReference } from '../MainContentReference';
+import { DialogHelp } from './DialogHelp.tsx';
 
 interface DialogDetailsProps {
   dialog: DialogByIdDetails | undefined | null;
@@ -253,6 +253,7 @@ export const DialogDetails = ({
     }
   });
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: t is stable from i18next
   const transmissions: TimelineSegmentWithTransmissions[] = useMemo(() => {
     if (!dialog?.transmissions) {
       return [];
@@ -264,16 +265,21 @@ export const DialogDetails = ({
       items: transmission.items?.map((item) => {
         return {
           ...item,
-          children: dialog.contentReferenceForTransmissions[item.id as string]
-            ? dialogToken && (
-                <MainContentReference
-                  id={item.id}
-                  content={dialog.contentReferenceForTransmissions[item.id as string]}
-                  dialogToken={dialogToken}
-                  dialogId={dialog?.id ?? ''}
-                />
-              )
-            : null,
+          // C: empty-state message | B (contentRef): lazy-load embedded content
+          children: item.isEmpty ? (
+            <Typography>
+              <em>{t('transmission.empty')}</em>
+            </Typography>
+          ) : dialog.contentReferenceForTransmissions[item.id as string] ? (
+            dialogToken && (
+              <MainContentReference
+                id={item.id}
+                content={dialog.contentReferenceForTransmissions[item.id as string]}
+                dialogToken={dialogToken}
+                dialogId={dialog?.id ?? ''}
+              />
+            )
+          ) : null,
         };
       }),
     }));
@@ -298,10 +304,16 @@ export const DialogDetails = ({
         children:
           dialogHistoryItem.type === 'transmission' ? (
             <TransmissionList
-              items={dialogHistoryItem.items.map((item) => ({
-                ...item,
-                children: dialog.contentReferenceForTransmissions[item.id as string]
-                  ? dialogToken && (
+              items={dialogHistoryItem.items.map((item) => {
+                return {
+                  ...item,
+                  // C: empty-state message | B (contentRef): lazy-load embedded content
+                  children: item.isEmpty ? (
+                    <Typography>
+                      <em>{t('transmission.empty')}</em>
+                    </Typography>
+                  ) : dialog.contentReferenceForTransmissions[item.id as string] ? (
+                    dialogToken && (
                       <MainContentReference
                         id={item.id}
                         content={dialog.contentReferenceForTransmissions[item.id as string]}
@@ -309,8 +321,9 @@ export const DialogDetails = ({
                         dialogId={dialog?.id}
                       />
                     )
-                  : null,
-              }))}
+                  ) : null,
+                };
+              })}
             />
           ) : null,
       };
@@ -482,11 +495,9 @@ export const DialogDetails = ({
         </Button>
       )}
       {dialog.additionalInfo?.value && (
-        <>
-          <Divider />
-          <AdditionalInfoContent mediaType={dialog.additionalInfo.mediaType} value={dialog.additionalInfo.value} />
-        </>
+        <AdditionalInfoContent mediaType={dialog.additionalInfo.mediaType} value={dialog.additionalInfo.value} />
       )}
+      <DialogHelp />
       <ActivityLogModal
         title={dialog.title}
         items={activityHistoryItems}

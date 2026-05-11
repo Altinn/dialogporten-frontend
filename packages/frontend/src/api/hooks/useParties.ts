@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query';
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import { useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
@@ -56,8 +55,11 @@ const createPartyParams = (searchParamString: string, key: string, value: string
 };
 
 export const useParties = (): UsePartiesOutput => {
-  const queryClient = useQueryClient();
   const [cookiePartyUuid] = useGlobalState(QUERY_KEYS.ALTINN_COOKIE, '');
+  const [hasInitializedPartySelection, setHasInitializedPartySelection] = useGlobalState(
+    QUERY_KEYS.HAS_INITIALIZED_PARTY_SELECTION,
+    false,
+  );
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [allOrganizationsSelected, setAllOrganizationsSelected] = useGlobalState<boolean>(
@@ -116,8 +118,11 @@ export const useParties = (): UsePartiesOutput => {
       handleChangSearchParams(params);
     }
 
-    const partyIdSet = new Set(partyIds);
-    const matchedParties = data?.filter((party) => partyIdSet.has(party.party)) ?? [];
+    const matchedParties: PartyFieldsFragment[] = [];
+    for (const id of partyIds) {
+      const p = partyGraph.partyByUrn.get(id);
+      if (p) matchedParties.push(p);
+    }
     handleSetSelectedParties(matchedParties);
 
     const partyForCookie = allOrgSelected ? currentEndUser : matchedParties[0];
@@ -148,10 +153,10 @@ export const useParties = (): UsePartiesOutput => {
 
   const initializePartySelection = () => {
     // Synchronous guard — prevents multiple hook instances from initializing
-    if (queryClient.getQueryData(['hasInitializedPartySelection'])) {
+    if (hasInitializedPartySelection) {
       return;
     }
-    queryClient.setQueryData(['hasInitializedPartySelection'], true);
+    setHasInitializedPartySelection(true);
 
     if (getSelectedAllPartiesFromQueryParams(searchParams)) {
       selectAllOrganizations();
@@ -202,7 +207,7 @@ export const useParties = (): UsePartiesOutput => {
   // Handle URL-driven account switching (after initialization)
   // biome-ignore lint/correctness/useExhaustiveDependencies: Only react to party-related param changes
   useEffect(() => {
-    if (!isSuccess || !data?.length || !queryClient.getQueryData(['hasInitializedPartySelection'])) {
+    if (!isSuccess || !data?.length || !hasInitializedPartySelection) {
       return;
     }
 

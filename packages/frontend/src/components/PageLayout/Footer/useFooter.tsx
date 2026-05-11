@@ -1,12 +1,10 @@
 import type { FooterProps } from '@altinn/altinn-components';
 import { useTranslation } from 'react-i18next';
-import { useCurrentPartyUuid } from '../../../api/hooks/usePartiesSelectors';
 import { getFooterLinks } from '../../../auth';
 
 export const useFooter = (): FooterProps => {
   const { t, i18n } = useTranslation();
-  const currentPartyUuid = useCurrentPartyUuid();
-  const footerLinks = getFooterLinks(currentPartyUuid || '', i18n.language);
+  const footerLinks = getFooterLinks(i18n.language);
 
   return {
     address: t('footer.address'),

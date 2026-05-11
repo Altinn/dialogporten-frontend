@@ -71,7 +71,6 @@
       "dist",
       "build",
       ".docusaurus",
-      "mocks",
       "test-results",
       "mockServiceWorker.js",
       "./package.json"

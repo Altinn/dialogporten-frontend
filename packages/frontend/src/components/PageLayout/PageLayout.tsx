@@ -15,14 +15,13 @@ import i18n from 'i18next';
 import { useEffect, useLayoutEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps, Outlet, useLocation, useSearchParams } from 'react-router-dom';
-import { useCurrentEndUser, useCurrentPartyUuid, useSelectedProfile } from '../../api/hooks/usePartiesSelectors.ts';
+import { useCurrentEndUser, useSelectedProfile } from '../../api/hooks/usePartiesSelectors.ts';
 import { getFrontPageLink } from '../../auth';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { getSearchStringFromQueryParams } from '../../pages/Inbox/queryParams.ts';
 import { useProfile } from '../../pages/Profile';
 import { PageRoutes } from '../../pages/routes.ts';
 import { useGlobalState } from '../../useGlobalState.ts';
-import { BetaModal } from '../BetaModal';
 import { FloatingDropdown } from '../FloatingDropdown';
 import { useAuth } from '../Login/AuthContext.tsx';
 import { useFooter } from './Footer';
@@ -43,9 +42,9 @@ export const PageLayout: React.FC = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [docTitle] = useGlobalState<string>(QUERY_KEYS.CURRENT_DIALOG_TITLE, '');
+  const [bulkMode, setBulkMode] = useGlobalState<boolean>(QUERY_KEYS.BULK_MODE, false);
   const selectedProfile = useSelectedProfile();
   const currentEndUser = useCurrentEndUser();
-  const currentPartyUuid = useCurrentPartyUuid();
   const [allOrganizationsSelected] = useGlobalState<boolean>(QUERY_KEYS.ALL_ORGANIZATIONS_SELECTED, false);
   const [selectedParties] = useGlobalState<PartyFieldsFragment[]>(QUERY_KEYS.SELECTED_PARTIES, []);
   const [isErrorState] = useGlobalState<boolean>(QUERY_KEYS.ERROR_STATE, false);
@@ -63,6 +62,9 @@ export const PageLayout: React.FC = () => {
   // biome-ignore lint/correctness/useExhaustiveDependencies: runs synchronously after DOM mutations but before the browser paints.
   useLayoutEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    if (bulkMode) {
+      setBulkMode(false);
+    }
   }, [location.pathname]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: Full control of what triggers this code is needed
@@ -78,7 +80,7 @@ export const PageLayout: React.FC = () => {
       {
         label: t('route.titles.start'),
         as: (props: LinkProps) => {
-          return <Link {...props} to={getFrontPageLink(currentPartyUuid, i18n.language)} />;
+          return <Link {...props} to={getFrontPageLink(i18n.language)} />;
         },
       },
     ];
@@ -148,7 +150,10 @@ export const PageLayout: React.FC = () => {
     }
 
     return steps;
-  }, [currentPartyUuid, location.pathname, fromView, docTitle]);
+  }, [location.pathname, fromView, docTitle]);
+
+  const escalateBannerSeverity = new Date() >= new Date(2026, 5, 2); // Escalate to warning on June 2nd, 2026
+  const bannerLink = getBannerLink(i18n.language);
 
   let color: LayoutColor = 'neutral';
   let theme: LayoutTheme = 'default';
@@ -170,6 +175,12 @@ export const PageLayout: React.FC = () => {
   const layoutProps: LayoutProps = {
     theme,
     color,
+    banner: {
+      title: t('altinn_shutdown_banner.title'),
+      link: { label: t('altinn_shutdown_banner.link'), href: bannerLink },
+      color: escalateBannerSeverity ? 'warning' : undefined,
+      variant: escalateBannerSeverity ? 'alert' : undefined,
+    },
     content: {
       color: isProfile ? 'person' : undefined,
     },
@@ -184,7 +195,7 @@ export const PageLayout: React.FC = () => {
     sidebar: {
       sticky: true,
       menu: sidebarMenu,
-      hidden: isErrorState,
+      hidden: isErrorState || bulkMode,
       footer: <Badge label={t('word.beta')} variant="base" color="neutral" size="sm" />,
     },
     breadcrumbs: {
@@ -195,12 +206,22 @@ export const PageLayout: React.FC = () => {
 
   return (
     <>
-      <Layout {...layoutProps} useGlobalHeader>
+      <Layout {...layoutProps}>
         <Outlet />
         <Snackbar />
-        <BetaModal />
         <FloatingDropdown />
       </Layout>
     </>
   );
+};
+
+const getBannerLink = (languageCode: string) => {
+  switch (languageCode) {
+    case 'en':
+      return 'https://info.altinn.no/en/news/check-if-you-need-to-take-action-before-we-shut-down-the-old-altinn/';
+    case 'nn':
+      return 'https://info.altinn.no/nn/nyheiter/sjekk-om-du-ma-gjere-noko-for-vi-slar-av-gamle-altinn/';
+    default:
+      return 'https://info.altinn.no/nyheter/sjekk-om-du-ma-gjore-noe-for-vi-slar-av-gamle-altinn/';
+  }
 };

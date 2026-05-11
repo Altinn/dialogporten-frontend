@@ -1,7 +1,6 @@
 import {
   type FilterState,
   type GlobalHeaderProps,
-  type HeaderProps,
   QueryLabel,
   type ToolbarSearchProps,
   useAccountSelector,
@@ -26,7 +25,7 @@ import { useSearchString } from './Search';
 import { mapPartiesToAuthorizedParties } from './mapPartyToAuthorizedParty';
 
 interface UseHeaderConfigOutput {
-  headerProps: HeaderProps;
+  headerProps: GlobalHeaderProps;
   inboxSearch: ToolbarSearchProps;
 }
 
@@ -150,6 +149,11 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
   const { mobileMenu, desktopMenu } = useGlobalMenu();
 
   const handleUpdateLanguage = async (language: string) => {
+    if (language === i18n.language) return;
+    /* Update locally first so duplicate onSelect calls from the library
+       (desktop + mobile LocaleSwitchers) short-circuit on the guard above. */
+    updateProfileLanguage(language);
+    void i18n.changeLanguage(language);
     try {
       await updateLanguage(language);
     } catch (error) {
@@ -161,17 +165,13 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
         },
         'Error updating language',
       );
-    } finally {
-      /* Keep this optimistically to avoid refetching profile in order update state */
-      updateProfileLanguage(language);
-      void i18n.changeLanguage(language);
     }
   };
 
   const commonProps = {
     logo: {
       as: (props: LinkProps) => {
-        return <Link {...props} to={getFrontPageLink(currentPartyUuid, i18n.language)} />;
+        return <Link {...props} to={getFrontPageLink(i18n.language)} />;
       },
     },
     locale: {

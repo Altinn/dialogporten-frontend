@@ -40,7 +40,7 @@ const mockData: InboxItemInput[] = [
       name: 'Hjelpelinje Ordinær',
       type: 'company',
     },
-    hasUnopenedContent: true,
+    isContentSeen: false,
     unread: true,
     seenSinceLastContentUpdate: [],
     fromServiceOwnerTransmissionsCount: 0,
@@ -54,6 +54,7 @@ const mockData: InboxItemInput[] = [
     seenByLabel: 'Sett av deg',
     seenByOthersCount: 0,
     viewType: 'inbox' as InboxViewType,
+    viewTypes: ['inbox'],
     seenByLog: {
       collapsible: true,
       endUserLabel: 'Sett av deg',
@@ -82,7 +83,7 @@ const mockData: InboxItemInput[] = [
       type: 'person',
     },
     seenSinceLastContentUpdate: [],
-    hasUnopenedContent: true,
+    isContentSeen: false,
     unread: true,
     contentUpdatedAt: '2025-02-24T13:55:45.689Z',
     guiAttachmentCount: 1,
@@ -95,6 +96,7 @@ const mockData: InboxItemInput[] = [
     seenByLabel: 'Sett av deg',
     seenByOthersCount: 0,
     viewType: 'inbox' as InboxViewType,
+    viewTypes: ['inbox'],
     seenByLog: {
       collapsible: true,
       endUserLabel: 'Sett av deg',
@@ -123,7 +125,7 @@ const mockData: InboxItemInput[] = [
       type: 'person',
     },
     seenSinceLastContentUpdate: [],
-    hasUnopenedContent: false,
+    isContentSeen: true,
     unread: false,
     fromServiceOwnerTransmissionsCount: 0,
     fromPartyTransmissionsCount: 0,
@@ -136,6 +138,7 @@ const mockData: InboxItemInput[] = [
     seenByLabel: 'Sett av deg',
     seenByOthersCount: 0,
     viewType: 'inbox' as InboxViewType,
+    viewTypes: ['inbox'],
     seenByLog: {
       collapsible: true,
       endUserLabel: 'Sett av deg',
@@ -164,7 +167,7 @@ const mockData: InboxItemInput[] = [
       type: 'person',
     },
     seenSinceLastContentUpdate: [],
-    hasUnopenedContent: false,
+    isContentSeen: true,
     unread: false,
     fromServiceOwnerTransmissionsCount: 0,
     fromPartyTransmissionsCount: 0,
@@ -177,6 +180,7 @@ const mockData: InboxItemInput[] = [
     seenByLabel: 'Sett av deg',
     seenByOthersCount: 0,
     viewType: 'inbox' as InboxViewType,
+    viewTypes: ['inbox'],
     seenByLog: {
       collapsible: true,
       endUserLabel: 'Sett av deg',
@@ -205,7 +209,7 @@ const mockData: InboxItemInput[] = [
       type: 'person',
     },
     seenSinceLastContentUpdate: [],
-    hasUnopenedContent: false,
+    isContentSeen: true,
     unread: false,
     fromServiceOwnerTransmissionsCount: 0,
     fromPartyTransmissionsCount: 0,
@@ -218,6 +222,7 @@ const mockData: InboxItemInput[] = [
     seenByLabel: 'Sett av deg',
     seenByOthersCount: 0,
     viewType: 'inbox' as InboxViewType,
+    viewTypes: ['inbox'],
     seenByLog: {
       collapsible: true,
       endUserLabel: 'Sett av deg',
@@ -247,7 +252,7 @@ const mockData: InboxItemInput[] = [
       type: 'person',
     },
     seenSinceLastContentUpdate: [],
-    hasUnopenedContent: false,
+    isContentSeen: true,
     unread: false,
     fromServiceOwnerTransmissionsCount: 0,
     fromPartyTransmissionsCount: 0,
@@ -260,6 +265,7 @@ const mockData: InboxItemInput[] = [
     seenByLabel: 'Sett av deg',
     seenByOthersCount: 0,
     viewType: 'inbox' as InboxViewType,
+    viewTypes: ['inbox'],
     seenByLog: {
       collapsible: true,
       endUserLabel: 'Sett av deg',
@@ -289,7 +295,7 @@ const mockData: InboxItemInput[] = [
       type: 'person',
     },
     seenSinceLastContentUpdate: [],
-    hasUnopenedContent: false,
+    isContentSeen: true,
     unread: false,
     fromServiceOwnerTransmissionsCount: 0,
     fromPartyTransmissionsCount: 0,
@@ -302,6 +308,7 @@ const mockData: InboxItemInput[] = [
     seenByLabel: 'Sett av deg',
     seenByOthersCount: 0,
     viewType: 'inbox' as InboxViewType,
+    viewTypes: ['inbox'],
     seenByLog: {
       collapsible: true,
       endUserLabel: 'Sett av deg',
@@ -364,9 +371,9 @@ describe('useGroupedDialogs', () => {
     );
 
     expect(result.current.groupedDialogs).toHaveLength(7);
-    expect(result.current.groups).toEqual({
-      collapsed: { description: 'search.results.description', orderIndex: null, title: 'inbox.heading.title.inbox' },
-    });
+    // Single titleless group is stripped; the title is exposed at the top level instead.
+    expect(result.current.groups).toEqual({});
+    expect(result.current.title).toBe('inbox.heading.title.inbox');
   });
 
   it('should generat groups orderIndex correctly', () => {
@@ -447,8 +454,33 @@ describe('useGroupedDialogs', () => {
     expect(orderIndexes).toContain(2024);
   });
 
-  it('should use status-based grouping for archive view', () => {
+  it('should use date-based grouping for archive view when not searching', () => {
     const archiveMockData = mockData.map((item) => ({ ...item, viewType: 'archive' as InboxViewType }));
+    const formatMock = vi.fn((date, formatString) => {
+      if (formatString === 'yyyy') {
+        return new Date(date).getFullYear().toString();
+      }
+      if (formatString === 'LLLL') {
+        const monthNames = [
+          'January',
+          'February',
+          'March',
+          'April',
+          'May',
+          'June',
+          'July',
+          'August',
+          'September',
+          'October',
+          'November',
+          'December',
+        ];
+        return monthNames[new Date(date).getMonth()];
+      }
+      return date.toString();
+    });
+    (useFormat as Mock).mockReturnValue(formatMock);
+
     const { result } = renderHook(
       () =>
         useGroupedDialogs({
@@ -467,8 +499,8 @@ describe('useGroupedDialogs', () => {
     const groups = result.current.groups;
     const groupKeys = Object.keys(groups);
 
-    expect(groupKeys).toContain('archive');
-    expect(groupKeys).not.toContain('2025');
-    expect(groupKeys).not.toContain('2024');
+    expect(groupKeys).not.toContain('archive');
+    expect(groupKeys).toContain('2025');
+    expect(groupKeys).toContain('2024');
   });
 });

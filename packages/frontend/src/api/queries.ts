@@ -2,9 +2,9 @@ import {
   type AddFavoritePartyMutation,
   type AddFavoritePartyToGroupMutation,
   type Altinn2messagesQuery,
+  type BulkUpdateSystemLabelsMutation,
   type CreateSavedSearchMutation,
   type DeleteFavoritePartyMutation,
-  type DeleteNotificationSettingMutation,
   type DeleteSavedSearchMutation,
   type GetAllDialogsForPartiesQuery,
   type GetServiceResourcesQuery,
@@ -12,10 +12,10 @@ import {
   type NotificationSettingsInput,
   type NotificationsettingsForCurrentUserQuery,
   type OrganizationsQuery,
-  type ResendVerificationCodeMutation,
-  type ResendVerificationCodeMutationVariables,
   type SavedSearchInput,
   type SavedSearchesQuery,
+  type SendVerificationCodeMutation,
+  type SendVerificationCodeMutationVariables,
   type SetPreSelectedPartyMutation,
   type SetShouldShowSubEntitiesMutation,
   type SetShowClientUnitsMutation,
@@ -208,8 +208,6 @@ export const getNotificationsettingsForCurrentUser = (): Promise<Notificationset
 export const updateNotificationsetting = (
   data: NotificationSettingsInput,
 ): Promise<UpdateNotificationSettingMutation> => graphQLSDK.UpdateNotificationSetting({ data });
-export const deleteNotificationsetting = (partyUuid: string): Promise<DeleteNotificationSettingMutation> =>
-  graphQLSDK.DeleteNotificationSetting({ partyUuid });
 export const updateSystemLabel = (
   dialogId: string,
   addLabels: SystemLabel | SystemLabel[],
@@ -220,6 +218,20 @@ export const updateSystemLabel = (
     addLabels,
     removeLabels,
   });
+
+export const bulkUpdateSystemLabels = (
+  dialogIds: string[],
+  addLabels: SystemLabel | SystemLabel[],
+  removeLabels: SystemLabel | SystemLabel[] = [],
+): Promise<BulkUpdateSystemLabelsMutation> =>
+  graphQLSDK.bulkUpdateSystemLabels({
+    dialogs: dialogIds.map((id) => ({
+      dialogId: id,
+    })),
+    addLabels,
+    removeLabels,
+  });
+
 export const searchDialogs = (
   partyURIs: string[],
   search: string | undefined,
@@ -251,6 +263,6 @@ export const getVerifiedAddresses = (): Promise<VerifiedAddressesQuery> => graph
 export const verifyAddress = (data: VerifyAddressMutationVariables['data']): Promise<VerifyAddressMutation> =>
   graphQLSDK.verifyAddress({ data });
 
-export const resendVerificationCode = (
-  data: ResendVerificationCodeMutationVariables['data'],
-): Promise<ResendVerificationCodeMutation> => graphQLSDK.ResendVerificationCode({ data });
+export const sendVerificationCode = (
+  data: SendVerificationCodeMutationVariables['data'],
+): Promise<SendVerificationCodeMutation> => graphQLSDK.SendVerificationCode({ data });

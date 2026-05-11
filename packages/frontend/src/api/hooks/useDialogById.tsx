@@ -1,4 +1,4 @@
-import type { AttachmentLinkProps, AvatarProps, SeenByLogProps } from '@altinn/altinn-components';
+import type { AttachmentLinkProps, AvatarProps, ContactButtonProps, SeenByLogProps } from '@altinn/altinn-components';
 import { formatDisplayName } from '@altinn/altinn-components';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -14,6 +14,7 @@ import {
   SystemLabel,
 } from 'bff-types-generated';
 import { type TFunction, t } from 'i18next';
+import { useCallback } from 'react';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import type { DialogActionProps } from '../../components';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
@@ -21,10 +22,9 @@ import { useFeatureFlag } from '../../featureFlags';
 import { type LocalizationObject, type ValueType, getPreferredPropertyByLocale } from '../../i18n/property.ts';
 import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
 import { type Locale, useDateFnsLocale, useFormat } from '../../i18n/useDateFnsLocale.tsx';
-import { getIsUnread } from '../../pages/Inbox/status.ts';
 import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
 import { type ActivityLogEntry, getActivityHistory } from '../../utils/activities.tsx';
-import { createExpiryBadge, mediaTypeToExt } from '../../utils/attachments.ts';
+import { createExpiryBadge, mediaTypeToExt, mediaTypeToIcon } from '../../utils/attachments.ts';
 import { getSeenByLabel, getServiceOwnerLogo } from '../../utils/dialog.ts';
 import { type OrganizationOutput, getOrganization, getOrganizationByLocale } from '../../utils/organizations.ts';
 import { type TimelineSegmentWithTransmissions, getTransmissions } from '../../utils/transmissions.ts';
@@ -49,7 +49,7 @@ export interface EmbeddedContent {
 export interface DialogByIdDetails {
   /* id of dialog */
   id: string;
-  /* servide owner of dialog */
+  /* service owner of dialog */
   org: string;
   /* party with access to dialog */
   party: string;
@@ -101,6 +101,8 @@ export interface DialogByIdDetails {
   receivedCount?: number;
   /* Unread or not, determined by label, logs and/or hasUnOpenedContent */
   unread: boolean;
+  /* contact buttons derived from contactInfo and sender name */
+  contactButtons: ContactButtonProps[];
 }
 
 interface UseDialogByIdOutput {
@@ -110,6 +112,7 @@ interface UseDialogByIdOutput {
   dataUpdatedAt: number;
   dialog?: DialogByIdDetails;
   isAuthLevelTooLow?: boolean;
+  refreshDialogToken: () => Promise<string | undefined>;
 }
 export const getDialogsById = (id: string): Promise<GetDialogByIdQuery> =>
   graphQLSDK.getDialogById({
@@ -125,15 +128,18 @@ export const getAttachmentLinks = (
     .filter((a) => a.urls.filter((url) => url.consumerType === AttachmentUrlConsumer.Gui).length > 0)
     .flatMap((attachment) =>
       attachment.urls
-        .filter((url) => url.url !== 'urn:dialogporten:unauthorized')
         .filter((url) => url.consumerType === AttachmentUrlConsumer.Gui)
-        .map((url) => ({
-          disabled: attachment.expiresAt ? new Date(attachment.expiresAt) <= new Date() : false,
-          label: getPreferredPropertyByLocale(attachment.displayName)?.value || url.url,
-          href: url.url,
-          metadata: mediaTypeToExt(url.mediaType),
-          badge: createExpiryBadge(attachment.expiresAt, locale, t),
-        })),
+        .map((url) => {
+          const isUnauthorized = url.url === 'urn:dialogporten:unauthorized';
+          return {
+            disabled: isUnauthorized || (attachment.expiresAt ? new Date(attachment.expiresAt) <= new Date() : false),
+            label: getPreferredPropertyByLocale(attachment.displayName)?.value || url.url,
+            href: isUnauthorized ? '' : url.url,
+            metadata: mediaTypeToExt(url.mediaType),
+            badge: createExpiryBadge(attachment.expiresAt, locale, t),
+            icon: mediaTypeToIcon(url.mediaType),
+          };
+        }),
     );
 };
 
@@ -215,7 +221,27 @@ export const getActorProps = (
   };
 };
 
-export function mapDialogToToInboxItem(
+const getContactButtons = (
+  contactInfo: OrganizationOutput['contact'] | undefined | null,
+  senderName: string,
+): ContactButtonProps[] => {
+  const buttons: ContactButtonProps[] = [];
+  if (contactInfo?.url || contactInfo?.email) {
+    buttons.push({
+      label: t('dialog.help.contact_sender', { name: senderName }),
+      href: contactInfo.url ?? `mailto:${contactInfo.email}`,
+    });
+  }
+  if (contactInfo?.phone) {
+    buttons.push({
+      label: t('dialog.help.phone', { number: contactInfo.phone }),
+      href: `tel:${contactInfo.phone}`,
+    });
+  }
+  return buttons;
+};
+
+export function mapDialogToInboxItem(
   item: DialogByIdFieldsFragment | null | undefined,
   parties: PartyFieldsFragment[],
   organizations: OrganizationFieldsFragment[],
@@ -338,9 +364,13 @@ export function mapDialogToToInboxItem(
     createdAt: item.createdAt,
     updatedAt: item.contentUpdatedAt,
     label: item.endUserContext?.systemLabels,
-    viewType: getViewTypes({ status: item.status, systemLabel: item.endUserContext?.systemLabels }, true)?.[0],
+    viewType: getViewTypes({ status: item.status, systemLabel: item.endUserContext?.systemLabels })?.[0],
     dueAt: item.dueAt,
-    unread: getIsUnread(item),
+    unread: !item.isContentSeen,
+    contactButtons: getContactButtons(
+      serviceOwner?.contact,
+      getPreferredPropertyByLocale(senderName)?.value || serviceOwner?.name || '',
+    ),
   };
 }
 
@@ -356,12 +386,7 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
     queryKey: [QUERY_KEYS.DIALOG_BY_ID, id],
     staleTime: 0,
     refetchInterval: 1000 * 60 * 9,
-    refetchOnMount: 'always',
-    refetchOnWindowFocus: (query) => {
-      if (!query.state.dataUpdatedAt) return true;
-      const NINE_MIN = 9 * 60 * 1000;
-      return Date.now() - query.state.dataUpdatedAt > NINE_MIN;
-    },
+    refetchOnWindowFocus: 'always',
     retry: 3,
     queryFn: async () => {
       const response = await getDialogsById(id!);
@@ -377,14 +402,21 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
     enabled: typeof id !== 'undefined' && partyURIs.length > 0,
   });
 
+  const refreshDialogToken = useCallback(async (): Promise<string | undefined> => {
+    if (!id) return undefined;
+    await queryClient.refetchQueries({ queryKey: [QUERY_KEYS.DIALOG_BY_ID, id] });
+    const freshData = queryClient.getQueryData<GetDialogByIdQuery>([QUERY_KEYS.DIALOG_BY_ID, id]);
+    return freshData?.dialogById?.dialog?.dialogToken ?? undefined;
+  }, [queryClient, id]);
+
   if (isOrganizationsLoading) {
-    return { isLoading: true, isError: false, isSuccess: false, dataUpdatedAt: Date.now() };
+    return { isLoading: true, isError: false, isSuccess: false, dataUpdatedAt: Date.now(), refreshDialogToken };
   }
 
   return {
     isLoading,
     isSuccess,
-    dialog: mapDialogToToInboxItem(
+    dialog: mapDialogToInboxItem(
       data?.dialogById?.dialog,
       parties,
       organizations,
@@ -397,5 +429,6 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
     isError,
     isAuthLevelTooLow:
       data?.dialogById?.errors?.some((error) => error.__typename === 'DialogByIdForbiddenAuthLevelTooLow') ?? false,
+    refreshDialogToken,
   };
 };

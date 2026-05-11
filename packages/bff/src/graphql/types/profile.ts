@@ -272,7 +272,6 @@ export const NotificationSettingsInput = inputObjectType({
     t.string('emailAddress');
     t.string('phoneNumber');
     t.list.string('resourceIncludeList');
-    t.nullable.boolean('generateVerificationCode');
   },
 });
 
@@ -282,7 +281,6 @@ export interface NotificationSettingsInputData {
   emailAddress?: string;
   phoneNumber?: string;
   resourceIncludeList?: string[];
-  generateVerificationCode?: boolean;
 }
 
 export const VerifyAddressInput = inputObjectType({
@@ -300,15 +298,15 @@ export interface VerifyAddressInputData {
   verificationCode: string;
 }
 
-export const ResendVerificationCodeInput = inputObjectType({
-  name: 'ResendVerificationCodeInput',
+export const SendVerificationCodeInput = inputObjectType({
+  name: 'SendVerificationCodeInput',
   definition(t) {
     t.string('value');
     t.string('type');
   },
 });
 
-export interface ResendVerificationCodeInputData {
+export interface SendVerificationCodeInputData {
   value: string;
   type: 'Email' | 'Sms';
 }

@@ -5,12 +5,6 @@ test.describe('Inbox BookmarkModal', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(defaultAppURL);
     await page.waitForLoadState('networkidle');
-    await page.evaluate(() => {
-      localStorage.setItem('arbeidsflate:inbox-onboarding-displayed', 'true');
-      localStorage.setItem('arbeidsflate:beta-modal-displayed', 'true');
-      localStorage.setItem('arbeidsflate:profile-main-onboarding-completed', 'true');
-      localStorage.setItem('arbeidsflate:profile-parties-onboarding-completed', 'true');
-    });
   });
 
   test('Save search from Inbox: open modal, change title, save', async ({ page, isMobile }) => {

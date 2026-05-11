@@ -8,7 +8,7 @@ fragment SearchDialogFields on SearchDialog {
   createdAt
   dueAt
   contentUpdatedAt
-  hasUnopenedContent
+  isContentSeen
   serviceResourceType
   serviceResource
   seenSinceLastContentUpdate {
@@ -44,6 +44,7 @@ fragment DialogByIdFields on Dialog {
   serviceResourceType
   fromServiceOwnerTransmissionsCount
   fromPartyTransmissionsCount
+  isContentSeen
   attachments {
     ...AttachmentFields
   }
@@ -63,7 +64,6 @@ fragment DialogByIdFields on Dialog {
   dueAt
   createdAt
   contentUpdatedAt
-  hasUnopenedContent
   endUserContext {
     systemLabels
   }

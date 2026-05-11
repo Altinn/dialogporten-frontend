@@ -1,6 +1,7 @@
 import type { TimelineSegmentProps, TransmissionProps, TransmissionTypeValue } from '@altinn/altinn-components';
 import {
   ActivityType,
+  AttachmentUrlConsumer,
   type DialogActivityFragment,
   type TransmissionFieldsFragment,
   TransmissionType,
@@ -12,9 +13,39 @@ import { type LocalizationObject, getPreferredPropertyByLocale } from '../i18n/p
 import type { FormatFunction, Locale } from '../i18n/useDateFnsLocale.tsx';
 import type { OrganizationOutput } from './organizations.ts';
 
-export interface TimelineSegmentWithTransmissions extends TimelineSegmentProps {
-  items: TransmissionProps[];
+export interface TransmissionItemWithMeta extends TransmissionProps {
+  isEmpty?: boolean;
 }
+
+export interface TimelineSegmentWithTransmissions extends TimelineSegmentProps {
+  items: TransmissionItemWithMeta[];
+}
+
+// Decision table for how a transmission should be displayed (cases A/B/C from issue #3819).
+// Consumers use the returned value to filter, disable, or show an empty-state message.
+export type TransmissionVisibility = 'filter' | 'disabled' | 'empty' | 'visible';
+
+export const getTransmissionVisibility = (transmission: TransmissionFieldsFragment): TransmissionVisibility => {
+  const hasGuiAttachment = transmission.attachments.some((a) =>
+    a.urls.some((url) => url.consumerType === AttachmentUrlConsumer.Gui),
+  );
+  const hasSummary = !!getPreferredPropertyByLocale(transmission.content.summary?.value)?.value;
+  const hasContentReference =
+    !!transmission.content.contentReference &&
+    !!getPreferredPropertyByLocale(transmission.content.contentReference.value)?.value;
+
+  // A: has attachments but none are GUI-consumable, and no other visible content — irrelevant for GUI users, remove from all lists
+  if (transmission.attachments.length > 0 && !hasGuiAttachment && !hasSummary && !hasContentReference) return 'filter';
+
+  // B: unauthorized at top level — show transmission but disable expansion
+  if (!transmission.isAuthorized) return 'disabled';
+
+  // C: authorized but nothing visible — expand with empty-state explanation
+  // hasGuiAttachment covers case 6 too: unauthorized GUI links are shown as disabled links, which counts as visible content
+  if (!hasSummary && !hasContentReference && !hasGuiAttachment) return 'empty';
+
+  return 'visible';
+};
 
 export const groupTransmissions = (transmissions: TransmissionFieldsFragment[]): TransmissionFieldsFragment[][] => {
   const relatedMap = new Map<string, Set<string>>();
@@ -125,7 +156,7 @@ const createTransmissionItem = ({
   selectedProfile?: ProfileType;
   senderName?: LocalizationObject[];
   serviceOwnerNbName?: string;
-}): TransmissionProps => {
+}): TransmissionItemWithMeta => {
   const formatString = getClockFormatString();
   const sender = getActorProps(
     transmission.sender,
@@ -135,9 +166,11 @@ const createTransmissionItem = ({
     serviceOwnerNbName,
   );
   const unread = isTransmissionUnread(transmission.id, transmission.type, activities);
+  const visibility = getTransmissionVisibility(transmission);
 
   return {
     id: transmission.id,
+    disabled: visibility === 'disabled',
     byline: transmission?.createdAt ? `${sender.name}, ${format(transmission.createdAt, getClockFormatString())}` : '',
     title: getPreferredPropertyByLocale(transmission.content.title.value)?.value ?? '',
     summary: getPreferredPropertyByLocale(transmission.content.summary?.value)?.value ?? '',
@@ -155,6 +188,7 @@ const createTransmissionItem = ({
     attachments: {
       items: getAttachmentLinks(transmission.attachments, locale, t),
     },
+    isEmpty: visibility === 'empty',
   };
 };
 
@@ -179,10 +213,10 @@ export const getTransmissions = ({
   senderName?: LocalizationObject[];
   serviceOwnerNbName?: string;
 }): TimelineSegmentWithTransmissions[] => {
-  return groupTransmissions(transmissions).map((group) => {
+  return groupTransmissions(transmissions.filter((t) => getTransmissionVisibility(t) !== 'filter')).map((group) => {
     const sortedGroup = [...group].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     const [lastTransmission] = sortedGroup;
-    const items: TransmissionProps[] = sortedGroup.map((transmission) =>
+    const items: TransmissionItemWithMeta[] = sortedGroup.map((transmission) =>
       createTransmissionItem({
         transmission,
         format,

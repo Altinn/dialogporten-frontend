@@ -5,7 +5,14 @@ import {
   SelectDateFilter,
   type ToolbarFilterProps,
 } from '@altinn/altinn-components';
-import { CalendarIcon, InformationSquareIcon, MenuGridIcon, MenuHamburgerIcon } from '@navikt/aksel-icons';
+import {
+  CalendarIcon,
+  EyeIcon,
+  FolderIcon,
+  InformationSquareIcon,
+  MenuGridIcon,
+  MenuHamburgerIcon,
+} from '@navikt/aksel-icons';
 import {
   type CountableDialogFieldsFragment,
   DialogStatus,
@@ -128,10 +135,19 @@ const filterRanges: Record<DateFilterOption, { start?: Date; end?: Date }> = {
 export enum FilterCategory {
   ORG = 'org',
   STATUS = 'status',
+  SYSTEM_LABEL = 'systemLabel',
+  IS_CONTENT_SEEN = 'isContentSeen',
   UPDATED = 'updated',
   SERVICE = 'service',
   FROM_DATE = 'fromDate',
   TO_DATE = 'toDate',
+}
+
+const SYSTEM_LABEL_FOLDER_VALUES = [SystemLabel.Default, SystemLabel.Archive, SystemLabel.Bin] as string[];
+
+export enum IsContentSeenFilterValue {
+  UNREAD = 'unread',
+  READ = 'read',
 }
 
 const createDateOptions = (): MenuItemProps[] => {
@@ -254,7 +270,6 @@ const createStatusFilter = (): FilterProps => {
       },
       'status-active': {},
       'status-draft': {},
-      'status-history': {},
     },
     items: [
       {
@@ -299,22 +314,84 @@ const createStatusFilter = (): FilterProps => {
         groupId: 'status-history',
         value: SystemLabel.Sent,
       },
-      {
-        id: SystemLabel.Archive,
-        title: t('status.archive'),
-        groupId: 'status-history',
-        value: SystemLabel.Archive,
-      },
-      {
-        id: SystemLabel.Bin,
-        title: t('status.bin'),
-        groupId: 'status-history',
-        value: SystemLabel.Bin,
-      },
     ].map((item) => ({
       ...item,
       role: 'checkbox',
       name: FilterCategory.STATUS,
+    })),
+  };
+};
+
+const createSystemLabelFilter = (): FilterProps => {
+  return {
+    id: FilterCategory.SYSTEM_LABEL,
+    title: t('filter_bar.label.choose_folder'),
+    groupId: 'status-date',
+    icon: FolderIcon,
+    name: FilterCategory.SYSTEM_LABEL,
+    removable: true,
+    groups: {
+      folder: {
+        title: t('filter_bar.group.choose_folder'),
+      },
+    },
+    items: [
+      {
+        id: SystemLabel.Default,
+        title: t('status.default'),
+        value: SystemLabel.Default,
+        groupId: 'folder',
+      },
+      {
+        id: SystemLabel.Archive,
+        title: t('status.archive'),
+        value: SystemLabel.Archive,
+        groupId: 'folder',
+      },
+      {
+        id: SystemLabel.Bin,
+        title: t('status.bin'),
+        value: SystemLabel.Bin,
+        groupId: 'folder',
+      },
+    ].map((item) => ({
+      ...item,
+      role: 'radio',
+      name: FilterCategory.SYSTEM_LABEL,
+    })),
+  };
+};
+
+const createIsContentSeenFilter = (): FilterProps => {
+  return {
+    id: FilterCategory.IS_CONTENT_SEEN,
+    title: t('filter_bar.label.is_content_seen'),
+    groupId: 'status-date',
+    icon: EyeIcon,
+    name: FilterCategory.IS_CONTENT_SEEN,
+    removable: true,
+    groups: {
+      'is-content-seen': {
+        title: t('filter_bar.group.choose_is_content_seen'),
+      },
+    },
+    items: [
+      {
+        id: IsContentSeenFilterValue.UNREAD,
+        title: t('filter.is_content_seen.unread'),
+        value: IsContentSeenFilterValue.UNREAD,
+        groupId: 'is-content-seen',
+      },
+      {
+        id: IsContentSeenFilterValue.READ,
+        title: t('filter.is_content_seen.read'),
+        value: IsContentSeenFilterValue.READ,
+        groupId: 'is-content-seen',
+      },
+    ].map((item) => ({
+      ...item,
+      role: 'radio',
+      name: FilterCategory.IS_CONTENT_SEEN,
     })),
   };
 };
@@ -409,7 +486,6 @@ export const createServiceFilter = ({
  * @param orgsFromSearchState
  * @param serviceResources
  * @param currentFilters - The current filter state to calculate accurate counts
- * @param enableServiceFilter
  * @returns {Array} - The array of filter settings.
  */
 
@@ -417,30 +493,35 @@ export const getFilters = ({
   allDialogs,
   allOrganizations,
   viewType,
-  enableServiceFilter,
   prebuiltServiceFilter,
 }: {
   allDialogs: CountableDialogFieldsFragment[];
   allOrganizations: OrganizationFieldsFragment[];
   viewType: InboxViewType;
-  enableServiceFilter?: boolean;
   prebuiltServiceFilter?: FilterProps;
 }): ToolbarFilterProps['filters'] => {
   const orgLookup = buildOrganizationMap(allOrganizations ?? []);
   const senderOrgFilter = createServiceOwnerFilter(allDialogs, allOrganizations ?? [], orgLookup);
   const statusFilter = createStatusFilter();
+  const systemLabelFilter = createSystemLabelFilter();
+  const isContentSeenFilter = createIsContentSeenFilter();
   const updatedAtFilter = createUpdatedAtFilter();
 
   const filters = [];
+
+  if (viewType === 'inbox' || viewType === 'drafts' || viewType === 'sent') {
+    filters.push(systemLabelFilter);
+  }
 
   if (viewType === 'inbox') {
     filters.push(statusFilter);
   }
 
+  filters.push(isContentSeenFilter);
   filters.push(updatedAtFilter);
   filters.push(senderOrgFilter);
 
-  if (enableServiceFilter && prebuiltServiceFilter) {
+  if (prebuiltServiceFilter) {
     filters.push(prebuiltServiceFilter);
   }
 
@@ -455,10 +536,18 @@ export const readFiltersFromURLQuery = (query: string): FilterState => {
   const filters: FilterState = {};
 
   for (const [key, value] of searchParams) {
-    if (allowedFilterKeys.includes(key) && value) {
-      filters[key] = filters[key] || [];
-      filters[key].push(value);
+    if (!allowedFilterKeys.includes(key) || !value) continue;
+
+    // Backward compat: legacy URLs used status=ARCHIVE|BIN for system label folders.
+    // Migrate those values to the systemLabel filter so the chip renders correctly.
+    if (key === FilterCategory.STATUS && SYSTEM_LABEL_FOLDER_VALUES.includes(value)) {
+      filters[FilterCategory.SYSTEM_LABEL] = filters[FilterCategory.SYSTEM_LABEL] || [];
+      filters[FilterCategory.SYSTEM_LABEL].push(value);
+      continue;
     }
+
+    filters[key] = filters[key] || [];
+    filters[key].push(value);
   }
 
   return filters;
@@ -470,6 +559,10 @@ interface NormalizeFilterDefaults {
   searchQuery?: string;
 }
 
+/**
+ * Overridable defaults per view. Applied when the user has not made an explicit
+ * choice for the corresponding filter. Can be overridden by user selections.
+ */
 export const presetFiltersByView: Record<InboxViewType, Partial<GetAllDialogsForPartiesQueryVariables>> = {
   inbox: {
     status: [
@@ -482,18 +575,40 @@ export const presetFiltersByView: Record<InboxViewType, Partial<GetAllDialogsFor
     label: [SystemLabel.Default],
   },
   drafts: {
-    status: [DialogStatus.Draft],
     label: [SystemLabel.Default],
   },
-  sent: {
-    label: [SystemLabel.Sent],
-  },
-  archive: {
-    label: [SystemLabel.Archive],
-  },
-  bin: {
-    label: [SystemLabel.Bin],
-  },
+  sent: {},
+  archive: {},
+  bin: {},
+};
+
+/**
+ * Hard view locks. Values that must always be present in the query regardless of
+ * user filter selections. They define the view identity (drafts = DRAFT status,
+ * sent = SENT label, etc.). Applied after normalization and preset merging.
+ */
+const viewLocks: Record<InboxViewType, Partial<GetAllDialogsForPartiesQueryVariables>> = {
+  inbox: {},
+  drafts: { status: [DialogStatus.Draft] },
+  sent: { label: [SystemLabel.Sent] },
+  archive: { label: [SystemLabel.Archive] },
+  bin: { label: [SystemLabel.Bin] },
+};
+
+const applyViewLocks = (
+  current: GetAllDialogsForPartiesQueryVariables,
+  viewType?: InboxViewType,
+): GetAllDialogsForPartiesQueryVariables => {
+  if (!viewType) return current;
+  const locks = viewLocks[viewType];
+  const result = { ...current };
+  if (locks.status?.length) {
+    result.status = Array.from(new Set([...(result.status ?? []), ...locks.status])) as DialogStatus[];
+  }
+  if (locks.label?.length) {
+    result.label = Array.from(new Set([...(result.label ?? []), ...locks.label])) as SystemLabel[];
+  }
+  return result;
 };
 
 export const removeUndefinedValues = <T extends Record<string, unknown>>(obj: T): T => {
@@ -542,11 +657,21 @@ export const normalizeFilterDefaults = ({
   searchQuery,
 }: NormalizeFilterDefaults): GetAllDialogsForPartiesQueryVariables => {
   const SYSTEM_LABEL_STATUSES = [SystemLabel.Bin, SystemLabel.Archive, SystemLabel.Sent] as string[];
-  const { updatedAfter, fromDate, toDate, ...baseFilters } = filters;
-  const { status, org, systemLabel, serviceResources } = baseFilters;
+  const { updatedAfter, fromDate, toDate, systemLabel, isContentSeen, ...baseFilters } = filters;
+  const { status, org, serviceResources } = baseFilters;
+  // `systemLabel` is a filter-state key only; the query uses `label`.
   const normalized: GetAllDialogsForPartiesQueryVariables = { ...baseFilters };
 
-  const hasFilters = [status, org, systemLabel, updatedAfter, serviceResources].some((f) => {
+  const rawIsContentSeen = Array.isArray(isContentSeen) ? (isContentSeen[0] as string | undefined) : undefined;
+  if (rawIsContentSeen === IsContentSeenFilterValue.UNREAD) {
+    normalized.isContentSeen = false;
+  } else if (rawIsContentSeen === IsContentSeenFilterValue.READ) {
+    normalized.isContentSeen = true;
+  } else {
+    normalized.isContentSeen = undefined;
+  }
+
+  const hasFilters = [status, org, systemLabel, isContentSeen, updatedAfter, serviceResources].some((f) => {
     // Special case for date filters: if "fromAndToDate" is selected, both fromDate and toDate must be provided to be valid
     if (
       typeof f?.[0] === 'string' &&
@@ -574,16 +699,25 @@ export const normalizeFilterDefaults = ({
   const systemLabelsInStatus = normalizedStatus.filter((s) => SYSTEM_LABEL_STATUSES.includes(s)) as SystemLabel[];
   const remainingStatus = normalizedStatus.filter((s) => !SYSTEM_LABEL_STATUSES.includes(s)) as DialogStatus[];
 
-  if (systemLabelsInStatus.length > 0) {
-    normalized.label = systemLabelsInStatus;
+  const userSystemLabels = (Array.isArray(systemLabel) ? (systemLabel as string[]) : []) as SystemLabel[];
+  const combinedLabels = Array.from(new Set([...userSystemLabels, ...systemLabelsInStatus]));
+  const hasExplicitLabels = combinedLabels.length > 0;
+
+  if (hasExplicitLabels) {
+    normalized.label = combinedLabels;
   }
   normalized.status = remainingStatus.length > 0 ? remainingStatus : undefined;
 
   if ((hasFilters || searchQuery) && viewType === 'inbox') {
-    return normalized;
+    return applyViewLocks(normalized, viewType);
   }
 
-  return mergeFilterDefaults(normalized, viewType);
+  const merged = mergeFilterDefaults(normalized, viewType);
+  // User-selected folder labels must override preset defaults (e.g. inbox's DEFAULT).
+  if (hasExplicitLabels) {
+    merged.label = combinedLabels;
+  }
+  return applyViewLocks(merged, viewType);
 };
 
 const mergeWithPresets = <T extends Record<string, unknown>>(current: T, presets: Partial<T>): T => {

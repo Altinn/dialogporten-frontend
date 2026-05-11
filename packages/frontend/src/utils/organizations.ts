@@ -4,6 +4,11 @@ import { i18n } from '../i18n/config.ts';
 export interface OrganizationOutput {
   name: string;
   logo: string;
+  contact?: {
+    email?: string | null;
+    phone?: string | null;
+    url?: string | null;
+  } | null;
 }
 
 export type OrganizationLookup = OrganizationFieldsFragment[] | Map<string, OrganizationFieldsFragment>;
@@ -26,6 +31,7 @@ export const getOrganizationByLocale = (
   return {
     name: name || org,
     logo,
+    contact: currentOrg?.contact,
   };
 };
 

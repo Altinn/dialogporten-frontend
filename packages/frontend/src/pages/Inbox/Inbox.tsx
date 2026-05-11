@@ -1,24 +1,35 @@
-import { type FilterState, ToolbarFilter, ToolbarSearch } from '@altinn/altinn-components';
 import {
   BookmarkModal,
+  BulkFooter,
+  BulkHeader,
   Button,
   DialogList,
   DsAlert,
   DsParagraph,
+  type FilterState,
   Heading,
   PageBase,
   type SeenByLogItemProps,
   Toolbar,
+  ToolbarFilter,
   ToolbarMenu,
+  ToolbarSearch,
+  Typography,
 } from '@altinn/altinn-components';
-import type { TFunction } from 'i18next';
+import { XMarkIcon } from '@navikt/aksel-icons';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useSearchParams } from 'react-router-dom';
-import { type InboxViewType, MAX_DIALOG_PARTY_SIZE, useDialogs } from '../../api/hooks/useDialogs.tsx';
+import { MAX_COUNT_BULK_DIALOGS, useBulkActions } from '../../api/hooks/useBulkActions.tsx';
+import {
+  type InboxViewType,
+  MAX_DIALOG_PARTY_SIZE,
+  MAX_SERVICE_RESOURCE_SIZE,
+  isDialogQueryEnabled,
+  useDialogs,
+} from '../../api/hooks/useDialogs.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { createFiltersURLQuery } from '../../auth';
-import { EmptyState } from '../../components/EmptyState/EmptyState.tsx';
 import { Notice } from '../../components/Notice';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
 import { useSearchString } from '../../components/PageLayout/Search/';
@@ -28,17 +39,24 @@ import { SINotice } from '../../components/SINotice/SINotice.tsx';
 import { SaveSearchButton } from '../../components/SavedSearchButton/SaveSearchButton.tsx';
 import { isSavedSearchDisabled } from '../../components/SavedSearchButton/savedSearchEnabled.ts';
 import { SeenByModal } from '../../components/SeenByModal/SeenByModal.tsx';
+import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useFeatureFlag } from '../../featureFlags';
 import { useAlertBanner } from '../../hooks/useAlertBanner.ts';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
-import { useInboxOnboarding } from '../../onboardingTour';
+import { useGlobalState } from '../../useGlobalState.ts';
 import { useSavedSearches } from '../SavedSearches/useSavedSearches.tsx';
 import { PageRoutes } from '../routes.ts';
+import { AccountNavigator } from './AccountNavigator.tsx';
 import { AlertBanner } from './AlertBanner.tsx';
 import { Altinn2ActiveSchemasNotification } from './Altinn2ActiveSchemasNotification.tsx';
 import { FilterCategory, hasValidFilters, readFiltersFromURLQuery } from './filters';
 import styles from './inbox.module.css';
-import { FixedGlobalQueryParams, encodeSubAccountIds } from './queryParams.ts';
+import {
+  FixedGlobalQueryParams,
+  VariableGlobalQueryParams,
+  encodeSubAccountIds,
+  getSelectedSubAccountsFromQueryParams,
+} from './queryParams.ts';
 import { useBookmarkModal } from './useBookmarkModal.tsx';
 import { useFilters } from './useFilters.tsx';
 import useGroupedDialogs from './useGroupedDialogs.tsx';
@@ -55,74 +73,6 @@ export interface CurrentSeenByLog {
   items: SeenByLogItemProps[];
 }
 
-type LimitReachedNoticeContent = {
-  title: string;
-  description: string;
-};
-
-const getLimitReachedNoticeContent = ({
-  t,
-  isSubPartiesLimitReached,
-  shouldShowSubAccountsNudge,
-  isServiceFilterEnabled,
-  selectedPartiesCount,
-  subAccountsCount,
-  currentAccountName,
-}: {
-  t: TFunction;
-  isSubPartiesLimitReached: boolean;
-  shouldShowSubAccountsNudge: boolean;
-  isServiceFilterEnabled: boolean;
-  selectedPartiesCount: number;
-  subAccountsCount: number;
-  currentAccountName?: string;
-}): LimitReachedNoticeContent => {
-  if (isSubPartiesLimitReached) {
-    if (currentAccountName) {
-      return {
-        title: t('subAccountsLimitReached.title'),
-        description: t('subAccountsLimitReached.withOrg.description', {
-          count: subAccountsCount,
-          orgName: currentAccountName,
-          limit: MAX_DIALOG_PARTY_SIZE,
-        }),
-      };
-    }
-    return {
-      title: t('subAccountsLimitReached.title'),
-      description: t('subAccountsLimitReached.description', { count: subAccountsCount, limit: MAX_DIALOG_PARTY_SIZE }),
-    };
-  }
-
-  if (shouldShowSubAccountsNudge) {
-    return {
-      title: t('organizationLimitReached.subAccounts.title'),
-      description: t('organizationLimitReached.subAccounts.description', {
-        count: selectedPartiesCount,
-        limit: MAX_DIALOG_PARTY_SIZE,
-      }),
-    };
-  }
-
-  if (isServiceFilterEnabled) {
-    return {
-      title: t('organizationLimitReached.serviceFilter.title'),
-      description: t('organizationLimitReached.serviceFilter.description', {
-        count: selectedPartiesCount,
-        limit: MAX_DIALOG_PARTY_SIZE,
-      }),
-    };
-  }
-
-  return {
-    title: t('organizationLimitReached.title'),
-    description: t('organizationLimitReached.description', {
-      count: selectedPartiesCount,
-      limit: MAX_DIALOG_PARTY_SIZE,
-    }),
-  };
-};
-
 export const Inbox = ({ viewType }: InboxProps) => {
   useMockError();
   const { t } = useTranslation();
@@ -130,18 +80,20 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const {
     selectedParties,
     selectedPartyIds,
+    setSelectedPartyIds,
     allOrganizationsSelected,
     parties,
     partiesEmptyList,
     isError: unableToLoadParties,
     isLoading: isLoadingParties,
-    organizationLimitReached,
     partyGraph,
+    organizationLimitReached,
   } = useParties();
 
   const { items: savedSearchItems, onSaveSearch, onCloseSavedSearch } = useSavedSearches(selectedPartyIds);
   const { bookmarkModalProps, onSaveSuccess } = useBookmarkModal(savedSearchItems, onSaveSearch, onCloseSavedSearch);
-
+  const [bulkMode, setBulkMode] = useGlobalState<boolean>(QUERY_KEYS.BULK_MODE, false);
+  const [bulkedIds, setBulkedIds] = useGlobalState<string[]>(QUERY_KEYS.BULK_MODE_SELECTED_IDS, []);
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentSeenByLogModal, setCurrentSeenByLogModal] = useState<CurrentSeenByLog | null>(null);
@@ -158,12 +110,10 @@ export const Inbox = ({ viewType }: InboxProps) => {
 
   const isAltinn2MessagesEnabled = useFeatureFlag<boolean>('inbox.enableAltinn2Messages');
   const isAlertBannerEnabled = useFeatureFlag<boolean>('inbox.enableAlertBanner');
-  const isServiceFilterEnabled = useFeatureFlag<boolean>('filters.enableServiceFilter');
-  const isSubAccountsMenuEnabled = useFeatureFlag<boolean>('filters.enableSubAccountsMenu');
   const alertBannerContent = useAlertBanner();
 
   const onFiltersChange = useCallback(
-    (filters: FilterState) => {
+    (filters: FilterState, clearSearch = false) => {
       // Update state synchronously so ToolbarFilter sees it immediately
       setFilterState(filters);
 
@@ -171,7 +121,11 @@ export const Inbox = ({ viewType }: InboxProps) => {
       setSearchParams(
         (prev) => {
           const baseURL = new URL(`${window.location.origin}${window.location.pathname}?${prev.toString()}`);
-          return createFiltersURLQuery(filters, allowedFilters, baseURL.toString()).searchParams;
+          const next = createFiltersURLQuery(filters, allowedFilters, baseURL.toString()).searchParams;
+          if (clearSearch) {
+            next.delete(VariableGlobalQueryParams.search);
+          }
+          return next;
         },
         { replace: true },
       );
@@ -183,18 +137,23 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const validSearchString = enteredSearchValue.length > 2 ? enteredSearchValue : undefined;
   const selectedServices = (filterState.service ?? []) as string[];
   const selectedServicesCount = selectedServices.length;
-  const serviceLimitReached = selectedServicesCount > 20;
+  const serviceLimitReached = selectedServicesCount > MAX_SERVICE_RESOURCE_SIZE;
 
   const { accounts, accountSearch, accountGroups, onSelectAccount, currentAccountName } = useAccounts({
     parties,
     selectedParties,
     allOrganizationsSelected,
     partyGraph,
+    setSelectedPartyIds,
     options: {
       showGroups: true,
     },
   });
 
+  const partyIdsFromParams = useMemo(() => getSelectedSubAccountsFromQueryParams(searchParams), [searchParams]);
+  const hasSubAccountOverrideWithinLimit =
+    !!partyIdsFromParams.length && partyIdsFromParams.length <= MAX_DIALOG_PARTY_SIZE;
+  const showPageLabel = !(selectedServicesCount > 0 && !hasSubAccountOverrideWithinLimit);
   const {
     subAccounts,
     getSubAccountLabel,
@@ -205,35 +164,17 @@ export const Inbox = ({ viewType }: InboxProps) => {
     accounts,
     selectedParties,
     allOrganizationsSelected,
+    showPageLabel,
   });
   const searchMode = hasValidFilters(filterState) || !!validSearchString;
-  const showSubAccountsMenu = isSubAccountsMenuEnabled && subAccounts.length > 0;
-  const isSubPartiesLimitReached =
-    isSubAccountsMenuEnabled &&
-    ((subAccounts.length > MAX_DIALOG_PARTY_SIZE && !partyIdsOverride.length) ||
-      partyIdsOverride.length > MAX_DIALOG_PARTY_SIZE);
-  const subAccountsCount = Math.max(subAccounts.length - 1, 0);
-  const hasSubAccountOverrideWithinLimit =
-    isSubAccountsMenuEnabled && !!partyIdsOverride?.length && partyIdsOverride.length <= MAX_DIALOG_PARTY_SIZE;
-  const shouldShowSubAccountsNudge = isSubAccountsMenuEnabled && (!partyIdsOverride || partyIdsOverride.length === 0);
-  const organizationLimitApplies = organizationLimitReached && !hasSubAccountOverrideWithinLimit;
+  const showSubAccountsMenu = subAccounts.length > 0;
+  const allSubAccountsSelected = partyIdsOverride?.length === 0;
 
-  const isLimitReached =
-    (organizationLimitApplies && !isServiceFilterEnabled) ||
-    (organizationLimitApplies && isServiceFilterEnabled && selectedServicesCount === 0) ||
-    (organizationLimitApplies && isServiceFilterEnabled && serviceLimitReached) ||
-    isSubPartiesLimitReached ||
-    selectedServicesCount > 20;
-
-  const limitReachedNoticeContent = getLimitReachedNoticeContent({
-    t,
-    isSubPartiesLimitReached,
-    shouldShowSubAccountsNudge,
-    isServiceFilterEnabled,
-    selectedPartiesCount: selectedParties.length,
-    subAccountsCount,
-    currentAccountName,
+  const isLimitReached = !isDialogQueryEnabled({
+    queryPartyURIs: allSubAccountsSelected ? (organizationLimitReached ? [] : selectedPartyIds) : partyIdsOverride,
+    serviceResources: selectedServices,
   });
+
   const subAccountsParamForSave = useMemo(() => {
     if (subAccountsParam) return subAccountsParam;
     return encodeSubAccountIds(partyIdsOverride ?? []) ?? '';
@@ -248,11 +189,13 @@ export const Inbox = ({ viewType }: InboxProps) => {
   }, [filterState, subAccountsParamForSave]);
 
   const savedSearchDisabled = isSavedSearchDisabled(savedSearchFilterState, partyIdsOverride, enteredSearchValue);
+  const onResetAllFilter = () => {
+    onFiltersChange({}, true);
+  };
 
   const {
     dialogs,
     isLoading: isLoadingDialogs,
-    isSuccess: dialogsSuccess,
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
@@ -261,7 +204,23 @@ export const Inbox = ({ viewType }: InboxProps) => {
     filterState,
     search: validSearchString,
     serviceResources: selectedServices,
-    partyIdsOverride: isSubAccountsMenuEnabled && partyIdsOverride?.length ? partyIdsOverride : [],
+    partyIdsOverride: partyIdsOverride?.length ? partyIdsOverride : [],
+  });
+
+  const onCloseBulkMode = useCallback(() => {
+    setBulkMode(false);
+    setBulkedIds([]);
+  }, [setBulkMode, setBulkedIds]);
+
+  const onSelectAll = useCallback(() => {
+    setBulkedIds(dialogs.map((d) => d.id).slice(0, MAX_COUNT_BULK_DIALOGS));
+  }, [dialogs, setBulkedIds]);
+
+  const { footerActions, headerActions } = useBulkActions({
+    selectedDialogIds: bulkedIds,
+    allDialogs: dialogs,
+    onSelectAll,
+    onDismiss: onCloseBulkMode,
   });
 
   const { filters, getFilterLabel } = useFilters({ viewType });
@@ -286,20 +245,14 @@ export const Inbox = ({ viewType }: InboxProps) => {
     }
   }, [isLoading]);
 
-  useInboxOnboarding({
-    isLoadingParties,
-    isLoadingDialogs,
-    dialogsSuccess,
-    dialog: dialogs[0] || null,
-    viewType,
-  });
-
-  const { groupedDialogs, groups } = useGroupedDialogs({
+  const { groupedDialogs, groups, title, description } = useGroupedDialogs({
     onSeenByLogModalChange: setCurrentSeenByLogModal,
     items: dialogs,
     hasNextPage,
     displaySearchResults: searchMode,
     filters: filterState,
+    filterState,
+    onFiltersChange,
     viewType,
     isLoading,
     isFetchingNextPage,
@@ -361,13 +314,29 @@ export const Inbox = ({ viewType }: InboxProps) => {
 
   return (
     <PageBase>
-      <Heading as="h1" size="xl">
-        {t(getPageRouteTitle(PageRoutes[viewType]))}
-      </Heading>
+      <BulkHeader
+        hidden={!bulkMode}
+        title={t(
+          bulkedIds?.length >= MAX_COUNT_BULK_DIALOGS
+            ? 'bulk_action.header.selected_max_reached'
+            : 'bulk_action.header.selected',
+          { count: bulkedIds?.length ?? 0 },
+        )}
+        options={headerActions}
+        dismissable={true}
+        onDismiss={onCloseBulkMode}
+        color={bulkedIds.length >= MAX_COUNT_BULK_DIALOGS ? 'warning' : 'company'}
+      />
+      {!searchMode && (
+        <Heading as="h1" size="xl">
+          {t(getPageRouteTitle(PageRoutes[viewType]))}
+        </Heading>
+      )}
       <div data-testid="inbox-toolbar">
         {currentAccountName ? (
           <Toolbar>
             <ToolbarMenu
+              disabled={bulkMode}
               size="md"
               items={accounts}
               search={accountSearch}
@@ -382,6 +351,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
             />
             {showSubAccountsMenu && (
               <ToolbarMenu
+                disabled={bulkMode}
                 id="toolbarmenu-subAccounts"
                 items={subAccounts}
                 groups={subAccountGroups}
@@ -390,8 +360,10 @@ export const Inbox = ({ viewType }: InboxProps) => {
                 virtualized
               />
             )}
-            <ToolbarSearch {...inboxSearch} />
+            <ToolbarSearch {...inboxSearch} disabled={bulkMode} />
             <ToolbarFilter
+              showResetButton={false}
+              disabled={bulkMode}
               filters={filters}
               filterState={filterState}
               onFilterStateChange={onFiltersChange}
@@ -404,31 +376,62 @@ export const Inbox = ({ viewType }: InboxProps) => {
               submitLabel={t('filter.show_all_results')}
               removeLabel={t('filter_bar.remove_filter')}
             />
+            {searchMode && !bulkMode && (
+              <Button onClick={onResetAllFilter} variant="ghost">
+                <XMarkIcon aria-hidden="true" />
+                <span>{t('filter_bar.reset_filters')}</span>
+              </Button>
+            )}
             <SaveSearchButton
               viewType={viewType}
-              disabled={savedSearchDisabled}
+              hidden={savedSearchDisabled || bulkMode}
               filterState={savedSearchFilterState}
               onSaveSuccess={onSaveSuccess}
             />
           </Toolbar>
-        ) : null}
+        ) : (
+          <Toolbar>
+            <Button as="div" loading>
+              {t('word.loading')}
+            </Button>
+          </Toolbar>
+        )}
       </div>
       <SINotice />
       <AlertBanner showAlertBanner={isAlertBannerEnabled && !!alertBannerContent} />
       {isAltinn2MessagesEnabled && <Altinn2ActiveSchemasNotification selectedAccountId={selectedParties?.[0]?.party} />}
-      {dialogsSuccess && !dialogItems.length && !isLoading && !isLimitReached && (
-        <EmptyState viewType={viewType} savable={searchMode || !!(partyIdsOverride?.length ?? 0)} />
-      )}
-      {isLimitReached && (
-        <Notice title={limitReachedNoticeContent.title} description={limitReachedNoticeContent.description} />
-      )}
       <>
+        <AccountNavigator
+          hidden={
+            subAccounts.length - 1 < MAX_DIALOG_PARTY_SIZE ||
+            (selectedServicesCount > 0 && !hasSubAccountOverrideWithinLimit)
+          }
+          subAccounts={subAccounts}
+          partyIdsOverride={partyIdsOverride}
+        />
+        {serviceLimitReached && (
+          <Typography variant="subtle" size="sm">
+            <p>{t('inbox.service_limit_reached.description', { count: MAX_SERVICE_RESOURCE_SIZE })} </p>
+          </Typography>
+        )}
         <DialogList
+          title={
+            isLimitReached ? undefined : searchMode ? (
+              isLoading ? (
+                <Heading as="h2" loading>
+                  {t('word.loading')}
+                </Heading>
+              ) : (
+                title
+              )
+            ) : undefined
+          }
           items={dialogItems}
           groups={dialogListGroups}
           sortGroupBy={sortGroupBy}
           isLoading={isLoading}
           highlightWords={highlightWords}
+          description={isLimitReached ? undefined : description}
         />
         {hasNextPage && (
           <Button aria-label={t('dialog.aria.fetch_more')} onClick={fetchNextPage} variant="outline" size="lg">
@@ -443,6 +446,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
         onClose={() => setCurrentSeenByLogModal(null)}
       />
       <BookmarkModal {...bookmarkModalProps} />
+      {footerActions.length > 0 && <BulkFooter hidden={!bulkMode} actions={footerActions} />}
     </PageBase>
   );
 };

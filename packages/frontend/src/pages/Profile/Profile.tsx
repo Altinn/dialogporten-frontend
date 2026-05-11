@@ -4,7 +4,6 @@ import { t } from 'i18next';
 import { useCurrentEndUser, useIsSelfIdentifiedUser } from '../../api/hooks/usePartiesSelectors.ts';
 import { formatSSN } from '../../components/PageLayout/Accounts/useAccounts.tsx';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
-import { useProfileOnboarding } from '../../onboardingTour/useProfileOnboarding';
 import { SettingsType, useSettings } from './Settings/useSettings.tsx';
 import { useProfile } from './useProfile';
 
@@ -21,8 +20,6 @@ export const Profile = () => {
   });
 
   usePageTitle({ baseTitle: t('sidebar.profile') });
-  useProfileOnboarding({ isLoading, pageType: 'main' });
-
   const userDisplayName = formatDisplayName({
     fullName: currentEndUser?.name ?? '',
     type: 'person',
