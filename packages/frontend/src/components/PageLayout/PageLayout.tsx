@@ -15,7 +15,7 @@ import i18n from 'i18next';
 import { useEffect, useLayoutEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps, Outlet, useLocation, useSearchParams } from 'react-router-dom';
-import { useCurrentEndUser, useCurrentPartyUuid, useSelectedProfile } from '../../api/hooks/usePartiesSelectors.ts';
+import { useCurrentEndUser, useSelectedProfile } from '../../api/hooks/usePartiesSelectors.ts';
 import { getFrontPageLink } from '../../auth';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { getSearchStringFromQueryParams } from '../../pages/Inbox/queryParams.ts';
@@ -45,7 +45,6 @@ export const PageLayout: React.FC = () => {
   const [bulkMode, setBulkMode] = useGlobalState<boolean>(QUERY_KEYS.BULK_MODE, false);
   const selectedProfile = useSelectedProfile();
   const currentEndUser = useCurrentEndUser();
-  const currentPartyUuid = useCurrentPartyUuid();
   const [allOrganizationsSelected] = useGlobalState<boolean>(QUERY_KEYS.ALL_ORGANIZATIONS_SELECTED, false);
   const [selectedParties] = useGlobalState<PartyFieldsFragment[]>(QUERY_KEYS.SELECTED_PARTIES, []);
   const [isErrorState] = useGlobalState<boolean>(QUERY_KEYS.ERROR_STATE, false);
@@ -81,7 +80,7 @@ export const PageLayout: React.FC = () => {
       {
         label: t('route.titles.start'),
         as: (props: LinkProps) => {
-          return <Link {...props} to={getFrontPageLink(currentPartyUuid, i18n.language)} />;
+          return <Link {...props} to={getFrontPageLink(i18n.language)} />;
         },
       },
     ];
@@ -151,7 +150,10 @@ export const PageLayout: React.FC = () => {
     }
 
     return steps;
-  }, [currentPartyUuid, location.pathname, fromView, docTitle]);
+  }, [location.pathname, fromView, docTitle]);
+
+  const escalateBannerSeverity = new Date() >= new Date(2026, 5, 2); // Escalate to warning on June 2nd, 2026
+  const bannerLink = getBannerLink(i18n.language);
 
   let color: LayoutColor = 'neutral';
   let theme: LayoutTheme = 'default';
@@ -173,6 +175,12 @@ export const PageLayout: React.FC = () => {
   const layoutProps: LayoutProps = {
     theme,
     color,
+    banner: {
+      title: t('altinn_shutdown_banner.title'),
+      link: { label: t('altinn_shutdown_banner.link'), href: bannerLink },
+      color: escalateBannerSeverity ? 'warning' : undefined,
+      variant: escalateBannerSeverity ? 'alert' : undefined,
+    },
     content: {
       color: isProfile ? 'person' : undefined,
     },
@@ -205,4 +213,15 @@ export const PageLayout: React.FC = () => {
       </Layout>
     </>
   );
+};
+
+const getBannerLink = (languageCode: string) => {
+  switch (languageCode) {
+    case 'en':
+      return 'https://info.altinn.no/en/news/check-if-you-need-to-take-action-before-we-shut-down-the-old-altinn/';
+    case 'nn':
+      return 'https://info.altinn.no/nn/nyheiter/sjekk-om-du-ma-gjere-noko-for-vi-slar-av-gamle-altinn/';
+    default:
+      return 'https://info.altinn.no/nyheter/sjekk-om-du-ma-gjore-noe-for-vi-slar-av-gamle-altinn/';
+  }
 };

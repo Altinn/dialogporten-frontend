@@ -31,6 +31,8 @@
   "altinn.delegate_access": "Share and give power of attorney",
   "altinn.dialogporten.loading_lookup": "Loading the id of the dialog",
   "altinn.new_schema": "New form",
+  "altinn_shutdown_banner.link": "Here's what you need to be aware of.",
+  "altinn_shutdown_banner.title": "June 19: the old Altinn will be shut down.",
   "attachment.expired": "Expired",
   "attachment.expires_in": "Expires {relativeTime}",
   "badge.deleted": "Deleted",
