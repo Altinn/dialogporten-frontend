@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { useParties } from '../../../api/hooks/useParties.ts';
 import { useIsSelfIdentifiedUser } from '../../../api/hooks/usePartiesSelectors.ts';
 import { usePageTitle } from '../../../hooks/usePageTitle';
-import { SettingsType, useSettings } from '../Settings/useSettings.tsx';
 import { useProfile } from '../useProfile';
+import { SettingsType, useSettings } from '../useSettings.tsx';
 
 export interface NotificationAccountsType extends PartyFieldsFragment {
   notificationSettings?: NotificationSettingsResponse;
@@ -18,11 +18,10 @@ export const NotificationsPage = () => {
   const { isLoading: isLoadingParties } = useParties();
   const isSelfIdentifiedUser = useIsSelfIdentifiedUser();
 
-  usePageTitle({ baseTitle: t('component.notifications') });
+  usePageTitle({ baseTitle: t('sidebar.profile.notifications') });
 
   const { settingsGroups, settings, settingsSearch } = useSettings({
     isLoading: isLoadingUser || isLoadingParties,
-    isSelfIdentifiedUser,
     disabled: isSelfIdentifiedUser,
     options: {
       includeGroups: [
@@ -47,7 +46,7 @@ export const NotificationsPage = () => {
 
   return (
     <PageBase>
-      <Heading size="xl">{t('profile.settings.notification_settings')}</Heading>
+      <Heading size="xl">{t('sidebar.profile.notifications')}</Heading>
       <Toolbar
         search={{
           ...settingsSearch,

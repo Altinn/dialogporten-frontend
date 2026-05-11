@@ -13,7 +13,6 @@ export const getPageRouteTitle = (route: PageRoutes): string => {
     [PageRoutes.profile]: 'profile',
     [PageRoutes.partiesOverview]: 'parties',
     [PageRoutes.notifications]: 'notifications',
-    [PageRoutes.settings]: 'settings',
     [PageRoutes.error]: 'error',
     [PageRoutes.redirect]: 'redirect',
   };

@@ -14,11 +14,11 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useCallback, useDeferredValue, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useServiceResource } from '../../../../api/hooks/useServiceResource.ts';
-import { updateNotificationsetting } from '../../../../api/queries.ts';
-import { QUERY_KEYS } from '../../../../constants/queryKeys.ts';
-import { useErrorLogger } from '../../../../hooks/useErrorLogger.ts';
-import type { NotificationAccountsType } from '../../NotificationsPage/NotificationsPage.tsx';
+import { useServiceResource } from '../../../api/hooks/useServiceResource.ts';
+import { updateNotificationsetting } from '../../../api/queries.ts';
+import { QUERY_KEYS } from '../../../constants/queryKeys.ts';
+import { useErrorLogger } from '../../../hooks/useErrorLogger.ts';
+import type { NotificationAccountsType } from '../NotificationsPage/NotificationsPage.tsx';
 
 export interface ServiceResourceNotificationsDetailsProps {
   notificationParty?: NotificationAccountsType | null;

@@ -4,9 +4,9 @@ import {
   BellIcon,
   Buildings2Icon,
   ChatExclamationmarkIcon,
-  CogIcon,
   HeartIcon,
   InboxFillIcon,
+  InboxIcon,
   InformationSquareIcon,
   MagnifyingGlassIcon,
   MenuGridIcon,
@@ -101,17 +101,6 @@ export function buildProfileMenu({
             to: PageRoutes.notifications + pruneSearchQueryParams(currentSearchQuery),
           }),
         },
-        {
-          id: '3',
-          groupId: '4',
-          icon: CogIcon,
-          size: 'md',
-          title: t('sidebar.profile.settings'),
-          selected: isRouteSelected(pathname, PageRoutes.settings, fromView),
-          as: createMenuItemComponent({
-            to: PageRoutes.settings + pruneSearchQueryParams(currentSearchQuery),
-          }),
-        },
       ],
     },
   ];
@@ -152,6 +141,17 @@ export function buildProfileMenu({
     },
   ];
 
+  const inboxShortcut: MenuItemProps = {
+    id: 'profile-inbox-shortcut',
+    groupId: 'shortcuts',
+    icon: InboxIcon,
+    title: t('sidebar.inbox'),
+    selected: isRouteSelected(pathname, PageRoutes.inbox, fromView),
+    as: createMenuItemComponent({
+      to: PageRoutes.inbox + pruneSearchQueryParams(currentSearchQuery),
+    }),
+  };
+
   const sidebarMenu: MenuProps = {
     variant: 'tinted',
     groups: menuGroups,
@@ -161,6 +161,7 @@ export function buildProfileMenu({
         ...item,
         iconTheme: idx === 0 ? 'base' : 'tinted',
       })),
+      inboxShortcut,
     ],
   };
 
