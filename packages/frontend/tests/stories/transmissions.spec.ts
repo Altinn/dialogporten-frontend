@@ -43,7 +43,7 @@ test.describe('Transmissions and dialog history', () => {
 
     await page.getByRole('button', { name: /aktivitetslogg/i }).click();
     // Both case 1 and case 3 generate this same text — use .first() to avoid strict mode violation
-    await expect(page.getByText('Sending for API-bruk ble opprettet.').first()).toBeVisible();
+    await expect(page.getByText('Forsendelse kun med maskinlesbart vedlegg').first()).toBeVisible();
   });
 
   // Case 2: isAuthorized=false + has GUI attachment → B: disabled (shown but cannot expand)
@@ -76,13 +76,17 @@ test.describe('Transmissions and dialog history', () => {
 
     await page.getByRole('button', { name: /aktivitetslogg/i }).click();
     // Both case 1 and case 3 generate this same text — use .first() to avoid strict mode violation
-    await expect(page.getByText('Sending for API-bruk ble opprettet.').first()).toBeVisible();
+    await expect(page.getByText('Forsendelse kun med maskinlesbart vedlegg').first()).toBeVisible();
   });
 
   // Case 4: isAuthorized=true + visible content → visible (expandable, shows content)
   test('case 4 — isAuthorized=true, visible content: shown and expandable', async ({ page }) => {
     await page.goto(appUrlWithPlaywrightId('transmissions'));
     await page.getByRole('link', { name: 'This has no sender name' }).click();
+
+    await page.waitForLoadState('networkidle');
+    const showMore = page.getByRole('button', { name: 'Vis mer' });
+    if (await showMore.isVisible()) await showMore.click();
 
     const visible = page.getByRole('button', { name: /Sak 4: vises/ });
     await expect(visible).toBeVisible();
@@ -118,5 +122,20 @@ test.describe('Transmissions and dialog history', () => {
       'aria-disabled',
       'true',
     );
+  });
+
+  // Case 7: isAuthorized=true + summary and GUI attachment → visible and expandable, attachment link works
+  test('case 7 — isAuthorized=true, summary and GUI attachment: shown and expandable', async ({ page }) => {
+    await page.goto(appUrlWithPlaywrightId('transmissions'));
+    await page.getByRole('link', { name: 'This has no sender name' }).click();
+
+    const case7 = page.getByRole('button', { name: /Sak 7: vises.*summary og GUI-vedlegg/ });
+    await expect(case7).toBeVisible();
+    await expect(case7).not.toHaveAttribute('aria-disabled', 'true');
+
+    await case7.click();
+    const link = page.getByRole('link', { name: 'tilbakemelding' });
+    await expect(link).toBeVisible();
+    await expect(link).not.toHaveAttribute('aria-disabled', 'true');
   });
 });

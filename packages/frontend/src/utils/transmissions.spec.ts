@@ -263,4 +263,35 @@ describe('getTransmissionVisibility', () => {
     });
     expect(getTransmissionVisibility(t)).toBe('visible');
   });
+
+  it('case 7 — isAuthorized=true, summary and GUI attachment → shown', () => {
+    const t = makeTransmission({
+      content: {
+        title: { value: [{ value: 'Title', languageCode: 'nb' }], mediaType: 'text/plain' },
+        summary: { value: [{ value: 'Tilbakemelding på a-melding', languageCode: 'nb' }], mediaType: 'text/plain' },
+        contentReference: null,
+      },
+      attachments: [
+        {
+          id: 'a1',
+          displayName: [{ value: 'tilbakemelding', languageCode: 'nb' }],
+          urls: [
+            {
+              id: 'u1',
+              url: 'https://gui.example.com/file.pdf',
+              consumerType: AttachmentUrlConsumer.Gui,
+              mediaType: 'application/json',
+            },
+            {
+              id: 'u2',
+              url: 'https://api.example.com/file',
+              consumerType: AttachmentUrlConsumer.Api,
+              mediaType: 'application/json',
+            },
+          ],
+        },
+      ],
+    });
+    expect(getTransmissionVisibility(t)).toBe('visible');
+  });
 });

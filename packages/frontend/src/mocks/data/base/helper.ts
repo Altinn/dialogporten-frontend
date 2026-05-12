@@ -581,6 +581,46 @@ export const getMockedTransmissions = (dialogId: string) => {
           },
         ],
       },
+      // Case 7: isAuthorized=true + summary and GUI attachment → visible
+      {
+        id: 'case7-summary-and-gui-attachment',
+        isAuthorized: true,
+        createdAt: '2024-08-15T07:00:00.000Z',
+        type: TransmissionType.Information,
+        sender: { actorType: ActorType.ServiceOwner, actorId: null, actorName: null },
+        content: {
+          title: {
+            value: [{ value: 'Sak 7: vises (isAuthorized=true, summary og GUI-vedlegg)', languageCode: 'nb' }],
+            mediaType: 'text/plain',
+          },
+          summary: {
+            value: [{ value: 'Tilbakemelding på a-melding', languageCode: 'nb' }],
+            mediaType: 'text/plain',
+          },
+          contentReference: null,
+        },
+        attachments: [
+          {
+            id: 'case7-attachment',
+            displayName: [{ value: 'tilbakemelding', languageCode: 'nb' }],
+            expiresAt: null,
+            urls: [
+              {
+                id: 'case7-url-gui',
+                url: 'https://info.altinn.no/om-altinn/',
+                consumerType: AttachmentUrlConsumer.Gui,
+                mediaType: 'application/pdf',
+              },
+              {
+                id: 'case7-url-api',
+                url: 'https://info.altinn.no/om-altinn/api/',
+                consumerType: AttachmentUrlConsumer.Api,
+                mediaType: 'application/json',
+              },
+            ],
+          },
+        ],
+      },
     ];
   }
   return [];
