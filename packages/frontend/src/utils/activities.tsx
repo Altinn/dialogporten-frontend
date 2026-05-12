@@ -162,6 +162,7 @@ export const getActivityHistory = ({
     date: activity.datetime!,
   }));
 
+  // D: only visible transmissions appear as expandable cards in the activity log modal
   const dialogHistoryTransmissions: ActivityLogEntry[] = getTransmissions({
     transmissions,
     format,
@@ -172,12 +173,18 @@ export const getActivityHistory = ({
     locale,
     senderName,
     serviceOwnerNbName,
-  }).map((transmission) => ({
-    id: transmission.id ?? '',
-    type: 'transmission',
-    date: transmission.items?.[0]?.createdAt ?? '',
-    items: transmission.items,
-  }));
+  })
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) => !item.disabled && !item.isEmpty),
+    }))
+    .filter((group) => group.items.length > 0)
+    .map((group) => ({
+      id: group.id ?? '',
+      type: 'transmission' as const,
+      date: group.items[0].createdAt ?? '',
+      items: group.items,
+    }));
 
   // A: API-only transmissions shown as plain text entries in the activity log instead of transmission components
   const apiOnlyTransmissionActivities: ActivityLogEntry[] = transmissions
@@ -185,19 +192,61 @@ export const getActivityHistory = ({
     .map((transmission) => ({
       id: transmission.id,
       date: transmission.createdAt,
-      type: 'activity',
+      type: 'activity' as const,
       items: [
         {
           id: transmission.id,
           summary: <>{t('activity.status.transmission_api_only')}</>,
           byline: format(transmission.createdAt, formatString),
           datetime: transmission.createdAt,
-          type: 'activity',
+          type: 'activity' as const,
         },
       ],
     }));
 
-  return [...dialogHistoryActivities, ...dialogHistoryTransmissions, ...apiOnlyTransmissionActivities].sort((a, b) => {
+  // B: unauthorized transmissions shown as plain text in the activity log; disabled card still shown in the main timeline
+  const disabledTransmissionActivities: ActivityLogEntry[] = transmissions
+    .filter((t) => getTransmissionVisibility(t) === 'disabled')
+    .map((transmission) => ({
+      id: transmission.id,
+      date: transmission.createdAt,
+      type: 'activity' as const,
+      items: [
+        {
+          id: transmission.id,
+          summary: <>{t('activity.status.transmission_unauthorized')}</>,
+          byline: format(transmission.createdAt, formatString),
+          datetime: transmission.createdAt,
+          type: 'activity' as const,
+        },
+      ],
+    }));
+
+  // C: empty transmissions shown with their title in the activity log; empty-state card still shown in the main timeline
+  const emptyTransmissionActivities: ActivityLogEntry[] = transmissions
+    .filter((t) => getTransmissionVisibility(t) === 'empty')
+    .map((transmission) => ({
+      id: transmission.id,
+      date: transmission.createdAt,
+      type: 'activity' as const,
+      items: [
+        {
+          id: transmission.id,
+          summary: <>{getPreferredPropertyByLocale(transmission.content.title.value)?.value}</>,
+          byline: format(transmission.createdAt, formatString),
+          datetime: transmission.createdAt,
+          type: 'activity' as const,
+        },
+      ],
+    }));
+
+  return [
+    ...dialogHistoryActivities,
+    ...dialogHistoryTransmissions,
+    ...apiOnlyTransmissionActivities,
+    ...disabledTransmissionActivities,
+    ...emptyTransmissionActivities,
+  ].sort((a, b) => {
     return new Date(b.date).getTime() - new Date(a.date).getTime();
   });
 };
