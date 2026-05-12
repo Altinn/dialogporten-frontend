@@ -28,31 +28,35 @@ async function getAadDbToken(): Promise<string> {
   throw lastError;
 }
 
-const sslExtra = config.enableHttps ? { extra: { ssl: { rejectUnauthorized: false } } } : {};
+const commonOptions = {
+  synchronize: false,
+  logging: false,
+  entities: ['src/entities.ts'],
+  migrations: [__dirname + '/migrations/**/*.ts'],
+} satisfies Partial<DataSourceOptions>;
 
-export const connectionOptions: DataSourceOptions = config.postgresql.useAadAuth
-  ? ({
-      type: 'postgres',
-      host: config.postgresql.host,
-      port: config.postgresql.port,
-      database: config.postgresql.database,
-      username: config.postgresql.user,
-      password: getAadDbToken,
-      synchronize: false,
-      logging: false,
-      entities: ['src/entities.ts'],
-      migrations: [__dirname + '/migrations/**/*.ts'],
-      // Azure PostgreSQL always requires TLS regardless of ENABLE_HTTPS (which controls the BFF's own server)
-      extra: { ssl: { rejectUnauthorized: false } },
-    } as unknown as DataSourceOptions)
-  : {
-      type: 'postgres',
-      url: config.postgresql.connectionString,
-      synchronize: false,
-      logging: false,
-      entities: ['src/entities.ts'],
-      migrations: [__dirname + '/migrations/**/*.ts'],
-      ...sslExtra,
-    };
+// Used when DB_USE_AAD_AUTH=true: connects via Entra ID workload identity.
+// Azure PostgreSQL always requires TLS, independent of ENABLE_HTTPS.
+const aadOptions = {
+  ...commonOptions,
+  type: 'postgres',
+  host: config.postgresql.host,
+  port: config.postgresql.port,
+  database: config.postgresql.database,
+  username: config.postgresql.user,
+  password: getAadDbToken,
+  extra: { ssl: { rejectUnauthorized: false } },
+} as unknown as DataSourceOptions;
+
+// Default path: connection string from Key Vault (legacy Bicep-provisioned DB).
+// SSL is controlled by sslmode= in the connection string itself.
+const legacyOptions: DataSourceOptions = {
+  ...commonOptions,
+  type: 'postgres',
+  url: config.postgresql.connectionString,
+  ...(config.enableHttps && { extra: { ssl: { rejectUnauthorized: false } } }),
+};
+
+export const connectionOptions: DataSourceOptions = config.postgresql.useAadAuth ? aadOptions : legacyOptions;
 
 export default new DataSource(connectionOptions);
