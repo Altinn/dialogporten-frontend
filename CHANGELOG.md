@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.148.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.147.0...v1.148.0) (2026-05-12)
+
+
+### Features
+
+* Transmissions and activity log visibility v2 ([#4142](https://github.com/Altinn/dialogporten-frontend/issues/4142)) ([c4585d8](https://github.com/Altinn/dialogporten-frontend/commit/c4585d8197fa979464c30da25fb910fe8e713a43))
+
 ## [1.147.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.146.0...v1.147.0) (2026-05-12)
 
 
