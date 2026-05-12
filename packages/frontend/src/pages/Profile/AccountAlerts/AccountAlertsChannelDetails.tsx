@@ -14,11 +14,11 @@ import {
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { sendVerificationCode, updateNotificationsetting, verifyAddress } from '../../../../api/queries.ts';
-import { QUERY_KEYS } from '../../../../constants/queryKeys.ts';
-import { useErrorLogger } from '../../../../hooks/useErrorLogger.ts';
-import type { NotificationAccountsType } from '../../NotificationsPage/NotificationsPage.tsx';
-import { useProfile } from '../../useProfile.tsx';
+import { sendVerificationCode, updateNotificationsetting, verifyAddress } from '../../../api/queries.ts';
+import { QUERY_KEYS } from '../../../constants/queryKeys.ts';
+import { useErrorLogger } from '../../../hooks/useErrorLogger.ts';
+import type { NotificationAccountsType } from '../NotificationsPage/NotificationsPage.tsx';
+import { useProfile } from '../useProfile.tsx';
 import styles from './AccountAlertsChannelDetails.module.css';
 import { VerificationCodeStep } from './VerificationCodeStep.tsx';
 import { type Channel, useIsAlreadyVerified, useResendCooldown } from './common.ts';

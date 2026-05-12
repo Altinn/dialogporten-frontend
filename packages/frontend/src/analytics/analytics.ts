@@ -19,7 +19,6 @@ const pageMapping: Record<string, string> = {
   [PageRoutes.profile]: 'Profile Overview',
   [PageRoutes.partiesOverview]: 'Parties Management',
   [PageRoutes.notifications]: 'Notification Settings',
-  [PageRoutes.settings]: 'User Settings',
   [PageRoutes.error]: 'Error Page',
 };
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useVerifiedAddresses } from '../../useVerifiedAddresses.tsx';
+import { useVerifiedAddresses } from '../useVerifiedAddresses.tsx';
 
 export type Channel = 'Email' | 'Sms';
 

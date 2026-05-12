@@ -1,46 +1,37 @@
-import { DashboardHeader, PageBase, SettingsList } from '@altinn/altinn-components';
-import { formatDisplayName } from '@altinn/altinn-components';
+import { Heading, PageBase, SettingsList, Toolbar } from '@altinn/altinn-components';
 import { t } from 'i18next';
-import { useCurrentEndUser, useIsSelfIdentifiedUser } from '../../api/hooks/usePartiesSelectors.ts';
-import { formatSSN } from '../../components/PageLayout/Accounts/useAccounts.tsx';
+import { useIsSelfIdentifiedUser } from '../../api/hooks/usePartiesSelectors.ts';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
-import { SettingsType, useSettings } from './Settings/useSettings.tsx';
-import { useProfile } from './useProfile';
+import { SettingsType, useSettings } from './useSettings.tsx';
 
 export const Profile = () => {
-  const { user, isLoading } = useProfile();
-  const currentEndUser = useCurrentEndUser();
   const isSelfIdentifiedUser = useIsSelfIdentifiedUser();
-  const { settings } = useSettings({
+  const { settings, settingsSearch, settingsGroups } = useSettings({
     options: {
-      includeGroups: [SettingsType.contact],
+      includeGroups: [
+        SettingsType.contact,
+        SettingsType.profile,
+        SettingsType.contactAddresses,
+        SettingsType.partySettings,
+        SettingsType.partyOverview,
+      ],
     },
-    isSelfIdentifiedUser,
     disabled: isSelfIdentifiedUser,
   });
 
   usePageTitle({ baseTitle: t('sidebar.profile') });
-  const userDisplayName = formatDisplayName({
-    fullName: currentEndUser?.name ?? '',
-    type: 'person',
-  });
 
   return (
     <PageBase>
-      <DashboardHeader
-        loading={isLoading}
-        icon={{
-          type: 'person',
-          name: userDisplayName,
+      <Heading size="xl">{t('profile.settings.heading')}</Heading>
+      <Toolbar
+        search={{
+          ...settingsSearch,
+          placeholder: t('profile.settings.search_placeholder'),
         }}
-        title={userDisplayName}
-        description={
-          isSelfIdentifiedUser
-            ? undefined
-            : `${t('profile.landing.ssn')} ${user?.party?.ssn ? formatSSN(user?.party?.ssn, false) : ''}`
-        }
       />
-      <SettingsList items={settings} />
+      {settings.length === 0 && <Heading size="lg">{t('profile.settings.no_results')}</Heading>}
+      <SettingsList items={settings} groups={settingsGroups} />
     </PageBase>
   );
 };

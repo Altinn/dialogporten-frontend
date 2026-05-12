@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.147.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.146.0...v1.147.0) (2026-05-12)
+
+
+### Features
+
+* base line for re-organization of lists in profile pages ([#4138](https://github.com/Altinn/dialogporten-frontend/issues/4138)) ([3832fb7](https://github.com/Altinn/dialogporten-frontend/commit/3832fb7bb7f9cdccbf44be6f8d3461fbcb8a69ca))
+
+## [1.146.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.145.0...v1.146.0) (2026-05-11)
+
+
+### Features
+
+* Enable info banner about a2 shutdown ([#4124](https://github.com/Altinn/dialogporten-frontend/issues/4124)) ([539f673](https://github.com/Altinn/dialogporten-frontend/commit/539f673f4e6cd0f59e87a6f418228ea9379b9597))
+* Replace ChangeReporteeAndRedirect endpoint from A2 to A3 ([#4104](https://github.com/Altinn/dialogporten-frontend/issues/4104)) ([39e0673](https://github.com/Altinn/dialogporten-frontend/commit/39e0673b11a4e36e07bcbb2ba80a5d4ef761101a))
+
+
+### Bug Fixes
+
+* **notifications:** unable to remove email address on personal notification ([#4132](https://github.com/Altinn/dialogporten-frontend/issues/4132)) ([5cccae7](https://github.com/Altinn/dialogporten-frontend/commit/5cccae7c77f7ed3dd82af8c9f78d401cb5c5b041))
+
 ## [1.145.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.144.1...v1.145.0) (2026-05-07)
 
 

@@ -9,10 +9,12 @@ import {
   type SettingsItemVariant,
   type ToolbarSearchProps,
   type UsedByLogItemProps,
+  formatDisplayName,
 } from '@altinn/altinn-components';
 import {
   BellIcon,
   BriefcaseIcon,
+  HeartIcon,
   HouseHeartIcon,
   MobileIcon,
   PaperplaneIcon,
@@ -21,15 +23,15 @@ import {
 } from '@navikt/aksel-icons';
 import { type ChangeEvent, type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParties } from '../../../api/hooks/useParties.ts';
-import { useAccounts } from '../../../components/PageLayout/Accounts/useAccounts.tsx';
-import { usePartiesWithNotificationSettings } from '../usePartiesWithNotificationSettings.tsx';
-import { useProfile } from '../useProfile.tsx';
-import { useVerifiedAddresses } from '../useVerifiedAddresses.tsx';
+import { useParties } from '../../api/hooks/useParties.ts';
+import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
 import { AccountAlertsChannelDetails } from './AccountAlerts/AccountAlertsChannelDetails.tsx';
 import { ServiceResourceNotificationsDetails } from './AccountAlerts/ServiceResourceNotificationsDetails.tsx';
 import type { Channel } from './AccountAlerts/common.ts';
 import { ContactProfileDetails } from './ContactProfileDetails.tsx';
+import { usePartiesWithNotificationSettings } from './usePartiesWithNotificationSettings.tsx';
+import { useProfile } from './useProfile.tsx';
+import { useVerifiedAddresses } from './useVerifiedAddresses.tsx';
 
 export enum SettingsType {
   contact = `contact`,
@@ -41,9 +43,11 @@ export enum SettingsType {
   companies = 'companies',
   persons = 'persons',
   primary = 'primary',
-  profiles = 'profiles',
+  profile = 'profile',
+  contactAddresses = 'contactAddresses',
   favorites = 'favorites',
-  other = 'other',
+  partySettings = 'partySettings',
+  partyOverview = 'partyOverview',
 }
 
 interface UseSettingsOptions {
@@ -55,7 +59,6 @@ interface UseSettingsOptions {
 interface UseSettingsInput {
   options?: UseSettingsOptions;
   isLoading?: boolean;
-  isSelfIdentifiedUser?: boolean;
   disabled?: boolean;
 }
 
@@ -67,14 +70,13 @@ interface UseSettingsOutput {
 }
 
 const getDefaultGroups = (t: (key: string) => string) => ({
-  [SettingsType.contact]: { title: t('profile.settings.contact_information') },
   [SettingsType.emailAlerts]: { title: t('profile.settings.email_notifications') },
   [SettingsType.mobileAlerts]: { title: t('profile.settings.sms_notifications') },
   [SettingsType.companies]: { title: t('profile.settings.company_notifications') },
   [SettingsType.persons]: { title: t('profile.settings.person_notifications') },
   [SettingsType.primary]: { title: t('profile.settings.favorite_notifications') },
-  [SettingsType.profiles]: { title: t('profile.settings.alternative_addresses') },
-  [SettingsType.other]: { title: t('profile.settings.other') },
+  [SettingsType.profile]: { title: t('profile.settings.your_profile') },
+  [SettingsType.partyOverview]: { title: t('profile.settings.your_parties') },
 });
 
 const getDefaultOptions = (t: (key: string) => string) => ({
@@ -110,7 +112,6 @@ export const getNotificationsSettingsBadge = ({
 export const useSettings = ({
   options: inputOptions = {},
   isLoading,
-  isSelfIdentifiedUser = false,
   disabled = false,
 }: UseSettingsInput = {}): UseSettingsOutput => {
   const {
@@ -119,15 +120,26 @@ export const useSettings = ({
     selectedParties,
     allOrganizationsSelected,
     partyGraph,
+    isSelfIdentifiedUser,
+    currentEndUser,
     setSelectedPartyIds,
   } = useParties();
   const { user, showClientUnits, setShowClientUnits, shouldShowDeletedEntities, updateShowDeletedEntities } =
     useProfile();
+
   const { t } = useTranslation();
   const [searchString, setSearchString] = useState<string>('');
   const { partiesWithNotificationSettings, uniqueEmailAddresses, uniquePhoneNumbers } =
     usePartiesWithNotificationSettings(parties);
   const { verifiedAddresses } = useVerifiedAddresses();
+  const userDisplayName = formatDisplayName({
+    fullName: currentEndUser?.name ?? '',
+    type: 'person',
+  });
+  const folkeRegisteretUrl = location.hostname.includes('af.altinn.no')
+    ? 'https://www.skatteetaten.no/person/folkeregister/flytte/'
+    : 'https://testdata.skatteetaten.no/web/testnorge/soek/freg';
+  const krrInfoUrl = 'https://eid.difi.no/nb/kontakt-og-reservasjonsregisteret';
 
   const isVerifiedAddress = (value: string, type: 'Email' | 'Sms') =>
     verifiedAddresses.some((addr) => addr?.value === value && addr?.addressType === type);
@@ -321,6 +333,46 @@ export const useSettings = ({
 
   const address = `${user?.party?.person?.mailingAddress}, ${user?.party?.person?.mailingPostalCode} ${user?.party?.person?.mailingPostalCity}`;
 
+  const profileSettings: SettingsItemProps[] = isSelfIdentifiedUser
+    ? []
+    : [
+        {
+          id: 'profile-settings',
+          groupId: SettingsType.profile,
+          title: userDisplayName,
+          icon: {
+            type: 'person',
+            name: userDisplayName,
+          },
+          variant: 'link',
+          as: 'div',
+        },
+        {
+          id: 'profile-address',
+          groupId: SettingsType.profile,
+          summary: (
+            <p>
+              {t('contact_profile.address_from_register_part1')}{' '}
+              <a href={folkeRegisteretUrl}>{t('contact_profile.address_from_register_link')}</a>
+            </p>
+          ),
+          icon: HouseHeartIcon,
+          title: t('profile.settings.address'),
+          value: address,
+          badge: getChangeSettingsBadge(address),
+          variant: 'modal',
+          children: (
+            <ContactProfileDetails
+              variant="address"
+              mailingPostalCity={user?.party?.person?.mailingPostalCity ?? ''}
+              mailingPostalCode={user?.party?.person?.mailingPostalCode ?? ''}
+              mailingAddress={user?.party?.person?.mailingAddress ?? ''}
+              readOnly
+            />
+          ),
+        },
+      ];
+
   const contactSettings: SettingsItemProps[] = [
     {
       id: 'contact-mobile',
@@ -341,43 +393,29 @@ export const useSettings = ({
     },
     {
       id: 'contact-email',
+      summary: isSelfIdentifiedUser ? (
+        <p>{t('contact_profile.self_identified_email_user')}</p>
+      ) : (
+        <p>
+          {t('contact_profile.contact_info_part1')} <a href={krrInfoUrl}>{t('contact_profile.email_register')}</a>
+          {t('contact_profile.contact_info_part2')}
+        </p>
+      ),
       groupId: SettingsType.contact,
       icon: PaperplaneIcon,
       title: t('profile.settings.email_address'),
-      value: user?.email || '',
+      value: isSelfIdentifiedUser ? (currentEndUser?.name ?? user?.email ?? '') : user?.email || '',
       badge: isSelfIdentifiedUser ? undefined : getChangeSettingsBadge(user?.email || ''),
       variant: 'modal',
       children: (
         <ContactProfileDetails
           variant="email"
-          emailAddress={user?.email || ''}
+          emailAddress={isSelfIdentifiedUser ? (currentEndUser?.name ?? user?.email ?? '') : user?.email || ''}
           usedByItems={getUsedByEmail(user?.email ?? '')}
           readOnly
         />
       ),
     },
-    ...(!isSelfIdentifiedUser
-      ? [
-          {
-            id: 'contact-address',
-            groupId: SettingsType.contact,
-            icon: HouseHeartIcon,
-            title: t('profile.settings.address'),
-            value: address,
-            badge: getChangeSettingsBadge(address),
-            variant: 'modal',
-            children: (
-              <ContactProfileDetails
-                variant="address"
-                mailingPostalCity={user?.party?.person?.mailingPostalCity ?? ''}
-                mailingPostalCode={user?.party?.person?.mailingPostalCode ?? ''}
-                mailingAddress={user?.party?.person?.mailingAddress ?? ''}
-                readOnly
-              />
-            ),
-          } as SettingsItemProps,
-        ]
-      : []),
   ];
 
   const contactProfileEmailSettings: SettingsItemProps[] = uniqueEmailAddresses.map((uea) => ({
@@ -450,6 +488,40 @@ export const useSettings = ({
     ),
   }));
 
+  const contactAddressLink: SettingsItemProps[] = [
+    {
+      id: 'contact-address-link',
+      variant: 'link',
+      title: t('profile.notifications.heading'),
+      as: 'a',
+      groupId: SettingsType.contactAddresses,
+      badge: {
+        label: t('profile.settings.notification_addresses_count', {
+          count: uniqueEmailAddresses.length + uniquePhoneNumbers.length,
+        }),
+      },
+      linkIcon: true,
+      icon: PersonRectangleIcon,
+      summary: <p>{t('profile.settings.notification_addresses_summary')}</p>,
+    },
+  ];
+
+  const partyOverviewLink: SettingsItemProps[] = [
+    {
+      id: 'party-overview-link',
+      variant: 'link',
+      title: t('sidebar.profile.parties'),
+      as: 'a',
+      groupId: SettingsType.partyOverview,
+      badge: {
+        label: t('profile.parties', { count: parties.length }),
+      },
+      linkIcon: true,
+      icon: HeartIcon,
+      summary: <p>{t('profile.settings.parties_overview_summary')}</p>,
+    },
+  ];
+
   const mobileAlertSettings: SettingsItemProps[] = [
     {
       id: 'alert-mobile',
@@ -482,7 +554,7 @@ export const useSettings = ({
     },
   ];
 
-  const otherSettings: SettingsItemProps[] = isSelfIdentifiedUser
+  const partySettings: SettingsItemProps[] = isSelfIdentifiedUser
     ? []
     : [
         {
@@ -492,11 +564,8 @@ export const useSettings = ({
           onChange: (event: ChangeEvent<HTMLInputElement>) => {
             void updateShowDeletedEntities(event.target.checked);
           },
-          groupId: SettingsType.other,
+          groupId: SettingsType.partySettings,
           variant: 'switch',
-          description: shouldShowDeletedEntities
-            ? t('profile.settings.show_deleted_units.enabled')
-            : t('profile.settings.show_deleted_units.disabled'),
           icon: TrashIcon,
           title: t('profile.settings.show_deleted_units.title'),
         },
@@ -507,24 +576,25 @@ export const useSettings = ({
             void setShowClientUnits(event.target.checked);
           },
           checked: showClientUnits ?? false,
-          groupId: SettingsType.other,
+          groupId: SettingsType.partySettings,
           variant: 'switch',
-          description: showClientUnits
-            ? t('profile.settings.show_client_units.enabled')
-            : t('profile.settings.show_client_units.disabled'),
+          description: t('profile.settings.show_client_units.description'),
           title: t('profile.settings.show_client_units.title'),
           icon: BriefcaseIcon,
         },
       ];
 
   const allSettings = [
+    ...profileSettings,
     ...contactSettings,
+    ...contactAddressLink,
+    ...partyOverviewLink,
+    ...partySettings,
     ...mobileAlertSettings,
     ...contactProfilePhoneSettings,
     ...emailAlertSettings,
     ...contactProfileEmailSettings,
     ...accountAlertSettings,
-    ...otherSettings,
   ].map((item) => (disabled ? { ...item, disabled: true } : item));
 
   const settings = allSettings.filter((item) => {

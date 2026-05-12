@@ -1,5 +1,4 @@
-import { appURLProfileLanding, appURLProfileSettings } from '../..';
-import { PageRoutes } from '../../../src/pages/routes';
+import { appURLProfileLanding } from '../..';
 import { expect, test } from '../../fixtures';
 
 test.describe('Profile Landing Page', () => {
@@ -8,10 +7,6 @@ test.describe('Profile Landing Page', () => {
     await page.waitForLoadState('networkidle');
 
     await expect(page.locator('#main-content')).toContainText('Test Testesen');
-    await expect(page.locator('#main-content')).toContainText('Fødselsnr.: 228162 98923');
-
-    await expect(page.getByRole('button', { name: 'Mobiltelefon +' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'E-postadresse nullstilt@' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Adresse Kirkegata 25, 4307' })).toBeVisible();
   });
 
@@ -36,42 +31,5 @@ test.describe('Profile Landing Page', () => {
     } catch {
       console.error('Could not find mobile phone container');
     }
-  });
-
-  test('page loads and displays content correctly', async ({ page }) => {
-    await page.goto(appURLProfileLanding);
-
-    await expect(page.getByRole('heading').first()).toBeVisible({ timeout: 10000 });
-
-    await expect(page.getByText(/Fødselsnr.:/)).toBeVisible({ timeout: 5000 });
-
-    const hasContactSettings = await Promise.race([
-      page
-        .getByText('Mobiltelefon')
-        .isVisible()
-        .then(() => true),
-      page
-        .getByText('E-postadresse')
-        .isVisible()
-        .then(() => true),
-      page
-        .getByRole('button', { name: 'Adresse', exact: true })
-        .isVisible()
-        .then(() => true),
-    ]).catch(() => false);
-
-    expect(hasContactSettings).toBe(true);
-  });
-
-  test('can navigate to settings page', async ({ page }) => {
-    await page.goto(appURLProfileLanding);
-    await page.waitForLoadState('networkidle');
-
-    await page.goto(appURLProfileSettings);
-    await expect(page).toHaveURL(new RegExp(PageRoutes.settings));
-
-    await expect(page.getByRole('heading', { name: 'Personlige innstillinger' })).toBeVisible({
-      timeout: 5000,
-    });
   });
 });

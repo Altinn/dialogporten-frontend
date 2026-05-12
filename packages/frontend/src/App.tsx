@@ -8,7 +8,6 @@ import { FrontChannelLogout } from './pages/LogoutPage/FrontChannelLogout.tsx';
 import { NotificationsPage } from './pages/Profile/NotificationsPage/NotificationsPage.tsx';
 import { PartiesOverviewPage } from './pages/Profile/PartiesOverviewPage/PartiesOverviewPage.tsx';
 import { Profile } from './pages/Profile/Profile.tsx';
-import { Settings } from './pages/Profile/Settings/Settings.tsx';
 import { RedirectPage } from './pages/RedirectPage/RedirectPage.tsx';
 import { SavedSearchesPage } from './pages/SavedSearches';
 import { PageRoutes } from './pages/routes.ts';
@@ -33,7 +32,6 @@ function App() {
             element={withErrorBoundary(<PartiesOverviewPage key="partys" />, 'Parties Overview')}
           />
           <Route path={PageRoutes.notifications} element={withErrorBoundary(<NotificationsPage />, 'Notifications')} />
-          <Route path={PageRoutes.settings} element={withErrorBoundary(<Settings />, 'Settings')} />
           <Route
             path={PageRoutes.drafts}
             element={withErrorBoundary(<Inbox key="draft" viewType={'drafts'} />, 'Drafts')}
