@@ -35,8 +35,6 @@ const commonOptions = {
   migrations: [__dirname + '/migrations/**/*.ts'],
 } satisfies Partial<DataSourceOptions>;
 
-// Used when DB_USE_AAD_AUTH=true: connects via Entra ID workload identity.
-// Azure PostgreSQL always requires TLS, independent of ENABLE_HTTPS.
 const aadOptions = {
   ...commonOptions,
   type: 'postgres',
@@ -48,8 +46,6 @@ const aadOptions = {
   extra: { ssl: { rejectUnauthorized: false } },
 } as unknown as DataSourceOptions;
 
-// Default path: connection string from Key Vault (legacy Bicep-provisioned DB).
-// SSL is controlled by sslmode= in the connection string itself.
 const legacyOptions: DataSourceOptions = {
   ...commonOptions,
   type: 'postgres',
