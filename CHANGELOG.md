@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.147.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.146.0...v1.147.0) (2026-05-12)
+
+
+### Features
+
+* base line for re-organization of lists in profile pages ([#4138](https://github.com/Altinn/dialogporten-frontend/issues/4138)) ([3832fb7](https://github.com/Altinn/dialogporten-frontend/commit/3832fb7bb7f9cdccbf44be6f8d3461fbcb8a69ca))
+
 ## [1.146.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.145.0...v1.146.0) (2026-05-11)
 
 
