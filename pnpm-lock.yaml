@@ -39,6 +39,9 @@ importers:
       '@azure/identity':
         specifier: ^4.6.0
         version: 4.13.0
+      '@azure/postgresql-auth':
+        specifier: ^1.0.0-beta.1
+        version: 1.0.0-beta.1(pg@8.18.0)
       '@digdir/dialogporten-schema':
         specifier: 1.114.0
         version: 1.114.0
@@ -769,6 +772,18 @@ packages:
   '@azure/msal-node@3.8.6':
     resolution: {integrity: sha512-XTmhdItcBckcVVTy65Xp+42xG4LX5GK+9AqAsXPXk4IqUNv+LyQo5TMwNjuFYBfAB2GTG9iSQGk+QLc03vhf3w==}
     engines: {node: '>=16'}
+
+  '@azure/postgresql-auth@1.0.0-beta.1':
+    resolution: {integrity: sha512-UAWw2p7jUKO1VcI3uLEjaBBFsiFT7dEf3rNMnotgW3cDV9k/Zz1awc56Pe3YJtZfPxBr0rAnrOs5stLS7pue5Q==}
+    engines: {node: '>=20.0.0'}
+    peerDependencies:
+      pg: '>=8.0.0'
+      sequelize: '>=6.0.0'
+    peerDependenciesMeta:
+      pg:
+        optional: true
+      sequelize:
+        optional: true
 
   '@babel/code-frame@7.29.0':
     resolution: {integrity: sha512-9NhCeYjq9+3uxgdtp20LSiJXJvN0FeCtNGpJxuMFZ1Kv3cWUNb6DOhJwUvcVCzKGR66cw4njwM6hrJLqgOwbcw==}
@@ -11034,6 +11049,16 @@ snapshots:
       '@azure/msal-common': 15.14.1
       jsonwebtoken: 9.0.3
       uuid: 8.3.2
+
+  '@azure/postgresql-auth@1.0.0-beta.1(pg@8.18.0)':
+    dependencies:
+      '@azure/core-auth': 1.10.1
+      '@azure/logger': 1.3.0
+      tslib: 2.8.1
+    optionalDependencies:
+      pg: 8.18.0
+    transitivePeerDependencies:
+      - supports-color
 
   '@babel/code-frame@7.29.0':
     dependencies:

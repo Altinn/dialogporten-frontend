@@ -2,31 +2,12 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import 'reflect-metadata';
 import { DefaultAzureCredential } from '@azure/identity';
+import { entraTokenProvider } from '@azure/postgresql-auth';
 import { DataSource, type DataSourceOptions } from 'typeorm';
 import config from './config.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-const AAD_TOKEN_SCOPE = 'https://ossrdbms-aad.database.windows.net/.default';
-const credential = new DefaultAzureCredential();
-
-async function getAadDbToken(): Promise<string> {
-  let lastError: unknown;
-  const delays = [200, 400, 800];
-  for (let i = 0; i <= delays.length; i++) {
-    try {
-      const { token } = await credential.getToken(AAD_TOKEN_SCOPE);
-      return token;
-    } catch (err) {
-      lastError = err;
-      if (i < delays.length) {
-        await new Promise<void>((resolve) => setTimeout(resolve, delays[i]));
-      }
-    }
-  }
-  throw lastError;
-}
 
 const commonOptions = {
   synchronize: false,
@@ -42,7 +23,7 @@ const aadOptions = {
   port: config.postgresql.port,
   database: config.postgresql.database,
   username: config.postgresql.user,
-  password: getAadDbToken,
+  password: entraTokenProvider(new DefaultAzureCredential()),
   extra: { ssl: { rejectUnauthorized: false } },
 } as unknown as DataSourceOptions;
 
