@@ -1,8 +1,8 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import 'reflect-metadata';
-import { DataSource, type DataSourceOptions } from 'typeorm';
 import { DefaultAzureCredential } from '@azure/identity';
+import { DataSource, type DataSourceOptions } from 'typeorm';
 import config from './config.ts';
 
 const __filename = fileURLToPath(import.meta.url);
