@@ -9,6 +9,7 @@ import {
   ButtonGroup,
   ContextMenu,
   type ContextMenuProps,
+  DsPagination,
   Heading,
   PageBase,
   Section,
@@ -18,6 +19,7 @@ import {
   SnackbarDuration,
   Switch,
   Toolbar,
+  useDsPagination,
   useSnackbar,
 } from '@altinn/altinn-components';
 import {
@@ -34,7 +36,7 @@ import {
 } from '@navikt/aksel-icons';
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import { t } from 'i18next';
-import { type ElementType, useDeferredValue, useMemo, useState } from 'react';
+import { type ElementType, useDeferredValue, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps } from 'react-router-dom';
 import { useProfile } from '..';
@@ -44,11 +46,10 @@ import {
   formatNorwegianId,
   useAccounts,
 } from '../../../components/PageLayout/Accounts/useAccounts';
-import { useFeatureFlag } from '../../../featureFlags';
 import { usePageTitle } from '../../../hooks/usePageTitle';
 import { PageRoutes } from '../../routes.ts';
-import { useSettings } from '../Settings/useSettings.tsx';
 import { useAccountFilters } from '../useAccountFilters.tsx';
+import { useSettings } from '../useSettings.tsx';
 import { ConfirmSetPreselectedActorModal } from './ConfirmSetPreselectedActorModal.tsx';
 import styles from './partiesOverviewPage.module.css';
 
@@ -169,6 +170,8 @@ export type PreselectedActorModalProps = {
   operation: PreselectedPartyOperationType;
 };
 
+const PAGE_SIZE = 50;
+
 export const PartiesOverviewPage = () => {
   const { t } = useTranslation();
   const {
@@ -182,9 +185,7 @@ export const PartiesOverviewPage = () => {
   } = useParties();
   const { getAccountAlertSettings, settings } = useSettings({
     disabled: isSelfIdentifiedUser,
-    isSelfIdentifiedUser,
   });
-  const isDeletedUnitsFilterEnabled = useFeatureFlag<boolean>('inbox.enableDeletedUnitsFilter');
   const {
     addFavoriteParty,
     deleteFavoriteParty,
@@ -199,15 +200,16 @@ export const PartiesOverviewPage = () => {
   const [expandedItem, setExpandedItem] = useState<string>('');
   const { openSnackbar } = useSnackbar();
 
-  const includeDeletedParties = isDeletedUnitsFilterEnabled ? (shouldShowDeletedEntities ?? false) : true;
-
+  const includeDeletedParties = shouldShowDeletedEntities ?? false;
   const { filters, getFilterLabel, filterState, setFilterState, filteredParties, isSearching } = useAccountFilters({
     searchValue: deferredSearchValue,
     parties,
-    includeDeletedParties: true,
+    includeDeletedParties,
   });
 
-  const { accounts, accountGroups } = useAccounts({
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
+  const { accounts, accountGroups, accountsTotal } = useAccounts({
     parties: filteredParties,
     availableParties: parties,
     selectedParties,
@@ -217,10 +219,11 @@ export const PartiesOverviewPage = () => {
     setSelectedPartyIds,
     options: {
       showFavorites: !isSearching,
+      pagination: { offset: (currentPage - 1) * PAGE_SIZE, limit: PAGE_SIZE },
     },
   });
 
-  usePageTitle({ baseTitle: t('component.parties_settings') });
+  usePageTitle({ baseTitle: t('sidebar.profile.parties') });
 
   const toggleExpanded = (id: string) => setExpandedItem((currentId) => (currentId === id ? '' : id));
 
@@ -388,6 +391,7 @@ export const PartiesOverviewPage = () => {
     const { label: _, variant: __, ...party } = account;
     const itemId = account.id + account.groupId;
     const accountType = party.type === 'subunit' ? 'company' : party.type;
+    const isExpanded = expandedItem === itemId;
     const contextMenuProps: ContextMenuProps = {
       placement: 'right',
       id: party.groupId + party.id + '-menu',
@@ -427,23 +431,25 @@ export const PartiesOverviewPage = () => {
       ],
     };
 
+    const currentPartyForDetails = isExpanded ? partyGraph.partyByUrn.get(party.id) : undefined;
+
     return {
       id: party.id,
       icon: party.icon,
-      description: expandedItem === itemId ? undefined : party.description,
+      description: isExpanded ? undefined : party.description,
       variant: 'accordion',
       groupId: String(party.groupId),
       collapsible: true,
-      expanded: expandedItem === itemId,
+      expanded: isExpanded,
       onClick: () => toggleExpanded(itemId),
       badge: undefined,
       highlightWords: (searchValue ?? '').split(' '),
       as: 'button' as ElementType,
       title: party.name,
-      children: partyGraph.partyByUrn.get(party.id) ? (
+      children: currentPartyForDetails ? (
         <PartyDetails
           type={accountType as AccountListItemType}
-          currentParty={partyGraph.partyByUrn.get(party.id) as PartyFieldsFragment}
+          currentParty={currentPartyForDetails}
           settings={settings}
           getGoToInboxButton={getGoToInboxButton}
           getCompanySettings={getCompanySettings}
@@ -487,26 +493,40 @@ export const PartiesOverviewPage = () => {
     };
   };
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  const accountListItems = useMemo(
-    (): SettingsListProps['items'] => accounts.map(mapAccountToPartyListItem),
-    [accounts],
-  );
+  const totalPages = Math.max(1, Math.ceil(accountsTotal / PAGE_SIZE));
 
-  const displayHits = useMemo((): SettingsListProps['items'] => {
-    if (!isSearching) return accountListItems;
-    return accountListItems.map((a) => ({ ...a, groupId: 'search' }));
-  }, [accountListItems, isSearching]);
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [isSearching, deferredSearchValue, filterState, includeDeletedParties]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(1);
+    }
+  }, [currentPage, totalPages]);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: re-map only when the page contents or expansion changes
+  const pagedItems = useMemo((): SettingsListProps['items'] => {
+    const mapped = accounts.map(mapAccountToPartyListItem);
+    return isSearching ? mapped.map((a) => ({ ...a, groupId: 'search' })) : mapped;
+  }, [accounts, isSearching, expandedItem, searchValue]);
 
   const searchGroup = useMemo(
-    () => ({ search: { title: t('search.hits', { count: displayHits.length }) } }),
-    [displayHits.length, t],
+    () => ({ search: { title: t('search.hits', { count: accountsTotal }) } }),
+    [accountsTotal, t],
   );
+
+  const { pages, prevButtonProps, nextButtonProps } = useDsPagination({
+    currentPage,
+    setCurrentPage,
+    totalPages,
+    showPages: 7,
+  });
 
   return (
     <PageBase color="person">
       <Section as="header" spacing={6}>
-        <Heading size="xl">{t('component.parties_settings')}</Heading>
+        <Heading size="xl">{t('sidebar.profile.parties')}</Heading>
         <Toolbar
           search={{
             name: 'party-search',
@@ -522,7 +542,7 @@ export const PartiesOverviewPage = () => {
             filters,
           }}
         >
-          {isDeletedUnitsFilterEnabled && filterState?.partyScope?.[0] !== 'PERSONS' && (
+          {filterState?.partyScope?.[0] !== 'PERSONS' && (
             <Switch
               size="sm"
               checked={includeDeletedParties}
@@ -533,12 +553,39 @@ export const PartiesOverviewPage = () => {
             />
           )}
         </Toolbar>
-        {isSearching && displayHits.length === 0 && <Heading size="lg">{t('profile.settings.no_results')}</Heading>}
-        <SettingsList
-          virtualized
-          groups={isSearching ? searchGroup : accountGroups}
-          items={isSearching ? displayHits : accountListItems}
-        />
+        {isSearching && accountsTotal === 0 ? (
+          <Heading size="lg">{t('profile.settings.no_results')}</Heading>
+        ) : (
+          <SettingsList groups={isSearching ? searchGroup : accountGroups} items={pagedItems} />
+        )}
+        {totalPages > 1 && (
+          <DsPagination aria-label={t('parties.pagination.aria_label', 'Sidenavigering')}>
+            <DsPagination.List>
+              <DsPagination.Item>
+                <DsPagination.Button {...prevButtonProps} aria-label={t('parties.pagination.previous', 'Forrige side')}>
+                  {t('parties.pagination.previous_short', 'Forrige')}
+                </DsPagination.Button>
+              </DsPagination.Item>
+              {pages.map(({ page, itemKey, buttonProps }) => (
+                <DsPagination.Item key={itemKey}>
+                  {typeof page === 'number' && buttonProps && (
+                    <DsPagination.Button
+                      {...buttonProps}
+                      aria-label={t('parties.pagination.page', { defaultValue: 'Side {{page}}', page })}
+                    >
+                      {page}
+                    </DsPagination.Button>
+                  )}
+                </DsPagination.Item>
+              ))}
+              <DsPagination.Item>
+                <DsPagination.Button {...nextButtonProps} aria-label={t('parties.pagination.next', 'Neste side')}>
+                  {t('parties.pagination.next_short', 'Neste')}
+                </DsPagination.Button>
+              </DsPagination.Item>
+            </DsPagination.List>
+          </DsPagination>
+        )}
       </Section>
       <ConfirmSetPreselectedActorModal
         showActor={openConfirmSetPreselectedActorModal}
