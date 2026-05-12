@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.148.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.148.0...v1.148.1) (2026-05-12)
+
+
+### Bug Fixes
+
+* **SettingsItem:** Chevron shrinks in SettingsItem ([#4144](https://github.com/Altinn/dialogporten-frontend/issues/4144)) ([9756492](https://github.com/Altinn/dialogporten-frontend/commit/9756492601c1725f60dc5d53c7dfbcd0d871df12))
+
 ## [1.148.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.147.0...v1.148.0) (2026-05-12)
 
 
