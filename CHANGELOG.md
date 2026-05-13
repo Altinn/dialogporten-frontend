@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.149.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.148.2...v1.149.0) (2026-05-13)
+
+
+### Features
+
+* improve navigation for profile ([#4148](https://github.com/Altinn/dialogporten-frontend/issues/4148)) ([fc77cc7](https://github.com/Altinn/dialogporten-frontend/commit/fc77cc7cda03864b1025eab53d2ef358f973b28e))
+
 ## [1.148.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.148.1...v1.148.2) (2026-05-13)
 
 
