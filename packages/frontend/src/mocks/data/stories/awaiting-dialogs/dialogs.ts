@@ -3,6 +3,7 @@ import { dialogs as baseDialogs } from '../../base/dialogs';
 
 const dialogsWithStatusAwaiting: SearchDialogFieldsFragment[] = [
   {
+    hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
     id: '019241f7-6f45-72fd-abcd-today83j1ks2',
@@ -45,6 +46,7 @@ const dialogsWithStatusAwaiting: SearchDialogFieldsFragment[] = [
     },
   },
   {
+    hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
     id: '019241f7-6f45-72fd-a574-jksit83j1ks2',

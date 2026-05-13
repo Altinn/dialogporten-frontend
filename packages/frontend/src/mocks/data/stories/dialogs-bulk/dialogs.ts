@@ -85,6 +85,7 @@ function generateDialog(index: number): SearchDialogFieldsFragment {
   const seen = index % 3 === 0;
 
   return {
+    hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
     id: generateUUID(index),

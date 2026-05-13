@@ -13,6 +13,8 @@ export interface InboxItemInput {
   status: DialogStatus;
   extendedStatus?: string;
   isContentSeen: boolean;
+  /* Has unread items (i.e. transimssions), could still be unread: false on top-level */
+  unreadItems?: boolean;
   contentUpdatedAt: string;
   label: SystemLabel[];
   org: string;
