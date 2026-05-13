@@ -11,6 +11,7 @@ fragment SearchDialogFields on SearchDialog {
   isContentSeen
   serviceResourceType
   serviceResource
+  hasUnopenedContent
   seenSinceLastContentUpdate {
     ...SeenLogFields
   }

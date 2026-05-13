@@ -284,6 +284,8 @@ const useGroupedDialogs = ({
       seenByLog: item.seenByLog,
       unread: item.unread,
       unreadLabel: t('word.unread'),
+      unreadItemsLabel: t('word.unread_content'),
+      unreadItems: item.unreadItems,
       selectable: bulkMode,
       tabIndex: bulkMode ? 0 : undefined,
       selected: bulkedIds?.includes(item.id),

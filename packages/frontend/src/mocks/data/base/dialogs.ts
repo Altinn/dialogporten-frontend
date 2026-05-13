@@ -2,6 +2,7 @@ import { DialogStatus, type SearchDialogFieldsFragment, SystemLabel } from 'bff-
 
 export const dialogs: SearchDialogFieldsFragment[] = [
   {
+    hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
     id: '019241f7-6f45-72fd-a574-f19d358aaf4e',
@@ -101,6 +102,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     },
   },
   {
+    hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
     id: '019241f7-67dc-7562-a56f-1634796039e5',
@@ -142,6 +144,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     },
   },
   {
+    hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
     id: '019241f7-8375-75a3-8bdb-2cebee9cb585',
@@ -194,6 +197,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     },
   },
   {
+    hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
     id: '019241f7-8218-7756-be82-5310042c3d95',
@@ -235,6 +239,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     },
   },
   {
+    hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
     id: '019241f7-812c-71c8-8e68-94a0b771fa10',
@@ -288,6 +293,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     },
   },
   {
+    hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
     id: '019241f7-78e6-7702-8724-a95e049d491e',
@@ -341,6 +347,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     },
   },
   {
+    hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
     id: '019241f7-5fa0-7336-934d-716a8e5bbb49',
@@ -383,6 +390,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     },
   },
   {
+    hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
     id: '019241f7-7f61-778d-9ef8-f6bae5e80579',
@@ -435,6 +443,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     },
   },
   {
+    hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
     id: '019241f7-8698-7293-90aa-6c65a784c15e',
@@ -484,6 +493,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     },
   },
   {
+    hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
     id: '019241f7-85ed-72fd-922a-fa784d7e4228',
