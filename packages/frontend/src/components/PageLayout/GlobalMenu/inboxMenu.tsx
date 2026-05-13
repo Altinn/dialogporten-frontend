@@ -1,7 +1,6 @@
-import type { MenuItemProps, MenuItemSize, MenuProps, Theme } from '@altinn/altinn-components';
+import { Badge, type MenuItemProps, type MenuItemSize, type MenuProps, type Theme } from '@altinn/altinn-components';
 import {
   ArchiveIcon,
-  BookmarkIcon,
   Buildings2Icon,
   ChatExclamationmarkIcon,
   DocPencilIcon,
@@ -69,10 +68,20 @@ export function buildInboxMenu({
 
   const shortcuts: MenuItemProps[] = [
     {
+      id: 'new-schema',
+      'data-testid': 'sidebar-new-schema',
+      groupId: 'shortcuts',
+      icon: PlusIcon,
+      title: t('altinn.new_schema'),
+      as: createMenuItemComponent({
+        to: getNewFormLink(i18n.language),
+      }),
+    },
+    {
       id: 'saved-searches',
       'data-testid': 'sidebar-saved-searches',
       groupId: 'shortcuts',
-      icon: BookmarkIcon,
+      icon: MagnifyingGlassIcon,
       title: t('sidebar.saved_searches'),
       selected: isRouteSelected(pathname, PageRoutes.savedSearches, fromView),
       as: createMenuItemComponent({
@@ -82,7 +91,7 @@ export function buildInboxMenu({
     {
       id: 'beta-exit',
       'data-testid': 'sidebar-exit',
-      groupId: 'shortcuts',
+      groupId: 'shortcuts-2',
       icon: LeaveIcon,
       title: t('altinn.beta.exit'),
       as: createMenuItemComponent({
@@ -90,14 +99,13 @@ export function buildInboxMenu({
       }),
     },
     {
-      id: 'new-schema',
-      'data-testid': 'sidebar-new-schema',
-      groupId: 'shortcuts',
-      icon: PlusIcon,
-      title: t('altinn.new_schema'),
-      as: createMenuItemComponent({
-        to: getNewFormLink(i18n.language),
-      }),
+      id: 'beta-badge',
+      groupId: 'shortcuts-2',
+      as: () => (
+        <span style={{ marginLeft: '0.5rem' }}>
+          <Badge label={t('word.beta')} variant="base" color="neutral" size="sm" />
+        </span>
+      ),
     },
   ];
 
@@ -211,7 +219,7 @@ export function buildInboxMenu({
       ...menuGroups,
       shortcuts: {
         ...menuGroups.shortcuts,
-        divider: false,
+        divider: true,
       },
     },
     items: [
