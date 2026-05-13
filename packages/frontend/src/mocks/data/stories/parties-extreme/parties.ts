@@ -1,6 +1,6 @@
 import type { PartyFieldsFragment } from 'bff-types-generated';
 
-const TOTAL_PARTIES = 12_000;
+const TOTAL_PARTIES = 15_000;
 const PERSON_COUNT = 10;
 
 const firstNames = [
