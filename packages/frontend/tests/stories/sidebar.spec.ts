@@ -13,9 +13,6 @@ test.describe('Sidebar menu', () => {
     await getSidebarMenuItem(page, PageRoutes.sent).click();
     await expect(page.getByRole('link', { name: 'Melding om hull i veien' })).toBeVisible();
 
-    await getSidebarMenuItem(page, PageRoutes.savedSearches).click();
-    await expect(page.getByText('Du har ingen lagrede søk')).toBeVisible();
-
     await getSidebarMenuItem(page, PageRoutes.archive).click();
     await expect(page.getByText('Arkivet er tomt')).toBeVisible();
 
@@ -24,5 +21,8 @@ test.describe('Sidebar menu', () => {
 
     await getSidebarMenuItem(page, PageRoutes.inbox).click();
     await expect(page.getByRole('link', { name: 'Melding om bortkjøring av sn' })).toBeVisible();
+
+    await getSidebarMenuItem(page, PageRoutes.savedSearches).click();
+    await expect(page.getByText('Du har ingen lagrede søk')).toBeVisible();
   });
 });
