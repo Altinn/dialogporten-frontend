@@ -358,7 +358,7 @@ export const PartiesOverviewPage = () => {
       variant: item.parentId ? ('outline' as AvatarVariant) : undefined,
       isDeleted: item.isDeleted,
     },
-    items: item.subParties?.map((subParty) => createSubPartyItem(subParty, item)),
+    items: item.subParties?.map((subParty) => createSubPartyItem(subParty, currentParty)),
     title: item.name,
     description: formatNorwegianId(item.party, false),
     selected: item.party === currentParty?.party,
@@ -372,22 +372,21 @@ export const PartiesOverviewPage = () => {
     const rootParty = parentParty ?? partyGraph.partyByUrn.get(currentParty?.party ?? '');
     if (!rootParty) return [];
 
-    const items = [rootParty, ...(rootParty.subParties ?? [])].map((item) => ({
-      party: item.party,
-      name: item.name,
-      isDeleted: item.isDeleted,
-      parentId: rootParty.party !== item.party ? rootParty.partyUuid : undefined,
+    const item = {
+      party: rootParty.party,
+      name: rootParty.name,
+      isDeleted: rootParty.isDeleted,
       subParties:
-        'subParties' in item
-          ? ((item as PartyFieldsFragment).subParties ?? []).map((sp) => ({
+        'subParties' in rootParty
+          ? ((rootParty as PartyFieldsFragment).subParties ?? []).map((sp) => ({
               party: sp.party,
               name: sp.name,
               isDeleted: sp.isDeleted,
             }))
           : undefined,
-    }));
+    };
 
-    return items.map((item) => createOrganizationItem(item, currentParty));
+    return [createOrganizationItem(item, currentParty)];
   };
 
   const mapAccountToPartyListItem = (account: PartyItemProp): SettingsItemProps => {

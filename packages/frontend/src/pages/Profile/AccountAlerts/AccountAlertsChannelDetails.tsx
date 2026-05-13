@@ -277,7 +277,7 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
             </Button>
           )}
           <Button type="button" variant="outline" onClick={handleClose}>
-            {t('word.close')}
+            {t('word.cancel')}
           </Button>
         </ButtonGroup>
       </Section>

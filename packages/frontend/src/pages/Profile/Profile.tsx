@@ -15,6 +15,7 @@ export const Profile = () => {
         SettingsType.partySettings,
         SettingsType.partyOverview,
         SettingsType.inboxShortcuts,
+        SettingsType.other,
       ],
     },
     disabled: isSelfIdentifiedUser,

@@ -7,14 +7,17 @@ import {
   type SettingsGroupProps,
   type SettingsItemProps,
   type SettingsItemVariant,
+  SnackbarDuration,
   type ToolbarSearchProps,
   type UsedByLogItemProps,
   formatDisplayName,
+  useSnackbar,
 } from '@altinn/altinn-components';
 import {
   BellIcon,
   BriefcaseIcon,
   EarthIcon,
+  GlobeIcon,
   HeartIcon,
   MagnifyingGlassIcon,
   MobileIcon,
@@ -22,11 +25,14 @@ import {
   PersonRectangleIcon,
   RecycleIcon,
 } from '@navikt/aksel-icons';
+import i18n from 'i18next';
 import { type ChangeEvent, type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps, useLocation } from 'react-router-dom';
 import { useParties } from '../../api/hooks/useParties.ts';
+import { updateLanguage } from '../../api/queries.ts';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
+import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { pruneSearchQueryParams } from '../Inbox/queryParams.ts';
 import { useSavedSearches } from '../SavedSearches/useSavedSearches.tsx';
 import { PageRoutes } from '../routes.ts';
@@ -34,6 +40,7 @@ import { AccountAlertsChannelDetails } from './AccountAlerts/AccountAlertsChanne
 import { ServiceResourceNotificationsDetails } from './AccountAlerts/ServiceResourceNotificationsDetails.tsx';
 import type { Channel } from './AccountAlerts/common.ts';
 import { ContactProfileDetails } from './ContactProfileDetails.tsx';
+import { LanguageSettingsContent } from './LanguageSettingsContent.tsx';
 import { usePartiesWithNotificationSettings } from './usePartiesWithNotificationSettings.tsx';
 import { useProfile } from './useProfile.tsx';
 import { useVerifiedAddresses } from './useVerifiedAddresses.tsx';
@@ -54,6 +61,7 @@ export enum SettingsType {
   partySettings = 'partySettings',
   partyOverview = 'partyOverview',
   inboxShortcuts = 'inboxShortcuts',
+  other = 'other',
 }
 
 interface UseSettingsOptions {
@@ -84,6 +92,7 @@ const getDefaultGroups = (t: (key: string) => string) => ({
   [SettingsType.profile]: { title: t('profile.settings.your_profile') },
   [SettingsType.partyOverview]: { title: t('profile.settings.your_parties') },
   [SettingsType.inboxShortcuts]: { title: t('sidebar.inbox') },
+  [SettingsType.other]: { title: t('profile.settings.other') },
 });
 
 const getDefaultOptions = (t: (key: string) => string) => ({
@@ -132,13 +141,22 @@ export const useSettings = ({
     selectedPartyIds,
     setSelectedPartyIds,
   } = useParties();
-  const { user, showClientUnits, setShowClientUnits, shouldShowDeletedEntities, updateShowDeletedEntities } =
-    useProfile();
+  const {
+    user,
+    showClientUnits,
+    setShowClientUnits,
+    shouldShowDeletedEntities,
+    updateShowDeletedEntities,
+    updateProfileLanguage,
+  } = useProfile();
+  const { openSnackbar } = useSnackbar();
+  const { logError } = useErrorLogger();
   const { savedSearches } = useSavedSearches(selectedPartyIds);
   const { search: currentSearchQuery } = useLocation();
 
   const { t } = useTranslation();
   const [searchString, setSearchString] = useState<string>('');
+  const [selectedLanguage, setSelectedLanguage] = useState<string>(i18n.language);
   const { partiesWithNotificationSettings, uniqueEmailAddresses, uniquePhoneNumbers } =
     usePartiesWithNotificationSettings(parties);
   const { verifiedAddresses } = useVerifiedAddresses();
@@ -150,6 +168,30 @@ export const useSettings = ({
     ? 'https://www.skatteetaten.no/person/folkeregister/flytte/'
     : 'https://testdata.skatteetaten.no/web/testnorge/soek/freg';
   const krrInfoUrl = 'https://eid.difi.no/nb/kontakt-og-reservasjonsregisteret';
+
+  const handleUpdateLanguage = async (language: string) => {
+    if (language === i18n.language) return;
+    updateProfileLanguage(language);
+    setSelectedLanguage(language);
+    void i18n.changeLanguage(language);
+    try {
+      await updateLanguage(language);
+      openSnackbar({
+        message: t('profile.settings.language_changed'),
+        color: 'company',
+        duration: SnackbarDuration.normal,
+      });
+    } catch (error) {
+      logError(
+        error as Error,
+        {
+          context: 'useSettings.handleUpdateLanguage',
+          language,
+        },
+        'Error updating language',
+      );
+    }
+  };
 
   const isVerifiedAddress = (value: string, type: 'Email' | 'Sms') =>
     verifiedAddresses.some((addr) => addr?.value === value && addr?.addressType === type);
@@ -518,6 +560,41 @@ export const useSettings = ({
     },
   ];
 
+  const otherSettings: SettingsItemProps[] = [
+    {
+      id: 'language',
+      groupId: SettingsType.other,
+      variant: 'modal',
+      icon: GlobeIcon,
+      value: i18n.language,
+      description: t('word.locale.' + i18n.language),
+      title: 'Språk/language',
+      badge: {
+        variant: 'text',
+        label: t('word.change'),
+      },
+      modalProps: {
+        icon: GlobeIcon,
+        title: 'Språk/language',
+        buttons: [
+          {
+            label: t('word.save'),
+            onClick: () => {
+              void handleUpdateLanguage(selectedLanguage);
+            },
+            close: true,
+          },
+          {
+            label: t('word.cancel'),
+            variant: 'outline',
+            close: true,
+          },
+        ],
+      },
+      children: <LanguageSettingsContent selectedLanguage={selectedLanguage} onSelect={setSelectedLanguage} />,
+    },
+  ];
+
   const partyOverviewLink: SettingsItemProps[] = [
     {
       id: 'party-overview-link',
@@ -629,6 +706,7 @@ export const useSettings = ({
     ...emailAlertSettings,
     ...contactProfileEmailSettings,
     ...accountAlertSettings,
+    ...otherSettings,
   ].map((item) => (disabled ? { ...item, disabled: true } : item));
 
   const settings = allSettings.filter((item) => {
