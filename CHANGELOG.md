@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.150.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.149.0...v1.150.0) (2026-05-13)
+
+
+### Features
+
+* add unread content signal based on hasUopenedContent ([#4152](https://github.com/Altinn/dialogporten-frontend/issues/4152)) ([a0582ce](https://github.com/Altinn/dialogporten-frontend/commit/a0582ce7ecbbea039014c382ac2dfc98e01e07d7))
+* **profile:** add language to other settings in profile page ([#4154](https://github.com/Altinn/dialogporten-frontend/issues/4154)) ([1fa1d2d](https://github.com/Altinn/dialogporten-frontend/commit/1fa1d2d70e1c1b38c179863880556f274be4060d))
+
 ## [1.149.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.148.2...v1.149.0) (2026-05-13)
 
 
