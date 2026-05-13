@@ -3,6 +3,7 @@ import { dialogs as baseDialogs } from '../../base/dialogs';
 
 const dialogsWithServiceResourceBankruptcy: SearchDialogFieldsFragment[] = [
   {
+    hasUnopenedContent: false,
     serviceResource: 'urn:altinn:resource:app_brg_konkursbehandling',
     serviceResourceType: 'correspondenceservice',
     id: '019241f7-6f45-72fd-abcd-today83j1ks2',
@@ -44,6 +45,7 @@ const dialogsWithServiceResourceBankruptcy: SearchDialogFieldsFragment[] = [
     },
   },
   {
+    hasUnopenedContent: false,
     serviceResource: 'urn:altinn:resource:app_brg_konkursbehandling',
     serviceResourceType: 'correspondenceservice',
     id: '019241f7-6f45-72fd-a574-jksit83j1ks2',

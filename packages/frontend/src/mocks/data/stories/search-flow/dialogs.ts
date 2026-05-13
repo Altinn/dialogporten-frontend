@@ -3,6 +3,7 @@ import { dialogs as baseDialogs } from '../../base/dialogs';
 
 const customDialogs: SearchDialogFieldsFragment[] = [
   {
+    hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
     seenSinceLastContentUpdate: [],
@@ -44,6 +45,7 @@ const customDialogs: SearchDialogFieldsFragment[] = [
     },
   },
   {
+    hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
     seenSinceLastContentUpdate: [],
@@ -85,6 +87,7 @@ const customDialogs: SearchDialogFieldsFragment[] = [
     },
   },
   {
+    hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
     seenSinceLastContentUpdate: [],
@@ -126,6 +129,7 @@ const customDialogs: SearchDialogFieldsFragment[] = [
     },
   },
   {
+    hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
     seenSinceLastContentUpdate: [],
@@ -167,6 +171,7 @@ const customDialogs: SearchDialogFieldsFragment[] = [
     },
   },
   {
+    hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
     seenSinceLastContentUpdate: [],
@@ -208,6 +213,7 @@ const customDialogs: SearchDialogFieldsFragment[] = [
     },
   },
   {
+    hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
     seenSinceLastContentUpdate: [],

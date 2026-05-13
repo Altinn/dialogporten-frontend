@@ -103,6 +103,7 @@ export function mapDialogToInboxItems(
       contentUpdatedAt: item.contentUpdatedAt,
       guiAttachmentCount: item.guiAttachmentCount ?? 0,
       createdAt: item.createdAt,
+      unreadItems: item.hasUnopenedContent,
       status: item.status ?? 'UnknownStatus',
       extendedStatus: getPreferredPropertyByLocale(extendedStatusObj)?.value || undefined,
       isSeenByEndUser,
