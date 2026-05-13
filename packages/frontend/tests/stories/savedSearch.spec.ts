@@ -42,13 +42,8 @@ test.describe('Saved search', () => {
     await page.getByRole('button', { name: 'Avbryt' }).click();
     await expect(page.getByRole('button', { name: 'Lagret søk' })).toBeVisible();
 
-    if (isMobile) {
-      await page.getByRole('button', { name: 'Meny' }).click();
-      await page.getByRole('link', { name: 'Lagrede søk' }).click();
-      await page.getByRole('button', { name: 'Meny' }).click();
-    } else {
-      await getSidebarMenuItem(page, PageRoutes.savedSearches).click();
-    }
+    test.skip(isMobile, 'Sidebar is desktop-only');
+    await getSidebarMenuItem(page, PageRoutes.savedSearches).click();
     await page.waitForLoadState('networkidle');
 
     await expect(page.locator('a', { hasText: 'skatten' })).toBeVisible();

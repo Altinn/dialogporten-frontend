@@ -1,4 +1,4 @@
-import type { MenuItemProps, MenuItemSize, MenuProps, Theme } from '@altinn/altinn-components';
+import { Badge, type MenuItemProps, type MenuItemSize, type MenuProps, type Theme } from '@altinn/altinn-components';
 import { formatDisplayName } from '@altinn/altinn-components';
 import {
   BellIcon,
@@ -42,7 +42,6 @@ export function buildProfileMenu({
 }): UseGlobalMenuProps {
   const menuGroups = {
     shortcuts: {
-      divider: false,
       title: t('word.shortcuts'),
       defaultIconTheme: 'transparent' as Theme,
       defaultItemSize: 'sm' as MenuItemSize,
@@ -101,6 +100,17 @@ export function buildProfileMenu({
             to: PageRoutes.notifications + pruneSearchQueryParams(currentSearchQuery),
           }),
         },
+        {
+          id: '3',
+          groupId: 'saved-searches',
+          icon: MagnifyingGlassIcon,
+          size: 'md',
+          title: t('sidebar.saved_searches'),
+          selected: isRouteSelected(pathname, PageRoutes.savedSearches, fromView),
+          as: createMenuItemComponent({
+            to: PageRoutes.savedSearches + pruneSearchQueryParams(currentSearchQuery),
+          }),
+        },
       ],
     },
   ];
@@ -152,6 +162,19 @@ export function buildProfileMenu({
     }),
   };
 
+  const shortcuts: MenuItemProps[] = [
+    inboxShortcut,
+    {
+      id: 'beta-badge',
+      groupId: 'shortcuts-2',
+      as: () => (
+        <span style={{ marginLeft: '0.5rem' }}>
+          <Badge label={t('word.beta')} variant="base" color="neutral" size="sm" />
+        </span>
+      ),
+    },
+  ];
+
   const sidebarMenu: MenuProps = {
     variant: 'tinted',
     groups: menuGroups,
@@ -161,7 +184,7 @@ export function buildProfileMenu({
         ...item,
         iconTheme: idx === 0 ? 'base' : 'tinted',
       })),
-      inboxShortcut,
+      ...shortcuts,
     ],
   };
 
@@ -238,11 +261,6 @@ export function buildProfileMenu({
 
   const desktopMenu: MenuProps = {
     groups: menuGroups,
-    items: [...globalMenuItems, ...helpItems, profileMenuItem],
-  };
-
-  const mobileMenu: MenuProps = {
-    ...desktopMenu,
     items: [
       ...globalMenuItems,
       ...helpItems,
@@ -250,14 +268,13 @@ export function buildProfileMenu({
         ...profileMenuItem,
         selected: isRouteSelected(pathname, PageRoutes.profile, fromView),
         expanded: true,
-        items: profileItems[0].items,
+        items: profileItems[0]?.items?.map((item) => ({ ...item, size: 'sm' })),
       },
     ],
   };
 
   return {
     sidebarMenu,
-    mobileMenu,
     desktopMenu,
   };
 }

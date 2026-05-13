@@ -3,7 +3,7 @@ export enum PageRoutes {
   inboxItem = '/inbox/:id',
   sent = '/sent',
   drafts = '/drafts',
-  savedSearches = '/saved-searches',
+  savedSearches = '/profile/saved-searches',
   archive = '/archive',
   bin = '/bin',
   profile = '/profile',

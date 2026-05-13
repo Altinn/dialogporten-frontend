@@ -14,17 +14,22 @@ import {
 import {
   BellIcon,
   BriefcaseIcon,
+  EarthIcon,
   HeartIcon,
-  HouseHeartIcon,
+  MagnifyingGlassIcon,
   MobileIcon,
   PaperplaneIcon,
   PersonRectangleIcon,
-  TrashIcon,
+  RecycleIcon,
 } from '@navikt/aksel-icons';
 import { type ChangeEvent, type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link, type LinkProps, useLocation } from 'react-router-dom';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
+import { pruneSearchQueryParams } from '../Inbox/queryParams.ts';
+import { useSavedSearches } from '../SavedSearches/useSavedSearches.tsx';
+import { PageRoutes } from '../routes.ts';
 import { AccountAlertsChannelDetails } from './AccountAlerts/AccountAlertsChannelDetails.tsx';
 import { ServiceResourceNotificationsDetails } from './AccountAlerts/ServiceResourceNotificationsDetails.tsx';
 import type { Channel } from './AccountAlerts/common.ts';
@@ -48,6 +53,7 @@ export enum SettingsType {
   favorites = 'favorites',
   partySettings = 'partySettings',
   partyOverview = 'partyOverview',
+  inboxShortcuts = 'inboxShortcuts',
 }
 
 interface UseSettingsOptions {
@@ -77,6 +83,7 @@ const getDefaultGroups = (t: (key: string) => string) => ({
   [SettingsType.primary]: { title: t('profile.settings.favorite_notifications') },
   [SettingsType.profile]: { title: t('profile.settings.your_profile') },
   [SettingsType.partyOverview]: { title: t('profile.settings.your_parties') },
+  [SettingsType.inboxShortcuts]: { title: t('sidebar.inbox') },
 });
 
 const getDefaultOptions = (t: (key: string) => string) => ({
@@ -122,10 +129,13 @@ export const useSettings = ({
     partyGraph,
     isSelfIdentifiedUser,
     currentEndUser,
+    selectedPartyIds,
     setSelectedPartyIds,
   } = useParties();
   const { user, showClientUnits, setShowClientUnits, shouldShowDeletedEntities, updateShowDeletedEntities } =
     useProfile();
+  const { savedSearches } = useSavedSearches(selectedPartyIds);
+  const { search: currentSearchQuery } = useLocation();
 
   const { t } = useTranslation();
   const [searchString, setSearchString] = useState<string>('');
@@ -356,7 +366,7 @@ export const useSettings = ({
               <a href={folkeRegisteretUrl}>{t('contact_profile.address_from_register_link')}</a>
             </p>
           ),
-          icon: HouseHeartIcon,
+          icon: EarthIcon,
           title: t('profile.settings.address'),
           value: address,
           badge: getChangeSettingsBadge(address),
@@ -493,7 +503,9 @@ export const useSettings = ({
       id: 'contact-address-link',
       variant: 'link',
       title: t('profile.notifications.heading'),
-      as: 'a',
+      as: (props: LinkProps) => (
+        <Link {...props} to={PageRoutes.notifications + pruneSearchQueryParams(currentSearchQuery)} />
+      ),
       groupId: SettingsType.contactAddresses,
       badge: {
         label: t('profile.settings.notification_addresses_count', {
@@ -511,7 +523,9 @@ export const useSettings = ({
       id: 'party-overview-link',
       variant: 'link',
       title: t('sidebar.profile.parties'),
-      as: 'a',
+      as: (props: LinkProps) => (
+        <Link {...props} to={PageRoutes.partiesOverview + pruneSearchQueryParams(currentSearchQuery)} />
+      ),
       groupId: SettingsType.partyOverview,
       badge: {
         label: t('profile.parties', { count: parties.length }),
@@ -519,6 +533,24 @@ export const useSettings = ({
       linkIcon: true,
       icon: HeartIcon,
       summary: <p>{t('profile.settings.parties_overview_summary')}</p>,
+    },
+  ];
+
+  const inboxShortcuts: SettingsItemProps[] = [
+    {
+      id: 'inbox-saved-searched',
+      variant: 'link',
+      title: t('sidebar.saved_searches'),
+      as: (props: LinkProps) => (
+        <Link {...props} to={PageRoutes.savedSearches + pruneSearchQueryParams(currentSearchQuery)} />
+      ),
+      groupId: SettingsType.inboxShortcuts,
+      linkIcon: true,
+      icon: MagnifyingGlassIcon,
+      badge: {
+        label: t('profile.saved_searches', { count: savedSearches.length }),
+      },
+      summary: <p>{t('profile.settings.saved_searches_summary')}</p>,
     },
   ];
 
@@ -541,6 +573,7 @@ export const useSettings = ({
       ),
     },
   ];
+
   const emailAlertSettings: SettingsItemProps[] = [
     {
       id: 'alert-email',
@@ -566,7 +599,7 @@ export const useSettings = ({
           },
           groupId: SettingsType.partySettings,
           variant: 'switch',
-          icon: TrashIcon,
+          icon: RecycleIcon,
           title: t('profile.settings.show_deleted_units.title'),
         },
         {
@@ -590,6 +623,7 @@ export const useSettings = ({
     ...contactAddressLink,
     ...partyOverviewLink,
     ...partySettings,
+    ...inboxShortcuts,
     ...mobileAlertSettings,
     ...contactProfilePhoneSettings,
     ...emailAlertSettings,

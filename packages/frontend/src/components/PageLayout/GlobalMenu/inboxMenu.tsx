@@ -1,10 +1,12 @@
 import { Badge, type MenuItemProps, type MenuItemSize, type MenuProps, type Theme } from '@altinn/altinn-components';
 import {
   ArchiveIcon,
+  BellIcon,
   Buildings2Icon,
   ChatExclamationmarkIcon,
   DocPencilIcon,
   FileCheckmarkIcon,
+  HeartIcon,
   InboxFillIcon,
   InformationSquareIcon,
   LeaveIcon,
@@ -78,9 +80,20 @@ export function buildInboxMenu({
       }),
     },
     {
+      id: 'profile',
+      'data-testid': 'sidebar-profile',
+      groupId: 'shortcuts-profile',
+      icon: PersonCircleIcon,
+      title: t('sidebar.profile'),
+      selected: isRouteSelected(pathname, PageRoutes.profile, fromView),
+      as: createMenuItemComponent({
+        to: PageRoutes.profile + pruneSearchQueryParams(currentSearchQuery),
+      }),
+    },
+    {
       id: 'saved-searches',
       'data-testid': 'sidebar-saved-searches',
-      groupId: 'shortcuts',
+      groupId: 'shortcuts-profile',
       icon: MagnifyingGlassIcon,
       title: t('sidebar.saved_searches'),
       selected: isRouteSelected(pathname, PageRoutes.savedSearches, fromView),
@@ -217,10 +230,7 @@ export function buildInboxMenu({
     variant: 'tinted',
     groups: {
       ...menuGroups,
-      shortcuts: {
-        ...menuGroups.shortcuts,
-        divider: true,
-      },
+      shortcuts: menuGroups.shortcuts,
     },
     items: [
       ...inboxItems.map((item, idx) => ({
@@ -291,7 +301,41 @@ export function buildInboxMenu({
         title: t('sidebar.profile'),
         selected: false,
         expanded: true,
-        items: [],
+        items: [
+          {
+            id: '1',
+            groupId: '2',
+            icon: HeartIcon,
+            size: 'sm',
+            title: t('sidebar.profile.parties'),
+            selected: isRouteSelected(pathname, PageRoutes.partiesOverview, fromView),
+            as: createMenuItemComponent({
+              to: PageRoutes.partiesOverview + pruneSearchQueryParams(currentSearchQuery),
+            }),
+          },
+          {
+            id: '2',
+            groupId: '2',
+            icon: BellIcon,
+            size: 'sm',
+            title: t('sidebar.profile.notifications'),
+            selected: isRouteSelected(pathname, PageRoutes.notifications, fromView),
+            as: createMenuItemComponent({
+              to: PageRoutes.notifications + pruneSearchQueryParams(currentSearchQuery),
+            }),
+          },
+          {
+            id: '3',
+            groupId: 'saved-searches',
+            icon: MagnifyingGlassIcon,
+            size: 'sm',
+            title: t('sidebar.saved_searches'),
+            selected: isRouteSelected(pathname, PageRoutes.savedSearches, fromView),
+            as: createMenuItemComponent({
+              to: PageRoutes.savedSearches + pruneSearchQueryParams(currentSearchQuery),
+            }),
+          },
+        ],
       },
     ],
   };
@@ -302,7 +346,6 @@ export function buildInboxMenu({
       ...mobileMenu.groups,
     },
   };
-  mobileMenu.items.push(...shortcuts);
 
   return { sidebarMenu, mobileMenu, desktopMenu };
 }
