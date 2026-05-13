@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.148.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.148.1...v1.148.2) (2026-05-13)
+
+
+### Bug Fixes
+
+* bump altinn-components to pick up account selector reopen fix ([#4146](https://github.com/Altinn/dialogporten-frontend/issues/4146)) ([cc6927a](https://github.com/Altinn/dialogporten-frontend/commit/cc6927a5714f268f95a911da2394762bbe8b3711))
+
 ## [1.148.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.148.0...v1.148.1) (2026-05-12)
 
 
