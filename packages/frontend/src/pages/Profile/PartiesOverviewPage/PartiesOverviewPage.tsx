@@ -49,7 +49,7 @@ import {
 import { usePageTitle } from '../../../hooks/usePageTitle';
 import { PageRoutes } from '../../routes.ts';
 import { useAccountFilters } from '../useAccountFilters.tsx';
-import { useSettings } from '../useSettings.tsx';
+import { SettingsType, useSettings } from '../useSettings.tsx';
 import { ConfirmSetPreselectedActorModal } from './ConfirmSetPreselectedActorModal.tsx';
 import styles from './partiesOverviewPage.module.css';
 
@@ -87,7 +87,7 @@ const PartyDetails = ({
   const buttons = [getGoToInboxButton(currentParty)];
 
   if (currentParty.isCurrentEndUser) {
-    const contactSettings = settings.filter((s) => s.groupId === 'contact');
+    const contactSettings = settings.filter((s) => s.groupId === SettingsType.contact);
     return (
       <Section spacing={3} color="person">
         {buttons && (
@@ -185,6 +185,9 @@ export const PartiesOverviewPage = () => {
   } = useParties();
   const { getAccountAlertSettings, settings } = useSettings({
     disabled: isSelfIdentifiedUser,
+    options: {
+      includeGroups: [SettingsType.contact],
+    },
   });
   const {
     addFavoriteParty,

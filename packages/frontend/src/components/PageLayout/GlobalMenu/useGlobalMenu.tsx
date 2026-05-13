@@ -8,8 +8,8 @@ import { buildProfileMenu } from './profileMenu.tsx';
 
 export interface UseGlobalMenuProps {
   sidebarMenu: MenuProps;
-  mobileMenu: MenuProps;
   desktopMenu: MenuProps;
+  mobileMenu?: MenuProps;
 }
 
 export const useGlobalMenu = (): UseGlobalMenuProps => {
