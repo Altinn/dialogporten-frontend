@@ -118,7 +118,7 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
     try {
       const result = await verifyAddress({ value, type: channel, verificationCode: codeInput });
       if (result?.verifyAddress?.success) {
-        void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.VERIFIED_ADDRESSES] });
+        await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.VERIFIED_ADDRESSES] });
         setIsInVerificationFlow(false);
       } else {
         setCodeError(t('profile.verification.code_invalid'));
