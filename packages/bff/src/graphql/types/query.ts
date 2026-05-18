@@ -2,6 +2,7 @@ import { logger } from '@altinn/dialogporten-node-logger';
 import { booleanArg, list, objectType, stringArg } from 'nexus';
 import config from '../../config.js';
 import { SavedSearchRepository } from '../../db.ts';
+import { encryptPersonUrn } from '../../party/personUrnCipher.ts';
 import { getAltinn2messages } from '../functions/altinn2messages.ts';
 import {
   coreToFrontendLang,
@@ -79,15 +80,22 @@ export const Query = objectType({
       type: list('SavedSearches'),
       resolve: async (_source, _args, ctx) => {
         const pid = ctx.session.get('pid');
-        if (SavedSearchRepository) {
-          return await SavedSearchRepository.createQueryBuilder('s')
-            .where('s.profilePid = :pid', { pid })
-            .orderBy("CASE WHEN s.name IS NULL OR s.name = '' THEN 1 ELSE 0 END", 'ASC')
-            .addOrderBy('s.name', 'ASC')
-            .addOrderBy('s.updatedAt', 'DESC')
-            .getMany();
+        if (!SavedSearchRepository) return [];
+
+        const searches = await SavedSearchRepository.createQueryBuilder('s')
+          .where('s.profilePid = :pid', { pid })
+          .orderBy("CASE WHEN s.name IS NULL OR s.name = '' THEN 1 ELSE 0 END", 'ASC')
+          .addOrderBy('s.name', 'ASC')
+          .addOrderBy('s.updatedAt', 'DESC')
+          .getMany();
+
+        for (const search of searches) {
+          const urn = search.data?.urn;
+          if (Array.isArray(urn)) {
+            search.data.urn = urn.map((u) => encryptPersonUrn(u) as string);
+          }
         }
-        return [];
+        return searches;
       },
     });
 

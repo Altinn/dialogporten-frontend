@@ -23,7 +23,7 @@ export interface PartyDetailsProps {
     [key: string]: unknown;
   };
   getCompanySettings: (id: string) => SettingsListProps['items'];
-  getPersonSettings: (id: string, isCurrentEndUser: boolean) => SettingsItemProps[];
+  getPersonSettings: (party: PartyFieldsFragment) => SettingsItemProps[];
   getOrganizationAccounts: (
     currentParty: { party: string } | undefined,
     parentParty: PartyFieldsFragment | undefined,
@@ -101,7 +101,7 @@ export const PartyDetails = ({
   }
 
   if (type === 'person') {
-    const settings = getPersonSettings(currentParty.party, currentParty.isCurrentEndUser);
+    const settings = getPersonSettings(currentParty);
     return (
       <Section spacing={3} color="person">
         {buttons && (

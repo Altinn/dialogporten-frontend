@@ -1,6 +1,7 @@
 import { logger } from '@altinn/dialogporten-node-logger';
 import { booleanArg, extendType, intArg, nonNull, stringArg } from 'nexus';
 import config from '../../config.js';
+import { decryptPersonUrn } from '../../party/personUrnCipher.ts';
 import {
   addFavoriteParty,
   addFavoritePartyToGroup,
@@ -89,7 +90,11 @@ export const CreateSavedSearch = extendType({
           if (!data) {
             throw new Error('Data are required to create a saved search');
           }
-          return await createSavedSearch({ name, data, profile });
+          const resolvedData = {
+            ...data,
+            urn: Array.isArray(data.urn) ? data.urn.map((u: string) => decryptPersonUrn(u) as string) : data.urn,
+          };
+          return await createSavedSearch({ name, data: resolvedData, profile });
         } catch (error) {
           logger.error(error, 'Failed to create saved search:');
           return error;

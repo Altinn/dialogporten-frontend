@@ -124,6 +124,12 @@ var altinn2ApiKeySecret = {
   identity: 'System'
 }
 
+var personUrnEncryptionKeySecret = {
+  name: 'person-urn-encryption-key'
+  keyVaultUrl: '${keyVaultUrl}/PersonUrnEncryptionKey'
+  identity: 'System'
+}
+
 var secrets = [
   dbConnectionStringSecret
   redisConnectionStringSecret
@@ -134,6 +140,7 @@ var secrets = [
   oidcClientId
   oidcClientSecret
   altinn2ApiKeySecret
+  personUrnEncryptionKeySecret
 ]
 
 var containerAppEnvVars = concat(
@@ -173,6 +180,10 @@ var containerAppEnvVars = concat(
     {
       name: 'SESSION_SECRET'
       secretRef: idPortenSessionSecretSecret.name
+    }
+    {
+      name: 'PERSON_URN_ENC_KEYS'
+      secretRef: personUrnEncryptionKeySecret.name
     }
     {
       name: 'TYPEORM_SYNCHRONIZE_ENABLED'

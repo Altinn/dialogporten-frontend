@@ -5,7 +5,7 @@ import { type Mock, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createCustomWrapper } from '../../../../tests/test-utils.tsx';
 import { useProfile } from '../../../pages/Profile';
 import { buildPartyGraph } from '../../../utils/partyGraph.ts';
-import { formatNorwegianId, formatSSN, useAccounts } from './useAccounts.tsx';
+import { formatNorwegianId, useAccounts } from './useAccounts.tsx';
 
 // Mock dependencies
 vi.mock('react-i18next', () => ({
@@ -268,41 +268,26 @@ describe('useAccounts', () => {
   });
 });
 
-describe('formatSSN', () => {
-  it('should format SSN correctly without masking', () => {
-    const result = formatSSN('12345678901', false);
-    expect(result).toBe('123456\u200978901');
-  });
-
-  it('should format SSN correctly with masking', () => {
-    const result = formatSSN('12345678901', true);
-    expect(result).toBe('123456\u2009XXXXX');
-  });
-});
-
 describe('formatNorwegianId', () => {
-  it('should format person identifier correctly without masking for current user', () => {
-    const result = formatNorwegianId('urn:altinn:person:identifier-no:12345678901', true);
-    expect(result).toBe('123456\u200978901');
-  });
-
-  it('should format person identifier correctly with masking for non-current user', () => {
-    const result = formatNorwegianId('urn:altinn:person:identifier-no:12345678901', false);
-    expect(result).toBe('123456\u2009XXXXX');
-  });
-
-  it('should format organization identifier correctly', () => {
-    const result = formatNorwegianId('urn:altinn:organization:identifier-no:123456789', false);
+  it('should format organization identifier with thin spaces by default', () => {
+    const result = formatNorwegianId('urn:altinn:organization:identifier-no:123456789');
     expect(result).toBe('123\u2009456\u2009789');
   });
 
+  it('should format organization identifier without thin spaces when requested', () => {
+    const result = formatNorwegianId('urn:altinn:organization:identifier-no:123456789', false);
+    expect(result).toBe('123456789');
+  });
+
+  it('should return empty string for person URNs', () => {
+    expect(formatNorwegianId('urn:altinn:person:identifier-no:12345678901')).toBe('');
+  });
+
   it('should return empty string for invalid format', () => {
-    const result = formatNorwegianId('invalid-format', false);
-    expect(result).toBe('');
+    expect(formatNorwegianId('invalid-format')).toBe('');
   });
 
   it('should return empty string when no identifier found', () => {
-    const result = formatNorwegianId('urn:altinn:person:identifier-no:', false);
-    expect(result).toBe('');
+    expect(formatNorwegianId('urn:altinn:organization:identifier-no:')).toBe('');
   });
 });
