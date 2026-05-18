@@ -25,17 +25,12 @@ import { createSavedSearch, deleteSavedSearch, fetchSavedSearches, updateSavedSe
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
-import { useDateFnsLocale, useFormatDistance } from '../../i18n/useDateFnsLocale.tsx';
+import { useDateFnsLocale } from '../../i18n/useDateFnsLocale.tsx';
 import { buildOrganizationMap } from '../../utils/organizations.ts';
 import { useOrganizations } from '../Inbox/useOrganizations.ts';
 import { PageRoutes } from '../routes.ts';
 import { buildCurrentStateURL, buildSavedSearchURL } from './bookmarkURL.ts';
-import {
-  autoFormatRelativeTime,
-  buildFilterParams,
-  fromPathToViewType,
-  getMostRecentSearchDate,
-} from './searchUtils.ts';
+import { buildFilterParams, fromPathToViewType } from './searchUtils.ts';
 
 interface UseSavedSearchesOutput {
   savedSearches: SavedSearchesFieldsFragment[];
@@ -130,11 +125,10 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
   const { organizations } = useOrganizations();
   const orgMap = useMemo(() => buildOrganizationMap(organizations), [organizations]);
   const { serviceResourceById } = useServiceResource();
-  const { currentEndUser, setSelectedPartyIds, partyGraph } = useParties();
+  const { currentEndUser, setSelectedPartyIds, setSelectedParties, partyGraph } = useParties();
   const { locale } = useDateFnsLocale();
   const navigate = useNavigate();
 
-  const formatDistance = useFormatDistance();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { openSnackbar } = useSnackbar();
@@ -149,7 +143,6 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
   });
 
   const endUsersSavedSearches = (data?.savedSearches ?? []) as SavedSearchesFieldsFragment[];
-  const lastUpdated = getMostRecentSearchDate(endUsersSavedSearches);
   const currentPartySavedSearches = filterSavedSearches(endUsersSavedSearches, selectedPartyIds || []);
 
   const saveSearch = async ({
@@ -341,6 +334,11 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
       onClick: () => {
         if (isPersonBookmark && savedSearch?.data?.urn?.[0]) {
           setSelectedPartyIds([savedSearch?.data?.urn?.[0]], false);
+        } else if (!isPersonBookmark && savedSearch?.data?.urn?.length === 1 && savedSearch?.data?.urn?.[0]) {
+          const party = partyGraph.partyByUrn.get(savedSearch.data.urn[0]);
+          if (party) {
+            setSelectedParties([party]);
+          }
         }
       },
       as: (props: LinkProps) => <Link {...props} to={bookmarkLink} />,
@@ -350,7 +348,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
           {
             id: `menu-saved-search-${savedSearch.id}-link`,
             groupId: '1',
-            title: t('inbox.search.placeholder'),
+            title: t('savedSearches.use_search'),
             icon: MagnifyingGlassIcon,
             onClick: () => {
               if (isPersonBookmark && savedSearch?.data?.urn?.[0]) {
@@ -393,9 +391,6 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
 
   return {
     title: t('savedSearches.title', { count: endUsersSavedSearches?.length }),
-    description: lastUpdated
-      ? `${t('savedSearches.lastUpdated')}${autoFormatRelativeTime(lastUpdated, formatDistance)}`
-      : '',
     savedSearches: endUsersSavedSearches,
     isLoading,
     isSuccess,

@@ -499,7 +499,6 @@ export const useSettings = ({
         variant="email"
         emailAddress={uea.email}
         usedByItems={getUsedByEmail(uea.email)}
-        description={t('profile.settings.coming_soon')}
         readOnly
       />
     ),
@@ -535,7 +534,6 @@ export const useSettings = ({
         phoneNumber={uep.phoneNumber}
         readOnly
         usedByItems={getUsedByPhoneNumber(uep.phoneNumber)}
-        description={t('profile.settings.coming_soon')}
       />
     ),
   }));
