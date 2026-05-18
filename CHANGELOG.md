@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.150.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.150.1...v1.150.2) (2026-05-18)
+
+
+### Bug Fixes
+
+* **deps:** update dependency typeorm to v0.3.29 ([#4156](https://github.com/Altinn/dialogporten-frontend/issues/4156)) ([f31336d](https://github.com/Altinn/dialogporten-frontend/commit/f31336ded88277dbc7de5ffd1fc17071c9174846))
+* **inbox:** show 'show more' when service filter is active with &gt;100 parties ([#4160](https://github.com/Altinn/dialogporten-frontend/issues/4160)) ([a6fac3d](https://github.com/Altinn/dialogporten-frontend/commit/a6fac3dc0f0307526a0f8fce3dffa973581880ad))
+* **profile:** include current end user in parties overview search and filter results ([#4164](https://github.com/Altinn/dialogporten-frontend/issues/4164)) ([725fa81](https://github.com/Altinn/dialogporten-frontend/commit/725fa818380b7f8b8b1a1eee86216645cb49f478))
+
 ## [1.150.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.150.0...v1.150.1) (2026-05-18)
 
 
