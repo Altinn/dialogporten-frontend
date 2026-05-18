@@ -64,6 +64,7 @@
   "contact_profile.email_register": "the Common Contact Register",
   "contact_profile.location": "Zip code and location",
   "contact_profile.mobile_phone": "Mobile phone",
+  "contact_profile.self_identified_email_user": "You are logged in as an email user.",
   "contact_profile.used_by_actors": "{count, plural, =1 {Used by # actor} other {Used by # actors}}",
   "contact_profile.used_by_you": "You",
   "contact_profile.verification_status": "Status",

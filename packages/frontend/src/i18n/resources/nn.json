@@ -64,6 +64,7 @@
   "contact_profile.email_register": "Kontakt- og reservasjonsregisteret",
   "contact_profile.location": "Postnummer og stad",
   "contact_profile.mobile_phone": "Mobiltelefon",
+  "contact_profile.self_identified_email_user": "Du er logga inn som e-postbrukar.",
   "contact_profile.used_by_actors": "{count, plural, =1 {Brukes av # aktør} other {Brukes av # aktørar}}",
   "contact_profile.used_by_you": "Deg",
   "contact_profile.verification_status": "Status",
