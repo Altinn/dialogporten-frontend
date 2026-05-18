@@ -1,4 +1,11 @@
-import { BookmarkModal, BookmarkSettingsList, Heading, PageBase, Toolbar } from '@altinn/altinn-components';
+import {
+  BookmarkModal,
+  type BookmarkSettingsItemProps,
+  BookmarkSettingsList,
+  Heading,
+  PageBase,
+  Toolbar,
+} from '@altinn/altinn-components';
 import { type ChangeEvent, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelectedPartyIds } from '../../api/hooks/usePartiesSelectors.ts';
@@ -8,11 +15,53 @@ import { PageRoutes } from '../routes.ts';
 import { filterBookmarksBySearch } from './searchUtils.ts';
 import { useSavedSearches } from './useSavedSearches.tsx';
 
+interface EditBookmarkModalProps {
+  search: BookmarkSettingsItemProps | undefined;
+  onClose: () => void;
+  onSave?: (id: string, title: string) => void;
+}
+
+const EditBookmarkModal = ({ search, onClose, onSave }: EditBookmarkModalProps) => {
+  const { t } = useTranslation();
+  const [title, setTitle] = useState(search?.title ?? '');
+
+  return (
+    <BookmarkModal
+      open={!!search}
+      onClose={onClose}
+      title={t('savedSearches.edit_title')}
+      params={search?.params}
+      buttons={[
+        {
+          label: t('savedSearches.save'),
+          onClick: () => {
+            if (search?.id) {
+              onSave?.(search.id, title);
+            }
+            onClose();
+          },
+        },
+        {
+          label: t('savedSearches.cancel'),
+          variant: 'outline',
+          onClick: onClose,
+        },
+      ]}
+      titleField={{
+        label: t('savedSearches.bookmark.item_input_label'),
+        placeholder: t('savedSearches.bookmark.item_input_placeholder'),
+        helperText: t('savedSearches.bookmark.item_input_helper'),
+        value: title,
+        onChange: (e: ChangeEvent<HTMLInputElement>) => setTitle(e.target.value),
+      }}
+    />
+  );
+};
+
 export const SavedSearchesPage = () => {
   const { t } = useTranslation();
   usePageTitle({ baseTitle: t('sidebar.saved_searches') });
   const selectedPartyIds = useSelectedPartyIds();
-  const [inputValues, setInputValues] = useState<Record<string, string>>({});
   const [searchQuery, setSearchQuery] = useState('');
   const { items, groups, description, title, isLoading, onCloseSavedSearch, onSaveSearch, openedSavedSearch } =
     useSavedSearches(selectedPartyIds);
@@ -49,36 +98,11 @@ export const SavedSearchesPage = () => {
           {description}
         </Heading>
       )}
-      <BookmarkModal
+      <EditBookmarkModal
+        key={currentSearch?.id ?? 'none'}
+        search={currentSearch}
         onClose={onCloseSavedSearch}
-        title={t('savedSearches.edit_title')}
-        open={!!openedSavedSearch}
-        params={currentSearch?.params}
-        buttons={[
-          {
-            label: t('savedSearches.save'),
-            onClick: () => {
-              if (currentSearch?.id) {
-                onSaveSearch?.(currentSearch?.id, inputValues[currentSearch?.id]);
-              }
-              onCloseSavedSearch();
-            },
-          },
-          {
-            label: t('savedSearches.cancel'),
-            variant: 'outline',
-            onClick: onCloseSavedSearch,
-          },
-        ]}
-        titleField={{
-          label: t('savedSearches.bookmark.item_input_label'),
-          placeholder: t('savedSearches.bookmark.item_input_placeholder'),
-          helperText: t('savedSearches.bookmark.item_input_helper'),
-          value: typeof openedSavedSearch === 'string' ? (inputValues[openedSavedSearch] ?? '') : '',
-          onChange: (e: ChangeEvent<HTMLInputElement>) => {
-            openedSavedSearch && setInputValues((prev) => ({ ...prev, [openedSavedSearch]: e.target.value }));
-          },
-        }}
+        onSave={onSaveSearch}
       />
     </PageBase>
   );
