@@ -532,7 +532,7 @@ export const PartiesOverviewPage = () => {
         <Toolbar
           search={{
             name: 'party-search',
-            placeholder: t('parties.search'),
+            placeholder: t('word.search'),
             value: searchValue,
             onChange: (e) => setSearchValue((e.target as HTMLInputElement).value),
             onClear: () => setSearchValue(''),

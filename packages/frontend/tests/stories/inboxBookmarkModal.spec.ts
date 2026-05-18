@@ -19,7 +19,7 @@ test.describe('Inbox BookmarkModal', () => {
     await expect(page.getByRole('dialog')).toBeVisible();
     await expect(page.getByRole('dialog').getByRole('heading', { name: 'Lagre søk' })).toBeVisible();
 
-    await page.getByLabel('Tittel').fill('Mitt test-søk');
+    await page.getByLabel('Gi søket et navn').fill('Mitt test-søk');
     await page.getByRole('dialog').getByRole('button', { name: 'Lagre søk' }).click();
 
     await expect(page.getByText('Søket ditt er oppdatert')).toBeVisible();

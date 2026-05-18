@@ -530,7 +530,7 @@ export const useAccounts = ({
             onChange: (event: ChangeEvent<HTMLInputElement>) => {
               setSearchString(event.target.value);
             },
-            placeholder: t('parties.search'),
+            placeholder: t('word.search'),
           }
         : undefined,
     [showSearch, searchString, t],

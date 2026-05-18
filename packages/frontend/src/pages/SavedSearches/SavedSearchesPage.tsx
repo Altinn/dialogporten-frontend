@@ -14,17 +14,8 @@ export const SavedSearchesPage = () => {
   const selectedPartyIds = useSelectedPartyIds();
   const [inputValues, setInputValues] = useState<Record<string, string>>({});
   const [searchQuery, setSearchQuery] = useState('');
-  const {
-    items,
-    groups,
-    description,
-    title,
-    isLoading,
-    onCloseSavedSearch,
-    onSaveSearch,
-    openedSavedSearch,
-    onDeleteSavedSearch,
-  } = useSavedSearches(selectedPartyIds);
+  const { items, groups, description, title, isLoading, onCloseSavedSearch, onSaveSearch, openedSavedSearch } =
+    useSavedSearches(selectedPartyIds);
   const currentSearch = useMemo(() => items?.find((item) => item.id === openedSavedSearch), [items, openedSavedSearch]);
   const filteredItems = filterBookmarksBySearch(items ?? [], searchQuery);
 
@@ -53,9 +44,11 @@ export const SavedSearchesPage = () => {
           loading={isLoading}
         />
       )}
-      <Heading size="xs" weight="normal">
-        {description}
-      </Heading>
+      {description && (
+        <Heading size="xs" weight="normal">
+          {description}
+        </Heading>
+      )}
       <BookmarkModal
         onClose={onCloseSavedSearch}
         title={t('savedSearches.edit_title')}
@@ -63,7 +56,7 @@ export const SavedSearchesPage = () => {
         params={currentSearch?.params}
         buttons={[
           {
-            label: t('savedSearches.save_search'),
+            label: t('savedSearches.save'),
             onClick: () => {
               if (currentSearch?.id) {
                 onSaveSearch?.(currentSearch?.id, inputValues[currentSearch?.id]);
@@ -72,15 +65,9 @@ export const SavedSearchesPage = () => {
             },
           },
           {
-            label: t('savedSearches.delete_search'),
+            label: t('savedSearches.cancel'),
             variant: 'outline',
-            color: 'danger',
-            onClick: () => {
-              if (currentSearch?.id) {
-                onDeleteSavedSearch?.(currentSearch?.id);
-              }
-              onCloseSavedSearch();
-            },
+            onClick: onCloseSavedSearch,
           },
         ]}
         titleField={{
