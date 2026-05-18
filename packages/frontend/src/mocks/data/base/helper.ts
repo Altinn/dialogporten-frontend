@@ -13,9 +13,13 @@ import {
 import { naiveSearchFilter } from '../../filters';
 import type { InMemoryStore } from '../../handlers.ts';
 
+export const MAX_PARTY_URIS = 100;
+export const MAX_SERVICE_RESOURCES = 20;
+
 export const filterDialogs = ({
   inMemoryStore,
   partyURIs,
+  serviceResources,
   search,
   org,
   label,
@@ -26,6 +30,7 @@ export const filterDialogs = ({
 }: {
   inMemoryStore: InMemoryStore;
   partyURIs: string[];
+  serviceResources?: string[];
   search?: string;
   org?: string;
   label?: string;
@@ -36,15 +41,21 @@ export const filterDialogs = ({
 }) => {
   if (!inMemoryStore.dialogs) return null;
 
-  const allowedPartyIds = inMemoryStore.parties?.flatMap((party: PartyFieldsFragment) => [
-    party.party,
-    ...(party.subParties ?? []).map((subParty) => subParty.party),
-  ]);
+  const partyURIList = partyURIs ?? [];
+  const serviceResourceList = serviceResources ?? [];
 
-  const allPartiesEligible = partyURIs.every((partyURI) => allowedPartyIds?.includes(partyURI));
-  const shouldReturnNull = !allPartiesEligible || partyURIs.length === 0;
+  if (partyURIList.length > MAX_PARTY_URIS) return null;
+  if (serviceResourceList.length > MAX_SERVICE_RESOURCES) return null;
+  if (partyURIList.length === 0 && serviceResourceList.length === 0) return null;
 
-  if (shouldReturnNull) return null;
+  if (partyURIList.length > 0) {
+    const allowedPartyIds = inMemoryStore.parties?.flatMap((party: PartyFieldsFragment) => [
+      party.party,
+      ...(party.subParties ?? []).map((subParty) => subParty.party),
+    ]);
+    const allPartiesEligible = partyURIList.every((partyURI) => allowedPartyIds?.includes(partyURI));
+    if (!allPartiesEligible) return null;
+  }
 
   const normalizeArray = (value: string | string[] | undefined) =>
     Array.isArray(value) ? value : value ? [value] : [];
@@ -53,7 +64,9 @@ export const filterDialogs = ({
   const statuses = normalizeArray(status);
 
   return inMemoryStore.dialogs.filter((dialog) => {
-    const matchesParty = partyURIs.includes(dialog.party);
+    const matchesParty = partyURIList.length === 0 || partyURIList.includes(dialog.party);
+    const matchesServiceResource =
+      serviceResourceList.length === 0 || serviceResourceList.includes(dialog.serviceResource);
 
     const matchesTimeRange =
       (!updatedBefore || dialog.contentUpdatedAt < updatedBefore) &&
@@ -72,6 +85,7 @@ export const filterDialogs = ({
 
     return (
       matchesParty &&
+      matchesServiceResource &&
       matchesTimeRange &&
       matchesOrg &&
       matchesLabels &&

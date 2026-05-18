@@ -217,10 +217,9 @@ export const useDialogs = ({
     fetchNextPage,
     dialogs,
     dialogCountInconclusive,
-    hasNextPage:
-      partyIds.length >= MAX_DIALOG_PARTY_SIZE
-        ? false
-        : (data?.pages?.[data?.pages.length - 1]?.searchDialogs?.hasNextPage ?? false),
+    hasNextPage: isDialogQueryEnabled({ queryPartyURIs, serviceResources })
+      ? (data?.pages?.[data?.pages.length - 1]?.searchDialogs?.hasNextPage ?? false)
+      : false,
     isFetchingNextPage,
   };
 };

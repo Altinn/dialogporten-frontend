@@ -99,6 +99,7 @@ const getAllDialogsforCountMock = graphql.query('getAllDialogsForCount', ({ vari
   const items = filterDialogs({
     inMemoryStore,
     partyURIs: variables.partyURIs,
+    serviceResources: variables.serviceResources,
     search: variables.search,
     org: variables.org,
     label: variables.systemLabel,
@@ -133,6 +134,7 @@ const getAllDialogsForPartiesMock = graphql.query('getAllDialogsForParties', ({ 
   const items = filterDialogs({
     inMemoryStore,
     partyURIs: variables.partyURIs,
+    serviceResources: variables.serviceResources,
     search: variables.search,
     org: variables.org,
     label: variables.label,
@@ -146,10 +148,24 @@ const getAllDialogsForPartiesMock = graphql.query('getAllDialogsForParties', ({ 
     ?.slice()
     .sort((a, b) => new Date(b.contentUpdatedAt).getTime() - new Date(a.contentUpdatedAt).getTime());
 
+  const limit = typeof variables.limit === 'number' && variables.limit > 0 ? variables.limit : 100;
+  const offset = (() => {
+    const token = variables.continuationToken;
+    if (typeof token !== 'string' || token.length === 0) return 0;
+    const parsed = Number.parseInt(token, 10);
+    return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
+  })();
+
+  const pagedItems = sortedItems ? sortedItems.slice(offset, offset + limit) : null;
+  const hasNextPage = sortedItems ? offset + limit < sortedItems.length : false;
+  const continuationToken = hasNextPage ? String(offset + limit) : null;
+
   return HttpResponse.json({
     data: {
       searchDialogs: {
-        items: sortedItems ?? null,
+        items: pagedItems,
+        hasNextPage,
+        continuationToken,
       },
     },
   });
