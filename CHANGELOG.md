@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.150.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.150.2...v1.150.3) (2026-05-18)
+
+
+### Bug Fixes
+
+* **saved-searches:** set edit modal input value to current title of saved search ([#4166](https://github.com/Altinn/dialogporten-frontend/issues/4166)) ([5deefe4](https://github.com/Altinn/dialogporten-frontend/commit/5deefe4907f42e4d016f6049efb7d7137d5f5a8c))
+
 ## [1.150.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.150.1...v1.150.2) (2026-05-18)
 
 
