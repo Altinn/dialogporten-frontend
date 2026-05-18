@@ -1,12 +1,10 @@
 import {
   type AccountListItemType,
-  AccountOrganization,
   type AccountOrganizationItemProps,
   type AvatarType,
   type AvatarVariant,
   Badge,
   Button,
-  ButtonGroup,
   ContextMenu,
   type ContextMenuProps,
   DsPagination,
@@ -35,7 +33,6 @@ import {
   PaperplaneIcon,
 } from '@navikt/aksel-icons';
 import type { PartyFieldsFragment } from 'bff-types-generated';
-import { t } from 'i18next';
 import { type ElementType, useDeferredValue, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps } from 'react-router-dom';
@@ -51,117 +48,8 @@ import { PageRoutes } from '../../routes.ts';
 import { useAccountFilters } from '../useAccountFilters.tsx';
 import { SettingsType, useSettings } from '../useSettings.tsx';
 import { ConfirmSetPreselectedActorModal } from './ConfirmSetPreselectedActorModal.tsx';
+import { PartyDetails } from './PartyDetails.tsx';
 import styles from './partiesOverviewPage.module.css';
-
-interface PartyDetailsProps {
-  type: AccountListItemType;
-  currentParty: PartyFieldsFragment;
-  settings: SettingsItemProps[];
-  getGoToInboxButton: (party: { party: string; isCurrentEndUser: boolean }) => {
-    label: string;
-    [key: string]: unknown;
-  };
-  getCompanySettings: (id: string) => SettingsListProps['items'];
-  getPersonSettings: (id: string, isCurrentEndUser: boolean) => SettingsItemProps[];
-  getOrganizationAccounts: (
-    currentParty: { party: string } | undefined,
-    parentParty: PartyFieldsFragment | undefined,
-  ) => AccountOrganizationItemProps[];
-  parentParty: PartyFieldsFragment | undefined;
-}
-
-const PartyDetails = ({
-  type,
-  currentParty,
-  settings,
-  getGoToInboxButton,
-  getCompanySettings,
-  getPersonSettings,
-  getOrganizationAccounts,
-  parentParty,
-}: PartyDetailsProps) => {
-  const organizationAccounts = useMemo((): AccountOrganizationItemProps[] => {
-    if (type !== 'company') return [];
-    return getOrganizationAccounts(currentParty, parentParty);
-  }, [type, currentParty, parentParty, getOrganizationAccounts]);
-  const buttons = [getGoToInboxButton(currentParty)];
-
-  if (currentParty.isCurrentEndUser) {
-    const contactSettings = settings.filter((s) => s.groupId === SettingsType.contact);
-    return (
-      <Section spacing={3} color="person">
-        {buttons && (
-          <ButtonGroup size="sm">
-            {buttons.map((button) => {
-              const { variant, label, ...buttonProps } = button;
-              return (
-                <Button {...buttonProps} variant="outline" key={button.label}>
-                  {label}
-                </Button>
-              );
-            })}
-          </ButtonGroup>
-        )}
-        {contactSettings?.length > 0 && <SettingsList items={contactSettings} variant="menu" />}
-      </Section>
-    );
-  }
-
-  if (type === 'company') {
-    const companySettings = getCompanySettings(currentParty.party);
-    return (
-      <Section spacing={3} color="company">
-        {buttons && (
-          <ButtonGroup size="sm">
-            {buttons.map((button) => {
-              const { variant, label, ...buttonProps } = button;
-              return (
-                <Button {...buttonProps} variant="outline" key={button.label}>
-                  {label}
-                </Button>
-              );
-            })}
-          </ButtonGroup>
-        )}
-        {companySettings && (
-          <SettingsList
-            items={companySettings}
-            groups={{
-              orgNr: {
-                title: t('profile.settings.organization_information'),
-              },
-            }}
-            variant="menu"
-          />
-        )}
-        {(organizationAccounts?.length ?? 0) > 0 && <AccountOrganization items={organizationAccounts} />}
-      </Section>
-    );
-  }
-
-  if (type === 'person') {
-    const settings = getPersonSettings(currentParty.party, currentParty.isCurrentEndUser);
-    return (
-      <Section spacing={3} color="person">
-        {buttons && (
-          <ButtonGroup size="sm">
-            {buttons.map((button) => {
-              const { variant, label, ...buttonProps } = button;
-              return (
-                <Button {...buttonProps} variant="outline" key={button.label}>
-                  {label}
-                </Button>
-              );
-            })}
-          </ButtonGroup>
-        )}
-        {settings?.length > 0 && <SettingsList items={settings} variant="menu" />}
-      </Section>
-    );
-  }
-
-  return null;
-};
 
 export type PreselectedPartyOperationType = 'set' | 'unset';
 
@@ -171,6 +59,45 @@ export type PreselectedActorModalProps = {
 };
 
 const PAGE_SIZE = 50;
+
+const createSubPartyItem = (
+  subParty: { party: string; name: string; isDeleted: boolean },
+  currentParty: { party: string } | undefined,
+): AccountOrganizationItemProps => ({
+  avatar: {
+    type: 'company' as AvatarType,
+    name: subParty.name,
+    variant: 'outline' as AvatarVariant,
+    isDeleted: subParty.isDeleted,
+  },
+  title: subParty.name,
+  description: `${formatNorwegianId(subParty.party, false)} `,
+  selected: subParty.party === currentParty?.party,
+  as: 'span' as ElementType,
+});
+
+const createOrganizationItem = (
+  item: {
+    party: string;
+    name: string;
+    isDeleted: boolean;
+    parentId?: string;
+    subParties?: Array<{ party: string; name: string; isDeleted: boolean }>;
+  },
+  currentParty: { party: string } | undefined,
+): AccountOrganizationItemProps => ({
+  avatar: {
+    type: 'company' as AvatarType,
+    name: item.name,
+    variant: item.parentId ? ('outline' as AvatarVariant) : undefined,
+    isDeleted: item.isDeleted,
+  },
+  items: item.subParties?.map((subParty) => createSubPartyItem(subParty, currentParty)),
+  title: item.name,
+  description: formatNorwegianId(item.party, false),
+  selected: item.party === currentParty?.party,
+  as: 'span' as ElementType,
+});
 
 export const PartiesOverviewPage = () => {
   const { t } = useTranslation();
@@ -326,45 +253,6 @@ export const PartiesOverviewPage = () => {
     ];
   };
 
-  const createSubPartyItem = (
-    subParty: { party: string; name: string; isDeleted: boolean },
-    currentParty: { party: string } | undefined,
-  ): AccountOrganizationItemProps => ({
-    avatar: {
-      type: 'company' as AvatarType,
-      name: subParty.name,
-      variant: 'outline' as AvatarVariant,
-      isDeleted: subParty.isDeleted,
-    },
-    title: subParty.name,
-    description: `${formatNorwegianId(subParty.party, false)} `,
-    selected: subParty.party === currentParty?.party,
-    as: 'span' as ElementType,
-  });
-
-  const createOrganizationItem = (
-    item: {
-      party: string;
-      name: string;
-      isDeleted: boolean;
-      parentId?: string;
-      subParties?: Array<{ party: string; name: string; isDeleted: boolean }>;
-    },
-    currentParty: { party: string } | undefined,
-  ): AccountOrganizationItemProps => ({
-    avatar: {
-      type: 'company' as AvatarType,
-      name: item.name,
-      variant: item.parentId ? ('outline' as AvatarVariant) : undefined,
-      isDeleted: item.isDeleted,
-    },
-    items: item.subParties?.map((subParty) => createSubPartyItem(subParty, currentParty)),
-    title: item.name,
-    description: formatNorwegianId(item.party, false),
-    selected: item.party === currentParty?.party,
-    as: 'span' as ElementType,
-  });
-
   const getOrganizationAccounts = (
     currentParty: { party: string } | undefined,
     parentParty: PartyFieldsFragment | undefined,
@@ -509,13 +397,22 @@ export const PartiesOverviewPage = () => {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: re-map only when the page contents or expansion changes
   const pagedItems = useMemo((): SettingsListProps['items'] => {
-    const mapped = accounts.map(mapAccountToPartyListItem);
+    const isCompaniesFilter = filterState?.partyScope?.[0] === 'COMPANIES';
+    const search = deferredSearchValue.trim().toLowerCase();
+    const endUserMatchesSearch = (a: PartyItemProp) =>
+      !search || a.name.toLowerCase().includes(search) || a.id.toLowerCase().includes(search);
+    const visibleAccounts = accounts.filter((a) => {
+      if (!a.isCurrentEndUser) return true;
+      if (isCompaniesFilter) return false;
+      return endUserMatchesSearch(a);
+    });
+    const mapped = visibleAccounts.map(mapAccountToPartyListItem);
     return isSearching ? mapped.map((a) => ({ ...a, groupId: 'search' })) : mapped;
-  }, [accounts, isSearching, expandedItem, searchValue]);
+  }, [accounts, isSearching, expandedItem, searchValue, filterState, deferredSearchValue]);
 
   const searchGroup = useMemo(
-    () => ({ search: { title: t('search.hits', { count: accountsTotal }) } }),
-    [accountsTotal, t],
+    () => ({ search: { title: t('search.hits', { count: pagedItems.length }) } }),
+    [pagedItems.length, t],
   );
 
   const { pages, prevButtonProps, nextButtonProps } = useDsPagination({
@@ -555,7 +452,7 @@ export const PartiesOverviewPage = () => {
             />
           )}
         </Toolbar>
-        {isSearching && accountsTotal === 0 ? (
+        {isSearching && pagedItems.length === 0 ? (
           <Heading size="lg">{t('profile.settings.no_results')}</Heading>
         ) : (
           <SettingsList groups={isSearching ? searchGroup : accountGroups} items={pagedItems} />
