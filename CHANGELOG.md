@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.150.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.150.3...v1.150.4) (2026-05-18)
+
+
+### Bug Fixes
+
+* **i18n:** re-add self_identified_email_user contact profile string ([ddd3644](https://github.com/Altinn/dialogporten-frontend/commit/ddd364423c7ed9e3e01034d44a6a5ce601a8871e))
+
 ## [1.150.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.150.2...v1.150.3) (2026-05-18)
 
 
