@@ -1,7 +1,6 @@
 import {
   Button,
   ButtonGroup,
-  type ButtonProps,
   TextField,
   Typography,
   UsedByLog,
@@ -22,10 +21,11 @@ export const ContactProfileDetails = ({
   mailingPostalCity,
   mailingPostalCode,
   usedByItems = [],
-  buttons,
   description,
+  source,
 }: {
   variant: 'phone' | 'email' | 'address' | 'alerts';
+  source?: 'folkeregisteret' | 'altinn' | 'krr';
   phoneNumber?: string;
   emailAddress?: string;
   readOnly?: boolean;
@@ -33,7 +33,6 @@ export const ContactProfileDetails = ({
   mailingPostalCode?: string;
   mailingPostalCity?: string;
   description?: string;
-  buttons?: ButtonProps[];
   usedByItems?: UsedByLogItemProps[];
 }) => {
   const { t } = useTranslation();
@@ -78,8 +77,7 @@ export const ContactProfileDetails = ({
           <p>{description}</p>
         </Typography>
       )}
-      {buttons}
-      {readOnly && variant === 'address' ? (
+      {source === 'folkeregisteret' && (
         <>
           <Typography size="sm">
             <p>
@@ -95,23 +93,22 @@ export const ContactProfileDetails = ({
             </Button>
           </ButtonGroup>
         </>
-      ) : (
-        !description && (
-          <>
-            <Typography size="sm">
-              <p>
-                {t('contact_profile.contact_info_part1')} <a href={krrInfoUrl}>{t('contact_profile.email_register')}</a>
-                {t('contact_profile.contact_info_part2')}
-              </p>
-            </Typography>
-            <ButtonGroup size="md">
-              <Button variant="outline" href={krrUrl} as="a">
-                <span>{t('profile.change_contact_settings')}</span>
-                <ExternalLinkIcon />
-              </Button>
-            </ButtonGroup>
-          </>
-        )
+      )}
+      {source === 'krr' && (
+        <>
+          <Typography size="sm">
+            <p>
+              {t('contact_profile.contact_info_part1')} <a href={krrInfoUrl}>{t('contact_profile.email_register')}</a>
+              {t('contact_profile.contact_info_part2')}
+            </p>
+          </Typography>
+          <ButtonGroup size="md">
+            <Button variant="outline" href={krrUrl} as="a">
+              <span>{t('profile.change_contact_settings')}</span>
+              <ExternalLinkIcon />
+            </Button>
+          </ButtonGroup>
+        </>
       )}
     </>
   );

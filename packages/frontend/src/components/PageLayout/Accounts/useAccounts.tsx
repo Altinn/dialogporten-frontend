@@ -346,7 +346,6 @@ export const useAccounts = ({
 
     const norwegianId = currentEndUser?.party ? formatNorwegianId(currentEndUser.party, true) : '';
     const desc = currentEndUser?.party && norwegianId ? t('word.ssn') + norwegianId : '';
-
     const endUserAccount: PartyItemProp | undefined = currentEndUser
       ? {
           id: currentEndUser.party ?? '',

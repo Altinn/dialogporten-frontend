@@ -336,7 +336,15 @@ export const useSettings = ({
             title: account?.name,
             description: account?.description ? String(account?.description) : '',
           },
-          children: <ContactProfileDetails variant="alerts" phoneNumber={phoneNumber} emailAddress={email} readOnly />,
+          children: (
+            <ContactProfileDetails
+              variant="alerts"
+              phoneNumber={phoneNumber}
+              emailAddress={email}
+              source="krr"
+              readOnly
+            />
+          ),
           badge: getNotificationsSettingsBadge({ phoneNumber, email, t }),
         },
       ];
@@ -419,6 +427,7 @@ export const useSettings = ({
               mailingPostalCity={user?.party?.person?.mailingPostalCity ?? ''}
               mailingPostalCode={user?.party?.person?.mailingPostalCode ?? ''}
               mailingAddress={user?.party?.person?.mailingAddress ?? ''}
+              source="folkeregisteret"
               readOnly
             />
           ),
@@ -437,6 +446,7 @@ export const useSettings = ({
       children: (
         <ContactProfileDetails
           variant="phone"
+          source="krr"
           phoneNumber={user?.phoneNumber || ''}
           usedByItems={getUsedByPhoneNumber(user?.phoneNumber ?? '')}
           readOnly
@@ -462,6 +472,7 @@ export const useSettings = ({
       children: (
         <ContactProfileDetails
           variant="email"
+          source={isSelfIdentifiedUser ? 'altinn' : 'krr'}
           emailAddress={isSelfIdentifiedUser ? (currentEndUser?.name ?? user?.email ?? '') : user?.email || ''}
           usedByItems={getUsedByEmail(user?.email ?? '')}
           readOnly
@@ -497,6 +508,7 @@ export const useSettings = ({
     children: (
       <ContactProfileDetails
         variant="email"
+        source="altinn"
         emailAddress={uea.email}
         usedByItems={getUsedByEmail(uea.email)}
         readOnly
@@ -531,6 +543,7 @@ export const useSettings = ({
     children: (
       <ContactProfileDetails
         variant="phone"
+        source="altinn"
         phoneNumber={uep.phoneNumber}
         readOnly
         usedByItems={getUsedByPhoneNumber(uep.phoneNumber)}
@@ -641,6 +654,7 @@ export const useSettings = ({
       children: (
         <ContactProfileDetails
           variant="phone"
+          source="krr"
           phoneNumber={user?.phoneNumber || ''}
           usedByItems={getUsedByPhoneNumber(user?.phoneNumber ?? '')}
           readOnly
@@ -658,7 +672,7 @@ export const useSettings = ({
       value: user?.email || '',
       badge: isSelfIdentifiedUser ? undefined : { label: t('profile.settings.change'), variant: 'text' },
       variant: 'modal',
-      children: <ContactProfileDetails variant="email" emailAddress={user?.email || ''} readOnly />,
+      children: <ContactProfileDetails variant="email" emailAddress={user?.email || ''} source="krr" readOnly />,
     },
   ];
 
