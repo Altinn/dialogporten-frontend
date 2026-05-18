@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.150.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.150.0...v1.150.1) (2026-05-18)
+
+
+### Bug Fixes
+
+* E-mail verification, typing feil then correct code now works ([#4157](https://github.com/Altinn/dialogporten-frontend/issues/4157)) ([6db1cfd](https://github.com/Altinn/dialogporten-frontend/commit/6db1cfd37a2031928654f4be836acf231e7befdf))
+* Update texts and cleanup across the app ([#4134](https://github.com/Altinn/dialogporten-frontend/issues/4134)) ([d6fcf4d](https://github.com/Altinn/dialogporten-frontend/commit/d6fcf4db673e18ae55343b837044a8e95da7d6a8))
+
 ## [1.150.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.149.0...v1.150.0) (2026-05-13)
 
 
