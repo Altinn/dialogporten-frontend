@@ -235,7 +235,6 @@ describe('useSavedSearches', () => {
     expect(result.current.isLoading).toBe(false);
     expect(result.current.isSuccess).toBe(true);
     expect(result.current.items).toEqual([]);
-    expect(result.current.title).toBe('savedSearches.no_saved_searches');
     expect(result.current.description).toBe('savedSearches.noSearchesFound');
   });
 

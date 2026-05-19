@@ -159,7 +159,7 @@ export const ServiceResourceNotificationsDetails = ({
         />
       )}
       <SearchField
-        placeholder={t('profile.service_notifications.search_placeholder')}
+        placeholder={t('inbox.search.placeholder')}
         size="sm"
         onChange={(e) => setSearchQuery(e.target.value)}
       />

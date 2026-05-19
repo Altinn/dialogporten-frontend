@@ -101,17 +101,9 @@ const createOrganizationItem = (
 
 export const PartiesOverviewPage = () => {
   const { t } = useTranslation();
-  const {
-    isSelfIdentifiedUser,
-    parties,
-    selectedParties,
-    allOrganizationsSelected,
-    isLoading,
-    partyGraph,
-    setSelectedPartyIds,
-  } = useParties();
+  const { parties, selectedParties, allOrganizationsSelected, isLoading, partyGraph, setSelectedPartyIds } =
+    useParties();
   const { getAccountAlertSettings, settings } = useSettings({
-    disabled: isSelfIdentifiedUser,
     options: {
       includeGroups: [SettingsType.contact],
     },
@@ -429,7 +421,7 @@ export const PartiesOverviewPage = () => {
         <Toolbar
           search={{
             name: 'party-search',
-            placeholder: t('word.search'),
+            placeholder: t('inbox.search.placeholder'),
             value: searchValue,
             onChange: (e) => setSearchValue((e.target as HTMLInputElement).value),
             onClear: () => setSearchValue(''),
