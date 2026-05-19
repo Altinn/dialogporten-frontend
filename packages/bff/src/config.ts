@@ -14,6 +14,11 @@ const envVariables = z.object({
   GIT_SHA: z.string().default('v6.1.5'),
   HOST: z.string().default('0.0.0.0'),
   DB_CONNECTION_STRING: z.string().default('postgres://postgres:mysecretpassword@localhost:5432/dialogporten'),
+  DB_USE_AAD_AUTH: z.preprocess(stringToBoolean, z.boolean().default(false)),
+  DB_HOST: z.string().default('localhost'),
+  DB_PORT: z.coerce.number().default(5432),
+  DB_NAME: z.string().default('dialogporten'),
+  DB_USER: z.string().default('postgres'),
   OTEL_EXPORTER_OTLP_ENDPOINT: z.string().optional(),
   OTEL_EXPORTER_OTLP_PROTOCOL: z
     .enum(['http/protobuf', 'http/json', 'grpc'])
@@ -68,6 +73,11 @@ const config = {
   },
   postgresql: {
     connectionString: env.DB_CONNECTION_STRING,
+    useAadAuth: env.DB_USE_AAD_AUTH,
+    host: env.DB_HOST,
+    port: env.DB_PORT,
+    database: env.DB_NAME,
+    user: env.DB_USER,
   },
   secret: env.SESSION_SECRET,
   cookie: {
