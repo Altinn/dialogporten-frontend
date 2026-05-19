@@ -23,6 +23,6 @@ test.describe('Sidebar menu', () => {
     await expect(page.getByRole('link', { name: 'Melding om bortkjøring av sn' })).toBeVisible();
 
     await getSidebarMenuItem(page, PageRoutes.savedSearches).click();
-    await expect(page.getByText('Du har ingen lagrede søk')).toBeVisible();
+    await expect(page.getByText('Du legger til et søk')).toBeVisible();
   });
 });

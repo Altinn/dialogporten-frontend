@@ -2,7 +2,6 @@ import { Heading, PageBase, SettingsList, Toolbar } from '@altinn/altinn-compone
 import type { NotificationSettingsResponse, PartyFieldsFragment } from 'bff-types-generated';
 import { useTranslation } from 'react-i18next';
 import { useParties } from '../../../api/hooks/useParties.ts';
-import { useIsSelfIdentifiedUser } from '../../../api/hooks/usePartiesSelectors.ts';
 import { usePageTitle } from '../../../hooks/usePageTitle';
 import { useProfile } from '../useProfile';
 import { SettingsType, useSettings } from '../useSettings.tsx';
@@ -16,13 +15,11 @@ export const NotificationsPage = () => {
   const { t } = useTranslation();
   const { isLoading: isLoadingUser } = useProfile();
   const { isLoading: isLoadingParties } = useParties();
-  const isSelfIdentifiedUser = useIsSelfIdentifiedUser();
 
   usePageTitle({ baseTitle: t('sidebar.profile.notifications') });
 
   const { settingsGroups, settings, settingsSearch } = useSettings({
     isLoading: isLoadingUser || isLoadingParties,
-    disabled: isSelfIdentifiedUser,
     options: {
       includeGroups: [
         SettingsType.mobileAlerts,
@@ -50,7 +47,7 @@ export const NotificationsPage = () => {
       <Toolbar
         search={{
           ...settingsSearch,
-          placeholder: t('profile.notifications.search_placeholder'),
+          placeholder: t('inbox.search.placeholder'),
         }}
       />
       {settings.length === 0 && <Heading size="lg">{t('profile.settings.no_results')}</Heading>}

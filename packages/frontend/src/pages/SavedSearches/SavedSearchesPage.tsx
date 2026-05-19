@@ -5,6 +5,7 @@ import {
   Heading,
   PageBase,
   Toolbar,
+  Typography,
 } from '@altinn/altinn-components';
 import { type ChangeEvent, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -63,7 +64,7 @@ export const SavedSearchesPage = () => {
   usePageTitle({ baseTitle: t('sidebar.saved_searches') });
   const selectedPartyIds = useSelectedPartyIds();
   const [searchQuery, setSearchQuery] = useState('');
-  const { items, groups, description, title, isLoading, onCloseSavedSearch, onSaveSearch, openedSavedSearch } =
+  const { items, groups, description, isLoading, onCloseSavedSearch, onSaveSearch, openedSavedSearch } =
     useSavedSearches(selectedPartyIds);
   const currentSearch = useMemo(() => items?.find((item) => item.id === openedSavedSearch), [items, openedSavedSearch]);
   const filteredItems = filterBookmarksBySearch(items ?? [], searchQuery);
@@ -79,12 +80,11 @@ export const SavedSearchesPage = () => {
       <Toolbar
         search={{
           value: searchQuery,
-          placeholder: t('savedSearches.search_placeholder'),
+          placeholder: t('inbox.search.placeholder'),
           onChange: (e: ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value),
           onClear: () => setSearchQuery(''),
         }}
       />
-      {!isLoading && !items?.length && <Heading size="lg">{title}</Heading>}
       {filteredItems?.length > 0 && (
         <BookmarkSettingsList
           items={filteredItems}
@@ -94,9 +94,9 @@ export const SavedSearchesPage = () => {
         />
       )}
       {description && (
-        <Heading size="xs" weight="normal">
+        <Typography variant="subtle" size="sm">
           {description}
-        </Heading>
+        </Typography>
       )}
       <EditBookmarkModal
         key={currentSearch?.id ?? 'none'}

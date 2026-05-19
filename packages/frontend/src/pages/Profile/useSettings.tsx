@@ -73,7 +73,6 @@ interface UseSettingsOptions {
 interface UseSettingsInput {
   options?: UseSettingsOptions;
   isLoading?: boolean;
-  disabled?: boolean;
 }
 
 interface UseSettingsOutput {
@@ -125,11 +124,7 @@ export const getNotificationsSettingsBadge = ({
   };
 };
 
-export const useSettings = ({
-  options: inputOptions = {},
-  isLoading,
-  disabled = false,
-}: UseSettingsInput = {}): UseSettingsOutput => {
+export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettingsInput = {}): UseSettingsOutput => {
   const {
     isLoading: isLoadingParties,
     parties,
@@ -443,6 +438,7 @@ export const useSettings = ({
       value: user?.phoneNumber || '',
       badge: isSelfIdentifiedUser ? undefined : getChangeSettingsBadge(user?.phoneNumber || ''),
       variant: 'modal',
+      disabled: isSelfIdentifiedUser, // TODO: Remove this when notification settings are changable for SI users
       children: (
         <ContactProfileDetails
           variant="phone"
@@ -464,6 +460,7 @@ export const useSettings = ({
         </p>
       ),
       groupId: SettingsType.contact,
+      disabled: isSelfIdentifiedUser,
       icon: PaperplaneIcon,
       title: t('profile.settings.email_address'),
       value: isSelfIdentifiedUser ? (currentEndUser?.name ?? user?.email ?? '') : user?.email || '',
@@ -551,6 +548,8 @@ export const useSettings = ({
     ),
   }));
 
+  const addressCount =
+    uniqueEmailAddresses.length + uniquePhoneNumbers.length + (user?.email ? 1 : 0) + (user?.phoneNumber ? 1 : 0);
   const contactAddressLink: SettingsItemProps[] = [
     {
       id: 'contact-address-link',
@@ -562,7 +561,7 @@ export const useSettings = ({
       groupId: SettingsType.contactAddresses,
       badge: {
         label: t('profile.settings.notification_addresses_count', {
-          count: uniqueEmailAddresses.length + uniquePhoneNumbers.length,
+          count: addressCount,
         }),
       },
       linkIcon: true,
@@ -648,6 +647,8 @@ export const useSettings = ({
       groupId: SettingsType.mobileAlerts,
       icon: BellIcon,
       title: t('profile.settings.sms_notifications'),
+      summary: t('profile.settings.sms_notifications_summary'),
+      disabled: isSelfIdentifiedUser,
       value: user?.phoneNumber || '',
       badge: isSelfIdentifiedUser ? undefined : { label: t('profile.settings.change'), variant: 'text' },
       variant: 'modal',
@@ -667,8 +668,10 @@ export const useSettings = ({
     {
       id: 'alert-email',
       groupId: SettingsType.emailAlerts,
+      disabled: isSelfIdentifiedUser,
       icon: BellIcon,
       title: t('profile.settings.email_notifications'),
+      summary: t('profile.settings.email_notifications_summary'),
       value: user?.email || '',
       badge: isSelfIdentifiedUser ? undefined : { label: t('profile.settings.change'), variant: 'text' },
       variant: 'modal',
@@ -719,7 +722,7 @@ export const useSettings = ({
     ...contactProfileEmailSettings,
     ...accountAlertSettings,
     ...otherSettings,
-  ].map((item) => (disabled ? { ...item, disabled: true } : item));
+  ];
 
   const settings = allSettings.filter((item) => {
     const { includeGroups, excludeGroups } = options;

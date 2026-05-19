@@ -40,7 +40,6 @@ interface UseSavedSearchesOutput {
   currentPartySavedSearches: SavedSearchesFieldsFragment[] | undefined;
   saveSearch: (props: HandleSaveSearchProps) => Promise<string | undefined>;
   onDeleteSavedSearch: (id: string) => Promise<void>;
-  title: string;
   items: BookmarkSettingsListProps['items'];
   groups: BookmarkSettingsListProps['groups'];
   description?: string;
@@ -283,7 +282,6 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
       title: t('savedSearches.loading_saved_searches') + randomString(),
     }));
     return {
-      title: t('savedSearches.loading_saved_searches'),
       items,
       groups,
       isLoading: true,
@@ -300,7 +298,6 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
   if (isSuccess && !endUsersSavedSearches?.length) {
     return {
       isLoading: false,
-      title: t('savedSearches.no_saved_searches'),
       description: t('savedSearches.noSearchesFound'),
       items: [],
       groups,
@@ -390,7 +387,6 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
   });
 
   return {
-    title: t('savedSearches.title', { count: endUsersSavedSearches?.length }),
     savedSearches: endUsersSavedSearches,
     isLoading,
     isSuccess,
