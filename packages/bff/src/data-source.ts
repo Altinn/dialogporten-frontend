@@ -16,16 +16,16 @@ const commonOptions = {
   migrations: [__dirname + '/migrations/**/*.ts'],
 } satisfies Partial<DataSourceOptions>;
 
-const aadOptions = {
+const aadOptions: DataSourceOptions = {
   ...commonOptions,
   type: 'postgres',
   host: config.postgresql.host,
   port: config.postgresql.port,
   database: config.postgresql.database,
   username: config.postgresql.user,
-  password: entraTokenProvider(new DefaultAzureCredential()),
+  password: entraTokenProvider(new DefaultAzureCredential()) as unknown as string,
   extra: { ssl: { rejectUnauthorized: false } },
-} as unknown as DataSourceOptions;
+};
 
 const legacyOptions: DataSourceOptions = {
   ...commonOptions,
