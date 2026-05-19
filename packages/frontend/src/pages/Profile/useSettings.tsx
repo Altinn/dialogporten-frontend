@@ -26,7 +26,7 @@ import {
   RecycleIcon,
 } from '@navikt/aksel-icons';
 import i18n from 'i18next';
-import { type ChangeEvent, type ReactNode, useState } from 'react';
+import { type ChangeEvent, type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps, useLocation } from 'react-router-dom';
 import { useParties } from '../../api/hooks/useParties.ts';
@@ -254,6 +254,18 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
     },
   });
 
+  const accountsById = useMemo(() => new Map(accounts.map((a) => [a.id, a])), [accounts]);
+  const notificationByParty = useMemo(
+    () => new Map(partiesWithNotificationSettings.map((p) => [p.party, p])),
+    [partiesWithNotificationSettings],
+  );
+
+  const groupIncluded = (groupId: SettingsType): boolean => {
+    if (options.includeGroups?.length) return options.includeGroups.includes(groupId);
+    if (options.excludeGroups?.length) return !options.excludeGroups.includes(groupId);
+    return true;
+  };
+
   const settingsSearch = {
     name: 'settings-search',
     value: searchString,
@@ -284,8 +296,8 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
   }
 
   const getAccountAlertChannelSettings = (id: string, channel: Channel): SettingsItemProps => {
-    const account = accounts.find((account) => account.id === id);
-    const notificationAccount = partiesWithNotificationSettings.find((p) => p.party === id);
+    const account = accountsById.get(id);
+    const notificationAccount = notificationByParty.get(id);
     const isEmail = channel === 'Email';
     const value = account?.isCurrentEndUser
       ? (isEmail ? user?.email : user?.phoneNumber) || ''
@@ -313,7 +325,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
   };
 
   const getAccountAlertSettings = (id: string): SettingsItemProps[] => {
-    const account = accounts.find((account) => account.id === id);
+    const account = accountsById.get(id);
     if (account?.isCurrentEndUser) {
       const phoneNumber = user?.phoneNumber || '';
       const email = user?.email || '';
@@ -344,7 +356,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
         },
       ];
     }
-    const notificationAccount = partiesWithNotificationSettings.find((p) => p.party === id);
+    const notificationAccount = notificationByParty.get(id);
     const includedServiceCount = (notificationAccount?.notificationSettings?.resourceIncludeList ?? []).filter(
       (r): r is string => !!r,
     ).length;
@@ -377,14 +389,25 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
     ];
   };
 
-  const accountAlertSettings: SettingsItemProps[] = accounts
-    .filter((a) => {
-      if (!options.excludeGroups) {
-        return true;
-      }
-      return !(options.excludeGroups.includes(SettingsType.companies) && a.type === 'company');
-    })
-    .flatMap((a) => getAccountAlertSettings(a.id));
+  // Group IDs that account alert items may end up with — used to skip the per-account
+  // build entirely when none of these groups will pass the include/exclude filter.
+  const ACCOUNT_ALERT_OUTPUT_GROUPS = [
+    SettingsType.companies,
+    SettingsType.persons,
+    SettingsType.primary,
+    SettingsType.favorites,
+  ] as const;
+
+  const accountAlertSettings: SettingsItemProps[] = ACCOUNT_ALERT_OUTPUT_GROUPS.some(groupIncluded)
+    ? accounts
+        .filter((a) => {
+          if (!options.excludeGroups) {
+            return true;
+          }
+          return !(options.excludeGroups.includes(SettingsType.companies) && a.type === 'company');
+        })
+        .flatMap((a) => getAccountAlertSettings(a.id))
+    : [];
 
   const address = `${user?.party?.person?.mailingAddress}, ${user?.party?.person?.mailingPostalCode} ${user?.party?.person?.mailingPostalCity}`;
 
@@ -478,75 +501,79 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
     },
   ];
 
-  const contactProfileEmailSettings: SettingsItemProps[] = uniqueEmailAddresses.map((uea) => ({
-    id: 'contact-profile-email-setting-' + uea.email,
-    groupId: SettingsType.emailProfiles,
-    icon: PersonRectangleIcon,
-    title: t('profile.settings.notification_profile_email'),
-    value: uea.email,
-    controls: (
-      <>
-        {isVerifiedAddress(uea.email, 'Email') ? (
-          <AvatarGroup items={getAvatarGroup(getUsedByEmail(uea.email))} size="lg" />
-        ) : (
-          <Badge
-            variant="outline"
-            label={t(
-              isVerifiedAddress(uea.email, 'Email')
-                ? 'profile.verification.status_verified'
-                : 'profile.verification.status_unverified',
+  const contactProfileEmailSettings: SettingsItemProps[] = !groupIncluded(SettingsType.emailProfiles)
+    ? []
+    : uniqueEmailAddresses.map((uea) => ({
+        id: 'contact-profile-email-setting-' + uea.email,
+        groupId: SettingsType.emailProfiles,
+        icon: PersonRectangleIcon,
+        title: t('profile.settings.notification_profile_email'),
+        value: uea.email,
+        controls: (
+          <>
+            {isVerifiedAddress(uea.email, 'Email') ? (
+              <AvatarGroup items={getAvatarGroup(getUsedByEmail(uea.email))} size="lg" />
+            ) : (
+              <Badge
+                variant="outline"
+                label={t(
+                  isVerifiedAddress(uea.email, 'Email')
+                    ? 'profile.verification.status_verified'
+                    : 'profile.verification.status_unverified',
+                )}
+                size="sm"
+              />
             )}
-            size="sm"
+          </>
+        ),
+        variant: 'modal',
+        children: (
+          <ContactProfileDetails
+            variant="email"
+            source="altinn"
+            emailAddress={uea.email}
+            usedByItems={getUsedByEmail(uea.email)}
+            readOnly
           />
-        )}
-      </>
-    ),
-    variant: 'modal',
-    children: (
-      <ContactProfileDetails
-        variant="email"
-        source="altinn"
-        emailAddress={uea.email}
-        usedByItems={getUsedByEmail(uea.email)}
-        readOnly
-      />
-    ),
-  }));
+        ),
+      }));
 
-  const contactProfilePhoneSettings: SettingsItemProps[] = uniquePhoneNumbers.map((uep) => ({
-    id: 'contact-profile-phone-setting-' + uep.phoneNumber,
-    groupId: SettingsType.mobileProfile,
-    icon: PersonRectangleIcon,
-    title: t('profile.settings.notification_profile_sms'),
-    value: uep.phoneNumber,
-    controls: (
-      <>
-        {isVerifiedAddress(uep.phoneNumber, 'Sms') ? (
-          <AvatarGroup items={getAvatarGroup(getUsedByPhoneNumber(uep.phoneNumber))} size="lg" />
-        ) : (
-          <Badge
-            variant="outline"
-            label={t(
-              isVerifiedAddress(uep.phoneNumber, 'Sms')
-                ? 'profile.verification.status_verified'
-                : 'profile.verification.status_unverified',
+  const contactProfilePhoneSettings: SettingsItemProps[] = !groupIncluded(SettingsType.mobileProfile)
+    ? []
+    : uniquePhoneNumbers.map((uep) => ({
+        id: 'contact-profile-phone-setting-' + uep.phoneNumber,
+        groupId: SettingsType.mobileProfile,
+        icon: PersonRectangleIcon,
+        title: t('profile.settings.notification_profile_sms'),
+        value: uep.phoneNumber,
+        controls: (
+          <>
+            {isVerifiedAddress(uep.phoneNumber, 'Sms') ? (
+              <AvatarGroup items={getAvatarGroup(getUsedByPhoneNumber(uep.phoneNumber))} size="lg" />
+            ) : (
+              <Badge
+                variant="outline"
+                label={t(
+                  isVerifiedAddress(uep.phoneNumber, 'Sms')
+                    ? 'profile.verification.status_verified'
+                    : 'profile.verification.status_unverified',
+                )}
+                size="sm"
+              />
             )}
-            size="sm"
+          </>
+        ),
+        variant: 'modal',
+        children: (
+          <ContactProfileDetails
+            variant="phone"
+            source="altinn"
+            phoneNumber={uep.phoneNumber}
+            readOnly
+            usedByItems={getUsedByPhoneNumber(uep.phoneNumber)}
           />
-        )}
-      </>
-    ),
-    variant: 'modal',
-    children: (
-      <ContactProfileDetails
-        variant="phone"
-        source="altinn"
-        phoneNumber={uep.phoneNumber}
-        readOnly
-        usedByItems={getUsedByPhoneNumber(uep.phoneNumber)}
-      />
-    ),
-  }));
+        ),
+      }));
 
   const addressCount =
     uniqueEmailAddresses.length + uniquePhoneNumbers.length + (user?.email ? 1 : 0) + (user?.phoneNumber ? 1 : 0);
