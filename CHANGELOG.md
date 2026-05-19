@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.150.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.150.4...v1.150.5) (2026-05-19)
+
+
+### Bug Fixes
+
+* **profile:** misc improvements to texts and states in settings ([#4172](https://github.com/Altinn/dialogporten-frontend/issues/4172)) ([5211f27](https://github.com/Altinn/dialogporten-frontend/commit/5211f274d02c1df79c50831741977213cd906504))
+
 ## [1.150.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.150.3...v1.150.4) (2026-05-18)
 
 
