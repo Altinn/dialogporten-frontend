@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.150.6](https://github.com/Altinn/dialogporten-frontend/compare/v1.150.5...v1.150.6) (2026-05-19)
+
+
+### Bug Fixes
+
+* **profile:** check to determine whether email already is verified is case sensitive ([#4177](https://github.com/Altinn/dialogporten-frontend/issues/4177)) ([a841334](https://github.com/Altinn/dialogporten-frontend/commit/a8413343f6b5cf949af2784e21d02dc0e07ba6e7))
+* **profile:** speed up settings build for users with many parties ([#4175](https://github.com/Altinn/dialogporten-frontend/issues/4175)) ([4f1968e](https://github.com/Altinn/dialogporten-frontend/commit/4f1968ec060a77e0cc7089361752d5e26d8b3e5c))
+
 ## [1.150.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.150.4...v1.150.5) (2026-05-19)
 
 
