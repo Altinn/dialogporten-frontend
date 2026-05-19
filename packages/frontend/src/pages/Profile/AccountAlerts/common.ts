@@ -8,7 +8,7 @@ export const useIsAlreadyVerified = () => {
   return (value: string, type: Channel) =>
     verifiedAddresses.some(
       (a: { value?: string | null; addressType?: string | null } | null) =>
-        a?.value === value && a?.addressType === type,
+        a?.value?.toLowerCase() === value?.toLowerCase() && a?.addressType === type,
     );
 };
 
