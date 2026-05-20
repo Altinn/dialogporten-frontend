@@ -22,6 +22,7 @@ import { useProfile } from '../useProfile.tsx';
 import styles from './AccountAlertsChannelDetails.module.css';
 import { VerificationCodeStep } from './VerificationCodeStep.tsx';
 import { type Channel, useIsAlreadyVerified, useResendCooldown } from './common.ts';
+import { isValidEmail } from './email.ts';
 import { isValidCountryCodeInput, isValidPhoneNumber, joinPhone, parsePhone } from './phone.ts';
 
 export interface AccountAlertsChannelDetailsProps {
@@ -62,7 +63,8 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
     document.activeElement?.closest('dialog')?.close();
   };
 
-  const isPhoneShapeValid = isEmail || !enabled || isValidPhoneNumber(countryCode, phoneNumberPart);
+  const isValidValue =
+    !enabled || (isEmail ? isValidEmail(emailValue) : isValidPhoneNumber(countryCode, phoneNumberPart));
   const isVerified = !!value && isAlreadyVerified(value, channel);
   const isValueDirty = value.trim() !== defaultValue.trim();
   const isDirty = (enabled && isValueDirty) || enabled !== initiallyEnabled;
@@ -72,7 +74,7 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
   const verificationStatus = isEmail
     ? notificationSettings?.emailVerificationStatus
     : notificationSettings?.smsVerificationStatus;
-  const allowedToVerify = (verificationStatus === 'Legacy' ? hasChangedFromProfile : true) && isPhoneShapeValid;
+  const allowedToVerify = (verificationStatus === 'Legacy' ? hasChangedFromProfile : true) && isValidValue;
 
   const invalidateQueries = () => {
     void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.VERIFIED_ADDRESSES] });
@@ -272,7 +274,7 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
             </Button>
           )}
           {!needsVerification && isDirty && (
-            <Button type="submit" disabled={!isPhoneShapeValid}>
+            <Button type="submit" disabled={!isValidValue}>
               {t('profile.account_alerts.save')}
             </Button>
           )}
