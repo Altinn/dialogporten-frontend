@@ -6,41 +6,61 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  verify-release-please-branch:
+  # When this job is skipped (release-please-* PR branches), every job that lists it in
+  # `needs` is skipped as well — so the whole workflow becomes a no-op for those PRs.
+  ci-branch-gate:
+    name: CI branch gate
     if: ${{ !startsWith(github.head_ref, 'release-please-') }}
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Confirmed not to be a release please branch"
+      - run: echo "Branch is eligible for full PR CI"
 
   generate-git-short-sha:
     name: Generate git short sha
+    needs: [ci-branch-gate]
     uses: ./.github/workflows/workflow-generate-git-short-sha.yml
 
   get-current-version:
     name: Get current version
+    needs: [ci-branch-gate]
     uses: ./.github/workflows/workflow-get-current-version.yml
 
   check-for-changes:
     name: Check for changes
+    needs: [ci-branch-gate]
     uses: ./.github/workflows/workflow-check-for-changes.yml
 
   build-and-test:
     uses: ./.github/workflows/workflow-build-and-test.yml
-    needs: [check-for-changes, get-current-version, generate-git-short-sha]
+    needs:
+      [
+        ci-branch-gate,
+        check-for-changes,
+        get-current-version,
+        generate-git-short-sha,
+      ]
     if: ${{ needs.check-for-changes.outputs.hasApplicationChanges == 'true' }}
     with:
       environment: test
       version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
 
   translations-check:
+    needs: [ci-branch-gate]
     uses: ./.github/workflows/workflow-check-translations.yml
 
   playwright-test:
+    needs: [ci-branch-gate]
     uses: ./.github/workflows/workflow-playwright-test.yml
 
   dry-run-deploy-infra:
     uses: ./.github/workflows/workflow-deploy-infrastructure.yml
-    needs: [generate-git-short-sha, check-for-changes, get-current-version]
+    needs:
+      [
+        ci-branch-gate,
+        generate-git-short-sha,
+        check-for-changes,
+        get-current-version,
+      ]
     if: ${{ needs.check-for-changes.outputs.hasInfrastructureChanges == 'true' }}
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -59,7 +79,13 @@ jobs:
 
   deploy-apps-test:
     name: Deploy apps to test
-    needs: [get-current-version, check-for-changes, generate-git-short-sha]
+    needs:
+      [
+        ci-branch-gate,
+        get-current-version,
+        check-for-changes,
+        generate-git-short-sha,
+      ]
     if: ${{ needs.check-for-changes.outputs.hasApplicationChanges == 'true' }}
     uses: ./.github/workflows/workflow-deploy-apps.yml
     secrets:
