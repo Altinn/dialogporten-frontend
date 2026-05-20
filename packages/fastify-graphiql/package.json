@@ -5,11 +5,11 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "fastify": "5.8.5",
-    "fastify-plugin": "^5.0.1"
+    "fastify": "catalog:",
+    "fastify-plugin": "catalog:"
   },
   "type": "module",
   "devDependencies": {
-    "vitest": "^3.2.4"
+    "vitest": "catalog:"
   }
 }
