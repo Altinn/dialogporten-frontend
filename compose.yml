@@ -236,6 +236,11 @@ services:
             - node_modules/
             - .azure/
             - .git/
+            - test-results/
+            - playwright-report/
+            - blob-report/
+            - axe-reports/
+            - playwright/.cache/
         - action: sync+restart
           path: ./packages/bff-types-generated/
           target: /app/packages/bff-types-generated/
