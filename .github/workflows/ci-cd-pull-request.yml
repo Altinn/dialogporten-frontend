@@ -36,6 +36,7 @@ jobs:
     uses: ./.github/workflows/workflow-check-translations.yml
 
   playwright-test:
+    if: ${{ !startsWith(github.head_ref, 'release-please-') }}
     uses: ./.github/workflows/workflow-playwright-test.yml
 
   dry-run-deploy-infra:
