@@ -182,7 +182,7 @@
   "filter.query.default": "Innboks",
   "filter.query.completed": "Avsluttet",
   "filter.query.draft": "Utkast",
-  "filter.query.drafts": "i utkast",
+  "filter.query.drafts": "Utkast",
   "filter.query.fromDate": "Fra {date}",
   "filter.query.in_progress": "Under arbeid",
   "filter.query.last_six_months": "Siste seks måneder",

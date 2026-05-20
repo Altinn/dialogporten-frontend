@@ -47,9 +47,10 @@ export const buildFilterParams = (
     subAccounts: 0,
     systemLabel: 1,
     status: 2,
-    updated: 3,
-    org: 4,
-    service: 5,
+    isContentSeen: 3,
+    updated: 4,
+    org: 5,
+    service: 6,
   };
   const orderOf = (id: string | null | undefined): number => filterOrder[id ?? ''] ?? Number.MAX_SAFE_INTEGER;
 
@@ -79,6 +80,10 @@ export const buildFilterParams = (
       if (filter?.id === 'service') {
         const service = serviceResourceById.get(filter.value ?? '');
         return { order, item: { type: 'filter', label: service?.title ?? '' } };
+      }
+
+      if (filter?.id === 'isContentSeen') {
+        return { order, item: { type: 'filter', label: t(`filter.is_content_seen.${filter.value}`) } };
       }
 
       return {

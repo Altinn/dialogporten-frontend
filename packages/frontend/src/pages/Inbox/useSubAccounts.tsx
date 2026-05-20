@@ -3,6 +3,7 @@ import type { PartyFieldsFragment } from 'bff-types-generated';
 import { useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
+import { MAX_DIALOG_PARTY_SIZE } from '../../api/hooks/useDialogs.tsx';
 import type { PartyItemProp } from '../../components/PageLayout/Accounts/useAccounts.tsx';
 import { FixedGlobalQueryParams, encodeSubAccountIds, getSelectedSubAccountsFromQueryParams } from './queryParams.ts';
 
@@ -10,7 +11,8 @@ interface UseSubAccountsProps {
   accounts: PartyItemProp[];
   selectedParties: PartyFieldsFragment[];
   allOrganizationsSelected: boolean;
-  showPageLabel: boolean;
+  selectedServicesCount: number;
+  hasSubAccountOverrideWithinLimit: boolean;
 }
 
 interface UseSubAccountsOutput {
@@ -19,6 +21,8 @@ interface UseSubAccountsOutput {
   searchable: boolean;
   getSubAccountLabel: () => string;
   partyIdsOverride: string[];
+  showPageLabel: boolean;
+  accountNavigatorHidden: boolean;
 }
 
 const ALL_SUB_ACCOUNTS_ID = 'ALL_SUB_ACCOUNTS';
@@ -38,7 +42,8 @@ export const useSubAccounts = ({
   accounts,
   selectedParties,
   allOrganizationsSelected,
-  showPageLabel,
+  selectedServicesCount,
+  hasSubAccountOverrideWithinLimit,
 }: UseSubAccountsProps): UseSubAccountsOutput => {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -114,6 +119,11 @@ export const useSubAccounts = ({
   const filteredSubAccounts = useMemo(() => {
     return subAccountsAndAll.filter((item) => !item.disabled);
   }, [subAccountsAndAll]);
+
+  const accountNavigatorHidden =
+    filteredSubAccounts.length < MAX_DIALOG_PARTY_SIZE ||
+    (selectedServicesCount > 0 && !hasSubAccountOverrideWithinLimit);
+  const showPageLabel = !accountNavigatorHidden;
 
   const allLabel = allOrganizationsSelected ? t('parties.labels.all_organizations') : t('parties.labels.all_units');
   const mainUnitLabel = t('parties.labels.main_unit');
@@ -263,5 +273,7 @@ export const useSubAccounts = ({
     partyIdsOverride: selectedSubAccountIds,
     searchable: subAccounts.length > 2,
     subAccountGroups: groups,
+    showPageLabel,
+    accountNavigatorHidden,
   };
 };

@@ -85,19 +85,16 @@ describe('buildCurrentStateURL', () => {
     expect(url).not.toContain('emptyArray');
   });
 
-  it('should handle different view types', () => {
+  it('should use the view-specific route for each view type', () => {
     const filterState: FilterState = {
       sender: ['NAV'],
     };
 
-    const inboxUrl = buildCurrentStateURL(filterState, '', 'inbox');
-    const draftsUrl = buildCurrentStateURL(filterState, '', 'drafts');
-    const sentUrl = buildCurrentStateURL(filterState, '', 'sent');
-
-    // All should start with inbox route but may have different aggregation
-    expect(inboxUrl).toContain(PageRoutes.inbox);
-    expect(draftsUrl).toContain(PageRoutes.inbox);
-    expect(sentUrl).toContain(PageRoutes.inbox);
+    expect(buildCurrentStateURL(filterState, '', 'inbox').startsWith(`${PageRoutes.inbox}?`)).toBe(true);
+    expect(buildCurrentStateURL(filterState, '', 'drafts').startsWith(`${PageRoutes.drafts}?`)).toBe(true);
+    expect(buildCurrentStateURL(filterState, '', 'sent').startsWith(`${PageRoutes.sent}?`)).toBe(true);
+    expect(buildCurrentStateURL(filterState, '', 'archive').startsWith(`${PageRoutes.archive}?`)).toBe(true);
+    expect(buildCurrentStateURL(filterState, '', 'bin').startsWith(`${PageRoutes.bin}?`)).toBe(true);
   });
 });
 
@@ -168,6 +165,19 @@ describe('buildSavedSearchURL', () => {
     const url = buildSavedSearchURL(savedSearch);
     expect(url).not.toContain(SystemLabel.Default);
     expect(url).toContain('status=NEW');
+  });
+
+  it('should land on the originating view route when fromView is set', () => {
+    expect(buildSavedSearchURL(createSavedSearch('q', [], PageRoutes.sent)).startsWith(`${PageRoutes.sent}?`)).toBe(
+      true,
+    );
+    expect(
+      buildSavedSearchURL(createSavedSearch('q', [], PageRoutes.archive)).startsWith(`${PageRoutes.archive}?`),
+    ).toBe(true);
+    expect(buildSavedSearchURL(createSavedSearch('q', [], PageRoutes.drafts)).startsWith(`${PageRoutes.drafts}?`)).toBe(
+      true,
+    );
+    expect(buildSavedSearchURL(createSavedSearch('q', [], PageRoutes.bin)).startsWith(`${PageRoutes.bin}?`)).toBe(true);
   });
 });
 
