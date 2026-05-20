@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.151.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.151.0...v1.151.1) (2026-05-20)
+
+
+### Bug Fixes
+
+* **savedsearches:** sort named searches A–Z, unnamed by date desc ([#4186](https://github.com/Altinn/dialogporten-frontend/issues/4186)) ([a950de0](https://github.com/Altinn/dialogporten-frontend/commit/a950de0559d5ed132cb37f4aafdfa77436bc8120))
+
 ## [1.151.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.150.6...v1.151.0) (2026-05-20)
 
 
