@@ -462,6 +462,7 @@
   "savedSearches.delete_search": "Delete saved search",
   "savedSearches.delete_search_menu": "Delete search",
   "savedSearches.deleted_success": "Search deleted",
+  "savedSearches.edit_search": "Edit search",
   "savedSearches.edit_title": "Change name",
   "savedSearches.groups.all_organizations": "All organizations",
   "savedSearches.groups.personal": "Personal searches",

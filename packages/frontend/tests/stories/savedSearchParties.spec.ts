@@ -27,8 +27,8 @@ async function saveSearchAndDismiss(page: Page, searchTerm: string) {
   await expect(saveButton).toBeVisible();
   await saveButton.click();
 
+  await page.getByRole('dialog').getByRole('button', { name: 'Lagre søk' }).click();
   await expect(savedButton).toBeVisible();
-  await page.getByRole('button', { name: 'Avbryt' }).click();
 }
 
 async function switchParty(page: Page, partyName: string) {

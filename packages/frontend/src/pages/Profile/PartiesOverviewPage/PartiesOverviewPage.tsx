@@ -377,6 +377,7 @@ export const PartiesOverviewPage = () => {
 
   const totalPages = Math.max(1, Math.ceil(accountsTotal / PAGE_SIZE));
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     setCurrentPage(1);
   }, [isSearching, deferredSearchValue, filterState, includeDeletedParties]);

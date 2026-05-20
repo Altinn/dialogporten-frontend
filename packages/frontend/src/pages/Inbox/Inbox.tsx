@@ -90,8 +90,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     organizationLimitReached,
   } = useParties();
 
-  const { items: savedSearchItems, onSaveSearch, onCloseSavedSearch } = useSavedSearches(selectedPartyIds);
-  const { bookmarkModalProps, onSaveSuccess } = useBookmarkModal(savedSearchItems, onSaveSearch, onCloseSavedSearch);
+  const { saveSearch, onSaveSearch, onDeleteSavedSearch } = useSavedSearches(selectedPartyIds);
   const [bulkMode, setBulkMode] = useGlobalState<boolean>(QUERY_KEYS.BULK_MODE, false);
   const [bulkedIds, setBulkedIds] = useGlobalState<string[]>(QUERY_KEYS.BULK_MODE_SELECTED_IDS, []);
   const location = useLocation();
@@ -188,6 +187,16 @@ export const Inbox = ({ viewType }: InboxProps) => {
       [FixedGlobalQueryParams.subAccounts]: [subAccountsParamForSave],
     };
   }, [filterState, subAccountsParamForSave]);
+
+  const { bookmarkModalProps, openSaveModal, openEditModal } = useBookmarkModal({
+    filterState: savedSearchFilterState,
+    enteredSearchValue,
+    viewType,
+    selectedPartyIds,
+    saveSearch,
+    updateSavedSearchTitle: (id, name) => onSaveSearch?.(id, name) ?? Promise.resolve(),
+    deleteSavedSearch: onDeleteSavedSearch,
+  });
 
   const savedSearchDisabled = isSavedSearchDisabled(savedSearchFilterState, partyIdsOverride, enteredSearchValue);
   const onResetAllFilter = () => {
@@ -387,7 +396,8 @@ export const Inbox = ({ viewType }: InboxProps) => {
               viewType={viewType}
               hidden={savedSearchDisabled || bulkMode}
               filterState={savedSearchFilterState}
-              onSaveSuccess={onSaveSuccess}
+              onSaveClick={openSaveModal}
+              onEditClick={openEditModal}
             />
           </Toolbar>
         ) : (
