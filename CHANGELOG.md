@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.151.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.150.6...v1.151.0) (2026-05-20)
+
+
+### Features
+
+* **bff:** add AAD workload-identity DB auth path ([#4133](https://github.com/Altinn/dialogporten-frontend/issues/4133)) ([e99ed0d](https://github.com/Altinn/dialogporten-frontend/commit/e99ed0d29ba2c766245c201136cc98e01fcb771a))
+
+
+### Bug Fixes
+
+* **profile:** proper validation for email before saving ([#4180](https://github.com/Altinn/dialogporten-frontend/issues/4180)) ([3889f78](https://github.com/Altinn/dialogporten-frontend/commit/3889f78ae21ff873a005245440a657d215a320d9))
+* **savedsearch:** missing texts and prope navigation to route where the saved search was made ([#4185](https://github.com/Altinn/dialogporten-frontend/issues/4185)) ([0a10a50](https://github.com/Altinn/dialogporten-frontend/commit/0a10a50cd64aec3d7f0a302312cb3d8cbd17471f))
+
 ## [1.150.6](https://github.com/Altinn/dialogporten-frontend/compare/v1.150.5...v1.150.6) (2026-05-19)
 
 
