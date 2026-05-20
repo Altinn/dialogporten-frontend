@@ -53,6 +53,7 @@ interface HandleSaveSearchProps {
   selectedParties: string[];
   enteredSearchValue: string;
   viewType: InboxViewType;
+  name?: string;
 }
 
 const randomString = () => {
@@ -149,6 +150,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
     selectedParties,
     enteredSearchValue,
     viewType,
+    name,
   }: HandleSaveSearchProps): Promise<string | undefined> => {
     try {
       setIsCTALoading(true);
@@ -158,7 +160,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
         searchString: enteredSearchValue,
         fromView: PageRoutes[viewType],
       };
-      const result = await createSavedSearch('', data);
+      const result = await createSavedSearch(name ?? '', data);
 
       Analytics.trackEvent(ANALYTICS_EVENTS.SAVED_SEARCH_CREATE_SUCCESS, {
         'search.viewType': viewType,

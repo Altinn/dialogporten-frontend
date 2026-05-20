@@ -17,8 +17,8 @@ test.describe('Saved search', () => {
     await page.locator('#ok').press('Escape');
 
     await page.getByRole('button', { name: 'Lagre søk' }).click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Lagre søk' }).click();
     await expect(page.getByText('Søket ditt er lagret')).toBeVisible();
-    await page.getByRole('button', { name: 'Avbryt' }).click();
 
     await getSidebarMenuItem(page, PageRoutes.savedSearches).click();
     await page.waitForLoadState('networkidle');
@@ -39,7 +39,7 @@ test.describe('Saved search', () => {
     await performSearch(page, 'skatten', 'enter');
 
     await page.getByRole('button', { name: 'Lagre søk' }).click();
-    await page.getByRole('button', { name: 'Avbryt' }).click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Lagre søk' }).click();
     await expect(page.getByRole('button', { name: 'Lagret søk' })).toBeVisible();
 
     test.skip(isMobile, 'Sidebar is desktop-only');
@@ -67,8 +67,8 @@ test.describe('Saved search', () => {
     await page.getByRole('combobox', { name: 'Søk' }).fill('innkalling');
     await page.getByRole('combobox', { name: 'Søk' }).press('Enter');
     await page.getByRole('button', { name: 'Lagre søk' }).click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Lagre søk' }).click();
     await expect(page.getByText('Søket ditt er lagret')).toBeVisible();
-    await page.getByRole('button', { name: 'Avbryt' }).click();
 
     await page.getByTestId('sidebar-saved-searches').click();
     await page.waitForLoadState('networkidle');
@@ -95,8 +95,8 @@ test.describe('Saved search', () => {
     await page.locator('#ARCHIVE').press('Escape');
 
     await page.getByRole('button', { name: 'Lagre søk' }).click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Lagre søk' }).click();
     await expect(page.getByText('Søket ditt er lagret')).toBeVisible();
-    await page.getByRole('button', { name: 'Avbryt' }).click();
 
     await page.getByRole('button', { name: 'Nullstill' }).click();
 

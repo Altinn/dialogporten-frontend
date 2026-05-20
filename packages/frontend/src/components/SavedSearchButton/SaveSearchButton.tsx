@@ -1,5 +1,6 @@
 import { Button, type FilterState } from '@altinn/altinn-components';
 import { BookmarkFillIcon, BookmarkIcon } from '@navikt/aksel-icons';
+import type { SavedSearchesFieldsFragment } from 'bff-types-generated';
 import type { ButtonHTMLAttributes, RefAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
@@ -13,7 +14,8 @@ export type SaveSearchButtonProps = {
   viewType: InboxViewType;
   filterState: FilterState;
   variant?: 'ghost' | 'outline';
-  onSaveSuccess?: (savedSearchId: string) => void;
+  onSaveClick?: () => void;
+  onEditClick?: (savedSearch: SavedSearchesFieldsFragment) => void;
 } & ButtonHTMLAttributes<HTMLButtonElement> &
   RefAttributes<HTMLButtonElement>;
 
@@ -23,17 +25,13 @@ export const SaveSearchButton = ({
   filterState,
   viewType,
   variant = 'ghost',
-  onSaveSuccess,
+  onSaveClick,
+  onEditClick,
 }: SaveSearchButtonProps) => {
   const { t } = useTranslation();
   const selectedPartyIds = useSelectedPartyIds();
   const { enteredSearchValue } = useSearchString();
-  const {
-    currentPartySavedSearches: savedSearches,
-    isCTALoading,
-    saveSearch,
-    onDeleteSavedSearch,
-  } = useSavedSearches(selectedPartyIds);
+  const { currentPartySavedSearches: savedSearches } = useSavedSearches(selectedPartyIds);
 
   if (hidden) {
     return null;
@@ -47,8 +45,7 @@ export const SaveSearchButton = ({
       <Button
         size="xs"
         className={className}
-        onClick={() => onDeleteSavedSearch(matchingSavedSearch.id.toString())}
-        loading={isCTALoading}
+        onClick={() => onEditClick?.(matchingSavedSearch)}
         variant={variant}
         aria-label={t('filter_bar.saved_search')}
       >
@@ -62,17 +59,8 @@ export const SaveSearchButton = ({
     <Button
       size="xs"
       className={className}
-      onClick={async () => {
-        const id = await saveSearch({
-          filters: filterState,
-          selectedParties: selectedPartyIds,
-          enteredSearchValue,
-          viewType,
-        });
-        if (id) onSaveSuccess?.(id);
-      }}
+      onClick={() => onSaveClick?.()}
       variant={variant}
-      loading={isCTALoading}
       aria-label={t('filter_bar.save_search')}
     >
       <BookmarkIcon />

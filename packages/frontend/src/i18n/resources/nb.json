@@ -462,6 +462,7 @@
   "savedSearches.delete_search": "Slett",
   "savedSearches.delete_search_menu": "Slett søk",
   "savedSearches.deleted_success": "Søket ditt ble slettet",
+  "savedSearches.edit_search": "Rediger søk",
   "savedSearches.edit_title": "Endre navn",
   "savedSearches.groups.all_organizations": "Alle virksomheter",
   "savedSearches.groups.personal": "Personlige søk",
