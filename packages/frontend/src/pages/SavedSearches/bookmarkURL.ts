@@ -6,6 +6,21 @@ import { PageRoutes } from '../routes.ts';
 import { fromPathToViewType } from './searchUtils.ts';
 import { convertFiltersToFilterState } from './useSavedSearches.tsx';
 
+const routeForViewType = (viewType: InboxViewType | undefined): PageRoutes => {
+  switch (viewType) {
+    case 'drafts':
+      return PageRoutes.drafts;
+    case 'sent':
+      return PageRoutes.sent;
+    case 'archive':
+      return PageRoutes.archive;
+    case 'bin':
+      return PageRoutes.bin;
+    default:
+      return PageRoutes.inbox;
+  }
+};
+
 /**
  * Builds a URL from the current search state
  */
@@ -46,7 +61,7 @@ export const buildCurrentStateURL = (
     }
   }
 
-  return `${PageRoutes.inbox}?${queryParams.toString()}`;
+  return `${routeForViewType(viewType)}?${queryParams.toString()}`;
 };
 
 /**
@@ -96,7 +111,7 @@ export const buildSavedSearchURL = (savedSearch: SavedSearchesFieldsFragment) =>
     }
   }
 
-  return `${PageRoutes.inbox}?${queryParams.toString()}`;
+  return `${routeForViewType(viewType)}?${queryParams.toString()}`;
 };
 
 /**

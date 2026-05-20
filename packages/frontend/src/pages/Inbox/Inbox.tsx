@@ -153,18 +153,19 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const partyIdsFromParams = useMemo(() => getSelectedSubAccountsFromQueryParams(searchParams), [searchParams]);
   const hasSubAccountOverrideWithinLimit =
     !!partyIdsFromParams.length && partyIdsFromParams.length <= MAX_DIALOG_PARTY_SIZE;
-  const showPageLabel = !(selectedServicesCount > 0 && !hasSubAccountOverrideWithinLimit);
   const {
     subAccounts,
     getSubAccountLabel,
     partyIdsOverride,
     searchable: subAccountsSearchable,
     subAccountGroups,
+    accountNavigatorHidden,
   } = useSubAccounts({
     accounts,
     selectedParties,
     allOrganizationsSelected,
-    showPageLabel,
+    selectedServicesCount,
+    hasSubAccountOverrideWithinLimit,
   });
   const searchMode = hasValidFilters(filterState) || !!validSearchString;
   const showSubAccountsMenu = subAccounts.length > 0;
@@ -402,10 +403,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
       {isAltinn2MessagesEnabled && <Altinn2ActiveSchemasNotification selectedAccountId={selectedParties?.[0]?.party} />}
       <>
         <AccountNavigator
-          hidden={
-            subAccounts.length - 1 < MAX_DIALOG_PARTY_SIZE ||
-            (selectedServicesCount > 0 && !hasSubAccountOverrideWithinLimit)
-          }
+          hidden={accountNavigatorHidden}
           subAccounts={subAccounts}
           partyIdsOverride={partyIdsOverride}
         />
