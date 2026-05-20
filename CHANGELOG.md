@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.152.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.151.1...v1.152.0) (2026-05-20)
+
+
+### Features
+
+* **savedsearch:** defer save until modal submit and add edit/delete modal ([#4190](https://github.com/Altinn/dialogporten-frontend/issues/4190)) ([c254197](https://github.com/Altinn/dialogporten-frontend/commit/c254197547d07000d4a6ad018067318293e107d5))
+
 ## [1.151.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.151.0...v1.151.1) (2026-05-20)
 
 
