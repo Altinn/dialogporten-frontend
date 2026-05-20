@@ -311,11 +311,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
     };
   }
 
-  const sortedSearches = [...endUsersSavedSearches].sort(
-    (a, b) => Number.parseInt(b.updatedAt ?? '0', 10) - Number.parseInt(a.updatedAt ?? '0', 10),
-  );
-
-  const items: BookmarkSettingsItemProps[] = sortedSearches.map((savedSearch) => {
+  const items: BookmarkSettingsItemProps[] = endUsersSavedSearches.map((savedSearch) => {
     const bookmarkLink = buildSavedSearchURL(savedSearch);
     const searchId = savedSearch.id.toString();
     const groupId = getSavedSearchGroupId(savedSearch);

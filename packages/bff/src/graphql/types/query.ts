@@ -80,10 +80,12 @@ export const Query = objectType({
       resolve: async (_source, _args, ctx) => {
         const pid = ctx.session.get('pid');
         if (SavedSearchRepository) {
-          return await SavedSearchRepository.find({
-            where: { profile: { pid } },
-            order: { updatedAt: 'DESC' },
-          });
+          return await SavedSearchRepository.createQueryBuilder('s')
+            .where('s.profilePid = :pid', { pid })
+            .orderBy("CASE WHEN s.name IS NULL OR s.name = '' THEN 1 ELSE 0 END", 'ASC')
+            .addOrderBy('s.name', 'ASC')
+            .addOrderBy('s.updatedAt', 'DESC')
+            .getMany();
         }
         return [];
       },

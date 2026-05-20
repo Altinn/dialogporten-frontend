@@ -238,7 +238,7 @@ describe('useSavedSearches', () => {
     expect(result.current.description).toBe('savedSearches.noSearchesFound');
   });
 
-  it('returns sorted items when data is available', () => {
+  it('preserves the order returned by the BFF', () => {
     setupAuthQuery();
 
     const { result } = renderHook(() => useSavedSearches(['urn:altinn:person:identifier-no:1']), {
@@ -247,10 +247,7 @@ describe('useSavedSearches', () => {
 
     expect(result.current.isLoading).toBe(false);
     expect(result.current.items.length).toBe(savedSearches.length);
-    // Items should be sorted by updatedAt descending
-    expect(result.current.items[0].id).toBe('3'); // highest updatedAt
-    expect(result.current.items[1].id).toBe('2');
-    expect(result.current.items[2].id).toBe('1');
+    expect(result.current.items.map((i) => i.id)).toEqual(savedSearches.map((s) => s.id.toString()));
   });
 
   it('assigns correct group IDs', () => {
