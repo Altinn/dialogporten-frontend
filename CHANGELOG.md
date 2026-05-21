@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.152.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.152.0...v1.152.1) (2026-05-21)
+
+
+### Bug Fixes
+
+* **attachments:** show HTML attachments as link and open in same window ([#4200](https://github.com/Altinn/dialogporten-frontend/issues/4200)) ([784a427](https://github.com/Altinn/dialogporten-frontend/commit/784a4270c574b1298889427dba0fc693adde3b21))
+
 ## [1.152.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.151.1...v1.152.0) (2026-05-20)
 
 
