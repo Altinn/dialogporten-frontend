@@ -138,6 +138,7 @@ export const getAttachmentLinks = (
             metadata: mediaTypeToExt(url.mediaType),
             badge: createExpiryBadge(attachment.expiresAt, locale, t),
             icon: mediaTypeToIcon(url.mediaType),
+            target: url.mediaType === 'text/html' ? '_self' : '_blank',
           };
         }),
     );
