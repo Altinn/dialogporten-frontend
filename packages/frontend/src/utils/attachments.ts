@@ -1,8 +1,8 @@
 import type { BadgeProps } from '@altinn/altinn-components';
-import { FileIcon, FilesIcon } from '@navikt/aksel-icons';
+import { ExternalLinkIcon, FileIcon, FilesIcon } from '@navikt/aksel-icons';
 import { formatDistance } from 'date-fns';
 import type { Locale } from 'date-fns/locale';
-import type { TFunction } from 'i18next';
+import { type TFunction, t } from 'i18next';
 import { logError } from '../analytics/errorLogger.ts';
 
 const MEDIA_TYPE_TO_EXT: Record<string, string> = {
@@ -10,7 +10,6 @@ const MEDIA_TYPE_TO_EXT: Record<string, string> = {
   'application/pdf': 'PDF',
   'text/xml': 'XML',
   'application/xml': 'XML',
-  'text/html': 'HTML',
   'application/json': 'JSON',
   'image/jpeg': 'JPG',
   'application/jpeg': 'JPG',
@@ -33,10 +32,14 @@ const MEDIA_TYPE_TO_EXT: Record<string, string> = {
 };
 
 export function mediaTypeToIcon(value: string | null | undefined): React.ComponentType<React.SVGProps<SVGSVGElement>> {
-  if (value === 'application/zip') {
-    return FilesIcon;
+  switch (value) {
+    case 'application/zip':
+      return FilesIcon;
+    case 'text/html':
+      return ExternalLinkIcon;
+    default:
+      return FileIcon;
   }
-  return FileIcon;
 }
 
 export function mediaTypeToExt(value: string | null | undefined): string {
@@ -44,6 +47,7 @@ export function mediaTypeToExt(value: string | null | undefined): string {
     if (!value) return '';
 
     const key = value.trim().toLowerCase();
+    if (key === 'text/html') return t('word.link');
     return MEDIA_TYPE_TO_EXT[key] ?? value.trim().toUpperCase();
   } catch (error) {
     logError(
