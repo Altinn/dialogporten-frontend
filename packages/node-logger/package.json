@@ -19,9 +19,9 @@
     "pino-pretty": "11.2.2"
   },
   "devDependencies": {
-    "@types/node": "22.5.1",
-    "typescript": "5.5.4",
-    "zod": "3.23.8"
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "zod": "catalog:"
   },
   "repository": {
     "type": "git",

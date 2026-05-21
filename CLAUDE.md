@@ -103,6 +103,15 @@ PostgreSQL  Redis     Dialogporten API
 - **GraphQL**: Nexus for type-safe schema definition in BFF
 - **Testing**: Vitest for unit tests, Playwright for E2E, axe-core for accessibility
 
+## Shared Dependency Versions (pnpm catalog)
+
+Versions of dependencies used by 2+ packages are centralized in the `catalog:` section of `pnpm-workspace.yaml`. Each package's `package.json` references these via `"<dep>": "catalog:"`.
+
+When adding or upgrading a dependency:
+- If it's only used in one package, declare the version directly.
+- If it's also used in another package (or about to be), add it to the `catalog:` in `pnpm-workspace.yaml` and reference it as `"catalog:"` from every consumer.
+- To bump a shared version, edit the entry in `pnpm-workspace.yaml` — do not pin individual packages to a different version.
+
 ## Agent Skills (`.agents/skills/`)
 
 - **Keep skills in sync when relevant**: If you change behavior/workflows that are described by an existing skill in `.agents/skills/<skill>/SKILL.md`, update that skill file so it matches the new reality.
