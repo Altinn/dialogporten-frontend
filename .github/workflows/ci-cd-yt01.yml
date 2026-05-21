@@ -9,6 +9,12 @@ on:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
 
+permissions:
+  contents: read
+  id-token: write
+  issues: write
+  pull-requests: write
+
 jobs:
   get-versions-from-github:
     name: Get Latest Deployed Version Info from GitHub
@@ -145,3 +151,12 @@ jobs:
     secrets:
       SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
       SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_SUCCESSFUL_RELEASES }}
+
+  tag-issues-with-environment:
+    name: Tag deployed PRs and issues for yt01
+    needs: [deploy-apps, deploy-infrastructure]
+    if: ${{ always() && !failure() && !cancelled() && needs.deploy-apps.outputs.deployment_executed == 'true' }}
+    uses: ./.github/workflows/workflow-tag-issues-with-environment.yml
+    with:
+      environment-label: yt01
+      version: ${{ github.event.client_payload.version }}
