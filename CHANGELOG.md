@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.152.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.152.2...v1.152.3) (2026-05-22)
+
+
+### Bug Fixes
+
+* **header:** bump altinn-components to 0.63.5, fixes header scroll is… ([#4208](https://github.com/Altinn/dialogporten-frontend/issues/4208)) ([6ca78b4](https://github.com/Altinn/dialogporten-frontend/commit/6ca78b480b319458f1f2eac128e925d25d635e69))
+
 ## [1.152.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.152.1...v1.152.2) (2026-05-22)
 
 
