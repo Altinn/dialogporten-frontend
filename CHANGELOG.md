@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.152.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.152.1...v1.152.2) (2026-05-22)
+
+
+### Bug Fixes
+
+* **e2e:** update profile and saved-search tests for new flows ([#4204](https://github.com/Altinn/dialogporten-frontend/issues/4204)) ([03b0ced](https://github.com/Altinn/dialogporten-frontend/commit/03b0cedad5e935fbe8f74d1d537080fb2c2d98d4))
+* **parties:** only virtualize party lists with more than 20 items which avoids virtualization overhead for small party lists in the global ([#4203](https://github.com/Altinn/dialogporten-frontend/issues/4203)) ([bcc38ae](https://github.com/Altinn/dialogporten-frontend/commit/bcc38ae351baebc216ac4eb26bc82e83b183db77))
+
 ## [1.152.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.152.0...v1.152.1) (2026-05-21)
 
 
