@@ -136,7 +136,7 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
     currentAccountUuid: currentPartyUuid,
     selfAccountUuid,
     isLoading,
-    virtualized: true,
+    virtualized: partyListDTO.length > 20,
     onSelectAccount: handleSelectAccount,
     onToggleFavorite: handleToggleFavorite,
     languageCode: i18n.language,

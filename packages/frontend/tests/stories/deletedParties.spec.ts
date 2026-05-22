@@ -64,8 +64,9 @@ test.describe('deleted parties', () => {
       await expect(dialogsRegion.getByRole('link', { name: dialogTitle })).toBeVisible();
     }
 
-    const accountSelectorButton = page.getByLabel('Uglesett Ask');
-    const showDeletedSwitch = page.getByRole('switch', { name: 'Vis slettede' });
+    const header = page.locator('header');
+    const accountSelectorButton = header.getByRole('button', { name: 'Uglesett Ask' });
+    const showDeletedSwitch = header.getByRole('switch', { name: 'Vis slettede' });
 
     await accountSelectorButton.click();
     await showDeletedSwitch.click();

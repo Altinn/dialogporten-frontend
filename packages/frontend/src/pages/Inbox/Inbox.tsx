@@ -357,7 +357,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
               }}
               title={t('parties.change_label')}
               searchable
-              virtualized
+              virtualized={accounts.length > 20}
             />
             {showSubAccountsMenu && (
               <ToolbarMenu
@@ -367,7 +367,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
                 groups={subAccountGroups}
                 label={getSubAccountLabel()}
                 searchable={subAccountsSearchable}
-                virtualized
+                virtualized={subAccounts.length > 20}
               />
             )}
             <ToolbarSearch {...inboxSearch} disabled={bulkMode} />
