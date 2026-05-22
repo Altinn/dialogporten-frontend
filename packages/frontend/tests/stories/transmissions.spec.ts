@@ -7,21 +7,32 @@ test.describe('Transmissions and dialog history', () => {
     // Go to details for dialog with transmissions
     await page.getByRole('link', { name: 'This has no sender name' }).click();
 
-    await page.waitForLoadState('networkidle');
-    const showMore = page.getByRole('button', { name: 'Vis mer' });
-    if (await showMore.isVisible()) await showMore.click();
+    // The mock has 11 transmissions (4 "Tittel" + 7 "Sak"), so "Vis mer" is always rendered.
+    // .click() auto-waits up to the test timeout — no manual hydration wait needed.
+    await page.getByRole('button', { name: 'Vis mer' }).click();
 
     /* Check that the transmissions are displayed */
-    await expect(page.getByRole('button', { name: 'Tittel 4' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Tittel 3' })).toBeVisible();
-    await page.getByRole('button', { name: 'Tittel 4' }).click();
-    await expect(page.getByRole('heading', { name: 'Info i markdown for' })).toBeVisible();
-    await page.getByRole('button', { name: 'Tittel 2' }).click();
+    const tittel4 = page.getByRole('button', { name: 'Tittel 4' });
+    const tittel3 = page.getByRole('button', { name: 'Tittel 3' });
+    const tittel2 = page.getByRole('button', { name: 'Tittel 2' });
+    await expect(tittel4).toBeVisible();
+    await expect(tittel3).toBeVisible();
+
+    await tittel4.click();
+    await expect(tittel4).toHaveAttribute('aria-expanded', 'true');
+    await expect(
+      page.getByRole('heading', { name: 'Info i markdown for transmission (id=ttransmission-4)' }),
+    ).toBeVisible();
+
+    await tittel2.click();
+    await expect(tittel2).toHaveAttribute('aria-expanded', 'true');
     await expect(
       page.getByRole('heading', { name: 'Info i markdown for transmission (id=ttransmission-2)' }),
     ).toBeVisible();
+
     await expect(page.getByRole('button', { name: 'Tittel', exact: true })).toBeVisible();
-    await page.getByRole('button', { name: 'Tittel 4' }).click();
+    await tittel4.click();
+    await expect(tittel4).toHaveAttribute('aria-expanded', 'false');
   });
 
   test('help section should show', async ({ page }) => {
@@ -42,8 +53,9 @@ test.describe('Transmissions and dialog history', () => {
     ).not.toBeVisible();
 
     await page.getByRole('button', { name: /aktivitetslogg/i }).click();
-    // Both case 1 and case 3 generate this same text — use .first() to avoid strict mode violation
-    await expect(page.getByText('Forsendelse kun med maskinlesbart vedlegg').first()).toBeVisible();
+    // Case 1 and Case 3 both emit this activity-log entry — assert both are present
+    // rather than .first() so a regression that drops one is actually caught.
+    await expect(page.getByText('Forsendelse kun med maskinlesbart vedlegg')).toHaveCount(2);
   });
 
   // Case 2: isAuthorized=false + has GUI attachment → B: disabled (shown but cannot expand)
@@ -51,9 +63,7 @@ test.describe('Transmissions and dialog history', () => {
     await page.goto(appUrlWithPlaywrightId('transmissions'));
     await page.getByRole('link', { name: 'This has no sender name' }).click();
 
-    await page.waitForLoadState('networkidle');
-    const showMore = page.getByRole('button', { name: 'Vis mer' });
-    if (await showMore.isVisible()) await showMore.click();
+    await page.getByRole('button', { name: 'Vis mer' }).click();
 
     const disabled = page.getByRole('button', { name: /Sak 2: deaktiveres/ });
     await expect(disabled).toBeVisible();
@@ -75,8 +85,9 @@ test.describe('Transmissions and dialog history', () => {
     ).not.toBeVisible();
 
     await page.getByRole('button', { name: /aktivitetslogg/i }).click();
-    // Both case 1 and case 3 generate this same text — use .first() to avoid strict mode violation
-    await expect(page.getByText('Forsendelse kun med maskinlesbart vedlegg').first()).toBeVisible();
+    // Case 1 and Case 3 both emit this activity-log entry — assert both are present
+    // rather than .first() so a regression that drops one is actually caught.
+    await expect(page.getByText('Forsendelse kun med maskinlesbart vedlegg')).toHaveCount(2);
   });
 
   // Case 4: isAuthorized=true + visible content → visible (expandable, shows content)
@@ -84,9 +95,7 @@ test.describe('Transmissions and dialog history', () => {
     await page.goto(appUrlWithPlaywrightId('transmissions'));
     await page.getByRole('link', { name: 'This has no sender name' }).click();
 
-    await page.waitForLoadState('networkidle');
-    const showMore = page.getByRole('button', { name: 'Vis mer' });
-    if (await showMore.isVisible()) await showMore.click();
+    await page.getByRole('button', { name: 'Vis mer' }).click();
 
     const visible = page.getByRole('button', { name: /Sak 4: vises/ });
     await expect(visible).toBeVisible();
