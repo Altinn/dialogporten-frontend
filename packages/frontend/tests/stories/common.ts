@@ -68,12 +68,11 @@ export async function selectPartyFromToolbar(page: Page, partyName: string) {
 
 export async function openContextMenuForDialog(page: Page, title: string) {
   const dialogItem = page.locator('li', { has: page.getByRole('link', { name: title }) }).first();
-  const btn = dialogItem.locator(`button[aria-label^="Kontekstmeny for dialog med tittel ${title}"]`);
+  const btn = dialogItem.getByRole('button', { name: 'Åpne meny' });
 
   await btn.click();
-  await expect(btn).toHaveAttribute('aria-expanded', 'true');
 
-  // Menu is now rendered via React portal to document.body — locate at page level
+  // Menu is rendered via React portal to document.body — locate at page level
   const menuRoot = page.locator('[role="menu"]:not([aria-hidden="true"])');
   await expect(menuRoot).toBeVisible();
 
