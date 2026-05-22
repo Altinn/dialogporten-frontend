@@ -17,7 +17,10 @@ test.describe('Saved Searches', () => {
 
     // Step 1: Apply a sender filter so the toolbar exposes "Lagre søk"
     await toolbarArea.getByRole('button', { name: /legg til/i }).click();
-    await toolbarArea.getByRole('menuitem', { name: /(Tjenesteeier|Avsender)/i }).first().click();
+    await toolbarArea
+      .getByRole('menuitem', { name: /(Tjenesteeier|Avsender)/i })
+      .first()
+      .click();
     await page.locator('li').filter({ hasText: 'Digitaliseringsdirektoratet' }).nth(1).click();
     await page.keyboard.press('Escape');
 
