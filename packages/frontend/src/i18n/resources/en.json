@@ -299,6 +299,7 @@
   "parties.results": "{hits, plural, one {# hit} other {# hits}}",
   "parties.search.no_results": "No hits",
   "parties.search.placeholder": "Search",
+  "parties.subunit.change_label": "Select units",
   "profile.access.grant_access_word": "Grant access",
   "profile.access.heading": "Grant access to others",
   "profile.account_alerts.cancel": "Cancel",
