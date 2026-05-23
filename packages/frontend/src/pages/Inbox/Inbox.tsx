@@ -366,6 +366,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
                 items={subAccounts}
                 groups={subAccountGroups}
                 label={getSubAccountLabel()}
+                title={t('parties.subunit.change_label')}
                 searchable={subAccountsSearchable}
                 virtualized={subAccounts.length > 20}
               />
