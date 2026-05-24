@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.152.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.152.3...v1.152.4) (2026-05-23)
+
+
+### Bug Fixes
+
+* **i18n:** add title and parties.subunit.change_label translation to subunit selector on mobile ([#4211](https://github.com/Altinn/dialogporten-frontend/issues/4211)) ([ea77ee3](https://github.com/Altinn/dialogporten-frontend/commit/ea77ee3f5d8dd69dcf796c9b4bd47fd33e78e0f8))
+
 ## [1.152.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.152.2...v1.152.3) (2026-05-22)
 
 
