@@ -1,13 +1,44 @@
-import { Alert, Flex } from '@altinn/altinn-components';
+import { Alert, Flex, NotificationItem } from '@altinn/altinn-components';
+import { PersonCircleIcon } from '@navikt/aksel-icons';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelfIdentifiedUserType } from '../../api/hooks/usePartiesSelectors.ts';
-import { getAlternativeLoginLink } from '../../auth';
+import { getAlternativeLoginLink, getAltinn2AccountLink } from '../../auth';
+import { useFeatureFlag } from '../../featureFlags';
+
+const SI_NOTICE_DISMISSED_KEY = 'si-notice:email-connect:dismissed';
 
 export const SINotice = () => {
   const { t, i18n } = useTranslation();
   const selfIdentifiedUserType = useSelfIdentifiedUserType();
+  const enableConnectLink = useFeatureFlag<boolean>('SI.emailAccount.enableConnectLink');
+  const [dismissed, setDismissed] = useState<boolean>(
+    () => typeof window !== 'undefined' && window.localStorage.getItem(SI_NOTICE_DISMISSED_KEY) === 'true',
+  );
+
+  const handleDismiss = () => {
+    window.localStorage.setItem(SI_NOTICE_DISMISSED_KEY, 'true');
+    setDismissed(true);
+  };
+
   switch (selfIdentifiedUserType) {
     case 'Email':
+      if (enableConnectLink) {
+        if (dismissed) return null;
+        return (
+          <NotificationItem
+            id="si-banner-warning"
+            as="a"
+            href={getAltinn2AccountLink()}
+            icon={PersonCircleIcon}
+            title={t('inbox.si_notice.email.title')}
+            description={t('inbox.si_notice.add_account.description')}
+            variant="tinted"
+            dismissable
+            onDismiss={handleDismiss}
+          />
+        );
+      }
       return (
         <Alert variant="info" heading={t('inbox.si_notice.email.title')}>
           <Flex direction="col">

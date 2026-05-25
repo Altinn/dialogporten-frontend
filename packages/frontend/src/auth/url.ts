@@ -115,6 +115,8 @@ export const getAccessAMUILink = () => {
   return hostMap[getEnvByHost()];
 };
 
+export const getAltinn2AccountLink = () => `${getAccessAMUILink()}/altinn2account`;
+
 const INFO_PORTAL_HOST_MAP: Record<hostEnv, string> = {
   local: 'https://info.at23.altinn.cloud',
   at23: 'https://info.at23.altinn.cloud',

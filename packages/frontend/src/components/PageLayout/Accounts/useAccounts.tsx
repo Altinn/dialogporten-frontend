@@ -143,7 +143,10 @@ export const useAccounts = ({
   };
 
   const otherPeople = useMemo(
-    () => parties.filter((party) => party.partyType === 'Person' && !party.isCurrentEndUser),
+    () =>
+      parties.filter(
+        (party) => (party.partyType === 'Person' || party.partyType === 'SelfIdentified') && !party.isCurrentEndUser,
+      ),
     [parties],
   );
 

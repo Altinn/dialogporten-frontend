@@ -191,7 +191,7 @@ export const useParties = (): UsePartiesOutput => {
     if (isSuccess) {
       if (data?.length > 0) {
         initializePartySelection();
-        if (data?.length === 1 && data[0].partyType === 'SelfIdentified') {
+        if (currentEndUser?.partyType === 'SelfIdentified') {
           setIsSelfIdentifiedUser(true);
         }
       } else {

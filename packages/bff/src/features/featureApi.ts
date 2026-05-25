@@ -6,7 +6,6 @@ import type { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 
 const defaultFeatureFlags: Record<string, boolean> = {
-  'globalMenu.enabled': false,
   'dialogporten.disableFlipNamesPatch': false,
   'inbox.enableAltinn2Messages': false,
   'inbox.enableAlertBanner': false,
@@ -17,6 +16,7 @@ const defaultFeatureFlags: Record<string, boolean> = {
   'inbox.accountNavigatorEnabled': false,
   'inbox.banner.escalateWarning': false,
   'inbox.disableBetaLabel': false,
+  'SI.emailAccount.enableConnectLink': false,
 };
 
 const defaultAppConfigValues: Record<string, string[]> = {

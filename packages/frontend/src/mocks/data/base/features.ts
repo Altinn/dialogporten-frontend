@@ -8,4 +8,5 @@ export const features = {
   'inbox.accountNavigatorEnabled': true,
   'inbox.banner.escalateWarning': false,
   'inbox.disableBetaLabel': false,
+  'SI.emailAccount.enableConnectLink': true,
 };
