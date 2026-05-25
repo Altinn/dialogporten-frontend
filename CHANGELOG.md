@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.152.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.152.4...v1.152.5) (2026-05-25)
+
+
+### Bug Fixes
+
+* **SearchField:** restore collapsible behavior with &lt;ds-field&gt; custom element by bumping altinn-components to 0.63.6 ([729031c](https://github.com/Altinn/dialogporten-frontend/commit/729031ca93bc5d42b242e705819d8bd767f60726))
+
 ## [1.152.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.152.3...v1.152.4) (2026-05-23)
 
 
