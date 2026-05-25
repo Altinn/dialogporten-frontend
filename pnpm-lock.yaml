@@ -495,8 +495,8 @@ importers:
   packages/frontend:
     dependencies:
       '@altinn/altinn-components':
-        specifier: 0.63.5
-        version: 0.63.5(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        specifier: 0.63.6
+        version: 0.63.6(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@microsoft/applicationinsights-react-js':
         specifier: 19.3.7
         version: 19.3.7(history@4.10.1)(react@19.2.3)(tslib@2.8.1)
@@ -713,8 +713,8 @@ packages:
     resolution: {integrity: sha512-ZgxV2+5qt3NLeUYBTsi6PLyHcENQWC0iFppFZekHSEDA2wcLdTUjnaJzimTEULHIvJuLRCkUs4JABdhuJktEag==}
     engines: {node: '>= 14.0.0'}
 
-  '@altinn/altinn-components@0.63.5':
-    resolution: {integrity: sha512-8bIzU96ay9QiMK16d/fth2KPetdTty53jmVuh6BBu3URDw/Vu0xdp595ZvBB5VhpEcP+vGdGF4VX3ZOXFr283Q==}
+  '@altinn/altinn-components@0.63.6':
+    resolution: {integrity: sha512-e8+56Dox3qDzTO3i4YkCybSrFE+Z5M6xEp0ovndrHsOnrNjY6i7zpPrkQdhz4SkWEoC4F+LXxJix3lz/0gp+MQ==}
     peerDependencies:
       react: '>=18.3.1 || ^19.0.0'
       react-dom: '>=18.3.1 || ^19.0.0'
@@ -1853,9 +1853,6 @@ packages:
     resolution: {integrity: sha512-C4Mf+LmecQ8sdjykD25NWiEclQDEOK+Y6Dlo8oz2BjhLBkDmo1+udFyCplvAGvv1MTzhsAhGafW/S4ox8iXlOA==}
     deprecated: Use themebuilder at https://theme.designsystemet.no to create your own theme
 
-  '@digdir/designsystemet-types@1.11.1':
-    resolution: {integrity: sha512-sCPTFx1FplAfFIO8LMP68ts3HeUFgw/5Py9D+d5y4CPFJzxYk05/Bk7fHiKbVr57ZhbkKO4C88o7B2s63bOTlg==}
-
   '@digdir/designsystemet-types@1.14.0':
     resolution: {integrity: sha512-d/JZhwebAgclFsE7ax0Z8mWotEk3GE4e9+iC8Cq8EN5BQ+bOptwFrVipSrL+NAt8/7AX9WzrnAScPuxCb4vvgQ==}
 
@@ -2341,9 +2338,6 @@ packages:
     peerDependencies:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
-
-  '@floating-ui/utils@0.2.10':
-    resolution: {integrity: sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==}
 
   '@floating-ui/utils@0.2.11':
     resolution: {integrity: sha512-RiB/yIh78pcIxl6lLMG0CgBXAZ2Y0eVHqMPYugu+9U0AeT6YBeiJpf7lbdJNIugFP5SIjwNRgo4DhR1Qxi26Gg==}
@@ -3019,9 +3013,6 @@ packages:
 
   '@navikt/aksel-icons@8.11.0':
     resolution: {integrity: sha512-enprSpDl7j4yDEAtVtp/BPby2McZKtgXIgarTVDeZ0pmiqnYbXFyCTgzl/ZMg2/EV+hd2DXpLsKzU73PDljpmw==}
-
-  '@navikt/aksel-icons@8.9.0':
-    resolution: {integrity: sha512-AaHoHwSlULrQxNPLV1tmWNdx4RL6QTdzhkM7NcKrnaq0hUPvcUbHyVLiecubiDmjEiAAPVQQboo6/QRuw2UvXg==}
 
   '@nevware21/ts-async@0.5.5':
     resolution: {integrity: sha512-vwqaL05iJPjLeh5igPi8MeeAu10i+Aq7xko1fbo9F5Si6MnVN5505qaV7AhSdk5MCBJVT/UYMk3kgInNjDb4Ig==}
@@ -10592,13 +10583,13 @@ snapshots:
     dependencies:
       '@algolia/client-common': 5.48.0
 
-  '@altinn/altinn-components@0.63.5(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+  '@altinn/altinn-components@0.63.6(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@digdir/designsystemet-css': 1.14.0
       '@digdir/designsystemet-react': 1.14.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@digdir/designsystemet-theme': 1.11.0
-      '@navikt/aksel-icons': 8.9.0
-      '@tanstack/react-virtual': 3.13.22(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@navikt/aksel-icons': 8.11.0
+      '@tanstack/react-virtual': 3.13.25(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       classnames: 2.5.1
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
@@ -12045,9 +12036,7 @@ snapshots:
 
   '@digdir/designsystemet-theme@1.11.0':
     dependencies:
-      '@digdir/designsystemet-types': 1.11.1
-
-  '@digdir/designsystemet-types@1.11.1': {}
+      '@digdir/designsystemet-types': 1.14.0
 
   '@digdir/designsystemet-types@1.14.0': {}
 
@@ -13118,12 +13107,10 @@ snapshots:
   '@floating-ui/react@0.26.23(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@floating-ui/react-dom': 2.1.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      '@floating-ui/utils': 0.2.10
+      '@floating-ui/utils': 0.2.11
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
       tabbable: 6.4.0
-
-  '@floating-ui/utils@0.2.10': {}
 
   '@floating-ui/utils@0.2.11': {}
 
@@ -14215,8 +14202,6 @@ snapshots:
   '@navikt/aksel-icons@7.40.0': {}
 
   '@navikt/aksel-icons@8.11.0': {}
-
-  '@navikt/aksel-icons@8.9.0': {}
 
   '@nevware21/ts-async@0.5.5':
     dependencies:
