@@ -15,6 +15,8 @@ const defaultFeatureFlags: Record<string, boolean> = {
   'auth.enableDelegationLink': false,
   'inbox.enableBulkMode': false,
   'inbox.accountNavigatorEnabled': false,
+  'inbox.banner.escalateWarning': false,
+  'inbox.disableBetaLabel': false,
 };
 
 const defaultAppConfigValues: Record<string, string[]> = {

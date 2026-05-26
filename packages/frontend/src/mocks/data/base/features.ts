@@ -6,4 +6,6 @@ export const features = {
   'inbox.enableDeletedUnitsFilter': true,
   'inbox.enableBulkMode': true,
   'inbox.accountNavigatorEnabled': true,
+  'inbox.banner.escalateWarning': false,
+  'inbox.disableBetaLabel': false,
 };

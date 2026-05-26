@@ -16,6 +16,8 @@ export const featureFlagDefinitions = [
   { key: 'inbox.enableBulkMode', type: 'boolean', default: false },
   { key: 'inbox.accountNavigatorEnabled', type: 'boolean', default: false },
   { key: 'auth.orgsNotReadyToDealWithDelegations', type: 'string-array', default: [] },
+  { key: 'inbox.banner.escalateWarning', type: 'boolean', default: false },
+  { key: 'inbox.disableBetaLabel', type: 'boolean', default: false },
 ] as const satisfies readonly FeatureFlagDefinition[];
 
 export type FeatureFlagKey = (typeof featureFlagDefinitions)[number]['key'];
