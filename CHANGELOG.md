@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.153.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.152.5...v1.153.0) (2026-05-26)
+
+
+### Features
+
+* Feature flag for beta label and banner color ([#4216](https://github.com/Altinn/dialogporten-frontend/issues/4216)) ([fbe42e0](https://github.com/Altinn/dialogporten-frontend/commit/fbe42e01eeaa5e42ea969bf23715e2d1625d31f6))
+
+
+### Bug Fixes
+
+* **dialog:** emphasize dueAt in dialog list item ([#4221](https://github.com/Altinn/dialogporten-frontend/issues/4221)) ([4380757](https://github.com/Altinn/dialogporten-frontend/commit/43807572104f1cb14eb0406d56b11a84036a61a7))
+
 ## [1.152.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.152.4...v1.152.5) (2026-05-25)
 
 
