@@ -17,6 +17,7 @@ import { Link, type LinkProps, Outlet, useLocation, useSearchParams } from 'reac
 import { useCurrentEndUser, useSelectedProfile } from '../../api/hooks/usePartiesSelectors.ts';
 import { getFrontPageLink } from '../../auth';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
+import { useFeatureFlag } from '../../featureFlags';
 import { getSearchStringFromQueryParams } from '../../pages/Inbox/queryParams.ts';
 import { useProfile } from '../../pages/Profile';
 import { PageRoutes } from '../../pages/routes.ts';
@@ -151,7 +152,7 @@ export const PageLayout: React.FC = () => {
     return steps;
   }, [location.pathname, fromView, docTitle]);
 
-  const escalateBannerSeverity = new Date() >= new Date(2026, 5, 2); // Escalate to warning on June 2nd, 2026
+  const escalateBannerSeverity = useFeatureFlag<boolean>('inbox.banner.escalateWarning');
   const bannerLink = getBannerLink(i18n.language);
 
   let color: LayoutColor = 'neutral';

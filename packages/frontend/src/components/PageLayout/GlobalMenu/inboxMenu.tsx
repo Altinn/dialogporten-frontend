@@ -39,6 +39,7 @@ export function buildInboxMenu({
   currentSearchQuery,
   fromView,
   currentPartyUuid,
+  disableBetaLabel,
 }: {
   t: (key: string, vars?: Record<string, string>) => string;
   currentEndUserName?: string;
@@ -46,6 +47,7 @@ export function buildInboxMenu({
   currentSearchQuery: string;
   fromView?: string;
   currentPartyUuid?: string;
+  disableBetaLabel: boolean;
 }): UseGlobalMenuProps {
   const menuGroups = {
     shortcuts: {
@@ -111,15 +113,19 @@ export function buildInboxMenu({
         to: createMessageBoxLink(currentPartyUuid),
       }),
     },
-    {
-      id: 'beta-badge',
-      groupId: 'shortcuts-2',
-      as: () => (
-        <span style={{ marginLeft: '0.5rem' }}>
-          <Badge label={t('word.beta')} variant="base" color="neutral" size="sm" />
-        </span>
-      ),
-    },
+    ...(!disableBetaLabel
+      ? [
+          {
+            id: 'beta-badge',
+            groupId: 'shortcuts-2',
+            as: () => (
+              <span style={{ marginLeft: '0.5rem' }}>
+                <Badge label={t('word.beta')} variant="base" color="neutral" size="sm" />
+              </span>
+            ),
+          } as MenuItemProps,
+        ]
+      : []),
   ];
 
   const helpItems: MenuItemProps[] = [
@@ -168,11 +174,13 @@ export function buildInboxMenu({
       as: createMenuItemComponent({
         to: PageRoutes.inbox + pruneSearchQueryParams(currentSearchQuery),
       }),
-      badge: {
-        label: t('word.beta'),
-        color: 'neutral',
-        variant: 'base',
-      },
+      badge: disableBetaLabel
+        ? undefined
+        : {
+            label: t('word.beta'),
+            color: 'neutral',
+            variant: 'base',
+          },
       items: [
         {
           id: '2',
@@ -261,11 +269,13 @@ export function buildInboxMenu({
         href: getAccessAMUILink(),
         title: t('altinn.access_management'),
         selected: false,
-        badge: {
-          label: t('word.beta'),
-          color: 'neutral',
-          variant: 'base',
-        },
+        badge: disableBetaLabel
+          ? undefined
+          : {
+              label: t('word.beta'),
+              color: 'neutral',
+              variant: 'base',
+            },
       },
       {
         id: 'all-forms',
