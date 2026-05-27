@@ -1,10 +1,11 @@
-import type {
-  AccountMenuItemProps,
-  AccountSearchProps,
-  AvatarGroupProps,
-  AvatarType,
-  BadgeProps,
-  MenuItemGroups,
+import {
+  type AccountMenuItemProps,
+  type AccountSearchProps,
+  type AvatarGroupProps,
+  type AvatarType,
+  type BadgeProps,
+  type MenuItemGroups,
+  formatDate,
 } from '@altinn/altinn-components';
 import { useQueryClient } from '@tanstack/react-query';
 import type { PartyFieldsFragment } from 'bff-types-generated';
@@ -69,37 +70,20 @@ interface UseAccountsOutput {
   accountsTotal: number;
 }
 
-export const formatSSN = (ssn: string, maskIdentifierSuffix: boolean) => {
-  if (maskIdentifierSuffix) {
-    return ssn.slice(0, 6) + '\u2009' + 'XXXXX';
-  }
-  return ssn.slice(0, 6) + '\u2009' + ssn.slice(6);
-};
-
-export const getSSNOrOrgNo = (partyId: string) => {
+export const getOrgNo = (partyId: string): string => {
+  if (!partyId.includes('urn:altinn:organization:')) return '';
   const parts = partyId.split('identifier-no:');
-  if (parts.length < 2) return '';
-
-  const ssnOrOrgNo = parts[1];
-  return ssnOrOrgNo ?? '';
+  return parts[1] ?? '';
 };
 
-export const formatNorwegianId = (partyId: string, isCurrentEndUser: boolean, includeThinSpace?: boolean) => {
-  const ssnOrOrgNo = getSSNOrOrgNo(partyId);
-  const isPerson = partyId.includes('person');
+export const formatNorwegianId = (partyId: string, includeThinSpace?: boolean): string => {
+  const orgNo = getOrgNo(partyId);
+  if (!orgNo) return '';
   const thinSpaceIncluded = includeThinSpace ?? true;
-
-  if (!ssnOrOrgNo) return '';
-
-  if (isPerson) {
-    return formatSSN(ssnOrOrgNo, !isCurrentEndUser);
-  }
-
   if (thinSpaceIncluded) {
-    return [ssnOrOrgNo.slice(0, 3), ssnOrOrgNo.slice(3, 6), ssnOrOrgNo.slice(6, 9)].join('\u2009');
+    return [orgNo.slice(0, 3), orgNo.slice(3, 6), orgNo.slice(6, 9)].join('\u2009');
   }
-
-  return ssnOrOrgNo.slice(0, 9);
+  return orgNo.slice(0, 9);
 };
 
 /** Reuse a single Intl.Collator per language – much faster than localeCompare per call */
@@ -216,11 +200,10 @@ export const useAccounts = ({
   // Pure mappers. No favorite/preselect deps here — applied as a cheap overlay after.
   const mapPerson = useCallback(
     (person: PartyFieldsFragment): PartyItemProp => {
-      const ssnOrOrgNo = getSSNOrOrgNo(person.party);
+      const birthDate = formatDate(person.dateOfBirth ?? undefined);
       return {
         id: person.party,
-        searchWords: [person.name, ssnOrOrgNo],
-        ssnOrOrgNo,
+        searchWords: [person.name],
         name: person.name,
         title: person.name,
         type: 'person' as AccountMenuItemProps['type'],
@@ -229,7 +212,7 @@ export const useAccounts = ({
         isCurrentEndUser: false,
         uuid: person.partyUuid,
         altinnId: person.partyId,
-        description: options.showDescription ? t('word.ssn') + formatNorwegianId(person.party, false) : undefined,
+        description: options.showDescription && birthDate ? t('word.born') + birthDate : undefined,
         badge: person.isDeleted ? { color: 'neutral', label: t('badge.deleted'), variant: 'subtle' } : undefined,
         groupId: 'persons',
       } as PartyItemProp;
@@ -240,8 +223,8 @@ export const useAccounts = ({
   const mapOrgItem = useCallback(
     (item: OrgSkeletonItem): PartyItemProp => {
       const { party, isParent, parent } = item;
-      const orgNo = getSSNOrOrgNo(party.party);
-      const formattedId = formatNorwegianId(party.party, false);
+      const orgNo = getOrgNo(party.party);
+      const formattedId = formatNorwegianId(party.party);
       const description = options.showDescription
         ? parent?.name && party?.party
           ? `↳ ${t('word.orgNo')} ${formattedId}, ${t('profile.account.partOf')} ${parent.name}`
@@ -344,8 +327,8 @@ export const useAccounts = ({
       ...(firstOrgPartyUrn && options.groups?.companies ? { [firstOrgPartyUrn]: options.groups?.companies } : {}),
     } as MenuItemGroups;
 
-    const norwegianId = currentEndUser?.party ? formatNorwegianId(currentEndUser.party, true) : '';
-    const desc = currentEndUser?.party && norwegianId ? t('word.ssn') + norwegianId : '';
+    const birthDate = formatDate(currentEndUser?.dateOfBirth ?? undefined);
+    const desc = birthDate ? t('word.born') + birthDate : '';
     const endUserAccount: PartyItemProp | undefined = currentEndUser
       ? {
           id: currentEndUser.party ?? '',

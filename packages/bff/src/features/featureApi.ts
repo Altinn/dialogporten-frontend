@@ -6,7 +6,6 @@ import type { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 
 const defaultFeatureFlags: Record<string, boolean> = {
-  'globalMenu.enabled': false,
   'dialogporten.disableFlipNamesPatch': false,
   'inbox.enableAltinn2Messages': false,
   'inbox.enableAlertBanner': false,

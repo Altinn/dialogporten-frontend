@@ -147,6 +147,9 @@ importers:
       '@microsoft/feature-management':
         specifier: ^2.2.0
         version: 2.2.0
+      '@noble/ciphers':
+        specifier: ^2.2.0
+        version: 2.2.0
       '@opentelemetry/api':
         specifier: 1.9.0
         version: 1.9.0
@@ -3019,6 +3022,10 @@ packages:
 
   '@nevware21/ts-utils@0.12.6':
     resolution: {integrity: sha512-UsS1hbgr/V/x8dT7hVHvr/PwHzASi8/Itis1+L8ykLiqsUXdfzrB1maL0vMmKbDEJpmGARsoC/7RIswi+n248Q==}
+
+  '@noble/ciphers@2.2.0':
+    resolution: {integrity: sha512-Z6pjIZ/8IJcCGzb2S/0Px5J81yij85xASuk1teLNeg75bfT07MV3a/O2Mtn1I2se43k3lkVEcFaR10N4cgQcZA==}
+    engines: {node: '>= 20.19.0'}
 
   '@noble/hashes@1.4.0':
     resolution: {integrity: sha512-V1JJ1WTRUqHHrOSh597hURcMqVKVGL/ea3kv0gSnEdsEZ0/+VyPghM1lMNGc00z7CIQorSvbKpuJkxvuHbvdbg==}
@@ -14208,6 +14215,8 @@ snapshots:
       '@nevware21/ts-utils': 0.12.6
 
   '@nevware21/ts-utils@0.12.6': {}
+
+  '@noble/ciphers@2.2.0': {}
 
   '@noble/hashes@1.4.0': {}
 

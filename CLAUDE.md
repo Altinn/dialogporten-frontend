@@ -134,8 +134,11 @@ OIDC_CLIENT_SECRET=<value>
 OCP_APIM_SUBSCRIPTION_KEY=<value>
 APP_CONFIG_CONNECTION_STRING=<value>
 AUTH_CONTEXT_COOKIE_DOMAIN='localhost'
+PERSON_URN_ENC_KEYS=<base64_key>  # generate with: openssl rand -base64 64
 # ... additional variables as needed
 ```
+
+`PERSON_URN_ENC_KEYS` is the AES-SIV key used to encrypt person URNs in BFF GraphQL responses. Comma-separate `current,previous` for rotation. A built-in dev default exists; never use it in deployed environments.
 
 ## Diagrams
 

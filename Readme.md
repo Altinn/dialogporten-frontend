@@ -46,7 +46,16 @@ DIALOGPORTEN_URL=<URL>
 PLATFORM_BASEURL=<URL>
 OIDC_PLATFORM_URL==<URL>
 AUTH_CONTEXT_COOKIE_DOMAIN='localhost'
+PERSON_URN_ENC_KEYS=<base64_key>
 ```
+
+`PERSON_URN_ENC_KEYS` is a base64-encoded AES-SIV key (32 or 64 bytes of key material) used by the BFF to encrypt person URNs in GraphQL responses. Generate one with:
+
+```bash
+openssl rand -base64 64
+```
+
+For key rotation, supply multiple keys comma-separated (`current,previous`); decrypt tries each in order. In local development the config falls back to a built-in dev key — do **not** use the dev default in deployed environments. In Azure the value is wired from the `PersonUrnEncryptionKey` Key Vault secret via [.azure/applications/bff/main.bicep](.azure/applications/bff/main.bicep).
 
 ## Docker
 

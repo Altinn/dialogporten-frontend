@@ -1,30 +1,43 @@
 import { stitchSchemas } from '@graphql-tools/stitch';
 import type { AsyncExecutor } from '@graphql-tools/utils';
-import axios from 'axios';
+import axios, { type AxiosResponse } from 'axios';
 import type { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 import { print } from 'graphql';
 import depthLimit from 'graphql-depth-limit';
 import { createHandler } from 'graphql-http/lib/use/fastify';
 import config from '../config.ts';
+import { encryptPersonUrnsInResponse } from '../party/personUrnTransformers.ts';
+import { decryptPersonUrnsDeep } from '../party/transformPersonUrns.ts';
 import { bffSchema, dialogportenSchema } from './schema.ts';
 
 const plugin: FastifyPluginAsync = async (fastify) => {
   const remoteExecutor: AsyncExecutor = async ({ document, variables, operationName, context }) => {
     const query = print(document);
     const token = context!.session.get('token');
-    const response = await axios({
-      method: 'POST',
-      url: config.dialogporten.graphqlUrl,
-      timeout: 30000,
-      headers: {
-        'content-type': 'application/json',
-        Authorization: `Bearer ${token.access_token}`,
-      },
-      data: JSON.stringify({ query, variables, operationName }),
-    });
+    const resolvedVariables = variables ? decryptPersonUrnsDeep({ ...variables }) : variables;
+    let response: AxiosResponse;
+    try {
+      response = await axios({
+        method: 'POST',
+        url: config.dialogporten.graphqlUrl,
+        timeout: 30000,
+        headers: {
+          'content-type': 'application/json',
+          Authorization: `Bearer ${token.access_token}`,
+        },
+        data: JSON.stringify({ query, variables: resolvedVariables, operationName }),
+      });
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        const sanitized = new Error(`Upstream GraphQL request failed: ${err.message}`) as Error & { status?: number };
+        sanitized.status = err.response?.status;
+        throw sanitized;
+      }
+      throw err;
+    }
 
-    return response.data;
+    return encryptPersonUrnsInResponse(operationName, response.data);
   };
 
   const remoteExecutorSubschema = {

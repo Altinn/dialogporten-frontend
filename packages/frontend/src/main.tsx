@@ -30,9 +30,7 @@ async function enableMocking() {
 async function loadFeatures() {
   try {
     if (window.location.pathname === '/logout') {
-      return {
-        'party.stopReversingPersonNameOrder': false,
-      };
+      return {};
     }
     return await loadFeatureFlags();
   } catch (error) {

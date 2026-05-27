@@ -85,6 +85,7 @@ export interface SavedSearchData {
   filters?: Filter[];
   searchString?: string;
   fromView?: string;
+  urn?: string[];
 }
 
 @Entity({ name: 'saved_search' })
