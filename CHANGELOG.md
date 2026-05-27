@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.155.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.154.1...v1.155.0) (2026-05-27)
+
+
+### Features
+
+* **si:** add support for forwaring SI email account to route for connecting account to old Altinn 2 legacy account ([#4214](https://github.com/Altinn/dialogporten-frontend/issues/4214)) ([3c4051c](https://github.com/Altinn/dialogporten-frontend/commit/3c4051c0e3cd6f5f833de241164d5c1011e97a41))
+
 ## [1.154.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.154.0...v1.154.1) (2026-05-27)
 
 
