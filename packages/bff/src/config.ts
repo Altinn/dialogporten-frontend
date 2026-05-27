@@ -47,6 +47,9 @@ const envVariables = z.object({
   ENABLE_INIT_SESSION_ENDPOINT: z.preprocess(stringToBoolean, z.boolean().default(false)),
   AUTH_CONTEXT_COOKIE_DOMAIN: z.string().default('.at23.altinn.cloud'),
   ENVIRONMENT: z.enum(['dev', 'test', 'staging', 'yt01', 'prod']).default('test'),
+  PERSON_URN_ENC_KEYS: z
+    .string()
+    .default('ZGV2a2V5LWRvLW5vdC11c2UtaW4tcHJvZGRldmtleS1kby1ub3QtdXNlLWluLXByb2RkZXZrZXktZG8tbm90LQ=='),
 });
 
 const env = envVariables.parse(process.env);
@@ -98,6 +101,9 @@ const config = {
   appConfigConnectionString: env.APP_CONFIG_CONNECTION_STRING,
   authContextCookieDomain: env.AUTH_CONTEXT_COOKIE_DOMAIN,
   environment: env.ENVIRONMENT,
+  personUrnEncKeys: env.PERSON_URN_ENC_KEYS.split(',')
+    .map((k) => k.trim())
+    .filter((k) => k.length > 0),
 };
 
 export default config;

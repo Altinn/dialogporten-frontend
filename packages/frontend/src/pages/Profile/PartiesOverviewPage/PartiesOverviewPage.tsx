@@ -20,6 +20,7 @@ import {
   useDsPagination,
   useSnackbar,
 } from '@altinn/altinn-components';
+import { formatDate } from '@altinn/altinn-components';
 import {
   BellIcon,
   FilesIcon,
@@ -71,7 +72,7 @@ const createSubPartyItem = (
     isDeleted: subParty.isDeleted,
   },
   title: subParty.name,
-  description: `${formatNorwegianId(subParty.party, false)} `,
+  description: `${formatNorwegianId(subParty.party)} `,
   selected: subParty.party === currentParty?.party,
   as: 'span' as ElementType,
 });
@@ -94,7 +95,7 @@ const createOrganizationItem = (
   },
   items: item.subParties?.map((subParty) => createSubPartyItem(subParty, currentParty)),
   title: item.name,
-  description: formatNorwegianId(item.party, false),
+  description: formatNorwegianId(item.party),
   selected: item.party === currentParty?.party,
   as: 'span' as ElementType,
 });
@@ -209,14 +210,14 @@ export const PartiesOverviewPage = () => {
         icon: HashtagIcon,
         as: 'div',
         title: t('profile.organization_number'),
-        value: formatNorwegianId(id, false),
+        value: formatNorwegianId(id),
         controls: (
           <Button
             as="button"
             size="xs"
             variant="ghost"
             onClick={() => {
-              void navigator.clipboard.writeText(formatNorwegianId(id, false, false)).then(() => {
+              void navigator.clipboard.writeText(formatNorwegianId(id, false)).then(() => {
                 openSnackbar({
                   message: t('word.copied'),
                   color: 'company',
@@ -233,14 +234,14 @@ export const PartiesOverviewPage = () => {
     ];
   };
 
-  const getPersonSettings = (id: string, isCurrentEndUser: boolean): SettingsItemProps[] => {
+  const getPersonSettings = (party: PartyFieldsFragment): SettingsItemProps[] => {
     return [
-      ...getNotificationsSettings(id),
+      ...getNotificationsSettings(party.party),
       {
-        id: 'snr',
+        id: 'born',
         icon: HashtagIcon,
-        title: t('profile.birth_number'),
-        value: formatNorwegianId(id, isCurrentEndUser),
+        title: t('profile.born'),
+        value: formatDate(party.dateOfBirth ?? undefined),
       },
     ];
   };
