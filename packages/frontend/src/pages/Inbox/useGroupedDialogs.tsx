@@ -87,7 +87,7 @@ const getDialogListDescription = ({
   onScopeChange: (scope: FilterScope) => void;
 }): ReactNode | undefined => {
   if (viewIsEmpty) {
-    return <p>{t(`inbox.heading.no_results.${viewType}`)}</p>;
+    return t(`inbox.heading.no_results.${viewType}`);
   }
 
   if (!displaySearchResults) return undefined;
