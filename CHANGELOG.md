@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.156.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.156.0...v1.156.1) (2026-05-27)
+
+
+### Bug Fixes
+
+* **inbox:** emphasize expired item.dueAt even stronger ([#4234](https://github.com/Altinn/dialogporten-frontend/issues/4234)) ([ffa7b0f](https://github.com/Altinn/dialogporten-frontend/commit/ffa7b0ff6b42ceb5ffb9952bd97a89a1b838da55))
+
 ## [1.156.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.155.0...v1.156.0) (2026-05-27)
 
 
