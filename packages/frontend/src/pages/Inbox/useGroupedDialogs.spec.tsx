@@ -1,12 +1,12 @@
 import { renderHook } from '@testing-library/react';
 import { type DialogStatus, SystemLabel } from 'bff-types-generated';
 import { useTranslation } from 'react-i18next';
-import { type Mock, beforeEach, describe, expect, it, vi } from 'vitest';
+import { type Mock, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createCustomWrapper } from '../../../tests/test-utils.tsx';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import type { InboxItemInput } from './InboxItemInput.ts';
-import useGroupedDialogs from './useGroupedDialogs.tsx';
+import useGroupedDialogs, { isDueAtExpired } from './useGroupedDialogs.tsx';
 
 vi.mock('react-i18next', () => ({
   useTranslation: vi.fn(),
@@ -502,5 +502,40 @@ describe('useGroupedDialogs', () => {
     expect(groupKeys).not.toContain('archive');
     expect(groupKeys).toContain('2025');
     expect(groupKeys).toContain('2024');
+  });
+});
+
+describe('isDueAtExpired', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2025-06-01T12:00:00.000Z'));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('returns false when dueAt is undefined', () => {
+    expect(isDueAtExpired(undefined)).toBe(false);
+  });
+
+  it('returns false when dueAt is an empty string', () => {
+    expect(isDueAtExpired('')).toBe(false);
+  });
+
+  it('returns false when dueAt is not a valid date', () => {
+    expect(isDueAtExpired('not-a-date')).toBe(false);
+  });
+
+  it('returns true when dueAt is in the past', () => {
+    expect(isDueAtExpired('2025-05-31T12:00:00.000Z')).toBe(true);
+  });
+
+  it('returns false when dueAt is in the future', () => {
+    expect(isDueAtExpired('2025-06-02T12:00:00.000Z')).toBe(false);
+  });
+
+  it('returns false when dueAt is exactly now', () => {
+    expect(isDueAtExpired('2025-06-01T12:00:00.000Z')).toBe(false);
   });
 });
