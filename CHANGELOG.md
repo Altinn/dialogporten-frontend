@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.156.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.155.0...v1.156.0) (2026-05-27)
+
+
+### Features
+
+* SI sms verification ([#4230](https://github.com/Altinn/dialogporten-frontend/issues/4230)) ([cb4d6f4](https://github.com/Altinn/dialogporten-frontend/commit/cb4d6f40d9f56acbae52f40cf5580da3d8c43a58))
+
 ## [1.155.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.154.1...v1.155.0) (2026-05-27)
 
 
