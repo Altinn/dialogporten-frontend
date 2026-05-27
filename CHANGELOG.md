@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.154.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.153.0...v1.154.0) (2026-05-27)
+
+
+### Features
+
+* **bff:** encrypt person URNs in GraphQL responses ([#4170](https://github.com/Altinn/dialogporten-frontend/issues/4170)) ([c3b4d41](https://github.com/Altinn/dialogporten-frontend/commit/c3b4d41be897484da2a6d31f6e8787a08f88b653))
+
 ## [1.153.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.152.5...v1.153.0) (2026-05-26)
 
 
