@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.154.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.154.0...v1.154.1) (2026-05-27)
+
+
+### Bug Fixes
+
+* Bump ac v63.8, fix aria current ([#4228](https://github.com/Altinn/dialogporten-frontend/issues/4228)) ([fccb2c7](https://github.com/Altinn/dialogporten-frontend/commit/fccb2c74c3efeace1241f4d7f3614eb1cd5fd5bc))
+* **inbox:** avoid nested &lt;p&gt; in empty-state description ([#4224](https://github.com/Altinn/dialogporten-frontend/issues/4224)) ([b4b306e](https://github.com/Altinn/dialogporten-frontend/commit/b4b306e0cf18ca26430f1f5ec8d5269de2242aec))
+
 ## [1.154.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.153.0...v1.154.0) (2026-05-27)
 
 
