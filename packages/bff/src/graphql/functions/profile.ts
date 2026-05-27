@@ -509,3 +509,36 @@ export const updateLanguageInCore = async (context: Context, language: string): 
   const coreLanguage = frontendToCoreLang[language] ?? language;
   await patchProfileSettings(context, { language: coreLanguage });
 };
+
+export const updateSIPrivatePhoneNumber = async (value: string | null, context: Context) => {
+  const token = getSessionToken(context);
+  if (!token) {
+    logger.error('No token found in session');
+    return { success: false };
+  }
+  try {
+    await axios.put(
+      `${platformProfileAPI_url}users/current/notificationsettings/private/phonenumber`,
+      { value },
+      {
+        timeout: 30000,
+        headers: {
+          Authorization: `Bearer ${token.access_token}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+      },
+    );
+    return { success: true };
+  } catch (error) {
+    if (isAxiosError(error)) {
+      logger.error(
+        { status: error.response?.status, body: error.response?.data },
+        'Failed to update SI private phone number',
+      );
+    } else {
+      logger.error(error, 'Failed to update SI private phone number');
+    }
+    return { success: false };
+  }
+};

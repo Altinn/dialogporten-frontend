@@ -9,12 +9,14 @@ import {
 import { ExternalLinkIcon } from '@navikt/aksel-icons';
 import i18n from 'i18next';
 import { useTranslation } from 'react-i18next';
+import { SIPhoneDetails } from './AccountAlerts/SIPhoneDetails.tsx';
 
 const getIsProdEnvironment = () => location.hostname.includes('af.altinn.no');
 
 export const ContactProfileDetails = ({
   variant,
   readOnly = false,
+  isSelfIdentifiedUser = false,
   phoneNumber,
   emailAddress,
   mailingAddress,
@@ -29,6 +31,7 @@ export const ContactProfileDetails = ({
   phoneNumber?: string;
   emailAddress?: string;
   readOnly?: boolean;
+  isSelfIdentifiedUser?: boolean;
   mailingAddress?: string;
   mailingPostalCode?: string;
   mailingPostalCity?: string;
@@ -45,6 +48,10 @@ export const ContactProfileDetails = ({
   const folkeRegisteretUrl = isProdEnvironment
     ? 'https://www.skatteetaten.no/person/folkeregister/flytte/'
     : 'https://testdata.skatteetaten.no/web/testnorge/soek/freg';
+
+  if (isSelfIdentifiedUser && variant === 'phone') {
+    return <SIPhoneDetails phoneNumber={phoneNumber} />;
+  }
 
   return (
     <>
