@@ -4,6 +4,7 @@ import {
   type AvatarVariant,
   Badge,
   type BadgeProps,
+  Button,
   type SettingsGroupProps,
   type SettingsItemProps,
   type SettingsItemVariant,
@@ -22,6 +23,7 @@ import {
   MagnifyingGlassIcon,
   MobileIcon,
   PaperplaneIcon,
+  PersonCircleIcon,
   PersonRectangleIcon,
   RecycleIcon,
 } from '@navikt/aksel-icons';
@@ -30,8 +32,11 @@ import { type ChangeEvent, type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps, useLocation } from 'react-router-dom';
 import { useParties } from '../../api/hooks/useParties.ts';
+import { useSILegacyParties } from '../../api/hooks/usePartiesSelectors.ts';
 import { updateLanguage } from '../../api/queries.ts';
+import { getAltinn2AccountLink } from '../../auth';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
+import { useFeatureFlag } from '../../featureFlags';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { pruneSearchQueryParams } from '../Inbox/queryParams.ts';
 import { useSavedSearches } from '../SavedSearches/useSavedSearches.tsx';
@@ -132,10 +137,16 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
     allOrganizationsSelected,
     partyGraph,
     isSelfIdentifiedUser,
+    selfIdentifiedUserType,
     currentEndUser,
     selectedPartyIds,
     setSelectedPartyIds,
   } = useParties();
+  const enableSIConnectLink = useFeatureFlag<boolean>('SI.emailAccount.enableConnectLink');
+  const siLegacyParties = useSILegacyParties();
+  const hasSILegacyParty = siLegacyParties.length > 0;
+  const isSIEmailConnected = selfIdentifiedUserType === 'Email' && hasSILegacyParty;
+  const showSIEmailConnectLink = enableSIConnectLink && selfIdentifiedUserType === 'Email';
   const {
     user,
     showClientUnits,
@@ -411,8 +422,46 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
 
   const address = `${user?.party?.person?.mailingAddress}, ${user?.party?.person?.mailingPostalCode} ${user?.party?.person?.mailingPostalCity}`;
 
+  const siEmailDescription =
+    selfIdentifiedUserType === 'Email'
+      ? isSIEmailConnected
+        ? `${t('contact_profile.self_identified_email_user')} ${t('profile.settings.si_email.connected_description', { count: siLegacyParties.length })}`
+        : showSIEmailConnectLink
+          ? `${t('contact_profile.self_identified_email_user')} ${t('profile.settings.si_email.connect_account_description')}`
+          : t('contact_profile.self_identified_email_user')
+      : undefined;
+
   const profileSettings: SettingsItemProps[] = isSelfIdentifiedUser
-    ? []
+    ? [
+        {
+          id: 'profile-settings',
+          groupId: SettingsType.profile,
+          title: userDisplayName,
+          icon: {
+            type: 'person',
+            name: userDisplayName,
+          },
+          variant: 'link',
+          as: 'div',
+          summary: siEmailDescription,
+          controls: showSIEmailConnectLink ? (
+            <Button as="a" size="xs" variant="outline" href={getAltinn2AccountLink()}>
+              {t('profile.settings.si_email.add_account')}
+            </Button>
+          ) : undefined,
+        },
+        ...(isSIEmailConnected
+          ? siLegacyParties.map<SettingsItemProps>((legacy) => ({
+              id: `si-old-username-${legacy.party}`,
+              groupId: SettingsType.profile,
+              title: t('profile.settings.si_email.linked_account'),
+              value: legacy.name,
+              icon: PersonCircleIcon,
+              variant: 'default' as SettingsItemVariant,
+              as: 'div' as const,
+            }))
+          : []),
+      ]
     : [
         {
           id: 'profile-settings',
@@ -474,9 +523,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
     },
     {
       id: 'contact-email',
-      summary: isSelfIdentifiedUser ? (
-        <p>{t('contact_profile.self_identified_email_user')}</p>
-      ) : (
+      summary: isSelfIdentifiedUser ? undefined : (
         <p>
           {t('contact_profile.contact_info_part1')} <a href={krrInfoUrl}>{t('contact_profile.email_register')}</a>
           {t('contact_profile.contact_info_part2')}

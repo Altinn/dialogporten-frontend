@@ -18,6 +18,7 @@ export const featureFlagDefinitions = [
   { key: 'auth.orgsNotReadyToDealWithDelegations', type: 'string-array', default: [] },
   { key: 'inbox.banner.escalateWarning', type: 'boolean', default: false },
   { key: 'inbox.disableBetaLabel', type: 'boolean', default: false },
+  { key: 'SI.emailAccount.enableConnectLink', type: 'boolean', default: false },
 ] as const satisfies readonly FeatureFlagDefinition[];
 
 export type FeatureFlagKey = (typeof featureFlagDefinitions)[number]['key'];
