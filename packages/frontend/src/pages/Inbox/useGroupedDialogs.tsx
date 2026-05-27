@@ -126,6 +126,13 @@ const getDialogListDescription = ({
 
 const BANKRUPTCY_SERVICE_RESOURCE = 'urn:altinn:resource:app_brg_konkursbehandling';
 
+export const isDueAtExpired = (dueAt?: string): boolean => {
+  if (!dueAt) return false;
+  const time = new Date(dueAt).getTime();
+  if (Number.isNaN(time)) return false;
+  return time < Date.now();
+};
+
 const sortGroupedDialogs = (arr: DialogListItemProps[]) => {
   return arr.sort((a, b) => new Date(b.updatedAt ?? 0).getTime() - new Date(a.updatedAt ?? 0).getTime());
 };
@@ -303,6 +310,7 @@ const useGroupedDialogs = ({
       updatedAt: item.contentUpdatedAt,
       updatedAtLabel: format(item.contentUpdatedAt, formatString),
       dueAtLabel: item.dueAt ? t('dialog.due_at', { date: format(item.dueAt, formatString) }) : undefined,
+      dueAtExpired: isDueAtExpired(item.dueAt),
       dueAt: item.dueAt,
       sentCount: item.fromPartyTransmissionsCount ?? 0,
       receivedCount: item.fromServiceOwnerTransmissionsCount ?? 0,
