@@ -16,6 +16,8 @@ const defaultFeatureFlags: Record<string, boolean> = {
   'inbox.accountNavigatorEnabled': false,
   'inbox.banner.escalateWarning': false,
   'inbox.disableBetaLabel': false,
+  'SI.emailAccount.enableConnectLink': false,
+  'profil.enableSIPhoneEdit': false,
 };
 
 const defaultAppConfigValues: Record<string, string[]> = {

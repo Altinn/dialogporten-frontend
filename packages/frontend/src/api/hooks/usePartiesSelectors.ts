@@ -34,6 +34,33 @@ const selectSelfIdentifiedUserType = (parties: PartyFieldsFragment[]): SelfIdent
   return 'None';
 };
 
+const SI_LEGACY_URN_PREFIX = 'urn:altinn:person:legacy-selfidentified:';
+
+export interface SILegacyPartyInfo {
+  party: string;
+  name: string;
+}
+
+const EMPTY_SI_LEGACY_PARTIES: SILegacyPartyInfo[] = [];
+
+const selectSILegacyParties = (parties: PartyFieldsFragment[]): SILegacyPartyInfo[] => {
+  const result: SILegacyPartyInfo[] = [];
+  for (const party of parties) {
+    if (party.party?.startsWith(SI_LEGACY_URN_PREFIX)) {
+      result.push({ party: party.party, name: party.name });
+    }
+    const subs = party.subParties;
+    if (!subs) continue;
+    for (const sub of subs) {
+      if (sub.party?.startsWith(SI_LEGACY_URN_PREFIX)) {
+        result.push({ party: sub.party, name: sub.name });
+      }
+    }
+  }
+  // Stable empty-array reference avoids spurious re-renders for users with no legacy parties.
+  return result.length > 0 ? result : EMPTY_SI_LEGACY_PARTIES;
+};
+
 /* ── Shared query options (no fetch, just read from cache) ── */
 const partiesQueryOptions = {
   queryKey: [QUERY_KEYS.PARTIES],
@@ -140,6 +167,19 @@ export const useSelfIdentifiedUserType = (): SelfIdentifiedUserType => {
   const { data = 'None' } = useQuery({
     ...partiesQueryOptions,
     select: selectSelfIdentifiedUserType,
+  });
+  return data;
+};
+
+/**
+ * Returns the user's SI legacy-selfidentified parties (top-level or sub-party).
+ * Returns a stable empty-array reference when none are present.
+ * Useful for showing legacy usernames alongside the Email account.
+ */
+export const useSILegacyParties = (): SILegacyPartyInfo[] => {
+  const { data = EMPTY_SI_LEGACY_PARTIES } = useQuery({
+    ...partiesQueryOptions,
+    select: selectSILegacyParties,
   });
   return data;
 };
