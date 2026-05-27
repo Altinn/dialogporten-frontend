@@ -97,7 +97,7 @@
   "dialog.toolbar.toast.mark_as_unread_success": "Markert som ulest",
   "dialog.toolbar.toast.move_to_archive_failed": "Kunne ikke flytte til arkivet",
   "dialog.toolbar.toast.move_to_archive_success": "Flyttet til arkivet",
-  "dialog.toolbar.toast.move_to_bin_failed": "Kunne inne flytte til papirkurven",
+  "dialog.toolbar.toast.move_to_bin_failed": "Kunne ikke flytte til papirkurven",
   "dialog.toolbar.toast.move_to_bin_success": "Flyttet til papirkurven",
   "dialog.toolbar.toast.move_to_inbox_failed": "Kunne ikke flytte til innboksen",
   "dialog.toolbar.toast.move_to_inbox_success": "Flyttet til innboksen",

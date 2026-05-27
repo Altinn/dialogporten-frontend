@@ -1,0 +1,6 @@
+mutation UpdateSIPrivatePhoneNumber($value: String) {
+  updateSIPrivatePhoneNumber(value: $value) {
+    success
+    message
+  }
+}

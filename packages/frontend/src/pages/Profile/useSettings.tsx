@@ -143,6 +143,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
     setSelectedPartyIds,
   } = useParties();
   const enableSIConnectLink = useFeatureFlag<boolean>('SI.emailAccount.enableConnectLink');
+  const enableSIPhoneEdit = useFeatureFlag<boolean>('profil.enableSIPhoneEdit');
   const siLegacyParties = useSILegacyParties();
   const hasSILegacyParty = siLegacyParties.length > 0;
   const isSIEmailConnected = selfIdentifiedUserType === 'Email' && hasSILegacyParty;
@@ -508,15 +509,16 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
       icon: MobileIcon,
       title: t('profile.settings.mobile_phone'),
       value: user?.phoneNumber || '',
-      badge: isSelfIdentifiedUser ? undefined : getChangeSettingsBadge(user?.phoneNumber || ''),
+      disabled: isSelfIdentifiedUser && !enableSIPhoneEdit,
+      badge: isSelfIdentifiedUser && !enableSIPhoneEdit ? undefined : getChangeSettingsBadge(user?.phoneNumber || ''),
       variant: 'modal',
-      disabled: isSelfIdentifiedUser, // TODO: Remove this when notification settings are changable for SI users
       children: (
         <ContactProfileDetails
           variant="phone"
           source="krr"
           phoneNumber={user?.phoneNumber || ''}
           usedByItems={getUsedByPhoneNumber(user?.phoneNumber ?? '')}
+          isSelfIdentifiedUser={enableSIPhoneEdit && isSelfIdentifiedUser}
           readOnly
         />
       ),

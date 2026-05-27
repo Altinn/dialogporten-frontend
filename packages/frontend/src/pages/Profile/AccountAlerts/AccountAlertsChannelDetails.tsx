@@ -14,14 +14,14 @@ import {
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { sendVerificationCode, updateNotificationsetting, verifyAddress } from '../../../api/queries.ts';
+import { updateNotificationsetting } from '../../../api/queries.ts';
 import { QUERY_KEYS } from '../../../constants/queryKeys.ts';
 import { useErrorLogger } from '../../../hooks/useErrorLogger.ts';
 import type { NotificationAccountsType } from '../NotificationsPage/NotificationsPage.tsx';
 import { useProfile } from '../useProfile.tsx';
 import styles from './AccountAlertsChannelDetails.module.css';
 import { VerificationCodeStep } from './VerificationCodeStep.tsx';
-import { type Channel, useIsAlreadyVerified, useResendCooldown } from './common.ts';
+import { type Channel, useIsAlreadyVerified, useVerificationFlow } from './common.ts';
 import { isValidEmail } from './email.ts';
 import { isValidCountryCodeInput, isValidPhoneNumber, joinPhone, parsePhone } from './phone.ts';
 
@@ -37,7 +37,19 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
   const { t } = useTranslation();
   const { logError } = useErrorLogger();
   const isAlreadyVerified = useIsAlreadyVerified();
-  const { cooldown, start: startCooldown } = useResendCooldown();
+  const {
+    isInVerificationFlow,
+    setIsInVerificationFlow,
+    codeInput,
+    setCodeInput,
+    codeError,
+    setCodeError,
+    isSending,
+    isConfirming,
+    cooldown,
+    handleSendCode,
+    handleConfirmCode,
+  } = useVerificationFlow(channel);
   const isEmail = channel === 'Email';
   const notificationSettings = notificationParty?.notificationSettings;
   const partyUuid = notificationSettings?.partyUuid || notificationParty?.partyUuid || '';
@@ -53,11 +65,6 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
   const [countryCode, setCountryCode] = useState<string>(initialPhone.countryCode);
   const [phoneNumberPart, setPhoneNumberPart] = useState<string>(initialPhone.phoneNumber);
   const value = isEmail ? emailValue : joinPhone(countryCode, phoneNumberPart);
-  const [isInVerificationFlow, setIsInVerificationFlow] = useState(false);
-  const [codeInput, setCodeInput] = useState('');
-  const [codeError, setCodeError] = useState('');
-  const [isSending, setIsSending] = useState(false);
-  const [isConfirming, setIsConfirming] = useState(false);
 
   const handleClose = () => {
     document.activeElement?.closest('dialog')?.close();
@@ -85,57 +92,6 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
     partyUuid,
     ...(isEmail ? { emailAddress: next } : { phoneNumber: next }),
   });
-
-  const handleSendCode = async () => {
-    setIsSending(true);
-    setCodeInput('');
-    setCodeError('');
-    try {
-      const result = await sendVerificationCode({ value, type: channel });
-      const response = result?.sendVerificationCode;
-      if (response?.success || response?.retryAfter) {
-        setIsInVerificationFlow(true);
-        startCooldown(response.retryAfter ?? undefined);
-      } else {
-        openSnackbar({
-          message: t('profile.account_alerts.snackbar.error'),
-          color: 'danger',
-        });
-      }
-    } catch (err) {
-      logError(
-        err as Error,
-        { context: 'AccountAlertsChannelDetails.handleSendCode', channel },
-        'Error sending verification code',
-      );
-      openSnackbar({ message: t('profile.account_alerts.snackbar.error'), color: 'danger' });
-    } finally {
-      setIsSending(false);
-    }
-  };
-
-  const handleConfirmCode = async () => {
-    setIsConfirming(true);
-    setCodeError('');
-    try {
-      const result = await verifyAddress({ value, type: channel, verificationCode: codeInput });
-      if (result?.verifyAddress?.success) {
-        await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.VERIFIED_ADDRESSES] });
-        setIsInVerificationFlow(false);
-      } else {
-        setCodeError(t('profile.verification.code_invalid'));
-      }
-    } catch (err) {
-      logError(
-        err as Error,
-        { context: 'AccountAlertsChannelDetails.handleConfirmCode', channel },
-        'Error confirming verification code',
-      );
-      openSnackbar({ message: t('profile.account_alerts.snackbar.error'), color: 'danger' });
-    } finally {
-      setIsConfirming(false);
-    }
-  };
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -173,8 +129,8 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
           setCodeInput(v);
           setCodeError('');
         }}
-        onConfirm={handleConfirmCode}
-        onResend={handleSendCode}
+        onConfirm={() => handleConfirmCode(value)}
+        onResend={() => handleSendCode(value)}
         onCancel={() => setIsInVerificationFlow(false)}
       />
     );
@@ -269,7 +225,12 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
         )}
         <ButtonGroup>
           {needsVerification && (
-            <Button type="button" variant="tinted" onClick={handleSendCode} disabled={isSending || !allowedToVerify}>
+            <Button
+              type="button"
+              variant="tinted"
+              onClick={() => handleSendCode(value)}
+              disabled={isSending || !allowedToVerify}
+            >
               {isEmail ? t('profile.account_alerts.verify_email') : t('profile.account_alerts.verify_sms')}
             </Button>
           )}
