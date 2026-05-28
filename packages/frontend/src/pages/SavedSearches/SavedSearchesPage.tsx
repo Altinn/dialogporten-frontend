@@ -51,7 +51,6 @@ const EditBookmarkModal = ({ search, onClose, onSave }: EditBookmarkModalProps) 
       titleField={{
         label: t('savedSearches.bookmark.item_input_label'),
         placeholder: t('savedSearches.bookmark.item_input_placeholder'),
-        helperText: t('savedSearches.bookmark.item_input_helper'),
         value: title,
         onChange: (e: ChangeEvent<HTMLInputElement>) => setTitle(e.target.value),
       }}
