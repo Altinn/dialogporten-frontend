@@ -24,11 +24,7 @@ interface UseAccountFiltersProps {
   includeDeletedParties?: boolean;
 }
 
-export const useAccountFilters = ({
-  searchValue,
-  parties,
-  includeDeletedParties = true,
-}: UseAccountFiltersProps): UseFiltersOutput => {
+export const useAccountFilters = ({ searchValue, parties }: UseAccountFiltersProps): UseFiltersOutput => {
   const { t } = useTranslation();
   const [filterState, setFilterState] = useState<FilterState>({
     partyScope: [FilterStateEnum.ALL_PARTIES],
@@ -101,8 +97,6 @@ export const useAccountFilters = ({
     const result: PartyFieldsFragment[] = [];
 
     for (const party of parties) {
-      if (!includeDeletedParties && party.isDeleted) continue;
-
       if (party.partyType === 'Organization' ? !includeCompanies : !includePersons) continue;
 
       if (hasSearch) {
@@ -119,7 +113,7 @@ export const useAccountFilters = ({
     }
 
     return result;
-  }, [parties, filterState, searchValue, includeDeletedParties]);
+  }, [parties, filterState, searchValue]);
 
   const isSearching = searchValue.length > 0 || filterState.partyScope?.[0] !== FilterStateEnum.ALL_PARTIES;
 

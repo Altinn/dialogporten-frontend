@@ -25,7 +25,6 @@ const getDelegationHref = (instanceUrn: string, resourceId: string, dialogId: st
 export const useDelegation = (dialogId?: string, party?: string, org?: string): UseDelegationOutput => {
   const partyGraph = usePartyGraph();
   const instanceRef = `urn:altinn:dialog-id:${dialogId}`;
-  const enableDelegationLink = useFeatureFlag('auth.enableDelegationLink');
   const orgsNotReadyToDealWithDelegations = useFeatureFlag<string[]>('auth.orgsNotReadyToDealWithDelegations');
   const { data, isSuccess } = useAuthenticatedQuery<DialogLookupQuery>({
     queryKey: [QUERY_KEYS.DIALOG_DELEGATION_LOOKUP, dialogId],
@@ -34,18 +33,12 @@ export const useDelegation = (dialogId?: string, party?: string, org?: string): 
     refetchOnMount: false,
     retry: 3,
     queryFn: async () => graphQLSDK.dialogLookup({ instanceRef: instanceRef }),
-    enabled: !!dialogId && !!enableDelegationLink,
+    enabled: !!dialogId,
   });
 
   const partyUuid = useMemo(() => {
     return party ? partyGraph.partyByUrn.get(party)?.partyUuid : undefined;
   }, [partyGraph, party]);
-
-  if (!enableDelegationLink) {
-    return {
-      delegationHref: undefined,
-    };
-  }
 
   const isDelegable = data?.dialogLookup?.lookup?.serviceResource?.isDelegable
     ? !orgsNotReadyToDealWithDelegations?.includes(org ?? '')

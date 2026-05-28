@@ -127,7 +127,6 @@ export const PartiesOverviewPage = () => {
   const { filters, getFilterLabel, filterState, setFilterState, filteredParties, isSearching } = useAccountFilters({
     searchValue: deferredSearchValue,
     parties,
-    includeDeletedParties,
   });
 
   const [currentPage, setCurrentPage] = useState<number>(1);

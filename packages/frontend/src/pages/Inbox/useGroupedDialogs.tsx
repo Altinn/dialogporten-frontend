@@ -18,7 +18,6 @@ import { Link, type LinkProps, useSearchParams } from 'react-router-dom';
 import { MAX_COUNT_BULK_DIALOGS } from '../../api/hooks/useBulkActions.tsx';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
-import { useFeatureFlag } from '../../featureFlags';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { useGlobalState } from '../../useGlobalState.ts';
 import { useDialogActions } from '../DialogDetailsPage/useDialogActions.tsx';
@@ -178,7 +177,6 @@ const useGroupedDialogs = ({
   const { t } = useTranslation();
   const format = useFormat();
   const [searchParams] = useSearchParams();
-  const enabledBulkMode = useFeatureFlag<boolean>('inbox.enableBulkMode');
   const systemLabelActions = useDialogActions();
   const [allOrganizationsSelected] = useGlobalState<boolean>(QUERY_KEYS.ALL_ORGANIZATIONS_SELECTED, false);
   const [bulkMode, setBulkMode] = useGlobalState<boolean>(QUERY_KEYS.BULK_MODE, false);
@@ -237,20 +235,16 @@ const useGroupedDialogs = ({
       placement: 'right',
       color: item.recipient.type === 'person' ? 'person' : 'company',
       items: [
-        ...(enabledBulkMode
-          ? [
-              {
-                id: 'select-multiple',
-                groupId: 'mark-as',
-                title: t('bulk_action.select_multiple'),
-                icon: CheckmarkIcon,
-                onClick: () => {
-                  setBulkMode(true);
-                  setBulkedIds([item.id]);
-                },
-              },
-            ]
-          : []),
+        {
+          id: 'select-multiple',
+          groupId: 'mark-as',
+          title: t('bulk_action.select_multiple'),
+          icon: CheckmarkIcon,
+          onClick: () => {
+            setBulkMode(true);
+            setBulkedIds([item.id]);
+          },
+        },
         ...(item ? systemLabelActions(item.id, item.label, item.unread) : []),
         ...(item.seenByLabel
           ? [

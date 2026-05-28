@@ -14,7 +14,6 @@ import { ANALYTICS_EVENTS } from '../../analytics/analyticsEvents.ts';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { updateLanguage } from '../../api/queries.ts';
 import { createFiltersURLQuery, getFrontPageLink } from '../../auth';
-import { useFeatureFlag } from '../../featureFlags';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { FilterCategory } from '../../pages/Inbox/filters.tsx';
 import { FixedGlobalQueryParams, pruneSearchQueryParams } from '../../pages/Inbox/queryParams.ts';
@@ -38,8 +37,6 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
   const navigate = useNavigate();
   const isProfile = location.pathname.includes(PageRoutes.profile);
   const { searchValue, setSearchValue, onClear } = useSearchString();
-
-  const isDeletedUnitsFilterEnabled = useFeatureFlag<boolean>('inbox.enableDeletedUnitsFilter');
 
   const {
     favoritesGroup,
@@ -140,10 +137,8 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
     onSelectAccount: handleSelectAccount,
     onToggleFavorite: handleToggleFavorite,
     languageCode: i18n.language,
-    ...(isDeletedUnitsFilterEnabled && {
-      showDeletedUnits: shouldShowDeletedEntities ?? undefined,
-      onShowDeletedUnitsChange: handleShowDeletedUnitsChange,
-    }),
+    showDeletedUnits: shouldShowDeletedEntities ?? undefined,
+    onShowDeletedUnitsChange: handleShowDeletedUnitsChange,
   });
 
   const { mobileMenu, desktopMenu } = useGlobalMenu();
