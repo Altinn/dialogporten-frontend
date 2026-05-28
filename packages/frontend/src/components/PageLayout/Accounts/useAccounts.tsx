@@ -15,7 +15,6 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { MAX_DIALOG_PARTY_SIZE } from '../../../api/hooks/useDialogs.tsx';
 import { QUERY_KEYS } from '../../../constants/queryKeys.ts';
-import { useFeatureFlag } from '../../../featureFlags';
 import { FixedGlobalQueryParams } from '../../../pages/Inbox/queryParams.ts';
 import { useProfile } from '../../../pages/Profile';
 import { SettingsType } from '../../../pages/Profile/useSettings.tsx';
@@ -111,7 +110,6 @@ export const useAccounts = ({
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, favoritesGroup, shouldShowDeletedEntities } = useProfile();
-  const isDeletedUnitsFilterEnabled = useFeatureFlag<boolean>('inbox.enableDeletedUnitsFilter');
   const [searchString, setSearchString] = useState<string>('');
   const queryClient = useQueryClient();
   const accountSearchThreshold = 2;
@@ -279,13 +277,8 @@ export const useAccounts = ({
 
   const currentEndUser = partyGraph.currentEndUser;
 
-  /** deleted units filtering - FF: "inbox.enableDeletedUnitsFilter"
-   * FF off -> always include deleted parties
-   * FF on, switch off -> exclude deleted parties
-   * FF on, switch on -> include deleted parties
-   */
   const shouldExcludeDeleted = options.excludeDeleted ?? true;
-  const includeDeletedParties = isDeletedUnitsFilterEnabled ? (shouldShowDeletedEntities ?? false) : true;
+  const includeDeletedParties = shouldShowDeletedEntities ?? false;
 
   // Memoize org count and avatar group items separately — avoids recomputation when only selection changes.
   // Reads from the cheap orgSkeleton instead of materialized organizationAccounts.

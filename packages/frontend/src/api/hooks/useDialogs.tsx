@@ -86,14 +86,12 @@ export const useDialogs = ({
 }: UseDialogsProps): UseDialogsOutput => {
   const { organizations } = useOrganizations();
   const disableFlipNamesPatch = useFeatureFlag<boolean>('dialogporten.disableFlipNamesPatch');
-  const isDeletedUnitsFilterEnabled = useFeatureFlag<boolean>('inbox.enableDeletedUnitsFilter');
   const { shouldShowDeletedEntities } = useProfile();
   const { selectedParties, allOrganizationsSelected, partyGraph } = useParties();
   const format = useFormat();
 
-  const shouldExcludeDeleted = isDeletedUnitsFilterEnabled && !shouldShowDeletedEntities;
   const partiesToUse =
-    allOrganizationsSelected && shouldExcludeDeleted
+    allOrganizationsSelected && !shouldShowDeletedEntities
       ? selectedParties.filter((party) => !party.isDeleted)
       : selectedParties;
 

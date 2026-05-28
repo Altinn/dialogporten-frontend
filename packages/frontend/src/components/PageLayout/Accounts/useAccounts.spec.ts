@@ -213,6 +213,7 @@ describe('useAccounts', () => {
 
   it('should handle deleted parties with badges', () => {
     const selectedParties = parties;
+    (useProfile as Mock).mockReturnValue({ favoritesGroup: { parties: [] }, shouldShowDeletedEntities: true });
 
     const { result } = renderHook(
       () =>
