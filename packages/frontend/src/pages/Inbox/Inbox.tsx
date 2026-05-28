@@ -30,6 +30,7 @@ import {
 } from '../../api/hooks/useDialogs.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { createFiltersURLQuery } from '../../auth';
+import { DialogAccessInfoModal } from '../../components/DialogAccessInfoModal/DialogAccessInfoModal.tsx';
 import { Notice } from '../../components/Notice';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
 import { useSearchString } from '../../components/PageLayout/Search/';
@@ -96,6 +97,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentSeenByLogModal, setCurrentSeenByLogModal] = useState<CurrentSeenByLog | null>(null);
+  const [accessInfoDialogId, setAccessInfoDialogId] = useState<string | null>(null);
   const subAccountsParam = searchParams.get(FixedGlobalQueryParams.subAccounts) ?? '';
 
   const [filterState, setFilterState] = useState<FilterState>(() => readFiltersFromURLQuery(searchParams.toString()));
@@ -257,6 +259,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
 
   const { groupedDialogs, groups, title, description } = useGroupedDialogs({
     onSeenByLogModalChange: setCurrentSeenByLogModal,
+    onAccessInfoModalChange: setAccessInfoDialogId,
     items: dialogs,
     hasNextPage,
     displaySearchResults: searchMode,
@@ -453,6 +456,11 @@ export const Inbox = ({ viewType }: InboxProps) => {
         items={currentSeenByLogModal?.items}
         isOpen={!!currentSeenByLogModal}
         onClose={() => setCurrentSeenByLogModal(null)}
+      />
+      <DialogAccessInfoModal
+        dialogId={accessInfoDialogId ?? undefined}
+        isOpen={!!accessInfoDialogId}
+        onClose={() => setAccessInfoDialogId(null)}
       />
       <BookmarkModal {...bookmarkModalProps} />
       {footerActions.length > 0 && <BulkFooter hidden={!bulkMode} actions={footerActions} />}

@@ -344,6 +344,7 @@ describe('useGroupedDialogs', () => {
           isLoading: true,
           hasNextPage: false,
           onSeenByLogModalChange: () => {},
+          onAccessInfoModalChange: () => {},
         }),
       {
         wrapper: createCustomWrapper(),
@@ -364,6 +365,7 @@ describe('useGroupedDialogs', () => {
           isLoading: false,
           hasNextPage: false,
           onSeenByLogModalChange: () => {},
+          onAccessInfoModalChange: () => {},
         }),
       {
         wrapper: createCustomWrapper(),
@@ -386,6 +388,7 @@ describe('useGroupedDialogs', () => {
           viewType: 'inbox',
           isLoading: false,
           onSeenByLogModalChange: () => {},
+          onAccessInfoModalChange: () => {},
         }),
       {
         wrapper: createCustomWrapper(),
@@ -436,6 +439,7 @@ describe('useGroupedDialogs', () => {
           viewType: 'sent',
           isLoading: false,
           onSeenByLogModalChange: () => {},
+          onAccessInfoModalChange: () => {},
         }),
       {
         wrapper: createCustomWrapper(),
@@ -490,6 +494,7 @@ describe('useGroupedDialogs', () => {
           viewType: 'archive',
           isLoading: false,
           onSeenByLogModalChange: () => {},
+          onAccessInfoModalChange: () => {},
         }),
       {
         wrapper: createCustomWrapper(),
