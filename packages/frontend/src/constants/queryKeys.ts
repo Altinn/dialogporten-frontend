@@ -30,6 +30,7 @@ export const QUERY_KEYS = {
   VERIFIED_ADDRESSES: 'verifiedAddresses',
   SELECTED_SUB_ACCOUNTS: 'selectedSubAccounts',
   DIALOG_DELEGATION_LOOKUP: 'dialogDelegationLookup',
+  DIALOG_ACCESS_INFO: 'dialogAccessInfo',
   DIALOG_REDIRECT_LOOKUP: 'dialogRedirectLookup',
   BULK_MODE: 'bulkMode',
   BULK_MODE_SELECTED_IDS: 'bulkModeSelectedIds',
