@@ -13,7 +13,6 @@ param logoutRedirectUri = 'https://at23.altinn.cloud/ui/Authentication/Logout'
 
 param platformBaseUrl = 'https://platform.at23.altinn.cloud'
 
-param ocPApimSubscriptionKey = readEnvironmentVariable('OCP_APIM_SUBSCRIPTION_KEY')
 
 // secrets
 param environmentKeyVaultName = readEnvironmentVariable('ENVIRONMENT_KEY_VAULT_NAME')

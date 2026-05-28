@@ -38,7 +38,6 @@ Ensure that `./.env` (in root) is created with following keys and appropriate va
 ```
 OIDC_CLIENT_ID=<my_example_service>
 OIDC_CLIENT_SECRET=<secret_password_keep_this_private>
-OCP_APIM_SUBSCRIPTION_KEY=<key>
 APP_CONFIG_CONNECTION_STRING=<endpoint_url>
 ALTINN2_API_KEY=<key>
 ALTINN2_BASE_URL=<URL>

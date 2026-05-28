@@ -20,8 +20,6 @@ param logoutRedirectUri = 'https://tt02.altinn.no/ui/Authentication/Logout'
 
 param platformBaseUrl = 'https://platform.tt02.altinn.no'
 
-param ocPApimSubscriptionKey = readEnvironmentVariable('OCP_APIM_SUBSCRIPTION_KEY')
-
 // secrets
 param environmentKeyVaultName = readEnvironmentVariable('ENVIRONMENT_KEY_VAULT_NAME')
 param containerAppEnvironmentName = readEnvironmentVariable('CONTAINER_APP_ENVIRONMENT_NAME')

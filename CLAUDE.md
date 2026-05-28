@@ -131,7 +131,6 @@ Requires Node 22+, pnpm, and Docker. Create `.env` in root with:
 ```
 OIDC_CLIENT_ID=<value>
 OIDC_CLIENT_SECRET=<value>
-OCP_APIM_SUBSCRIPTION_KEY=<value>
 APP_CONFIG_CONNECTION_STRING=<value>
 AUTH_CONTEXT_COOKIE_DOMAIN='localhost'
 PERSON_URN_ENC_KEYS=<base64_key>  # generate with: openssl rand -base64 64
