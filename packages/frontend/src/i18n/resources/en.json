@@ -234,6 +234,8 @@
   "inbox.heading.scope.all_folders": "All folders",
   "inbox.heading.narrow_scope": "Narrow search to",
   "inbox.heading.expand_scope": "Expand search to",
+  "inbox.heading.search_scope_info.archive": "Search is limited to the archive.",
+  "inbox.heading.search_scope_info.bin": "Search is limited to the bin.",
   "inbox.heading.search_results.archive": "{count, plural, =0 {No hits} one {# hit} other {# hits}} in archive",
   "inbox.heading.search_results.bin": "{count, plural, =0 {No hits} one {# hit} other {# hits}} in bin",
   "inbox.heading.search_results.drafts": "{count, plural, =0 {No hits} one {# hit} other {# hits}} in drafts",
