@@ -22,8 +22,6 @@ param platformBaseUrl = 'https://platform.altinn.no'
 param enableInitSessionEndpoint = 'false'
 param logoutRedirectUri = 'https://altinn.no/ui/Authentication/Logout'
 
-param ocPApimSubscriptionKey = readEnvironmentVariable('OCP_APIM_SUBSCRIPTION_KEY')
-
 // secrets
 param environmentKeyVaultName = readEnvironmentVariable('ENVIRONMENT_KEY_VAULT_NAME')
 param containerAppEnvironmentName = readEnvironmentVariable('CONTAINER_APP_ENVIRONMENT_NAME')

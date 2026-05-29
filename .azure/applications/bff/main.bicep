@@ -27,9 +27,6 @@ param platformBaseUrl string
 @minLength(3)
 param altinn2BaseUrl string = 'https://at23.altinn.cloud'
 
-@secure()
-param ocPApimSubscriptionKey string
-
 @description('Controls whether GraphiQL interface is enabled. Should be disabled in production.')
 @allowed([
   'false'
@@ -212,10 +209,6 @@ var containerAppEnvVars = concat(
     {
       name: 'PLATFORM_BASEURL'
       value: platformBaseUrl
-    }
-    {
-      name: 'OCP_APIM_SUBSCRIPTION_KEY'
-      value: ocPApimSubscriptionKey
     }
     {
         name: 'APP_CONFIG_CONNECTION_STRING'
