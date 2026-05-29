@@ -91,6 +91,10 @@ const getDialogListDescription = ({
 
   if (!displaySearchResults) return undefined;
 
+  if (viewType === 'archive' || viewType === 'bin') {
+    return t(`inbox.heading.search_scope_info.${viewType}`);
+  }
+
   if (filterScope === 'ALL' && hasNoResults) {
     return '';
   }

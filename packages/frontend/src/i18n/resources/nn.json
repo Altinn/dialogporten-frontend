@@ -188,6 +188,8 @@
   "inbox.heading.scope.all_folders": "Alle mapper",
   "inbox.heading.narrow_scope": "Avgrens søket til",
   "inbox.heading.expand_scope": "Utvid søket til",
+  "inbox.heading.search_scope_info.archive": "Søket er avgrensa til arkiv.",
+  "inbox.heading.search_scope_info.bin": "Søket er avgrensa til papirkorg.",
   "inbox.heading.search_results.archive": "{count, plural, =0 {Ingen treff} one {# treff} other {# treff}} i arkiv",
   "inbox.heading.search_results.bin": "{count, plural, =0 {Ingen treff} one {# treff} other {# treff}} i papirkorg",
   "inbox.heading.search_results.drafts": "{count, plural, =0 {Ingen treff} one {# treff} other {# treff}} i utkast",
