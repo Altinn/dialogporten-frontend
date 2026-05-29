@@ -40,6 +40,7 @@ export function buildInboxMenu({
   fromView,
   currentPartyUuid,
   disableBetaLabel,
+  hideAltinn2Links,
 }: {
   t: (key: string, vars?: Record<string, string>) => string;
   currentEndUserName?: string;
@@ -48,6 +49,7 @@ export function buildInboxMenu({
   fromView?: string;
   currentPartyUuid?: string;
   disableBetaLabel: boolean;
+  hideAltinn2Links: boolean;
 }): UseGlobalMenuProps {
   const menuGroups = {
     shortcuts: {
@@ -103,16 +105,20 @@ export function buildInboxMenu({
         to: PageRoutes.savedSearches + pruneSearchQueryParams(currentSearchQuery),
       }),
     },
-    {
-      id: 'beta-exit',
-      'data-testid': 'sidebar-exit',
-      groupId: 'shortcuts-2',
-      icon: LeaveIcon,
-      title: t('altinn.beta.exit'),
-      as: createMenuItemComponent({
-        to: createMessageBoxLink(currentPartyUuid),
-      }),
-    },
+    ...(!hideAltinn2Links
+      ? [
+          {
+            id: 'beta-exit',
+            'data-testid': 'sidebar-exit',
+            groupId: 'shortcuts-2',
+            icon: LeaveIcon,
+            title: t('altinn.beta.exit'),
+            as: createMenuItemComponent({
+              to: createMessageBoxLink(currentPartyUuid),
+            }),
+          } as MenuItemProps,
+        ]
+      : []),
     ...(!disableBetaLabel
       ? [
           {
