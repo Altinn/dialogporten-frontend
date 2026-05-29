@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.157.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.156.1...v1.157.0) (2026-05-29)
+
+
+### Features
+
+* Add feature flag to hide all A2 links ([#4246](https://github.com/Altinn/dialogporten-frontend/issues/4246)) ([541bae7](https://github.com/Altinn/dialogporten-frontend/commit/541bae7c727a14ee878e3bfe75d9afe465a6d500))
+
+
+### Bug Fixes
+
+* **modal:** remove redundant helper text for title change for saved search ([#4238](https://github.com/Altinn/dialogporten-frontend/issues/4238)) ([945423b](https://github.com/Altinn/dialogporten-frontend/commit/945423befbadebf7c3f0f354057f3d67642c0152))
+
 ## [1.156.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.156.0...v1.156.1) (2026-05-27)
 
 
