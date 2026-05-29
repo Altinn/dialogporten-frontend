@@ -130,11 +130,7 @@ export const DialogDetailsPage = () => {
           setIsOpen: setIsActivityLogOpen,
         }}
       />
-      <DialogAccessInfoModal
-        dialogId={dialogId}
-        isOpen={isAccessInfoOpen}
-        onClose={() => setIsAccessInfoOpen(false)}
-      />
+      <DialogAccessInfoModal dialogId={dialogId} isOpen={isAccessInfoOpen} onClose={() => setIsAccessInfoOpen(false)} />
     </DialogLayout>
   );
 };
