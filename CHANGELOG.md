@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.157.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.157.1...v1.157.2) (2026-05-29)
+
+
+### Bug Fixes
+
+* **inbox:** hide search scope selector in archive and bin view ([#4252](https://github.com/Altinn/dialogporten-frontend/issues/4252)) ([bad28d7](https://github.com/Altinn/dialogporten-frontend/commit/bad28d7a8fd3764c7215af22a243ca375d0aa0db))
+
 ## [1.157.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.157.0...v1.157.1) (2026-05-29)
 
 
