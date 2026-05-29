@@ -351,7 +351,7 @@ export function buildInboxMenu({
   };
   const desktopMenu: MenuProps = {
     ...mobileMenu,
-    items: [{ ...mobileMenu.items[0], expanded: false, items: [] }, ...mobileMenu.items.slice(1)],
+    items: [{ ...mobileMenu.items[0], expanded: false, items: [], selected: true }, ...mobileMenu.items.slice(1)],
     groups: {
       ...mobileMenu.groups,
     },
