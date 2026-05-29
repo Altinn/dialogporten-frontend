@@ -5,7 +5,7 @@ import {
   type MenuItemProps,
   type PageMenuProps,
 } from '@altinn/altinn-components';
-import { ArrowRedoIcon, ClockDashedIcon } from '@navikt/aksel-icons';
+import { ArrowRedoIcon, ClockDashedIcon, InformationSquareIcon } from '@navikt/aksel-icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +14,7 @@ import { useDialogById } from '../../api/hooks/useDialogById.tsx';
 import { useDialogByIdSubscription } from '../../api/hooks/useDialogByIdSubscription.ts';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { DialogDetails } from '../../components';
+import { DialogAccessInfoModal } from '../../components/DialogAccessInfoModal/DialogAccessInfoModal.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
 import { useDelegation } from './useDelegation.tsx';
@@ -22,6 +23,7 @@ import { useDialogActions } from './useDialogActions.tsx';
 export const DialogDetailsPage = () => {
   const { id: dialogId } = useParams();
   const [isActivityLogOpen, setIsActivityLogOpen] = useState<boolean>(false);
+  const [isAccessInfoOpen, setIsAccessInfoOpen] = useState<boolean>(false);
   const { parties } = useParties();
   const { t } = useTranslation();
   const location = useLocation();
@@ -67,6 +69,14 @@ export const DialogDetailsPage = () => {
         as: 'button',
         icon: ClockDashedIcon,
         onClick: () => setIsActivityLogOpen(true),
+      },
+      {
+        id: 'access-info',
+        groupId: 'logs',
+        title: t('dialog.access_info.menu_item'),
+        as: 'button',
+        icon: InformationSquareIcon,
+        onClick: () => setIsAccessInfoOpen(true),
       },
     ],
   };
@@ -120,6 +130,7 @@ export const DialogDetailsPage = () => {
           setIsOpen: setIsActivityLogOpen,
         }}
       />
+      <DialogAccessInfoModal dialogId={dialogId} isOpen={isAccessInfoOpen} onClose={() => setIsAccessInfoOpen(false)} />
     </DialogLayout>
   );
 };
