@@ -3,11 +3,13 @@ import { ExternalLinkIcon, LeaveIcon, QuestionmarkIcon } from '@navikt/aksel-ico
 import { useTranslation } from 'react-i18next';
 import { useCurrentPartyUuid } from '../../api/hooks/usePartiesSelectors.ts';
 import { createMessageBoxLink, getNeedHelpLink } from '../../auth';
+import { useFeatureFlag } from '../../featureFlags';
 import { i18n } from '../../i18n/config';
 
 export const FloatingDropdown = () => {
   const { t } = useTranslation();
   const currentPartyUuid = useCurrentPartyUuid();
+  const hideAltinn2Links = useFeatureFlag<boolean>('inbox.hideAltinn2Links');
 
   const handleGoBack = () => {
     window.location.href = createMessageBoxLink(currentPartyUuid);
@@ -23,11 +25,15 @@ export const FloatingDropdown = () => {
       title: t('floating_dropdown.help_pages'),
       onClick: handleGoToHelp,
     },
-    {
-      icon: LeaveIcon,
-      title: t('altinn.beta.exit'),
-      onClick: handleGoBack,
-    },
+    ...(!hideAltinn2Links
+      ? [
+          {
+            icon: LeaveIcon,
+            title: t('altinn.beta.exit'),
+            onClick: handleGoBack,
+          },
+        ]
+      : []),
   ];
 
   return <FloatingDropdownAc icon={QuestionmarkIcon} iconAltText={t('floatingdropdown.open_alt_text')} items={items} />;
