@@ -73,6 +73,7 @@
   "dialog.access_info.access.via_resource_delegation": "Via single service",
   "dialog.access_info.access.via_role": "Via role",
   "dialog.access_info.error": "Could not load access information.",
+  "dialog.access_info.find_in_inbox": "Find content for the service in inbox",
   "dialog.access_info.intro": "This is how you have access:",
   "dialog.access_info.menu_item": "About access and service",
   "dialog.access_info.modal.title": "Access and service",

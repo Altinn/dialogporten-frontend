@@ -1,18 +1,22 @@
 import {
-  Avatar,
+  AuthEvidence,
+  type AuthEvidenceItemProps,
   type AvatarProps,
-  DsParagraph,
+  type ButtonVariant,
   DsSpinner,
-  Heading,
   SettingsModal,
   Typography,
 } from '@altinn/altinn-components';
 import { DialogLookupGrantType } from 'bff-types-generated';
 import { useTranslation } from 'react-i18next';
+import { Link, type LinkProps, useLocation } from 'react-router-dom';
 import { useDialogAccessInfo } from '../../api/hooks/useDialogAccessInfo.ts';
 import { getAccessAMUILink } from '../../auth';
 import { getPreferredPropertyByLocale } from '../../i18n/property.ts';
+import { FilterCategory } from '../../pages/Inbox/filters.tsx';
+import { pruneSearchQueryParams } from '../../pages/Inbox/queryParams.ts';
 import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
+import { PageRoutes } from '../../pages/routes.ts';
 import { getOrganizationByLocale } from '../../utils/organizations.ts';
 import styles from './dialogAccessInfoModal.module.css';
 
@@ -22,24 +26,26 @@ interface DialogAccessInfoModalProps {
   onClose: () => void;
 }
 
-const GRANT_TYPE_ORDER: DialogLookupGrantType[] = [
-  DialogLookupGrantType.AccessPackage,
-  DialogLookupGrantType.Role,
-  DialogLookupGrantType.ResourceDelegation,
-  DialogLookupGrantType.InstanceDelegation,
-];
-
-const GRANT_TYPE_LABEL_KEY: Record<DialogLookupGrantType, string> = {
-  [DialogLookupGrantType.AccessPackage]: 'dialog.access_info.access.via_access_package',
-  [DialogLookupGrantType.Role]: 'dialog.access_info.access.via_role',
-  [DialogLookupGrantType.ResourceDelegation]: 'dialog.access_info.access.via_resource_delegation',
-  [DialogLookupGrantType.InstanceDelegation]: 'dialog.access_info.access.via_instance_delegation',
+const GRANT_TYPE_TO_AUTH_EVIDENCE: Record<DialogLookupGrantType, NonNullable<AuthEvidenceItemProps['grantType']>> = {
+  [DialogLookupGrantType.AccessPackage]: 'package',
+  [DialogLookupGrantType.Role]: 'role',
+  [DialogLookupGrantType.ResourceDelegation]: 'resource',
+  [DialogLookupGrantType.InstanceDelegation]: 'instance',
 };
 
 export const DialogAccessInfoModal = ({ dialogId, isOpen, onClose }: DialogAccessInfoModalProps) => {
   const { t, i18n } = useTranslation();
+  const location = useLocation();
   const { accessInfo, isLoading, isError } = useDialogAccessInfo(dialogId, { enabled: isOpen });
   const { organizations } = useOrganizations();
+
+  // Build the inbox link that scopes the list to this service while keeping the
+  // currently selected party/allParties/subAccounts in the URL.
+  const findInInboxTo = accessInfo
+    ? `${PageRoutes.inbox}${pruneSearchQueryParams(location.search, {
+        [FilterCategory.SERVICE]: 'urn:altinn:resource:' + accessInfo.serviceResource.id,
+      })}`
+    : undefined;
 
   return (
     <SettingsModal
@@ -58,18 +64,25 @@ export const DialogAccessInfoModal = ({ dialogId, isOpen, onClose }: DialogAcces
           label: t('word.close'),
           close: true,
         },
+        ...(findInInboxTo
+          ? [
+              {
+                as: (props: LinkProps) => <Link {...props} to={findInInboxTo} onClick={onClose} />,
+                variant: 'ghost' as ButtonVariant,
+                label: t('dialog.access_info.find_in_inbox'),
+              },
+            ]
+          : []),
       ]}
     >
       {isLoading ? (
         <DsSpinner aria-label={t('word.loading')} />
       ) : isError || !accessInfo ? (
-        <DsParagraph>{t('dialog.access_info.error')}</DsParagraph>
+        <Typography>
+          <p>{t('dialog.access_info.error')}</p>
+        </Typography>
       ) : (
-        <DialogAccessInfoBody
-          accessInfo={accessInfo}
-          organizations={organizations ?? []}
-          locale={i18n.language}
-        />
+        <DialogAccessInfoBody accessInfo={accessInfo} organizations={organizations ?? []} locale={i18n.language} />
       )}
     </SettingsModal>
   );
@@ -86,8 +99,7 @@ const DialogAccessInfoBody = ({ accessInfo, organizations, locale }: DialogAcces
   const { serviceResource, serviceOwner, authorizationEvidence } = accessInfo;
 
   const serviceResourceName = getPreferredPropertyByLocale(serviceResource.name)?.value || serviceResource.id;
-  const serviceOwnerLocalizedName =
-    getPreferredPropertyByLocale(serviceOwner.name)?.value || serviceOwner.code;
+  const serviceOwnerLocalizedName = getPreferredPropertyByLocale(serviceOwner.name)?.value || serviceOwner.code;
   const orgLookup = getOrganizationByLocale(organizations, serviceOwner.code, locale);
   const ownerDisplayName = orgLookup?.name || serviceOwnerLocalizedName;
 
@@ -97,51 +109,41 @@ const DialogAccessInfoBody = ({ accessInfo, organizations, locale }: DialogAcces
     imageUrl: orgLookup?.logo || undefined,
   };
 
-  const groupedEvidence = GRANT_TYPE_ORDER.map((grantType) => ({
-    grantType,
-    items: authorizationEvidence.evidence.filter((e) => e.grantType === grantType),
-  })).filter((g) => g.items.length > 0);
+  // TODO: dialogLookup will soon expose names for access packages and roles as
+  // part of the response. Once that lands we should render the friendly names
+  // here (e.g. "Folkeregisterets navnepakke", "Daglig leder") instead of the
+  // raw URN/identifier in `evidence.subject`.
+  const items: AuthEvidenceItemProps[] = authorizationEvidence.evidence.map((evidence, index) => {
+    const grantType = GRANT_TYPE_TO_AUTH_EVIDENCE[evidence.grantType];
+    return {
+      id: `${grantType}-${index}-${evidence.subject}`,
+      groupId: grantType,
+      grantType,
+      title: evidence.subject,
+    };
+  });
+
+  const groups = {
+    package: { title: t('dialog.access_info.access.via_access_package') },
+    role: { title: t('dialog.access_info.access.via_role') },
+    resource: { title: t('dialog.access_info.access.via_resource_delegation') },
+    instance: { title: t('dialog.access_info.access.via_instance_delegation') },
+  };
 
   return (
-    <div className={styles.body}>
+    <div className={styles.scrollableBody}>
       <Typography>
         <p>{t('dialog.access_info.intro')}</p>
       </Typography>
-
-      <div className={styles.parent}>
-        <Avatar {...ownerAvatar} size="md" />
-        <div className={styles.parentText}>
-          <Heading size="xs" as="h3">
-            {ownerDisplayName}
-          </Heading>
-          <Heading size="xxs" as="p" variant="subtle" weight="normal">
-            {serviceResourceName}
-          </Heading>
-        </div>
-      </div>
-
-      {groupedEvidence.length > 0 ? (
-        <section className={styles.evidence}>
-          {groupedEvidence.map(({ grantType, items }) => (
-            <div key={grantType} className={styles.evidenceGroup}>
-              <Heading size="xxs" as="h4" variant="subtle">
-                {t(GRANT_TYPE_LABEL_KEY[grantType])}
-              </Heading>
-              <ul className={styles.evidenceList}>
-                {items.map((item, index) => (
-                  <li key={`${grantType}-${index}-${item.subject}`}>
-                    <code>{item.subject}</code>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </section>
-      ) : null}
-
-      <Heading size="xs" variant="subtle" weight="normal" as="p">
+      <AuthEvidence
+        owner={{ avatar: ownerAvatar, name: ownerDisplayName }}
+        service={{ title: serviceResourceName }}
+        items={items}
+        groups={groups}
+      />
+      <Typography variant="subtle">
         {t('dialog.access_info.service.identifier_short', { id: serviceResource.id })}
-      </Heading>
+      </Typography>
       <Typography>
         <p>{t('dialog.access_info.outro')}</p>
       </Typography>

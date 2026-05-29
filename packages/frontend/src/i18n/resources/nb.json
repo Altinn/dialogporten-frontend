@@ -73,6 +73,7 @@
   "dialog.access_info.access.via_resource_delegation": "Via enkelttjeneste",
   "dialog.access_info.access.via_role": "Via rolle",
   "dialog.access_info.error": "Kunne ikke hente tilgangsinformasjon.",
+  "dialog.access_info.find_in_inbox": "Finn innhold for tjenesten i innboks",
   "dialog.access_info.intro": "Slik har du tilgang:",
   "dialog.access_info.menu_item": "Om tilgang og tjeneste",
   "dialog.access_info.modal.title": "Tilgang og tjeneste",

@@ -510,6 +510,70 @@ const getServiceResourcesMock = graphql.query('getServiceResources', () => {
   });
 });
 
+const dialogAccessInfoMock = graphql.query('dialogAccessInfo', ({ variables }) => {
+  const { instanceRef } = variables as { instanceRef: string };
+  const dialogId = instanceRef?.replace('urn:altinn:dialog-id:', '');
+  const dialog = inMemoryStore.dialogs?.find((d) => d.id === dialogId);
+
+  if (!dialog) {
+    return HttpResponse.json({
+      data: {
+        dialogLookup: {
+          lookup: null,
+          errors: [{ __typename: 'DialogLookupNotFound', message: 'Dialog not found' }],
+        },
+      },
+    });
+  }
+
+  const service = inMemoryStore.services?.find((s) => s.id === dialog.serviceResource);
+  const organization = inMemoryStore.organizations?.find((o) => o.id === dialog.org);
+
+  return HttpResponse.json({
+    data: {
+      dialogLookup: {
+        lookup: {
+          instanceRef,
+          dialogId: dialog.id,
+          serviceResource: {
+            id: dialog.serviceResource,
+            name: service?.title
+              ? [
+                  { value: service.title, languageCode: 'nb' },
+                  { value: service.title, languageCode: 'en' },
+                ]
+              : [{ value: dialog.serviceResource, languageCode: 'nb' }],
+          },
+          serviceOwner: {
+            code: dialog.org,
+            orgNumber: '974761076',
+            name: organization?.name
+              ? [
+                  { value: organization.name.nb ?? dialog.org, languageCode: 'nb' },
+                  { value: organization.name.en ?? organization.name.nb ?? dialog.org, languageCode: 'en' },
+                ]
+              : [{ value: dialog.org, languageCode: 'nb' }],
+          },
+          // Mix of grant types so we exercise all four AuthEvidence groups by default.
+          authorizationEvidence: {
+            viaAccessPackage: true,
+            viaResourceDelegation: true,
+            viaInstanceDelegation: false,
+            viaRole: true,
+            evidence: [
+              { grantType: 'ACCESS_PACKAGE', subject: 'urn:altinn:accesspackage:skattegrunnlag' },
+              { grantType: 'ROLE', subject: 'urn:altinn:rolecode:DAGL' },
+              { grantType: 'ROLE', subject: 'urn:altinn:rolecode:STYL' },
+              { grantType: 'RESOURCE_DELEGATION', subject: dialog.serviceResource },
+            ],
+          },
+        },
+        errors: [],
+      },
+    },
+  });
+});
+
 export const handlers = [
   isAuthenticatedMock,
   getAllDialogsForPartiesMock,
@@ -534,6 +598,7 @@ export const handlers = [
   mutateAddFavoritePartyMock,
   mutateDeleteFavoritePartyMock,
   getServiceResourcesMock,
+  dialogAccessInfoMock,
   mockAltinn2Messages,
   mockNotificationsettingsForCurrentUser,
   featuresMock,
