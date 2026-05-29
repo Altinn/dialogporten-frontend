@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.157.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.157.0...v1.157.1) (2026-05-29)
+
+
+### Bug Fixes
+
+* **globalmenu:** inbox item not selected when subfolder is selected ([#4248](https://github.com/Altinn/dialogporten-frontend/issues/4248)) ([550680e](https://github.com/Altinn/dialogporten-frontend/commit/550680ea389209a6f4671b96e62825cbe6f0a014))
+
 ## [1.157.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.156.1...v1.157.0) (2026-05-29)
 
 
