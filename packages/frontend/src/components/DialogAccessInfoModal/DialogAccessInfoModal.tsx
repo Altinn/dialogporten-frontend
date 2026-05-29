@@ -22,6 +22,7 @@ import styles from './dialogAccessInfoModal.module.css';
 
 interface DialogAccessInfoModalProps {
   dialogId: string | undefined;
+  title?: string;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -33,7 +34,7 @@ const GRANT_TYPE_TO_AUTH_EVIDENCE: Record<DialogLookupGrantType, NonNullable<Aut
   [DialogLookupGrantType.InstanceDelegation]: 'instance',
 };
 
-export const DialogAccessInfoModal = ({ dialogId, isOpen, onClose }: DialogAccessInfoModalProps) => {
+export const DialogAccessInfoModal = ({ dialogId, title, isOpen, onClose }: DialogAccessInfoModalProps) => {
   const { t, i18n } = useTranslation();
   const location = useLocation();
   const { accessInfo, isLoading, isError } = useDialogAccessInfo(dialogId, { enabled: isOpen });
@@ -50,7 +51,7 @@ export const DialogAccessInfoModal = ({ dialogId, isOpen, onClose }: DialogAcces
   return (
     <SettingsModal
       variant="content"
-      title={t('dialog.access_info.modal.title')}
+      title={title}
       open={isOpen}
       onClose={onClose}
       buttons={[
@@ -141,7 +142,7 @@ const DialogAccessInfoBody = ({ accessInfo, organizations, locale }: DialogAcces
         items={items}
         groups={groups}
       />
-      <Typography variant="subtle">
+      <Typography variant="subtle" size="sm">
         {t('dialog.access_info.service.identifier_short', { id: serviceResource.id })}
       </Typography>
       <Typography>

@@ -132,6 +132,7 @@ export const DialogDetailsPage = () => {
       />
       <DialogAccessInfoModal
         dialogId={dialogId}
+        title={dialog?.title}
         isOpen={isAccessInfoOpen}
         onClose={() => setIsAccessInfoOpen(false)}
       />

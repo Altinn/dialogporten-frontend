@@ -62,7 +62,7 @@ interface UseGroupedDialogsProps {
   /* used to open modal with seen by log */
   onSeenByLogModalChange: (input: CurrentSeenByLog) => void;
   /* used to open modal showing access/service info for a dialog */
-  onAccessInfoModalChange: (dialogId: string) => void;
+  onAccessInfoModalChange: (input: { dialogId: string; title: string }) => void;
 }
 
 const SCOPE_TO_SYSTEM_LABEL: Record<Exclude<FilterScope, 'ALL'>, SystemLabel> = {
@@ -277,7 +277,7 @@ const useGroupedDialogs = ({
           groupId: 'logs',
           title: t('dialog.access_info.menu_item'),
           icon: InformationSquareIcon,
-          onClick: () => onAccessInfoModalChange(item.id),
+          onClick: () => onAccessInfoModalChange({ dialogId: item.id, title: item.title }),
         },
       ],
       'aria-label': t('dialog.context_menu.label', { title: item.title }),

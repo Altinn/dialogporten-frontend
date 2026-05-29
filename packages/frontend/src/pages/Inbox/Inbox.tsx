@@ -97,7 +97,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentSeenByLogModal, setCurrentSeenByLogModal] = useState<CurrentSeenByLog | null>(null);
-  const [accessInfoDialogId, setAccessInfoDialogId] = useState<string | null>(null);
+  const [accessInfoModal, setAccessInfoModal] = useState<{ dialogId: string; title: string } | null>(null);
   const subAccountsParam = searchParams.get(FixedGlobalQueryParams.subAccounts) ?? '';
 
   const [filterState, setFilterState] = useState<FilterState>(() => readFiltersFromURLQuery(searchParams.toString()));
@@ -259,7 +259,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
 
   const { groupedDialogs, groups, title, description } = useGroupedDialogs({
     onSeenByLogModalChange: setCurrentSeenByLogModal,
-    onAccessInfoModalChange: setAccessInfoDialogId,
+    onAccessInfoModalChange: setAccessInfoModal,
     items: dialogs,
     hasNextPage,
     displaySearchResults: searchMode,
@@ -458,9 +458,10 @@ export const Inbox = ({ viewType }: InboxProps) => {
         onClose={() => setCurrentSeenByLogModal(null)}
       />
       <DialogAccessInfoModal
-        dialogId={accessInfoDialogId ?? undefined}
-        isOpen={!!accessInfoDialogId}
-        onClose={() => setAccessInfoDialogId(null)}
+        dialogId={accessInfoModal?.dialogId}
+        title={accessInfoModal?.title}
+        isOpen={!!accessInfoModal}
+        onClose={() => setAccessInfoModal(null)}
       />
       <BookmarkModal {...bookmarkModalProps} />
       {footerActions.length > 0 && <BulkFooter hidden={!bulkMode} actions={footerActions} />}
