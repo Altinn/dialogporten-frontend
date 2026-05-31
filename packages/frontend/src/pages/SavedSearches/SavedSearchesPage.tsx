@@ -78,6 +78,8 @@ export const SavedSearchesPage = () => {
       </Heading>
       <Toolbar
         search={{
+          label: t('savedSearches.search.label'),
+          hideLabel: true,
           value: searchQuery,
           placeholder: t('inbox.search.placeholder'),
           onChange: (e: ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value),

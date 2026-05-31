@@ -280,6 +280,8 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
 
   const settingsSearch = {
     name: 'settings-search',
+    label: t('profile.settings.search.label'),
+    hideLabel: true,
     value: searchString,
     onChange: (event: ChangeEvent<HTMLInputElement>) => {
       setSearchString(event.target.value);

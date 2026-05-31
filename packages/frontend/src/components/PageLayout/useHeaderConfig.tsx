@@ -210,6 +210,8 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
     id: 'inbox-toolbar-search',
     collapsible: true,
     value: searchValue,
+    hideLabel: true,
+    label: t('inbox.search.label'),
     onClear,
     onChange: (event: ChangeEvent<HTMLInputElement>) => {
       const value = event.target.value;
