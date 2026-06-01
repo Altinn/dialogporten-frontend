@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.157.6](https://github.com/Altinn/dialogporten-frontend/compare/v1.157.5...v1.157.6) (2026-06-01)
+
+
+### Bug Fixes
+
+* **docs:** update docs to force new release ([4aa3f9e](https://github.com/Altinn/dialogporten-frontend/commit/4aa3f9e78c885e748f8be4f8249bfc582d2b16d7))
+
 ## [1.157.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.157.4...v1.157.5) (2026-06-01)
 
 
