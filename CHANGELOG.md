@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.157.7](https://github.com/Altinn/dialogporten-frontend/compare/v1.157.6...v1.157.7) (2026-06-01)
+
+
+### Bug Fixes
+
+* **ci:** always build docker images on release ([#4264](https://github.com/Altinn/dialogporten-frontend/issues/4264)) ([2f63489](https://github.com/Altinn/dialogporten-frontend/commit/2f634891f8a55c76c626d0a912add71d3521371e))
+
 ## [1.157.6](https://github.com/Altinn/dialogporten-frontend/compare/v1.157.5...v1.157.6) (2026-06-01)
 
 
