@@ -1,7 +1,7 @@
 ---
 slug: maintainers
 title: Maintainers
-authors: [seanes, alexdigdir, mbacherycz]
+authors: [seanes, mbacherycz]
 tags: []
 date: 2025-04-30
 ---
