@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.157.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.157.3...v1.157.4) (2026-06-01)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @fastify/otel to v0.18.1 ([#4109](https://github.com/Altinn/dialogporten-frontend/issues/4109)) ([ecdadc1](https://github.com/Altinn/dialogporten-frontend/commit/ecdadc12632b12b476b40fabd822b115e3ac05b1))
+
 ## [1.157.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.157.2...v1.157.3) (2026-06-01)
 
 
