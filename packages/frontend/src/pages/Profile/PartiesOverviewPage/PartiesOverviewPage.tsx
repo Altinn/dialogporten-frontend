@@ -422,6 +422,8 @@ export const PartiesOverviewPage = () => {
         <Toolbar
           search={{
             name: 'party-search',
+            label: t('parties.search.label'),
+            hideLabel: true,
             placeholder: t('inbox.search.placeholder'),
             value: searchValue,
             onChange: (e) => setSearchValue((e.target as HTMLInputElement).value),
