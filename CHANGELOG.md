@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.157.8](https://github.com/Altinn/dialogporten-frontend/compare/v1.157.7...v1.157.8) (2026-06-01)
+
+
+### Bug Fixes
+
+* **forms:** consolidate validation on input fields ([#4254](https://github.com/Altinn/dialogporten-frontend/issues/4254)) ([62ca767](https://github.com/Altinn/dialogporten-frontend/commit/62ca7673a6afddcddd8bada515f6e43c9cc69796))
+* **snackbar:** cap visible to 3 snacks and fade older ones ([#4261](https://github.com/Altinn/dialogporten-frontend/issues/4261)) ([b088f17](https://github.com/Altinn/dialogporten-frontend/commit/b088f1795ebb3bf4f9801835f2f868db0cb0587a))
+
 ## [1.157.7](https://github.com/Altinn/dialogporten-frontend/compare/v1.157.6...v1.157.7) (2026-06-01)
 
 
