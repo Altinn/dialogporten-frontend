@@ -9,6 +9,8 @@ import {
   Section,
   Switch,
   Typography,
+  DsValidationMessage as ValidationMessage,
+  type DsValidationMessageProps as ValidationMessageProps,
   useSnackbar,
 } from '@altinn/altinn-components';
 import { useQueryClient } from '@tanstack/react-query';
@@ -64,7 +66,23 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
   const [emailValue, setEmailValue] = useState<string>(isEmail ? defaultValue : '');
   const [countryCode, setCountryCode] = useState<string>(initialPhone.countryCode);
   const [phoneNumberPart, setPhoneNumberPart] = useState<string>(initialPhone.phoneNumber);
+  const [emailTouched, setEmailTouched] = useState<boolean>(false);
+  const [phoneTouched, setPhoneTouched] = useState<boolean>(false);
   const value = isEmail ? emailValue : joinPhone(countryCode, phoneNumberPart);
+
+  const emailValidation =
+    !emailValue || !emailTouched
+      ? { color: 'info' as ValidationMessageProps['color'], message: t('profile.account_alerts.email_hint') }
+      : isValidEmail(emailValue)
+        ? { color: 'success' as ValidationMessageProps['color'], message: t('profile.account_alerts.email_valid') }
+        : { color: 'danger' as ValidationMessageProps['color'], message: t('profile.account_alerts.email_invalid') };
+
+  const phoneValidation =
+    !phoneNumberPart || !phoneTouched
+      ? { color: 'info' as ValidationMessageProps['color'], message: t('profile.account_alerts.phone_hint') }
+      : isValidPhoneNumber(countryCode, phoneNumberPart)
+        ? { color: 'success' as ValidationMessageProps['color'], message: t('profile.account_alerts.phone_valid') }
+        : { color: 'danger' as ValidationMessageProps['color'], message: t('profile.account_alerts.phone_invalid') };
 
   const handleClose = () => {
     document.activeElement?.closest('dialog')?.close();
@@ -95,7 +113,28 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (needsVerification) return;
+    const form = e.currentTarget;
+
+    if (!isDirty && !needsVerification) {
+      handleClose();
+      return;
+    }
+    if (enabled && !isValidValue) {
+      if (isEmail) {
+        setEmailTouched(true);
+        form.querySelector<HTMLInputElement>('input[name="email"]')?.focus();
+      } else {
+        setPhoneTouched(true);
+        form.querySelector<HTMLInputElement>('input[name="tel"]')?.focus();
+      }
+      return;
+    }
+    if (needsVerification) {
+      if (allowedToVerify) void handleSendCode(value);
+      else handleClose();
+      return;
+    }
+
     try {
       const result = await updateNotificationsetting(buildPatch(enabled ? value : null));
       if (result?.updateNotificationSetting?.success) {
@@ -157,7 +196,12 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
                   name="email"
                   size="sm"
                   value={emailValue}
-                  onChange={(e) => setEmailValue(e.target.value)}
+                  aria-invalid={emailValidation.color === 'danger'}
+                  onChange={(e) => {
+                    setEmailValue(e.target.value);
+                    setEmailTouched(false);
+                  }}
+                  onBlur={() => setEmailTouched(true)}
                   placeholder={t('profile.account_alerts.email_placeholder')}
                   autoComplete="email"
                 />
@@ -167,46 +211,58 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
                   </span>
                 )}
               </div>
+              <ValidationMessage data-size="sm" data-color={emailValidation.color}>
+                {emailValidation.message}
+              </ValidationMessage>
             </Field>
           )}
           {enabled && !isEmail && (
-            <Field>
-              <Label className={styles.hiddenLabel} size="sm">
-                {t('profile.account_alerts.phone_label')}
-              </Label>
+            <Fieldset size="sm">
               <div className={styles.phoneRow}>
-                <Input
-                  name="countryCode"
-                  size="sm"
-                  value={countryCode}
-                  inputMode="tel"
-                  autoComplete="tel-country-code"
-                  aria-label={t('profile.account_alerts.country_code_label')}
-                  className={styles.countryCodeInput}
-                  onChange={(e) => {
-                    const next = e.target.value;
-                    if (next === '' || isValidCountryCodeInput(next)) setCountryCode(next || '+');
-                  }}
-                />
-                <div className={`${styles.fieldWrapper} ${styles.phoneNumberInput}`}>
+                <Field className={styles.countryCodeInput}>
                   <Input
-                    name="tel"
+                    name="countryCode"
                     size="sm"
-                    value={phoneNumberPart}
+                    value={countryCode}
                     inputMode="tel"
-                    autoComplete="tel-national"
-                    placeholder={t('profile.account_alerts.phone_placeholder')}
-                    aria-label={t('profile.account_alerts.phone_label')}
-                    onChange={(e) => setPhoneNumberPart(e.target.value.replace(/\D/g, ''))}
+                    autoComplete="tel-country-code"
+                    aria-label={t('profile.account_alerts.country_code_label')}
+                    aria-invalid={false}
+                    onChange={(e) => {
+                      const next = e.target.value;
+                      if (next === '' || isValidCountryCodeInput(next)) setCountryCode(next || '+');
+                    }}
                   />
-                  {value && isVerified && (
-                    <span data-size="sm" className={styles.badgeOverlay}>
-                      <Badge color="success">{t('profile.verification.status_verified')}</Badge>
-                    </span>
-                  )}
-                </div>
+                </Field>
+                <Field className={styles.phoneNumberInput}>
+                  <div className={styles.fieldWrapper}>
+                    <Input
+                      name="tel"
+                      size="sm"
+                      value={phoneNumberPart}
+                      inputMode="tel"
+                      autoComplete="tel-national"
+                      placeholder={t('profile.account_alerts.phone_placeholder')}
+                      aria-label={t('profile.account_alerts.phone_label')}
+                      aria-invalid={phoneValidation.color === 'danger'}
+                      onChange={(e) => {
+                        setPhoneNumberPart(e.target.value.replace(/\D/g, ''));
+                        setPhoneTouched(false);
+                      }}
+                      onBlur={() => setPhoneTouched(true)}
+                    />
+                    {value && isVerified && (
+                      <span data-size="sm" className={styles.badgeOverlay}>
+                        <Badge color="success">{t('profile.verification.status_verified')}</Badge>
+                      </span>
+                    )}
+                  </div>
+                </Field>
               </div>
-            </Field>
+              <ValidationMessage data-size="sm" data-color={phoneValidation.color}>
+                {phoneValidation.message}
+              </ValidationMessage>
+            </Fieldset>
           )}
         </Fieldset>
         <Typography size="sm">
@@ -224,21 +280,13 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
           </Typography>
         )}
         <ButtonGroup>
-          {needsVerification && (
-            <Button
-              type="button"
-              variant="tinted"
-              onClick={() => handleSendCode(value)}
-              disabled={isSending || !allowedToVerify}
-            >
-              {isEmail ? t('profile.account_alerts.verify_email') : t('profile.account_alerts.verify_sms')}
-            </Button>
-          )}
-          {!needsVerification && isDirty && (
-            <Button type="submit" disabled={!isValidValue}>
-              {t('profile.account_alerts.save')}
-            </Button>
-          )}
+          <Button type="submit" variant={needsVerification ? 'tinted' : 'solid'}>
+            {needsVerification
+              ? isEmail
+                ? t('profile.account_alerts.verify_email')
+                : t('profile.account_alerts.verify_sms')
+              : t('profile.account_alerts.save')}
+          </Button>
           <Button type="button" variant="outline" onClick={handleClose}>
             {t('word.cancel')}
           </Button>
