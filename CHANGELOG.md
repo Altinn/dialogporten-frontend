@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.157.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.157.2...v1.157.3) (2026-06-01)
+
+
+### Bug Fixes
+
+* **a11y:** add accessible labels to toolbar search inputs ([#4257](https://github.com/Altinn/dialogporten-frontend/issues/4257)) ([576db56](https://github.com/Altinn/dialogporten-frontend/commit/576db56a7afc2c8da9fbc17b996058e631a471b9))
+* **deps:** update dependency @opentelemetry/instrumentation to v0.218.0 ([#4197](https://github.com/Altinn/dialogporten-frontend/issues/4197)) ([8349a5d](https://github.com/Altinn/dialogporten-frontend/commit/8349a5d4a265944e202d24262947d8d5c82a348b))
+
 ## [1.157.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.157.1...v1.157.2) (2026-05-29)
 
 
