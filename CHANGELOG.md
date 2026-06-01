@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.157.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.157.4...v1.157.5) (2026-06-01)
+
+
+### Bug Fixes
+
+* **docs:** add explicit date to maintainers blog post to fix CI docker build ([8569a8c](https://github.com/Altinn/dialogporten-frontend/commit/8569a8cc32052fb59cd4e3789404c34bc7f5a08e))
+
 ## [1.157.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.157.3...v1.157.4) (2026-06-01)
 
 
