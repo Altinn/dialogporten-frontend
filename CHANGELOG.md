@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.157.9](https://github.com/Altinn/dialogporten-frontend/compare/v1.157.8...v1.157.9) (2026-06-02)
+
+
+### Bug Fixes
+
+* **toolbar:** add html title for service resource title in order to se full title ([#4269](https://github.com/Altinn/dialogporten-frontend/issues/4269)) ([a51dc80](https://github.com/Altinn/dialogporten-frontend/commit/a51dc80a230affb4b7f35da2ad23af2d39889018))
+
 ## [1.157.8](https://github.com/Altinn/dialogporten-frontend/compare/v1.157.7...v1.157.8) (2026-06-01)
 
 
