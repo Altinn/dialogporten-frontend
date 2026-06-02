@@ -13,8 +13,6 @@ export const featureFlagDefinitions = [
   { key: 'dialogporten.disableSubscriptions', type: 'boolean', default: false },
   { key: 'inbox.accountNavigatorEnabled', type: 'boolean', default: false },
   { key: 'auth.orgsNotReadyToDealWithDelegations', type: 'string-array', default: [] },
-  { key: 'inbox.banner.escalateWarning', type: 'boolean', default: false },
-  { key: 'inbox.disableBetaLabel', type: 'boolean', default: false },
   { key: 'SI.emailAccount.enableConnectLink', type: 'boolean', default: false },
   { key: 'profil.enableSIPhoneEdit', type: 'boolean', default: false },
   { key: 'inbox.hideAltinn2Links', type: 'boolean', default: false },
