@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.157.10](https://github.com/Altinn/dialogporten-frontend/compare/v1.157.9...v1.157.10) (2026-06-02)
+
+
+### Bug Fixes
+
+* Remove beta label and warning banner color ff ([#4271](https://github.com/Altinn/dialogporten-frontend/issues/4271)) ([def1e80](https://github.com/Altinn/dialogporten-frontend/commit/def1e80d0b57f265ac15ee691dfb7ec2bd894ad1))
+* **search:** split and unquote search terms consistently ([#4274](https://github.com/Altinn/dialogporten-frontend/issues/4274)) ([58e2045](https://github.com/Altinn/dialogporten-frontend/commit/58e204562d01b809338bad53853ddabf723f8c5d))
+
 ## [1.157.9](https://github.com/Altinn/dialogporten-frontend/compare/v1.157.8...v1.157.9) (2026-06-02)
 
 
