@@ -307,7 +307,11 @@ const useGroupedDialogs = ({
       extendedStatusLabel: item.extendedStatus,
       updatedAt: item.contentUpdatedAt,
       updatedAtLabel: format(item.contentUpdatedAt, formatString),
-      dueAtLabel: item.dueAt ? t('dialog.due_at', { date: format(item.dueAt, formatString) }) : undefined,
+      dueAtLabel: item.dueAt
+        ? t(isDueAtExpired(item.dueAt) ? 'dialog.due_at_expired' : 'dialog.due_at', {
+            date: format(item.dueAt, formatString),
+          })
+        : undefined,
       dueAtExpired: isDueAtExpired(item.dueAt),
       dueAt: item.dueAt,
       sentCount: item.fromPartyTransmissionsCount ?? 0,
