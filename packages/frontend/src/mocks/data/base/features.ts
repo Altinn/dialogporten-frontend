@@ -7,4 +7,5 @@ export const features = {
   'inbox.banner.escalateWarning': false,
   'inbox.disableBetaLabel': false,
   'SI.emailAccount.enableConnectLink': true,
+  'profil.enableSIPhoneEdit': true,
 };

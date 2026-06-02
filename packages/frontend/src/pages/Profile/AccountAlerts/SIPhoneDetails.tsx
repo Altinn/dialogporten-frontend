@@ -3,12 +3,15 @@ import {
   Button,
   ButtonGroup,
   Field,
+  Fieldset,
   Input,
   Label,
   Section,
   Typography,
+  DsValidationMessage as ValidationMessage,
   useSnackbar,
 } from '@altinn/altinn-components';
+import type { DsValidationMessageProps as ValidationMessageProps } from '@altinn/altinn-components/dist/types/lib/components/DsComponents';
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -41,7 +44,7 @@ export const SIPhoneDetails = ({ phoneNumber }: { phoneNumber?: string }) => {
   const initialPhone = parsePhone(phoneNumber);
   const [countryCode, setCountryCode] = useState<string>(initialPhone.countryCode);
   const [phoneNumberPart, setPhoneNumberPart] = useState<string>(initialPhone.phoneNumber);
-  const [isSaving, setIsSaving] = useState(false);
+  const [phoneTouched, setPhoneTouched] = useState<boolean>(false);
 
   const handleClose = (event: React.SyntheticEvent) => {
     const target = event.target as Element | null;
@@ -50,14 +53,34 @@ export const SIPhoneDetails = ({ phoneNumber }: { phoneNumber?: string }) => {
 
   const siPhoneValue = joinPhone(countryCode, phoneNumberPart);
   const isPhoneShapeValid = isValidPhoneNumber(countryCode, phoneNumberPart);
+  const phoneValidation =
+    !phoneNumberPart || !phoneTouched
+      ? { color: 'info' as ValidationMessageProps['color'], message: t('profile.account_alerts.phone_hint') }
+      : isPhoneShapeValid
+        ? { color: 'success' as ValidationMessageProps['color'], message: t('profile.account_alerts.phone_valid') }
+        : { color: 'danger' as ValidationMessageProps['color'], message: t('profile.account_alerts.phone_invalid') };
   const isVerified = !!siPhoneValue && isAlreadyVerified(siPhoneValue, 'Sms');
   const isValueDirty = siPhoneValue.trim() !== (phoneNumber ?? '').trim();
   const needsVerification = !!siPhoneValue && !isVerified;
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (needsVerification) return;
-    setIsSaving(true);
+    const form = e.currentTarget;
+
+    if (!isValueDirty && !needsVerification) {
+      handleClose(e);
+      return;
+    }
+    if (phoneNumberPart && !isPhoneShapeValid) {
+      setPhoneTouched(true);
+      form.querySelector<HTMLInputElement>('input[name="tel"]')?.focus();
+      return;
+    }
+    if (needsVerification) {
+      void handleSendCode(siPhoneValue);
+      return;
+    }
+
     try {
       const result = await updateSIPrivatePhoneNumber(siPhoneValue || null);
       if (result?.updateSIPrivatePhoneNumber?.success) {
@@ -69,8 +92,6 @@ export const SIPhoneDetails = ({ phoneNumber }: { phoneNumber?: string }) => {
       }
     } catch {
       openSnackbar({ message: t('profile.account_alerts.snackbar.error'), color: 'danger' });
-    } finally {
-      setIsSaving(false);
     }
   };
 
@@ -98,62 +119,62 @@ export const SIPhoneDetails = ({ phoneNumber }: { phoneNumber?: string }) => {
   return (
     <form onSubmit={handleSave}>
       <Section spacing={6}>
-        <Field>
+        <Fieldset size="sm">
           <Label size="sm">{t('profile.account_alerts.phone_label')}</Label>
           <div className={styles.phoneRow}>
-            <Input
-              name="countryCode"
-              size="sm"
-              value={countryCode}
-              inputMode="tel"
-              autoComplete="tel-country-code"
-              aria-label={t('profile.account_alerts.country_code_label')}
-              className={styles.countryCodeInput}
-              onChange={(e) => {
-                const next = e.target.value;
-                if (next === '' || isValidCountryCodeInput(next)) setCountryCode(next || '+');
-              }}
-            />
-            <div className={`${styles.fieldWrapper} ${styles.phoneNumberInput}`}>
+            <Field className={styles.countryCodeInput}>
               <Input
-                name="tel"
+                name="countryCode"
                 size="sm"
-                value={phoneNumberPart}
+                value={countryCode}
                 inputMode="tel"
-                autoComplete="tel-national"
-                placeholder={t('profile.account_alerts.phone_placeholder')}
-                aria-label={t('profile.account_alerts.phone_label')}
-                onChange={(e) => setPhoneNumberPart(e.target.value.replace(/\D/g, ''))}
+                autoComplete="tel-country-code"
+                aria-label={t('profile.account_alerts.country_code_label')}
+                aria-invalid={false}
+                onChange={(e) => {
+                  const next = e.target.value;
+                  if (next === '' || isValidCountryCodeInput(next)) setCountryCode(next || '+');
+                }}
               />
-              {siPhoneValue && isVerified && (
-                <span data-size="sm" className={styles.badgeOverlay}>
-                  <Badge color="success">{t('profile.verification.status_verified')}</Badge>
-                </span>
-              )}
-            </div>
+            </Field>
+            <Field className={styles.phoneNumberInput}>
+              <div className={styles.fieldWrapper}>
+                <Input
+                  name="tel"
+                  size="sm"
+                  value={phoneNumberPart}
+                  inputMode="tel"
+                  autoComplete="tel-national"
+                  placeholder={t('profile.account_alerts.phone_placeholder')}
+                  aria-label={t('profile.account_alerts.phone_label')}
+                  aria-invalid={phoneValidation.color === 'danger'}
+                  onChange={(e) => {
+                    setPhoneNumberPart(e.target.value.replace(/\D/g, ''));
+                    setPhoneTouched(false);
+                  }}
+                  onBlur={() => setPhoneTouched(true)}
+                />
+                {siPhoneValue && isVerified && (
+                  <span data-size="sm" className={styles.badgeOverlay}>
+                    <Badge color="success">{t('profile.verification.status_verified')}</Badge>
+                  </span>
+                )}
+              </div>
+            </Field>
           </div>
-        </Field>
+          <ValidationMessage data-size="sm" data-color={phoneValidation.color}>
+            {phoneValidation.message}
+          </ValidationMessage>
+        </Fieldset>
         {needsVerification && siPhoneValue && (
           <Typography size="sm">
             <p>{t('profile.account_alerts.new_addresses_must_verify')}</p>
           </Typography>
         )}
         <ButtonGroup>
-          {needsVerification && siPhoneValue && (
-            <Button
-              type="button"
-              variant="tinted"
-              onClick={() => handleSendCode(siPhoneValue)}
-              disabled={isSending || !isPhoneShapeValid}
-            >
-              {t('profile.account_alerts.verify_sms')}
-            </Button>
-          )}
-          {!needsVerification && isValueDirty && (
-            <Button type="submit" disabled={!isPhoneShapeValid || isSaving}>
-              {t('profile.account_alerts.save')}
-            </Button>
-          )}
+          <Button type="submit" variant={needsVerification ? 'tinted' : 'solid'}>
+            {needsVerification ? t('profile.account_alerts.verify_sms') : t('profile.account_alerts.save')}
+          </Button>
           <Button type="button" variant="outline" onClick={handleClose}>
             {t('word.close')}
           </Button>
