@@ -3,6 +3,7 @@ import { DialogStatus, type SavedSearchesFieldsFragment, type ServiceResource, S
 import type { Locale } from 'date-fns';
 import type { TFunction } from 'i18next';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
+import { getSearchLabels } from '../../components/PageLayout/Search/getSearchLabels.ts';
 import type { OrganizationLookup } from '../../utils/organizations.ts';
 import { getOrganization } from '../../utils/organizations.ts';
 import { DateFilterOption, formatDateRange, formatSingleDate } from '../Inbox/filters';
@@ -128,7 +129,7 @@ export const buildFilterParams = (
   }
 
   if (savedSearch.data?.searchString) {
-    params.push({ type: 'search', label: savedSearch.data.searchString });
+    params.push(...getSearchLabels(savedSearch.data.searchString));
   }
 
   return params;

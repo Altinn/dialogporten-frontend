@@ -20,7 +20,7 @@ import { FixedGlobalQueryParams, pruneSearchQueryParams } from '../../pages/Inbo
 import { useProfile } from '../../pages/Profile';
 import { PageRoutes } from '../../pages/routes.ts';
 import { useGlobalMenu } from './GlobalMenu';
-import { useSearchString } from './Search';
+import { getSearchLabels, pruneSearchValue, useSearchString } from './Search';
 import { mapPartiesToAuthorizedParties } from './mapPartyToAuthorizedParty';
 
 interface UseHeaderConfigOutput {
@@ -205,6 +205,7 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
   const activeFilters = Object.keys(filterState ?? {})
     .filter((key) => !ignoreCountFor.includes(key))
     .filter((key) => (filterState?.[key]?.length ?? 0) > 0);
+  const searchLabel = getSearchLabels(searchValue);
 
   const inboxSearch: ToolbarSearchProps = {
     id: 'inbox-toolbar-search',
@@ -234,10 +235,11 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
         {
           groupId: 'suggestions',
           title: searchValue,
-          label: <QueryLabel params={[{ type: 'search', value: searchValue, label: searchValue }]} />,
+          label: <QueryLabel params={searchLabel} />,
           'aria-label': t('search.autocomplete.searchInInbox', { query: searchValue }),
           onClick: () => {
-            navigate(`${location.pathname}${pruneSearchQueryParams(location.search, { search: searchValue })}`);
+            const prunedSearchQuery = pruneSearchValue(searchValue);
+            navigate(`${location.pathname}${pruneSearchQueryParams(location.search, { search: prunedSearchQuery })}`);
           },
           as: 'button',
           linkIcon: true,
@@ -253,7 +255,7 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
           label: (
             <QueryLabel
               params={[
-                { type: 'search', value: searchValue, label: searchValue },
+                ...searchLabel,
                 {
                   type: 'filter',
                   value: 'filters',

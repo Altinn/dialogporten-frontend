@@ -30,7 +30,7 @@ test.describe('Saved search', () => {
     await page.getByLabel('Slett søk').click();
 
     await expect(page.getByText('Søket ditt ble slettet')).toBeVisible();
-    await expect(page.getByRole('main')).toContainText('Du legger til et søk ved å søke');
+    await expect(page.getByRole('main')).toContainText('Ingen lagrede søk');
   });
 
   test('Saved search based on searchbar value', async ({ page, isMobile }) => {

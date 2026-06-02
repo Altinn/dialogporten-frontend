@@ -32,7 +32,7 @@ import { useParties } from '../../api/hooks/useParties.ts';
 import { createFiltersURLQuery } from '../../auth';
 import { Notice } from '../../components/Notice';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
-import { useSearchString } from '../../components/PageLayout/Search/';
+import { getSearchWords, useSearchString } from '../../components/PageLayout/Search/';
 import { getPageRouteTitle } from '../../components/PageLayout/pageRouteToTitle.ts';
 import { useHeaderConfig } from '../../components/PageLayout/useHeaderConfig.tsx';
 import { SINotice } from '../../components/SINotice/SINotice.tsx';
@@ -290,7 +290,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
   );
 
   const highlightWords = useMemo(
-    () => (searchMode ? [enteredSearchValue] : undefined),
+    () => (searchMode ? getSearchWords(enteredSearchValue) : undefined),
     [searchMode, enteredSearchValue],
   );
 
