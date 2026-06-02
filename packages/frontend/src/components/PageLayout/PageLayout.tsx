@@ -17,7 +17,6 @@ import { Link, type LinkProps, Outlet, useLocation, useSearchParams } from 'reac
 import { useCurrentEndUser, useSelectedProfile } from '../../api/hooks/usePartiesSelectors.ts';
 import { getFrontPageLink } from '../../auth';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
-import { useFeatureFlag } from '../../featureFlags';
 import { getSearchStringFromQueryParams } from '../../pages/Inbox/queryParams.ts';
 import { useProfile } from '../../pages/Profile';
 import { PageRoutes } from '../../pages/routes.ts';
@@ -152,7 +151,6 @@ export const PageLayout: React.FC = () => {
     return steps;
   }, [location.pathname, fromView, docTitle]);
 
-  const escalateBannerSeverity = useFeatureFlag<boolean>('inbox.banner.escalateWarning');
   const bannerLink = getBannerLink(i18n.language);
 
   let color: LayoutColor = 'neutral';
@@ -178,8 +176,8 @@ export const PageLayout: React.FC = () => {
     banner: {
       title: t('altinn_shutdown_banner.title'),
       link: { label: t('altinn_shutdown_banner.link'), href: bannerLink },
-      color: escalateBannerSeverity ? 'warning' : undefined,
-      variant: escalateBannerSeverity ? 'alert' : undefined,
+      color: 'warning',
+      variant: 'alert',
     },
     content: {
       color: isProfile ? 'person' : undefined,

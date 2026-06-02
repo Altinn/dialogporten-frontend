@@ -1,4 +1,4 @@
-import { Badge, type MenuItemProps, type MenuItemSize, type MenuProps, type Theme } from '@altinn/altinn-components';
+import type { MenuItemProps, MenuItemSize, MenuProps, Theme } from '@altinn/altinn-components';
 import {
   ArchiveIcon,
   BellIcon,
@@ -39,7 +39,6 @@ export function buildInboxMenu({
   currentSearchQuery,
   fromView,
   currentPartyUuid,
-  disableBetaLabel,
   hideAltinn2Links,
 }: {
   t: (key: string, vars?: Record<string, string>) => string;
@@ -48,7 +47,6 @@ export function buildInboxMenu({
   currentSearchQuery: string;
   fromView?: string;
   currentPartyUuid?: string;
-  disableBetaLabel: boolean;
   hideAltinn2Links: boolean;
 }): UseGlobalMenuProps {
   const menuGroups = {
@@ -119,19 +117,6 @@ export function buildInboxMenu({
           } as MenuItemProps,
         ]
       : []),
-    ...(!disableBetaLabel
-      ? [
-          {
-            id: 'beta-badge',
-            groupId: 'shortcuts-2',
-            as: () => (
-              <span style={{ marginLeft: '0.5rem' }}>
-                <Badge label={t('word.beta')} variant="base" color="neutral" size="sm" />
-              </span>
-            ),
-          } as MenuItemProps,
-        ]
-      : []),
   ];
 
   const helpItems: MenuItemProps[] = [
@@ -180,13 +165,6 @@ export function buildInboxMenu({
       as: createMenuItemComponent({
         to: PageRoutes.inbox + pruneSearchQueryParams(currentSearchQuery),
       }),
-      badge: disableBetaLabel
-        ? undefined
-        : {
-            label: t('word.beta'),
-            color: 'neutral',
-            variant: 'base',
-          },
       items: [
         {
           id: '2',
@@ -246,13 +224,7 @@ export function buildInboxMenu({
       ...menuGroups,
       shortcuts: menuGroups.shortcuts,
     },
-    items: [
-      ...inboxItems.map((item, idx) => ({
-        ...item,
-        badge: idx === 0 ? undefined : item.badge,
-      })),
-      ...shortcuts,
-    ],
+    items: [...inboxItems, ...shortcuts],
   };
 
   const mobileMenu: MenuProps = {
@@ -275,13 +247,6 @@ export function buildInboxMenu({
         href: getAccessAMUILink(),
         title: t('altinn.access_management'),
         selected: false,
-        badge: disableBetaLabel
-          ? undefined
-          : {
-              label: t('word.beta'),
-              color: 'neutral',
-              variant: 'base',
-            },
       },
       {
         id: 'all-forms',

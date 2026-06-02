@@ -20,7 +20,6 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
   const { t } = useTranslation();
   const currentEndUser = useCurrentEndUser();
   const currentPartyUuid = useCurrentPartyUuid();
-  const disableBetaLabel = useFeatureFlag<boolean>('inbox.disableBetaLabel');
   const hideAltinn2Links = useFeatureFlag<boolean>('inbox.hideAltinn2Links');
 
   const inboxMenus = buildInboxMenu({
@@ -30,7 +29,6 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
     currentSearchQuery,
     fromView,
     currentPartyUuid,
-    disableBetaLabel,
     hideAltinn2Links,
   });
 
@@ -40,7 +38,6 @@ export const useGlobalMenu = (): UseGlobalMenuProps => {
     pathname,
     currentSearchQuery,
     fromView,
-    disableBetaLabel,
   });
 
   return isProfile ? profileMenus : inboxMenus;

@@ -2,8 +2,6 @@ import type { FilterState } from '@altinn/altinn-components';
 import type { TFunction } from 'i18next';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useFeatureFlag } from '../featureFlags';
-
 interface PageTitleOptions {
   baseTitle: string;
   searchValue?: string;
@@ -25,7 +23,6 @@ const translateInboxViewType = (baseTitle: string, t: TFunction): string => {
 
 export const usePageTitle = ({ baseTitle, searchValue, filterState, getFilterLabel }: PageTitleOptions) => {
   const { t } = useTranslation();
-  const disableBetaLabel = useFeatureFlag<boolean>('inbox.disableBetaLabel');
 
   useEffect(() => {
     const translatedBaseTitle = translateInboxViewType(baseTitle, t);
@@ -52,6 +49,6 @@ export const usePageTitle = ({ baseTitle, searchValue, filterState, getFilterLab
       }
     }
 
-    document.title = titleParts.join(' + ') + (disableBetaLabel ? ' - Altinn' : ` - Altinn ${t('word.beta')}`);
-  }, [baseTitle, searchValue, filterState, getFilterLabel, disableBetaLabel, t]);
+    document.title = titleParts.join(' + ') + ' - Altinn';
+  }, [baseTitle, searchValue, filterState, getFilterLabel, t]);
 };

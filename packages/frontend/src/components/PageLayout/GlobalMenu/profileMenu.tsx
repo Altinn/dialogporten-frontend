@@ -1,4 +1,4 @@
-import { Badge, type MenuItemProps, type MenuItemSize, type MenuProps, type Theme } from '@altinn/altinn-components';
+import type { MenuItemProps, MenuItemSize, MenuProps, Theme } from '@altinn/altinn-components';
 import { formatDisplayName } from '@altinn/altinn-components';
 import {
   BellIcon,
@@ -33,14 +33,12 @@ export function buildProfileMenu({
   pathname,
   currentSearchQuery,
   fromView,
-  disableBetaLabel,
 }: {
   t: (key: string, vars?: Record<string, string>) => string;
   currentEndUserName?: string;
   pathname: string;
   currentSearchQuery: string;
   fromView?: string;
-  disableBetaLabel: boolean;
 }): UseGlobalMenuProps {
   const menuGroups = {
     shortcuts: {
@@ -164,22 +162,7 @@ export function buildProfileMenu({
     }),
   };
 
-  const shortcuts: MenuItemProps[] = [
-    inboxShortcut,
-    ...(!disableBetaLabel
-      ? [
-          {
-            id: 'beta-badge',
-            groupId: 'shortcuts-2',
-            as: () => (
-              <span style={{ marginLeft: '0.5rem' }}>
-                <Badge label={t('word.beta')} variant="base" color="neutral" size="sm" />
-              </span>
-            ),
-          } as MenuItemProps,
-        ]
-      : []),
-  ];
+  const shortcuts: MenuItemProps[] = [inboxShortcut];
 
   const sidebarMenu: MenuProps = {
     variant: 'tinted',
@@ -207,13 +190,6 @@ export function buildProfileMenu({
       as: createMenuItemComponent({
         to: PageRoutes.inbox + pruneSearchQueryParams(currentSearchQuery),
       }),
-      badge: disableBetaLabel
-        ? undefined
-        : {
-            label: t('word.beta'),
-            color: 'neutral',
-            variant: 'base',
-          },
     },
     {
       id: 'am',
@@ -224,13 +200,6 @@ export function buildProfileMenu({
       as: 'a',
       href: getAccessAMUILink(),
       title: t('altinn.access_management'),
-      badge: disableBetaLabel
-        ? undefined
-        : {
-            label: t('word.beta'),
-            color: 'neutral',
-            variant: 'base',
-          },
     },
     {
       id: 'all-forms',

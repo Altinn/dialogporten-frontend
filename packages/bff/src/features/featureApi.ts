@@ -11,8 +11,6 @@ const defaultFeatureFlags: Record<string, boolean> = {
   'inbox.enableAlertBanner': false,
   'dialogporten.disableSubscriptions': false,
   'inbox.accountNavigatorEnabled': false,
-  'inbox.banner.escalateWarning': false,
-  'inbox.disableBetaLabel': false,
   'SI.emailAccount.enableConnectLink': false,
   'profil.enableSIPhoneEdit': false,
   'inbox.hideAltinn2Links': false,
