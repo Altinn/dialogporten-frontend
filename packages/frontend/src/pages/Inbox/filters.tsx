@@ -465,6 +465,7 @@ export const createServiceFilter = ({
         return {
           groupId: serviceResource.groupId,
           description: serviceResource.description,
+          htmlTitle: serviceResource.title,
           title: serviceResource.title,
           value: serviceResource.id,
           searchWords: [serviceResource.id, serviceResource.title],
