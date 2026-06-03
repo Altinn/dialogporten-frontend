@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.157.11](https://github.com/Altinn/dialogporten-frontend/compare/v1.157.10...v1.157.11) (2026-06-03)
+
+
+### Bug Fixes
+
+* **header:** hide search in account selector when 5 &lt;= parties ([#4279](https://github.com/Altinn/dialogporten-frontend/issues/4279)) ([a6ee648](https://github.com/Altinn/dialogporten-frontend/commit/a6ee648265104b896d5e82431e480edb0c1889e0))
+
 ## [1.157.10](https://github.com/Altinn/dialogporten-frontend/compare/v1.157.9...v1.157.10) (2026-06-02)
 
 
