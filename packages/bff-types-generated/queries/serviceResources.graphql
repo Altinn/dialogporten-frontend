@@ -1,5 +1,5 @@
 query getServiceResources($ids: [String!], $resourceType: [String], $org: [String], $lang: String) {
-  serviceResources(resourceType: $resourceType, ids: $ids, org: $org, lang: $lang) {
+  serviceResources: RRServiceResourcesList(resourceType: $resourceType, ids: $ids, org: $org, lang: $lang) {
     id
     title
     org

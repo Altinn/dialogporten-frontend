@@ -9,11 +9,56 @@ query dialogLookup($instanceRef: String!) {
   }
 }
 
+query dialogAccessInfo($instanceRef: String!) {
+  dialogLookup(instanceRef: $instanceRef) {
+    lookup {
+      ...dialogAccessInfoPayload
+    }
+    errors {
+      message
+    }
+  }
+}
+
 fragment dialogLookupPayload on DialogLookup {
   instanceRef
   dialogId
   serviceResource {
     id
     isDelegable
+  }
+}
+
+fragment dialogAccessInfoPayload on DialogLookup {
+  instanceRef
+  dialogId
+  serviceResource {
+    id
+    name {
+      value
+      languageCode
+    }
+  }
+  serviceOwner {
+    code
+    orgNumber
+    name {
+      value
+      languageCode
+    }
+  }
+  authorizationEvidence {
+    viaAccessPackage
+    viaResourceDelegation
+    viaInstanceDelegation
+    viaRole
+    evidence {
+      grantType
+      subject
+      name {
+        languageCode
+        value
+      }
+    }
   }
 }

@@ -324,7 +324,7 @@ export const ServiceResource = objectType({
 export const ServiceResourceQuery = extendType({
   type: 'Query',
   definition(t) {
-    t.list.field('serviceResources', {
+    t.list.field('RRServiceResourcesList', {
       type: 'ServiceResource',
       description: 'List of service resources from Altinn resource registry',
       args: {

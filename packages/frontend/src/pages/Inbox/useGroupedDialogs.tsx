@@ -7,7 +7,7 @@ import {
   type FilterState,
   ItemSelect,
 } from '@altinn/altinn-components';
-import { CheckmarkIcon } from '@navikt/aksel-icons';
+import { CheckmarkIcon, InformationSquareIcon } from '@navikt/aksel-icons';
 import { SystemLabel } from 'bff-types-generated';
 import type { TFunction } from 'i18next';
 import type { ReactNode } from 'react';
@@ -60,6 +60,7 @@ interface UseGroupedDialogsProps {
   displaySearchResults?: boolean;
   /* used to open modal with seen by log */
   onSeenByLogModalChange: (input: CurrentSeenByLog) => void;
+  onAccessInfoModalChange: (input: { dialogId: string; title: string }) => void;
 }
 
 const SCOPE_TO_SYSTEM_LABEL: Record<Exclude<FilterScope, 'ALL'>, SystemLabel> = {
@@ -174,6 +175,7 @@ const useGroupedDialogs = ({
   isLoading,
   isFetchingNextPage,
   onSeenByLogModalChange,
+  onAccessInfoModalChange,
   hasNextPage,
   filterState,
   onFiltersChange,
@@ -267,6 +269,13 @@ const useGroupedDialogs = ({
               },
             ]
           : []),
+        {
+          id: 'access-info',
+          groupId: 'logs',
+          title: t('dialog.access_info.menu_item'),
+          icon: InformationSquareIcon,
+          onClick: () => onAccessInfoModalChange({ dialogId: item.id, title: item.title }),
+        },
       ],
       'aria-label': t('dialog.context_menu.label', { title: item.title }),
     };
