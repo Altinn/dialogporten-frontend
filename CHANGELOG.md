@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.158.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.157.11...v1.158.0) (2026-06-03)
+
+
+### Features
+
+* **dialog:** add access info modal with service and authorization details ([#4245](https://github.com/Altinn/dialogporten-frontend/issues/4245)) ([4bd43f9](https://github.com/Altinn/dialogporten-frontend/commit/4bd43f98dfbbb85fd145c862f4c491694e04c54a))
+
+
+### Bug Fixes
+
+* **contextmenu:** button disappears on context menu open ([#4287](https://github.com/Altinn/dialogporten-frontend/issues/4287)) ([05bfccb](https://github.com/Altinn/dialogporten-frontend/commit/05bfccb4e7e85399e533082d0e57bbf24e234917))
+
 ## [1.157.11](https://github.com/Altinn/dialogporten-frontend/compare/v1.157.10...v1.157.11) (2026-06-03)
 
 
