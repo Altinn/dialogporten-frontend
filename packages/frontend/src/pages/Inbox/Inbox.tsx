@@ -25,7 +25,6 @@ import {
   type InboxViewType,
   MAX_DIALOG_PARTY_SIZE,
   MAX_SERVICE_RESOURCE_SIZE,
-  isDialogQueryEnabled,
   useDialogs,
 } from '../../api/hooks/useDialogs.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
@@ -88,7 +87,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
     isError: unableToLoadParties,
     isLoading: isLoadingParties,
     partyGraph,
-    organizationLimitReached,
   } = useParties();
 
   const { saveSearch, onSaveSearch, onDeleteSavedSearch } = useSavedSearches(selectedPartyIds);
@@ -170,12 +168,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
   });
   const searchMode = hasValidFilters(filterState) || !!validSearchString;
   const showSubAccountsMenu = subAccounts.length > 0;
-  const allSubAccountsSelected = partyIdsOverride?.length === 0;
-
-  const isLimitReached = !isDialogQueryEnabled({
-    queryPartyURIs: allSubAccountsSelected ? (organizationLimitReached ? [] : selectedPartyIds) : partyIdsOverride,
-    serviceResources: selectedServices,
-  });
 
   const subAccountsParamForSave = useMemo(() => {
     if (subAccountsParam) return subAccountsParam;
@@ -211,6 +203,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
+    isQueryEnabled,
   } = useDialogs({
     viewType,
     filterState,
@@ -218,6 +211,8 @@ export const Inbox = ({ viewType }: InboxProps) => {
     serviceResources: selectedServices,
     partyIdsOverride: partyIdsOverride?.length ? partyIdsOverride : [],
   });
+
+  const isLimitReached = !isQueryEnabled;
 
   const onCloseBulkMode = useCallback(() => {
     setBulkMode(false);
