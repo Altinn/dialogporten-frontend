@@ -75,6 +75,7 @@ interface UseDialogsOutput {
   fetchNextPage: () => void;
   hasNextPage: boolean;
   isFetchingNextPage: boolean;
+  isQueryEnabled: boolean;
 }
 
 export const useDialogs = ({
@@ -100,6 +101,7 @@ export const useDialogs = ({
   const previousTokensRef = useRef<string>('');
   const viewTypeKey = viewType ?? 'global';
   const queryPartyURIs = allOrganizationsSelected && !isPartyIdsOverridden && serviceResources?.length ? [] : partyIds;
+  const isQueryEnabled = isDialogQueryEnabled({ queryPartyURIs, serviceResources });
 
   const queryVariables = normalizeFilterDefaults({
     filters: {
@@ -138,7 +140,7 @@ export const useDialogs = ({
           searchLanguageCode: i18n.language,
         });
       },
-      enabled: isDialogQueryEnabled({ queryPartyURIs, serviceResources }),
+      enabled: isQueryEnabled,
       getNextPageParam(lastPage: GetAllDialogsForPartiesQuery): unknown | undefined | null {
         const hasNextPage = lastPage?.searchDialogs?.hasNextPage;
         const continuationToken = lastPage?.searchDialogs?.continuationToken;
@@ -215,9 +217,8 @@ export const useDialogs = ({
     fetchNextPage,
     dialogs,
     dialogCountInconclusive,
-    hasNextPage: isDialogQueryEnabled({ queryPartyURIs, serviceResources })
-      ? (data?.pages?.[data?.pages.length - 1]?.searchDialogs?.hasNextPage ?? false)
-      : false,
+    hasNextPage: isQueryEnabled ? (data?.pages?.[data?.pages.length - 1]?.searchDialogs?.hasNextPage ?? false) : false,
     isFetchingNextPage,
+    isQueryEnabled,
   };
 };
