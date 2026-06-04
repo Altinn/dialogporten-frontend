@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.158.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.158.3...v1.158.4) (2026-06-04)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @opentelemetry/sdk-node to v0.217.0 [security] ([#4136](https://github.com/Altinn/dialogporten-frontend/issues/4136)) ([705ded2](https://github.com/Altinn/dialogporten-frontend/commit/705ded2f6286c1bef0591efea02003def8616cf5))
+
 ## [1.158.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.158.2...v1.158.3) (2026-06-04)
 
 
