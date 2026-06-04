@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.158.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.158.1...v1.158.2) (2026-06-04)
+
+
+### Bug Fixes
+
+* **modal:** dismissable modals eagerly close on key press ([#4296](https://github.com/Altinn/dialogporten-frontend/issues/4296)) ([7097334](https://github.com/Altinn/dialogporten-frontend/commit/7097334dcbfd780b708ca3af9bb08f87e4e9e871))
+
 ## [1.158.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.158.0...v1.158.1) (2026-06-03)
 
 
