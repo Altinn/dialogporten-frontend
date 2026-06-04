@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.158.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.158.2...v1.158.3) (2026-06-04)
+
+
+### Bug Fixes
+
+* **toolbar:** user should have 5 or more selectable options in accoun… ([#4299](https://github.com/Altinn/dialogporten-frontend/issues/4299)) ([2f7ba73](https://github.com/Altinn/dialogporten-frontend/commit/2f7ba732732fc2d8a615cd94928ec9da2a001cc9))
+
 ## [1.158.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.158.1...v1.158.2) (2026-06-04)
 
 
