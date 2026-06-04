@@ -67,6 +67,7 @@ interface UseAccountsOutput {
   onSelectAccount: (account: string, route: PageRoutes) => void;
   currentAccountName: string;
   accountsTotal: number;
+  searchable: boolean;
 }
 
 export const getOrgNo = (partyId: string): string => {
@@ -112,8 +113,7 @@ export const useAccounts = ({
   const { user, favoritesGroup, shouldShowDeletedEntities } = useProfile();
   const [searchString, setSearchString] = useState<string>('');
   const queryClient = useQueryClient();
-  const accountSearchThreshold = 2;
-  const showSearch = parties.length > accountSearchThreshold;
+  const SHOW_SEARCH_THRESHOLD = 5;
 
   const loadingAccountMenuItem: AccountMenuItemProps = {
     id: 'loading-account',
@@ -499,6 +499,8 @@ export const useAccounts = ({
     [selectedParties, queryClient, setSelectedPartyIds, partyGraph, navigate],
   );
 
+  const showSearch = assembledAccounts.length > SHOW_SEARCH_THRESHOLD;
+
   const accountSearch = useMemo(
     () =>
       showSearch
@@ -522,6 +524,7 @@ export const useAccounts = ({
       onSelectAccount,
       currentAccountName: '',
       accountsTotal: 0,
+      searchable: false,
     };
   }
 
@@ -533,11 +536,13 @@ export const useAccounts = ({
       onSelectAccount,
       currentAccountName: '',
       accountsTotal: 0,
+      searchable: false,
     };
   }
 
   return {
     accounts: assembledAccounts,
+    searchable: showSearch,
     accountGroups,
     accountSearch,
     onSelectAccount,

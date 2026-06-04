@@ -138,7 +138,14 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const selectedServicesCount = selectedServices.length;
   const serviceLimitReached = selectedServicesCount > MAX_SERVICE_RESOURCE_SIZE;
 
-  const { accounts, accountSearch, accountGroups, onSelectAccount, currentAccountName } = useAccounts({
+  const {
+    accounts,
+    accountSearch,
+    accountGroups,
+    onSelectAccount,
+    currentAccountName,
+    searchable: accountsSearchable,
+  } = useAccounts({
     parties,
     selectedParties,
     allOrganizationsSelected,
@@ -354,7 +361,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
                 onSelectAccount(id, PageRoutes[viewType]);
               }}
               title={t('parties.change_label')}
-              searchable
+              searchable={accountsSearchable}
               virtualized={accounts.length > 20}
             />
             {showSubAccountsMenu && (
