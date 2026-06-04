@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.158.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.158.0...v1.158.1) (2026-06-03)
+
+
+### Bug Fixes
+
+* **inbox:** clear stale dialogs when switching to org with &gt;100 subunits ([#4289](https://github.com/Altinn/dialogporten-frontend/issues/4289)) ([ad537d0](https://github.com/Altinn/dialogporten-frontend/commit/ad537d01b41fe347d28926fd5751f86c17c7966d))
+
 ## [1.158.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.157.11...v1.158.0) (2026-06-03)
 
 
