@@ -108,7 +108,6 @@ const stopPageTracking = (pageInfo: {
   const enhancedProperties = {
     'page.path': currentPath,
     'page.url': currentUrl,
-    'page.referrer': document.referrer,
     'page.title': document.title,
     'user.agent': navigator.userAgent,
     'route.pathname': pageInfo.pathname,
@@ -174,6 +173,14 @@ if (applicationInsightsEnabled) {
       envelope.tags['ai.cloud.roleInstance'] = 'frontend';
 
       switch (envelope.baseType) {
+        case 'PageviewData':
+        case 'PageviewPerformanceData': {
+          const baseData = envelope.baseData;
+          if (baseData) {
+            baseData.refUri = '';
+          }
+          break;
+        }
         case 'RemoteDependencyData': {
           if (config.applicationInsightsDisableDependencyTracking) {
             return false;
@@ -193,8 +200,8 @@ if (applicationInsightsEnabled) {
 
         case 'ExceptionData': {
           const baseData = envelope.baseData;
-          const baseDataMessage = baseData?.message || '';
-          const propertyMessage = baseData?.properties?.message || '';
+          const baseDataMessage = (baseData?.message || '').toLowerCase();
+          const propertyMessage = (baseData?.properties?.message || '').toLowerCase();
           const exceptions = baseData?.exceptions || [];
 
           const extensionUrlPattern = /^(chrome|moz|safari|edge|ms-browser)-extension:\/\//i;
@@ -204,12 +211,12 @@ if (applicationInsightsEnabled) {
           }
 
           const ignoreMessages = [
-            'Script Error.',
-            'Script Error',
-            'ErrorEvent: Script error.',
-            'EventSource connection error',
-            "NotFoundError: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-            'NotFoundError: The object can not be found here',
+            'script error.',
+            'script error',
+            'errorevent: script error.',
+            'eventsource connection error',
+            "notfounderror: failed to execute 'removechild' on 'node': the node to be removed is not a child of this node.",
+            'notfounderror: the object can not be found here',
           ];
           if (
             ignoreMessages.some(
@@ -221,7 +228,7 @@ if (applicationInsightsEnabled) {
 
           // Check all exception details for extension URLs and ignored messages
           for (const exception of exceptions) {
-            const exceptionMessage = exception.message || '';
+            const exceptionMessage = (exception.message || '').toLowerCase();
             if (ignoreMessages.some((text) => exceptionMessage.includes(text))) {
               return false;
             }
