@@ -1,5 +1,6 @@
 import { logger } from '@altinn/dialogporten-node-logger';
 import axios, { isAxiosError } from 'axios';
+import { type Context, getSessionToken } from '../../auth/oidc.js';
 import config from '../../config.ts';
 import { GroupRepository, PartyRepository, ProfileRepository } from '../../db.ts';
 import { Group, Party, ProfileTable } from '../../entities.ts';
@@ -16,34 +17,6 @@ const platformProfileAPI_url = platformBaseURL + '/profile/api/v1/';
 
 const frontendToCoreLang: Record<string, string> = { nb: 'no', nn: 'nn', en: 'en' };
 export const coreToFrontendLang: Record<string, string> = { no: 'nb', nn: 'nn', en: 'en' };
-
-export type TokenType = {
-  access_token: string;
-  access_token_expires_at?: number;
-  id_token?: string;
-  refresh_token?: string;
-  refresh_token_expires_at?: number;
-  scope: string;
-  tokenUpdatedAt?: number;
-};
-
-export interface Context {
-  session: {
-    get: (key: string) => TokenType | string | undefined;
-  };
-  request: {
-    raw: {
-      cookies?: {
-        altinnPersistentContext?: string;
-      };
-    };
-  };
-}
-
-const getSessionToken = (context: Context): TokenType | null => {
-  const token = context.session.get('token');
-  return typeof token === 'object' ? token : null;
-};
 
 export const getOrCreateProfile = async (context: Context): Promise<ProfileTable> => {
   const pid = typeof context.session.get('pid') === 'string' ? (context.session.get('pid') as string) : '';

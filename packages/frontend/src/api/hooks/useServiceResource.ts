@@ -1,11 +1,15 @@
 import { useQueryClient } from '@tanstack/react-query';
-import type { GetServiceResourcesQuery, ServiceResource } from 'bff-types-generated';
+import type { ServiceResource } from 'bff-types-generated';
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
-import { fetchServiceResources } from '../queries.ts';
+import { fetchAllServiceResources, fetchConsumerServiceResources } from '../queries.ts';
 import { useParties } from './useParties.ts';
+
+interface ServiceResourcesResult {
+  serviceResources?: (ServiceResource | null)[] | null;
+}
 
 interface UseServiceResourceOutput {
   serviceResources: ServiceResource[];
@@ -14,23 +18,25 @@ interface UseServiceResourceOutput {
   isLoading: boolean;
 }
 
-export const useServiceResource = (): UseServiceResourceOutput => {
+const useServiceResourcesQuery = (
+  queryKeyPrefix: string,
+  queryFn: (variables: { lang: string }) => Promise<ServiceResourcesResult>,
+): UseServiceResourceOutput => {
   const { selectedParties } = useParties();
   const enabled = selectedParties.length > 0;
   const { i18n } = useTranslation();
   const queryClient = useQueryClient();
 
-  /* Drop cache entries for other languages — the dataset is large (~6.5k entries),
-     so keep only the active language. */
+  /* Drop cache entries for other languages because size of dataset, */
   useEffect(() => {
     queryClient.removeQueries({
-      predicate: (query) => query.queryKey[0] === QUERY_KEYS.SERVICE_RESOURCES && query.queryKey[1] !== i18n.language,
+      predicate: (query) => query.queryKey[0] === queryKeyPrefix && query.queryKey[1] !== i18n.language,
     });
-  }, [i18n.language, queryClient]);
+  }, [i18n.language, queryClient, queryKeyPrefix]);
 
-  const { data, isLoading, isSuccess } = useAuthenticatedQuery<GetServiceResourcesQuery>({
-    queryKey: [QUERY_KEYS.SERVICE_RESOURCES, i18n.language],
-    queryFn: () => fetchServiceResources({ lang: i18n.language }),
+  const { data, isLoading, isSuccess } = useAuthenticatedQuery<ServiceResourcesResult>({
+    queryKey: [queryKeyPrefix, i18n.language],
+    queryFn: () => queryFn({ lang: i18n.language }),
     retry: 3,
     staleTime: Number.POSITIVE_INFINITY,
     gcTime: Number.POSITIVE_INFINITY,
@@ -39,6 +45,7 @@ export const useServiceResource = (): UseServiceResourceOutput => {
     refetchOnReconnect: false,
     enabled,
   });
+
   const serviceResources = useMemo(
     () =>
       ((data?.serviceResources ?? []) as ServiceResource[])
@@ -65,3 +72,18 @@ export const useServiceResource = (): UseServiceResourceOutput => {
 
   return { serviceResources, serviceResourceById, isLoading, isSuccess };
 };
+
+/**
+ * Service resources used by the toolbar/saved-search filters, sourced from Dialogporten
+ * (DPServiceResourcesList). Use this when the resource id is passed to Dialogporten as a
+ * filter on dialogs by service.
+ */
+export const useFilterServiceResources = (): UseServiceResourceOutput =>
+  useServiceResourcesQuery(QUERY_KEYS.FILTER_SERVICE_RESOURCES, fetchConsumerServiceResources);
+
+/**
+ * Service resources used by notification settings, sourced from the Altinn Resource Registry
+ * (RRServiceResourcesList). Use this when the user enables explicit notifications per service.
+ */
+export const useNotificationServiceResources = (): UseServiceResourceOutput =>
+  useServiceResourcesQuery(QUERY_KEYS.SERVICE_RESOURCES, fetchAllServiceResources);

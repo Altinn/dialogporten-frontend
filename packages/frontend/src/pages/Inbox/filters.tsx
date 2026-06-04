@@ -37,7 +37,6 @@ import {
 import type { Locale } from 'date-fns/locale';
 import { t } from 'i18next';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
-import { getEnvByHost } from '../../auth';
 import { buildOrganizationMap } from '../../utils/organizations.ts';
 import { type OrganizationLookup, getOrganization } from '../../utils/organizations.ts';
 
@@ -55,35 +54,6 @@ export enum DateFilterOption {
   LAST_TWELVE_MONTHS = 'LAST_TWELVE_MONTHS',
   OLDER_THAN_ONE_YEAR = 'OLDER_THAN_ONE_YEAR',
 }
-
-const getSuggestedServiceIds = () => {
-  const envByHost = getEnvByHost();
-  if (envByHost === 'at23' || envByHost === 'local') {
-    return [
-      'urn:altinn:resource:app_hdir_a2-4081-3',
-      'urn:altinn:resource:app_sfd_a2-2975-1',
-      'urn:altinn:resource:app_skd_a2-1051-181125',
-      'urn:altinn:resource:nav-migratedcorrespondence-4503-',
-      'urn:altinn:resource:app_skd_a2-1049-111124',
-    ];
-  }
-  if (envByHost === 'tt02') {
-    return [
-      'urn:altinn:resource:app_skd_a2-1051-130203',
-      'urn:altinn:resource:app_brg_bvr-utv',
-      'urn:altinn:resource:app_dibk_a2-4655-2',
-      'urn:altinn:resource:nav_sykepenger_inntektsmelding',
-    ];
-  }
-  return [
-    'urn:altinn:resource:app_brg_a2-2705-201511',
-    'urn:altinn:resource:app_skd_a2-3736-140122',
-    'urn:altinn:resource:app_skd_a2-1051-130203',
-    'urn:altinn:resource:app_skd_a2-3707-190403',
-    'urn:altinn:resource:app_dibk_a2-4655-4',
-    'urn:altinn:resource:nav_sykepenger_inntektsmelding',
-  ];
-};
 
 export const getDateRange = (unit: 'day' | 'week' | 'month' | 'sixMonths' | 'year') => {
   const now = new Date();
@@ -421,26 +391,14 @@ export const createServiceFilter = ({
   currentFilters = {},
   allOrganizations,
 }: ServiceFilterProps): FilterProps => {
-  const suggestedServiceIds = new Set(getSuggestedServiceIds());
-  const serviceFilters: FilterProps[] = serviceResources
-    .map((s) => ({
-      id: s.id!,
-      name: s.id!,
-      items: [],
-      title: s.title ?? '',
-      groupId: suggestedServiceIds.has(s.id!) ? 'most-relevant' : 'services',
-      description: getOrganization(allOrganizations, s.org ?? '')?.name || '',
-    }))
-    .sort((a, b) => {
-      const groupOrder: Record<string, number> = {
-        'most-relevant': 0,
-        services: 1,
-      };
-      const ga = groupOrder[a.groupId] ?? Number.MAX_SAFE_INTEGER;
-      const gb = groupOrder[b.groupId] ?? Number.MAX_SAFE_INTEGER;
-
-      return ga - gb;
-    });
+  const serviceFilters: FilterProps[] = serviceResources.map((s) => ({
+    id: s.id!,
+    name: s.id!,
+    items: [],
+    title: s.title ?? '',
+    groupId: 'services',
+    description: getOrganization(allOrganizations, s.org ?? '')?.name || '',
+  }));
 
   return {
     id: FilterCategory.SERVICE,
@@ -453,10 +411,9 @@ export const createServiceFilter = ({
     searchable: true,
     groups: {
       selected: {},
-      'most-relevant': {
+      services: {
         title: t('filter_bar.group.choose_service'),
       },
-      services: {},
     },
     items: serviceFilters
       .filter((serviceResource) => serviceResource.id)
@@ -485,8 +442,6 @@ export const createServiceFilter = ({
  * @param allOrganizations
  * @param viewType
  * @param orgsFromSearchState
- * @param serviceResources
- * @param currentFilters - The current filter state to calculate accurate counts
  * @returns {Array} - The array of filter settings.
  */
 

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { useDialogsForRecommendations } from '../../api/hooks/useDialogsForRecommendations.tsx';
-import { useServiceResource } from '../../api/hooks/useServiceResource.ts';
+import { useFilterServiceResources } from '../../api/hooks/useServiceResource.ts';
 import { useDateFnsLocale } from '../../i18n/useDateFnsLocale.tsx';
 import { getOrganization } from '../../utils/organizations.ts';
 import { FilterCategory, createServiceFilter, formatDateRange, getFilters, readFiltersFromURLQuery } from './filters';
@@ -28,7 +28,7 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
   const dialogsForRecommendations = useDialogsForRecommendations();
   const { locale } = useDateFnsLocale();
   const { organizations } = useOrganizations();
-  const { serviceResources } = useServiceResource();
+  const { serviceResources } = useFilterServiceResources();
   const [params] = useSearchParams();
 
   const currentFilters = useMemo(() => {

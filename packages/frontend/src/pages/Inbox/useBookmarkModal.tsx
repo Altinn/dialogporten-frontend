@@ -3,7 +3,7 @@ import type { SavedSearchesFieldsFragment } from 'bff-types-generated';
 import { type ChangeEvent, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
-import { useServiceResource } from '../../api/hooks/useServiceResource.ts';
+import { useFilterServiceResources } from '../../api/hooks/useServiceResource.ts';
 import { useDateFnsLocale } from '../../i18n/useDateFnsLocale.tsx';
 import { buildOrganizationMap } from '../../utils/organizations.ts';
 import { buildFilterParams } from '../SavedSearches/searchUtils.ts';
@@ -43,7 +43,7 @@ export const useBookmarkModal = ({
   const { t } = useTranslation();
   const { organizations } = useOrganizations();
   const orgMap = useMemo(() => buildOrganizationMap(organizations), [organizations]);
-  const { serviceResourceById } = useServiceResource();
+  const { serviceResourceById } = useFilterServiceResources();
   const { locale } = useDateFnsLocale();
 
   const [state, setState] = useState<ModalState>({ kind: 'closed' });

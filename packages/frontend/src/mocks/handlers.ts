@@ -510,6 +510,14 @@ const getServiceResourcesMock = graphql.query('getServiceResources', () => {
   });
 });
 
+const getFilterServiceResourcesMock = graphql.query('getFilterServiceResources', () => {
+  return HttpResponse.json({
+    data: {
+      serviceResources: inMemoryStore.services,
+    },
+  });
+});
+
 const dialogAccessInfoMock = graphql.query('dialogAccessInfo', ({ variables }) => {
   const { instanceRef } = variables as { instanceRef: string };
   const dialogId = instanceRef?.replace('urn:altinn:dialog-id:', '');
@@ -597,6 +605,7 @@ export const handlers = [
   mutateAddFavoritePartyMock,
   mutateDeleteFavoritePartyMock,
   getServiceResourcesMock,
+  getFilterServiceResourcesMock,
   dialogAccessInfoMock,
   mockAltinn2Messages,
   mockNotificationsettingsForCurrentUser,

@@ -16,6 +16,7 @@ export const QUERY_KEYS = {
   PROFILE_PARTIES_WITH_NOTIFICATION_SETTINGS: 'profilePartiesWithNotificationSettings',
   ORGANIZATIONS: 'organizations',
   SERVICE_RESOURCES: 'serviceResources',
+  FILTER_SERVICE_RESOURCES: 'filterServiceResources',
   SEARCH_VALUE: 'searchValue',
   ENTERED_SEARCH_VALUE: 'enteredSearchValue',
   SET_ARCHIVE_LABEL_LOADING: 'setArchiveLabelLoading',

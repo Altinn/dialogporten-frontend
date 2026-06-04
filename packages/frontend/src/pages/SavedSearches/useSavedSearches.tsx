@@ -20,7 +20,7 @@ import { Analytics } from '../../analytics/analytics.ts';
 import { ANALYTICS_EVENTS } from '../../analytics/analyticsEvents.ts';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
-import { useServiceResource } from '../../api/hooks/useServiceResource.ts';
+import { useFilterServiceResources } from '../../api/hooks/useServiceResource.ts';
 import { createSavedSearch, deleteSavedSearch, fetchSavedSearches, updateSavedSearch } from '../../api/queries.ts';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
@@ -124,7 +124,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
   const [openedSavedSearch, setOpenedSavedSearch] = useState<string | null>(null);
   const { organizations } = useOrganizations();
   const orgMap = useMemo(() => buildOrganizationMap(organizations), [organizations]);
-  const { serviceResourceById } = useServiceResource();
+  const { serviceResourceById } = useFilterServiceResources();
   const { currentEndUser, setSelectedPartyIds, setSelectedParties, partyGraph } = useParties();
   const { locale } = useDateFnsLocale();
   const navigate = useNavigate();

@@ -7,6 +7,8 @@ import {
   type DeleteFavoritePartyMutation,
   type DeleteSavedSearchMutation,
   type GetAllDialogsForPartiesQuery,
+  type GetFilterServiceResourcesQuery,
+  type GetFilterServiceResourcesQueryVariables,
   type GetServiceResourcesQuery,
   type GetServiceResourcesQueryVariables,
   type NotificationSettingsInput,
@@ -248,9 +250,13 @@ export const searchDialogs = (
 export const updateLanguage = (language: string): Promise<UpdateLanguageMutation> =>
   graphQLSDK.UpdateLanguage({ language });
 
-export const fetchServiceResources = (
+export const fetchAllServiceResources = (
   variables?: GetServiceResourcesQueryVariables,
 ): Promise<GetServiceResourcesQuery> => graphQLSDK.getServiceResources(variables);
+
+export const fetchConsumerServiceResources = (
+  variables?: GetFilterServiceResourcesQueryVariables,
+): Promise<GetFilterServiceResourcesQuery> => graphQLSDK.getFilterServiceResources(variables);
 
 export const setShouldShowSubEntities = (
   shouldShowDeletedEntities: boolean,

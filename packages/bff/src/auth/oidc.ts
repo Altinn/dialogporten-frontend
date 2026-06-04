@@ -59,6 +59,19 @@ declare module 'fastify' {
   }
 }
 
+export interface Context {
+  session: {
+    get: (key: string) => SessionStorageToken | string | undefined;
+  };
+  request: {
+    raw: {
+      cookies?: {
+        altinnPersistentContext?: string;
+      };
+    };
+  };
+}
+
 interface IdportenToken {
   access_token: string;
   refresh_token: string;
@@ -90,6 +103,11 @@ export interface SessionStorageToken {
   tokenUpdatedAt: string;
   nonce?: string;
 }
+
+export const getSessionToken = (context: Context): SessionStorageToken | null => {
+  const token = context.session.get('token');
+  return typeof token === 'object' ? token : null;
+};
 
 export const generateSessionId = () => {
   return crypto

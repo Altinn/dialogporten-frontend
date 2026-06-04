@@ -1,0 +1,7 @@
+query getFilterServiceResources($lang: String) {
+  serviceResources: DPServiceResourcesList(lang: $lang) {
+    id
+    title
+    org
+  }
+}

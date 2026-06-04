@@ -4,21 +4,21 @@ import config from '../../../config.js';
 import type { LocalizedText, Resource } from './resourceRegistry.ts';
 import { getEnvironmentConfig } from './serviceResourcesConfig.js';
 
-interface TransformedServiceResource {
+export interface TransformedServiceResource {
   id: string;
   title: LocalizedText;
   org: string;
   resourceType: string;
 }
 
-interface ServiceResourceResponseDTO extends Omit<TransformedServiceResource, 'title'> {
+export interface ServiceResourceResponseDTO extends Omit<TransformedServiceResource, 'title'> {
   title: string;
 }
 
 const serviceResourcesRedisKey = 'arbeidsflate-service-resources:v5';
 let refreshTimer: NodeJS.Timeout | null = null;
 
-function getSupportedLanguage(defaultLanguage: 'nb' | 'nn' | 'en', language?: string): string[] {
+export function getSupportedLanguage(defaultLanguage: 'nb' | 'nn' | 'en', language?: string): string[] {
   const supportedLanguages = ['nb', 'nn', 'en'];
   const preferredMapping: Record<string, string[]> = {
     nb: ['nb', 'nn', 'en'],
@@ -35,7 +35,7 @@ function getSupportedLanguage(defaultLanguage: 'nb' | 'nn' | 'en', language?: st
   return preferredMapping[language];
 }
 
-function getLocalizedTitle(title: LocalizedText, langs: string[]): string {
+export function getLocalizedTitle(title: LocalizedText, langs: string[]): string {
   for (const lang of langs) {
     const value = title[lang as keyof LocalizedText];
     if (value) {
@@ -200,13 +200,40 @@ export async function storeServiceResourcesInRedis(filters?: ResourceFilters): P
   }
 }
 
+export interface ServiceResourceQueryFilters {
+  resourceType?: string[];
+  ids?: string[];
+  org?: string[];
+}
+
+export function applyServiceResourceQueryFilters(
+  resources: TransformedServiceResource[],
+  filters?: ServiceResourceQueryFilters,
+): TransformedServiceResource[] {
+  if (!filters) {
+    return resources;
+  }
+
+  let filtered = resources;
+  if (filters.resourceType && filters.resourceType.length > 0) {
+    filtered = filtered.filter((resource) =>
+      filters.resourceType!.some((type) => type.toLowerCase() === resource.resourceType.toLowerCase()),
+    );
+  }
+  if (filters.ids && filters.ids.length > 0) {
+    filtered = filtered.filter((resource) => filters.ids!.includes(resource.id));
+  }
+  if (filters.org && filters.org.length > 0) {
+    filtered = filtered.filter((resource) =>
+      filters.org!.some((org) => org.toLowerCase() === resource.org.toLowerCase()),
+    );
+  }
+  return filtered;
+}
+
 export async function getServiceResourcesFromRedis(
   langs: string[],
-  filters?: {
-    resourceType?: string[];
-    ids?: string[];
-    org?: string[];
-  },
+  filters?: ServiceResourceQueryFilters,
 ): Promise<ServiceResourceResponseDTO[]> {
   try {
     const { default: redisClient } = await import('../../../redisClient.ts');
@@ -219,24 +246,7 @@ export async function getServiceResourcesFromRedis(
       resources = await storeServiceResourcesInRedis(getEnvironmentConfig(config.platformBaseURL));
     }
 
-    // Apply filters if provided
-    if (filters) {
-      if (filters.resourceType && filters.resourceType.length > 0) {
-        resources = resources.filter((resource) =>
-          filters.resourceType!.some((type) => type.toLowerCase() === resource.resourceType.toLowerCase()),
-        );
-      }
-      if (filters.ids && filters.ids.length > 0) {
-        resources = resources.filter((resource) => filters.ids!.includes(resource.id));
-      }
-      if (filters.org && filters.org.length > 0) {
-        resources = resources.filter((resource) =>
-          filters.org!.some((org) => org.toLowerCase() === resource.org.toLowerCase()),
-        );
-      }
-    }
-
-    return resources.map((r) => ({
+    return applyServiceResourceQueryFilters(resources, filters).map((r) => ({
       ...r,
       title: getLocalizedTitle(r.title, langs),
     }));
@@ -276,7 +286,7 @@ export function startServiceResourcesRefresh(): void {
     () => {
       void refreshServiceResourcesInBackground();
     },
-    23 * 60 * 60 * 1000,
+    6 * 60 * 60 * 1000,
   );
 
   logger.info('Service resources background refresh started');
