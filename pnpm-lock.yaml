@@ -323,7 +323,7 @@ importers:
         specifier: 'catalog:'
         version: 7.4.0(graphql@16.12.0)
       graphql-tag:
-        specifier: ^2.12.6
+        specifier: 2.12.6
         version: 2.12.6(graphql@16.12.0)
       nodemon:
         specifier: 'catalog:'
