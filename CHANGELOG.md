@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.158.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.158.4...v1.158.5) (2026-06-05)
+
+
+### Bug Fixes
+
+* **inbox:** correct party/service limit handling to avoid blank inbox ([#4305](https://github.com/Altinn/dialogporten-frontend/issues/4305)) ([3396c2d](https://github.com/Altinn/dialogporten-frontend/commit/3396c2d990813aa0b0cb7188844df610a56e13d0))
+
 ## [1.158.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.158.3...v1.158.4) (2026-06-04)
 
 
