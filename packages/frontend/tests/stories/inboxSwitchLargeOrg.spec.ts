@@ -63,7 +63,7 @@ test.describe('Switching to all organizations with > 100 main units', () => {
     await expect(page.locator('#toolbar-menu-listbox')).toBeVisible();
     await page.getByRole('option', { name: 'Alle virksomheter' }).click();
 
-    await expect(page).toHaveURL(/allParties=true/);
+    await expect(page).toHaveURL(/group=ALL_COMPANIES/);
     await expect(page.getByRole('link', { name: PERSONAL_DIALOG })).toBeHidden();
     await expect(page.getByRole('button', { name: 'Side 1', exact: true })).toBeVisible();
   });

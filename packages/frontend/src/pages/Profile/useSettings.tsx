@@ -134,7 +134,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
     isLoading: isLoadingParties,
     parties,
     selectedParties,
-    allOrganizationsSelected,
+    selectedGroup,
     partyGraph,
     isSelfIdentifiedUser,
     selfIdentifiedUserType,
@@ -254,7 +254,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
   const { accounts, accountGroups } = useAccounts({
     isLoading: isLoadingParties,
     parties,
-    allOrganizationsSelected,
+    selectedGroup,
     selectedParties,
     partyGraph,
     setSelectedPartyIds,

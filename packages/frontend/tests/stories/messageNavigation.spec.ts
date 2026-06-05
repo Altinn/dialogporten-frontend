@@ -39,7 +39,7 @@ test.describe('Message navigation', () => {
     await expect(page.locator('#toolbar-menu-root')).toContainText('Alle virksomheter');
 
     await expectIsPersonPage(page);
-    expect(new URL(page.url()).searchParams.has('allParties')).toBe(true);
+    expect(new URL(page.url()).searchParams.has('group')).toBe(true);
   });
 
   /* Fix this later */

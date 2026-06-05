@@ -63,6 +63,8 @@ test.describe('Saved search', () => {
 
     await page.getByTestId('inbox-toolbar').getByRole('button', { name: 'Test Testesen' }).click();
     await page.getByRole('option', { name: 'Testbedrift As Avd Oslo' }).click();
+    await page.waitForURL((url) => url.searchParams.get('party') === 'urn:altinn:organization:identifier-sub:2');
+    await page.waitForLoadState('networkidle');
     await page.getByRole('combobox', { name: 'Søk' }).click();
     await page.getByRole('combobox', { name: 'Søk' }).fill('innkalling');
     await page.getByRole('combobox', { name: 'Søk' }).press('Enter');

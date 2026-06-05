@@ -1,7 +1,7 @@
 import type { PartyFieldsFragment } from 'bff-types-generated';
 
 const TOTAL_PARTIES = 15_000;
-const PERSON_COUNT = 10;
+const PERSON_COUNT = 300;
 
 const firstNames = [
   'OLA',
@@ -19,6 +19,24 @@ const firstNames = [
   'TORBJØRN',
   'MARIT',
   'HALVOR',
+];
+
+const middleNames = [
+  'ALEKSANDER',
+  'BIRGITTE',
+  'CHRISTOFFER',
+  'DOROTHEA',
+  'EMANUEL',
+  'FREDRIKKE',
+  'GABRIEL',
+  'HENRIETTE',
+  'ISAK',
+  'JOHANNE',
+  'KORNELIUS',
+  'LOVISE',
+  'MIKKEL',
+  'NANNA',
+  'OSKAR',
 ];
 
 const lastNames = [
@@ -88,12 +106,22 @@ const companyTypes = [
 const companySuffixes = ['AS', 'ASA', 'ANS', 'DA', 'SA'];
 
 function generatePerson(index: number): PartyFieldsFragment {
-  const firstName = firstNames[index % firstNames.length];
-  const lastName = lastNames[index % lastNames.length];
+  // Mixed-radix decomposition over the name pools so every (first, middle, last) combination is
+  // unique. The numeric suffix only kicks in after all combinations are exhausted, keeping names
+  // unique for any PERSON_COUNT.
+  const f = firstNames.length;
+  const m = middleNames.length;
+  const l = lastNames.length;
+  const firstName = firstNames[index % f];
+  const middleName = middleNames[Math.floor(index / f) % m];
+  const lastName = lastNames[Math.floor(index / (f * m)) % l];
+  const cycle = Math.floor(index / (f * m * l));
+  const cycleSuffix = cycle > 0 ? ` ${cycle + 1}` : '';
+
   return {
     party: `urn:altinn:person:identifier-no:${index + 1}`,
     partyType: 'Person',
-    name: `${firstName} ${lastName}`,
+    name: `${firstName} ${middleName} ${lastName}${cycleSuffix}`,
     isCurrentEndUser: index === 0,
     isDeleted: false,
     partyUuid: `urn:altinn:person:uuid:${(index + 1).toString().padStart(6, '0')}`,

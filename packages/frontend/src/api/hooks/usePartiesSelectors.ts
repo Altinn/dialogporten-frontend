@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import { useSearchParams } from 'react-router-dom';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
+import { type PartyGroup, getSelectedGroupFromQueryParams } from '../../pages/Inbox/queryParams.ts';
 import type { PartyGraph } from '../../utils/partyGraph.ts';
 import { EMPTY_PARTY_GRAPH, buildPartyGraph } from '../../utils/partyGraph.ts';
 import type { ProfileType, SelfIdentifiedUserType } from './useParties.ts';
@@ -77,13 +78,13 @@ const selectedPartiesQueryOptions = {
   queryFn: async () => [] as PartyFieldsFragment[],
 };
 
-const allOrgsQueryOptions = {
-  queryKey: [QUERY_KEYS.ALL_ORGANIZATIONS_SELECTED],
+const selectedGroupQueryOptions = {
+  queryKey: [QUERY_KEYS.SELECTED_GROUP],
   staleTime: Number.POSITIVE_INFINITY,
   enabled: false,
-  initialData: false,
-  queryFn: async () => false,
-} as const;
+  initialData: null as PartyGroup | null,
+  queryFn: async () => null as PartyGroup | null,
+};
 
 /**
  * Returns the current party UUID.
@@ -91,11 +92,11 @@ const allOrgsQueryOptions = {
  * so re-renders only when the actual UUID changes.
  */
 export const useCurrentPartyUuid = (): string | undefined => {
-  const { data: allOrganizationsSelected = false } = useQuery(allOrgsQueryOptions);
+  const { data: selectedGroup = null } = useQuery(selectedGroupQueryOptions);
   const { data: selectedPartyUuid } = useQuery({ ...selectedPartiesQueryOptions, select: selectFirstPartyUuid });
   const { data: endUserUuid } = useQuery({ ...partiesQueryOptions, select: selectEndUserUuid });
 
-  return allOrganizationsSelected ? endUserUuid : selectedPartyUuid;
+  return selectedGroup ? endUserUuid : selectedPartyUuid;
 };
 
 /**
@@ -103,15 +104,13 @@ export const useCurrentPartyUuid = (): string | undefined => {
  * Uses `select` on SELECTED_PARTIES to extract only the partyType.
  */
 export const useSelectedProfile = (): ProfileType => {
-  const { data: allOrganizationsSelected = false } = useQuery(allOrgsQueryOptions);
+  const { data: selectedGroup = null } = useQuery(selectedGroupQueryOptions);
   const { data: firstPartyType } = useQuery({ ...selectedPartiesQueryOptions, select: selectFirstPartyType });
   const [searchParams] = useSearchParams();
 
-  if (allOrganizationsSelected) return 'neutral';
+  if (selectedGroup || getSelectedGroupFromQueryParams(searchParams)) return 'neutral';
 
-  const party = searchParams.get('party');
-  const allParties = searchParams.get('allParties');
-  const isCompanyFromParams = Boolean(party || allParties);
+  const isCompanyFromParams = Boolean(searchParams.get('party'));
   const isCompanyProfile = isCompanyFromParams || firstPartyType === 'Organization';
 
   return isCompanyProfile ? 'company' : 'person';

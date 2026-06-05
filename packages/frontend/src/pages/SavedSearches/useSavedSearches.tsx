@@ -328,7 +328,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
       'aria-label': !savedSearch.name && t('filter_bar.saved_search'),
       onClick: () => {
         if (isPersonBookmark && savedSearch?.data?.urn?.[0]) {
-          setSelectedPartyIds([savedSearch?.data?.urn?.[0]], false);
+          setSelectedPartyIds([savedSearch?.data?.urn?.[0]], null);
         } else if (!isPersonBookmark && savedSearch?.data?.urn?.length === 1 && savedSearch?.data?.urn?.[0]) {
           const party = partyGraph.partyByUrn.get(savedSearch.data.urn[0]);
           if (party) {
@@ -347,7 +347,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
             icon: MagnifyingGlassIcon,
             onClick: () => {
               if (isPersonBookmark && savedSearch?.data?.urn?.[0]) {
-                setSelectedPartyIds([savedSearch?.data?.urn?.[0]], false);
+                setSelectedPartyIds([savedSearch?.data?.urn?.[0]], null);
               }
               navigate(
                 `${buildCurrentStateURL(convertFiltersToFilterState(savedSearch.data?.filters ?? []), savedSearch.data?.searchString ?? '', fromPathToViewType(savedSearch.data?.fromView ?? '') ?? 'inbox')}`,

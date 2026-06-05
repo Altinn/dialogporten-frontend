@@ -86,7 +86,7 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
     }
 
     if (party.partyType === 'Person') {
-      setSelectedPartyIds([party.party], false);
+      setSelectedPartyIds([party.party], null);
       if (location.pathname.startsWith('/inbox/')) {
         navigate(PageRoutes.inbox);
       }
@@ -94,6 +94,7 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
       const search = new URLSearchParams(location.search);
       search.set('party', party.party);
       search.delete('allParties');
+      search.delete(FixedGlobalQueryParams.group);
       search.delete(FixedGlobalQueryParams.subAccounts);
       navigate(`${targetRoute}?${search.toString()}`, {
         replace: location.pathname === targetRoute,

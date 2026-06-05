@@ -5,7 +5,7 @@ export const QUERY_KEYS = {
   PARTIES: 'parties',
   PARTIES_EMPTY_LIST: 'partiesEmptyList',
   SELECTED_PARTIES: 'selectedParties',
-  ALL_ORGANIZATIONS_SELECTED: 'allOrganizationsSelected',
+  SELECTED_GROUP: 'selectedGroup',
   SEARCH_DIALOGS: 'searchDialogs',
   DIALOGS: 'dialogs',
   DIALOGS_FOR_RECOMMENDATIONS: 'dialogsForRecommendations',

@@ -140,7 +140,7 @@ describe('useAccounts', () => {
         useAccounts({
           parties,
           selectedParties: [],
-          allOrganizationsSelected: false,
+          selectedGroup: null,
           isLoading: false,
           partyGraph: buildPartyGraph(parties),
           setSelectedPartyIds: mockSetSelectedPartyIds,
@@ -163,7 +163,7 @@ describe('useAccounts', () => {
         useAccounts({
           parties,
           selectedParties,
-          allOrganizationsSelected: false,
+          selectedGroup: null,
           isLoading: false,
           partyGraph: buildPartyGraph(parties),
           setSelectedPartyIds: mockSetSelectedPartyIds,
@@ -191,7 +191,7 @@ describe('useAccounts', () => {
         useAccounts({
           parties,
           selectedParties,
-          allOrganizationsSelected: false,
+          selectedGroup: null,
           isLoading: false,
           partyGraph: buildPartyGraph(parties),
           setSelectedPartyIds: mockSetSelectedPartyIds,
@@ -220,7 +220,7 @@ describe('useAccounts', () => {
         useAccounts({
           parties,
           selectedParties,
-          allOrganizationsSelected: false,
+          selectedGroup: null,
           isLoading: false,
           partyGraph: buildPartyGraph(parties),
           setSelectedPartyIds: mockSetSelectedPartyIds,
@@ -252,7 +252,7 @@ describe('useAccounts', () => {
         useAccounts({
           parties,
           selectedParties,
-          allOrganizationsSelected: false,
+          selectedGroup: null,
           isLoading: false,
           partyGraph: buildPartyGraph(parties),
           setSelectedPartyIds: mockSetSelectedPartyIds,

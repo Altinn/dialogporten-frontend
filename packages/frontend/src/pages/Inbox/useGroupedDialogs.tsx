@@ -23,6 +23,7 @@ import { useGlobalState } from '../../useGlobalState.ts';
 import { useDialogActions } from '../DialogDetailsPage/useDialogActions.tsx';
 import type { CurrentSeenByLog } from './Inbox.tsx';
 import type { InboxItemInput } from './InboxItemInput.ts';
+import type { PartyGroup } from './queryParams.ts';
 import { getDialogStatus } from './status.ts';
 
 interface GroupedItem {
@@ -184,7 +185,8 @@ const useGroupedDialogs = ({
   const format = useFormat();
   const [searchParams] = useSearchParams();
   const systemLabelActions = useDialogActions();
-  const [allOrganizationsSelected] = useGlobalState<boolean>(QUERY_KEYS.ALL_ORGANIZATIONS_SELECTED, false);
+  const [selectedGroup] = useGlobalState<PartyGroup | null>(QUERY_KEYS.SELECTED_GROUP, null);
+  const isGroupSelected = selectedGroup !== null;
   const [bulkMode, setBulkMode] = useGlobalState<boolean>(QUERY_KEYS.BULK_MODE, false);
   const [bulkedIds, setBulkedIds] = useGlobalState<string[]>(QUERY_KEYS.BULK_MODE_SELECTED_IDS, []);
   const collapseGroups = !!displaySearchResults;
@@ -293,7 +295,7 @@ const useGroupedDialogs = ({
       summary: item.summary,
       recipient: item.recipient,
       color: item.recipient.type?.toLowerCase() as 'person' | 'company',
-      grouped: allOrganizationsSelected,
+      grouped: isGroupSelected,
       attachmentsCount: item.guiAttachmentCount,
       seenByLog: item.seenByLog,
       unread: item.unread,

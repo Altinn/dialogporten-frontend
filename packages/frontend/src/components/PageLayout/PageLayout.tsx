@@ -17,7 +17,7 @@ import { Link, type LinkProps, Outlet, useLocation, useSearchParams } from 'reac
 import { useCurrentEndUser, useSelectedProfile } from '../../api/hooks/usePartiesSelectors.ts';
 import { getFrontPageLink } from '../../auth';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
-import { getSearchStringFromQueryParams } from '../../pages/Inbox/queryParams.ts';
+import { type PartyGroup, getSearchStringFromQueryParams } from '../../pages/Inbox/queryParams.ts';
 import { useProfile } from '../../pages/Profile';
 import { PageRoutes } from '../../pages/routes.ts';
 import { useGlobalState } from '../../useGlobalState.ts';
@@ -44,7 +44,7 @@ export const PageLayout: React.FC = () => {
   const [bulkMode, setBulkMode] = useGlobalState<boolean>(QUERY_KEYS.BULK_MODE, false);
   const selectedProfile = useSelectedProfile();
   const currentEndUser = useCurrentEndUser();
-  const [allOrganizationsSelected] = useGlobalState<boolean>(QUERY_KEYS.ALL_ORGANIZATIONS_SELECTED, false);
+  const [selectedGroup] = useGlobalState<PartyGroup | null>(QUERY_KEYS.SELECTED_GROUP, null);
   const [selectedParties] = useGlobalState<PartyFieldsFragment[]>(QUERY_KEYS.SELECTED_PARTIES, []);
   const [isErrorState] = useGlobalState<boolean>(QUERY_KEYS.ERROR_STATE, false);
   const { headerProps } = useHeaderConfig();
@@ -162,7 +162,7 @@ export const PageLayout: React.FC = () => {
   if (isSinglePartyMatchingCurrentUser) {
     color = 'person';
     theme = 'subtle';
-  } else if (isProfile || allOrganizationsSelected) {
+  } else if (isProfile || selectedGroup) {
     color = 'person';
     theme = 'neutral';
   } else {

@@ -83,7 +83,7 @@ test.describe('Saved search — party URL verification', () => {
 
     // All oartues
     await switchParty(page, 'Alle virksomheter');
-    await page.waitForURL((url) => url.searchParams.get('allParties') === 'true');
+    await page.waitForURL((url) => url.searchParams.get('group') === 'ALL_COMPANIES');
     await expect(page.locator('#toolbar-menu-root')).toContainText('Alle virksomheter');
     await page.waitForLoadState('networkidle');
     await saveSearchAndDismiss(page, 'allOrgsTest');
@@ -98,7 +98,7 @@ test.describe('Saved search — party URL verification', () => {
     await page.locator('aside a[href*="/saved-searches"]').click();
     await page.waitForLoadState('networkidle');
 
-    const linkAllOrgs = page.locator(`a[href*="search=allOrgsTest"][href*="allParties=true"]`);
+    const linkAllOrgs = page.locator(`a[href*="search=allOrgsTest"][href*="group=ALL_COMPANIES"]`);
     const linkOrg1 = page.locator(`a[href*="search=org1test"][href*="${ORG_1_URN_ENCODED}"]`);
     const linkOrg2 = page.locator(`a[href*="search=org2test"][href*="${ORG_2_URN_ENCODED}"]`);
     await expect(linkAllOrgs).toBeVisible();
@@ -109,7 +109,7 @@ test.describe('Saved search — party URL verification', () => {
 
     await linkAllOrgs.click();
     await page.waitForURL(
-      (url) => url.searchParams.get('allParties') === 'true' && url.searchParams.get('search') === 'allOrgsTest',
+      (url) => url.searchParams.get('group') === 'ALL_COMPANIES' && url.searchParams.get('search') === 'allOrgsTest',
     );
     await page.waitForLoadState('networkidle');
 
@@ -140,7 +140,7 @@ test.describe('Saved search — party URL verification', () => {
     await goToSavedSearches();
     await page.waitForLoadState('networkidle');
     await linkAllOrgs.click();
-    await page.waitForURL((url) => url.searchParams.get('allParties') === 'true');
+    await page.waitForURL((url) => url.searchParams.get('group') === 'ALL_COMPANIES');
     await page.waitForLoadState('networkidle');
     await goToSavedSearches();
     await page.waitForLoadState('networkidle');

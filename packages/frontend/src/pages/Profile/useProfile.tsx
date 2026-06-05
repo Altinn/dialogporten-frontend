@@ -35,13 +35,12 @@ interface UseProfileOutput {
   getNotificationsettingsForCurrentUser: typeof getNotificationsettingsForCurrentUser;
 }
 
-export const useProfile = (disabled?: boolean): UseProfileOutput => {
+export const useProfile = (): UseProfileOutput => {
   const { data, isLoading, isSuccess } = useAuthenticatedQuery<ProfileQuery>({
     queryKey: [QUERY_KEYS.PROFILE],
     staleTime: 10 * 1000 * 30,
     queryFn: () => profile(),
     refetchOnWindowFocus: false,
-    enabled: !disabled,
   });
 
   const { i18n } = useTranslation();

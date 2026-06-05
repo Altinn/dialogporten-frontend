@@ -12,7 +12,7 @@ test.describe('Service resource filter with > 100 parties', () => {
     await page.locator('#toolbar-menu-root > button').click();
     await expect(page.locator('#toolbar-menu-listbox')).toBeVisible();
     await page.getByRole('option', { name: 'Alle virksomheter' }).click();
-    await expect(page).toHaveURL(/allParties=true/);
+    await expect(page).toHaveURL(/group=ALL_COMPANIES/);
 
     await page.getByRole('button', { name: /^Legg til( filter)?$/ }).click();
     await page.locator('#service').click();
