@@ -506,6 +506,8 @@ export const useAccounts = ({
       showSearch
         ? {
             name: 'account-search',
+            label: t('parties.search.label'),
+            hideLabel: true,
             value: searchString,
             onChange: (event: ChangeEvent<HTMLInputElement>) => {
               setSearchString(event.target.value);
