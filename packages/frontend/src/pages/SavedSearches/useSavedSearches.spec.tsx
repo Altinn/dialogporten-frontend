@@ -28,7 +28,7 @@ vi.mock('../../api/hooks/useParties.ts', () => ({
 }));
 
 vi.mock('../../api/hooks/useServiceResource.ts', () => ({
-  useServiceResource: vi.fn(() => ({ serviceResourceById: new Map() })),
+  useFilterServiceResources: vi.fn(() => ({ serviceResourceById: new Map() })),
 }));
 
 vi.mock('../Inbox/useOrganizations.ts', () => ({

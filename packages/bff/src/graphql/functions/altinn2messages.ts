@@ -1,9 +1,9 @@
 import { logger } from '@altinn/dialogporten-node-logger';
 import axios from 'axios';
+import type { Context, SessionStorageToken } from '../../auth/oidc.js';
 import config from '../../config.ts';
 import { getLanguageFromAltinnContext, languageCodes } from '../types/cookie.ts';
 import type { Altinn2MessageData, Altinn2MessagesResponse } from '../types/index.ts';
-import type { Context, TokenType } from './profile.ts';
 
 export const getAltinn2messages = async (
   context: Context,
@@ -28,7 +28,8 @@ export const getAltinn2messages = async (
   const isCurrentEndUser = isSelfIdentified || selectedAccountIdentifier === context.session.get('pid');
 
   try {
-    const token = typeof context.session.get('token') === 'object' ? (context.session.get('token') as TokenType) : null;
+    const token =
+      typeof context.session.get('token') === 'object' ? (context.session.get('token') as SessionStorageToken) : null;
 
     if (!token?.access_token) {
       throw new Error('Unable to authenticate with Altinn 2 API - no valid token with required scope');
