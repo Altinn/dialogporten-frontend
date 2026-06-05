@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.159.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.158.5...v1.159.0) (2026-06-05)
+
+
+### Features
+
+* source filter service resources from Dialogporten ([#4304](https://github.com/Altinn/dialogporten-frontend/issues/4304)) ([235176e](https://github.com/Altinn/dialogporten-frontend/commit/235176e24135215c37b080ad8d5bf58826459f01))
+
 ## [1.158.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.158.4...v1.158.5) (2026-06-05)
 
 
