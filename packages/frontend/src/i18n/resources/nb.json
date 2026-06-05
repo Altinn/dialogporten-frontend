@@ -214,6 +214,8 @@
   "inbox.heading.title.inbox": "{count, plural, =0 {Ingen treff} one {# treff} other {# treff}}",
   "inbox.heading.title.sent": "{count, plural, =0 {Ingen sendt} one {# sendt} other {# sendt}}",
   "inbox.service_limit_reached.description": "Velg maks {count} tjenester for å se innholdet.",
+  "inbox.party_limit_reached.description": "Du har valgt flere enn {count} virksomheter. Velg færre virksomheter for å se meldinger.",
+  "inbox.dialogs_error.description": "En feil har oppstått: Vi klarte ikke å hente innholdet ditt her.",
   "inbox.historical_messages_date_warning": "Pga en teknisk feil vises en del historiske meldinger med feil dato i den nye innboksen. Vi jobber med å rette dette. Inntil videre kan den gamle innboksen benyttes.",
   "inbox.no_parties_found": "Fant ingen aktører",
   "inbox.old_inbox_notification": "Du har skjema til utfylling i gammel innboks",

@@ -214,6 +214,8 @@
   "inbox.heading.title.inbox": "{count, plural, =0 {No results} one {# result} other {# results}}",
   "inbox.heading.title.sent": "{count, plural, =0 {Nothing sent} one {# sent} other {# sent}}",
   "inbox.service_limit_reached.description": "Select max {count} services to see the content.",
+  "inbox.party_limit_reached.description": "You have selected more than {count} organisations. Select fewer organisations to see messages.",
+  "inbox.dialogs_error.description": "An error has occurred: We were unable to fetch your content here.",
   "inbox.historical_messages_date_warning": "Due to a technical issue, some historical messages are displayed with incorrect dates in the new inbox. We are working to fix this. In the meantime, the old inbox can be used.",
   "inbox.no_parties_found": "No parties found",
   "inbox.old_inbox_notification": "You have forms to fill out in the old inbox",

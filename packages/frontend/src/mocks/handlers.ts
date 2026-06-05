@@ -131,6 +131,11 @@ const getAllDialogsforCountMock = graphql.query('getAllDialogsForCount', ({ vari
 });
 
 const getAllDialogsForPartiesMock = graphql.query('getAllDialogsForParties', ({ variables }) => {
+  // Test hook: force the dialog query to fail so the inbox error state can be exercised.
+  if (new URLSearchParams(window.location.search).get('simulateDialogsError') === 'true') {
+    return HttpResponse.json({ errors: [{ message: 'Simulated dialogs error' }] }, { status: 500 });
+  }
+
   const items = filterDialogs({
     inMemoryStore,
     partyURIs: variables.partyURIs,
