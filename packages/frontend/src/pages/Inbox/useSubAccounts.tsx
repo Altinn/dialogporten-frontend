@@ -12,7 +12,6 @@ interface UseSubAccountsProps {
   selectedParties: PartyFieldsFragment[];
   allOrganizationsSelected: boolean;
   selectedServicesCount: number;
-  hasSubAccountOverrideWithinLimit: boolean;
 }
 
 interface UseSubAccountsOutput {
@@ -43,7 +42,6 @@ export const useSubAccounts = ({
   selectedParties,
   allOrganizationsSelected,
   selectedServicesCount,
-  hasSubAccountOverrideWithinLimit,
 }: UseSubAccountsProps): UseSubAccountsOutput => {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -120,9 +118,17 @@ export const useSubAccounts = ({
     return subAccountsAndAll.filter((item) => !item.disabled);
   }, [subAccountsAndAll]);
 
+  /*
+   * Only suppress the navigator for a service filter when the query bypasses the party list
+   * entirely — i.e. the "Alle virksomheter" path with no sub-account override, where it sends an
+   * empty party list (all parties) and runs without paginating. As soon as parties are sent (a
+   * single selected parent, or an override), a service filter can push the count over
+   * MAX_DIALOG_PARTY_SIZE and disable the query, so the navigator must stay available as the way out.
+   */
+  const hasSubAccountOverride = selectedSubAccountIds.length > 0;
   const accountNavigatorHidden =
     filteredSubAccounts.length < MAX_DIALOG_PARTY_SIZE ||
-    (selectedServicesCount > 0 && !hasSubAccountOverrideWithinLimit);
+    (allOrganizationsSelected && selectedServicesCount > 0 && !hasSubAccountOverride);
   const showPageLabel = !accountNavigatorHidden;
 
   const allLabel = allOrganizationsSelected ? t('parties.labels.all_organizations') : t('parties.labels.all_units');

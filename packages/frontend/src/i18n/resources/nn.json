@@ -214,6 +214,8 @@
   "inbox.heading.title.inbox": "{count, plural, =0 {Ingen treff} one {# treff} other {# treff}}",
   "inbox.heading.title.sent": "{count, plural, =0 {Ingen sendt} one {# sendt} other {# sendt}}",
   "inbox.service_limit_reached.description": "Vel maks {count} tenester for å sjå innhaldet.",
+  "inbox.party_limit_reached.description": "Du har valt fleire enn {count} verksemder. Vel færre verksemder for å sjå meldingar.",
+  "inbox.dialogs_error.description": "Det har oppstått ein feil: Vi klarte ikkje å hente innhaldet ditt her.",
   "inbox.historical_messages_date_warning": "På grunn av ein teknisk feil blir ein del historiske meldingar viste med feil dato i den nye innboksen. Vi jobbar med å rette dette. Inntil vidare kan den gamle innboksen nyttast.",
   "inbox.no_parties_found": "Ingen aktørar funne",
   "inbox.old_inbox_notification": "Du har skjema til utfylling i gammal innboks",

@@ -34,18 +34,15 @@ export const isDialogQueryEnabled = ({
   queryPartyURIs: string[];
   serviceResources: string[];
 }): boolean => {
-  if (serviceResources.length > 0 && serviceResources.length <= MAX_SERVICE_RESOURCE_SIZE) {
-    if (queryPartyURIs.length > MAX_DIALOG_PARTY_SIZE) {
-      return false;
-    }
-    return true;
+  if (serviceResources.length > MAX_SERVICE_RESOURCE_SIZE) {
+    return false;
   }
 
-  if (queryPartyURIs.length > 0 && queryPartyURIs.length <= MAX_DIALOG_PARTY_SIZE) {
-    return true;
+  if (serviceResources.length > 0) {
+    return queryPartyURIs.length <= MAX_DIALOG_PARTY_SIZE;
   }
 
-  return false;
+  return queryPartyURIs.length > 0 && queryPartyURIs.length <= MAX_DIALOG_PARTY_SIZE;
 };
 
 export const isDialogCountInconclusive = ({
@@ -76,6 +73,7 @@ interface UseDialogsOutput {
   hasNextPage: boolean;
   isFetchingNextPage: boolean;
   isQueryEnabled: boolean;
+  partyLimitExceeded: boolean;
 }
 
 export const useDialogs = ({
@@ -91,17 +89,29 @@ export const useDialogs = ({
   const { selectedParties, allOrganizationsSelected, partyGraph } = useParties();
   const format = useFormat();
 
-  const partiesToUse =
-    allOrganizationsSelected && !shouldShowDeletedEntities
-      ? selectedParties.filter((party) => !party.isDeleted)
-      : selectedParties;
+  const partiesToUse = useMemo(() => {
+    if (shouldShowDeletedEntities) return selectedParties;
+
+    const withoutDeletedSubParties = selectedParties.map((party) => ({
+      ...party,
+      subParties: party.subParties?.filter((subParty) => !subParty.isDeleted) ?? party.subParties,
+    }));
+
+    return allOrganizationsSelected
+      ? withoutDeletedSubParties.filter((party) => !party.isDeleted)
+      : withoutDeletedSubParties;
+  }, [selectedParties, allOrganizationsSelected, shouldShowDeletedEntities]);
 
   const isPartyIdsOverridden = partyIdsOverride.length > 0;
-  const partyIds = isPartyIdsOverridden ? partyIdsOverride : getPartyIds(partiesToUse);
+  const partyIds = useMemo(
+    () => (isPartyIdsOverridden ? partyIdsOverride : getPartyIds(partiesToUse)),
+    [isPartyIdsOverridden, partyIdsOverride, partiesToUse],
+  );
   const previousTokensRef = useRef<string>('');
   const viewTypeKey = viewType ?? 'global';
   const queryPartyURIs = allOrganizationsSelected && !isPartyIdsOverridden && serviceResources?.length ? [] : partyIds;
   const isQueryEnabled = isDialogQueryEnabled({ queryPartyURIs, serviceResources });
+  const partyLimitExceeded = queryPartyURIs.length > MAX_DIALOG_PARTY_SIZE;
 
   const queryVariables = normalizeFilterDefaults({
     filters: {
@@ -220,5 +230,6 @@ export const useDialogs = ({
     hasNextPage: isQueryEnabled ? (data?.pages?.[data?.pages.length - 1]?.searchDialogs?.hasNextPage ?? false) : false,
     isFetchingNextPage,
     isQueryEnabled,
+    partyLimitExceeded,
   };
 };

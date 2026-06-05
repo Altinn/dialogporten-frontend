@@ -51,12 +51,7 @@ import { AlertBanner } from './AlertBanner.tsx';
 import { Altinn2ActiveSchemasNotification } from './Altinn2ActiveSchemasNotification.tsx';
 import { FilterCategory, hasValidFilters, readFiltersFromURLQuery } from './filters';
 import styles from './inbox.module.css';
-import {
-  FixedGlobalQueryParams,
-  VariableGlobalQueryParams,
-  encodeSubAccountIds,
-  getSelectedSubAccountsFromQueryParams,
-} from './queryParams.ts';
+import { FixedGlobalQueryParams, VariableGlobalQueryParams, encodeSubAccountIds } from './queryParams.ts';
 import { useBookmarkModal } from './useBookmarkModal.tsx';
 import { useFilters } from './useFilters.tsx';
 import useGroupedDialogs from './useGroupedDialogs.tsx';
@@ -156,9 +151,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
     },
   });
 
-  const partyIdsFromParams = useMemo(() => getSelectedSubAccountsFromQueryParams(searchParams), [searchParams]);
-  const hasSubAccountOverrideWithinLimit =
-    !!partyIdsFromParams.length && partyIdsFromParams.length <= MAX_DIALOG_PARTY_SIZE;
   const {
     subAccounts,
     getSubAccountLabel,
@@ -171,10 +163,11 @@ export const Inbox = ({ viewType }: InboxProps) => {
     selectedParties,
     allOrganizationsSelected,
     selectedServicesCount,
-    hasSubAccountOverrideWithinLimit,
   });
   const searchMode = hasValidFilters(filterState) || !!validSearchString;
   const showSubAccountsMenu = subAccounts.length > 0;
+  const accountNavigatorEnabled = useFeatureFlag<boolean>('inbox.accountNavigatorEnabled');
+  const accountNavigatorVisible = !accountNavigatorHidden && accountNavigatorEnabled;
 
   const subAccountsParamForSave = useMemo(() => {
     if (subAccountsParam) return subAccountsParam;
@@ -207,10 +200,12 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const {
     dialogs,
     isLoading: isLoadingDialogs,
+    isError: isErrorDialogs,
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
     isQueryEnabled,
+    partyLimitExceeded,
   } = useDialogs({
     viewType,
     filterState,
@@ -220,6 +215,9 @@ export const Inbox = ({ viewType }: InboxProps) => {
   });
 
   const isLimitReached = !isQueryEnabled;
+  /* Suppress the list's empty-state heading when we already show a limit notice or an error,
+     so we never render a misleading "no messages" alongside those. */
+  const hideListHeader = isLimitReached || isErrorDialogs;
 
   const onCloseBulkMode = useCallback(() => {
     setBulkMode(false);
@@ -274,8 +272,8 @@ export const Inbox = ({ viewType }: InboxProps) => {
   });
 
   const dialogItems = useMemo(() => {
-    return isLimitReached ? [] : groupedDialogs;
-  }, [groupedDialogs, isLimitReached]);
+    return hideListHeader ? [] : groupedDialogs;
+  }, [groupedDialogs, hideListHeader]);
 
   const dialogListGroups = useMemo(() => {
     const firstKey = Object.keys(groups)[0];
@@ -423,14 +421,25 @@ export const Inbox = ({ viewType }: InboxProps) => {
           subAccounts={subAccounts}
           partyIdsOverride={partyIdsOverride}
         />
-        {serviceLimitReached && (
+        {/* Show a single notice: a fetch error takes priority, then the service limit, then the
+            party limit — and the party limit only when the AccountNavigator isn't already offering
+            a way out (it explains itself). */}
+        {isErrorDialogs ? (
+          <DsAlert data-color="danger">
+            <DsParagraph>{t('inbox.dialogs_error.description')}</DsParagraph>
+          </DsAlert>
+        ) : serviceLimitReached ? (
           <Typography variant="subtle" size="sm">
             <p>{t('inbox.service_limit_reached.description', { count: MAX_SERVICE_RESOURCE_SIZE })} </p>
           </Typography>
-        )}
+        ) : partyLimitExceeded && !accountNavigatorVisible ? (
+          <Typography variant="subtle" size="sm">
+            <p>{t('inbox.party_limit_reached.description', { count: MAX_DIALOG_PARTY_SIZE })}</p>
+          </Typography>
+        ) : null}
         <DialogList
           title={
-            isLimitReached ? undefined : searchMode ? (
+            hideListHeader ? undefined : searchMode ? (
               isLoading ? (
                 <Heading as="h2" loading>
                   {t('word.loading')}
@@ -445,7 +454,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
           sortGroupBy={sortGroupBy}
           isLoading={isLoading}
           highlightWords={highlightWords}
-          description={isLimitReached ? undefined : description}
+          description={hideListHeader ? undefined : description}
         />
         {hasNextPage && (
           <Button aria-label={t('dialog.aria.fetch_more')} onClick={fetchNextPage} variant="outline" size="lg">

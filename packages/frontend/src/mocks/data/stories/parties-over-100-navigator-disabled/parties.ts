@@ -1,13 +1,12 @@
 import type { PartyFieldsFragment, SubPartyFieldsFragment } from 'bff-types-generated';
 
 /**
- * A single parent organization ("STORSELSKAP AS") that has more than
- * MAX_DIALOG_PARTY_SIZE (100) sub-units. Selecting the parent expands
- * (via getPartyIds) into parent + all sub-units, exceeding the 100-party
- * query limit. Used to verify the inbox clears the previously selected
- * view's dialogs instead of leaving them hanging.
+ * A parent organization with more than MAX_DIALOG_PARTY_SIZE (100) active sub-units,
+ * combined with features.ts disabling the AccountNavigator. Selecting the parent
+ * exceeds the limit, but with no navigator to page out of it the inbox must instead
+ * show the party-limit notice. Used to verify that fallback message.
  */
-const SUBUNIT_COUNT = 99;
+const SUBUNIT_COUNT = 120;
 
 const pad = (n: number) => n.toString().padStart(3, '0');
 
