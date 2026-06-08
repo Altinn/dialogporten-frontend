@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.159.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.159.1...v1.159.2) (2026-06-08)
+
+
+### Bug Fixes
+
+* **header:** glitches on Safari / iOS ([#4316](https://github.com/Altinn/dialogporten-frontend/issues/4316)) ([11a7619](https://github.com/Altinn/dialogporten-frontend/commit/11a7619be53a291b9972bfb4720308a638b7d162))
+
 ## [1.159.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.159.0...v1.159.1) (2026-06-08)
 
 
