@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.159.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.159.0...v1.159.1) (2026-06-08)
+
+
+### Bug Fixes
+
+* Bump ac v67.5, fix docesaurus and wave errors ([#4309](https://github.com/Altinn/dialogporten-frontend/issues/4309)) ([9bf6af3](https://github.com/Altinn/dialogporten-frontend/commit/9bf6af36b3e41db0c56a6e257c9f103fd9c920f0))
+
 ## [1.159.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.158.5...v1.159.0) (2026-06-05)
 
 
