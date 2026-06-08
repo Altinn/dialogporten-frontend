@@ -66,14 +66,20 @@ export async function selectPartyFromToolbar(page: Page, partyName: string) {
   await toolbar.locator('li').filter({ hasText: partyName }).nth(1).click();
 }
 
+/* TODO: Improve selector */
 export async function openContextMenuForDialog(page: Page, title: string) {
   const dialogItem = page.locator('li', { has: page.getByRole('link', { name: title }) }).first();
-  const btn = dialogItem.getByRole('button', { name: 'Åpne meny' });
+  // The trigger's accessible name clears once the menu opens, so target the stable
+  // aria-haspopup attribute instead of the name to keep the locator valid afterwards.
+  const btn = dialogItem.locator('button[aria-haspopup="menu"]');
 
   await btn.click();
+  await expect(btn).toHaveAttribute('aria-expanded', 'true');
 
-  // Menu is rendered via React portal to document.body — locate at page level
-  const menuRoot = page.locator('[role="menu"]:not([aria-hidden="true"])');
+  // Every dialog renders its own context menu; the trigger's aria-controls points to
+  // this one's unique id, so scope to it rather than the shared menu role/prefix.
+  const menuId = await btn.getAttribute('aria-controls');
+  const menuRoot = page.locator(`[id="${menuId}"]`);
   await expect(menuRoot).toBeVisible();
 
   return { dialogItem, menuRoot };
