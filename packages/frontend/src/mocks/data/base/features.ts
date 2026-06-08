@@ -6,4 +6,5 @@ export const features = {
   'inbox.accountNavigatorEnabled': true,
   'SI.emailAccount.enableConnectLink': true,
   'profil.enableSIPhoneEdit': true,
+  'inbox.hideFloatingButton': false,
 };

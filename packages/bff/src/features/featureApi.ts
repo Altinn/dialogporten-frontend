@@ -14,6 +14,7 @@ const defaultFeatureFlags: Record<string, boolean> = {
   'SI.emailAccount.enableConnectLink': false,
   'profil.enableSIPhoneEdit': false,
   'inbox.hideAltinn2Links': false,
+  'inbox.hideFloatingButton': false,
 };
 
 const defaultAppConfigValues: Record<string, string[]> = {
