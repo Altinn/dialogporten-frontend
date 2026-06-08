@@ -10,6 +10,7 @@ export const FloatingDropdown = () => {
   const { t } = useTranslation();
   const currentPartyUuid = useCurrentPartyUuid();
   const hideAltinn2Links = useFeatureFlag<boolean>('inbox.hideAltinn2Links');
+  const hideFloatingButton = useFeatureFlag<boolean>('inbox.hideFloatingButton');
 
   const handleGoBack = () => {
     window.location.href = createMessageBoxLink(currentPartyUuid);
@@ -18,6 +19,8 @@ export const FloatingDropdown = () => {
   const handleGoToHelp = () => {
     window.location.href = getNeedHelpLink(i18n.language);
   };
+
+  if (hideFloatingButton) return null;
 
   const items = [
     {
