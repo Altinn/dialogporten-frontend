@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.160.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.160.1...v1.160.2) (2026-06-09)
+
+
+### Bug Fixes
+
+* **layout:** content in desktop was clipped when opening global menu ([#4326](https://github.com/Altinn/dialogporten-frontend/issues/4326)) ([5c6002e](https://github.com/Altinn/dialogporten-frontend/commit/5c6002e026a2582ba2ff1c371374ee17085d5016))
+
 ## [1.160.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.160.0...v1.160.1) (2026-06-09)
 
 
