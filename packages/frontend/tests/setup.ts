@@ -16,3 +16,10 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
     disconnect() {}
   };
 }
+const originalMatches = Element.prototype.matches;
+Element.prototype.matches = function matches(selector: string): boolean {
+  if (selector.includes(':popover-open')) {
+    return false;
+  }
+  return originalMatches.call(this, selector);
+};
