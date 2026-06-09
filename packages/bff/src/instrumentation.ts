@@ -2,6 +2,7 @@ import type { IncomingMessage } from 'node:http';
 import { logger } from '@altinn/dialogporten-node-logger';
 import { FastifyOtelInstrumentation } from '@fastify/otel';
 import type { Context } from '@opentelemetry/api';
+import { type ExportResult, ExportResultCode } from '@opentelemetry/core';
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-grpc';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
 import { GraphQLInstrumentation } from '@opentelemetry/instrumentation-graphql';
@@ -9,13 +10,14 @@ import { HttpInstrumentation, type HttpInstrumentationConfig } from '@openteleme
 import { IORedisInstrumentation } from '@opentelemetry/instrumentation-ioredis';
 import { PgInstrumentation } from '@opentelemetry/instrumentation-pg';
 import { resourceFromAttributes } from '@opentelemetry/resources';
-import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
+import { PeriodicExportingMetricReader, type PushMetricExporter } from '@opentelemetry/sdk-metrics';
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import {
   BatchSpanProcessor,
   ParentBasedSampler,
   type ReadableSpan,
   type Span,
+  type SpanExporter,
   type SpanProcessor,
   TraceIdRatioBasedSampler,
 } from '@opentelemetry/sdk-trace-base';
@@ -64,6 +66,53 @@ const resource = resourceFromAttributes({
   [SEMRESATTRS_SERVICE_INSTANCE_ID]: config.info.instanceId || 'local-dev',
 });
 
+// Telemetry export must never crash the process. A synchronous throw from an
+// exporter (e.g. protobuf serialization) escapes the BatchSpanProcessor as an
+// unhandled rejection, which is fatal under Node's default settings. These
+// wrappers convert any such throw into a failed ExportResult instead.
+class SafeSpanExporter implements SpanExporter {
+  constructor(private readonly delegate: SpanExporter) {}
+
+  export(spans: ReadableSpan[], resultCallback: (result: ExportResult) => void): void {
+    try {
+      this.delegate.export(spans, resultCallback);
+    } catch (error) {
+      logger.error(error, 'Trace export threw synchronously - suppressed to protect process');
+      resultCallback({ code: ExportResultCode.FAILED, error: error as Error });
+    }
+  }
+
+  forceFlush(): Promise<void> {
+    return this.delegate.forceFlush?.() ?? Promise.resolve();
+  }
+
+  shutdown(): Promise<void> {
+    return this.delegate.shutdown();
+  }
+}
+
+const wrapMetricExporter = (delegate: PushMetricExporter): PushMetricExporter => {
+  const safe: PushMetricExporter = {
+    export(metrics, resultCallback) {
+      try {
+        delegate.export(metrics, resultCallback);
+      } catch (error) {
+        logger.error(error, 'Metric export threw synchronously - suppressed to protect process');
+        resultCallback({ code: ExportResultCode.FAILED, error: error as Error });
+      }
+    },
+    forceFlush: () => delegate.forceFlush(),
+    shutdown: () => delegate.shutdown(),
+  };
+  if (delegate.selectAggregationTemporality) {
+    safe.selectAggregationTemporality = (instrumentType) => delegate.selectAggregationTemporality!(instrumentType);
+  }
+  if (delegate.selectAggregation) {
+    safe.selectAggregation = (instrumentType) => delegate.selectAggregation!(instrumentType);
+  }
+  return safe;
+};
+
 class SpanNameFilteringProcessor implements SpanProcessor {
   constructor(private readonly delegate: SpanProcessor) {}
 
@@ -94,13 +143,17 @@ const initializeOpenTelemetry = () => {
       return null;
     }
 
-    const traceExporter: OTLPTraceExporter = new OTLPTraceExporter({
-      url: openTelemetry.endpoint,
-    });
-    const metricReader: PeriodicExportingMetricReader = new PeriodicExportingMetricReader({
-      exporter: new OTLPMetricExporter({
+    const traceExporter: SpanExporter = new SafeSpanExporter(
+      new OTLPTraceExporter({
         url: openTelemetry.endpoint,
       }),
+    );
+    const metricReader: PeriodicExportingMetricReader = new PeriodicExportingMetricReader({
+      exporter: wrapMetricExporter(
+        new OTLPMetricExporter({
+          url: openTelemetry.endpoint,
+        }),
+      ),
       exportIntervalMillis: 30000,
     });
 
