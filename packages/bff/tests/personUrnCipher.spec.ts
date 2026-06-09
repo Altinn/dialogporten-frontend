@@ -91,6 +91,41 @@ describe('personUrnCipher', () => {
   });
 });
 
+describe('decryptPersonIdentifier (bare account identifier)', () => {
+  const originalKeys = process.env.PERSON_URN_ENC_KEYS;
+  afterEach(() => {
+    if (originalKeys === undefined) Reflect.deleteProperty(process.env, 'PERSON_URN_ENC_KEYS');
+    else process.env.PERSON_URN_ENC_KEYS = originalKeys;
+  });
+
+  it('decrypts the bare enc: identifier produced by stripping the URN prefix', async () => {
+    const { encryptPersonUrn, decryptPersonIdentifier } = await importCipher(KEY_A);
+    const encryptedUrn = encryptPersonUrn(PERSON_URN) as string;
+    const bareIdentifier = encryptedUrn.split('identifier-no:')[1];
+    expect(bareIdentifier).toMatch(/^enc:/);
+    expect(decryptPersonIdentifier(bareIdentifier)).toBe('20815497741');
+  });
+
+  it('passes through organization numbers and raw national identity numbers unchanged', async () => {
+    const { decryptPersonIdentifier } = await importCipher(KEY_A);
+    expect(decryptPersonIdentifier('312159600')).toBe('312159600');
+    expect(decryptPersonIdentifier('20815497741')).toBe('20815497741');
+  });
+
+  it('decrypts a bare identifier using a previous key during rotation', async () => {
+    const { encryptPersonUrn: encryptOld } = await importCipher(KEY_B);
+    const bareOld = (encryptOld(PERSON_URN) as string).split('identifier-no:')[1];
+
+    const { decryptPersonIdentifier } = await importCipher(`${KEY_A},${KEY_B}`);
+    expect(decryptPersonIdentifier(bareOld)).toBe('20815497741');
+  });
+
+  it('throws on a malformed enc: identifier that no key can decrypt', async () => {
+    const { decryptPersonIdentifier } = await importCipher(KEY_A);
+    expect(() => decryptPersonIdentifier('enc:not-valid-ciphertext')).toThrow();
+  });
+});
+
 describe('decryptPersonUrnsDeep (inbound variables)', () => {
   it('decrypts encrypted URNs anywhere in nested variables', async () => {
     const { encryptPersonUrn } = await importCipher(KEY_A);

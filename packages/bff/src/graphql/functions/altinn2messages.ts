@@ -2,6 +2,7 @@ import { logger } from '@altinn/dialogporten-node-logger';
 import axios from 'axios';
 import type { Context, SessionStorageToken } from '../../auth/oidc.js';
 import config from '../../config.ts';
+import { decryptPersonIdentifier } from '../../party/personUrnCipher.ts';
 import { getLanguageFromAltinnContext, languageCodes } from '../types/cookie.ts';
 import type { Altinn2MessageData, Altinn2MessagesResponse } from '../types/index.ts';
 
@@ -25,7 +26,6 @@ export const getAltinn2messages = async (
     logger.warn('No selectedAccountIdentifier provided for Altinn 2 API call');
     return [];
   }
-  const isCurrentEndUser = isSelfIdentified || selectedAccountIdentifier === context.session.get('pid');
 
   try {
     const token =
@@ -35,7 +35,11 @@ export const getAltinn2messages = async (
       throw new Error('Unable to authenticate with Altinn 2 API - no valid token with required scope');
     }
 
-    const segment = isCurrentEndUser ? 'my' : encodeURIComponent(selectedAccountIdentifier!);
+    const accountIdentifier = selectedAccountIdentifier
+      ? decryptPersonIdentifier(selectedAccountIdentifier)
+      : selectedAccountIdentifier;
+    const isCurrentEndUser = isSelfIdentified || accountIdentifier === context.session.get('pid');
+    const segment = isCurrentEndUser ? 'my' : encodeURIComponent(accountIdentifier!);
     const a2MessageAPIUrl = new URL(`/api/${segment}/messages`, altinn2BaseURL);
     a2MessageAPIUrl.searchParams.set('language', languageCode);
 
