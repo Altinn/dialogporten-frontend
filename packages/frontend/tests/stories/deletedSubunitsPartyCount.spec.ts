@@ -32,7 +32,7 @@ test.describe('"Alle virksomheter" with deleted sub-units (parties-over-100-with
 
     await openAccountMenu(page);
     await page.getByRole('option', { name: 'Alle virksomheter' }).click();
-    await expect(page).toHaveURL(/allParties=true/);
+    await expect(page).toHaveURL(/group=ALL_COMPANIES/);
 
     // 99 parties ≤ 100 → the query runs and the dialogs show
     await expect(page.getByRole('link', { name: PARENT_DIALOG })).toBeVisible();

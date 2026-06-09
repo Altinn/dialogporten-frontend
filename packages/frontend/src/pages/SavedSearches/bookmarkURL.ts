@@ -2,6 +2,7 @@ import type { FilterState } from '@altinn/altinn-components';
 import { type SavedSearchesFieldsFragment, SystemLabel } from 'bff-types-generated';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { FilterCategory, aggregateFilterState } from '../Inbox/filters';
+import { FixedGlobalQueryParams, PartyGroups, getSelectedGroupFromQueryParams } from '../Inbox/queryParams.ts';
 import { PageRoutes } from '../routes.ts';
 import { fromPathToViewType } from './searchUtils.ts';
 import { convertFiltersToFilterState } from './useSavedSearches.tsx';
@@ -30,13 +31,13 @@ export const buildCurrentStateURL = (
   viewType: InboxViewType,
 ): string => {
   const urlParams = new URLSearchParams(window.location.search);
-  const allPartiesInURL = urlParams.get('allParties');
+  const groupInURL = getSelectedGroupFromQueryParams(urlParams);
 
   const queryParams = new URLSearchParams(
     Object.entries({
       search: searchString || undefined,
-      party: allPartiesInURL ? null : urlParams.get('party'),
-      allParties: allPartiesInURL,
+      party: groupInURL ? null : urlParams.get(FixedGlobalQueryParams.party),
+      [FixedGlobalQueryParams.group]: groupInURL,
     }).reduce(
       (acc, [key, value]) => {
         if (value) acc[key] = value;
@@ -72,10 +73,12 @@ export const buildSavedSearchURL = (savedSearch: SavedSearchesFieldsFragment) =>
   const urn = savedSearch.data.urn;
 
   let partyParam: string | null = null;
-  let allPartiesParam: string | null = null;
+  let groupParam: string | null = null;
 
   if (urn && urn.length > 1) {
-    allPartiesParam = 'true';
+    // A multi-party saved search is a group. Persons and companies never mix in one group.
+    const allPersons = urn.every((u) => u?.includes('person'));
+    groupParam = allPersons ? PartyGroups.ALL_PERSONS : PartyGroups.ALL_COMPANIES;
   } else if (urn?.length === 1 && !urn[0]?.includes('person')) {
     partyParam = urn[0] ?? null;
   }
@@ -83,8 +86,8 @@ export const buildSavedSearchURL = (savedSearch: SavedSearchesFieldsFragment) =>
   const queryParams = new URLSearchParams(
     Object.entries({
       search: searchString,
-      party: allPartiesParam ? null : partyParam,
-      allParties: allPartiesParam,
+      party: groupParam ? null : partyParam,
+      [FixedGlobalQueryParams.group]: groupParam,
     }).reduce(
       (acc, [key, value]) => {
         if (value) acc[key] = value;

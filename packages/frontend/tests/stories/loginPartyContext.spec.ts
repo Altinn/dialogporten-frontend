@@ -26,7 +26,7 @@ test.describe('LoginPartyContext', () => {
     // Verify URL parameters
     const url = new URL(page.url());
     expect(url.searchParams.has('party')).toBe(false);
-    expect(url.searchParams.has('allParties')).toBe(false);
+    expect(url.searchParams.has('group')).toBe(false);
   });
 
   test('Shows available parties in dropdown when clicked', async ({ page }) => {
@@ -39,7 +39,7 @@ test.describe('LoginPartyContext', () => {
     await expect(page.locator('[role="option"][data-id="urn:altinn:organization:identifier-no:2"]')).toBeVisible(); // Testbedrift AS
     await expect(page.locator('[role="option"][data-id="urn:altinn:organization:identifier-sub:1"]')).toBeVisible(); // Testbedrift As Avd Sub
     await expect(page.locator('[role="option"][data-id="urn:altinn:organization:identifier-sub:2"]')).toBeVisible(); // Testbedrift As Avd Oslo
-    await expect(page.locator('[role="option"][data-id="ALL"]')).toBeVisible(); // Alle virksomheter
+    await expect(page.getByRole('option', { name: 'Alle virksomheter' })).toBeVisible(); // Alle virksomheter
   });
 
   test('Shows correct messages when switching to company party', async ({ page }: { page: Page }) => {
@@ -55,7 +55,7 @@ test.describe('LoginPartyContext', () => {
     // Verify URL parameters
     const url = new URL(page.url());
     expect(url.searchParams.has('party')).toBe(true);
-    expect(url.searchParams.has('allParties')).toBe(false);
+    expect(url.searchParams.has('group')).toBe(false);
   });
 
   test('Shows correct messages when switching to sub-party', async ({ page }: { page: Page }) => {
@@ -94,7 +94,7 @@ test.describe('LoginPartyContext', () => {
     // Verify URL parameters
     const url = new URL(page.url());
     expect(url.searchParams.has('party')).toBe(false);
-    expect(url.searchParams.get('allParties')).toBe('true');
+    expect(url.searchParams.get('group')).toBe('ALL_COMPANIES');
   });
 
   test('Maintains party selection after page reload', async ({ page }: { page: Page }) => {
@@ -106,7 +106,7 @@ test.describe('LoginPartyContext', () => {
     await Promise.all([page.waitForLoadState('domcontentloaded'), page.reload()]);
     const urlAfterReload = new URL(page.url());
     expect(urlAfterReload.searchParams.has('party')).toBe(false);
-    expect(urlAfterReload.searchParams.get('allParties')).toBe('true');
+    expect(urlAfterReload.searchParams.get('group')).toBe('ALL_COMPANIES');
   });
 
   test('Correct colour theme for selected party', async ({ page }: { page: Page }) => {

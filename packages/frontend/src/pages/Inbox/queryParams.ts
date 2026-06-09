@@ -1,8 +1,24 @@
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from 'lz-string';
 
+/**
+ * A party group is a virtual selection that resolves to a dynamic set of parties (capped at
+ * MAX_DIALOG_PARTY_SIZE). `ALL_COMPANIES` is the successor of the legacy `allParties=true` flag.
+ * The concept is intentionally open-ended so future groups (e.g. favorites) can reuse it.
+ */
+export type PartyGroup = 'ALL_COMPANIES' | 'ALL_PERSONS';
+
+export const PartyGroups: Record<PartyGroup, PartyGroup> = {
+  ALL_COMPANIES: 'ALL_COMPANIES',
+  ALL_PERSONS: 'ALL_PERSONS',
+};
+
+export const isPartyGroup = (value: string | null | undefined): value is PartyGroup =>
+  value === PartyGroups.ALL_COMPANIES || value === PartyGroups.ALL_PERSONS;
+
 export const FixedGlobalQueryParams = {
   party: 'party',
   allParties: 'allParties',
+  group: 'group',
   subAccounts: 'subAccounts',
   mock: 'mock',
   playwrightId: 'playwrightId',
@@ -22,6 +38,21 @@ export const getSelectedPartyFromQueryParams = (searchParams: URLSearchParams): 
 
 export const getSelectedAllPartiesFromQueryParams = (searchParams: URLSearchParams): boolean => {
   return searchParams.get(FixedGlobalQueryParams.allParties) === 'true';
+};
+
+/**
+ * Resolves the selected party group from the URL.
+ * Reads the new `group` param, and maps the legacy `allParties=true` flag to `ALL_COMPANIES`.
+ */
+export const getSelectedGroupFromQueryParams = (searchParams: URLSearchParams): PartyGroup | null => {
+  const group = searchParams.get(FixedGlobalQueryParams.group);
+  if (isPartyGroup(group)) {
+    return group;
+  }
+  if (getSelectedAllPartiesFromQueryParams(searchParams)) {
+    return PartyGroups.ALL_COMPANIES;
+  }
+  return null;
 };
 
 export const getSelectedSubAccountsFromQueryParams = (searchParams: URLSearchParams): string[] => {

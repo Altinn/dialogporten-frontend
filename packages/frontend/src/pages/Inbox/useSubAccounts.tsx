@@ -5,12 +5,18 @@ import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { MAX_DIALOG_PARTY_SIZE } from '../../api/hooks/useDialogs.tsx';
 import type { PartyItemProp } from '../../components/PageLayout/Accounts/useAccounts.tsx';
-import { FixedGlobalQueryParams, encodeSubAccountIds, getSelectedSubAccountsFromQueryParams } from './queryParams.ts';
+import {
+  FixedGlobalQueryParams,
+  type PartyGroup,
+  PartyGroups,
+  encodeSubAccountIds,
+  getSelectedSubAccountsFromQueryParams,
+} from './queryParams.ts';
 
 interface UseSubAccountsProps {
   accounts: PartyItemProp[];
   selectedParties: PartyFieldsFragment[];
-  allOrganizationsSelected: boolean;
+  selectedGroup: PartyGroup | null;
   selectedServicesCount: number;
 }
 
@@ -40,11 +46,14 @@ const getUniqueParties = (parties: PartyItemProp[]): PartyItemProp[] => {
 export const useSubAccounts = ({
   accounts,
   selectedParties,
-  allOrganizationsSelected,
+  selectedGroup,
   selectedServicesCount,
 }: UseSubAccountsProps): UseSubAccountsOutput => {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
+  const allOrganizationsSelected = selectedGroup === PartyGroups.ALL_COMPANIES;
+  const allPersonsSelected = selectedGroup === PartyGroups.ALL_PERSONS;
+  const isGroupSelected = selectedGroup !== null;
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   const selectedSubAccountIds = useMemo(() => {
@@ -73,11 +82,14 @@ export const useSubAccounts = ({
     const byId = new Map<string, PartyItemProp>();
     const byParentId = new Map<string, PartyItemProp[]>();
     const companies: PartyItemProp[] = [];
+    const persons: PartyItemProp[] = [];
 
     for (const account of accounts) {
       byId.set(account.id, account);
       if (account.type === 'company' || account.type === 'subunit') {
         companies.push(account);
+      } else if (account.type === 'person') {
+        persons.push(account);
       }
       if (account.parentId) {
         let children = byParentId.get(account.parentId);
@@ -89,18 +101,22 @@ export const useSubAccounts = ({
       }
     }
 
-    return { byId, byParentId, companies };
+    return { byId, byParentId, companies, persons };
   }, [accounts]);
 
   const selectedPartyId = selectedParties[0]?.party;
   const selectedAccount = useMemo(() => accountIndex.byId.get(selectedPartyId ?? ''), [accountIndex, selectedPartyId]);
   const parentAccount = useMemo(() => {
-    return !allOrganizationsSelected && selectedAccount?.isParent ? selectedAccount : undefined;
-  }, [allOrganizationsSelected, selectedAccount]);
+    return !isGroupSelected && selectedAccount?.isParent ? selectedAccount : undefined;
+  }, [isGroupSelected, selectedAccount]);
 
   const subAccountsAndAll = useMemo<PartyItemProp[]>(() => {
     if (allOrganizationsSelected) {
       return getUniqueParties(accountIndex.companies);
+    }
+
+    if (allPersonsSelected) {
+      return getUniqueParties(accountIndex.persons);
     }
 
     if (parentAccount) {
@@ -112,7 +128,7 @@ export const useSubAccounts = ({
     }
 
     return [];
-  }, [allOrganizationsSelected, accountIndex, parentAccount]);
+  }, [allOrganizationsSelected, allPersonsSelected, accountIndex, parentAccount]);
 
   const filteredSubAccounts = useMemo(() => {
     return subAccountsAndAll.filter((item) => !item.disabled);
@@ -131,7 +147,26 @@ export const useSubAccounts = ({
     (allOrganizationsSelected && selectedServicesCount > 0 && !hasSubAccountOverride);
   const showPageLabel = !accountNavigatorHidden;
 
-  const allLabel = allOrganizationsSelected ? t('parties.labels.all_organizations') : t('parties.labels.all_units');
+  // Labels differ by selection: an "all companies"/"all persons" group counts members ("3 units" /
+  // "3 persons"), while drilling into a single parent shows its sub-units.
+  const groupCountLabel = useCallback(
+    (count: number) =>
+      allPersonsSelected ? t('parties.labels.persons_count', { count }) : t('parties.labels.units_count', { count }),
+    [allPersonsSelected, t],
+  );
+  const groupPartialCountLabel = useCallback(
+    (selected: number, total: number) =>
+      allPersonsSelected
+        ? t('parties.labels.persons_partial_count', { selected, total })
+        : t('parties.labels.units_partial_count', { selected, total }),
+    [allPersonsSelected, t],
+  );
+
+  const allLabel = isGroupSelected
+    ? allPersonsSelected
+      ? t('parties.labels.all_persons')
+      : t('parties.labels.all_organizations')
+    : t('parties.labels.all_units');
   const mainUnitLabel = t('parties.labels.main_unit');
   const subUnitLabel = t('parties.labels.sub_unit');
 
@@ -235,11 +270,11 @@ export const useSubAccounts = ({
       const selectedSubAccount = filteredSubAccountsById.get(selectedSubAccountIds[0]);
       return selectedSubAccount ? getSubAccountTitle(selectedSubAccount) : allLabel;
     }
-    if (allOrganizationsSelected) {
+    if (isGroupSelected) {
       if (selectedSubAccountIds.length === 0) {
-        return t('parties.labels.units_count', { count: filteredSubAccounts.length });
+        return groupCountLabel(filteredSubAccounts.length);
       }
-      return t('parties.labels.units_count', { count: selectedSubAccountIds.length });
+      return groupCountLabel(selectedSubAccountIds.length);
     }
     if (selectedSubAccountIds.length === 0 || selectedSubAccountIds.length === filteredSubAccounts.length) {
       return allLabel;
@@ -255,20 +290,18 @@ export const useSubAccounts = ({
     filteredSubAccountsById,
     selectedSubAccountIds,
     t,
-    allOrganizationsSelected,
+    isGroupSelected,
+    groupCountLabel,
     getSubAccountTitle,
     showPageLabel,
   ]);
 
   const groups = {
     all: {
-      title: allOrganizationsSelected
+      title: isGroupSelected
         ? selectedSubAccountIds.length > 0 && selectedSubAccountIds.length !== filteredSubAccounts.length
-          ? t('parties.labels.units_partial_count', {
-              selected: selectedSubAccountIds.length,
-              total: filteredSubAccounts.length,
-            })
-          : t('parties.labels.units_count', { count: filteredSubAccounts.length })
+          ? groupPartialCountLabel(selectedSubAccountIds.length, filteredSubAccounts.length)
+          : groupCountLabel(filteredSubAccounts.length)
         : parentAccount?.name,
     },
   };

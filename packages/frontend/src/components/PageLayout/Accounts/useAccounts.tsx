@@ -15,11 +15,22 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { MAX_DIALOG_PARTY_SIZE } from '../../../api/hooks/useDialogs.tsx';
 import { QUERY_KEYS } from '../../../constants/queryKeys.ts';
-import { FixedGlobalQueryParams } from '../../../pages/Inbox/queryParams.ts';
+import {
+  FixedGlobalQueryParams,
+  type PartyGroup,
+  PartyGroups,
+  getSelectedGroupFromQueryParams,
+} from '../../../pages/Inbox/queryParams.ts';
 import { useProfile } from '../../../pages/Profile';
 import { SettingsType } from '../../../pages/Profile/useSettings.tsx';
 import type { PageRoutes } from '../../../pages/routes.ts';
 import type { PartyGraph } from '../../../utils/partyGraph.ts';
+
+/** Account tile ids for the virtual group tiles. Kept identical to the URL `group` values. */
+export const ACCOUNT_GROUPS_KEYS = {
+  ALL_ORGANIZATIONS: PartyGroups.ALL_COMPANIES,
+  ALL_PERSONS: PartyGroups.ALL_PERSONS,
+};
 
 interface UseAccountOptions {
   showDescription?: boolean;
@@ -51,12 +62,12 @@ export interface PartyItemProp extends AccountMenuItemProps {
 interface UseAccountsProps {
   parties: PartyFieldsFragment[];
   selectedParties: PartyFieldsFragment[];
-  allOrganizationsSelected: boolean;
+  selectedGroup: PartyGroup | null;
   options?: UseAccountOptions;
   isLoading?: boolean;
   availableParties?: PartyFieldsFragment[];
   partyGraph: PartyGraph;
-  setSelectedPartyIds: (parties: string[], allOrganizationsSelected: boolean) => void;
+  setSelectedPartyIds: (parties: string[], group: PartyGroup | null) => void;
 }
 
 interface UseAccountsOutput {
@@ -101,13 +112,16 @@ const compareName = (a: string, b: string) => getCollator().compare(a, b);
 export const useAccounts = ({
   parties,
   selectedParties,
-  allOrganizationsSelected,
+  selectedGroup,
   options: inputOptions,
   isLoading,
   availableParties: _availableParties,
   partyGraph,
   setSelectedPartyIds,
 }: UseAccountsProps): UseAccountsOutput => {
+  const allOrganizationsSelected = selectedGroup === PartyGroups.ALL_COMPANIES;
+  const allPersonsSelected = selectedGroup === PartyGroups.ALL_PERSONS;
+  const isGroupSelected = selectedGroup !== null;
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, favoritesGroup, shouldShowDeletedEntities } = useProfile();
@@ -300,6 +314,26 @@ export const useAccounts = ({
     };
   }, [orgSkeleton, shouldExcludeDeleted, includeDeletedParties]);
 
+  const { personCount, personAvatarGroupItems } = useMemo(() => {
+    const members: PartyFieldsFragment[] = [];
+    if (currentEndUser && (currentEndUser.partyType === 'Person' || currentEndUser.partyType === 'SelfIdentified')) {
+      members.push(currentEndUser);
+    }
+    for (const party of personSkeleton) {
+      if (shouldExcludeDeleted && !includeDeletedParties && party.isDeleted) continue;
+      members.push(party);
+    }
+
+    return {
+      personCount: members.length,
+      personAvatarGroupItems: members.slice(0, MAX_DIALOG_PARTY_SIZE).map((party) => ({
+        id: party.party,
+        name: party.name,
+        type: 'person' as AccountMenuItemProps['type'],
+      })),
+    };
+  }, [personSkeleton, currentEndUser, shouldExcludeDeleted, includeDeletedParties]);
+
   // Total bulk count (excluding favorites + end user). Used for pagination UI.
   const accountsTotal = useMemo(() => {
     if (!shouldExcludeDeleted || includeDeletedParties) {
@@ -328,7 +362,7 @@ export const useAccounts = ({
     const endUserAccount: PartyItemProp | undefined = currentEndUser
       ? {
           id: currentEndUser.party ?? '',
-          selected: !allOrganizationsSelected && currentEndUser.party === selectedParties[0]?.party,
+          selected: !isGroupSelected && currentEndUser.party === selectedParties[0]?.party,
           searchWords: [currentEndUser.name],
           name: currentEndUser.name ?? '',
           title: currentEndUser.name ?? '',
@@ -344,10 +378,10 @@ export const useAccounts = ({
       : undefined;
 
     const allOrganizationsAccount: PartyItemProp = {
-      uuid: 'N/A',
+      id: ACCOUNT_GROUPS_KEYS.ALL_ORGANIZATIONS,
+      uuid: 'ALL_ORGANIZATIONS_UUID',
       altinnId: -1,
       selected: allOrganizationsSelected,
-      id: 'ALL',
       name: t('parties.labels.all_organizations'),
       title: t('parties.labels.all_organizations'),
       type: 'group',
@@ -359,7 +393,23 @@ export const useAccounts = ({
       } as AvatarGroupProps,
     };
 
-    const selectedUrn = allOrganizationsSelected ? null : (selectedParties[0]?.party ?? null);
+    const allPersonsAccount: PartyItemProp = {
+      id: ACCOUNT_GROUPS_KEYS.ALL_PERSONS,
+      uuid: 'ALL_PERSONS_UUID',
+      altinnId: -1,
+      selected: allPersonsSelected,
+      name: t('parties.labels.all_persons'),
+      title: t('parties.labels.all_persons'),
+      type: 'group',
+      groupId: 'groups',
+      icon: {
+        type: 'group' as AccountMenuItemProps['type'],
+        maxItemsCountReachedLabel: personCount > 99 ? '..' : '',
+        items: personAvatarGroupItems,
+      } as AvatarGroupProps,
+    };
+
+    const selectedUrn = isGroupSelected ? null : (selectedParties[0]?.party ?? null);
     const excludeDeleted = shouldExcludeDeleted && !includeDeletedParties;
 
     // Favorites — always materialized (small set). Scan skeletons by uuid.
@@ -396,7 +446,14 @@ export const useAccounts = ({
     const result: PartyItemProp[] = [];
     if (endUserAccount) result.push(endUserAccount);
     for (const f of favorites) result.push(f);
-    if (options.showGroups && orgSkeleton.length > 1) result.push(allOrganizationsAccount);
+    if (options.showGroups) {
+      if (orgCount > 1) {
+        result.push(allOrganizationsAccount);
+      }
+      if (personCount > 1) {
+        result.push(allPersonsAccount);
+      }
+    }
 
     if (isPaginated) {
       // Build bulk list filtered for deleted, then materialize only the slice.
@@ -440,7 +497,9 @@ export const useAccounts = ({
     return { assembledAccounts: result, accountGroups: groups };
   }, [
     selectedParties,
+    isGroupSelected,
     allOrganizationsSelected,
+    allPersonsSelected,
     isPaginated,
     options.pagination?.offset,
     options.pagination?.limit,
@@ -462,37 +521,45 @@ export const useAccounts = ({
     includeDeletedParties,
     orgCount,
     avatarGroupItems,
+    personCount,
+    personAvatarGroupItems,
     t,
   ]);
 
   const onSelectAccount = useCallback(
     (partyId: string, route: PageRoutes) => {
       const search = new URLSearchParams(location.search);
-      const isPersonAccount = partyId.includes('person');
-      const isAllPartiesSelected = search.get('allParties') === 'true';
+      const selectedGroupId =
+        partyId === ACCOUNT_GROUPS_KEYS.ALL_ORGANIZATIONS || partyId === ACCOUNT_GROUPS_KEYS.ALL_PERSONS
+          ? (partyId as PartyGroup)
+          : null;
+      const isPersonAccount = !selectedGroupId && partyId.includes('person');
+      const isGroupCurrentlySelected = getSelectedGroupFromQueryParams(search) !== null;
       const isCurrentAccount = partyId === selectedParties[0]?.party;
 
-      if (isCurrentAccount && !isAllPartiesSelected) return;
+      if (isCurrentAccount && !isGroupCurrentlySelected) return;
 
       queryClient.setQueryData([QUERY_KEYS.SELECTED_SUB_ACCOUNTS], []);
 
-      if (isPersonAccount) {
-        setSelectedPartyIds([partyId], false);
+      if (selectedGroupId) {
+        // Group selections never expose individual party URNs in the URL.
+        search.set(FixedGlobalQueryParams.group, selectedGroupId);
+        search.delete(FixedGlobalQueryParams.party);
+        search.delete(FixedGlobalQueryParams.allParties);
+        search.delete(FixedGlobalQueryParams.subAccounts);
+        navigate(`${route}?${search.toString()}`, { replace: true });
+      } else if (isPersonAccount) {
+        setSelectedPartyIds([partyId], null);
       } else {
-        if (partyId === 'ALL') {
-          search.set(FixedGlobalQueryParams.allParties, 'true');
-          search.delete(FixedGlobalQueryParams.party);
-          search.delete(FixedGlobalQueryParams.subAccounts);
-        } else {
-          const party = partyGraph.partyByUrn.get(partyId);
-          if (!party) {
-            console.error('Selected party not found:', partyId);
-            return;
-          }
-          search.set(FixedGlobalQueryParams.party, party.party);
-          search.delete(FixedGlobalQueryParams.allParties);
-          search.delete(FixedGlobalQueryParams.subAccounts);
+        const party = partyGraph.partyByUrn.get(partyId);
+        if (!party) {
+          console.error('Selected party not found:', partyId);
+          return;
         }
+        search.set(FixedGlobalQueryParams.party, party.party);
+        search.delete(FixedGlobalQueryParams.allParties);
+        search.delete(FixedGlobalQueryParams.group);
+        search.delete(FixedGlobalQueryParams.subAccounts);
         navigate(`${route}?${search.toString()}`, { replace: true });
       }
     },
@@ -551,6 +618,8 @@ export const useAccounts = ({
     accountsTotal,
     currentAccountName: allOrganizationsSelected
       ? t('parties.labels.all_organizations')
-      : (selectedParties?.[0]?.name ?? ''),
+      : allPersonsSelected
+        ? t('parties.labels.all_persons')
+        : (selectedParties?.[0]?.name ?? ''),
   };
 };

@@ -86,8 +86,9 @@ export const useDialogs = ({
   const { organizations } = useOrganizations();
   const disableFlipNamesPatch = useFeatureFlag<boolean>('dialogporten.disableFlipNamesPatch');
   const { shouldShowDeletedEntities } = useProfile();
-  const { selectedParties, allOrganizationsSelected, partyGraph } = useParties();
+  const { selectedParties, selectedGroup, allOrganizationsSelected, partyGraph } = useParties();
   const format = useFormat();
+  const isGroupSelected = selectedGroup !== null;
 
   const partiesToUse = useMemo(() => {
     if (shouldShowDeletedEntities) return selectedParties;
@@ -97,10 +98,8 @@ export const useDialogs = ({
       subParties: party.subParties?.filter((subParty) => !subParty.isDeleted) ?? party.subParties,
     }));
 
-    return allOrganizationsSelected
-      ? withoutDeletedSubParties.filter((party) => !party.isDeleted)
-      : withoutDeletedSubParties;
-  }, [selectedParties, allOrganizationsSelected, shouldShowDeletedEntities]);
+    return isGroupSelected ? withoutDeletedSubParties.filter((party) => !party.isDeleted) : withoutDeletedSubParties;
+  }, [selectedParties, isGroupSelected, shouldShowDeletedEntities]);
 
   const isPartyIdsOverridden = partyIdsOverride.length > 0;
   const partyIds = useMemo(

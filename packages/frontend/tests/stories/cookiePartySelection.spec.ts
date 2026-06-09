@@ -56,7 +56,7 @@ test.describe('Cookie-based party preselection', () => {
     // Person parties don't store the party in the URL
     const url = new URL(page.url());
     expect(url.searchParams.has('party')).toBe(false);
-    expect(url.searchParams.has('allParties')).toBe(false);
+    expect(url.searchParams.has('group')).toBe(false);
   });
 
   test('Can switch from cookie-preselected company to another company', async ({ page }) => {
@@ -107,10 +107,10 @@ test.describe('Cookie-based party preselection', () => {
     await expect(page.getByRole('link', { name: 'Innkalling til sesjon' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).not.toBeVisible();
 
-    // URL should have allParties=true, no party param
+    // URL should have group=ALL_COMPANIES, no party param
     const url = new URL(page.url());
     expect(url.searchParams.has('party')).toBe(false);
-    expect(url.searchParams.get('allParties')).toBe('true');
+    expect(url.searchParams.get('group')).toBe('ALL_COMPANIES');
   });
 
   test('Preselects person party from cookie on load', async ({ page }) => {

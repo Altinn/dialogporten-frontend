@@ -26,7 +26,7 @@ test.describe('Parties extreme (15 000 parties)', () => {
 
     // Wait for the toolbar to show the current end user – that means parties
     // have been fetched, processed, and the UI has settled.
-    await expect(page.locator('#toolbar-menu-root')).toContainText('Ola Hansen', { timeout: 15_000 });
+    await expect(page.locator('#toolbar-menu-root')).toContainText('Ola Aleksander Hansen', { timeout: 15_000 });
     const loadTime = Date.now() - start;
 
     // The inbox list should render (dialogs come from base mock data)
@@ -41,7 +41,7 @@ test.describe('Parties extreme (15 000 parties)', () => {
 
   test('can open account menu and see parties', async ({ page }) => {
     await page.goto(appURL);
-    await expect(page.locator('#toolbar-menu-root')).toContainText('Ola Hansen', { timeout: 15_000 });
+    await expect(page.locator('#toolbar-menu-root')).toContainText('Ola Aleksander Hansen', { timeout: 15_000 });
 
     const start = Date.now();
     await page.locator('#toolbar-menu-root > button').click();
@@ -52,7 +52,7 @@ test.describe('Parties extreme (15 000 parties)', () => {
 
     // Should contain "Alle virksomheter" group and person entries
     await expect(page.getByRole('option', { name: 'Alle virksomheter' })).toBeVisible();
-    await expect(page.getByRole('option', { name: 'Kari Johansen' })).toBeVisible();
+    await expect(page.getByRole('option', { name: 'Astrid Aleksander Hansen' })).toBeVisible();
 
     const menuOpenTime = Date.now() - start;
     console.debug(`[perf] Account menu open with 15k parties: ${menuOpenTime}ms`);
@@ -62,7 +62,7 @@ test.describe('Parties extreme (15 000 parties)', () => {
 
   test('can switch to a company party via search', async ({ page }) => {
     await page.goto(appURL);
-    await expect(page.locator('#toolbar-menu-root')).toContainText('Ola Hansen', { timeout: 15_000 });
+    await expect(page.locator('#toolbar-menu-root')).toContainText('Ola Aleksander Hansen', { timeout: 15_000 });
 
     // Open the account menu
     await page.locator('#toolbar-menu-root > button').click();
@@ -94,7 +94,7 @@ test.describe('Parties extreme (15 000 parties)', () => {
 
   test('can switch to all organizations', async ({ page }) => {
     await page.goto(appURL);
-    await expect(page.locator('#toolbar-menu-root')).toContainText('Ola Hansen', { timeout: 15_000 });
+    await expect(page.locator('#toolbar-menu-root')).toContainText('Ola Aleksander Hansen', { timeout: 15_000 });
 
     // Open the account menu
     await page.locator('#toolbar-menu-root > button').click();
@@ -105,7 +105,7 @@ test.describe('Parties extreme (15 000 parties)', () => {
     await page.getByRole('option', { name: 'Alle virksomheter' }).click();
 
     // URL should reflect all parties
-    await expect(page).toHaveURL(/allParties=true/);
+    await expect(page).toHaveURL(/group=ALL_COMPANIES/);
 
     const switchTime = Date.now() - start;
     console.debug(`[perf] Switch to all organizations with 15k parties: ${switchTime}ms`);
@@ -127,10 +127,10 @@ test.describe('Parties extreme (15 000 parties)', () => {
     await expect(page.locator('#toolbar-menu-listbox')).toBeVisible();
 
     const start = Date.now();
-    await page.getByRole('option', { name: 'Ola Hansen' }).first().click();
+    await page.getByRole('option', { name: 'Ola Aleksander Hansen' }).first().click();
 
     await expectIsPersonPage(page);
-    await expect(page.locator('#toolbar-menu-root')).toContainText('Ola Hansen');
+    await expect(page.locator('#toolbar-menu-root')).toContainText('Ola Aleksander Hansen');
 
     const switchTime = Date.now() - start;
     console.debug(`[perf] Switch from company to person: ${switchTime}ms`);
@@ -140,7 +140,7 @@ test.describe('Parties extreme (15 000 parties)', () => {
 
   test('account menu search filters 15k parties responsively', async ({ page }) => {
     await page.goto(appURL);
-    await expect(page.locator('#toolbar-menu-root')).toContainText('Ola Hansen', { timeout: 15_000 });
+    await expect(page.locator('#toolbar-menu-root')).toContainText('Ola Aleksander Hansen', { timeout: 15_000 });
 
     // Open the account menu
     await page.locator('#toolbar-menu-root > button').click();

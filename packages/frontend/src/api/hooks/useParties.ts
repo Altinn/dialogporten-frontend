@@ -6,9 +6,12 @@ import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { updatePartyCookies } from '../../cookie.ts';
 import {
   FixedGlobalQueryParams,
-  getSelectedAllPartiesFromQueryParams,
+  type PartyGroup,
+  PartyGroups,
+  getSelectedGroupFromQueryParams,
   getSelectedPartyFromQueryParams,
 } from '../../pages/Inbox/queryParams.ts';
+import { useProfile } from '../../pages/Profile';
 import { useGlobalState } from '../../useGlobalState.ts';
 import { normalizeFlattenParties } from '../../utils/normalizeFlattenParties.ts';
 import { EMPTY_PARTY_GRAPH, type PartyGraph, buildPartyGraph } from '../../utils/partyGraph.ts';
@@ -26,8 +29,9 @@ interface UsePartiesOutput {
   selectedParties: PartyFieldsFragment[];
   selectedPartyIds: string[];
   setSelectedParties: (parties: PartyFieldsFragment[]) => void;
-  setSelectedPartyIds: (parties: string[], allOrganizationsSelected: boolean) => void;
+  setSelectedPartyIds: (parties: string[], group: PartyGroup | null) => void;
   currentEndUser: PartyFieldsFragment | undefined;
+  selectedGroup: PartyGroup | null;
   allOrganizationsSelected: boolean;
   selectedProfile: ProfileType;
   partiesEmptyList: boolean;
@@ -38,18 +42,22 @@ interface UsePartiesOutput {
   organizationLimitReached: boolean;
 }
 
-const stripQueryParamsForPersonParty = (searchParamString: string) => {
-  const params = new URLSearchParams(searchParamString);
+/** Removes every party/group selection param, leaving unrelated params (filters, search) intact. */
+const clearPartySelectionParams = (params: URLSearchParams): URLSearchParams => {
   params.delete(FixedGlobalQueryParams.party);
   params.delete(FixedGlobalQueryParams.allParties);
+  params.delete(FixedGlobalQueryParams.group);
+  return params;
+};
+
+const stripQueryParamsForPersonParty = (searchParamString: string) => {
+  const params = clearPartySelectionParams(new URLSearchParams(searchParamString));
   params.delete(FixedGlobalQueryParams.subAccounts);
   return params.toString();
 };
 
 const createPartyParams = (searchParamString: string, key: string, value: string): URLSearchParams => {
-  const params = new URLSearchParams(searchParamString);
-  params.delete(FixedGlobalQueryParams.allParties);
-  params.delete(FixedGlobalQueryParams.party);
+  const params = clearPartySelectionParams(new URLSearchParams(searchParamString));
   params.set(key, value);
   return params;
 };
@@ -62,10 +70,9 @@ export const useParties = (): UsePartiesOutput => {
   );
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const [allOrganizationsSelected, setAllOrganizationsSelected] = useGlobalState<boolean>(
-    QUERY_KEYS.ALL_ORGANIZATIONS_SELECTED,
-    false,
-  );
+  const { shouldShowDeletedEntities } = useProfile();
+  const [selectedGroup, setSelectedGroup] = useGlobalState<PartyGroup | null>(QUERY_KEYS.SELECTED_GROUP, null);
+  const allOrganizationsSelected = selectedGroup === PartyGroups.ALL_COMPANIES;
   const [selectedParties, setSelectedParties] = useGlobalState<PartyFieldsFragment[]>(QUERY_KEYS.SELECTED_PARTIES, []);
   const [partiesEmptyList, setPartiesEmptyList] = useGlobalState<boolean>(QUERY_KEYS.PARTIES_EMPTY_LIST, false);
   const [isSelfIdentifiedUser, setIsSelfIdentifiedUser] = useGlobalState<boolean>(
@@ -98,14 +105,14 @@ export const useParties = (): UsePartiesOutput => {
     }
   };
 
-  const setSelectedPartyIds = (partyIds: string[], allOrgSelected: boolean) => {
-    setAllOrganizationsSelected(allOrgSelected);
+  const setSelectedPartyIds = (partyIds: string[], group: PartyGroup | null) => {
+    setSelectedGroup(group);
     const partyIsPerson = partyIds.some((partyId) => partyId.includes('person')) || isSelfIdentifiedUser;
     const searchParamsString = searchParams.toString();
 
-    if (allOrgSelected) {
-      const allPartiesParams = createPartyParams(searchParamsString, FixedGlobalQueryParams.allParties, 'true');
-      handleChangSearchParams(allPartiesParams);
+    if (group) {
+      const groupParams = createPartyParams(searchParamsString, FixedGlobalQueryParams.group, group);
+      handleChangSearchParams(groupParams);
     } else if (partyIsPerson) {
       /* We need to exclude person from URL because it contains information we don't want to expose in the URL.
        * However, if current end user has multiple parties of type person, we need to resolve to current end (user logged in)
@@ -125,7 +132,7 @@ export const useParties = (): UsePartiesOutput => {
     }
     handleSetSelectedParties(matchedParties);
 
-    const partyForCookie = allOrgSelected ? currentEndUser : matchedParties[0];
+    const partyForCookie = group ? currentEndUser : matchedParties[0];
     if (partyForCookie?.partyUuid) {
       updatePartyCookies({
         partyUuid: partyForCookie.partyUuid,
@@ -134,22 +141,60 @@ export const useParties = (): UsePartiesOutput => {
     }
   };
 
-  const selectAllOrganizations = () => {
-    const allOrgParties: string[] = [];
-    for (const [urn] of partyGraph.partyByUrn) {
-      if (urn.includes('organization')) {
-        allOrgParties.push(urn);
+  /** Resolves the (capped-elsewhere) set of party URNs that make up a group. */
+  const getGroupPartyIds = (group: PartyGroup): string[] => {
+    const ids: string[] = [];
+    for (const party of partyGraph.partyByUrn.values()) {
+      const belongs =
+        group === PartyGroups.ALL_COMPANIES
+          ? party.partyType === 'Organization'
+          : party.partyType === 'Person' || party.partyType === 'SelfIdentified';
+      if (belongs) {
+        ids.push(party.party);
       }
     }
-    setSelectedPartyIds(allOrgParties, true);
+    return ids;
   };
 
-  const currentEndUser = useMemo(() => data?.find((party) => party.isCurrentEndUser), [data]);
+  const selectGroup = (group: PartyGroup) => {
+    setSelectedPartyIds(getGroupPartyIds(group), group);
+  };
+
+  /**
+   * Counts the members of a group that the user can actually select given the current settings:
+   * companies the user can only reach via sub-parties don't count, and deleted parties only count
+   * when "show deleted" is enabled.
+   */
+  const countSelectableGroupMembers = (group: PartyGroup): number => {
+    let count = 0;
+    for (const party of partyGraph.partyByUrn.values()) {
+      if (group === PartyGroups.ALL_COMPANIES) {
+        if (party.partyType !== 'Organization' || party.hasOnlyAccessToSubParties) continue;
+      } else if (party.partyType !== 'Person' && party.partyType !== 'SelfIdentified') {
+        continue;
+      }
+      if (!shouldShowDeletedEntities && party.isDeleted) continue;
+      count++;
+    }
+    return count;
+  };
+
+  /** A group is only a valid selection when it resolves to at least two selectable members. */
+  const isGroupValid = (group: PartyGroup): boolean => countSelectableGroupMembers(group) >= 2;
+
+  /** Resets the selection to the logged-in user, clearing any group/party from the URL. */
+  const fallBackToCurrentEndUser = () => {
+    if (currentEndUser) {
+      setSelectedPartyIds([currentEndUser.party], null);
+    }
+  };
 
   const partyGraph = useMemo(() => {
     if (!data) return EMPTY_PARTY_GRAPH;
     return buildPartyGraph(data);
   }, [data]);
+
+  const currentEndUser = partyGraph.currentEndUser;
 
   const initializePartySelection = () => {
     // Synchronous guard — prevents multiple hook instances from initializing
@@ -158,8 +203,12 @@ export const useParties = (): UsePartiesOutput => {
     }
     setHasInitializedPartySelection(true);
 
-    if (getSelectedAllPartiesFromQueryParams(searchParams)) {
-      selectAllOrganizations();
+    // A group from the URL is only honored when it's currently a valid selection (enough selectable
+    // members given the user's "show deleted" setting). Otherwise we fall through to the default
+    // resolution below — gracefully, the same way an invalid party URN is ignored.
+    const groupFromQuery = getSelectedGroupFromQueryParams(searchParams);
+    if (groupFromQuery && isGroupValid(groupFromQuery)) {
+      selectGroup(groupFromQuery);
     } else {
       const partyFromQuery = getSelectedPartyFromQueryParams(searchParams);
       const partyFromCookie = cookiePartyUuid ? partyGraph.partyByUuid.get(cookiePartyUuid) : undefined;
@@ -167,13 +216,13 @@ export const useParties = (): UsePartiesOutput => {
       const orgFromURL = partyFromQuery ? partyGraph.partyByUrn.get(partyFromQuery) : undefined;
 
       if (partyFromQuery && orgFromURL) {
-        setSelectedPartyIds([orgFromURL.party], false);
+        setSelectedPartyIds([orgFromURL.party], null);
       } else if (partyFromCookie) {
         // Cookie takes precedence over default
-        setSelectedPartyIds([partyFromCookie.party], false);
+        setSelectedPartyIds([partyFromCookie.party], null);
       } else if (currentEndUser) {
         // Fallback to logged-in user
-        setSelectedPartyIds([currentEndUser.party], false);
+        setSelectedPartyIds([currentEndUser.party], null);
       } else {
         console.warn('No current end user found, unable to select default parties.');
       }
@@ -181,9 +230,7 @@ export const useParties = (): UsePartiesOutput => {
   };
 
   const isCompanyFromParams = useMemo(() => {
-    const party = searchParams.get('party');
-    const allParties = searchParams.get('allParties');
-    return Boolean(party || allParties);
+    return Boolean(searchParams.get(FixedGlobalQueryParams.party));
   }, [searchParams]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: Full control of what triggers this code is needed
@@ -202,7 +249,7 @@ export const useParties = (): UsePartiesOutput => {
   }, [isSuccess, data]);
 
   // Derive a stable key from only party-related query params to avoid reacting to unrelated URL changes
-  const partyParamKey = `${searchParams.get(FixedGlobalQueryParams.party) ?? ''}|${searchParams.get(FixedGlobalQueryParams.allParties) ?? ''}`;
+  const partyParamKey = `${searchParams.get(FixedGlobalQueryParams.party) ?? ''}|${searchParams.get(FixedGlobalQueryParams.allParties) ?? ''}|${searchParams.get(FixedGlobalQueryParams.group) ?? ''}`;
 
   // Handle URL-driven account switching (after initialization)
   // biome-ignore lint/correctness/useExhaustiveDependencies: Only react to party-related param changes
@@ -213,27 +260,44 @@ export const useParties = (): UsePartiesOutput => {
 
     // Read actual current URL to avoid acting on stale searchParams from closure
     const currentParams = new URLSearchParams(window.location.search);
-    const allPartiesParam = currentParams.get(FixedGlobalQueryParams.allParties) === 'true';
+    const groupParam = getSelectedGroupFromQueryParams(currentParams);
     const partyParam = currentParams.get(FixedGlobalQueryParams.party);
 
-    if (allPartiesParam) {
-      selectAllOrganizations();
+    if (groupParam) {
+      if (isGroupValid(groupParam)) {
+        selectGroup(groupParam);
+      } else {
+        fallBackToCurrentEndUser();
+      }
     } else if (partyParam) {
       const party = partyGraph.partyByUrn.get(partyParam);
       if (party) {
-        setSelectedPartyIds([party.party], false);
+        setSelectedPartyIds([party.party], null);
       }
     }
   }, [partyParamKey]);
 
+  // Re-validate the active group when the "show deleted" setting changes. Hiding deleted parties can
+  // turn a previously valid "all companies"/"all persons" selection into an invalid one (e.g. only a
+  // single non-deleted company remains); in that case fall back to the logged-in user.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Only react to setting / group changes
+  useEffect(() => {
+    if (!isSuccess || !data?.length || !hasInitializedPartySelection) {
+      return;
+    }
+    if (selectedGroup && !isGroupValid(selectedGroup)) {
+      fallBackToCurrentEndUser();
+    }
+  }, [shouldShowDeletedEntities, selectedGroup]);
+
   const isCompanyProfile =
     isCompanyFromParams || allOrganizationsSelected || selectedParties?.[0]?.partyType === 'Organization';
 
-  const selectedProfile: ProfileType = allOrganizationsSelected ? 'neutral' : isCompanyProfile ? 'company' : 'person';
+  const selectedProfile: ProfileType = selectedGroup ? 'neutral' : isCompanyProfile ? 'company' : 'person';
 
   const currentPartyUuid = useMemo(() => {
-    return allOrganizationsSelected ? currentEndUser?.partyUuid : selectedParties[0]?.partyUuid;
-  }, [selectedParties, currentEndUser, allOrganizationsSelected]);
+    return selectedGroup ? currentEndUser?.partyUuid : selectedParties[0]?.partyUuid;
+  }, [selectedParties, currentEndUser, selectedGroup]);
 
   const selfIdentifiedUserType: SelfIdentifiedUserType = useMemo(() => {
     if (!currentEndUser || currentEndUser.partyType !== 'SelfIdentified') return 'None';
@@ -257,6 +321,7 @@ export const useParties = (): UsePartiesOutput => {
     setSelectedPartyIds,
     parties: data ?? [],
     currentEndUser,
+    selectedGroup,
     allOrganizationsSelected,
     selectedProfile,
     partiesEmptyList,

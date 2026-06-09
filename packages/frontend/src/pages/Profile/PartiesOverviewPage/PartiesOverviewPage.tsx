@@ -102,8 +102,7 @@ const createOrganizationItem = (
 
 export const PartiesOverviewPage = () => {
   const { t } = useTranslation();
-  const { parties, selectedParties, allOrganizationsSelected, isLoading, partyGraph, setSelectedPartyIds } =
-    useParties();
+  const { parties, selectedParties, selectedGroup, isLoading, partyGraph, setSelectedPartyIds } = useParties();
   const { getAccountAlertSettings, settings } = useSettings({
     options: {
       includeGroups: [SettingsType.contact],
@@ -135,7 +134,7 @@ export const PartiesOverviewPage = () => {
     parties: filteredParties,
     availableParties: parties,
     selectedParties,
-    allOrganizationsSelected,
+    selectedGroup,
     isLoading,
     partyGraph,
     setSelectedPartyIds,
@@ -167,7 +166,7 @@ export const PartiesOverviewPage = () => {
           {...props}
           onClick={() => {
             if (!isOrg) {
-              setSelectedPartyIds([party.party], false);
+              setSelectedPartyIds([party.party], null);
             }
           }}
           to={to}

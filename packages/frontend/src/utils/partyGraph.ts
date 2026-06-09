@@ -19,10 +19,22 @@ export const EMPTY_PARTY_GRAPH: PartyGraph = {
 };
 
 /**
+ * Cache keyed by the (stable, immutable) party array reference. `useParties` is mounted in many
+ * components and React Query hands every consumer the same array reference (staleTime: Infinity), so
+ * memoizing here computes the graph once per data load instead of once per consumer/observer. The
+ * WeakMap lets the graph be garbage-collected together with its source array.
+ */
+const graphCache = new WeakMap<PartyFieldsFragment[], PartyGraph>();
+
+/**
  * Builds a precomputed graph from the normalized (flattened) party list in a single O(n) pass.
  * Provides O(1) lookups by URN and UUID, with pre-resolved parent↔child relationships.
+ * Memoized by input reference — repeated calls with the same array return the cached graph.
  */
 export function buildPartyGraph(parties: PartyFieldsFragment[]): PartyGraph {
+  const cached = graphCache.get(parties);
+  if (cached) return cached;
+
   const partyByUrn = new Map<string, PartyFieldsFragment>();
   const partyByUuid = new Map<string, PartyFieldsFragment>();
   const parentByChildUrn = new Map<string, PartyFieldsFragment>();
@@ -41,5 +53,7 @@ export function buildPartyGraph(parties: PartyFieldsFragment[]): PartyGraph {
     }
   }
 
-  return { partyByUrn, partyByUuid, parentByChildUrn, currentEndUser };
+  const graph: PartyGraph = { partyByUrn, partyByUuid, parentByChildUrn, currentEndUser };
+  graphCache.set(parties, graph);
+  return graph;
 }

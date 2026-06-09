@@ -51,7 +51,7 @@ import { AlertBanner } from './AlertBanner.tsx';
 import { Altinn2ActiveSchemasNotification } from './Altinn2ActiveSchemasNotification.tsx';
 import { FilterCategory, hasValidFilters, readFiltersFromURLQuery } from './filters';
 import styles from './inbox.module.css';
-import { FixedGlobalQueryParams, VariableGlobalQueryParams, encodeSubAccountIds } from './queryParams.ts';
+import { FixedGlobalQueryParams, PartyGroups, VariableGlobalQueryParams, encodeSubAccountIds } from './queryParams.ts';
 import { useBookmarkModal } from './useBookmarkModal.tsx';
 import { useFilters } from './useFilters.tsx';
 import useGroupedDialogs from './useGroupedDialogs.tsx';
@@ -76,7 +76,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     selectedParties,
     selectedPartyIds,
     setSelectedPartyIds,
-    allOrganizationsSelected,
+    selectedGroup,
     parties,
     partiesEmptyList,
     isError: unableToLoadParties,
@@ -143,7 +143,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
   } = useAccounts({
     parties,
     selectedParties,
-    allOrganizationsSelected,
+    selectedGroup,
     partyGraph,
     setSelectedPartyIds,
     options: {
@@ -161,7 +161,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
   } = useSubAccounts({
     accounts,
     selectedParties,
-    allOrganizationsSelected,
+    selectedGroup,
     selectedServicesCount,
   });
   const searchMode = hasValidFilters(filterState) || !!validSearchString;
@@ -434,7 +434,14 @@ export const Inbox = ({ viewType }: InboxProps) => {
           </Typography>
         ) : partyLimitExceeded && !accountNavigatorVisible ? (
           <Typography variant="subtle" size="sm">
-            <p>{t('inbox.party_limit_reached.description', { count: MAX_DIALOG_PARTY_SIZE })}</p>
+            <p>
+              {t(
+                selectedGroup === PartyGroups.ALL_PERSONS
+                  ? 'inbox.party_limit_reached.description_persons'
+                  : 'inbox.party_limit_reached.description',
+                { count: MAX_DIALOG_PARTY_SIZE },
+              )}
+            </p>
           </Typography>
         ) : null}
         <DialogList
