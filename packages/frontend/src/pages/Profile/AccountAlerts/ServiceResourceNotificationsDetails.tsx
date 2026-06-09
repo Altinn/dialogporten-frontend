@@ -1,15 +1,16 @@
 import {
-  Alert,
   Button,
   ButtonGroup,
   DsSpinner,
   Fieldset,
   SearchField,
   Section,
+  SettingsItem,
   Switch,
   Typography,
   useSnackbar,
 } from '@altinn/altinn-components';
+import { BellIcon } from '@navikt/aksel-icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useCallback, useDeferredValue, useLayoutEffect, useMemo, useRef, useState } from 'react';
@@ -18,6 +19,8 @@ import { useNotificationServiceResources } from '../../../api/hooks/useServiceRe
 import { updateNotificationsetting } from '../../../api/queries.ts';
 import { QUERY_KEYS } from '../../../constants/queryKeys.ts';
 import { useErrorLogger } from '../../../hooks/useErrorLogger.ts';
+import { getOrganization } from '../../../utils/organizations.ts';
+import { useOrganizations } from '../../Inbox/useOrganizations.ts';
 import type { NotificationAccountsType } from '../NotificationsPage/NotificationsPage.tsx';
 
 export interface ServiceResourceNotificationsDetailsProps {
@@ -32,12 +35,14 @@ export const ServiceResourceNotificationsDetails = ({
   const { logError } = useErrorLogger();
   const queryClient = useQueryClient();
   const { serviceResources, isLoading: isLoadingResources } = useNotificationServiceResources();
+  const { organizations } = useOrganizations();
 
   const notificationSetting = notificationParty?.notificationSettings;
 
   const [enabledResources, setEnabledResources] = useState<Set<string>>(
     () => new Set((notificationSetting?.resourceIncludeList ?? []).filter((r): r is string => r !== null)),
   );
+  const [isFilterEnabled, setIsFilterEnabled] = useState(() => enabledResources.size > 0);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
@@ -97,16 +102,15 @@ export const ServiceResourceNotificationsDetails = ({
     };
   }, [computeMaxListHeight]);
 
-  const hasNoEnabledResources = enabledResources.size === 0;
-  // biome-ignore lint/correctness/useExhaustiveDependencies: Recompute when the alert variant flips (info ↔ warning)
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Recompute when the list visibility flips
   useLayoutEffect(() => {
     computeMaxListHeight();
-  }, [hasNoEnabledResources, computeMaxListHeight]);
+  }, [isFilterEnabled, computeMaxListHeight]);
 
   const virtualizer = useVirtualizer({
     count: filteredResources.length,
     getScrollElement: () => scrollRef.current,
-    estimateSize: () => 56,
+    estimateSize: () => 64,
     overscan: 10,
   });
 
@@ -121,7 +125,7 @@ export const ServiceResourceNotificationsDetails = ({
     try {
       const result = await updateNotificationsetting({
         partyUuid,
-        resourceIncludeList: [...enabledResources],
+        resourceIncludeList: isFilterEnabled ? [...enabledResources] : [],
       });
 
       if (result?.updateNotificationSetting?.success) {
@@ -144,68 +148,89 @@ export const ServiceResourceNotificationsDetails = ({
   };
 
   return (
-    <Section spacing={6}>
-      {enabledResources.size === 0 ? (
-        <Alert
-          variant="info"
-          heading={t('profile.service_notifications.all_services_info_heading')}
-          message={t('profile.service_notifications.all_services_info_message')}
-        />
-      ) : (
-        <Alert
-          variant="warning"
-          heading={t('profile.service_notifications.custom_list_warning_heading')}
-          message={t('profile.service_notifications.custom_list_warning_message')}
-        />
-      )}
-      <SearchField
-        placeholder={t('inbox.search.placeholder')}
-        size="sm"
-        onChange={(e) => setSearchQuery(e.target.value)}
+    <Section spacing={4}>
+      <Switch
+        label={t('profile.service_notifications.title')}
+        checked={isFilterEnabled}
+        onChange={(e) => setIsFilterEnabled(e.target.checked)}
       />
-      <Fieldset size="sm">
-        {filteredResources.length > 0 ? (
-          <div ref={scrollRef} style={{ maxHeight: maxListHeight ? `${maxListHeight}px` : '300px', overflow: 'auto' }}>
-            <div style={{ height: `${virtualizer.getTotalSize()}px`, position: 'relative' }}>
-              {virtualizer.getVirtualItems().map((virtualRow) => {
-                const resource = filteredResources[virtualRow.index];
-                const { id } = resource;
-                return (
-                  <div
-                    key={id}
-                    style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      width: '100%',
-                      transform: `translateY(${virtualRow.start}px)`,
-                      paddingBlock: '4px',
-                    }}
-                    ref={virtualizer.measureElement}
-                    data-index={virtualRow.index}
-                  >
-                    <Switch
-                      label={resource.title || resource.id}
-                      name={id!}
-                      value={id!}
-                      checked={isChecked(id!)}
-                      onChange={(e) => handleToggle(id!, e.target.checked)}
-                    />
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        ) : isLoadingResources ? (
-          <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
-            <DsSpinner data-size="md" aria-label={t('profile.service_notifications.loading')} />
-          </div>
-        ) : (
-          <Typography>
-            <p>{t('profile.service_notifications.no_results')}</p>
-          </Typography>
-        )}
-      </Fieldset>
+
+      {isFilterEnabled ? (
+        <Typography>
+          <p>{t('profile.service_notifications.selected_count', { count: enabledResources.size })}</p>
+        </Typography>
+      ) : (
+        <Typography>
+          <p>
+            <strong>{t('profile.service_notifications.filter_default_heading')}</strong>{' '}
+            {t('profile.service_notifications.filter_default_body')}
+          </p>
+        </Typography>
+      )}
+
+      {isFilterEnabled && (
+        <>
+          <SearchField
+            placeholder={t('inbox.search.placeholder')}
+            size="sm"
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <Fieldset size="sm">
+            {filteredResources.length > 0 ? (
+              <div
+                ref={scrollRef}
+                style={{ maxHeight: maxListHeight ? `${maxListHeight}px` : '300px', overflow: 'auto' }}
+              >
+                <div style={{ height: `${virtualizer.getTotalSize()}px`, position: 'relative' }}>
+                  {virtualizer.getVirtualItems().map((virtualRow) => {
+                    const resource = filteredResources[virtualRow.index];
+                    const { id } = resource;
+                    return (
+                      <div
+                        key={id}
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '100%',
+                          transform: `translateY(${virtualRow.start}px)`,
+                          borderTop: virtualRow.index > 0 ? '1px solid var(--ds-color-border-subtle)' : undefined,
+                        }}
+                        ref={virtualizer.measureElement}
+                        data-index={virtualRow.index}
+                      >
+                        <SettingsItem
+                          containerAs="div"
+                          variant="switch"
+                          id={id!}
+                          icon={BellIcon}
+                          title={resource.title ?? resource.id ?? undefined}
+                          description={
+                            getOrganization(organizations, resource.org ?? '')?.name ?? resource.org ?? undefined
+                          }
+                          name={id!}
+                          value={id!}
+                          checked={isChecked(id!)}
+                          onChange={(e) => handleToggle(id!, e.target.checked)}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : isLoadingResources ? (
+              <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
+                <DsSpinner data-size="md" aria-label={t('profile.service_notifications.loading')} />
+              </div>
+            ) : (
+              <Typography>
+                <p>{t('profile.service_notifications.no_results')}</p>
+              </Typography>
+            )}
+          </Fieldset>
+        </>
+      )}
+
       <div ref={footerRef}>
         <ButtonGroup>
           <Button variant="solid" onClick={handleSave} disabled={isSaving}>
