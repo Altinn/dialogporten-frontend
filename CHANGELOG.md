@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.160.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.159.2...v1.160.0) (2026-06-08)
+
+
+### Features
+
+* Feature flag for floating booble ([#4318](https://github.com/Altinn/dialogporten-frontend/issues/4318)) ([9e0de63](https://github.com/Altinn/dialogporten-frontend/commit/9e0de6376fe9edc0d92657ae6ddd888f501e1583))
+
 ## [1.159.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.159.1...v1.159.2) (2026-06-08)
 
 
