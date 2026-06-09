@@ -66,3 +66,19 @@ export const decryptPersonUrn = (value: unknown): unknown => {
 
   return value;
 };
+
+export const decryptPersonIdentifier = (value: string): string => {
+  if (!value.startsWith(ENC_MARKER)) {
+    return value;
+  }
+  const ciphertext = fromBase64Url(value.slice(ENC_MARKER.length));
+  let lastError: unknown;
+  for (const key of keys) {
+    try {
+      return textDecoder.decode(aessiv(key).decrypt(ciphertext));
+    } catch (err) {
+      lastError = err;
+    }
+  }
+  throw new Error('Failed to decrypt person identifier with any configured key', { cause: lastError });
+};
