@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.160.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.160.0...v1.160.1) (2026-06-09)
+
+
+### Bug Fixes
+
+* **bff:** align OpenTelemetry versions to stop trace-export crash ([#4321](https://github.com/Altinn/dialogporten-frontend/issues/4321)) ([12ac511](https://github.com/Altinn/dialogporten-frontend/commit/12ac5110ceaed3411457d9f3096cbd17b69a9c8c))
+* **bff:** decrypt person identifier before Altinn 2 messages call ([#4322](https://github.com/Altinn/dialogporten-frontend/issues/4322)) ([cbd0d4e](https://github.com/Altinn/dialogporten-frontend/commit/cbd0d4e6e2ee4fe9174028b5f235b560515b4c07))
+
 ## [1.160.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.159.2...v1.160.0) (2026-06-08)
 
 
