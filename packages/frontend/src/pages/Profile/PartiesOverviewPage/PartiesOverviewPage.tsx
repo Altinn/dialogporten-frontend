@@ -17,6 +17,8 @@ import {
   SnackbarDuration,
   Switch,
   Toolbar,
+  ToolbarFilter,
+  ToolbarSearch,
   useDsPagination,
   useSnackbar,
 } from '@altinn/altinn-components';
@@ -420,23 +422,23 @@ export const PartiesOverviewPage = () => {
         <Heading as="h1" size="xl">
           {t('sidebar.profile.parties')}
         </Heading>
-        <Toolbar
-          search={{
-            name: 'party-search',
-            label: t('parties.search.label'),
-            hideLabel: true,
-            placeholder: t('inbox.search.placeholder'),
-            value: searchValue,
-            onChange: (e) => setSearchValue((e.target as HTMLInputElement).value),
-            onClear: () => setSearchValue(''),
-          }}
-          filter={{
-            getFilterLabel,
-            filterState,
-            onFilterStateChange: setFilterState,
-            filters,
-          }}
-        >
+        <Toolbar>
+          <ToolbarSearch
+            name="party-search"
+            label={t('parties.search.label')}
+            hideLabel
+            placeholder={t('inbox.search.placeholder')}
+            value={searchValue}
+            onChange={(e) => setSearchValue((e.target as HTMLInputElement).value)}
+            onClear={() => setSearchValue('')}
+          />
+          <ToolbarFilter
+            getFilterLabel={getFilterLabel}
+            filterState={filterState}
+            onFilterStateChange={setFilterState}
+            filters={filters}
+            addLabel={t('filter_bar.add_filter')}
+          />
           {filterState?.partyScope?.[0] !== 'PERSONS' && (
             <Switch
               size="sm"
