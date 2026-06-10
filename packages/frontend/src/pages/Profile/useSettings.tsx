@@ -380,15 +380,16 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
       groupId: String(account?.groupId ?? ''),
       title: t('profile.service_notifications.title'),
       description:
-        includedServiceCount === 0
-          ? t('profile.service_notifications.active_for_all')
-          : t('profile.service_notifications.active_for_count', { count: includedServiceCount }),
+        includedServiceCount > 0
+          ? t('profile.service_notifications.active_for_count', { count: includedServiceCount })
+          : t('profile.service_notifications.active_for_all'),
       value: 'services',
       icon: BellIcon,
       variant: 'modal' as SettingsItemVariant,
       modalProps: {
-        icon: BellIcon,
-        title: t('profile.service_notifications.title'),
+        icon: account?.icon,
+        title: account?.name,
+        description: account?.description ? String(account?.description) : '',
       },
       badge: {
         variant: 'text',
