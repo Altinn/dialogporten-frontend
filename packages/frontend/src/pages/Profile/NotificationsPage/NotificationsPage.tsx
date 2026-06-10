@@ -43,14 +43,20 @@ export const NotificationsPage = () => {
 
   return (
     <PageBase>
-      <Heading size="xl">{t('sidebar.profile.notifications')}</Heading>
+      <Heading as="h1" size="xl">
+        {t('sidebar.profile.notifications')}
+      </Heading>
       <Toolbar
         search={{
           ...settingsSearch,
           placeholder: t('inbox.search.placeholder'),
         }}
       />
-      {settings.length === 0 && <Heading size="lg">{t('profile.settings.no_results')}</Heading>}
+      {settings.length === 0 && (
+        <Heading as="h2" size="lg">
+          {t('profile.settings.no_results')}
+        </Heading>
+      )}
       <SettingsList items={settings} groups={settingsGroups} />
     </PageBase>
   );

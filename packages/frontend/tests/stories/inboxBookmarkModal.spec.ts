@@ -77,9 +77,11 @@ test.describe('Inbox BookmarkModal', () => {
 
     await page.getByRole('button', { name: 'Lagre søk' }).click();
     await page.getByRole('dialog').getByRole('button', { name: 'Lagre søk' }).click();
+    await expect(page.getByText('Søket ditt er lagret')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Lagret søk' })).toBeVisible();
 
     await page.getByRole('button', { name: 'Lagret søk' }).click();
+    await expect(page.getByRole('dialog')).toBeVisible();
     await expect(page.getByRole('dialog').getByRole('heading', { name: 'Rediger søk' })).toBeVisible();
     await page.getByRole('dialog').getByRole('button', { name: 'Slett søk' }).click();
 
