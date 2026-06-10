@@ -417,7 +417,9 @@ export const PartiesOverviewPage = () => {
   return (
     <PageBase color="person">
       <Section as="header" spacing={6}>
-        <Heading size="xl">{t('sidebar.profile.parties')}</Heading>
+        <Heading as="h1" size="xl">
+          {t('sidebar.profile.parties')}
+        </Heading>
         <Toolbar
           search={{
             name: 'party-search',
@@ -447,7 +449,9 @@ export const PartiesOverviewPage = () => {
           )}
         </Toolbar>
         {isSearching && pagedItems.length === 0 ? (
-          <Heading size="lg">{t('profile.settings.no_results')}</Heading>
+          <Heading as="h2" size="lg">
+            {t('profile.settings.no_results')}
+          </Heading>
         ) : (
           <SettingsList groups={isSearching ? searchGroup : accountGroups} items={pagedItems} />
         )}

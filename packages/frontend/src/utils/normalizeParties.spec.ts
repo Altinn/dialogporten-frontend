@@ -43,8 +43,8 @@ describe('normalizeParties', () => {
 
     expect(result.length).toBe(3);
     expect(result[0].name).toBe('Edel Reiersen');
-    expect(result[1].name).toBe('Mysusæter Og Østre Gausdal');
-    expect(result[2].name).toBe('Steinkjer Og Flateby');
+    expect(result[1].name).toBe('Mysusæter og Østre Gausdal');
+    expect(result[2].name).toBe('Steinkjer og Flateby');
   });
 
   it('should copy parent properties to sub-parties correctly', () => {
