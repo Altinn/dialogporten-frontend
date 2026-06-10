@@ -34,6 +34,7 @@ export const useAccountFilters = ({ searchValue, parties }: UseAccountFiltersPro
     {
       name: 'partyScope',
       label: t('filter_bar.add_filter'),
+      title: t('filter_bar.add_filter'),
       items: [
         {
           role: 'radio',
