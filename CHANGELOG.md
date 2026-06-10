@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.161.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.160.2...v1.161.0) (2026-06-09)
+
+
+### Features
+
+* **inbox:** support all persons filter ([#4312](https://github.com/Altinn/dialogporten-frontend/issues/4312)) ([1bafbac](https://github.com/Altinn/dialogporten-frontend/commit/1bafbacf8074b9cb499f5f7602bea51ce49ab387))
+
 ## [1.160.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.160.1...v1.160.2) (2026-06-09)
 
 
