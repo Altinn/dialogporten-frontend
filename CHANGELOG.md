@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.162.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.161.0...v1.162.0) (2026-06-10)
+
+
+### Features
+
+* Single services new design ([#4325](https://github.com/Altinn/dialogporten-frontend/issues/4325)) ([3f45a06](https://github.com/Altinn/dialogporten-frontend/commit/3f45a061fb764e8cc3fd115c81713106b189df97))
+
+
+### Bug Fixes
+
+* **dialog-details:** place 'Om fullmakt og tjeneste' at bottom of context menu ([#4333](https://github.com/Altinn/dialogporten-frontend/issues/4333)) ([bd3e603](https://github.com/Altinn/dialogporten-frontend/commit/bd3e603fbcc9681219d30ff0b052cd6fe4757ba9))
+* Profile headers level and aria hidden on line dividers ([#4336](https://github.com/Altinn/dialogporten-frontend/issues/4336)) ([047e5b6](https://github.com/Altinn/dialogporten-frontend/commit/047e5b69f24148d6454b28e27dbd361d67a0e147))
+* **toolbar:** add missing titles for mobile drawer for filter in profile and inbox ([#4337](https://github.com/Altinn/dialogporten-frontend/issues/4337)) ([07da47f](https://github.com/Altinn/dialogporten-frontend/commit/07da47f6ae0340b09594cb3b1f2e170640fc3542))
+
 ## [1.161.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.160.2...v1.161.0) (2026-06-09)
 
 
