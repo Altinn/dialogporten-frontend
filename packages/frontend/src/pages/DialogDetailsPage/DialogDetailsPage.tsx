@@ -47,7 +47,7 @@ export const DialogDetailsPage = () => {
     ? ([
         {
           id: 'delegation-link',
-          groupId: 'logs',
+          groupId: 'delegation',
           title: t('altinn.delegate_access'),
           as: 'a',
           icon: ArrowRedoIcon,
@@ -64,7 +64,7 @@ export const DialogDetailsPage = () => {
       ...(dialogId && dialog ? createLabelUpdateActions(dialogId, dialog?.label ?? [], dialog?.unread) : []),
       {
         id: 'activity-log',
-        groupId: 'activity-logs',
+        groupId: 'logs',
         title: t('dialog.activity_log.title'),
         as: 'button',
         icon: ClockDashedIcon,
