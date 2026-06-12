@@ -13,6 +13,7 @@ import {
 } from '../../api/queries.ts';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
+import { loadLocale } from '../../i18n/config.ts';
 import { useGlobalState, useGlobalStringState } from '../../useGlobalState.ts';
 import type { PreselectedPartyOperationType } from './PartiesOverviewPage/PartiesOverviewPage.tsx';
 
@@ -59,7 +60,7 @@ export const useProfile = (): UseProfileOutput => {
   // biome-ignore lint/correctness/useExhaustiveDependencies: Full control of what triggers this code is needed
   useEffect(() => {
     if (language !== i18n.language) {
-      void i18n.changeLanguage(language);
+      void loadLocale(language).then(() => i18n.changeLanguage(language));
     }
   }, [language]);
 

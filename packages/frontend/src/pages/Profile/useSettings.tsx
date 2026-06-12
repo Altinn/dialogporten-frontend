@@ -38,6 +38,7 @@ import { getAltinn2AccountLink } from '../../auth';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
 import { useFeatureFlag } from '../../featureFlags';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
+import { loadLocale } from '../../i18n/config.ts';
 import { pruneSearchQueryParams } from '../Inbox/queryParams.ts';
 import { useSavedSearches } from '../SavedSearches/useSavedSearches.tsx';
 import { PageRoutes } from '../routes.ts';
@@ -180,6 +181,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
     if (language === i18n.language) return;
     updateProfileLanguage(language);
     setSelectedLanguage(language);
+    await loadLocale(language);
     void i18n.changeLanguage(language);
     try {
       await updateLanguage(language);
