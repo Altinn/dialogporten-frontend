@@ -1,18 +1,34 @@
+import React, { Suspense } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { ErrorResetHandler, withErrorBoundary } from './components/ErrorBoundary/ErrorBoundary.tsx';
 import { ProtectedPageLayout } from './components/PageLayout/PageLayout.tsx';
-import { DialogDetailsPage } from './pages/DialogDetailsPage';
-import { ErrorPage } from './pages/Error/Error.tsx';
-import { Inbox } from './pages/Inbox';
-import { FrontChannelLogout } from './pages/LogoutPage/FrontChannelLogout.tsx';
-import { NotificationsPage } from './pages/Profile/NotificationsPage/NotificationsPage.tsx';
-import { PartiesOverviewPage } from './pages/Profile/PartiesOverviewPage/PartiesOverviewPage.tsx';
-import { Profile } from './pages/Profile/Profile.tsx';
-import { RedirectPage } from './pages/RedirectPage/RedirectPage.tsx';
-import { SavedSearchesPage } from './pages/SavedSearches';
 import { PageRoutes } from './pages/routes.ts';
 import './app.css';
 import { usePageTracking } from './hooks/usePageTracking.ts';
+
+const Inbox = React.lazy(() => import('./pages/Inbox').then((m) => ({ default: m.Inbox })));
+const DialogDetailsPage = React.lazy(() =>
+  import('./pages/DialogDetailsPage').then((m) => ({ default: m.DialogDetailsPage })),
+);
+const Profile = React.lazy(() => import('./pages/Profile/Profile.tsx').then((m) => ({ default: m.Profile })));
+const PartiesOverviewPage = React.lazy(() =>
+  import('./pages/Profile/PartiesOverviewPage/PartiesOverviewPage.tsx').then((m) => ({
+    default: m.PartiesOverviewPage,
+  })),
+);
+const NotificationsPage = React.lazy(() =>
+  import('./pages/Profile/NotificationsPage/NotificationsPage.tsx').then((m) => ({ default: m.NotificationsPage })),
+);
+const SavedSearchesPage = React.lazy(() =>
+  import('./pages/SavedSearches').then((m) => ({ default: m.SavedSearchesPage })),
+);
+const RedirectPage = React.lazy(() =>
+  import('./pages/RedirectPage/RedirectPage.tsx').then((m) => ({ default: m.RedirectPage })),
+);
+const ErrorPage = React.lazy(() => import('./pages/Error/Error.tsx').then((m) => ({ default: m.ErrorPage })));
+const FrontChannelLogout = React.lazy(() =>
+  import('./pages/LogoutPage/FrontChannelLogout.tsx').then((m) => ({ default: m.FrontChannelLogout })),
+);
 
 function App() {
   // Add page tracking
@@ -48,7 +64,14 @@ function App() {
           <Route path={PageRoutes.error} element={<ErrorPage />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Route>
-        <Route path="/logout" element={<FrontChannelLogout />} />
+        <Route
+          path="/logout"
+          element={
+            <Suspense>
+              <FrontChannelLogout />
+            </Suspense>
+          }
+        />
       </Routes>
       <ErrorResetHandler />
     </div>

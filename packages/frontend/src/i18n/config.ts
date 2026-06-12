@@ -2,9 +2,7 @@ import i18n from 'i18next';
 import ICU from 'i18next-icu';
 import { initReactI18next } from 'react-i18next';
 
-import en from './resources/en.json';
 import nb from './resources/nb.json';
-import nn from './resources/nn.json';
 
 const isI18nDisabled = window.location.search.includes('i18n=false');
 const emptyTranslation = { translation: {} };
@@ -12,8 +10,6 @@ const emptyTranslation = { translation: {} };
 const i18nInitConfig = {
   resources: {
     nb: isI18nDisabled ? emptyTranslation : { translation: nb },
-    en: isI18nDisabled ? emptyTranslation : { translation: en },
-    nn: isI18nDisabled ? emptyTranslation : { translation: nn },
   },
   lng: 'nb',
   fallbackLng: 'nb',
@@ -24,6 +20,12 @@ const i18nInitConfig = {
 };
 
 i18n.use(ICU).use(initReactI18next).init(i18nInitConfig);
+
+export async function loadLocale(language: string): Promise<void> {
+  if (isI18nDisabled || language === 'nb' || i18n.hasResourceBundle(language, 'translation')) return;
+  const { default: translations } = await import(`./resources/${language}.json`);
+  i18n.addResourceBundle(language, 'translation', translations);
+}
 
 document.documentElement.lang = 'nb';
 i18n.on('languageChanged', (lng) => {
