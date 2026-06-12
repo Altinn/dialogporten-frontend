@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.162.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.162.0...v1.162.1) (2026-06-12)
+
+
+### Bug Fixes
+
+* **wcag:** missing aria description for switches in profile settings + remove redundant title from global menu button ([#4343](https://github.com/Altinn/dialogporten-frontend/issues/4343)) ([a1a6ede](https://github.com/Altinn/dialogporten-frontend/commit/a1a6edeb5b45ad78da5006e4f3fea25f532f1287))
+
 ## [1.162.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.161.0...v1.162.0) (2026-06-10)
 
 
