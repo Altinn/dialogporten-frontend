@@ -275,12 +275,13 @@ export const PartiesOverviewPage = () => {
     const itemId = account.id + account.groupId;
     const accountType = party.type === 'subunit' ? 'company' : party.type;
     const isExpanded = expandedItem === itemId;
+    const contextMenuId = party.groupId + party.id + '-menu';
     const contextMenuProps: ContextMenuProps = {
       placement: 'right',
-      id: party.groupId + party.id + '-menu',
+      id: contextMenuId,
       items: [
         {
-          id: party.groupId + 'inbox',
+          id: 'inbox',
           groupId: 'inbox',
           icon: InboxIcon,
           ...getGoToInboxButton({
@@ -292,7 +293,7 @@ export const PartiesOverviewPage = () => {
           ? [
               party.isPreselectedParty
                 ? {
-                    id: party.groupId + 'set-preselected-party',
+                    id: 'set-preselected-party',
                     icon: HouseHeartFillIcon,
                     onClick: () =>
                       setOpenConfirmSetPreselectedActorModal({
@@ -303,7 +304,7 @@ export const PartiesOverviewPage = () => {
                     as: 'button' as ElementType,
                   }
                 : {
-                    id: party.groupId + 'unset-preselected-party',
+                    id: 'unset-preselected-party',
                     icon: HouseHeartIcon,
                     onClick: () => setOpenConfirmSetPreselectedActorModal({ party, operation: 'set' }),
                     title: t('profile.set_preselected_party'),
@@ -311,7 +312,7 @@ export const PartiesOverviewPage = () => {
                   },
             ]
           : []),
-      ],
+      ].map((menuItem) => ({ ...menuItem, id: `${contextMenuId}-${menuItem.id}` })),
     };
 
     const currentPartyForDetails = isExpanded ? partyGraph.partyByUrn.get(party.id) : undefined;
