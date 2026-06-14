@@ -74,6 +74,7 @@ interface UseDialogsOutput {
   isFetchingNextPage: boolean;
   isQueryEnabled: boolean;
   partyLimitExceeded: boolean;
+  applicablePartyCount: number;
 }
 
 export const useDialogs = ({
@@ -230,5 +231,6 @@ export const useDialogs = ({
     isFetchingNextPage,
     isQueryEnabled,
     partyLimitExceeded,
+    applicablePartyCount: partyIds.length,
   };
 };

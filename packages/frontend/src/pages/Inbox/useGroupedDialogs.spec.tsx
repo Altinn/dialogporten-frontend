@@ -345,6 +345,7 @@ describe('useGroupedDialogs', () => {
           hasNextPage: false,
           onSeenByLogModalChange: () => {},
           onAccessInfoModalChange: () => {},
+          applicablePartyCount: 1,
         }),
       {
         wrapper: createCustomWrapper(),
@@ -366,6 +367,7 @@ describe('useGroupedDialogs', () => {
           hasNextPage: false,
           onSeenByLogModalChange: () => {},
           onAccessInfoModalChange: () => {},
+          applicablePartyCount: 1,
         }),
       {
         wrapper: createCustomWrapper(),
@@ -376,6 +378,48 @@ describe('useGroupedDialogs', () => {
     // Single titleless group is stripped; the title is exposed at the top level instead.
     expect(result.current.groups).toEqual({});
     expect(result.current.title).toBe('inbox.heading.title.inbox');
+  });
+
+  it('should not mark items as grouped when only one party is applicable', () => {
+    const { result } = renderHook(
+      () =>
+        useGroupedDialogs({
+          items: mockData,
+          displaySearchResults: false,
+          viewType: 'inbox',
+          isLoading: false,
+          hasNextPage: false,
+          onSeenByLogModalChange: () => {},
+          onAccessInfoModalChange: () => {},
+          applicablePartyCount: 1,
+        }),
+      {
+        wrapper: createCustomWrapper(),
+      },
+    );
+
+    expect(result.current.groupedDialogs.every((dialog) => dialog.grouped === false)).toBe(true);
+  });
+
+  it('should mark items as grouped when more than one party is applicable', () => {
+    const { result } = renderHook(
+      () =>
+        useGroupedDialogs({
+          items: mockData,
+          displaySearchResults: false,
+          viewType: 'inbox',
+          isLoading: false,
+          hasNextPage: false,
+          onSeenByLogModalChange: () => {},
+          onAccessInfoModalChange: () => {},
+          applicablePartyCount: 2,
+        }),
+      {
+        wrapper: createCustomWrapper(),
+      },
+    );
+
+    expect(result.current.groupedDialogs.every((dialog) => dialog.grouped === true)).toBe(true);
   });
 
   it('should generat groups orderIndex correctly', () => {
@@ -389,6 +433,7 @@ describe('useGroupedDialogs', () => {
           isLoading: false,
           onSeenByLogModalChange: () => {},
           onAccessInfoModalChange: () => {},
+          applicablePartyCount: 1,
         }),
       {
         wrapper: createCustomWrapper(),
@@ -440,6 +485,7 @@ describe('useGroupedDialogs', () => {
           isLoading: false,
           onSeenByLogModalChange: () => {},
           onAccessInfoModalChange: () => {},
+          applicablePartyCount: 1,
         }),
       {
         wrapper: createCustomWrapper(),
@@ -495,6 +541,7 @@ describe('useGroupedDialogs', () => {
           isLoading: false,
           onSeenByLogModalChange: () => {},
           onAccessInfoModalChange: () => {},
+          applicablePartyCount: 1,
         }),
       {
         wrapper: createCustomWrapper(),
