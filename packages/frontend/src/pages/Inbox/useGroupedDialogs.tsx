@@ -238,8 +238,9 @@ const useGroupedDialogs = ({
   };
 
   const formatDialogItem = (item: InboxItemInput, groupId: string): DialogListItemProps => {
+    const contextMenuId = 'dialog-context-menu-' + item.id;
     const contextMenu: ContextMenuProps = {
-      id: 'dialog-context-menu-' + item.id,
+      id: contextMenuId,
       placement: 'right',
       color: item.recipient.type === 'person' ? 'person' : 'company',
       items: [
@@ -278,7 +279,7 @@ const useGroupedDialogs = ({
           icon: InformationSquareIcon,
           onClick: () => onAccessInfoModalChange({ dialogId: item.id, title: item.title }),
         },
-      ],
+      ].map((menuItem) => ({ ...menuItem, id: `${contextMenuId}-${menuItem.id}` })),
       'aria-label': t('dialog.context_menu.label', { title: item.title }),
     };
 
