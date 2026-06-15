@@ -5,7 +5,10 @@ on:
 
 jobs:
   check-translations:
-    runs-on: ubuntu-latest
+    # Self-hosted: repo-scoped ephemeral runner (Azure Container App Job).
+    # Only caller is ci-cd-pull-request.yml, so this stays PR-scoped.
+    # See Altinn/altinn-platform infrastructure/gh-runners/dialogporten-frontend.tf
+    runs-on: self-hosted
 
     steps:
       - name: Checkout repository

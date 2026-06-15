@@ -30,7 +30,7 @@ on:
 jobs:
   check-for-changes:
     name: Filter
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     outputs:
       hasInfrastructureChanges: ${{ steps.filter-infra.outputs.infrastructure_any_modified == 'true' || steps.filter-infra.outputs.github_workflows_any_modified == 'true' }}
       hasApplicationChanges: ${{ steps.filter-apps.outputs.applications_any_modified == 'true' || steps.filter-infra.outputs.github_workflows_any_modified == 'true' }}
