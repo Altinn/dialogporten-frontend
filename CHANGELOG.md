@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.162.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.162.1...v1.162.2) (2026-06-15)
+
+
+### Bug Fixes
+
+* **contextmenu:** correct color on context menu in dialog details ([#4350](https://github.com/Altinn/dialogporten-frontend/issues/4350)) ([9d925f7](https://github.com/Altinn/dialogporten-frontend/commit/9d925f7e76ea71f3cc66d1ffe546c6fc23f12d1c))
+* **inbox:** group dialogs when more than one party is applicable ([#4349](https://github.com/Altinn/dialogporten-frontend/issues/4349)) ([9f040c9](https://github.com/Altinn/dialogporten-frontend/commit/9f040c91b8d8f50bdc97609c95247135dd1f5df6))
+* **wcag:** unique context menu item ids so screen readers read every dialog's menu ([#4348](https://github.com/Altinn/dialogporten-frontend/issues/4348)) ([e985a98](https://github.com/Altinn/dialogporten-frontend/commit/e985a982ad8121c85a57e5f29721b2af95c604b8))
+
 ## [1.162.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.162.0...v1.162.1) (2026-06-12)
 
 
