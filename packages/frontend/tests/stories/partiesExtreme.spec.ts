@@ -69,7 +69,7 @@ test.describe('Parties extreme (15 000 parties)', () => {
     await expect(page.locator('#toolbar-menu-listbox')).toBeVisible();
 
     // Search for a specific company to find it in the 15k list
-    const searchInput = page.getByRole('searchbox', { name: 'Søk' });
+    const searchInput = page.getByRole('combobox', { name: 'Søk i aktører' });
     await searchInput.fill('Stavanger');
 
     // Click the first matching company option
@@ -147,7 +147,7 @@ test.describe('Parties extreme (15 000 parties)', () => {
     await expect(page.locator('#toolbar-menu-listbox')).toBeVisible();
 
     // Type in the search field
-    const searchInput = page.getByRole('searchbox', { name: 'Søk' });
+    const searchInput = page.getByRole('combobox', { name: 'Søk i aktører' });
     await expect(searchInput).toBeVisible();
 
     const start = Date.now();

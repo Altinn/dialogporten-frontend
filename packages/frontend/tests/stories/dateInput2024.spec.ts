@@ -20,15 +20,15 @@ test.describe('Date filter, system date set 2024', () => {
     const toolbar = page.getByTestId('inbox-toolbar');
     await toolbar.getByRole('button', { name: /legg til/i }).click();
     const addMenu = toolbar.locator('#tool-filter-add');
-    await addMenu.locator('button[data-id="updated"]').click();
+    await addMenu.getByRole('menuitem', { name: 'Dato' }).click();
 
-    const item = page.getByRole('radio', { name: 'I dag' });
+    const item = page.getByRole('menuitemradio', { name: 'I dag' });
     await expect(item.first()).toBeVisible();
 
-    const item2 = page.getByRole('radio', { name: 'Siste tolv måneder' });
+    const item2 = page.getByRole('menuitemradio', { name: 'Siste tolv måneder' });
     await expect(item2.first()).toBeVisible();
 
-    await page.getByRole('radio', { name: 'I dag' }).first().click();
+    await page.getByRole('menuitemradio', { name: 'I dag' }).first().click();
 
     await expect(page.getByRole('link', { name: 'Mocked system date Dec 31, 2024' })).toBeVisible();
     await expect(

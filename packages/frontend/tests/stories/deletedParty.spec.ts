@@ -6,7 +6,7 @@ test('should see content for a deleted party', async ({ page }) => {
   await page.goto(dateScenarioPage);
 
   await page.locator('#toolbar-menu-root > button').click();
-  await page.locator('button[id="urn:altinn:organization:identifier-no:215421902"]').click();
+  await page.locator('#toolbar-menu-listbox [role="option"]').filter({ hasText: '215 421 902' }).click();
 
   const currentUrl = page.url();
   const url = new URL(currentUrl);

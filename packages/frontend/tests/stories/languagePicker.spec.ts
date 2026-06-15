@@ -10,7 +10,7 @@ test.describe('Language picker', () => {
 
     await page.getByRole('button', { name: 'Meny', exact: true }).click();
     await page.getByRole('navigation', { name: 'Menu' }).getByLabel('Språk/language').click();
-    await page.locator('#en').click();
+    await page.getByRole('menuitemradio', { name: 'English' }).click();
     await expect(page.getByRole('link', { name: 'Notification of snow removal' })).toBeVisible();
     await expect(page.getByRole('banner')).toContainText('Search');
   });

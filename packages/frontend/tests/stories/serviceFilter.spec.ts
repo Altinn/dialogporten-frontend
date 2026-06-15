@@ -15,9 +15,9 @@ test.describe('Service resource filter with > 100 parties', () => {
     await expect(page).toHaveURL(/group=ALL_COMPANIES/);
 
     await page.getByRole('button', { name: /^Legg til( filter)?$/ }).click();
-    await page.locator('#service').click();
-    await page.getByRole('searchbox', { name: /Søk/ }).last().fill('Mock service journey');
-    await page.locator('#toolbar-filter-menu-item-0').click();
+    await page.locator('#tool-filter-add').getByRole('menuitem', { name: 'Tjeneste', exact: true }).click();
+    await page.locator('input[aria-controls="toolbar-filter-menu-service-listbox"]').fill('Mock service journey');
+    await page.locator('#toolbar-filter-menu-service-item-0').click();
     await page.keyboard.press('Escape');
 
     await expect(page.getByText('Mer enn 100 treff')).toBeVisible();

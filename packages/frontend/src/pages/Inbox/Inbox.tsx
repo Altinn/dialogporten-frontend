@@ -153,6 +153,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
 
   const {
     subAccounts,
+    onSelectSubAccount,
     getSubAccountLabel,
     partyIdsOverride,
     searchable: subAccountsSearchable,
@@ -370,6 +371,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
                 id="toolbarmenu-subAccounts"
                 items={subAccounts}
                 groups={subAccountGroups}
+                onSelectId={onSelectSubAccount}
                 label={getSubAccountLabel()}
                 title={t('parties.subunit.change_label')}
                 searchable={subAccountsSearchable}

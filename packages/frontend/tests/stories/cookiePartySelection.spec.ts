@@ -70,7 +70,7 @@ test.describe('Cookie-based party preselection', () => {
 
     // Switch to Testbedrift AS
     await page.locator('#toolbar-menu-root > button').click();
-    await page.locator(`[role="option"][data-id="${TESTBEDRIFT_URN}"]`).click();
+    await page.getByRole('option', { name: 'Testbedrift AS', exact: true }).first().click();
 
     // Verify Testbedrift AS is selected
     await expect(page.locator('#toolbar-menu-root')).toContainText('Testbedrift As');
