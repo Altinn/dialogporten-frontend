@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.162.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.162.2...v1.162.3) (2026-06-15)
+
+
+### Bug Fixes
+
+* **ci:** failing playwright tests ([#4354](https://github.com/Altinn/dialogporten-frontend/issues/4354)) ([363d97a](https://github.com/Altinn/dialogporten-frontend/commit/363d97a83f3b0f57ec8a6e0c97a9b4f2de87a420))
+
 ## [1.162.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.162.1...v1.162.2) (2026-06-15)
 
 
