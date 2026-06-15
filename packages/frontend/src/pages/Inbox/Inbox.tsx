@@ -206,6 +206,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     hasNextPage,
     isQueryEnabled,
     partyLimitExceeded,
+    applicablePartyCount,
   } = useDialogs({
     viewType,
     filterState,
@@ -269,6 +270,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     viewType,
     isLoading,
     isFetchingNextPage,
+    applicablePartyCount,
   });
 
   const dialogItems = useMemo(() => {

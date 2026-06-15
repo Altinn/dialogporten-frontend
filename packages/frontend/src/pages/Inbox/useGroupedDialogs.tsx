@@ -57,6 +57,7 @@ interface UseGroupedDialogsProps {
   filterState?: FilterState;
   onFiltersChange?: (filters: FilterState) => void;
   isFetchingNextPage?: boolean;
+  applicablePartyCount: number;
   /* true if the search results are displayed */
   displaySearchResults?: boolean;
   /* used to open modal with seen by log */
@@ -180,13 +181,14 @@ const useGroupedDialogs = ({
   hasNextPage,
   filterState,
   onFiltersChange,
+  applicablePartyCount,
 }: UseGroupedDialogsProps): UseGroupedDialogsOutput => {
   const { t } = useTranslation();
   const format = useFormat();
   const [searchParams] = useSearchParams();
   const systemLabelActions = useDialogActions();
   const [selectedGroup] = useGlobalState<PartyGroup | null>(QUERY_KEYS.SELECTED_GROUP, null);
-  const isGroupSelected = selectedGroup !== null;
+  const shouldGroup = selectedGroup !== null || applicablePartyCount > 1;
   const [bulkMode, setBulkMode] = useGlobalState<boolean>(QUERY_KEYS.BULK_MODE, false);
   const [bulkedIds, setBulkedIds] = useGlobalState<string[]>(QUERY_KEYS.BULK_MODE_SELECTED_IDS, []);
   const collapseGroups = !!displaySearchResults;
@@ -296,7 +298,7 @@ const useGroupedDialogs = ({
       summary: item.summary,
       recipient: item.recipient,
       color: item.recipient.type?.toLowerCase() as 'person' | 'company',
-      grouped: isGroupSelected,
+      grouped: shouldGroup,
       attachmentsCount: item.guiAttachmentCount,
       seenByLog: item.seenByLog,
       unread: item.unread,
