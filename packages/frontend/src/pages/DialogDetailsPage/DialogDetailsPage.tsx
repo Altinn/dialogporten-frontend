@@ -58,6 +58,7 @@ export const DialogDetailsPage = () => {
   const contextMenu: ContextMenuProps = {
     id: 'dialog-context-menu',
     placement: 'right',
+    color: dialog?.receiver.type === 'person' ? 'person' : 'company',
     'aria-label': t('dialog.context_menu.label', { title: dialog?.title }),
     items: [
       ...delegationLink,
