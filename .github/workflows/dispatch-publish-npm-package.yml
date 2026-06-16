@@ -22,7 +22,7 @@ permissions:
 
 jobs:
   check-published-version:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     outputs:
       version-exists: ${{ steps.check-published-version.outputs.version-exists }}
     steps:
