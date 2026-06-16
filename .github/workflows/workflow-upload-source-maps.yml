@@ -31,7 +31,7 @@ on:
 jobs:
   upload-source-maps:
     name: Upload source maps to Application Insights (${{ inputs.environment }})
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     environment: ${{ inputs.environment }}
     permissions:
       id-token: write

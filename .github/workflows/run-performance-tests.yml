@@ -64,7 +64,7 @@ permissions:
 run-name: ${{ inputs.tag }} ${{ inputs.browserVus }}/${{ inputs.bffVus }}/${{ inputs.duration }}/${{ inputs.parallelism }}
 jobs:
   k6-performance-tests:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     environment: test
     steps:
       - name: Checkout code
