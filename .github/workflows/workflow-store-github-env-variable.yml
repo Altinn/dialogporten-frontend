@@ -23,7 +23,7 @@ on:
 jobs:
   store-variable:
     name: Store GitHub Environment Variable
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     environment: ${{ inputs.environment }}
     steps:
       - name: Checkout

@@ -171,7 +171,7 @@ jobs:
 
   get-previous-deployed-sha:
     name: Get previous deployed SHA for test
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     environment: test
     if: ${{ github.event_name == 'push' }}
     outputs:

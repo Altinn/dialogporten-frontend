@@ -15,7 +15,7 @@ on:
 jobs:
   parse-environment:
     name: Parse environment name
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     outputs:
       environment: ${{ steps.parse.outputs.environment }}
     steps:

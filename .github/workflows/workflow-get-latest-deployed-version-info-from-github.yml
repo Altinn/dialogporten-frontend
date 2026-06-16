@@ -21,7 +21,7 @@ on:
 jobs:
   get-versions:
     name: Get Latest Deployed Versions from GitHub Variables
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     environment: ${{ inputs.environment }}
     env:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
