@@ -30,7 +30,8 @@
   "pnpm": {
     "overrides": {
       "mdast-util-gfm-autolink-literal": "2.0.0",
-      "protobufjs": ">=8.0.1"
+      "protobufjs": ">=8.0.1",
+      "shell-quote": ">=1.8.4"
     }
   }
 }
