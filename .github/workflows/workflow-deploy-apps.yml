@@ -54,7 +54,9 @@ jobs:
   deploy-migration-job:
     name: Deploy migration job to ${{ inputs.environment }}
     if: ${{ inputs.runMigration }}
-    runs-on: ubuntu-latest
+    # Self-hosted: repo-scoped ephemeral runner (Azure Container App Job).
+    # See Altinn/altinn-platform infrastructure/gh-runners/dialogporten-frontend.tf
+    runs-on: self-hosted
     environment: ${{inputs.environment}}
     permissions:
       id-token: write
@@ -113,20 +115,26 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Start migration job
-        uses: azure/CLI@9f7ce6f37c31b777ec6c6b6d1dfe7db79f497956 # v2.2.0
+        # No Docker daemon on self-hosted runners, so call az directly instead of
+        # the azure/CLI action (which executes the script inside a container).
+        # az is preinstalled and already authenticated by the Azure Login step above.
+        # Expressions are passed via env and referenced as quoted shell vars so
+        # workflow inputs can't be interpolated into the script (injection-safe).
         if: ${{!inputs.dryRun}}
-        with:
-          inlineScript: |
-            az containerapp job start -n ${{ steps.deploy.outputs.name }} -g ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+        env:
+          JOB_NAME: ${{ steps.deploy.outputs.name }}
+          RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+        run: az containerapp job start -n "$JOB_NAME" -g "$RESOURCE_GROUP_NAME"
 
       - name: Verify migration
-        uses: azure/CLI@9f7ce6f37c31b777ec6c6b6d1dfe7db79f497956 # v2.2.0
         if: ${{!inputs.dryRun}}
         id: verify-migration
         timeout-minutes: 3
-        with:
-          inlineScript: |
-            ./.github/tools/containerAppJobVerifier.sh ${{ steps.deploy.outputs.name }} ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} ${{ inputs.version }}
+        env:
+          JOB_NAME: ${{ steps.deploy.outputs.name }}
+          RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+          VERSION: ${{ inputs.version }}
+        run: ./.github/tools/containerAppJobVerifier.sh "$JOB_NAME" "$RESOURCE_GROUP_NAME" "$VERSION"
 
       - name: Logout from azure
         if: ${{failure() || success()}}
@@ -135,7 +143,9 @@ jobs:
 
   deploy-apps:
     name: Deploy ${{ matrix.name }} to ${{ inputs.environment }}
-    runs-on: ubuntu-latest
+    # Self-hosted: repo-scoped ephemeral runner (Azure Container App Job).
+    # See Altinn/altinn-platform infrastructure/gh-runners/dialogporten-frontend.tf
+    runs-on: self-hosted
     # Should run even though the migration job was skipped
     if: ${{ always() && !cancelled() && !failure() }}
     needs: deploy-migration-job
@@ -206,13 +216,13 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Verify deployment (${{ matrix.name }})
-        uses: azure/CLI@9f7ce6f37c31b777ec6c6b6d1dfe7db79f497956 # v2.2.0
         if: ${{!inputs.dryRun}}
         id: verify-deployment
         timeout-minutes: 6
-        with:
-          inlineScript: |
-            ./.github/tools/revisionVerifier.sh ${{ steps.deploy.outputs.revisionName }} ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+        env:
+          REVISION_NAME: ${{ steps.deploy.outputs.revisionName }}
+          RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+        run: ./.github/tools/revisionVerifier.sh "$REVISION_NAME" "$RESOURCE_GROUP_NAME"
 
       - name: Logout from azure
         if: ${{failure() || success()}}
