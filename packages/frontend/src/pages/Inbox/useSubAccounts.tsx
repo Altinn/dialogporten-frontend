@@ -22,6 +22,7 @@ interface UseSubAccountsProps {
 
 interface UseSubAccountsOutput {
   subAccounts: MenuItemProps[];
+  onSelectSubAccount: (id: string) => void;
   subAccountGroups: MenuItemGroups;
   searchable: boolean;
   getSubAccountLabel: () => string;
@@ -210,14 +211,11 @@ export const useSubAccounts = ({
     if (!filteredSubAccounts.length) return [];
     const items = filteredSubAccounts.map((item) => {
       return {
-        id: `subaccount-${item.id}`,
+        id: item.id,
         groupId: item.parentId || item.id,
         title: getSubAccountTitle(item),
         description: item.description,
         role: 'checkbox',
-        onChange: () => {
-          onSelectSubAccount(item.id);
-        },
         name: 'subaccount',
         value: item.id,
         checked: selectedSubAccountIdSet.has(item.id),
@@ -234,12 +232,11 @@ export const useSubAccounts = ({
         role: 'radio',
         name: 'subaccount',
         value: 'all',
-        onChange: () => updateRef.current([]),
         checked: selectedSubAccountIdSet.size === 0,
       },
       ...items,
     ];
-  }, [allLabel, filteredSubAccounts, getSubAccountTitle, selectedSubAccountIdSet, onSelectSubAccount]);
+  }, [allLabel, filteredSubAccounts, getSubAccountTitle, selectedSubAccountIdSet]);
 
   /** Pre-index filteredSubAccounts by id for O(1) label lookup */
   const filteredSubAccountsById = useMemo(() => {
@@ -308,6 +305,7 @@ export const useSubAccounts = ({
 
   return {
     subAccounts,
+    onSelectSubAccount,
     getSubAccountLabel,
     partyIdsOverride: selectedSubAccountIds,
     searchable: subAccounts.length > 2,

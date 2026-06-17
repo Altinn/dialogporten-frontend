@@ -35,11 +35,11 @@ test.describe('LoginPartyContext', () => {
     const listbox = page.getByRole('listbox');
     await expect(listbox).toBeVisible();
 
-    await expect(page.locator('[role="option"][data-id="urn:altinn:organization:identifier-no:1"]')).toBeVisible(); // Firma AS
-    await expect(page.locator('[role="option"][data-id="urn:altinn:organization:identifier-no:2"]')).toBeVisible(); // Testbedrift AS
-    await expect(page.locator('[role="option"][data-id="urn:altinn:organization:identifier-sub:1"]')).toBeVisible(); // Testbedrift As Avd Sub
-    await expect(page.locator('[role="option"][data-id="urn:altinn:organization:identifier-sub:2"]')).toBeVisible(); // Testbedrift As Avd Oslo
-    await expect(page.getByRole('option', { name: 'Alle virksomheter' })).toBeVisible(); // Alle virksomheter
+    await expect(page.getByRole('option', { name: 'Firma AS', exact: true })).toBeVisible();
+    await expect(page.getByRole('option', { name: 'Testbedrift AS', exact: true }).first()).toBeVisible();
+    await expect(page.getByRole('option', { name: 'Testbedrift As Avd Sub', exact: true })).toBeVisible();
+    await expect(page.getByRole('option', { name: 'Testbedrift As Avd Oslo', exact: true })).toBeVisible();
+    await expect(page.getByRole('option', { name: 'Alle virksomheter' })).toBeVisible();
   });
 
   test('Shows correct messages when switching to company party', async ({ page }: { page: Page }) => {
@@ -62,7 +62,7 @@ test.describe('LoginPartyContext', () => {
     // Navigate to parent party
     const toolbarMenu = page.locator('#toolbar-menu-root');
     await toolbarMenu.locator('> button').click();
-    await toolbarMenu.locator('[role="option"][data-id="urn:altinn:organization:identifier-no:2"]').click();
+    await page.getByRole('option', { name: 'Testbedrift AS', exact: true }).first().click();
     await expect(page.getByRole('link', { name: 'This is a message 1 for Testbedrift AS', exact: true })).toBeVisible();
     await expect(
       page.getByRole('link', { name: 'This is a message 1 for Testbedrift AS sub party AVD SUB' }),
@@ -70,7 +70,7 @@ test.describe('LoginPartyContext', () => {
 
     // Navigate to parent party
     await toolbarMenu.locator('> button').click();
-    await toolbarMenu.locator('[role="option"][data-id="urn:altinn:organization:identifier-sub:2"]').click();
+    await page.getByRole('option', { name: 'Testbedrift As Avd Oslo', exact: true }).click();
     await expect(page.getByRole('link', { name: 'Innkalling til sesjon' })).toBeVisible();
   });
 

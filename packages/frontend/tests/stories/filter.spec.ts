@@ -11,21 +11,21 @@ test.describe('Testing filter bar', () => {
   test('should filter when selecting sender filter and status filter', async ({ page }) => {
     await page.getByRole('button', { name: 'Legg til filter' }).click();
     await page.getByLabel('Tjenesteeier').click();
-    await page.locator('#skd').click();
+    await page.getByRole('option', { name: 'Skatteetaten' }).click();
     await expect(page).toHaveURL(/[?&]org=skd/);
 
     await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).toBeVisible();
 
-    await page.locator('#skd').press('Escape');
+    await page.getByRole('option', { name: 'Skatteetaten' }).press('Escape');
     await page.getByRole('button', { name: 'Nullstill' }).click();
 
     await expect(page).not.toHaveURL(/[?&]org=/);
 
     await page.getByRole('button', { name: 'Legg til filter' }).click();
     await page.getByRole('menuitem', { name: 'Status' }).first().click();
-    await page.locator('#COMPLETED').click();
+    await page.getByRole('menuitemcheckbox', { name: 'Avsluttet' }).click();
     await expect(page).toHaveURL(/[?&]status=COMPLETED/);
-    await page.locator('#COMPLETED').getByRole('checkbox', { name: 'Avsluttet' }).press('Escape');
+    await page.getByRole('menuitemcheckbox', { name: 'Avsluttet' }).press('Escape');
 
     await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Søknad om personlig bilskilt' })).toBeVisible();
@@ -34,9 +34,9 @@ test.describe('Testing filter bar', () => {
   test('should remove filters when changing view types', async ({ page, isMobile }) => {
     await page.getByRole('button', { name: 'Legg til filter' }).click();
     await page.getByLabel('Tjenesteeier').click();
-    await page.locator('#skd').click();
+    await page.getByRole('option', { name: 'Skatteetaten' }).click();
     await expect(page).toHaveURL(/[?&]org=skd/);
-    await page.locator('#skd').press('Escape');
+    await page.getByRole('option', { name: 'Skatteetaten' }).press('Escape');
 
     await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).toBeVisible();
 
@@ -47,9 +47,9 @@ test.describe('Testing filter bar', () => {
   test('should keep filters when returning to a filtered inbox from dialog details', async ({ page }) => {
     await page.getByRole('button', { name: 'Legg til filter' }).click();
     await page.getByLabel('Tjenesteeier').click();
-    await page.locator('#skd').click();
+    await page.getByRole('option', { name: 'Skatteetaten' }).click();
     await expect(page).toHaveURL(/[?&]org=skd/);
-    await page.locator('#skd').press('Escape');
+    await page.getByRole('option', { name: 'Skatteetaten' }).press('Escape');
 
     await page.getByRole('link', { name: 'Skatten din for 2022' }).click();
 

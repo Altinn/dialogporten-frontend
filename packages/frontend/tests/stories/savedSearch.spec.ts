@@ -12,9 +12,9 @@ test.describe('Saved search', () => {
   test('Create and delete saved search', async ({ page }) => {
     const toolbarArea = page.getByTestId('inbox-toolbar');
     await toolbarArea.getByRole('button', { name: /legg til/i }).click();
-    await toolbarArea.locator('#tool-filter-add').locator('button[data-id="org"], button#org').click();
-    await page.locator('#ok').click();
-    await page.locator('#ok').press('Escape');
+    await toolbarArea.locator('#tool-filter-add').getByRole('menuitem', { name: 'Tjenesteeier' }).click();
+    await page.getByRole('option', { name: 'Oslo kommune' }).click();
+    await page.getByRole('option', { name: 'Oslo kommune' }).press('Escape');
 
     await page.getByRole('button', { name: 'Lagre søk' }).click();
     await page.getByRole('dialog').getByRole('button', { name: 'Lagre søk' }).click();
@@ -87,14 +87,14 @@ test.describe('Saved search', () => {
     /* Create saved search with Oslo kommune and folder=Archive (systemLabel) from inbox */
 
     await page.getByRole('button', { name: 'Legg til filter' }).click();
-    await page.locator('#tool-filter-add').locator('button[data-id="org"], button#org').click();
-    await page.locator('input[aria-controls="toolbar-filter-menu-listbox"]').fill('Oslo');
-    await page.locator('li').filter({ hasText: 'Oslo kommune' }).nth(1).click();
+    await page.locator('#tool-filter-add').getByRole('menuitem', { name: 'Tjenesteeier' }).click();
+    await page.locator('input[aria-controls="toolbar-filter-menu-org-listbox"]').fill('Oslo');
+    await page.getByRole('option', { name: 'Oslo kommune' }).click();
     await page.keyboard.press('Escape');
     await page.getByRole('button', { name: 'Legg til' }).click();
-    await page.locator('#tool-filter-add').locator('button[data-id="systemLabel"], button#systemLabel').click();
-    await page.locator('#ARCHIVE').click();
-    await page.locator('#ARCHIVE').press('Escape');
+    await page.locator('#tool-filter-add').getByRole('menuitem', { name: 'Mappe' }).click();
+    await page.getByRole('menuitemradio', { name: 'Arkiv' }).click();
+    await page.keyboard.press('Escape');
 
     await page.getByRole('button', { name: 'Lagre søk' }).click();
     await page.getByRole('dialog').getByRole('button', { name: 'Lagre søk' }).click();
@@ -103,14 +103,14 @@ test.describe('Saved search', () => {
     await page.getByRole('button', { name: 'Nullstill' }).click();
 
     await page.getByRole('button', { name: 'Legg til filter' }).click();
-    await page.locator('#tool-filter-add').locator('button[data-id="org"], button#org').click();
-    await page.locator('input[aria-controls="toolbar-filter-menu-listbox"]').fill('Oslo');
-    await page.locator('li').filter({ hasText: 'Oslo kommune' }).nth(1).click();
-    await page.locator('li').filter({ hasText: 'Oslo kommune' }).nth(1).press('Escape');
+    await page.locator('#tool-filter-add').getByRole('menuitem', { name: 'Tjenesteeier' }).click();
+    await page.locator('input[aria-controls="toolbar-filter-menu-org-listbox"]').fill('Oslo');
+    await page.getByRole('option', { name: 'Oslo kommune' }).click();
+    await page.getByRole('option', { name: 'Oslo kommune' }).press('Escape');
     await page.getByRole('button', { name: 'Legg til' }).click();
-    await page.locator('#tool-filter-add').locator('button[data-id="systemLabel"], button#systemLabel').click();
-    await page.locator('#ARCHIVE').click();
-    await page.locator('#ARCHIVE').press('Escape');
+    await page.locator('#tool-filter-add').getByRole('menuitem', { name: 'Mappe' }).click();
+    await page.getByRole('menuitemradio', { name: 'Arkiv' }).click();
+    await page.keyboard.press('Escape');
 
     /* Navigate to sent folder and add Oslo kommune as filter...
     It should not be possible to save search since a matching search already exists */

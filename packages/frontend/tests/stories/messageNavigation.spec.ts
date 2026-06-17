@@ -17,7 +17,7 @@ test.describe('Message navigation', () => {
     await expect(page.locator('#toolbar-menu-root')).toContainText('Test Testesen');
 
     await page.locator('#toolbar-menu-root > button').click();
-    await page.locator('button[id="urn:altinn:organization:identifier-no:1"]').click();
+    await page.getByRole('option', { name: 'Firma AS', exact: true }).click();
 
     await expect(page.locator('#toolbar-menu-root')).toContainText('Firma AS');
     await expect(page.getByRole('link', { name: 'This is a message 1 for Firma AS' })).toBeVisible();

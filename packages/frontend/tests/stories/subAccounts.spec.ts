@@ -25,12 +25,12 @@ test.describe('Multiselect subaccounts', () => {
     await page.getByText('TTestbedrift AS Org. nr. : 2').click();
     await expect(page.getByRole('link', { name: 'Innkalling til sesjon' })).toBeVisible();
     const toolbar = page.getByTestId('inbox-toolbar');
-    // The subaccount checkbox is a <label role="checkbox"> wrapping the underlying <input>;
-    // both expose role=checkbox, so .first() picks the visible label (clicking it toggles the input).
-    const subaccountCheckbox = (name: string) => toolbar.getByRole('checkbox', { name, exact: true }).first();
-
-    await page.getByRole('button', { name: 'Alle enheter' }).click();
+    // Sub-account entries render as role="option" inside the sub-account listbox; select by name.
+    const subaccountListbox = page.locator('#toolbarmenu-subAccounts-listbox');
+    const subaccountCheckbox = (name: string) => subaccountListbox.getByRole('option', { name, exact: true });
+    await toolbar.getByRole('button', { name: 'Alle enheter' }).click();
     await subaccountCheckbox('Testbedrift As Avd Sub').click();
+    await page.waitForURL(/[?&]subAccounts=/);
     await page.keyboard.press('Escape');
     await expect(page.getByText('Du har ingen meldinger i innboksen')).toBeVisible();
 

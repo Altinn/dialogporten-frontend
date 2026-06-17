@@ -4,13 +4,22 @@ import { appUrlWithPlaywrightId } from '../index';
 import { expectIsPersonPage } from './common';
 
 const appURL = appUrlWithPlaywrightId('all-persons');
-const ALL_PERSONS_ID = 'ALL_PERSONS';
-const KARI_ID = 'urn:altinn:person:identifier-no:2';
+const ALL_PERSONS_NAME = 'Alle personer';
+const KARI_NAME = 'Kari Nordmann';
 
-/** Opens the account menu and clicks the entry by its account id (party URN, or the group id). */
-const selectAccount = async (page: Page, id: string) => {
+/**
+ * Opens the account menu and clicks the entry by its visible name (party or group).
+ * The account menu renders entries as role="option" when searchable and role="menuitem"
+ * otherwise, so match either.
+ */
+const selectAccount = async (page: Page, name: string) => {
   await page.locator('#toolbar-menu-root > button').click();
-  await page.locator(`#toolbar-menu-root button[id="${id}"]`).click();
+  const root = page.locator('#toolbar-menu-root');
+  await root
+    .getByRole('option', { name, exact: true })
+    .or(root.getByRole('menuitem', { name, exact: true }))
+    .first()
+    .click();
 };
 
 test.describe('All persons group', () => {
@@ -24,7 +33,7 @@ test.describe('All persons group', () => {
     await expect(inbox.getByRole('link', { name: 'Skattemelding for Kari Nordmann' })).toBeHidden();
 
     // The group tile is offered (more than one person beyond yourself) and selectable.
-    await selectAccount(page, ALL_PERSONS_ID);
+    await selectAccount(page, ALL_PERSONS_NAME);
 
     // New group URL param — and crucially, no individual person URN is exposed.
     await expect(page).toHaveURL(/group=ALL_PERSONS/);
@@ -47,10 +56,10 @@ test.describe('All persons group', () => {
     await expect(page.locator('#toolbar-menu-root')).toContainText('Test Testesen');
 
     // Enter the group, then pick a single other person.
-    await selectAccount(page, ALL_PERSONS_ID);
+    await selectAccount(page, ALL_PERSONS_NAME);
     await expect(page).toHaveURL(/group=ALL_PERSONS/);
 
-    await selectAccount(page, KARI_ID);
+    await selectAccount(page, KARI_NAME);
 
     await expect(page.locator('#toolbar-menu-root')).toContainText('Kari Nordmann');
     await expectIsPersonPage(page);
