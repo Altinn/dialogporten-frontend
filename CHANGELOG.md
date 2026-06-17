@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.162.6](https://github.com/Altinn/dialogporten-frontend/compare/v1.162.5...v1.162.6) (2026-06-17)
+
+
+### Bug Fixes
+
+* avatar for recipient in dialog details ([#4371](https://github.com/Altinn/dialogporten-frontend/issues/4371)) ([998d31e](https://github.com/Altinn/dialogporten-frontend/commit/998d31efbddababb54a2813deeef0e9db6db8afb))
+
 ## [1.162.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.162.4...v1.162.5) (2026-06-17)
 
 
