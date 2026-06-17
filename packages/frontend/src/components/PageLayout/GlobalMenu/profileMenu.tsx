@@ -167,7 +167,6 @@ export function buildProfileMenu({
   const sidebarMenu: MenuProps = {
     variant: 'tinted',
     groups: menuGroups,
-    color: 'person',
     items: [
       ...profileItems.map((item, idx) => ({
         ...item,

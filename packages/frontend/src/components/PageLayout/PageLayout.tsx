@@ -56,7 +56,6 @@ export const PageLayout: React.FC = () => {
   useProfile();
 
   const location = useLocation();
-  const isProfile = location.pathname.includes(PageRoutes.profile);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: runs synchronously after DOM mutations but before the browser paints.
   useLayoutEffect(() => {
@@ -162,7 +161,7 @@ export const PageLayout: React.FC = () => {
   if (isSinglePartyMatchingCurrentUser) {
     color = 'person';
     theme = 'subtle';
-  } else if (isProfile || selectedGroup) {
+  } else if (selectedGroup) {
     color = 'person';
     theme = 'neutral';
   } else {
@@ -178,9 +177,6 @@ export const PageLayout: React.FC = () => {
       link: { label: t('altinn_shutdown_banner.link'), href: bannerLink },
       color: 'warning',
       variant: 'alert',
-    },
-    content: {
-      color: isProfile ? 'person' : undefined,
     },
     skipLink: {
       href: '#main-content',
