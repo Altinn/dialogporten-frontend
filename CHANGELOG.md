@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.162.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.162.3...v1.162.4) (2026-06-17)
+
+
+### Bug Fixes
+
+* **wcag:** bump to altinn-components 0.68.2 for wcag improvements to … ([#4358](https://github.com/Altinn/dialogporten-frontend/issues/4358)) ([d0fb002](https://github.com/Altinn/dialogporten-frontend/commit/d0fb002cddd0484ca0c48b38d4dd360fa72ca45b))
+
 ## [1.162.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.162.2...v1.162.3) (2026-06-15)
 
 
