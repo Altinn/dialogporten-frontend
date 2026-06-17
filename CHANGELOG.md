@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.162.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.162.4...v1.162.5) (2026-06-17)
+
+
+### Bug Fixes
+
+* **profile:** update color scheme to be similar to inbox ([#4368](https://github.com/Altinn/dialogporten-frontend/issues/4368)) ([43265f7](https://github.com/Altinn/dialogporten-frontend/commit/43265f773442d8e235e085aa9ccd092d39886ef2))
+
 ## [1.162.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.162.3...v1.162.4) (2026-06-17)
 
 
