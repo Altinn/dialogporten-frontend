@@ -300,6 +300,8 @@ export function mapDialogToInboxItem(
     receiver: {
       name: actualRecipientParty?.name ?? '',
       type: actualRecipientParty?.partyType === 'Organization' ? 'company' : 'person',
+      isParent: Array.isArray(actualRecipientParty?.subParties),
+      isDeleted: actualRecipientParty?.isDeleted,
     },
     additionalInfo: {
       value: getPreferredPropertyByLocale(additionalInfoObj)?.value ?? '',

@@ -5,7 +5,6 @@ import { SavedSearchRepository } from '../../db.ts';
 import { encryptPersonUrn } from '../../party/personUrnCipher.ts';
 import { getAltinn2messages } from '../functions/altinn2messages.ts';
 import {
-  coreToFrontendLang,
   getNotificationAddressByOrgNumber,
   getNotificationsettingsForCurrentUser,
   getOrCreateProfile,
@@ -32,10 +31,7 @@ export const Query = objectType({
           return { language: currentCookieLang ?? 'nb', updatedAt, groups, user };
         }
 
-        const coreLanguage = user.profileSettingPreference?.language;
-        const language = coreLanguage
-          ? (coreToFrontendLang[coreLanguage] ?? coreLanguage)
-          : (currentCookieLang ?? 'nb');
+        const language = user.profileSettingPreference?.language ?? currentCookieLang ?? 'nb';
 
         const ul = languageCodes[language];
         if (ul) {

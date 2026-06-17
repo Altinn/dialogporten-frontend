@@ -15,9 +15,6 @@ const { platformBaseURL } = config;
 
 const platformProfileAPI_url = platformBaseURL + '/profile/api/v1/';
 
-const frontendToCoreLang: Record<string, string> = { nb: 'no', nn: 'nn', en: 'en' };
-export const coreToFrontendLang: Record<string, string> = { no: 'nb', nn: 'nn', en: 'en' };
-
 export const getOrCreateProfile = async (context: Context): Promise<ProfileTable> => {
   const pid = typeof context.session.get('pid') === 'string' ? (context.session.get('pid') as string) : '';
 
@@ -479,8 +476,7 @@ export const getVerifiedAddresses = async (context: Context) => {
 };
 
 export const updateLanguageInCore = async (context: Context, language: string): Promise<void> => {
-  const coreLanguage = frontendToCoreLang[language] ?? language;
-  await patchProfileSettings(context, { language: coreLanguage });
+  await patchProfileSettings(context, { language });
 };
 
 export const updateSIPrivatePhoneNumber = async (value: string | null, context: Context) => {
