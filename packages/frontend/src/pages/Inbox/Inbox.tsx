@@ -17,7 +17,7 @@ import {
   Typography,
 } from '@altinn/altinn-components';
 import { XMarkIcon } from '@navikt/aksel-icons';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useDeferredValue, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { MAX_COUNT_BULK_DIALOGS, useBulkActions } from '../../api/hooks/useBulkActions.tsx';
@@ -128,7 +128,8 @@ export const Inbox = ({ viewType }: InboxProps) => {
   );
 
   const { enteredSearchValue } = useSearchString();
-  const validSearchString = enteredSearchValue.length > 2 ? enteredSearchValue : undefined;
+  const deferredSearchValue = useDeferredValue(enteredSearchValue);
+  const validSearchString = deferredSearchValue.length > 2 ? deferredSearchValue : undefined;
   const selectedServices = (filterState.service ?? []) as string[];
   const selectedServicesCount = selectedServices.length;
   const serviceLimitReached = selectedServicesCount > MAX_SERVICE_RESOURCE_SIZE;

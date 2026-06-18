@@ -15,6 +15,7 @@ import { useParties } from '../../api/hooks/useParties.ts';
 import { updateLanguage } from '../../api/queries.ts';
 import { createFiltersURLQuery, getFrontPageLink } from '../../auth';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
+import { loadLocale } from '../../i18n/config.ts';
 import { FilterCategory } from '../../pages/Inbox/filters.tsx';
 import { FixedGlobalQueryParams, pruneSearchQueryParams } from '../../pages/Inbox/queryParams.ts';
 import { useProfile } from '../../pages/Profile';
@@ -149,6 +150,7 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
     /* Update locally first so duplicate onSelect calls from the library
        (desktop + mobile LocaleSwitchers) short-circuit on the guard above. */
     updateProfileLanguage(language);
+    await loadLocale(language);
     void i18n.changeLanguage(language);
     try {
       await updateLanguage(language);

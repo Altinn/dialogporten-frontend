@@ -11,7 +11,7 @@ import {
 import { useQueryClient } from '@tanstack/react-query';
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import i18n from 'i18next';
-import { useEffect, useLayoutEffect, useMemo } from 'react';
+import { Suspense, useEffect, useLayoutEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps, Outlet, useLocation, useSearchParams } from 'react-router-dom';
 import { useCurrentEndUser, useSelectedProfile } from '../../api/hooks/usePartiesSelectors.ts';
@@ -206,7 +206,9 @@ export const PageLayout: React.FC = () => {
   return (
     <>
       <Layout {...layoutProps}>
-        <Outlet />
+        <Suspense>
+          <Outlet />
+        </Suspense>
         <Snackbar />
         <FloatingDropdown />
       </Layout>
