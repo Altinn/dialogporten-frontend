@@ -150,7 +150,8 @@ export const PageLayout: React.FC = () => {
     return steps;
   }, [location.pathname, fromView, docTitle]);
 
-  const bannerLink = getBannerLink(i18n.language);
+  const isAfterJune20 = new Date() >= new Date(2026, 5, 20);
+  const bannerLink = getBannerLink(i18n.language, isAfterJune20);
 
   let color: LayoutColor = 'neutral';
   let theme: LayoutTheme = 'default';
@@ -172,12 +173,17 @@ export const PageLayout: React.FC = () => {
   const layoutProps: LayoutProps = {
     theme,
     color,
-    banner: {
-      title: t('altinn_shutdown_banner.title'),
-      link: { label: t('altinn_shutdown_banner.link'), href: bannerLink },
-      color: 'warning',
-      variant: 'alert',
-    },
+    banner: isAfterJune20
+      ? {
+          title: t('altinn_renewal_banner.title'),
+          link: { label: t('altinn_renewal_banner.link'), href: bannerLink },
+        }
+      : {
+          title: t('altinn_shutdown_banner.title'),
+          link: { label: t('altinn_shutdown_banner.link'), href: bannerLink },
+          color: 'warning',
+          variant: 'alert',
+        },
     skipLink: {
       href: '#main-content',
       color: 'inherit' as Color,
@@ -208,7 +214,17 @@ export const PageLayout: React.FC = () => {
   );
 };
 
-const getBannerLink = (languageCode: string) => {
+const getBannerLink = (languageCode: string, isAfterJune20: boolean) => {
+  if (isAfterJune20) {
+    switch (languageCode) {
+      case 'en':
+        return 'https://info.altinn.no/en/news/new-power-of-attorney-solution/';
+      case 'nn':
+        return 'https://info.altinn.no/nn/nyheiter/ny-fullmaktsloeysing/';
+      default:
+        return 'https://info.altinn.no/nyheter/ny-fullmaktsloesning/';
+    }
+  }
   switch (languageCode) {
     case 'en':
       return 'https://info.altinn.no/en/news/check-if-you-need-to-take-action-before-we-shut-down-the-old-altinn/';

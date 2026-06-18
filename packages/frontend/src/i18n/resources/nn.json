@@ -30,6 +30,8 @@
   "altinn.delegate_access": "Del og gi fullmakt",
   "altinn.dialogporten.loading_lookup": "Henter dialogens id",
   "altinn.new_schema": "Nytt skjema",
+  "altinn_renewal_banner.link": "Slik får du tilgang på nytt.",
+  "altinn_renewal_banner.title": "Saknar du noko i innboksen?",
   "altinn_shutdown_banner.link": "Dette må du passe på.",
   "altinn_shutdown_banner.title": "19. juni blir gamle Altinn skrudd av.",
   "attachment.expired": "Utløpt",
