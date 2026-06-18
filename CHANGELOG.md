@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.162.8](https://github.com/Altinn/dialogporten-frontend/compare/v1.162.7...v1.162.8) (2026-06-18)
+
+
+### Bug Fixes
+
+* add Popover API polyfill for unsupported browsers ([#4379](https://github.com/Altinn/dialogporten-frontend/issues/4379)) ([34bc822](https://github.com/Altinn/dialogporten-frontend/commit/34bc822ba0d0045944031c4a14a6b96cdb35c146))
+
 ## [1.162.7](https://github.com/Altinn/dialogporten-frontend/compare/v1.162.6...v1.162.7) (2026-06-18)
 
 
