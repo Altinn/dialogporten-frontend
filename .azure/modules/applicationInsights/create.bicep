@@ -17,7 +17,7 @@ resource appInsightsWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10-
   location: location
 }
 
-resource sourceMapStorageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
+resource sourceMapStorageAccount 'Microsoft.Storage/storageAccounts@2025-01-01' = {
   name: sourceMapStorageAccountName
   location: location
   sku: {
@@ -26,6 +26,12 @@ resource sourceMapStorageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' 
   kind: 'StorageV2'
   properties: {
     allowBlobPublicAccess: false
+    // Source maps are written by CI (az ... --auth-mode login) and read by App Insights
+    // via the developers group's Storage Blob Data Reader role. Both use Entra ID, so
+    // shared-key/account-key access can be disabled entirely.
+    allowSharedKeyAccess: false
+    defaultToOAuthAuthentication: true
+    allowCrossTenantReplication: false
     minimumTlsVersion: 'TLS1_2'
     supportsHttpsTrafficOnly: true
     encryption: {
