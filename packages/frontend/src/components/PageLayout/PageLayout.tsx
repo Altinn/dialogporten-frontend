@@ -11,7 +11,7 @@ import {
 import { useQueryClient } from '@tanstack/react-query';
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import i18n from 'i18next';
-import { useEffect, useLayoutEffect, useMemo } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps, Outlet, useLocation, useSearchParams } from 'react-router-dom';
 import { useCurrentEndUser, useSelectedProfile } from '../../api/hooks/usePartiesSelectors.ts';
@@ -56,6 +56,7 @@ export const PageLayout: React.FC = () => {
   useProfile();
 
   const location = useLocation();
+  const isInitialRender = useRef(true);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: runs synchronously after DOM mutations but before the browser paints.
   useLayoutEffect(() => {
@@ -63,6 +64,15 @@ export const PageLayout: React.FC = () => {
     if (bulkMode) {
       setBulkMode(false);
     }
+
+    if (isInitialRender.current) {
+      isInitialRender.current = false;
+      return;
+    }
+
+    document.body.setAttribute('tabindex', '-1');
+    document.body.focus({ preventScroll: true });
+    document.body.removeAttribute('tabindex');
   }, [location.pathname]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: Full control of what triggers this code is needed
