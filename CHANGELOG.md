@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.162.7](https://github.com/Altinn/dialogporten-frontend/compare/v1.162.6...v1.162.7) (2026-06-18)
+
+
+### Bug Fixes
+
+* **wcag:** focus should return to context menu trigger button on dismiss dialog content opened from context menu ([#4376](https://github.com/Altinn/dialogporten-frontend/issues/4376)) ([a12e018](https://github.com/Altinn/dialogporten-frontend/commit/a12e0185a55e6073d5864b3a32e785bc51d0a391))
+
 ## [1.162.6](https://github.com/Altinn/dialogporten-frontend/compare/v1.162.5...v1.162.6) (2026-06-17)
 
 
