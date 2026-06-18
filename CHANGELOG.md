@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.163.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.162.8...v1.163.0) (2026-06-18)
+
+
+### Features
+
+* Update banner info and color after 20 june ([#4382](https://github.com/Altinn/dialogporten-frontend/issues/4382)) ([08b168b](https://github.com/Altinn/dialogporten-frontend/commit/08b168b4c08e810bec2ebf76709317b71539ce3f))
+
 ## [1.162.8](https://github.com/Altinn/dialogporten-frontend/compare/v1.162.7...v1.162.8) (2026-06-18)
 
 
