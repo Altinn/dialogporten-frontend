@@ -1,7 +1,6 @@
 import {
   type AddFavoritePartyMutation,
   type AddFavoritePartyToGroupMutation,
-  type Altinn2messagesQuery,
   type BulkUpdateSystemLabelsMutation,
   type CreateSavedSearchMutation,
   type DeleteFavoritePartyMutation,
@@ -185,10 +184,6 @@ export const graphQLSDK = getSdk(
 
 export const profile = graphQLSDK.profile;
 export const fetchSavedSearches = (): Promise<SavedSearchesQuery> => graphQLSDK.savedSearches();
-export const fetchAltinn2Messages = (
-  selectedAccountIdentifier: string,
-  isSelfIdentified: boolean,
-): Promise<Altinn2messagesQuery> => graphQLSDK.altinn2messages({ selectedAccountIdentifier, isSelfIdentified });
 export const fetchOrganizations = (): Promise<OrganizationsQuery> => graphQLSDK.organizations();
 export const deleteSavedSearch = (id: number): Promise<DeleteSavedSearchMutation> =>
   graphQLSDK.DeleteSavedSearch({ id });

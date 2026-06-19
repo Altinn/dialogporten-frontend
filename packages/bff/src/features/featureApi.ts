@@ -7,7 +7,6 @@ import fp from 'fastify-plugin';
 
 const defaultFeatureFlags: Record<string, boolean> = {
   'dialogporten.disableFlipNamesPatch': false,
-  'inbox.enableAltinn2Messages': false,
   'inbox.enableAlertBanner': false,
   'dialogporten.disableSubscriptions': false,
   'inbox.accountNavigatorEnabled': false,

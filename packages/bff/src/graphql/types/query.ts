@@ -1,9 +1,8 @@
 import { logger } from '@altinn/dialogporten-node-logger';
-import { booleanArg, list, objectType, stringArg } from 'nexus';
+import { list, objectType, stringArg } from 'nexus';
 import config from '../../config.js';
 import { SavedSearchRepository } from '../../db.ts';
 import { encryptPersonUrn } from '../../party/personUrnCipher.ts';
-import { getAltinn2messages } from '../functions/altinn2messages.ts';
 import {
   getNotificationAddressByOrgNumber,
   getNotificationsettingsForCurrentUser,
@@ -48,16 +47,6 @@ export const Query = objectType({
         }
 
         return { language, updatedAt, groups, user };
-      },
-    });
-    t.field('altinn2messages', {
-      type: list('Altinn2Message'),
-      args: {
-        selectedAccountIdentifier: stringArg(),
-        isSelfIdentified: booleanArg({ default: false }),
-      },
-      resolve: async (_source, { selectedAccountIdentifier, isSelfIdentified }, ctx) => {
-        return await getAltinn2messages(ctx, selectedAccountIdentifier, isSelfIdentified);
       },
     });
     t.field('organizations', {

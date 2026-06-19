@@ -48,7 +48,6 @@ import { useSavedSearches } from '../SavedSearches/useSavedSearches.tsx';
 import { PageRoutes } from '../routes.ts';
 import { AccountNavigator } from './AccountNavigator.tsx';
 import { AlertBanner } from './AlertBanner.tsx';
-import { Altinn2ActiveSchemasNotification } from './Altinn2ActiveSchemasNotification.tsx';
 import { FilterCategory, hasValidFilters, readFiltersFromURLQuery } from './filters';
 import styles from './inbox.module.css';
 import { FixedGlobalQueryParams, PartyGroups, VariableGlobalQueryParams, encodeSubAccountIds } from './queryParams.ts';
@@ -102,7 +101,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
 
   const { inboxSearch } = useHeaderConfig(filterState);
 
-  const isAltinn2MessagesEnabled = useFeatureFlag<boolean>('inbox.enableAltinn2Messages');
   const isAlertBannerEnabled = useFeatureFlag<boolean>('inbox.enableAlertBanner');
   const alertBannerContent = useAlertBanner();
 
@@ -418,7 +416,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
       </div>
       <SINotice />
       <AlertBanner showAlertBanner={isAlertBannerEnabled && !!alertBannerContent} />
-      {isAltinn2MessagesEnabled && <Altinn2ActiveSchemasNotification selectedAccountId={selectedParties?.[0]?.party} />}
       <>
         <AccountNavigator
           hidden={accountNavigatorHidden}
