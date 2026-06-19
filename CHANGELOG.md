@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.163.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.163.0...v1.163.1) (2026-06-19)
+
+
+### Bug Fixes
+
+* **infra:** lock down source maps storage account to Entra-only access ([#4378](https://github.com/Altinn/dialogporten-frontend/issues/4378)) ([d9827ab](https://github.com/Altinn/dialogporten-frontend/commit/d9827ab4e6c640e17aa7ed53c94e2a4eea11c4b9))
+* **wcag:** reset focus to top of page on route change ([#4386](https://github.com/Altinn/dialogporten-frontend/issues/4386)) ([7dc67ea](https://github.com/Altinn/dialogporten-frontend/commit/7dc67ea7fb6c01d43fc8e10b7c5de0b6e2c6ed7e))
+
 ## [1.163.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.162.8...v1.163.0) (2026-06-18)
 
 
