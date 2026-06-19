@@ -76,7 +76,7 @@
   "dialog.aria.fetch_more": "Hent og vis flere dialoger",
   "dialog.context_menu.label": "Kontekstmeny for dialog med tittel {title}",
   "dialog.due_at": "Frist: {date}",
-  "dialog.due_at_expired": "Frist utløpt: {date}",
+  "dialog.due_at_expired": "Frist utgått: {date}",
   "dialog.error_message.general": "Kan ikke vise dialogen du prøver å åpne.",
   "dialog.fetch_more": "Vis flere ...",
   "dialog.gui_action.delete_grace_period": "Dialogen kan ikke slettes ennå fordi den er i en bevaringsperiode på {days, plural, =1 {# dag} other {# dager}} etter innsending. Du kan slette den fra {date}.",

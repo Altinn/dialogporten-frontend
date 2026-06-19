@@ -30,6 +30,7 @@ import type { DialogByIdDetails } from '../../api/hooks/useDialogById.tsx';
 import type { DialogEventData } from '../../api/hooks/useDialogByIdSubscription.ts';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
+import { getDueAtProps } from '../../pages/Inbox/dueAt.ts';
 import { getDialogStatus } from '../../pages/Inbox/status.ts';
 import type { TimelineSegmentWithTransmissions } from '../../utils/transmissions.ts';
 import { ActivityLogModal } from '../ActivityLog/activityLogModal.tsx';
@@ -337,8 +338,10 @@ export const DialogDetails = ({
           loading
           updatedAt={new Date().toISOString()}
           updatedAtLabel={format(new Date(), 'do MMMM yyyy HH.mm').toString()}
-          dueAt={new Date().toISOString()}
-          dueAtLabel={format(new Date(), 'do MMMM yyyy HH.mm').toString()}
+          dueAt={{
+            datetime: new Date().toISOString(),
+            label: format(new Date(), 'do MMMM yyyy HH.mm').toString(),
+          }}
           status={getDialogStatus(DialogStatus.NotApplicable, t)}
           title={'???'}
         />
@@ -371,7 +374,6 @@ export const DialogDetails = ({
 
   const clockPrefix = t('word.clock_prefix');
   const formatString = clockPrefix ? `do MMMM yyyy '${clockPrefix}' HH.mm` : `do MMMM yyyy HH.mm`;
-  const dueAtLabel = dialog.dueAt ? t('dialog.due_at', { date: format(dialog.dueAt, formatString) }) : '';
   const numberOfTransmissionGroups = 3;
   const dialogActions: DialogActionButtonProps[] = dialog.guiActions.map((action) => ({
     id: action.id,
@@ -412,8 +414,7 @@ export const DialogDetails = ({
       <DialogHeader
         updatedAt={dialog.updatedAt}
         updatedAtLabel={format(dialog.updatedAt, formatString)}
-        dueAt={dialog.dueAt}
-        dueAtLabel={dueAtLabel}
+        dueAt={getDueAtProps(dialog.dueAt, dialog.status, t, (date) => format(date, formatString))}
         status={getDialogStatus(dialog.status, t)}
         badge={headerBadge}
         title={dialog.title}
