@@ -79,14 +79,6 @@ export const streamMock = http.get('/api/graphql/stream', async () => {
   });
 });
 
-const mockAltinn2Messages = graphql.query('altinn2messages', () => {
-  return HttpResponse.json({
-    data: {
-      altinn2messages: [],
-    },
-  });
-});
-
 const mockNotificationsettingsForCurrentUser = graphql.query('notificationsettingsForCurrentUser', () => {
   return HttpResponse.json({
     data: {
@@ -612,7 +604,6 @@ export const handlers = [
   getServiceResourcesMock,
   getFilterServiceResourcesMock,
   dialogAccessInfoMock,
-  mockAltinn2Messages,
   mockNotificationsettingsForCurrentUser,
   featuresMock,
   alertBannerMock,
