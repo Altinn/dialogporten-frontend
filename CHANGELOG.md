@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.163.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.163.1...v1.163.2) (2026-06-19)
+
+
+### Bug Fixes
+
+* remove Altinn2ActiveSchemasNotification and enableAltinn2Messages flag ([#4388](https://github.com/Altinn/dialogporten-frontend/issues/4388)) ([1ddb128](https://github.com/Altinn/dialogporten-frontend/commit/1ddb128984aa6ea6613169171a39f5a627137fef))
+
 ## [1.163.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.163.0...v1.163.1) (2026-06-19)
 
 
