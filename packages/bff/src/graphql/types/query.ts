@@ -10,9 +10,17 @@ import {
   getUserFromCore,
   getVerifiedAddresses,
 } from '../functions/profile.ts';
+import { getUsername } from '../functions/register.ts';
 import { getLanguageFromAltinnContext, languageCodes, updateAltinnPersistentContextValue } from './cookie.js';
 import { getOrganizationsFromRedis } from './organization.ts';
 import { OrganizationResponse } from './profile.ts';
+
+export const UsernameResponse = objectType({
+  name: 'UsernameResponse',
+  definition(t) {
+    t.nullable.string('username');
+  },
+});
 
 export const Query = objectType({
   name: 'Query',
@@ -95,6 +103,19 @@ export const Query = objectType({
       type: list('VerifiedAddressResponse'),
       resolve: async (_source, _args, ctx) => {
         return (await getVerifiedAddresses(ctx)) ?? [];
+      },
+    });
+
+    t.field('partyUsername', {
+      type: UsernameResponse,
+      args: {
+        partyUuid: stringArg(),
+      },
+      resolve: async (_source, { partyUuid }) => {
+        if (!partyUuid) {
+          return null;
+        }
+        return { username: await getUsername(partyUuid) };
       },
     });
 

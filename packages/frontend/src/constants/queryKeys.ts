@@ -35,4 +35,5 @@ export const QUERY_KEYS = {
   BULK_MODE: 'bulkMode',
   BULK_MODE_SELECTED_IDS: 'bulkModeSelectedIds',
   HAS_INITIALIZED_PARTY_SELECTION: 'hasInitializedPartySelection',
+  USERNAME: 'username',
 };

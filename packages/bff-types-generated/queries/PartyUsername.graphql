@@ -1,0 +1,5 @@
+query PartyUsername($partyUuid: String) {
+  partyUsername(partyUuid: $partyUuid) {
+    username
+  }
+}

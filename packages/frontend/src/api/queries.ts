@@ -13,6 +13,7 @@ import {
   type NotificationSettingsInput,
   type NotificationsettingsForCurrentUserQuery,
   type OrganizationsQuery,
+  type PartyUsernameQuery,
   type SavedSearchInput,
   type SavedSearchesQuery,
   type SendVerificationCodeMutation,
@@ -20,6 +21,7 @@ import {
   type SetPreSelectedPartyMutation,
   type SetShouldShowSubEntitiesMutation,
   type SetShowClientUnitsMutation,
+  type SetUsernameMutation,
   type SystemLabel,
   type UpdateLanguageMutation,
   type UpdateNotificationSettingMutation,
@@ -201,6 +203,10 @@ export const setPreSelectedParty = (
 ): Promise<SetPreSelectedPartyMutation> => graphQLSDK.SetPreSelectedParty({ partyUuid, operationType });
 export const createSavedSearch = (name: string, data: SavedSearchInput): Promise<CreateSavedSearchMutation> =>
   graphQLSDK.CreateSavedSearch({ name, data });
+export const setUsername = (username: string | null): Promise<SetUsernameMutation> =>
+  graphQLSDK.SetUsername({ username });
+export const getPartyUsername = (partyUuid: string): Promise<PartyUsernameQuery> =>
+  graphQLSDK.PartyUsername({ partyUuid });
 export const getNotificationsettingsForCurrentUser = (): Promise<NotificationsettingsForCurrentUserQuery> =>
   graphQLSDK.notificationsettingsForCurrentUser();
 export const updateNotificationsetting = (
