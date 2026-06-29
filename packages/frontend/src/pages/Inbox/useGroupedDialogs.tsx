@@ -23,6 +23,7 @@ import { useGlobalState } from '../../useGlobalState.ts';
 import { useDialogActions } from '../DialogDetailsPage/useDialogActions.tsx';
 import type { CurrentSeenByLog } from './Inbox.tsx';
 import type { InboxItemInput } from './InboxItemInput.ts';
+import { getDueAtProps } from './dueAt.ts';
 import type { PartyGroup } from './queryParams.ts';
 import { getDialogStatus } from './status.ts';
 
@@ -131,13 +132,6 @@ const getDialogListDescription = ({
 };
 
 const BANKRUPTCY_SERVICE_RESOURCE = 'urn:altinn:resource:app_brg_konkursbehandling';
-
-export const isDueAtExpired = (dueAt?: string): boolean => {
-  if (!dueAt) return false;
-  const time = new Date(dueAt).getTime();
-  if (Number.isNaN(time)) return false;
-  return time < Date.now();
-};
 
 const sortGroupedDialogs = (arr: DialogListItemProps[]) => {
   return arr.sort((a, b) => new Date(b.updatedAt ?? 0).getTime() - new Date(a.updatedAt ?? 0).getTime());
@@ -321,13 +315,7 @@ const useGroupedDialogs = ({
       extendedStatusLabel: item.extendedStatus,
       updatedAt: item.contentUpdatedAt,
       updatedAtLabel: format(item.contentUpdatedAt, formatString),
-      dueAtLabel: item.dueAt
-        ? t(isDueAtExpired(item.dueAt) ? 'dialog.due_at_expired' : 'dialog.due_at', {
-            date: format(item.dueAt, formatString),
-          })
-        : undefined,
-      dueAtExpired: isDueAtExpired(item.dueAt),
-      dueAt: item.dueAt,
+      dueAt: getDueAtProps(item.dueAt, item.status, t, (date) => format(date, formatString)),
       sentCount: item.fromPartyTransmissionsCount ?? 0,
       receivedCount: item.fromServiceOwnerTransmissionsCount ?? 0,
       ariaLabel: item.title,
