@@ -95,12 +95,6 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
   const isDirty = (enabled && isValueDirty) || enabled !== initiallyEnabled;
   const needsVerification = enabled && !!value && !isVerified;
 
-  const hasChangedFromProfile = persistedValue?.trim() !== value.trim();
-  const verificationStatus = isEmail
-    ? notificationSettings?.emailVerificationStatus
-    : notificationSettings?.smsVerificationStatus;
-  const allowedToVerify = (verificationStatus === 'Legacy' ? hasChangedFromProfile : true) && isValidValue;
-
   const invalidateQueries = () => {
     void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.VERIFIED_ADDRESSES] });
     void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.NOTIFICATION_SETTINGS_FOR_CURRENT_USER] });
@@ -130,7 +124,7 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
       return;
     }
     if (needsVerification) {
-      if (allowedToVerify) void handleSendCode(value);
+      if (isValidValue) void handleSendCode(value);
       else handleClose();
       return;
     }
@@ -205,9 +199,13 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
                   placeholder={t('profile.account_alerts.email_placeholder')}
                   autoComplete="email"
                 />
-                {value && isVerified && (
+                {value && (
                   <span data-size="sm" className={styles.badgeOverlay}>
-                    <Badge color="success">{t('profile.verification.status_verified')}</Badge>
+                    <Badge color={isVerified ? 'success' : 'warning'}>
+                      {t(
+                        isVerified ? 'profile.verification.status_verified' : 'profile.verification.status_unverified',
+                      )}
+                    </Badge>
                   </span>
                 )}
               </div>
@@ -251,9 +249,15 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
                       }}
                       onBlur={() => setPhoneTouched(true)}
                     />
-                    {value && isVerified && (
+                    {value && (
                       <span data-size="sm" className={styles.badgeOverlay}>
-                        <Badge color="success">{t('profile.verification.status_verified')}</Badge>
+                        <Badge color={isVerified ? 'success' : 'warning'}>
+                          {t(
+                            isVerified
+                              ? 'profile.verification.status_verified'
+                              : 'profile.verification.status_unverified',
+                          )}
+                        </Badge>
                       </span>
                     )}
                   </div>
@@ -271,6 +275,11 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
               isOrganization
                 ? 'profile.notifications.personal_explanation'
                 : 'profile.notifications.personal_for_person',
+            )}{' '}
+            {t(
+              isEmail
+                ? 'profile.notifications.channel_explanation_email'
+                : 'profile.notifications.channel_explanation_sms',
             )}
           </p>
         </Typography>

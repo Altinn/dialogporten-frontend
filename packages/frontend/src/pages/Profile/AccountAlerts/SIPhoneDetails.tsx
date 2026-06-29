@@ -154,9 +154,13 @@ export const SIPhoneDetails = ({ phoneNumber }: { phoneNumber?: string }) => {
                   }}
                   onBlur={() => setPhoneTouched(true)}
                 />
-                {siPhoneValue && isVerified && (
+                {siPhoneValue && (
                   <span data-size="sm" className={styles.badgeOverlay}>
-                    <Badge color="success">{t('profile.verification.status_verified')}</Badge>
+                    <Badge color={isVerified ? 'success' : 'warning'}>
+                      {t(
+                        isVerified ? 'profile.verification.status_verified' : 'profile.verification.status_unverified',
+                      )}
+                    </Badge>
                   </span>
                 )}
               </div>
