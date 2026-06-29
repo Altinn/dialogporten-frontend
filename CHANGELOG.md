@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.163.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.163.2...v1.163.3) (2026-06-29)
+
+
+### Bug Fixes
+
+* adapt dueAt to new DialogMetadataDueAtProps and add color logic ([#4390](https://github.com/Altinn/dialogporten-frontend/issues/4390)) ([4d153bc](https://github.com/Altinn/dialogporten-frontend/commit/4d153bc6fec5fd0549ec5269b083bb9ff10cf526))
+
 ## [1.163.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.163.1...v1.163.2) (2026-06-19)
 
 
