@@ -45,8 +45,10 @@ import { ServiceResourceNotificationsDetails } from './AccountAlerts/ServiceReso
 import type { Channel } from './AccountAlerts/common.ts';
 import { ContactProfileDetails } from './ContactProfileDetails.tsx';
 import { LanguageSettingsContent } from './LanguageSettingsContent.tsx';
+import { UsernameSetting } from './UsernameSetting.tsx';
 import { usePartiesWithNotificationSettings } from './usePartiesWithNotificationSettings.tsx';
 import { useProfile } from './useProfile.tsx';
+import { useUsername } from './useUsername.tsx';
 import { useVerifiedAddresses } from './useVerifiedAddresses.tsx';
 
 export enum SettingsType {
@@ -166,6 +168,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
   const { partiesWithNotificationSettings, uniqueEmailAddresses, uniquePhoneNumbers } =
     usePartiesWithNotificationSettings(parties);
   const { verifiedAddresses } = useVerifiedAddresses();
+  const { username: currentUsername } = useUsername(currentEndUser?.partyUuid);
   const userDisplayName = formatDisplayName({
     fullName: currentEndUser?.name ?? '',
     type: 'person',
@@ -501,6 +504,20 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
               readOnly
             />
           ),
+        },
+        {
+          id: 'profile-username',
+          groupId: SettingsType.profile,
+          icon: PersonCircleIcon,
+          title: t('profile.username.title'),
+          value: currentUsername ?? '',
+          summary: <p>{t('profile.username.summary')}</p>,
+          variant: 'modal',
+          as: 'div',
+          badge: currentEndUser
+            ? { label: t('profile.settings.add'), variant: 'text' }
+            : { label: t('profile.settings.change'), variant: 'text' },
+          children: <UsernameSetting partyUuid={currentEndUser?.partyUuid} />,
         },
       ];
 

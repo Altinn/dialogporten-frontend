@@ -50,6 +50,12 @@ const envVariables = z.object({
   PERSON_URN_ENC_KEYS: z
     .string()
     .default('ZGV2a2V5LWRvLW5vdC11c2UtaW4tcHJvZGRldmtleS1kby1ub3QtdXNlLWluLXByb2RkZXZrZXktZG8tbm90LQ=='),
+  MASKINPORTEN_CLIENT_ID: z.string().default(''),
+  MASKINPORTEN_JWK: z.string().default(''),
+  MASKINPORTEN_ISSUER: z.string().default('https://test.maskinporten.no/'),
+  MASKINPORTEN_SCOPE: z.string().default('altinn:register/partylookup.admin'),
+  OCP_APIM_SUBSCRIPTION_KEY: z.string().default(''),
+  REGISTER_SUBSCRIPTION_KEY: z.string().default(''),
 });
 
 const env = envVariables.parse(process.env);
@@ -104,6 +110,14 @@ const config = {
   personUrnEncKeys: env.PERSON_URN_ENC_KEYS.split(',')
     .map((k) => k.trim())
     .filter((k) => k.length > 0),
+  maskinporten: {
+    clientId: env.MASKINPORTEN_CLIENT_ID,
+    jwk: env.MASKINPORTEN_JWK,
+    issuer: env.MASKINPORTEN_ISSUER,
+    scope: env.MASKINPORTEN_SCOPE,
+  },
+  ocpApimSubscriptionKey: env.OCP_APIM_SUBSCRIPTION_KEY,
+  registerSubscriptionKey: env.REGISTER_SUBSCRIPTION_KEY,
 };
 
 export default config;

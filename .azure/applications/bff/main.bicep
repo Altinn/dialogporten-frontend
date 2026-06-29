@@ -27,6 +27,15 @@ param platformBaseUrl string
 @minLength(3)
 param altinn2BaseUrl string = 'https://at23.altinn.cloud'
 
+@description('Maskinporten integration client id used for the register set-username call')
+param maskinportenClientId string = ''
+
+@description('Maskinporten issuer base URL (token endpoint is "<issuer>token")')
+param maskinportenIssuer string = 'https://test.maskinporten.no/'
+
+@description('Maskinporten scope requested for the register set-username call')
+param maskinportenScope string = 'altinn:register/partylookup.admin'
+
 @description('Controls whether GraphiQL interface is enabled. Should be disabled in production.')
 @allowed([
   'false'
@@ -127,6 +136,12 @@ var personUrnEncryptionKeySecret = {
   identity: 'System'
 }
 
+var maskinportenJwkSecret = {
+  name: 'maskinporten-jwk'
+  keyVaultUrl: '${keyVaultUrl}/maskinportenJwk'
+  identity: 'System'
+}
+
 var secrets = [
   dbConnectionStringSecret
   redisConnectionStringSecret
@@ -138,6 +153,7 @@ var secrets = [
   oidcClientSecret
   altinn2ApiKeySecret
   personUrnEncryptionKeySecret
+  maskinportenJwkSecret
 ]
 
 var containerAppEnvVars = concat(
@@ -225,6 +241,22 @@ var containerAppEnvVars = concat(
     {
         name: 'ALTINN2_API_KEY'
         secretRef: altinn2ApiKeySecret.name
+    }
+    {
+        name: 'MASKINPORTEN_JWK'
+        secretRef: maskinportenJwkSecret.name
+    }
+    {
+        name: 'MASKINPORTEN_CLIENT_ID'
+        value: maskinportenClientId
+    }
+    {
+        name: 'MASKINPORTEN_ISSUER'
+        value: maskinportenIssuer
+    }
+    {
+        name: 'MASKINPORTEN_SCOPE'
+        value: maskinportenScope
     }
   ],
   additionalEnvironmentVariables

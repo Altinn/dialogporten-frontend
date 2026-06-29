@@ -13,6 +13,7 @@ param logoutRedirectUri = 'https://at23.altinn.cloud/ui/Authentication/Logout'
 
 param platformBaseUrl = 'https://platform.at23.altinn.cloud'
 
+param maskinportenClientId = '140cbc03-3382-407b-8812-5b12d6a15efe'
 
 // secrets
 param environmentKeyVaultName = readEnvironmentVariable('ENVIRONMENT_KEY_VAULT_NAME')
