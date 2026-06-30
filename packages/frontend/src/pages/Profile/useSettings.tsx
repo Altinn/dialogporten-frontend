@@ -146,6 +146,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
   } = useParties();
   const enableSIConnectLink = useFeatureFlag<boolean>('SI.emailAccount.enableConnectLink');
   const enableSIPhoneEdit = useFeatureFlag<boolean>('profil.enableSIPhoneEdit');
+  const enableSetUserName = useFeatureFlag<boolean>('profile.enableSetUserName');
   const siLegacyParties = useSILegacyParties();
   const hasSILegacyParty = siLegacyParties.length > 0;
   const isSIEmailConnected = selfIdentifiedUserType === 'Email' && hasSILegacyParty;
@@ -506,20 +507,24 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
             />
           ),
         },
-        {
-          id: 'profile-username',
-          groupId: SettingsType.profile,
-          icon: PersonCircleIcon,
-          title: t('profile.username.title'),
-          value: currentUsername ?? '',
-          summary: <p>{t('profile.username.summary')}</p>,
-          variant: 'modal',
-          as: 'div',
-          badge: currentEndUser
-            ? { label: t('profile.settings.add'), variant: 'text' }
-            : { label: t('profile.settings.change'), variant: 'text' },
-          children: <UsernameSetting partyUuid={currentEndUser?.partyUuid} />,
-        },
+        ...(enableSetUserName
+          ? [
+              {
+                id: 'profile-username',
+                groupId: SettingsType.profile,
+                icon: PersonCircleIcon,
+                title: t('profile.username.title'),
+                value: currentUsername ?? '',
+                summary: <p>{t('profile.username.summary')}</p>,
+                variant: 'modal',
+                as: 'div',
+                badge: !currentUsername
+                  ? { label: t('profile.settings.add'), variant: 'text' }
+                  : { label: t('profile.settings.change'), variant: 'text' },
+                children: <UsernameSetting partyUuid={currentEndUser?.partyUuid} />,
+              } as SettingsItemProps,
+            ]
+          : []),
       ];
 
   const contactSettings: SettingsItemProps[] = [

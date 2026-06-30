@@ -8,7 +8,7 @@ vi.mock('axios', () => {
 });
 
 vi.mock('../src/auth/maskinporten.ts', () => ({
-  getMaskinportenToken: vi.fn().mockResolvedValue('test-token'),
+  getAltinnToken: vi.fn().mockResolvedValue('test-token'),
 }));
 
 const PARTY = 'urn:altinn:person:identifier-no:20815497741';
