@@ -12,6 +12,7 @@ const defaultFeatureFlags: Record<string, boolean> = {
   'inbox.accountNavigatorEnabled': false,
   'SI.emailAccount.enableConnectLink': false,
   'profil.enableSIPhoneEdit': false,
+  'profile.enableSetUserName': false,
   'inbox.hideAltinn2Links': false,
   'inbox.hideFloatingButton': false,
 };

@@ -1,6 +1,6 @@
 import { logger } from '@altinn/dialogporten-node-logger';
 import axios, { isAxiosError } from 'axios';
-import { getMaskinportenToken } from '../../auth/maskinporten.js';
+import { getAltinnToken } from '../../auth/maskinporten.js';
 import config from '../../config.ts';
 
 const setUsernameUrl = `${config.platformBaseURL}/register/api/v1/dialogporten/parties/set-username?`;
@@ -40,9 +40,9 @@ const buildRegisterHeaders = (token: string): Record<string, string> => {
 export const setUsername = async (party: string, username: string | null): Promise<SetUsernameResult> => {
   let token: string;
   try {
-    token = await getMaskinportenToken();
+    token = await getAltinnToken();
   } catch (error) {
-    logger.error(error, 'Failed to obtain Maskinporten token for set-username');
+    logger.error(error, 'Failed to obtain Altinn token for set-username');
     return { success: false, message: 'Failed to authenticate against register' };
   }
 
@@ -85,9 +85,9 @@ interface PartyQueryResponse {
 export const getUsername = async (partyUuid: string): Promise<string | null> => {
   let token: string;
   try {
-    token = await getMaskinportenToken();
+    token = await getAltinnToken();
   } catch (error) {
-    logger.error(error, 'Failed to obtain Maskinporten token for party query');
+    logger.error(error, 'Failed to obtain Altinn token for party query');
     return null;
   }
 
