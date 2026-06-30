@@ -517,9 +517,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
                 summary: <p>{t('profile.username.summary')}</p>,
                 variant: 'modal',
                 as: 'div',
-                badge: !currentUsername
-                  ? { label: t('profile.settings.add'), variant: 'text' }
-                  : { label: t('profile.settings.change'), variant: 'text' },
+                badge: getChangeSettingsBadge(currentUsername ?? undefined),
                 children: <UsernameSetting partyUuid={currentEndUser?.partyUuid} />,
               } as SettingsItemProps,
             ]
