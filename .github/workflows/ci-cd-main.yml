@@ -51,7 +51,7 @@ jobs:
         get-current-version,
         build-and-test,
       ]
-    # todo: only run this if necessary (the appropriate files have changed)
+    # todo: only run this if necessary (i.e. the appropriate files have changed)
     secrets:
       GCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
     with:

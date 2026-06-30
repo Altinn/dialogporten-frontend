@@ -369,10 +369,7 @@ export const SetUsername = extendType({
           return { success: false, message: 'No pid in session' };
         }
 
-        // TODO: support self-identified users. They have no national identity number
-        // (session pid falls back to `sub`, see auth/oidc.ts), so they cannot be mapped
-        // to a urn:altinn:person:identifier-no party. The register endpoint only supports
-        // person identifiers at this time.
+        // This functionality is however not supported in frontend
         if (!NATIONAL_IDENTITY_NUMBER_PATTERN.test(pid)) {
           return { success: false, message: 'Setting username is not supported for this user' };
         }

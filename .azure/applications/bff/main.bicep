@@ -27,9 +27,6 @@ param platformBaseUrl string
 @minLength(3)
 param altinn2BaseUrl string = 'https://at23.altinn.cloud'
 
-@description('Maskinporten integration client id used for the register set-username call')
-param maskinportenClientId string = ''
-
 @description('Maskinporten issuer base URL (token endpoint is "<issuer>token")')
 param maskinportenIssuer string = 'https://test.maskinporten.no/'
 
@@ -142,6 +139,18 @@ var maskinportenJwkSecret = {
   identity: 'System'
 }
 
+var maskinportenClientIdSecret = {
+  name: 'maskinporten-client-id'
+  keyVaultUrl: '${keyVaultUrl}/maskinportenClientId'
+  identity: 'System'
+}
+
+var registerSubscriptionKeySecret = {
+  name: 'register-subscription-key'
+  keyVaultUrl: '${keyVaultUrl}/registerSubscriptionKey'
+  identity: 'System'
+}
+
 var secrets = [
   dbConnectionStringSecret
   redisConnectionStringSecret
@@ -154,6 +163,8 @@ var secrets = [
   altinn2ApiKeySecret
   personUrnEncryptionKeySecret
   maskinportenJwkSecret
+  maskinportenClientIdSecret
+  registerSubscriptionKeySecret
 ]
 
 var containerAppEnvVars = concat(
@@ -248,7 +259,7 @@ var containerAppEnvVars = concat(
     }
     {
         name: 'MASKINPORTEN_CLIENT_ID'
-        value: maskinportenClientId
+        secretRef: maskinportenClientIdSecret.name
     }
     {
         name: 'MASKINPORTEN_ISSUER'
@@ -257,6 +268,10 @@ var containerAppEnvVars = concat(
     {
         name: 'MASKINPORTEN_SCOPE'
         value: maskinportenScope
+    }
+    {
+        name: 'REGISTER_SUBSCRIPTION_KEY'
+        secretRef: registerSubscriptionKeySecret.name
     }
   ],
   additionalEnvironmentVariables

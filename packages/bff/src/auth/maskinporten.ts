@@ -26,7 +26,7 @@ const buildClientAssertion = (): string => {
     throw new Error('Maskinporten is not configured (missing MASKINPORTEN_CLIENT_ID or MASKINPORTEN_JWK)');
   }
 
-  const parsedJwk = JSON.parse(jwk) as crypto.JsonWebKey & { kid?: string };
+  const parsedJwk = JSON.parse(Buffer.from(jwk, 'base64').toString('utf8')) as crypto.JsonWebKey & { kid?: string };
   const privateKey = crypto.createPrivateKey({ key: parsedJwk, format: 'jwk' });
 
   const now = Math.floor(Date.now() / 1000);
