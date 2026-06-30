@@ -22,6 +22,7 @@ export type InMemoryStore = {
   organizations?: OrganizationFieldsFragment[];
   features?: Record<string, boolean>;
   services?: ServiceResource[];
+  verifiedAddresses?: { value: string; addressType: string }[];
 };
 
 const inMemoryStore: InMemoryStore = {
@@ -32,6 +33,7 @@ const inMemoryStore: InMemoryStore = {
   organizations: data.organizations,
   features: data.features,
   services: data.services,
+  verifiedAddresses: [],
 };
 
 const isAuthenticatedMock = http.get('/api/isAuthenticated', () => {
@@ -82,7 +84,47 @@ export const streamMock = http.get('/api/graphql/stream', async () => {
 const mockNotificationsettingsForCurrentUser = graphql.query('notificationsettingsForCurrentUser', () => {
   return HttpResponse.json({
     data: {
-      notificationsettingsForCurrentUser: [],
+      notificationsettingsForCurrentUser: [
+        {
+          userId: 20625133,
+          partyUuid: 'urn:altinn:organization:uuid:firma-as',
+          emailAddress: 'legacy@firma-as.no',
+          phoneNumber: '+4712345678',
+          emailVerificationStatus: 'Legacy',
+          smsVerificationStatus: 'Legacy',
+          needsConfirmation: false,
+          resourceIncludeList: [],
+        },
+      ],
+    },
+  });
+});
+
+const mockVerifiedAddresses = graphql.query('verifiedAddresses', () => {
+  return HttpResponse.json({
+    data: {
+      verifiedAddresses: inMemoryStore.verifiedAddresses,
+    },
+  });
+});
+
+const mockSendVerificationCode = graphql.mutation('SendVerificationCode', () => {
+  return HttpResponse.json({
+    data: {
+      sendVerificationCode: { success: true, message: null, retryAfter: null },
+    },
+  });
+});
+
+const mockVerifyAddress = graphql.mutation('verifyAddress', ({ variables }) => {
+  const { value, type } = variables.data as { value: string; type: string };
+  inMemoryStore.verifiedAddresses = [
+    ...(inMemoryStore.verifiedAddresses ?? []).filter((a) => !(a.value === value && a.addressType === type)),
+    { value, addressType: type },
+  ];
+  return HttpResponse.json({
+    data: {
+      verifyAddress: { success: true, message: null },
     },
   });
 });
@@ -605,6 +647,9 @@ export const handlers = [
   getFilterServiceResourcesMock,
   dialogAccessInfoMock,
   mockNotificationsettingsForCurrentUser,
+  mockVerifiedAddresses,
+  mockSendVerificationCode,
+  mockVerifyAddress,
   featuresMock,
   alertBannerMock,
 ];

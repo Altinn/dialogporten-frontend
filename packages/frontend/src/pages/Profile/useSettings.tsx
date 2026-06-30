@@ -2,7 +2,6 @@ import {
   AvatarGroup,
   type AvatarGroupProps,
   type AvatarVariant,
-  Badge,
   type BadgeProps,
   Button,
   type SettingsGroupProps,
@@ -563,18 +562,8 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
         value: uea.email,
         controls: (
           <>
-            {isVerifiedAddress(uea.email, 'Email') ? (
+            {isVerifiedAddress(uea.email, 'Email') && (
               <AvatarGroup items={getAvatarGroup(getUsedByEmail(uea.email))} size="lg" />
-            ) : (
-              <Badge
-                variant="outline"
-                label={t(
-                  isVerifiedAddress(uea.email, 'Email')
-                    ? 'profile.verification.status_verified'
-                    : 'profile.verification.status_unverified',
-                )}
-                size="sm"
-              />
             )}
           </>
         ),
@@ -600,18 +589,8 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
         value: uep.phoneNumber,
         controls: (
           <>
-            {isVerifiedAddress(uep.phoneNumber, 'Sms') ? (
+            {isVerifiedAddress(uep.phoneNumber, 'Sms') && (
               <AvatarGroup items={getAvatarGroup(getUsedByPhoneNumber(uep.phoneNumber))} size="lg" />
-            ) : (
-              <Badge
-                variant="outline"
-                label={t(
-                  isVerifiedAddress(uep.phoneNumber, 'Sms')
-                    ? 'profile.verification.status_verified'
-                    : 'profile.verification.status_unverified',
-                )}
-                size="sm"
-              />
             )}
           </>
         ),
