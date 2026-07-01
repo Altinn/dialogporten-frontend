@@ -282,7 +282,7 @@
   "profile.account_alerts.verify_email": "Bekreft e-post",
   "profile.account_alerts.verify_sms": "Bekreft SMS",
   "profile.account.partOf": "del av",
-  "profile.accounts.companies": "Alle virksomheter",
+  "profile.accounts.companies": "Virksomheter",
   "profile.accounts.loading": "Laster",
   "profile.accounts.me_and_favorites": "Favoritter",
   "profile.accounts.persons": "Personer",
