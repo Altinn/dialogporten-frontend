@@ -27,6 +27,9 @@ const buildClientAssertion = (): string => {
   }
 
   const parsedJwk = JSON.parse(Buffer.from(jwk, 'base64').toString('utf8')) as crypto.JsonWebKey & { kid?: string };
+  if (!parsedJwk.kid) {
+    throw new Error("Maskinporten JWK is missing 'kid' (required in the client_assertion header)");
+  }
   const privateKey = crypto.createPrivateKey({ key: parsedJwk, format: 'jwk' });
 
   const now = Math.floor(Date.now() / 1000);
