@@ -19,6 +19,7 @@ param workloadProfileName = 'Dedicated-D4'
 param oidcPlatformUrl = 'platform.altinn.no/authentication/api/v1/openid'
 
 param platformBaseUrl = 'https://platform.altinn.no'
+param maskinportenIssuer = 'https://maskinporten.no/'
 param enableInitSessionEndpoint = 'false'
 param logoutRedirectUri = 'https://altinn.no/ui/Authentication/Logout'
 

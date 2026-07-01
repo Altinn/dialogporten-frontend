@@ -13,7 +13,6 @@ param logoutRedirectUri = 'https://at23.altinn.cloud/ui/Authentication/Logout'
 
 param platformBaseUrl = 'https://platform.at23.altinn.cloud'
 
-
 // secrets
 param environmentKeyVaultName = readEnvironmentVariable('ENVIRONMENT_KEY_VAULT_NAME')
 param containerAppEnvironmentName = readEnvironmentVariable('CONTAINER_APP_ENVIRONMENT_NAME')
