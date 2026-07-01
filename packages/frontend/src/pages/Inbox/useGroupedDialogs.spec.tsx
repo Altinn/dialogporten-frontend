@@ -6,7 +6,8 @@ import { createCustomWrapper } from '../../../tests/test-utils.tsx';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import type { InboxItemInput } from './InboxItemInput.ts';
-import useGroupedDialogs, { isDueAtExpired } from './useGroupedDialogs.tsx';
+import { isDueAtExpired } from './dueAt.ts';
+import useGroupedDialogs from './useGroupedDialogs.tsx';
 
 vi.mock('react-i18next', () => ({
   useTranslation: vi.fn(),
