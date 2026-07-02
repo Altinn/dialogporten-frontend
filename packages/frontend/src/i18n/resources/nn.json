@@ -296,6 +296,8 @@
   "profile.notifications.channel_explanation_sms": "Dersom ein avsendar ønskjer å varsle deg på SMS, vil dei nytte seg av dette nummeret.",
   "profile.notifications.personal_explanation": "Dette er dei personlege varslingarinnstillingane dine for verksemda.",
   "profile.notifications.personal_for_person": "Dette er dei personlege varslingarinnstillingane dine.",
+  "profile.notifications.company_address_part1": "For å oppdatere varslingsadresser for verksemda, gå til",
+  "profile.notifications.company_address_link": "Tilgangsstyring",
   "profile.add_favorite": "Legg til {name} som favorittaktør",
   "profile.organization_number": "Organisasjonsnummer",
   "profile.remove_favorite": "Fjern {name} som favorittaktør",

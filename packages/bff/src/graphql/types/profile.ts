@@ -209,6 +209,10 @@ export const OrganizationResponse = objectType({
       description: 'Represents a list of mandatory notification address',
       resolve: (obj) => obj.notificationAddresses,
     });
+    t.nullable.int('status', {
+      description: 'The HTTP status code of the upstream request, populated when the request did not succeed',
+      resolve: (obj) => obj.status,
+    });
   },
 });
 
