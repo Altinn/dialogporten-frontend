@@ -13,7 +13,6 @@ import {
   type DsValidationMessageProps as ValidationMessageProps,
   useSnackbar,
 } from '@altinn/altinn-components';
-import { ExternalLinkIcon } from '@navikt/aksel-icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -292,20 +291,12 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
           </p>
         </Typography>
         {isOrganization && !isCompanyAddressAccessLoading && hasCompanyAddressAccess && (
-          <>
-            <Typography size="sm">
-              <p>
-                {t('profile.notifications.company_address_part1')}{' '}
-                <a href={amuiSettingsLink}>{t('profile.notifications.company_address_link')}</a>
-              </p>
-            </Typography>
-            <ButtonGroup size="md">
-              <Button variant="outline" href={amuiSettingsLink} as="a">
-                <span>{t('profile.notifications.company_address_button')}</span>
-                <ExternalLinkIcon />
-              </Button>
-            </ButtonGroup>
-          </>
+          <Typography size="sm">
+            <p>
+              {t('profile.notifications.company_address_part1')}{' '}
+              <a href={amuiSettingsLink}>{t('profile.notifications.company_address_link')}</a>
+            </p>
+          </Typography>
         )}
         {needsVerification && (
           <Typography size="sm">

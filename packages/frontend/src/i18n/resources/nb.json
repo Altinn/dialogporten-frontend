@@ -298,7 +298,6 @@
   "profile.notifications.personal_for_person": "Dette er dine personlige varslingsinnstillinger.",
   "profile.notifications.company_address_part1": "For å oppdatere varslingsadresser for virksomheten, gå til",
   "profile.notifications.company_address_link": "Tilgangsstyring",
-  "profile.notifications.company_address_button": "Endre varslingsadresser for virksomheten",
   "profile.add_favorite": "Legg til {name} som favorittaktør",
   "profile.organization_number": "Organisasjonsnummer",
   "profile.remove_favorite": "Fjern {name} som favorittaktør",
