@@ -41,7 +41,7 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-i18next": "^15.5.2",
-    "react-router-dom": "^7.6.0",
+    "react-router-dom": "^7.18.1",
     "sse.js": "^2.6.0",
     "use-debounce": "^10.0.4"
   },
