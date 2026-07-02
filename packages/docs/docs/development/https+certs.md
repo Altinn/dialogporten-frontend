@@ -18,10 +18,10 @@ mkcert -install
 
 ## 🔹 Step 2: Generate SSL Certificates
 ```sh
-mkcert -cert-file certs/cert.crt -key-file certs/key.pem app.localhost localhost docs.localhost
+mkcert -cert-file certs/cert.crt -key-file certs/key.pem app.localhost localhost docs.localhost dashboard.localhost pgadmin4.localhost redisinsight.localhost
 ```
 
-This creates a certificate valid for app.localhost, localhost, and docs.localhost.
+This creates a certificate valid for every localhost subdomain Traefik routes: app.localhost, localhost, docs.localhost, dashboard.localhost, pgadmin4.localhost, and redisinsight.localhost.
 
 ## 🔹 Step 3: Convert to PEM Format 
 ```sh
