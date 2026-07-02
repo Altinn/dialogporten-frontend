@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.165.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.164.0...v1.165.0) (2026-07-02)
+
+
+### Features
+
+* **profile:** add username management ([#4406](https://github.com/Altinn/dialogporten-frontend/issues/4406)) ([839708c](https://github.com/Altinn/dialogporten-frontend/commit/839708cdf416dd01195bde4a5734ffff583afeff))
+
+
+### Bug Fixes
+
+* **bff:** fail fast when Maskinporten JWK is missing 'kid' ([#4412](https://github.com/Altinn/dialogporten-frontend/issues/4412)) ([76572e4](https://github.com/Altinn/dialogporten-frontend/commit/76572e4e2d3b51c4c14693cbc118de0db67ae070))
+* **ci:** add word to comment to force infra deploy ([#4416](https://github.com/Altinn/dialogporten-frontend/issues/4416)) ([49ef0d9](https://github.com/Altinn/dialogporten-frontend/commit/49ef0d9bb10d8bfe9043f1bea485948fa13d3646))
+* **ci:** make source map upload succeed on workflow rerun ([#4410](https://github.com/Altinn/dialogporten-frontend/issues/4410)) ([ddcf92c](https://github.com/Altinn/dialogporten-frontend/commit/ddcf92c4cf95f5d539c30272a5d9e069e1a165cf))
+* Update all orgs lable to just Organizations ([#4408](https://github.com/Altinn/dialogporten-frontend/issues/4408)) ([592c8d4](https://github.com/Altinn/dialogporten-frontend/commit/592c8d42d2fc1faee3d50d6ac31e05befbdd0072))
+
 ## [1.164.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.163.3...v1.164.0) (2026-06-30)
 
 
