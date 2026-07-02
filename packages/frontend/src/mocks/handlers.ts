@@ -100,6 +100,19 @@ const mockNotificationsettingsForCurrentUser = graphql.query('notificationsettin
   });
 });
 
+const mockGetNotificationAddressByOrgNumber = graphql.query('getNotificationAddressByOrgNumber', ({ variables }) => {
+  const { orgnr } = variables as { orgnr: string };
+  return HttpResponse.json({
+    data: {
+      getNotificationAddressByOrgNumber: {
+        organizationNumber: orgnr,
+        status: null,
+        notificationAddresses: [],
+      },
+    },
+  });
+});
+
 const mockVerifiedAddresses = graphql.query('verifiedAddresses', () => {
   return HttpResponse.json({
     data: {
@@ -647,6 +660,7 @@ export const handlers = [
   getFilterServiceResourcesMock,
   dialogAccessInfoMock,
   mockNotificationsettingsForCurrentUser,
+  mockGetNotificationAddressByOrgNumber,
   mockVerifiedAddresses,
   mockSendVerificationCode,
   mockVerifyAddress,

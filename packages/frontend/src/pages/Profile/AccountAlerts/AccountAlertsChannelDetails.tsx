@@ -13,10 +13,14 @@ import {
   type DsValidationMessageProps as ValidationMessageProps,
   useSnackbar,
 } from '@altinn/altinn-components';
+import { ExternalLinkIcon } from '@navikt/aksel-icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNotificationAddressByOrgNumber } from '../../../api/hooks/useNotificationAddressByOrgNumber.ts';
 import { updateNotificationsetting } from '../../../api/queries.ts';
+import { createChangePartyAndRedirect, getAccessAMUILink } from '../../../auth';
+import { getOrgNo } from '../../../components/PageLayout/Accounts/useAccounts.tsx';
 import { QUERY_KEYS } from '../../../constants/queryKeys.ts';
 import { useErrorLogger } from '../../../hooks/useErrorLogger.ts';
 import type { NotificationAccountsType } from '../NotificationsPage/NotificationsPage.tsx';
@@ -56,6 +60,10 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
   const notificationSettings = notificationParty?.notificationSettings;
   const partyUuid = notificationSettings?.partyUuid || notificationParty?.partyUuid || '';
   const isOrganization = notificationParty?.partyType === 'Organization';
+  const orgNo = isOrganization ? getOrgNo(notificationParty?.party ?? '') : undefined;
+  const { hasAccess: hasCompanyAddressAccess, isLoading: isCompanyAddressAccessLoading } =
+    useNotificationAddressByOrgNumber(orgNo);
+  const amuiSettingsLink = createChangePartyAndRedirect(partyUuid, `${getAccessAMUILink()}/settings`);
   const persistedValue = isEmail ? notificationSettings?.emailAddress : notificationSettings?.phoneNumber;
   const profileFallback = isEmail ? user?.email : user?.phoneNumber;
   const defaultValue = persistedValue || profileFallback || '';
@@ -283,6 +291,22 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
             )}
           </p>
         </Typography>
+        {isOrganization && !isCompanyAddressAccessLoading && hasCompanyAddressAccess && (
+          <>
+            <Typography size="sm">
+              <p>
+                {t('profile.notifications.company_address_part1')}{' '}
+                <a href={amuiSettingsLink}>{t('profile.notifications.company_address_link')}</a>
+              </p>
+            </Typography>
+            <ButtonGroup size="md">
+              <Button variant="outline" href={amuiSettingsLink} as="a">
+                <span>{t('profile.notifications.company_address_button')}</span>
+                <ExternalLinkIcon />
+              </Button>
+            </ButtonGroup>
+          </>
+        )}
         {needsVerification && (
           <Typography size="sm">
             <p>{t('profile.account_alerts.new_addresses_must_verify')}</p>

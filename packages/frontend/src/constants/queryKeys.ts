@@ -36,4 +36,5 @@ export const QUERY_KEYS = {
   BULK_MODE_SELECTED_IDS: 'bulkModeSelectedIds',
   HAS_INITIALIZED_PARTY_SELECTION: 'hasInitializedPartySelection',
   USERNAME: 'username',
+  NOTIFICATION_ADDRESS_BY_ORG_NUMBER: 'notificationAddressByOrgNumber',
 };

@@ -1,6 +1,7 @@
 query getNotificationAddressByOrgNumber($orgnr: String!) {
   getNotificationAddressByOrgNumber(orgnr: $orgnr) {
     organizationNumber
+    status
     notificationAddresses {
       countryCode
       email
