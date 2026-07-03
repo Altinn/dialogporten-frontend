@@ -1,53 +1,29 @@
-// import type { Page } from '@playwright/test';
-// import { appURLProfileNotifications } from '../..';
-// import { expect, test } from '../../fixtures';
+import type { Page } from '@playwright/test';
+import { appURLProfileNotifications } from '../..';
+import { expect, test } from '../../fixtures';
 
-// test.describe('Profile Notifications Page', () => {
-//   test('Smoke test', async ({ page }: { page: Page }) => {
-//     await page.goto(appURLProfileNotifications);
+test.describe('Profile Notifications Page', () => {
+  test('displays the primary SMS and email notification addresses', async ({ page }: { page: Page }) => {
+    await page.goto(appURLProfileNotifications);
+    await page.waitForLoadState('networkidle');
 
-//     await expect(page.getByRole('heading', { name: 'Varselinnstillinger' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Varslingsadresser', level: 1 })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Varslinger på SMS' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Varslinger på e-post' })).toBeVisible();
+  });
 
-//     await expect(page.getByText('Varsler er på', { exact: false })).toBeVisible();
-//     await expect(page.getByText('E-postadresse for varsler', { exact: false })).toBeVisible();
-//     await expect(page.getByText('SMS-varsler', { exact: false })).toBeVisible();
+  test('opening an address shows the KRR-sourced contact info in a dialog', async ({ page }: { page: Page }) => {
+    await page.goto(appURLProfileNotifications);
+    await page.waitForLoadState('networkidle');
 
-//     await expect(page.getByRole('button', { name: 'Kristian Haugen' })).toBeVisible();
-//   });
+    await page.getByRole('button', { name: 'Varslinger på SMS' }).click();
 
-//   test('Notifications switch', async ({ page }: { page: Page }) => {
-//     await page.goto(appURLProfileNotifications);
+    const dialog = page.getByRole('dialog');
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByText('Kontakt- og reservasjonsregisteret')).toBeVisible();
+    await expect(dialog.getByRole('link', { name: 'Endre kontaktinformasjon' })).toBeVisible();
 
-//     await page.getByRole('switch', { name: 'Skru av' }).uncheck();
-//     await expect(page.getByRole('switch', { name: 'Skru på' })).toBeVisible();
-
-//     await expect(page.locator('div').filter({ hasText: /^Ingen varsler$/ })).toBeVisible();
-
-//     await expect(page.getByText('Varsler er på', { exact: false })).not.toBeVisible();
-//     await expect(page.getByText('E-postadresse for varsler', { exact: false })).not.toBeVisible();
-//     await expect(page.getByText('SMS-varsler', { exact: false })).not.toBeVisible();
-
-//     await page.getByRole('switch', { name: 'Skru på' }).check();
-
-//     await expect(page.getByText('Varsler er på', { exact: false })).toBeVisible();
-//     await expect(page.getByText('E-postadresse for varsler', { exact: false })).toBeVisible();
-//     await expect(page.getByText('SMS-varsler', { exact: false })).toBeVisible();
-//   });
-
-//   test('Actor shows options on click', async ({ page }: { page: Page }) => {
-//     await page.goto(appURLProfileNotifications);
-
-//     await expect(page.getByText('Varsle på SMS')).not.toBeVisible();
-//     await page.getByRole('button', { name: 'Kristian Haugen' }).click();
-//     await expect(page.getByText('Varsle på SMS')).toBeVisible();
-
-//     await expect(page.getByPlaceholder('Mobiltelefon')).not.toBeVisible();
-//     await expect(page.getByRole('textbox', { name: 'E-postadresse' })).not.toBeVisible();
-
-//     await page.getByRole('switch', { name: 'Varsle på SMS' }).check();
-//     await page.getByRole('switch', { name: 'Varsle på e-post' }).check();
-
-//     await expect(page.getByPlaceholder('Mobiltelefon')).toBeVisible();
-//     await expect(page.getByRole('textbox', { name: 'E-postadresse' })).toBeVisible();
-//   });
-// });
+    await page.keyboard.press('Escape');
+    await expect(dialog).not.toBeVisible();
+  });
+});
