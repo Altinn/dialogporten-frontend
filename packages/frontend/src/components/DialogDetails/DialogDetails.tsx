@@ -458,7 +458,7 @@ export const DialogDetails = ({
             .slice(0, showAllTransmissions ? undefined : numberOfTransmissionGroups)
             .map(({ items, ...timelineSegmentProps }) => {
               return (
-                <TimelineSegment key={timelineSegmentProps.id} {...timelineSegmentProps}>
+                <TimelineSegment {...timelineSegmentProps} key={timelineSegmentProps.id}>
                   {transmissions?.length > 0 && <TransmissionList items={items} />}
                 </TimelineSegment>
               );
