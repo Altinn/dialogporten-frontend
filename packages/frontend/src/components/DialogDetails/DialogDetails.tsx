@@ -34,8 +34,8 @@ import { getDueAtProps } from '../../pages/Inbox/dueAt.ts';
 import { getDialogStatus } from '../../pages/Inbox/status.ts';
 import type { TimelineSegmentWithTransmissions } from '../../utils/transmissions.ts';
 import { ActivityLogModal } from '../ActivityLog/activityLogModal.tsx';
-import { AdditionalInfoContent } from '../AdditonalInfoContent';
-import { MainContentReference } from '../MainContentReference';
+import { AdditionalInfoContent } from '../AdditonalInfoContent/AdditonalInfoContent.tsx';
+import { MainContentReference } from '../MainContentReference/MainContentReference.tsx';
 import { DialogHelp } from './DialogHelp.tsx';
 
 interface DialogDetailsProps {

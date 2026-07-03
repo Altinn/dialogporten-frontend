@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import type React from 'react';
 import { createContext, useContext, useEffect } from 'react';
-import { getCurrentURL, getIsAuthenticated, getStoredURL, removeStoredURL, saveURL } from '../../auth';
+import { getIsAuthenticated } from '../../auth/api.ts';
+import { getCurrentURL, getStoredURL, removeStoredURL, saveURL } from '../../auth/url.ts';
 
 interface AuthContextProps {
   isAuthenticated: boolean;

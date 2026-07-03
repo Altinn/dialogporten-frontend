@@ -10,7 +10,7 @@ import { AuthProvider } from './components/Login/AuthContext.tsx';
 import { QUERY_KEYS } from './constants/queryKeys.ts';
 import { LoggerContextProvider } from './contexts/LoggerContext.tsx';
 import { getPartyFromCookie } from './cookie.ts';
-import { FeatureFlagProvider, loadFeatureFlags } from './featureFlags';
+import { FeatureFlagProvider, loadFeatureFlags } from './featureFlags/FeatureFlagsProvider.tsx';
 
 declare const __APP_VERSION__: string;
 console.info('App Version:', __APP_VERSION__);

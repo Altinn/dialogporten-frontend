@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps, useLocation } from 'react-router-dom';
 import { useDialogAccessInfo } from '../../api/hooks/useDialogAccessInfo.ts';
 import { useParties } from '../../api/hooks/useParties.ts';
-import { getAccessAMUILink } from '../../auth';
+import { getAccessAMUILink } from '../../auth/url.ts';
 import { getPreferredPropertyByLocale } from '../../i18n/property.ts';
 import { FilterCategory } from '../../pages/Inbox/filters.tsx';
 import { pruneSearchQueryParams } from '../../pages/Inbox/queryParams.ts';

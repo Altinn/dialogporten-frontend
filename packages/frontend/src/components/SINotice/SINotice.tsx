@@ -3,8 +3,8 @@ import { PersonCircleIcon } from '@navikt/aksel-icons';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelfIdentifiedUserType } from '../../api/hooks/usePartiesSelectors.ts';
-import { getAlternativeLoginLink, getAltinn2AccountLink } from '../../auth';
-import { useFeatureFlag } from '../../featureFlags';
+import { getAlternativeLoginLink, getAltinn2AccountLink } from '../../auth/url.ts';
+import { useFeatureFlag } from '../../featureFlags/useFeatureFlag.ts';
 
 const SI_NOTICE_DISMISSED_KEY = 'si-notice:email-connect:dismissed';
 

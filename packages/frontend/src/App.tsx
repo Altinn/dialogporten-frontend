@@ -1,15 +1,15 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { ErrorResetHandler, withErrorBoundary } from './components/ErrorBoundary/ErrorBoundary.tsx';
 import { ProtectedPageLayout } from './components/PageLayout/PageLayout.tsx';
-import { DialogDetailsPage } from './pages/DialogDetailsPage';
+import { DialogDetailsPage } from './pages/DialogDetailsPage/DialogDetailsPage.tsx';
 import { ErrorPage } from './pages/Error/Error.tsx';
-import { Inbox } from './pages/Inbox';
+import { Inbox } from './pages/Inbox/Inbox.tsx';
 import { FrontChannelLogout } from './pages/LogoutPage/FrontChannelLogout.tsx';
 import { NotificationsPage } from './pages/Profile/NotificationsPage/NotificationsPage.tsx';
 import { PartiesOverviewPage } from './pages/Profile/PartiesOverviewPage/PartiesOverviewPage.tsx';
 import { Profile } from './pages/Profile/Profile.tsx';
 import { RedirectPage } from './pages/RedirectPage/RedirectPage.tsx';
-import { SavedSearchesPage } from './pages/SavedSearches';
+import { SavedSearchesPage } from './pages/SavedSearches/SavedSearchesPage.tsx';
 import { PageRoutes } from './pages/routes.ts';
 import './app.css';
 import { usePageTracking } from './hooks/usePageTracking.ts';

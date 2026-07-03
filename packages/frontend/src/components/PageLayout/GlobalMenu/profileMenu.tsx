@@ -20,7 +20,7 @@ import {
   getNeedHelpLink,
   getNewFormLink,
   getStartNewBusinessLink,
-} from '../../../auth';
+} from '../../../auth/url.ts';
 import { i18n } from '../../../i18n/config.ts';
 import { pruneSearchQueryParams } from '../../../pages/Inbox/queryParams.ts';
 import { PageRoutes } from '../../../pages/routes.ts';

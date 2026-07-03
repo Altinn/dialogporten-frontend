@@ -19,7 +19,8 @@
     "build:docker": "docker build -f ./Dockerfile -t frontend ../..",
     "run:docker": "docker run -it -p 80:80 frontend",
     "i18n:check": "tsx ./src/i18n/check.ts",
-    "i18n:sort": "tsx ./src/i18n/check.ts --sort"
+    "i18n:sort": "tsx ./src/i18n/check.ts --sort",
+    "doctor": "npx react-doctor@latest"
   },
   "dependencies": {
     "@altinn/altinn-components": "0.68.9",
@@ -29,7 +30,6 @@
     "@tanstack/react-query": "^5.85.9",
     "@tanstack/react-virtual": "^3.14.2",
     "bff-types-generated": "workspace:*",
-    "classnames": "^2.5.1",
     "date-fns": "^3.6.0",
     "embeddable-markdown-html": "workspace:*",
     "graphql": "catalog:",
@@ -42,8 +42,7 @@
     "react-dom": "catalog:",
     "react-i18next": "^15.5.2",
     "react-router-dom": "7.18.1",
-    "sse.js": "^2.6.0",
-    "use-debounce": "^10.0.4"
+    "sse.js": "^2.6.0"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.1",
