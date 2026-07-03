@@ -28,8 +28,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const prevURL = getStoredURL();
     if (isFetchedAfterMount && isAuthenticated && prevURL) {
       removeStoredURL();
-      if (prevURL !== getCurrentURL()) {
-        window.location.assign(prevURL);
+      const target = new URL(prevURL, window.location.origin);
+      const safePath = target.pathname + target.search + target.hash;
+      if (target.origin === window.location.origin && safePath !== getCurrentURL()) {
+        window.location.assign(safePath);
       }
     }
   }, [isAuthenticated, isFetchedAfterMount]);
