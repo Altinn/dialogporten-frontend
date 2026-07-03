@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.166.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.165.0...v1.166.0) (2026-07-03)
+
+
+### Features
+
+* Add access-management link in addresses modal under profile ([#4420](https://github.com/Altinn/dialogporten-frontend/issues/4420)) ([8c27888](https://github.com/Altinn/dialogporten-frontend/commit/8c27888feb0f3ced24d301cb4096805866e36d26))
+
 ## [1.165.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.164.0...v1.165.0) (2026-07-02)
 
 
