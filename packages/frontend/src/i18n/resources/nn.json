@@ -361,7 +361,7 @@
   "profile.settings.your_parties": "Dine aktørar",
   "profile.settings.your_profile": "Din profil",
   "profile.unset_preselected_party": "Fjern som førehandsvald aktør",
-  "profile.username.format_error": "Brukarnamnet må vere 6–64 teikn, starte med ein bokstav, og kan berre innehalde bokstavar, tal, punktum, understrek, bindestrek eller @.",
+  "profile.username.format_error": "Brukarnamnet må vere 6–64 teikn, starte med ein bokstav, og kan berre innehalde bokstavar (A-Z), tal, punktum, understrek, bindestrek eller @.",
   "profile.username.hint": "Må vere 6–64 teikn og starte med ein bokstav.",
   "profile.username.input_label": "Skriv inn brukarnamn",
   "profile.username.modal_description": "Dersom du ikkje ønskjer å dele fødselsnummeret ditt for at andre skal kunne gi deg fullmakter i Tilgangsstyring, kan du lage eit eige brukarnamn.",
