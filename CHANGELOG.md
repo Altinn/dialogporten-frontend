@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.166.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.166.1...v1.166.2) (2026-07-03)
+
+
+### Bug Fixes
+
+* **frontend:** stable key for TimelineSegment ([#4422](https://github.com/Altinn/dialogporten-frontend/issues/4422)) ([0338486](https://github.com/Altinn/dialogporten-frontend/commit/03384864876c261e9be0609dbc838c6a23174190))
+* **profile:** clarify that allowed letters for username follows the pattern A-Z ([#4429](https://github.com/Altinn/dialogporten-frontend/issues/4429)) ([c926ae2](https://github.com/Altinn/dialogporten-frontend/commit/c926ae29ed1b1e888fb73e4a28eedab88a2b3506))
+
 ## [1.166.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.166.0...v1.166.1) (2026-07-03)
 
 
