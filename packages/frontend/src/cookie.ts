@@ -1,4 +1,4 @@
-import { getCookieDomain } from './auth';
+import { getCookieDomain } from './auth/url.ts';
 
 export type PartyCookieName = 'AltinnPartyUuid' | 'AltinnPartyId';
 

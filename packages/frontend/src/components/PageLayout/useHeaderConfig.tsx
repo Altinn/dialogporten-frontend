@@ -13,14 +13,15 @@ import { Analytics } from '../../analytics/analytics.ts';
 import { ANALYTICS_EVENTS } from '../../analytics/analyticsEvents.ts';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { updateLanguage } from '../../api/queries.ts';
-import { createFiltersURLQuery, getFrontPageLink } from '../../auth';
+import { createFiltersURLQuery, getFrontPageLink } from '../../auth/url.ts';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { FilterCategory } from '../../pages/Inbox/filters.tsx';
 import { FixedGlobalQueryParams, pruneSearchQueryParams } from '../../pages/Inbox/queryParams.ts';
-import { useProfile } from '../../pages/Profile';
+import { useProfile } from '../../pages/Profile/useProfile.tsx';
 import { PageRoutes } from '../../pages/routes.ts';
-import { useGlobalMenu } from './GlobalMenu';
-import { getSearchLabels, pruneSearchValue, useSearchString } from './Search';
+import { useGlobalMenu } from './GlobalMenu/useGlobalMenu.tsx';
+import { getSearchLabels, pruneSearchValue } from './Search/getSearchLabels.ts';
+import { useSearchString } from './Search/useSearchString.tsx';
 import { mapPartiesToAuthorizedParties } from './mapPartyToAuthorizedParty';
 
 interface UseHeaderConfigOutput {

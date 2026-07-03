@@ -2,10 +2,10 @@ import type { DialogLookupQuery } from 'bff-types-generated';
 import { useMemo } from 'react';
 import { usePartyGraph } from '../../api/hooks/usePartiesSelectors.ts';
 import { graphQLSDK } from '../../api/queries.ts';
-import { getAccessAMUILink } from '../../auth';
+import { getAccessAMUILink } from '../../auth/url.ts';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
-import { useFeatureFlag } from '../../featureFlags';
+import { useFeatureFlag } from '../../featureFlags/useFeatureFlag.ts';
 
 interface UseDelegationOutput {
   delegationHref?: string;

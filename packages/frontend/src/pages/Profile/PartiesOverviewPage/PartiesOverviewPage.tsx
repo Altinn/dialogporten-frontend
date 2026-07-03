@@ -39,7 +39,6 @@ import type { PartyFieldsFragment } from 'bff-types-generated';
 import { type ElementType, useDeferredValue, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps } from 'react-router-dom';
-import { useProfile } from '..';
 import { useParties } from '../../../api/hooks/useParties';
 import {
   type PartyItemProp,
@@ -49,6 +48,7 @@ import {
 import { usePageTitle } from '../../../hooks/usePageTitle';
 import { PageRoutes } from '../../routes.ts';
 import { useAccountFilters } from '../useAccountFilters.tsx';
+import { useProfile } from '../useProfile.tsx';
 import { SettingsType, useSettings } from '../useSettings.tsx';
 import { ConfirmSetPreselectedActorModal } from './ConfirmSetPreselectedActorModal.tsx';
 import { PartyDetails } from './PartyDetails.tsx';

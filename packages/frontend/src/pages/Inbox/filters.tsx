@@ -113,7 +113,7 @@ export enum FilterCategory {
   TO_DATE = 'toDate',
 }
 
-const SYSTEM_LABEL_FOLDER_VALUES = [SystemLabel.Default, SystemLabel.Archive, SystemLabel.Bin] as string[];
+const SYSTEM_LABEL_FOLDER_VALUES = new Set<string>([SystemLabel.Default, SystemLabel.Archive, SystemLabel.Bin]);
 
 export enum IsContentSeenFilterValue {
   UNREAD = 'unread',
@@ -488,15 +488,15 @@ export const getFilters = ({
 
 export const readFiltersFromURLQuery = (query: string): FilterState => {
   const searchParams = new URLSearchParams(query);
-  const allowedFilterKeys = Object.values(FilterCategory) as string[];
+  const allowedFilterKeys = new Set<string>(Object.values(FilterCategory));
   const filters: FilterState = {};
 
   for (const [key, value] of searchParams) {
-    if (!allowedFilterKeys.includes(key) || !value) continue;
+    if (!allowedFilterKeys.has(key) || !value) continue;
 
     // Backward compat: legacy URLs used status=ARCHIVE|BIN for system label folders.
     // Migrate those values to the systemLabel filter so the chip renders correctly.
-    if (key === FilterCategory.STATUS && SYSTEM_LABEL_FOLDER_VALUES.includes(value)) {
+    if (key === FilterCategory.STATUS && SYSTEM_LABEL_FOLDER_VALUES.has(value)) {
       filters[FilterCategory.SYSTEM_LABEL] = filters[FilterCategory.SYSTEM_LABEL] || [];
       filters[FilterCategory.SYSTEM_LABEL].push(value);
       continue;

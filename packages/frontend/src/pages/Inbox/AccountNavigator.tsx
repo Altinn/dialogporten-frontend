@@ -3,7 +3,7 @@ import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { MAX_DIALOG_PARTY_SIZE } from '../../api/hooks/useDialogs.tsx';
-import { useFeatureFlag } from '../../featureFlags';
+import { useFeatureFlag } from '../../featureFlags/useFeatureFlag.ts';
 import { FixedGlobalQueryParams, encodeSubAccountIds } from './queryParams.ts';
 
 type PaginationVariant = 'list' | 'pagination';

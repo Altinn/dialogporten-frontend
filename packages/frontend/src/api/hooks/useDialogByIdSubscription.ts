@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { SSE } from 'sse.js';
 import { config } from '../../config.ts';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
-import { useFeatureFlag } from '../../featureFlags';
+import { useFeatureFlag } from '../../featureFlags/useFeatureFlag.ts';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { pruneSearchQueryParams } from '../../pages/Inbox/queryParams.ts';
 import { getNavigationOrigin } from '../../utils/viewType.ts';

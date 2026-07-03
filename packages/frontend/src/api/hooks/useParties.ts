@@ -11,7 +11,7 @@ import {
   getSelectedGroupFromQueryParams,
   getSelectedPartyFromQueryParams,
 } from '../../pages/Inbox/queryParams.ts';
-import { useProfile } from '../../pages/Profile';
+import { useProfile } from '../../pages/Profile/useProfile.tsx';
 import { useGlobalState } from '../../useGlobalState.ts';
 import { normalizeFlattenParties } from '../../utils/normalizeFlattenParties.ts';
 import { EMPTY_PARTY_GRAPH, type PartyGraph, buildPartyGraph } from '../../utils/partyGraph.ts';

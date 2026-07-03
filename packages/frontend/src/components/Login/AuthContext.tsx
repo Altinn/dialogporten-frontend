@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import type React from 'react';
-import { createContext, useContext, useEffect } from 'react';
-import { getCurrentURL, getIsAuthenticated, getStoredURL, removeStoredURL, saveURL } from '../../auth';
+import { createContext, useContext, useEffect, useMemo } from 'react';
+import { getIsAuthenticated } from '../../auth/api.ts';
+import { getCurrentURL, getStoredURL, removeStoredURL, saveURL } from '../../auth/url.ts';
 
 interface AuthContextProps {
   isAuthenticated: boolean;
@@ -27,13 +28,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const prevURL = getStoredURL();
     if (isFetchedAfterMount && isAuthenticated && prevURL) {
       removeStoredURL();
-      if (prevURL !== getCurrentURL()) {
-        window.location.assign(prevURL);
+      const target = new URL(prevURL, window.location.origin);
+      const safePath = target.pathname + target.search + target.hash;
+      if (target.origin === window.location.origin && safePath !== getCurrentURL()) {
+        window.location.assign(safePath);
       }
     }
   }, [isAuthenticated, isFetchedAfterMount]);
 
-  return <AuthContext.Provider value={{ isAuthenticated: isAuthenticated ?? false }}>{children}</AuthContext.Provider>;
+  const value = useMemo(() => ({ isAuthenticated: isAuthenticated ?? false }), [isAuthenticated]);
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = (): AuthContextProps => {

@@ -1,6 +1,6 @@
 import type { FooterProps } from '@altinn/altinn-components';
 import { useTranslation } from 'react-i18next';
-import { getFooterLinks } from '../../../auth';
+import { getFooterLinks } from '../../../auth/url.ts';
 
 export const useFooter = (): FooterProps => {
   const { t, i18n } = useTranslation();

@@ -522,9 +522,6 @@ importers:
       bff-types-generated:
         specifier: workspace:*
         version: link:../bff-types-generated
-      classnames:
-        specifier: ^2.5.1
-        version: 2.5.1
       date-fns:
         specifier: ^3.6.0
         version: 3.6.0
@@ -564,9 +561,6 @@ importers:
       sse.js:
         specifier: ^2.6.0
         version: 2.7.2
-      use-debounce:
-        specifier: ^10.0.4
-        version: 10.1.0(react@19.2.3)
     devDependencies:
       '@axe-core/playwright':
         specifier: ^4.10.1
@@ -10020,12 +10014,6 @@ packages:
 
   urlpattern-polyfill@10.1.0:
     resolution: {integrity: sha512-IGjKp/o0NL3Bso1PymYURCJxMPNAf/ILOpendP9f5B6e1rTJgdgiOvgfoT8VxCAdY+Wisb9uhGaJJf3yZ2V9nw==}
-
-  use-debounce@10.1.0:
-    resolution: {integrity: sha512-lu87Za35V3n/MyMoEpD5zJv0k7hCn0p+V/fK2kWD+3k2u3kOCwO593UArbczg1fhfs2rqPEnHpULJ3KmGdDzvg==}
-    engines: {node: '>= 16.0.0'}
-    peerDependencies:
-      react: '*'
 
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
@@ -22349,10 +22337,6 @@ snapshots:
       file-loader: 6.2.0(webpack@5.105.0(@swc/core@1.15.11))
 
   urlpattern-polyfill@10.1.0: {}
-
-  use-debounce@10.1.0(react@19.2.3):
-    dependencies:
-      react: 19.2.3
 
   util-deprecate@1.0.2: {}
 

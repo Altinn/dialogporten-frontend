@@ -21,7 +21,7 @@ import {
   PartyGroups,
   getSelectedGroupFromQueryParams,
 } from '../../../pages/Inbox/queryParams.ts';
-import { useProfile } from '../../../pages/Profile';
+import { useProfile } from '../../../pages/Profile/useProfile.tsx';
 import { SettingsType } from '../../../pages/Profile/useSettings.tsx';
 import type { PageRoutes } from '../../../pages/routes.ts';
 import type { PartyGraph } from '../../../utils/partyGraph.ts';

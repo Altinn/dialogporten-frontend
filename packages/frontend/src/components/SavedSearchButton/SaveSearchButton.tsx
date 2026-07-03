@@ -5,9 +5,9 @@ import type { ButtonHTMLAttributes, RefAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { useSelectedPartyIds } from '../../api/hooks/usePartiesSelectors.ts';
-import { buildCurrentStateURL, findMatchingSavedSearch } from '../../pages/SavedSearches';
+import { buildCurrentStateURL, findMatchingSavedSearch } from '../../pages/SavedSearches/bookmarkURL.ts';
 import { useSavedSearches } from '../../pages/SavedSearches/useSavedSearches.tsx';
-import { useSearchString } from '../PageLayout/Search';
+import { useSearchString } from '../PageLayout/Search/useSearchString.tsx';
 
 export type SaveSearchButtonProps = {
   hidden?: boolean;

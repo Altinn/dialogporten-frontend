@@ -16,9 +16,9 @@ import {
 import { type TFunction, t } from 'i18next';
 import { useCallback } from 'react';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
-import type { DialogActionProps } from '../../components';
+import type { DialogActionProps } from '../../components/DialogDetails/DialogDetails.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
-import { useFeatureFlag } from '../../featureFlags';
+import { useFeatureFlag } from '../../featureFlags/useFeatureFlag.ts';
 import { type LocalizationObject, type ValueType, getPreferredPropertyByLocale } from '../../i18n/property.ts';
 import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
 import { type Locale, useDateFnsLocale, useFormat } from '../../i18n/useDateFnsLocale.tsx';

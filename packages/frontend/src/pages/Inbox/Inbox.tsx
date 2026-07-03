@@ -28,11 +28,12 @@ import {
   useDialogs,
 } from '../../api/hooks/useDialogs.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
-import { createFiltersURLQuery } from '../../auth';
+import { createFiltersURLQuery } from '../../auth/url.ts';
 import { DialogAccessInfoModal } from '../../components/DialogAccessInfoModal/DialogAccessInfoModal.tsx';
-import { Notice } from '../../components/Notice';
+import { Notice } from '../../components/Notice/Notice.tsx';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
-import { getSearchWords, useSearchString } from '../../components/PageLayout/Search/';
+import { getSearchWords } from '../../components/PageLayout/Search/getSearchLabels.ts';
+import { useSearchString } from '../../components/PageLayout/Search/useSearchString.tsx';
 import { getPageRouteTitle } from '../../components/PageLayout/pageRouteToTitle.ts';
 import { useHeaderConfig } from '../../components/PageLayout/useHeaderConfig.tsx';
 import { SINotice } from '../../components/SINotice/SINotice.tsx';
@@ -40,7 +41,7 @@ import { SaveSearchButton } from '../../components/SavedSearchButton/SaveSearchB
 import { isSavedSearchDisabled } from '../../components/SavedSearchButton/savedSearchEnabled.ts';
 import { SeenByModal } from '../../components/SeenByModal/SeenByModal.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
-import { useFeatureFlag } from '../../featureFlags';
+import { useFeatureFlag } from '../../featureFlags/useFeatureFlag.ts';
 import { useAlertBanner } from '../../hooks/useAlertBanner.ts';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
 import { useGlobalState } from '../../useGlobalState.ts';
