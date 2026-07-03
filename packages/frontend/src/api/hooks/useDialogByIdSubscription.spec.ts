@@ -34,8 +34,8 @@ vi.mock('react-router-dom', async () => {
   return { ...actual, useNavigate: () => navigate };
 });
 
-vi.mock('../../featureFlags', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('../../featureFlags')>();
+vi.mock('../../featureFlags/useFeatureFlag.ts', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../featureFlags/useFeatureFlag.ts')>();
   return {
     ...actual,
     useFeatureFlag: () => false,

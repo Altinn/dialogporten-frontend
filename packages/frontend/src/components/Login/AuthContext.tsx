@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import type React from 'react';
-import { createContext, useContext, useEffect } from 'react';
+import { createContext, useContext, useEffect, useMemo } from 'react';
 import { getIsAuthenticated } from '../../auth/api.ts';
 import { getCurrentURL, getStoredURL, removeStoredURL, saveURL } from '../../auth/url.ts';
 
@@ -34,7 +34,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [isAuthenticated, isFetchedAfterMount]);
 
-  return <AuthContext.Provider value={{ isAuthenticated: isAuthenticated ?? false }}>{children}</AuthContext.Provider>;
+  const value = useMemo(() => ({ isAuthenticated: isAuthenticated ?? false }), [isAuthenticated]);
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = (): AuthContextProps => {

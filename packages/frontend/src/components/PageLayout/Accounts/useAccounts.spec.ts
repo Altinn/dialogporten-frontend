@@ -3,7 +3,7 @@ import type { PartyFieldsFragment } from 'bff-types-generated';
 import { useTranslation } from 'react-i18next';
 import { type Mock, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createCustomWrapper } from '../../../../tests/test-utils.tsx';
-import { useProfile } from '../../../pages/Profile';
+import { useProfile } from '../../../pages/Profile/useProfile.tsx';
 import { buildPartyGraph } from '../../../utils/partyGraph.ts';
 import { formatNorwegianId, useAccounts } from './useAccounts.tsx';
 
@@ -12,7 +12,7 @@ vi.mock('react-i18next', () => ({
   useTranslation: vi.fn(),
 }));
 
-vi.mock('../../../pages/Profile', () => ({
+vi.mock('../../../pages/Profile/useProfile.tsx', () => ({
   useProfile: vi.fn(),
 }));
 
