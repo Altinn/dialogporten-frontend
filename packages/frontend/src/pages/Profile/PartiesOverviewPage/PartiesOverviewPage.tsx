@@ -274,7 +274,8 @@ export const PartiesOverviewPage = () => {
     const { label: _, variant: __, ...party } = account;
     const itemId = account.id + account.groupId;
     const accountType = party.type === 'subunit' ? 'company' : party.type;
-    const isExpanded = expandedItem === itemId;
+    const isDisabled = party.disabled ?? false;
+    const isExpanded = !isDisabled && expandedItem === itemId;
     const contextMenuId = party.groupId + party.id + '-menu';
     const contextMenuProps: ContextMenuProps = {
       placement: 'right',
@@ -320,12 +321,13 @@ export const PartiesOverviewPage = () => {
     return {
       id: party.id,
       icon: party.icon,
+      disabled: isDisabled,
       description: isExpanded ? undefined : party.description,
       variant: 'accordion',
       groupId: String(party.groupId),
-      collapsible: true,
+      collapsible: !isDisabled,
       expanded: isExpanded,
-      onClick: () => toggleExpanded(itemId),
+      onClick: isDisabled ? undefined : () => toggleExpanded(itemId),
       badge: undefined,
       highlightWords: (searchValue ?? '').split(' '),
       as: 'button' as ElementType,
@@ -342,7 +344,7 @@ export const PartiesOverviewPage = () => {
           parentParty={partyGraph.parentByChildUrn.get(party.id)}
         />
       ) : null,
-      controls: (
+      controls: isDisabled ? undefined : (
         <>
           {party.isCurrentEndUser && party?.badge && <Badge {...party.badge} />}
           {!party.isCurrentEndUser && party.isPreselectedParty && (
