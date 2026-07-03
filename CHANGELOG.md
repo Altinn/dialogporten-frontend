@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.166.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.166.0...v1.166.1) (2026-07-03)
+
+
+### Bug Fixes
+
+* **frontend:** disable parties with hasOnlyAccessToSubParties in parties overview ([#4426](https://github.com/Altinn/dialogporten-frontend/issues/4426)) ([e3f8eba](https://github.com/Altinn/dialogporten-frontend/commit/e3f8ebafd9d4ca881d49c2fbfb8bc4c1293d3f4a))
+
 ## [1.166.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.165.0...v1.166.0) (2026-07-03)
 
 
