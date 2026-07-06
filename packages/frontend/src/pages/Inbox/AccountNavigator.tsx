@@ -3,7 +3,6 @@ import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { MAX_DIALOG_PARTY_SIZE } from '../../api/hooks/useDialogs.tsx';
-import { useFeatureFlag } from '../../featureFlags/useFeatureFlag.ts';
 import { FixedGlobalQueryParams, encodeSubAccountIds } from './queryParams.ts';
 
 type PaginationVariant = 'list' | 'pagination';
@@ -15,7 +14,6 @@ interface AccountNavigatorProps {
 }
 export const AccountNavigator = ({ hidden, subAccounts, partyIdsOverride }: AccountNavigatorProps) => {
   const { t } = useTranslation();
-  const accountNavigatorEnabled = useFeatureFlag<boolean>('inbox.accountNavigatorEnabled');
   const [searchParams, setSearchParams] = useSearchParams();
 
   const variant: PaginationVariant = useMemo(() => {
@@ -108,7 +106,7 @@ export const AccountNavigator = ({ hidden, subAccounts, partyIdsOverride }: Acco
     };
   }, [sliceIds, slicedSubAccounts, currentPageIndex, onSelectPage, t]);
 
-  if (hidden || !accountNavigatorEnabled) return null;
+  if (hidden) return null;
 
   if (variant === 'list') {
     return (
