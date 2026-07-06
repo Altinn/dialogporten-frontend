@@ -1,6 +1,7 @@
 import { formatDisplayName } from '@altinn/altinn-components';
 import {
   type DialogByIdFieldsFragment,
+  type NotificationSettingsResponse,
   type OrganizationFieldsFragment,
   type PartyFieldsFragment,
   type Profile,
@@ -23,6 +24,7 @@ export type InMemoryStore = {
   features?: Record<string, boolean>;
   services?: ServiceResource[];
   verifiedAddresses?: { value: string; addressType: string }[];
+  notificationSettings?: NotificationSettingsResponse[];
 };
 
 const inMemoryStore: InMemoryStore = {
@@ -34,6 +36,18 @@ const inMemoryStore: InMemoryStore = {
   features: data.features,
   services: data.services,
   verifiedAddresses: [],
+  notificationSettings: [
+    {
+      userId: 20625133,
+      partyUuid: 'urn:altinn:organization:uuid:firma-as',
+      emailAddress: 'legacy@firma-as.no',
+      phoneNumber: '+4712345678',
+      emailVerificationStatus: 'Legacy',
+      smsVerificationStatus: 'Legacy',
+      needsConfirmation: false,
+      resourceIncludeList: [],
+    },
+  ],
 };
 
 const isAuthenticatedMock = http.get('/api/isAuthenticated', () => {
@@ -84,18 +98,38 @@ export const streamMock = http.get('/api/graphql/stream', async () => {
 const mockNotificationsettingsForCurrentUser = graphql.query('notificationsettingsForCurrentUser', () => {
   return HttpResponse.json({
     data: {
-      notificationsettingsForCurrentUser: [
-        {
-          userId: 20625133,
-          partyUuid: 'urn:altinn:organization:uuid:firma-as',
-          emailAddress: 'legacy@firma-as.no',
-          phoneNumber: '+4712345678',
-          emailVerificationStatus: 'Legacy',
-          smsVerificationStatus: 'Legacy',
-          needsConfirmation: false,
-          resourceIncludeList: [],
-        },
-      ],
+      notificationsettingsForCurrentUser: inMemoryStore.notificationSettings,
+    },
+  });
+});
+
+const mockUpdateNotificationSetting = graphql.mutation('UpdateNotificationSetting', ({ variables }) => {
+  const { partyUuid, emailAddress, phoneNumber } = variables.data as {
+    partyUuid: string;
+    emailAddress?: string | null;
+    phoneNumber?: string | null;
+  };
+
+  const settings = inMemoryStore.notificationSettings ?? [];
+  const existing = settings.find((s) => s?.partyUuid === partyUuid);
+  const updated: NotificationSettingsResponse = {
+    userId: existing?.userId ?? 20625133,
+    partyUuid,
+    emailAddress: emailAddress !== undefined ? emailAddress : (existing?.emailAddress ?? null),
+    phoneNumber: phoneNumber !== undefined ? phoneNumber : (existing?.phoneNumber ?? null),
+    emailVerificationStatus:
+      emailAddress !== undefined ? (emailAddress ? 'Verified' : null) : (existing?.emailVerificationStatus ?? null),
+    smsVerificationStatus:
+      phoneNumber !== undefined ? (phoneNumber ? 'Verified' : null) : (existing?.smsVerificationStatus ?? null),
+    needsConfirmation: false,
+    resourceIncludeList: existing?.resourceIncludeList ?? [],
+  };
+
+  inMemoryStore.notificationSettings = [...settings.filter((s) => s?.partyUuid !== partyUuid), updated];
+
+  return HttpResponse.json({
+    data: {
+      updateNotificationSetting: { success: true, message: null },
     },
   });
 });
@@ -129,8 +163,18 @@ const mockSendVerificationCode = graphql.mutation('SendVerificationCode', () => 
   });
 });
 
+// Playwright tests use this code to deterministically exercise the "invalid code" path.
+export const MOCK_INVALID_VERIFICATION_CODE = '000000';
+
 const mockVerifyAddress = graphql.mutation('verifyAddress', ({ variables }) => {
-  const { value, type } = variables.data as { value: string; type: string };
+  const { value, type, verificationCode } = variables.data as { value: string; type: string; verificationCode: string };
+  if (verificationCode === MOCK_INVALID_VERIFICATION_CODE) {
+    return HttpResponse.json({
+      data: {
+        verifyAddress: { success: false, message: 'Invalid code' },
+      },
+    });
+  }
   inMemoryStore.verifiedAddresses = [
     ...(inMemoryStore.verifiedAddresses ?? []).filter((a) => !(a.value === value && a.addressType === type)),
     { value, addressType: type },
@@ -660,6 +704,7 @@ export const handlers = [
   getFilterServiceResourcesMock,
   dialogAccessInfoMock,
   mockNotificationsettingsForCurrentUser,
+  mockUpdateNotificationSetting,
   mockGetNotificationAddressByOrgNumber,
   mockVerifiedAddresses,
   mockSendVerificationCode,
