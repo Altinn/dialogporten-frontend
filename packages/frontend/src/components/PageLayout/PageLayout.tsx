@@ -21,7 +21,6 @@ import { type PartyGroup, getSearchStringFromQueryParams } from '../../pages/Inb
 import { useProfile } from '../../pages/Profile/useProfile.tsx';
 import { PageRoutes } from '../../pages/routes.ts';
 import { useGlobalState } from '../../useGlobalState.ts';
-import { FloatingDropdown } from '../FloatingDropdown/FloatingDropdown.tsx';
 import { useAuth } from '../Login/AuthContext.tsx';
 import { useFooter } from './Footer/useFooter.tsx';
 import { useGlobalMenu } from './GlobalMenu/useGlobalMenu.tsx';
@@ -218,7 +217,6 @@ export const PageLayout: React.FC = () => {
       <Layout {...layoutProps}>
         <Outlet />
         <Snackbar />
-        <FloatingDropdown />
       </Layout>
     </>
   );

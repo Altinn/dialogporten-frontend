@@ -143,13 +143,11 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
     selectedPartyIds,
     setSelectedPartyIds,
   } = useParties();
-  const enableSIConnectLink = useFeatureFlag<boolean>('SI.emailAccount.enableConnectLink');
-  const enableSIPhoneEdit = useFeatureFlag<boolean>('profil.enableSIPhoneEdit');
   const enableSetUserName = useFeatureFlag<boolean>('profile.enableSetUserName');
   const siLegacyParties = useSILegacyParties();
   const hasSILegacyParty = siLegacyParties.length > 0;
   const isSIEmailConnected = selfIdentifiedUserType === 'Email' && hasSILegacyParty;
-  const showSIEmailConnectLink = enableSIConnectLink && selfIdentifiedUserType === 'Email';
+  const showSIEmailConnectLink = selfIdentifiedUserType === 'Email';
   const {
     user,
     showClientUnits,
@@ -531,8 +529,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
       icon: MobileIcon,
       title: t('profile.settings.mobile_phone'),
       value: user?.phoneNumber || '',
-      disabled: isSelfIdentifiedUser && !enableSIPhoneEdit,
-      badge: isSelfIdentifiedUser && !enableSIPhoneEdit ? undefined : getChangeSettingsBadge(user?.phoneNumber || ''),
+      badge: getChangeSettingsBadge(user?.phoneNumber || ''),
       variant: 'modal',
       children: (
         <ContactProfileDetails
@@ -540,7 +537,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
           source="krr"
           phoneNumber={user?.phoneNumber || ''}
           usedByItems={getUsedByPhoneNumber(user?.phoneNumber ?? '')}
-          isSelfIdentifiedUser={enableSIPhoneEdit && isSelfIdentifiedUser}
+          isSelfIdentifiedUser={isSelfIdentifiedUser}
           readOnly
         />
       ),

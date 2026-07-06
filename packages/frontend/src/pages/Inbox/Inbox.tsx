@@ -166,8 +166,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
   });
   const searchMode = hasValidFilters(filterState) || !!validSearchString;
   const showSubAccountsMenu = subAccounts.length > 0;
-  const accountNavigatorEnabled = useFeatureFlag<boolean>('inbox.accountNavigatorEnabled');
-  const accountNavigatorVisible = !accountNavigatorHidden && accountNavigatorEnabled;
+  const accountNavigatorVisible = !accountNavigatorHidden;
 
   const subAccountsParamForSave = useMemo(() => {
     if (subAccountsParam) return subAccountsParam;

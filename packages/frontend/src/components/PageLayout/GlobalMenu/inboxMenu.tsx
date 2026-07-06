@@ -9,7 +9,6 @@ import {
   HeartIcon,
   InboxFillIcon,
   InformationSquareIcon,
-  LeaveIcon,
   MagnifyingGlassIcon,
   MenuGridIcon,
   PadlockLockedFillIcon,
@@ -18,7 +17,6 @@ import {
   TrashIcon,
 } from '@navikt/aksel-icons';
 import {
-  createMessageBoxLink,
   getAboutNewAltinnLink,
   getAccessAMUILink,
   getFrontPageLink,
@@ -38,16 +36,12 @@ export function buildInboxMenu({
   pathname,
   currentSearchQuery,
   fromView,
-  currentPartyUuid,
-  hideAltinn2Links,
 }: {
   t: (key: string, vars?: Record<string, string>) => string;
   currentEndUserName?: string;
   pathname: string;
   currentSearchQuery: string;
   fromView?: string;
-  currentPartyUuid?: string;
-  hideAltinn2Links: boolean;
 }): UseGlobalMenuProps {
   const menuGroups = {
     shortcuts: {
@@ -103,20 +97,6 @@ export function buildInboxMenu({
         to: PageRoutes.savedSearches + pruneSearchQueryParams(currentSearchQuery),
       }),
     },
-    ...(!hideAltinn2Links
-      ? [
-          {
-            id: 'beta-exit',
-            'data-testid': 'sidebar-exit',
-            groupId: 'shortcuts-2',
-            icon: LeaveIcon,
-            title: t('altinn.beta.exit'),
-            as: createMenuItemComponent({
-              to: createMessageBoxLink(currentPartyUuid),
-            }),
-          } as MenuItemProps,
-        ]
-      : []),
   ];
 
   const helpItems: MenuItemProps[] = [

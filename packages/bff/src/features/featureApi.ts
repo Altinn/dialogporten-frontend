@@ -9,12 +9,7 @@ const defaultFeatureFlags: Record<string, boolean> = {
   'dialogporten.disableFlipNamesPatch': false,
   'inbox.enableAlertBanner': false,
   'dialogporten.disableSubscriptions': false,
-  'inbox.accountNavigatorEnabled': false,
-  'SI.emailAccount.enableConnectLink': false,
-  'profil.enableSIPhoneEdit': false,
   'profile.enableSetUserName': false,
-  'inbox.hideAltinn2Links': false,
-  'inbox.hideFloatingButton': false,
 };
 
 const defaultAppConfigValues: Record<string, string[]> = {

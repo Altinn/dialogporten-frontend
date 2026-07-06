@@ -10,13 +10,8 @@ export const featureFlagDefinitions = [
   { key: 'dialogporten.disableFlipNamesPatch', type: 'boolean', default: false },
   { key: 'inbox.enableAlertBanner', type: 'boolean', default: false },
   { key: 'dialogporten.disableSubscriptions', type: 'boolean', default: false },
-  { key: 'inbox.accountNavigatorEnabled', type: 'boolean', default: false },
   { key: 'auth.orgsNotReadyToDealWithDelegations', type: 'string-array', default: [] },
-  { key: 'SI.emailAccount.enableConnectLink', type: 'boolean', default: false },
-  { key: 'profil.enableSIPhoneEdit', type: 'boolean', default: false },
   { key: 'profile.enableSetUserName', type: 'boolean', default: false },
-  { key: 'inbox.hideAltinn2Links', type: 'boolean', default: false },
-  { key: 'inbox.hideFloatingButton', type: 'boolean', default: false },
 ] as const satisfies readonly FeatureFlagDefinition[];
 
 export type FeatureFlagKey = (typeof featureFlagDefinitions)[number]['key'];
