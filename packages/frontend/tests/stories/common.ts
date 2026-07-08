@@ -18,6 +18,22 @@ export async function setPartyCookie(page: Page, partyUuid: string) {
   ]);
 }
 
+/**
+ * Pre-seeds the "don't show again" dismissal cookie for the org-limit info
+ * modal, so tests that don't care about the modal can skip past it.
+ */
+export async function setOrgLimitInfoDismissedCookie(page: Page) {
+  const url = new URL(baseURL);
+  await page.context().addCookies([
+    {
+      name: 'AltinnOrgLimitInfoDismissed',
+      value: 'true',
+      domain: url.hostname,
+      path: '/',
+    },
+  ]);
+}
+
 export const getSidebar = (page: Page) => page.locator('aside');
 export const getSidebarMenuItem = (page: Page, route: string) => getSidebar(page).locator(`a[href^="${route}?"]`);
 export const getSearchbarInput = (page: Page) => page.locator("[name='Søk']");

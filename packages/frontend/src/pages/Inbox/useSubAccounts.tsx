@@ -29,6 +29,7 @@ interface UseSubAccountsOutput {
   partyIdsOverride: string[];
   showPageLabel: boolean;
   accountNavigatorHidden: boolean;
+  subAccountsTotalCount: number;
 }
 
 const ALL_SUB_ACCOUNTS_ID = 'ALL_SUB_ACCOUNTS';
@@ -312,5 +313,6 @@ export const useSubAccounts = ({
     subAccountGroups: groups,
     showPageLabel,
     accountNavigatorHidden,
+    subAccountsTotalCount: filteredSubAccounts.length,
   };
 };
