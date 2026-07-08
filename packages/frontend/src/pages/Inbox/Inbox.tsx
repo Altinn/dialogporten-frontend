@@ -32,6 +32,8 @@ import { createFiltersURLQuery } from '../../auth';
 import { DialogAccessInfoModal } from '../../components/DialogAccessInfoModal/DialogAccessInfoModal.tsx';
 import { ExportSearchResultsButton } from '../../components/ExportSearchResultsButton/ExportSearchResultsButton.tsx';
 import { Notice } from '../../components/Notice/Notice.tsx';
+import { OrgLimitInfoModal } from '../../components/OrgLimitInfoModal/OrgLimitInfoModal.tsx';
+import { useOrgLimitInfoModal } from '../../components/OrgLimitInfoModal/useOrgLimitInfoModal.ts';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
 import { getPageRouteTitle } from '../../components/PageLayout/pageRouteToTitle.ts';
 import { getSearchWords } from '../../components/PageLayout/Search/getSearchLabels.ts';
@@ -162,6 +164,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     searchable: subAccountsSearchable,
     subAccountGroups,
     accountNavigatorHidden,
+    subAccountsTotalCount,
   } = useSubAccounts({
     accounts,
     selectedParties,
@@ -171,6 +174,9 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const searchMode = hasValidFilters(filterState) || !!validSearchString;
   const showSubAccountsMenu = subAccounts.length > 0;
   const accountNavigatorVisible = !accountNavigatorHidden;
+
+  const { isOpen: orgLimitInfoModalOpen, close: closeOrgLimitInfoModal } =
+    useOrgLimitInfoModal(accountNavigatorVisible);
 
   const subAccountsParamForSave = useMemo(() => {
     if (subAccountsParam) return subAccountsParam;
@@ -496,6 +502,12 @@ export const Inbox = ({ viewType }: InboxProps) => {
         title={accessInfoModal?.title}
         isOpen={!!accessInfoModal}
         onClose={() => setAccessInfoModal(null)}
+      />
+      <OrgLimitInfoModal
+        isOpen={orgLimitInfoModalOpen}
+        onClose={closeOrgLimitInfoModal}
+        count={subAccountsTotalCount}
+        max={MAX_DIALOG_PARTY_SIZE}
       />
       <BookmarkModal {...bookmarkModalProps} />
       {footerActions.length > 0 && <BulkFooter hidden={!bulkMode} actions={footerActions} />}
