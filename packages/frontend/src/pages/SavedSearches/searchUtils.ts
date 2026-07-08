@@ -68,7 +68,7 @@ export const buildFilterParams = (
         if (subAccountIds) {
           return {
             order,
-            item: { type: 'filter', label: t('parties.labels.units_count', { count: subAccountIds.length }) },
+            item: { type: 'filter', label: t('parties.labels.parties_count', { count: subAccountIds.length }) },
           };
         }
       }

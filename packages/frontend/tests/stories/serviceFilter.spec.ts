@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { appUrlWithPlaywrightId } from '../';
+import { setPartyLimitInfoDismissed } from './common';
 
 const appURL = appUrlWithPlaywrightId('service-filter');
 
@@ -7,6 +8,7 @@ test.describe('Service resource filter with > 100 parties', () => {
   test('shows "Vis flere" when all parties are selected with a service filter, and updates the count after paging', async ({
     page,
   }) => {
+    await setPartyLimitInfoDismissed(page);
     await page.goto(appURL);
 
     await page.locator('#toolbar-menu-root > button').click();

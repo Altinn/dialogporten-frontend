@@ -20,6 +20,19 @@ export async function setPartyCookie(page: Page, partyUuid: string) {
 
 export const expectInboxLoaded = (page: Page) => expect(page.getByTestId('inbox-toolbar')).toBeVisible();
 
+const PARTY_LIMIT_INFO_DISMISSED_KEY = 'party-limit-info:dismissed';
+
+/**
+ * Pre-seeds the "don't show again" dismissal for the party-limit info
+ * modal, so tests that don't care about the modal can skip past it.
+ */
+export async function setPartyLimitInfoDismissed(page: Page) {
+  await page.addInitScript((key) => window.localStorage.setItem(key, 'true'), PARTY_LIMIT_INFO_DISMISSED_KEY);
+}
+
+export const isPartyLimitInfoDismissed = (page: Page) =>
+  page.evaluate((key) => window.localStorage.getItem(key) === 'true', PARTY_LIMIT_INFO_DISMISSED_KEY);
+
 export const getSidebar = (page: Page) => page.locator('aside');
 export const getSidebarMenuItem = (page: Page, route: string) => getSidebar(page).locator(`a[href^="${route}?"]`);
 export const getSearchbarInput = (page: Page) => page.locator("[name='Søk']");

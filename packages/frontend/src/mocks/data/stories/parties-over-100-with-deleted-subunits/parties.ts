@@ -13,7 +13,7 @@ import type { PartyFieldsFragment, SubPartyFieldsFragment } from 'bff-types-gene
  *     sub-units are re-added to the URNs actually sent to the API.
  *
  * Result with this dataset:
- *   - Subunit filter label:  1 parent + 98 active sub-units      = "99 enheter"
+ *   - Subunit filter label:  1 parent + 98 active sub-units      = "99 aktører"
  *   - getPartyIds() sends:    99 + 4 deleted sub-units            = 103 URNs
  *   - 103 > MAX_DIALOG_PARTY_SIZE (100) -> isQueryEnabled = false
  *     -> isLimitReached -> DialogList renders no items AND no

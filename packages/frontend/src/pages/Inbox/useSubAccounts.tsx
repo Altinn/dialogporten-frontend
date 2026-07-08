@@ -26,6 +26,7 @@ interface UseSubAccountsOutput {
   subAccountGroups: MenuItemGroups;
   searchable: boolean;
   getSubAccountLabel: () => string;
+  subAccountsMenuTitle: string;
   partyIdsOverride: string[];
   showPageLabel: boolean;
   accountNavigatorHidden: boolean;
@@ -148,18 +149,18 @@ export const useSubAccounts = ({
     (allOrganizationsSelected && selectedServicesCount > 0 && !hasSubAccountOverride);
   const showPageLabel = !accountNavigatorHidden;
 
-  // Labels differ by selection: an "all companies"/"all persons" group counts members ("3 units" /
+  // Labels differ by selection: an "all companies"/"all persons" group counts members ("3 parties" /
   // "3 persons"), while drilling into a single parent shows its sub-units.
   const groupCountLabel = useCallback(
     (count: number) =>
-      allPersonsSelected ? t('parties.labels.persons_count', { count }) : t('parties.labels.units_count', { count }),
+      allPersonsSelected ? t('parties.labels.persons_count', { count }) : t('parties.labels.parties_count', { count }),
     [allPersonsSelected, t],
   );
   const groupPartialCountLabel = useCallback(
     (selected: number, total: number) =>
       allPersonsSelected
         ? t('parties.labels.persons_partial_count', { selected, total })
-        : t('parties.labels.units_partial_count', { selected, total }),
+        : t('parties.labels.parties_partial_count', { selected, total }),
     [allPersonsSelected, t],
   );
 
@@ -168,6 +169,11 @@ export const useSubAccounts = ({
       ? t('parties.labels.all_persons')
       : t('parties.labels.all_organizations')
     : t('parties.labels.all_units');
+  const subAccountsMenuTitle = isGroupSelected
+    ? allPersonsSelected
+      ? t('parties.labels.select_persons')
+      : t('parties.labels.select_parties')
+    : t('parties.labels.select_units');
   const mainUnitLabel = t('parties.labels.main_unit');
   const subUnitLabel = t('parties.labels.sub_unit');
 
@@ -307,6 +313,7 @@ export const useSubAccounts = ({
     subAccounts,
     onSelectSubAccount,
     getSubAccountLabel,
+    subAccountsMenuTitle,
     partyIdsOverride: selectedSubAccountIds,
     searchable: subAccounts.length > 2,
     subAccountGroups: groups,
