@@ -205,6 +205,28 @@ export const getNeedHelpLink = (language?: string) => {
   );
 };
 
+export const getInboxHelpLink = (language?: string) => {
+  return createInfoPortalLink(
+    {
+      nb: '/hjelp/ny-innboks-beta/',
+      en: '/en/help/inbox/',
+      nn: '/nn/hjelp/innboks/',
+    },
+    language,
+  );
+};
+
+export const getProfileHelpLink = (language?: string) => {
+  return createInfoPortalLink(
+    {
+      nb: '/hjelp/oversikt-over-varslingsinnstillinger/',
+      en: '/en/help/contact-information-and-notification-settings/',
+      nn: '/nn/hjelp/kontaktinformasjon-og-varslingsinnstillingar/',
+    },
+    language,
+  );
+};
+
 export const getCookieDomain = () => {
   const hostMap: Record<hostEnv, string> = {
     local: 'app.localhost',
