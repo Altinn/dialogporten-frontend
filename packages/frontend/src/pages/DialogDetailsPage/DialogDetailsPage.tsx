@@ -17,6 +17,7 @@ import { DialogAccessInfoModal } from '../../components/DialogAccessInfoModal/Di
 import { DialogDetails } from '../../components/DialogDetails/DialogDetails.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
+import { PartyGroups } from '../Inbox/queryParams.ts';
 import { useDelegation } from './useDelegation.tsx';
 import { useDialogActions } from './useDialogActions.tsx';
 
@@ -24,7 +25,8 @@ export const DialogDetailsPage = () => {
   const { id: dialogId } = useParams();
   const [isActivityLogOpen, setIsActivityLogOpen] = useState<boolean>(false);
   const [isAccessInfoOpen, setIsAccessInfoOpen] = useState<boolean>(false);
-  const { parties } = useParties();
+  const { parties, selectedProfile, selectedParties, currentEndUser, selectedGroup, selectGroupWithoutPersisting } =
+    useParties();
   const { t } = useTranslation();
   const location = useLocation();
   const qc = useQueryClient();
@@ -102,6 +104,41 @@ export const DialogDetailsPage = () => {
       qc.setQueryData([QUERY_KEYS.CURRENT_DIALOG_TITLE], '');
     };
   }, [qc, dialogId]);
+
+  // Corrects a mismatched profile color when landing on a dialog via external navigation (no
+  // `fromView`, e.g. a receipt link or cold URL) — e.g. "yourself" selected but the dialog belongs
+  // to a company. Never fires on internal inbox -> dialog navigation, since the dialog is already
+  // visible in the inbox the user came from.
+  const correctedDialogIdRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (location.state?.fromView) return;
+    if (!dialog) return;
+    if (selectedGroup) return;
+    if (correctedDialogIdRef.current === dialog.id) return;
+
+    const isActingAsSelf =
+      selectedProfile === 'person' &&
+      selectedParties.length === 1 &&
+      selectedParties[0]?.party === currentEndUser?.party;
+    const isActingAsSingleCompany = selectedProfile === 'company' && selectedParties.length === 1;
+
+    let applied = false;
+    if (isActingAsSelf && dialog.receiver.type === 'company') {
+      applied = selectGroupWithoutPersisting(PartyGroups.ALL_COMPANIES);
+    } else if (isActingAsSingleCompany && dialog.receiver.type === 'person') {
+      applied = selectGroupWithoutPersisting(PartyGroups.ALL_PERSONS);
+    }
+
+    if (applied) correctedDialogIdRef.current = dialog.id;
+  }, [
+    dialog,
+    location.state,
+    selectedGroup,
+    selectedProfile,
+    selectedParties,
+    currentEndUser,
+    selectGroupWithoutPersisting,
+  ]);
 
   const dialogTokenIsFreshAfterMount = dataUpdatedAt > mountAtRef.current ? dialog?.dialogToken : undefined;
   const { onMessageEvent } = useDialogByIdSubscription(dialog?.id, dialogTokenIsFreshAfterMount, refreshDialogToken);

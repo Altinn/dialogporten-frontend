@@ -30,6 +30,7 @@ interface UsePartiesOutput {
   selectedPartyIds: string[];
   setSelectedParties: (parties: PartyFieldsFragment[]) => void;
   setSelectedPartyIds: (parties: string[], group: PartyGroup | null) => void;
+  selectGroupWithoutPersisting: (group: PartyGroup) => boolean;
   currentEndUser: PartyFieldsFragment | undefined;
   selectedGroup: PartyGroup | null;
   allOrganizationsSelected: boolean;
@@ -158,6 +159,21 @@ export const useParties = (): UsePartiesOutput => {
 
   const selectGroup = (group: PartyGroup) => {
     setSelectedPartyIds(getGroupPartyIds(group), group);
+  };
+
+  /** Switches the displayed party group without persisting to the cookie or URL — used to correct
+   *  a mismatched profile color after landing on a dialog via external navigation. Returns false
+   *  (no-op) if the group isn't currently a valid selection (fewer than 2 selectable members). */
+  const selectGroupWithoutPersisting = (group: PartyGroup): boolean => {
+    if (!isGroupValid(group)) return false;
+    setSelectedGroup(group);
+    const matchedParties: PartyFieldsFragment[] = [];
+    for (const id of getGroupPartyIds(group)) {
+      const p = partyGraph.partyByUrn.get(id);
+      if (p) matchedParties.push(p);
+    }
+    handleSetSelectedParties(matchedParties);
+    return true;
   };
 
   /**
@@ -319,6 +335,7 @@ export const useParties = (): UsePartiesOutput => {
     selectedPartyIds,
     setSelectedParties: handleSetSelectedParties,
     setSelectedPartyIds,
+    selectGroupWithoutPersisting,
     parties: data ?? [],
     currentEndUser,
     selectedGroup,
