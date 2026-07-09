@@ -5,6 +5,7 @@ import {
   Buildings2Icon,
   ChatExclamationmarkIcon,
   DocPencilIcon,
+  ExternalLinkIcon,
   FileCheckmarkIcon,
   HeartIcon,
   InboxFillIcon,
@@ -20,6 +21,7 @@ import {
   getAboutNewAltinnLink,
   getAccessAMUILink,
   getFrontPageLink,
+  getInboxHelpLink,
   getNeedHelpLink,
   getNewFormLink,
   getStartNewBusinessLink,
@@ -132,6 +134,18 @@ export function buildInboxMenu({
     },
   ];
 
+  const helpPageItem: MenuItemProps = {
+    id: 'help-pages',
+    'data-testid': 'help-pages',
+    groupId: 'shortcuts',
+    icon: ExternalLinkIcon,
+    title: t('floating_dropdown.help_pages'),
+    as: createMenuItemComponent({
+      to: getInboxHelpLink(i18n.language),
+      isExternal: true,
+    }),
+  };
+
   const inboxItems: MenuItemProps[] = [
     {
       id: '1',
@@ -204,7 +218,7 @@ export function buildInboxMenu({
       ...menuGroups,
       shortcuts: menuGroups.shortcuts,
     },
-    items: [...inboxItems, ...shortcuts],
+    items: [...inboxItems, ...shortcuts, helpPageItem],
   };
 
   const mobileMenu: MenuProps = {
@@ -251,6 +265,7 @@ export function buildInboxMenu({
         selected: false,
       },
       ...helpItems,
+      { ...helpPageItem, groupId: 'help' },
       {
         groupId: 'profile-shortcut',
         id: 'profile',

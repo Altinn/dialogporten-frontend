@@ -27,5 +27,5 @@ export const createMenuItemComponent =
   ({ to, isExternal = false }: { to: string; isExternal?: boolean }): React.FC<MenuItemProps> =>
   (props) => {
     // @ts-ignore
-    return <Link {...props} to={to} {...(isExternal ? { target: '__blank', rel: 'noopener noreferrer' } : {})} />;
+    return <Link {...props} to={to} {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})} />;
   };
