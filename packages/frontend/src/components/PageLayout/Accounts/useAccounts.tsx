@@ -3,13 +3,11 @@ import {
   type AccountSearchProps,
   type AvatarGroupProps,
   type AvatarType,
-  type BadgeProps,
   type MenuItemGroups,
   formatDate,
 } from '@altinn/altinn-components';
 import { useQueryClient } from '@tanstack/react-query';
 import type { PartyFieldsFragment } from 'bff-types-generated';
-import i18n from 'i18next';
 import { type ChangeEvent, type ReactNode, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -25,6 +23,17 @@ import { useProfile } from '../../../pages/Profile/useProfile.tsx';
 import { SettingsType } from '../../../pages/Profile/useSettings.tsx';
 import type { PageRoutes } from '../../../pages/routes.ts';
 import type { PartyGraph } from '../../../utils/partyGraph.ts';
+import {
+  type OrgSkeletonItem,
+  type PartyItemProp,
+  buildOrgSkeleton,
+  buildPersonSkeleton,
+  mapOrgItemToAccount,
+  mapPersonToAccount,
+} from './accountComputations.ts';
+
+export { formatNorwegianId, formatOrgNo, getOrgNo } from './accountComputations.ts';
+export type { PartyItemProp } from './accountComputations.ts';
 
 /** Account tile ids for the virtual group tiles. Kept identical to the URL `group` values. */
 export const ACCOUNT_GROUPS_KEYS = {
@@ -43,20 +52,6 @@ interface UseAccountOptions {
    * into PartyItemProp. The full count is returned via `accountsTotal`.
    */
   pagination?: { offset: number; limit: number };
-}
-
-export interface PartyItemProp extends AccountMenuItemProps {
-  uuid: string;
-  altinnId: number;
-  isPreselectedParty?: boolean;
-  isDeleted?: boolean;
-  parentId?: string | undefined;
-  parentName?: string | undefined;
-  isFavorite?: boolean;
-  isCurrentEndUser?: boolean;
-  badge?: BadgeProps;
-  isParent?: boolean;
-  ssnOrOrgNo?: string;
 }
 
 interface UseAccountsProps {
@@ -80,34 +75,6 @@ interface UseAccountsOutput {
   accountsTotal: number;
   searchable: boolean;
 }
-
-export const getOrgNo = (partyId: string): string => {
-  if (!partyId.includes('urn:altinn:organization:')) return '';
-  const parts = partyId.split('identifier-no:');
-  return parts[1] ?? '';
-};
-
-export const formatNorwegianId = (partyId: string, includeThinSpace?: boolean): string => {
-  const orgNo = getOrgNo(partyId);
-  if (!orgNo) return '';
-  const thinSpaceIncluded = includeThinSpace ?? true;
-  if (thinSpaceIncluded) {
-    return [orgNo.slice(0, 3), orgNo.slice(3, 6), orgNo.slice(6, 9)].join('\u2009');
-  }
-  return orgNo.slice(0, 9);
-};
-
-/** Reuse a single Intl.Collator per language – much faster than localeCompare per call */
-let collatorLang = '';
-let collator: Intl.Collator;
-const getCollator = (): Intl.Collator => {
-  if (collatorLang !== i18n.language) {
-    collatorLang = i18n.language;
-    collator = new Intl.Collator(i18n.language, { sensitivity: 'base' });
-  }
-  return collator;
-};
-const compareName = (a: string, b: string) => getCollator().compare(a, b);
 
 export const useAccounts = ({
   parties,
@@ -175,96 +142,23 @@ export const useAccounts = ({
   const preselectedPartyUuid = user?.profileSettingPreference?.preselectedPartyUuid;
   const isPaginated = !!inputOptions?.pagination;
 
-  // Cheap skeleton: sorted PartyFieldsFragment refs. No PartyItemProp allocation here.
-  const personSkeleton = useMemo<PartyFieldsFragment[]>(() => {
-    return [...otherPeople].sort((a, b) => compareName(a.name, b.name));
-  }, [otherPeople]);
+  const personSkeleton = useMemo<PartyFieldsFragment[]>(() => buildPersonSkeleton(otherPeople), [otherPeople]);
 
-  type OrgSkeletonItem = { party: PartyFieldsFragment; isParent: boolean; parent?: PartyFieldsFragment };
-
-  // Cheap skeleton: sorted+grouped org refs.
-  const orgSkeleton = useMemo<OrgSkeletonItem[]>(() => {
-    const items: OrgSkeletonItem[] = organizations.map((party) => {
-      const matchInAvailable = partyGraph.partyByUrn.get(party.party);
-      const isParent = Array.isArray(matchInAvailable?.subParties);
-      const parent = isParent ? undefined : partyGraph.parentByChildUrn.get(party.party);
-      return { party, isParent, parent };
-    });
-
-    const parents = items.filter((i) => i.isParent).sort((a, b) => compareName(a.party.name, b.party.name));
-    const childrenByParentParty = new Map<string, OrgSkeletonItem[]>();
-    const orphans: OrgSkeletonItem[] = [];
-
-    for (const item of items) {
-      if (item.isParent) continue;
-      if (item.parent) {
-        const arr = childrenByParentParty.get(item.parent.party) ?? [];
-        arr.push(item);
-        childrenByParentParty.set(item.parent.party, arr);
-      } else {
-        orphans.push(item);
-      }
-    }
-    for (const arr of childrenByParentParty.values()) arr.sort((a, b) => compareName(a.party.name, b.party.name));
-    orphans.sort((a, b) => compareName(a.party.name, b.party.name));
-
-    const grouped = parents.flatMap((p) => [p, ...(childrenByParentParty.get(p.party.party) ?? [])]);
-    return [...grouped, ...orphans];
-  }, [organizations, partyGraph]);
+  const orgSkeleton = useMemo<OrgSkeletonItem[]>(
+    () => buildOrgSkeleton(organizations, partyGraph),
+    [organizations, partyGraph],
+  );
 
   // Pure mappers. No favorite/preselect deps here — applied as a cheap overlay after.
   const mapPerson = useCallback(
-    (person: PartyFieldsFragment): PartyItemProp => {
-      const birthDate = formatDate(person.dateOfBirth ?? undefined);
-      return {
-        id: person.party,
-        searchWords: [person.name],
-        name: person.name,
-        title: person.name,
-        type: 'person' as AccountMenuItemProps['type'],
-        icon: { name: person.name, type: 'person' as AvatarType },
-        isDeleted: person.isDeleted,
-        isCurrentEndUser: false,
-        uuid: person.partyUuid,
-        altinnId: person.partyId,
-        description: options.showDescription && birthDate ? t('word.born') + birthDate : undefined,
-        badge: person.isDeleted ? { color: 'neutral', label: t('badge.deleted'), variant: 'subtle' } : undefined,
-        groupId: 'persons',
-      } as PartyItemProp;
-    },
+    (person: PartyFieldsFragment): PartyItemProp =>
+      mapPersonToAccount(person, { showDescription: options.showDescription, t }),
     [options.showDescription, t],
   );
 
   const mapOrgItem = useCallback(
-    (item: OrgSkeletonItem): PartyItemProp => {
-      const { party, isParent, parent } = item;
-      const orgNo = getOrgNo(party.party);
-      const formattedId = formatNorwegianId(party.party);
-      const description = options.showDescription
-        ? parent?.name && party?.party
-          ? `↳ ${t('word.orgNo')} ${formattedId}, ${t('profile.account.partOf')} ${parent.name}`
-          : `${t('word.orgNo')} ${formattedId}`
-        : undefined;
-      return {
-        id: party.party,
-        searchWords: [orgNo, party.name],
-        ssnOrOrgNo: orgNo,
-        name: party.name,
-        title: party.name,
-        type: 'company' as AccountMenuItemProps['type'],
-        icon: { name: party.name, type: 'company' as AvatarType, isParent, isDeleted: party.isDeleted },
-        isDeleted: party.isDeleted,
-        isCurrentEndUser: false,
-        uuid: party.partyUuid,
-        disabled: party.hasOnlyAccessToSubParties,
-        isParent,
-        parentId: parent?.party,
-        parentName: parent?.name,
-        description,
-        badge: party.isDeleted ? { color: 'neutral', label: t('badge.deleted'), variant: 'subtle' } : undefined,
-        groupId: parent?.party ?? party.party,
-      } as PartyItemProp;
-    },
+    (item: OrgSkeletonItem): PartyItemProp =>
+      mapOrgItemToAccount(item, { showDescription: options.showDescription, t }),
     [options.showDescription, t],
   );
 

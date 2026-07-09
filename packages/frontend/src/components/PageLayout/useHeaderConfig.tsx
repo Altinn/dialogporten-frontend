@@ -72,36 +72,39 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
     [favoritesGroup?.parties, addFavoriteParty, deleteFavoriteParty, logError],
   );
 
-  const handleSelectAccount = (accountUuid: string) => {
-    const targetRoute = isProfile ? PageRoutes.profile : PageRoutes.inbox;
-    const party = partyGraph.partyByUuid.get(accountUuid);
+  const handleSelectAccount = useCallback(
+    (accountUuid: string) => {
+      const targetRoute = isProfile ? PageRoutes.profile : PageRoutes.inbox;
+      const party = partyGraph.partyByUuid.get(accountUuid);
 
-    if (!party) {
-      console.error('Selected party not found:', accountUuid);
-      return;
-    }
-
-    /* Selected party already selected */
-    if (selectedParties.length === 1 && selectedParties[0].party === party.party) {
-      return;
-    }
-
-    if (party.partyType === 'Person') {
-      setSelectedPartyIds([party.party], null);
-      if (location.pathname.startsWith('/inbox/')) {
-        navigate(PageRoutes.inbox);
+      if (!party) {
+        console.error('Selected party not found:', accountUuid);
+        return;
       }
-    } else {
-      const search = new URLSearchParams(location.search);
-      search.set('party', party.party);
-      search.delete('allParties');
-      search.delete(FixedGlobalQueryParams.group);
-      search.delete(FixedGlobalQueryParams.subAccounts);
-      navigate(`${targetRoute}?${search.toString()}`, {
-        replace: location.pathname === targetRoute,
-      });
-    }
-  };
+
+      /* Selected party already selected */
+      if (selectedParties.length === 1 && selectedParties[0].party === party.party) {
+        return;
+      }
+
+      if (party.partyType === 'Person') {
+        setSelectedPartyIds([party.party], null);
+        if (location.pathname.startsWith('/inbox/')) {
+          navigate(PageRoutes.inbox);
+        }
+      } else {
+        const search = new URLSearchParams(location.search);
+        search.set('party', party.party);
+        search.delete('allParties');
+        search.delete(FixedGlobalQueryParams.group);
+        search.delete(FixedGlobalQueryParams.subAccounts);
+        navigate(`${targetRoute}?${search.toString()}`, {
+          replace: location.pathname === targetRoute,
+        });
+      }
+    },
+    [isProfile, partyGraph, selectedParties, setSelectedPartyIds, location.pathname, location.search, navigate],
+  );
 
   const handleShowDeletedUnitsChange = useCallback(
     async (shouldShow: boolean) => {
@@ -123,8 +126,11 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
 
   const partyListDTO = useMemo(() => mapPartiesToAuthorizedParties(parties), [parties]);
 
-  const favoriteAccountUuids = (favoritesGroup?.parties ?? []).filter(
-    (uuid): uuid is string => uuid !== null && uuid !== undefined,
+  /* Must be referentially stable: useAccountSelector's full-list materialization memo depends on this
+   * array, so a fresh array per render re-runs that O(n) rebuild on every header render. */
+  const favoriteAccountUuids = useMemo(
+    () => (favoritesGroup?.parties ?? []).filter((uuid): uuid is string => uuid !== null && uuid !== undefined),
+    [favoritesGroup?.parties],
   );
 
   const selfAccountUuid = currentEndUser?.partyUuid;
