@@ -134,18 +134,6 @@ export function buildInboxMenu({
     },
   ];
 
-  const helpPageItem: MenuItemProps = {
-    id: 'help-pages',
-    'data-testid': 'help-pages',
-    groupId: 'shortcuts',
-    icon: ExternalLinkIcon,
-    title: t('floating_dropdown.help_pages'),
-    as: createMenuItemComponent({
-      to: getInboxHelpLink(i18n.language),
-      isExternal: true,
-    }),
-  };
-
   const inboxItems: MenuItemProps[] = [
     {
       id: '1',
@@ -218,7 +206,21 @@ export function buildInboxMenu({
       ...menuGroups,
       shortcuts: menuGroups.shortcuts,
     },
-    items: [...inboxItems, ...shortcuts, helpPageItem],
+    items: [
+      ...inboxItems,
+      ...shortcuts,
+      {
+        id: 'help-pages',
+        'data-testid': 'help-pages',
+        groupId: 'help',
+        icon: ExternalLinkIcon,
+        title: t('floating_dropdown.help_pages'),
+        as: createMenuItemComponent({
+          to: getInboxHelpLink(i18n.language),
+          isExternal: true,
+        }),
+      },
+    ],
   };
 
   const mobileMenu: MenuProps = {
@@ -265,7 +267,17 @@ export function buildInboxMenu({
         selected: false,
       },
       ...helpItems,
-      { ...helpPageItem, groupId: 'help' },
+      {
+        id: 'help-pages',
+        'data-testid': 'help-pages',
+        groupId: 'help',
+        icon: ExternalLinkIcon,
+        title: t('floating_dropdown.help_pages'),
+        as: createMenuItemComponent({
+          to: getInboxHelpLink(i18n.language),
+          isExternal: true,
+        }),
+      },
       {
         groupId: 'profile-shortcut',
         id: 'profile',

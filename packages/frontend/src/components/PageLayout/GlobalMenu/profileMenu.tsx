@@ -153,18 +153,6 @@ export function buildProfileMenu({
     },
   ];
 
-  const helpPageItem: MenuItemProps = {
-    id: 'help-pages',
-    'data-testid': 'sidebar-help-pages',
-    groupId: 'shortcuts',
-    icon: ExternalLinkIcon,
-    title: t('floating_dropdown.help_pages'),
-    as: createMenuItemComponent({
-      to: getProfileHelpLink(i18n.language),
-      isExternal: true,
-    }),
-  };
-
   const inboxShortcut: MenuItemProps = {
     id: 'profile-inbox-shortcut',
     groupId: 'shortcuts',
@@ -187,7 +175,17 @@ export function buildProfileMenu({
         iconTheme: idx === 0 ? 'base' : 'tinted',
       })),
       ...shortcuts,
-      helpPageItem,
+      {
+        id: 'help-pages',
+        'data-testid': 'sidebar-help-pages',
+        groupId: 'help',
+        icon: ExternalLinkIcon,
+        title: t('floating_dropdown.help_pages'),
+        as: createMenuItemComponent({
+          to: getProfileHelpLink(i18n.language),
+          isExternal: true,
+        }),
+      },
     ],
   };
 
@@ -257,7 +255,17 @@ export function buildProfileMenu({
     items: [
       ...globalMenuItems,
       ...helpItems,
-      { ...helpPageItem, groupId: 'help' },
+      {
+        id: 'help-pages',
+        'data-testid': 'sidebar-help-pages',
+        groupId: 'help',
+        icon: ExternalLinkIcon,
+        title: t('floating_dropdown.help_pages'),
+        as: createMenuItemComponent({
+          to: getProfileHelpLink(i18n.language),
+          isExternal: true,
+        }),
+      },
       {
         ...profileMenuItem,
         selected: isRouteSelected(pathname, PageRoutes.profile, fromView),
