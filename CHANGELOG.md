@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.167.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.166.2...v1.167.0) (2026-07-10)
+
+
+### Features
+
+* Add help pages to side meny and mobile, support languag ([#4442](https://github.com/Altinn/dialogporten-frontend/issues/4442)) ([7a2292f](https://github.com/Altinn/dialogporten-frontend/commit/7a2292f14aa8505bd22ecd5c224657400fd10a37))
+
+
+### Bug Fixes
+
+* **docker:** upgrade Traefik to v3.6.2 for Docker 29.x support ([#4421](https://github.com/Altinn/dialogporten-frontend/issues/4421)) ([397b9be](https://github.com/Altinn/dialogporten-frontend/commit/397b9bec493ded989d49effe0fc519fd13440af8))
+* Move help links to a separate group ([#4445](https://github.com/Altinn/dialogporten-frontend/issues/4445)) ([ce49260](https://github.com/Altinn/dialogporten-frontend/commit/ce4926071fa2aac2c5a5bc5d02d6e3b6fa64d8cc))
+
+
+### Performance Improvements
+
+* **frontend:** stabilize account selector inputs, add parties benchmark ([#4446](https://github.com/Altinn/dialogporten-frontend/issues/4446)) ([7f2d67e](https://github.com/Altinn/dialogporten-frontend/commit/7f2d67ec1fb245cc9be267ac8241e0c0e58a29a0))
+
 ## [1.166.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.166.1...v1.166.2) (2026-07-03)
 
 
