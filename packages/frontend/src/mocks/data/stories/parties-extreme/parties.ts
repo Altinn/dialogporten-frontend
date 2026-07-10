@@ -151,7 +151,10 @@ function generateOrganization(index: number, partyId: number): PartyFieldsFragme
   };
 }
 
-function generateParties(total: number = TOTAL_PARTIES, personCount: number = PERSON_COUNT): PartyFieldsFragment[] {
+export function generateParties(
+  total: number = TOTAL_PARTIES,
+  personCount: number = PERSON_COUNT,
+): PartyFieldsFragment[] {
   const result: PartyFieldsFragment[] = [];
 
   for (let i = 0; i < personCount && i < total; i++) {

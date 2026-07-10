@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit",
     "preview": "vite preview",
     "test": "vitest run",
+    "bench": "vitest bench --run",
     "codegen:playwright": "playwright codegen",
     "test:playwright": "npx playwright test --project=playwright",
     "test:playwright:mobile": "npx playwright test --project=playwright-mobile",
@@ -23,7 +24,7 @@
     "doctor": "npx react-doctor@latest"
   },
   "dependencies": {
-    "@altinn/altinn-components": "0.68.9",
+    "@altinn/altinn-components": "0.68.15",
     "@microsoft/applicationinsights-react-js": "19.3.7",
     "@microsoft/applicationinsights-web": "3.3.9",
     "@navikt/aksel-icons": "^7.37.0",
