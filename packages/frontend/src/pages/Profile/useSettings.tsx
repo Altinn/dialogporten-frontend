@@ -31,7 +31,7 @@ import { type ChangeEvent, type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps, useLocation } from 'react-router-dom';
 import { useParties } from '../../api/hooks/useParties.ts';
-import { useSILegacyParties } from '../../api/hooks/usePartiesSelectors.ts';
+import { hasOnlySelfParty, useSILegacyParties } from '../../api/hooks/usePartiesSelectors.ts';
 import { updateLanguage } from '../../api/queries.ts';
 import { getAltinn2AccountLink } from '../../auth/url.ts';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
@@ -625,25 +625,27 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
 
   const addressCount =
     uniqueEmailAddresses.length + uniquePhoneNumbers.length + (user?.email ? 1 : 0) + (user?.phoneNumber ? 1 : 0);
-  const contactAddressLink: SettingsItemProps[] = [
-    {
-      id: 'contact-address-link',
-      variant: 'link',
-      title: t('profile.notifications.heading'),
-      as: (props: LinkProps) => (
-        <Link {...props} to={PageRoutes.notifications + pruneSearchQueryParams(currentSearchQuery)} />
-      ),
-      groupId: SettingsType.contactAddresses,
-      badge: {
-        label: t('profile.settings.notification_addresses_count', {
-          count: addressCount,
-        }),
-      },
-      linkIcon: true,
-      icon: PersonRectangleIcon,
-      summary: <p>{t('profile.settings.notification_addresses_summary')}</p>,
-    },
-  ];
+  const contactAddressLink: SettingsItemProps[] = hasOnlySelfParty(parties)
+    ? []
+    : [
+        {
+          id: 'contact-address-link',
+          variant: 'link',
+          title: t('profile.notifications.heading'),
+          as: (props: LinkProps) => (
+            <Link {...props} to={PageRoutes.notifications + pruneSearchQueryParams(currentSearchQuery)} />
+          ),
+          groupId: SettingsType.contactAddresses,
+          badge: {
+            label: t('profile.settings.notification_addresses_count', {
+              count: addressCount,
+            }),
+          },
+          linkIcon: true,
+          icon: PersonRectangleIcon,
+          summary: <p>{t('profile.settings.notification_addresses_summary')}</p>,
+        },
+      ];
 
   const otherSettings: SettingsItemProps[] = [
     {
@@ -680,23 +682,25 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
     },
   ];
 
-  const partyOverviewLink: SettingsItemProps[] = [
-    {
-      id: 'party-overview-link',
-      variant: 'link',
-      title: t('sidebar.profile.parties'),
-      as: (props: LinkProps) => (
-        <Link {...props} to={PageRoutes.partiesOverview + pruneSearchQueryParams(currentSearchQuery)} />
-      ),
-      groupId: SettingsType.partyOverview,
-      badge: {
-        label: t('profile.parties', { count: parties.length }),
-      },
-      linkIcon: true,
-      icon: HeartIcon,
-      summary: <p>{t('profile.settings.parties_overview_summary')}</p>,
-    },
-  ];
+  const partyOverviewLink: SettingsItemProps[] = hasOnlySelfParty(parties)
+    ? []
+    : [
+        {
+          id: 'party-overview-link',
+          variant: 'link',
+          title: t('sidebar.profile.parties'),
+          as: (props: LinkProps) => (
+            <Link {...props} to={PageRoutes.partiesOverview + pruneSearchQueryParams(currentSearchQuery)} />
+          ),
+          groupId: SettingsType.partyOverview,
+          badge: {
+            label: t('profile.parties', { count: parties.length }),
+          },
+          linkIcon: true,
+          icon: HeartIcon,
+          summary: <p>{t('profile.settings.parties_overview_summary')}</p>,
+        },
+      ];
 
   const inboxShortcuts: SettingsItemProps[] = [
     {

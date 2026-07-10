@@ -38,12 +38,14 @@ export function buildInboxMenu({
   pathname,
   currentSearchQuery,
   fromView,
+  hasOnlySelfParty,
 }: {
   t: (key: string, vars?: Record<string, string>) => string;
   currentEndUserName?: string;
   pathname: string;
   currentSearchQuery: string;
   fromView?: string;
+  hasOnlySelfParty: boolean;
 }): UseGlobalMenuProps {
   const menuGroups = {
     shortcuts: {
@@ -223,6 +225,46 @@ export function buildInboxMenu({
     ],
   };
 
+  const profileShortcutItems: MenuItemProps[] = [
+    ...(hasOnlySelfParty
+      ? []
+      : [
+          {
+            id: '1',
+            groupId: '2',
+            icon: HeartIcon,
+            size: 'sm' as MenuItemSize,
+            title: t('sidebar.profile.parties'),
+            selected: isRouteSelected(pathname, PageRoutes.partiesOverview, fromView),
+            as: createMenuItemComponent({
+              to: PageRoutes.partiesOverview + pruneSearchQueryParams(currentSearchQuery),
+            }),
+          },
+          {
+            id: '2',
+            groupId: '2',
+            icon: BellIcon,
+            size: 'sm' as MenuItemSize,
+            title: t('sidebar.profile.notifications'),
+            selected: isRouteSelected(pathname, PageRoutes.notifications, fromView),
+            as: createMenuItemComponent({
+              to: PageRoutes.notifications + pruneSearchQueryParams(currentSearchQuery),
+            }),
+          },
+        ]),
+    {
+      id: '3',
+      groupId: 'saved-searches',
+      icon: MagnifyingGlassIcon,
+      size: 'sm',
+      title: t('sidebar.saved_searches'),
+      selected: isRouteSelected(pathname, PageRoutes.savedSearches, fromView),
+      as: createMenuItemComponent({
+        to: PageRoutes.savedSearches + pruneSearchQueryParams(currentSearchQuery),
+      }),
+    },
+  ];
+
   const mobileMenu: MenuProps = {
     groups: menuGroups,
     items: [
@@ -289,41 +331,7 @@ export function buildInboxMenu({
         title: t('sidebar.profile'),
         selected: false,
         expanded: true,
-        items: [
-          {
-            id: '1',
-            groupId: '2',
-            icon: HeartIcon,
-            size: 'sm',
-            title: t('sidebar.profile.parties'),
-            selected: isRouteSelected(pathname, PageRoutes.partiesOverview, fromView),
-            as: createMenuItemComponent({
-              to: PageRoutes.partiesOverview + pruneSearchQueryParams(currentSearchQuery),
-            }),
-          },
-          {
-            id: '2',
-            groupId: '2',
-            icon: BellIcon,
-            size: 'sm',
-            title: t('sidebar.profile.notifications'),
-            selected: isRouteSelected(pathname, PageRoutes.notifications, fromView),
-            as: createMenuItemComponent({
-              to: PageRoutes.notifications + pruneSearchQueryParams(currentSearchQuery),
-            }),
-          },
-          {
-            id: '3',
-            groupId: 'saved-searches',
-            icon: MagnifyingGlassIcon,
-            size: 'sm',
-            title: t('sidebar.saved_searches'),
-            selected: isRouteSelected(pathname, PageRoutes.savedSearches, fromView),
-            as: createMenuItemComponent({
-              to: PageRoutes.savedSearches + pruneSearchQueryParams(currentSearchQuery),
-            }),
-          },
-        ],
+        items: profileShortcutItems,
       },
     ],
   };
