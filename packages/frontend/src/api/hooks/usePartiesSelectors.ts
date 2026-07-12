@@ -19,10 +19,6 @@ import type { ProfileType, SelfIdentifiedUserType } from './useParties.ts';
 /* ── Stable selector functions (never recreated, so React Query memoizes the result) ── */
 const selectCurrentEndUser = (parties: PartyFieldsFragment[]) => parties.find((p) => p.isCurrentEndUser);
 
-const selectEndUserUuid = (parties: PartyFieldsFragment[]) => parties.find((p) => p.isCurrentEndUser)?.partyUuid;
-
-const selectFirstPartyUuid = (parties: PartyFieldsFragment[]) => (parties as PartyFieldsFragment[])[0]?.partyUuid;
-
 const selectFirstPartyType = (parties: PartyFieldsFragment[]) => (parties as PartyFieldsFragment[])[0]?.partyType;
 
 const selectPartyIds = (parties: PartyFieldsFragment[]) => parties.map((p) => p.party);
@@ -87,19 +83,6 @@ const selectedGroupQueryOptions = {
 };
 
 /**
- * Returns the current party UUID.
- * Uses `select` to extract only the UUID from each subscription,
- * so re-renders only when the actual UUID changes.
- */
-export const useCurrentPartyUuid = (): string | undefined => {
-  const { data: selectedGroup = null } = useQuery(selectedGroupQueryOptions);
-  const { data: selectedPartyUuid } = useQuery({ ...selectedPartiesQueryOptions, select: selectFirstPartyUuid });
-  const { data: endUserUuid } = useQuery({ ...partiesQueryOptions, select: selectEndUserUuid });
-
-  return selectedGroup ? endUserUuid : selectedPartyUuid;
-};
-
-/**
  * Returns the selected profile type ('company' | 'person' | 'neutral').
  * Uses `select` on SELECTED_PARTIES to extract only the partyType.
  */
@@ -138,21 +121,6 @@ export const useCurrentEndUser = (): PartyFieldsFragment | undefined => {
   const { data } = useQuery({
     ...partiesQueryOptions,
     select: selectCurrentEndUser,
-  });
-  return data;
-};
-
-/**
- * Returns whether the user is self-identified.
- * Subscribes only to: IS_SELF_IDENTIFIED_USER (a boolean, minimal subscription).
- */
-export const useIsSelfIdentifiedUser = (): boolean => {
-  const { data = false } = useQuery({
-    queryKey: [QUERY_KEYS.IS_SELF_IDENTIFIED_USER],
-    staleTime: Number.POSITIVE_INFINITY,
-    enabled: false,
-    initialData: false,
-    queryFn: async () => false,
   });
   return data;
 };
