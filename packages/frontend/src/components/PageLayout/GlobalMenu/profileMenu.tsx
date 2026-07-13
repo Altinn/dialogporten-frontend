@@ -35,12 +35,14 @@ export function buildProfileMenu({
   pathname,
   currentSearchQuery,
   fromView,
+  hasOnlySelfParty,
 }: {
   t: (key: string, vars?: Record<string, string>) => string;
   currentEndUserName?: string;
   pathname: string;
   currentSearchQuery: string;
   fromView?: string;
+  hasOnlySelfParty: boolean;
 }): UseGlobalMenuProps {
   const menuGroups = {
     shortcuts: {
@@ -80,28 +82,32 @@ export function buildProfileMenu({
         to: PageRoutes.profile + pruneSearchQueryParams(currentSearchQuery),
       }),
       items: [
-        {
-          id: '1',
-          groupId: '2',
-          icon: HeartIcon,
-          size: 'md',
-          title: t('sidebar.profile.parties'),
-          selected: isRouteSelected(pathname, PageRoutes.partiesOverview, fromView),
-          as: createMenuItemComponent({
-            to: PageRoutes.partiesOverview + pruneSearchQueryParams(currentSearchQuery),
-          }),
-        },
-        {
-          id: '2',
-          groupId: '2',
-          icon: BellIcon,
-          size: 'md',
-          title: t('sidebar.profile.notifications'),
-          selected: isRouteSelected(pathname, PageRoutes.notifications, fromView),
-          as: createMenuItemComponent({
-            to: PageRoutes.notifications + pruneSearchQueryParams(currentSearchQuery),
-          }),
-        },
+        ...(hasOnlySelfParty
+          ? []
+          : ([
+              {
+                id: '1',
+                groupId: '2',
+                icon: HeartIcon,
+                size: 'md',
+                title: t('sidebar.profile.parties'),
+                selected: isRouteSelected(pathname, PageRoutes.partiesOverview, fromView),
+                as: createMenuItemComponent({
+                  to: PageRoutes.partiesOverview + pruneSearchQueryParams(currentSearchQuery),
+                }),
+              },
+              {
+                id: '2',
+                groupId: '2',
+                icon: BellIcon,
+                size: 'md',
+                title: t('sidebar.profile.notifications'),
+                selected: isRouteSelected(pathname, PageRoutes.notifications, fromView),
+                as: createMenuItemComponent({
+                  to: PageRoutes.notifications + pruneSearchQueryParams(currentSearchQuery),
+                }),
+              },
+            ] satisfies MenuItemProps[])),
         {
           id: '3',
           groupId: 'saved-searches',

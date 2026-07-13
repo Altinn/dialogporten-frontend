@@ -1,8 +1,11 @@
 import { Heading, PageBase, SettingsList, Toolbar } from '@altinn/altinn-components';
 import type { NotificationSettingsResponse, PartyFieldsFragment } from 'bff-types-generated';
 import { useTranslation } from 'react-i18next';
+import { Navigate } from 'react-router-dom';
 import { useParties } from '../../../api/hooks/useParties.ts';
+import { hasOnlySelfParty } from '../../../api/hooks/usePartiesSelectors.ts';
 import { usePageTitle } from '../../../hooks/usePageTitle';
+import { PageRoutes } from '../../routes.ts';
 import { useProfile } from '../useProfile';
 import { SettingsType, useSettings } from '../useSettings.tsx';
 
@@ -14,7 +17,7 @@ export interface NotificationAccountsType extends PartyFieldsFragment {
 export const NotificationsPage = () => {
   const { t } = useTranslation();
   const { isLoading: isLoadingUser } = useProfile();
-  const { isLoading: isLoadingParties } = useParties();
+  const { isLoading: isLoadingParties, parties } = useParties();
 
   usePageTitle({ baseTitle: t('sidebar.profile.notifications') });
 
@@ -40,6 +43,10 @@ export const NotificationsPage = () => {
       },
     },
   });
+
+  if (!isLoadingParties && hasOnlySelfParty(parties)) {
+    return <Navigate to={PageRoutes.profile} replace />;
+  }
 
   return (
     <PageBase>

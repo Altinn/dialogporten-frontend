@@ -27,6 +27,12 @@ const selectFirstPartyType = (parties: PartyFieldsFragment[]) => (parties as Par
 
 const selectPartyIds = (parties: PartyFieldsFragment[]) => parties.map((p) => p.party);
 
+/**
+ * True when the user has no parties besides themselves (the flattened `parties`
+ * array always contains the current end user's own entry).
+ */
+export const hasOnlySelfParty = (parties: PartyFieldsFragment[]): boolean => parties.length <= 1;
+
 const selectSelfIdentifiedUserType = (parties: PartyFieldsFragment[]): SelfIdentifiedUserType => {
   const endUser = parties.find((p) => p.isCurrentEndUser);
   if (!endUser || endUser.partyType !== 'SelfIdentified') return 'None';
@@ -166,6 +172,18 @@ export const useSelfIdentifiedUserType = (): SelfIdentifiedUserType => {
   const { data = 'None' } = useQuery({
     ...partiesQueryOptions,
     select: selectSelfIdentifiedUserType,
+  });
+  return data;
+};
+
+/**
+ * Returns whether the user has no parties besides themselves.
+ * Subscribes only to a derived boolean, for callers that don't otherwise need useParties().
+ */
+export const useHasOnlySelfParty = (): boolean => {
+  const { data = false } = useQuery({
+    ...partiesQueryOptions,
+    select: hasOnlySelfParty,
   });
   return data;
 };
