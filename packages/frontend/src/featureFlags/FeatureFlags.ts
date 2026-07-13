@@ -11,6 +11,7 @@ export const featureFlagDefinitions = [
   { key: 'inbox.enableAlertBanner', type: 'boolean', default: false },
   { key: 'dialogporten.disableSubscriptions', type: 'boolean', default: false },
   { key: 'auth.orgsNotReadyToDealWithDelegations', type: 'string-array', default: [] },
+  { key: 'profil.enableSIPhoneEdit', type: 'boolean', default: false },
   { key: 'profile.enableSetUserName', type: 'boolean', default: false },
 ] as const satisfies readonly FeatureFlagDefinition[];
 

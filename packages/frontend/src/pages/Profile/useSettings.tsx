@@ -143,6 +143,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
     selectedPartyIds,
     setSelectedPartyIds,
   } = useParties();
+  const enableSIPhoneEdit = useFeatureFlag<boolean>('profil.enableSIPhoneEdit');
   const enableSetUserName = useFeatureFlag<boolean>('profile.enableSetUserName');
   const siLegacyParties = useSILegacyParties();
   const hasSILegacyParty = siLegacyParties.length > 0;
@@ -529,7 +530,8 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
       icon: MobileIcon,
       title: t('profile.settings.mobile_phone'),
       value: user?.phoneNumber || '',
-      badge: getChangeSettingsBadge(user?.phoneNumber || ''),
+      disabled: isSelfIdentifiedUser && !enableSIPhoneEdit,
+      badge: isSelfIdentifiedUser && !enableSIPhoneEdit ? undefined : getChangeSettingsBadge(user?.phoneNumber || ''),
       variant: 'modal',
       children: (
         <ContactProfileDetails
@@ -537,7 +539,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
           source="krr"
           phoneNumber={user?.phoneNumber || ''}
           usedByItems={getUsedByPhoneNumber(user?.phoneNumber ?? '')}
-          isSelfIdentifiedUser={isSelfIdentifiedUser}
+          isSelfIdentifiedUser={enableSIPhoneEdit && isSelfIdentifiedUser}
           readOnly
         />
       ),
