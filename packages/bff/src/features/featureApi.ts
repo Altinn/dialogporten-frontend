@@ -9,6 +9,7 @@ const defaultFeatureFlags: Record<string, boolean> = {
   'dialogporten.disableFlipNamesPatch': false,
   'inbox.enableAlertBanner': false,
   'dialogporten.disableSubscriptions': false,
+  'profil.enableSIPhoneEdit': false,
   'profile.enableSetUserName': false,
 };
 
