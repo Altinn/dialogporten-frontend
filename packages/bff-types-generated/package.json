@@ -23,9 +23,9 @@
   },
   "devDependencies": {
     "@graphql-codegen/typescript": "^4.1.6",
-    "@graphql-codegen/typescript-graphql-request": "^6.3.0",
+    "@graphql-codegen/typescript-graphql-request": "7.1.0",
     "@graphql-codegen/typescript-resolvers": "^4.5.1",
-    "@parcel/watcher": "^2.5.1",
+    "@parcel/watcher": "2.5.6",
     "@swc-node/register": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
