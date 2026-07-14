@@ -36,6 +36,7 @@ import type { TimelineSegmentWithTransmissions } from '../../utils/transmissions
 import { ActivityLogModal } from '../ActivityLog/activityLogModal.tsx';
 import { AdditionalInfoContent } from '../AdditionalInfoContent/AdditionalInfoContent.tsx';
 import { MainContentReference } from '../MainContentReference/MainContentReference.tsx';
+import { SeenByModal } from '../SeenByModal/SeenByModal.tsx';
 import { DialogHelp } from './DialogHelp.tsx';
 
 interface DialogDetailsProps {
@@ -44,6 +45,11 @@ interface DialogDetailsProps {
     isOpen: boolean;
     setIsOpen: (isOpen: boolean) => void;
   };
+  seenByLogModalProps: {
+    isOpen: boolean;
+    setIsOpen: (isOpen: boolean) => void;
+  };
+  onAccessInfoClick: () => void;
   isAuthLevelTooLow?: boolean;
   isLoading?: boolean;
   dialogToken?: string;
@@ -234,6 +240,8 @@ export const DialogDetails = ({
   isLoading,
   isAuthLevelTooLow,
   activityModalProps,
+  seenByLogModalProps,
+  onAccessInfoClick,
   dialogToken,
   onMessageEvent,
 }: DialogDetailsProps): ReactElement => {
@@ -420,12 +428,6 @@ export const DialogDetails = ({
         title={dialog.title}
         sentCount={dialog.sentCount}
         receivedCount={dialog.receivedCount}
-        activityLog={{
-          onClick: () => {
-            activityModalProps.setIsOpen(true);
-          },
-          label: t('dialog.activity_log.title'),
-        }}
         attachmentsCount={dialog.attachments?.length}
         extendedStatusLabel={dialog.extendedStatusLabel}
       />
@@ -433,7 +435,15 @@ export const DialogDetails = ({
         sender={dialog.sender}
         recipient={dialog.receiver}
         recipientLabel={t('word.to')}
-        seenByLog={dialog.seenByLog}
+        seenByLog={dialog.seenByLog && { ...dialog.seenByLog, onClick: () => seenByLogModalProps.setIsOpen(true) }}
+        activityLog={{
+          label: t('dialog.activity_log.title'),
+          onClick: () => activityModalProps.setIsOpen(true),
+        }}
+        accessInfo={{
+          label: t('dialog.access_info.menu_item'),
+          onClick: onAccessInfoClick,
+        }}
       >
         <p>{dialog.summary}</p>
         {dialogToken && (
@@ -504,6 +514,12 @@ export const DialogDetails = ({
         items={activityHistoryItems}
         isOpen={activityModalProps.isOpen}
         setIsOpen={activityModalProps.setIsOpen}
+      />
+      <SeenByModal
+        title={dialog.title}
+        items={dialog.seenByLog?.items}
+        isOpen={seenByLogModalProps.isOpen}
+        onClose={() => seenByLogModalProps.setIsOpen(false)}
       />
     </>
   );
