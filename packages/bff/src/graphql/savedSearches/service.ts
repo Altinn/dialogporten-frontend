@@ -7,6 +7,17 @@ interface CreateSavedSearch {
   profile: ProfileTable;
 }
 
+export const listSavedSearches = async (pid: string | undefined) => {
+  if (!SavedSearchRepository) return [];
+
+  return await SavedSearchRepository.createQueryBuilder('s')
+    .where('s.profilePid = :pid', { pid })
+    .orderBy("CASE WHEN s.name IS NULL OR s.name = '' THEN 1 ELSE 0 END", 'ASC')
+    .addOrderBy('s.name', 'ASC')
+    .addOrderBy('s.updatedAt', 'DESC')
+    .getMany();
+};
+
 export const createSavedSearch = async ({ name, data, profile }: CreateSavedSearch) => {
   const newSavedSearch = new SavedSearch();
   newSavedSearch.name = name;

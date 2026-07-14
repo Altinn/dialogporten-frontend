@@ -2,204 +2,11 @@ import { logger } from '@altinn/dialogporten-node-logger';
 import axios, { isAxiosError } from 'axios';
 import { type Context, getSessionToken } from '../../auth/oidc.js';
 import config from '../../config.ts';
-import { GroupRepository, PartyRepository, ProfileRepository } from '../../db.ts';
-import { Group, Party, ProfileTable } from '../../entities.ts';
-import type { PreselectedPartyOperationType } from '../types/mutation.ts';
-import type {
-  NotificationSettingsInputData,
-  SendVerificationCodeInputData,
-  VerifyAddressInputData,
-} from '../types/profile.ts';
+import type { NotificationSettingsInputData, SendVerificationCodeInputData, VerifyAddressInputData } from './types.ts';
 
 const { platformBaseURL } = config;
 
 const platformProfileAPI_url = platformBaseURL + '/profile/api/v1/';
-
-export const getOrCreateProfile = async (context: Context): Promise<ProfileTable> => {
-  const pid = typeof context.session.get('pid') === 'string' ? (context.session.get('pid') as string) : '';
-
-  if (!pid) {
-    logger.error('No pid provided');
-    throw new Error('PID is required to get or create a profile');
-  }
-
-  const profile = await ProfileRepository!.createQueryBuilder('profile').where('profile.pid = :pid', { pid }).getOne();
-  const token = getSessionToken(context);
-  const groups = token ? await getFavoritesFromCore(token.access_token) : [];
-
-  if (!profile) {
-    const newProfile = new ProfileTable();
-    newProfile.pid = pid;
-    newProfile.groups = [];
-
-    const savedProfile = await ProfileRepository!.save(newProfile);
-    if (!savedProfile) {
-      throw new Error('Fatal: Not able to create new profile');
-    }
-    return savedProfile;
-  }
-
-  profile.groups = groups;
-  return profile;
-};
-
-export const addFavoriteParty = async (context: Context, partyUuid: string) => {
-  const token = getSessionToken(context);
-  if (!token) {
-    logger.error('No token found in session');
-    return [];
-  }
-
-  try {
-    const response = await axios.put(
-      `${platformProfileAPI_url}users/current/party-groups/favorites/${partyUuid}`,
-      null,
-      {
-        timeout: 30000,
-        headers: {
-          Authorization: `Bearer ${token.access_token}`,
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-      },
-    );
-    return [response.data as Group];
-  } catch (error) {
-    logger.error(error, 'Error adding favorite:');
-    throw new Error('Failed to add favorite');
-  }
-};
-
-// Below code to be rewritten when Altinn Core API is updated
-// to support adding parties to groups
-export const addFavoritePartyToGroup = async (pid: string, partyId: string, categoryName: string) => {
-  const currentProfile = await ProfileRepository!.findOne({
-    where: { pid },
-  });
-  if (!currentProfile) throw new Error('Profile not found');
-
-  let group = await GroupRepository!.findOne({
-    where: { name: categoryName, profile: { pid } },
-  });
-  if (!group) {
-    const newGroup = new Group();
-    newGroup.profile = currentProfile;
-    newGroup.name = categoryName;
-    group = await GroupRepository!.save(newGroup);
-    if (!group) throw new Error('Fatal: Not able to create new group');
-  }
-
-  let party = await PartyRepository!.findOne({
-    where: { id: partyId },
-    relations: ['groups'],
-  });
-
-  if (!party) {
-    party = new Party();
-    party.id = partyId;
-    party.groups = [group];
-  } else {
-    const alreadyInGroup = party.groups.some((g) => g.id === group.id);
-    if (!alreadyInGroup) {
-      party.groups = [...party.groups, group];
-    } else {
-      logger.info(`Party ${partyId} already exists in group ${categoryName}, skipping addition`);
-      return currentProfile;
-    }
-  }
-
-  await PartyRepository!.save(party);
-
-  const updatedProfile = await ProfileRepository!.findOne({
-    where: { pid: currentProfile.pid },
-    relations: ['groups'],
-  });
-  if (!updatedProfile) throw new Error('Failed to update profile');
-  return updatedProfile;
-};
-
-export const deleteFavoriteParty = async (context: Context, partyUuid: string) => {
-  const token = getSessionToken(context);
-  if (!token) {
-    logger.error('No token found in session');
-    return [];
-  }
-
-  return await axios
-    .delete(`${platformProfileAPI_url}users/current/party-groups/favorites/${partyUuid}`, {
-      timeout: 30000,
-      headers: {
-        Authorization: `Bearer ${token.access_token}`,
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-    })
-    .catch((error) => {
-      logger.error({ status: error?.status, message: error?.message }, 'Error deleting favorite party:');
-      return;
-    });
-};
-
-export const getUserFromCore = async (context: Context) => {
-  const token = getSessionToken(context);
-  if (!token) {
-    logger.error('No token found in session');
-    return;
-  }
-  try {
-    const { data } = await axios.get(`${platformProfileAPI_url}users/current`, {
-      timeout: 30000,
-      headers: {
-        Authorization: `Bearer ${token.access_token}`,
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-    });
-    if (!data) {
-      logger.error('No core profile data found');
-      return;
-    }
-    return data;
-  } catch (error) {
-    logger.error(error, 'Error fetching user from core:');
-  }
-  return;
-};
-
-export const setPreSelectedParty = async (
-  context: Context,
-  partyUuid: string,
-  operationType: PreselectedPartyOperationType,
-) => {
-  if (operationType === 'set' && !partyUuid) {
-    throw new Error('partyUuid is required');
-  }
-
-  return patchProfileSettings(context, {
-    preSelectedPartyUuid: operationType === 'set' ? partyUuid : null,
-  });
-};
-
-export const updateShowClientUnits = async (context: Context, value: boolean) => {
-  return patchProfileSettings(context, { showClientUnits: value });
-};
-
-export const getFavoritesFromCore = async (accessToken: string) => {
-  try {
-    const { data } = await axios.get(`${platformProfileAPI_url}users/current/party-groups/favorites`, {
-      timeout: 30000,
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-    });
-    return [data as Group];
-  } catch {
-    logger.error('getFavoritesFromCore: Error fetching core profile favorite data, returning empty array');
-    return [];
-  }
-};
 
 export const getNotificationsettingsForCurrentUser = async (context: Context) => {
   const token = getSessionToken(context);
@@ -238,33 +45,6 @@ export const getNotificationsettingsForCurrentUser = async (context: Context) =>
     }
   }
   return;
-};
-
-const patchProfileSettings = async (context: Context, payload: Record<string, unknown>) => {
-  const token = getSessionToken(context);
-  if (!token) {
-    throw new Error('No token found in session');
-  }
-  try {
-    const response = await axios.patch(`${platformProfileAPI_url}users/current/profilesettings`, payload, {
-      timeout: 30000,
-      headers: {
-        Authorization: `Bearer ${token.access_token}`,
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-    });
-    return response.data;
-  } catch (error) {
-    if (error && typeof error === 'object' && 'response' in error) {
-      const axiosError = error as { response?: { status?: number; data?: unknown } };
-      logger.error(
-        { status: axiosError.response?.status, responseData: axiosError.response?.data },
-        'Platform API error patching profilesettings:',
-      );
-    }
-    throw error;
-  }
 };
 
 export const sendVerificationCode = async (data: SendVerificationCodeInputData, context: Context) => {
@@ -409,10 +189,6 @@ export const getNotificationAddressByOrgNumber = async (orgnr: string, context: 
   return data;
 };
 
-export const updateShowDeletedEntities = async (context: Context, shouldShowDeletedEntities: boolean) => {
-  return patchProfileSettings(context, { shouldShowDeletedEntities });
-};
-
 export const verifyAddress = async (data: VerifyAddressInputData, context: Context) => {
   const token = getSessionToken(context);
   if (!token) {
@@ -473,10 +249,6 @@ export const getVerifiedAddresses = async (context: Context) => {
     logger.error(error, 'Error fetching verified addresses for user:');
     return [];
   }
-};
-
-export const updateLanguageInCore = async (context: Context, language: string): Promise<void> => {
-  await patchProfileSettings(context, { language });
 };
 
 export const updateSIPrivatePhoneNumber = async (value: string | null, context: Context) => {

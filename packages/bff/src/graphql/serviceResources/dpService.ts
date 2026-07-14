@@ -1,15 +1,9 @@
 import { logger } from '@altinn/dialogporten-node-logger';
 import axios from 'axios';
-import { extendType, stringArg } from 'nexus';
-import { type Context, getSessionToken } from '../../../auth/oidc.js';
-import config from '../../../config.js';
-import type { LocalizedText } from './resourceRegistry.ts';
-import {
-  type ServiceResourceResponseDTO,
-  type TransformedServiceResource,
-  getLocalizedTitle,
-  getSupportedLanguage,
-} from './serviceResources.js';
+import { type Context, getSessionToken } from '../../auth/oidc.js';
+import config from '../../config.js';
+import type { LocalizedText } from './registryTypes.ts';
+import { type ServiceResourceResponseDTO, type TransformedServiceResource, getLocalizedTitle } from './service.ts';
 
 interface DpLocalization {
   languageCode: string;
@@ -120,20 +114,3 @@ export async function getDpServiceResources(langs: string[], context: Context): 
     return [];
   }
 }
-
-export const DpServiceResourceQuery = extendType({
-  type: 'Query',
-  definition(t) {
-    t.list.field('DPServiceResourcesList', {
-      type: 'ServiceResource',
-      description: 'List of service resources from Dialogporten, used for filtering dialogs by service',
-      args: {
-        lang: stringArg({ description: 'Preferred language for title', default: 'nb' }),
-      },
-      resolve: async (_, args, context) => {
-        const preferredLangs = getSupportedLanguage('nb', args.lang);
-        return await getDpServiceResources(preferredLangs, context);
-      },
-    });
-  },
-});
