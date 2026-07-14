@@ -2,8 +2,8 @@
  * Configuration file for service resource filtering
  * Contains environment-specific ID exclusions and other filtering configurations
  */
-import { at23TestIds, prodTestIDs, tt02TestIds } from './serviceResourceIds.js';
-import type { ResourceFilters } from './serviceResources.js';
+import type { ResourceFilters } from './service.ts';
+import { at23TestIds, prodTestIDs, tt02TestIds } from './testIds.ts';
 
 /**
  * Shared configuration across environments

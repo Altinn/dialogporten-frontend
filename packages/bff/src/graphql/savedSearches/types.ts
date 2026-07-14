@@ -1,14 +1,5 @@
 import { inputObjectType, list, objectType } from 'nexus';
 
-export const Response = objectType({
-  name: 'Response',
-  definition(t) {
-    t.nonNull.boolean('success');
-    t.string('message');
-    t.nullable.int('retryAfter');
-  },
-});
-
 export const SavedSearchInput = inputObjectType({
   name: 'SavedSearchInput',
   definition(t) {

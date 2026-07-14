@@ -1,8 +1,7 @@
 import { logger } from '@altinn/dialogporten-node-logger';
-import { extendType, list, objectType, stringArg } from 'nexus';
-import config from '../../../config.js';
-import type { LocalizedText, Resource } from './resourceRegistry.ts';
-import { getEnvironmentConfig } from './serviceResourcesConfig.js';
+import config from '../../config.js';
+import { getEnvironmentConfig } from './config.ts';
+import type { LocalizedText, Resource } from './registryTypes.ts';
 
 export interface TransformedServiceResource {
   id: string;
@@ -15,8 +14,7 @@ export interface ServiceResourceResponseDTO extends Omit<TransformedServiceResou
   title: string;
 }
 
-const serviceResourcesRedisKey = 'arbeidsflate-service-resources:v5';
-let refreshTimer: NodeJS.Timeout | null = null;
+export const serviceResourcesRedisKey = 'arbeidsflate-service-resources:v5';
 
 export function getSupportedLanguage(defaultLanguage: 'nb' | 'nn' | 'en', language?: string): string[] {
   const supportedLanguages = ['nb', 'nn', 'en'];
@@ -94,7 +92,7 @@ export interface ResourceFilters {
 
 export async function storeServiceResourcesInRedis(filters?: ResourceFilters): Promise<TransformedServiceResource[]> {
   try {
-    const { default: redisClient } = await import('../../../redisClient.ts');
+    const { default: redisClient } = await import('../../redisClient.ts');
     const serviceResources = await fetchServiceResources();
 
     // Apply filters to service resources before transformation
@@ -236,7 +234,7 @@ export async function getServiceResourcesFromRedis(
   filters?: ServiceResourceQueryFilters,
 ): Promise<ServiceResourceResponseDTO[]> {
   try {
-    const { default: redisClient } = await import('../../../redisClient.ts');
+    const { default: redisClient } = await import('../../redisClient.ts');
     const data = await redisClient.get(serviceResourcesRedisKey);
     let resources: TransformedServiceResource[];
 
@@ -255,138 +253,3 @@ export async function getServiceResourcesFromRedis(
     return [];
   }
 }
-
-// Background refresh function - attempts to refresh data but keeps old version on failure
-async function refreshServiceResourcesInBackground(): Promise<void> {
-  try {
-    const { default: redisClient } = await import('../../../redisClient.ts');
-    const existingData = await redisClient.get(serviceResourcesRedisKey);
-
-    try {
-      await storeServiceResourcesInRedis(getEnvironmentConfig(config.platformBaseURL));
-      logger.info('Service resources refreshed successfully in background');
-    } catch (refreshError) {
-      logger.warn(refreshError, 'Failed to refresh service resources, keeping existing data');
-      // If we have existing data and refresh fails, extend its TTL
-      if (existingData) {
-        await redisClient.expire(serviceResourcesRedisKey, 60 * 60 * 24);
-      }
-    }
-  } catch (error) {
-    logger.error(error, 'Background service resources refresh failed completely');
-  }
-}
-
-export function startServiceResourcesRefresh(): void {
-  if (refreshTimer) {
-    return;
-  }
-
-  refreshTimer = setInterval(
-    () => {
-      void refreshServiceResourcesInBackground();
-    },
-    6 * 60 * 60 * 1000,
-  );
-
-  logger.info('Service resources background refresh started');
-}
-
-// Stop periodic refresh (useful for cleanup)
-export function stopServiceResourcesRefresh(): void {
-  if (refreshTimer) {
-    clearInterval(refreshTimer);
-    refreshTimer = null;
-    logger.info('Service resources background refresh stopped');
-  }
-}
-
-export const ServiceResource = objectType({
-  name: 'ServiceResource',
-  definition(t) {
-    t.string('id', {
-      description: 'Service resource identifier',
-      resolve: (resource) => {
-        return resource.id;
-      },
-    });
-    t.string('title', {
-      description: 'Localized title of the service resource',
-      resolve: (resource) => {
-        return resource.title;
-      },
-    });
-    t.string('org', {
-      description: 'Organization (=service owner) code for the service resource',
-      resolve: (resource) => {
-        return resource.org;
-      },
-    });
-    t.string('resourceType', {
-      description: 'Type of the service resource',
-      resolve: (resource) => {
-        return resource.resourceType;
-      },
-    });
-  },
-});
-
-export const ServiceResourceQuery = extendType({
-  type: 'Query',
-  definition(t) {
-    t.list.field('RRServiceResourcesList', {
-      type: 'ServiceResource',
-      description: 'List of service resources from Altinn resource registry',
-      args: {
-        resourceType: list(
-          stringArg({
-            description: 'Filter by resource types',
-          }),
-        ),
-        ids: list(
-          stringArg({
-            description: 'Filter by resource identifiers',
-          }),
-        ),
-        org: list(
-          stringArg({
-            description: 'Filter by organization codes',
-          }),
-        ),
-        lang: stringArg({ description: 'Preferred language for title', default: 'nb' }),
-      },
-      resolve: async (_, args) => {
-        const preferredLangs = getSupportedLanguage('nb', args.lang);
-
-        const filters: {
-          resourceType?: string[];
-          ids?: string[];
-          org?: string[];
-        } = {};
-
-        if (args.resourceType) {
-          filters.resourceType = args.resourceType.filter(
-            (type: string | null | undefined): type is string => type !== null && type !== undefined,
-          );
-        }
-
-        if (args.ids) {
-          filters.ids = args.ids.filter(
-            (id: string | null | undefined): id is string => id !== null && id !== undefined,
-          );
-        }
-
-        if (args.org) {
-          filters.org = args.org.filter(
-            (orgCode: string | null | undefined): orgCode is string => orgCode !== null && orgCode !== undefined,
-          );
-        }
-
-        return await getServiceResourcesFromRedis(
-          preferredLangs,
-          Object.keys(filters).length > 0 ? filters : undefined,
-        );
-      },
-    });
-  },
-});

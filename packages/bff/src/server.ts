@@ -20,7 +20,7 @@ import alertBannerApi from './features/alertBannerApi.ts';
 import featureApi from './features/featureApi.js';
 import graphqlApi from './graphql/api.ts';
 import { fastifyHeaders } from './graphql/fastifyHeaders.ts';
-import { startServiceResourcesRefresh, stopServiceResourcesRefresh } from './graphql/types/index.js';
+import { startServiceResourcesRefresh, stopServiceResourcesRefresh } from './graphql/serviceResources/refresh.ts';
 import { otelSDK } from './instrumentation.ts';
 import redisClient from './redisClient.ts';
 

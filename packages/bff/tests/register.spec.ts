@@ -26,7 +26,7 @@ describe('setUsername', () => {
 
   it('returns success on 200', async () => {
     (axios.post as unknown as Mock).mockResolvedValueOnce({ status: 200 });
-    const { setUsername } = await import('../src/graphql/functions/register.ts');
+    const { setUsername } = await import('../src/graphql/username/service.ts');
     await expect(setUsername(PARTY, 'ola.nordmann')).resolves.toEqual({ success: true });
   });
 
@@ -34,13 +34,13 @@ describe('setUsername', () => {
     (axios.post as unknown as Mock).mockRejectedValueOnce(
       makeAxiosError(400, { validationErrors: [{ detail: 'Username too short' }] }),
     );
-    const { setUsername } = await import('../src/graphql/functions/register.ts');
+    const { setUsername } = await import('../src/graphql/username/service.ts');
     await expect(setUsername(PARTY, 'abc')).resolves.toEqual({ success: false, message: 'Username too short' });
   });
 
   it('maps 409 to username-in-use', async () => {
     (axios.post as unknown as Mock).mockRejectedValueOnce(makeAxiosError(409, {}));
-    const { setUsername } = await import('../src/graphql/functions/register.ts');
+    const { setUsername } = await import('../src/graphql/username/service.ts');
     await expect(setUsername(PARTY, 'ola.nordmann')).resolves.toEqual({
       success: false,
       message: 'Username is already in use by another party',
@@ -49,7 +49,7 @@ describe('setUsername', () => {
 
   it('maps 418 to managed-by-Altinn-2', async () => {
     (axios.post as unknown as Mock).mockRejectedValueOnce(makeAxiosError(418, {}));
-    const { setUsername } = await import('../src/graphql/functions/register.ts');
+    const { setUsername } = await import('../src/graphql/username/service.ts');
     await expect(setUsername(PARTY, 'ola.nordmann')).resolves.toEqual({
       success: false,
       message: 'Setting of usernames is currently managed by Altinn 2',
