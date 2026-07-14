@@ -47,10 +47,6 @@ export const getStoredURL = (): string | null => {
   return null;
 };
 
-export const createMessageBoxLink = (partyUuid?: string) => {
-  return createChangePartyAndRedirect(partyUuid, getFrontPageURL() + '/ui/Messagebox/');
-};
-
 export type hostEnv = 'local' | 'at23' | 'tt02' | 'yt' | 'prod';
 
 export const getEnvByHost = (): hostEnv => {
@@ -70,19 +66,6 @@ export const getEnvByHost = (): hostEnv => {
     return 'tt02';
   }
   return 'prod';
-};
-
-/* Used for redirect from logo in header */
-const getFrontPageURL = () => {
-  const hostMap: Record<hostEnv, string> = {
-    local: 'https://at23.altinn.cloud',
-    at23: 'https://at23.altinn.cloud',
-    tt02: 'https://tt02.altinn.no',
-    yt: 'https://yt.altinn.cloud',
-    prod: 'https://altinn.no',
-  };
-
-  return hostMap[getEnvByHost()] || hostMap.prod;
 };
 
 export const createChangePartyAndRedirect = (partyUuid?: string, goTo?: string) => {

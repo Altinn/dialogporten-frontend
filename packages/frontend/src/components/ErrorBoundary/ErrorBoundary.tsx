@@ -90,8 +90,6 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 }
 
-export default ErrorBoundary;
-
 export const withErrorBoundary = (Component: React.ReactNode, componentName: string) => {
   return <ErrorBoundaryWrapper componentName={componentName}>{Component}</ErrorBoundaryWrapper>;
 };
