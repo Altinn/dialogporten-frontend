@@ -24,6 +24,7 @@ export const DialogDetailsPage = () => {
   const { id: dialogId } = useParams();
   const [isActivityLogOpen, setIsActivityLogOpen] = useState<boolean>(false);
   const [isAccessInfoOpen, setIsAccessInfoOpen] = useState<boolean>(false);
+  const [isSeenByLogOpen, setIsSeenByLogOpen] = useState<boolean>(false);
   const { parties } = useParties();
   const { t } = useTranslation();
   const location = useLocation();
@@ -55,6 +56,7 @@ export const DialogDetailsPage = () => {
         },
       ] as MenuItemProps[])
     : [];
+  const seenByLog = dialog?.seenByLog;
   const contextMenu: ContextMenuProps = {
     id: 'dialog-context-menu',
     placement: 'right',
@@ -63,6 +65,18 @@ export const DialogDetailsPage = () => {
     items: [
       ...delegationLink,
       ...(dialogId && dialog ? createLabelUpdateActions(dialogId, dialog?.label ?? [], dialog?.unread) : []),
+      ...(seenByLog?.items?.length
+        ? [
+            {
+              id: 'seenby-log',
+              groupId: 'logs',
+              title: seenByLog.title,
+              as: 'button' as const,
+              icon: seenByLog,
+              onClick: () => setIsSeenByLogOpen(true),
+            },
+          ]
+        : []),
       {
         id: 'activity-log',
         groupId: 'logs',
@@ -130,6 +144,11 @@ export const DialogDetailsPage = () => {
           isOpen: isActivityLogOpen,
           setIsOpen: setIsActivityLogOpen,
         }}
+        seenByLogModalProps={{
+          isOpen: isSeenByLogOpen,
+          setIsOpen: setIsSeenByLogOpen,
+        }}
+        onAccessInfoClick={() => setIsAccessInfoOpen(true)}
       />
       <DialogAccessInfoModal
         dialogId={dialogId}

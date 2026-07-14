@@ -24,7 +24,7 @@
     "doctor": "npx react-doctor@latest"
   },
   "dependencies": {
-    "@altinn/altinn-components": "0.68.15",
+    "@altinn/altinn-components": "0.68.17",
     "@microsoft/applicationinsights-react-js": "19.4.1",
     "@microsoft/applicationinsights-web": "3.4.3",
     "@navikt/aksel-icons": "^7.37.0",
