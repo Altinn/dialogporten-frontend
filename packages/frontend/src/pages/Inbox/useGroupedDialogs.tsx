@@ -11,7 +11,7 @@ import { CheckmarkIcon, InformationSquareIcon } from '@navikt/aksel-icons';
 import { SystemLabel } from 'bff-types-generated';
 import type { TFunction } from 'i18next';
 import type { ReactNode } from 'react';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Trans } from 'react-i18next';
 import { Link, type LinkProps, useSearchParams } from 'react-router-dom';
@@ -133,9 +133,29 @@ const getDialogListDescription = ({
 
 const BANKRUPTCY_SERVICE_RESOURCE = 'urn:altinn:resource:app_brg_konkursbehandling';
 
-const sortGroupedDialogs = (arr: DialogListItemProps[]) => {
-  return arr.sort((a, b) => new Date(b.updatedAt ?? 0).getTime() - new Date(a.updatedAt ?? 0).getTime());
+const sortGroupedDialogs = (arr: DialogListItemProps[]): DialogListItemProps[] => {
+  return arr
+    .map((item) => ({ item, updatedAt: new Date(item.updatedAt ?? 0).getTime() }))
+    .sort((a, b) => b.updatedAt - a.updatedAt)
+    .map(({ item }) => item);
 };
+
+const getSearchTitle = (
+  t: TFunction,
+  viewType: InboxViewType,
+  count: number,
+  hasNextPage: boolean,
+  filterScope: FilterScope,
+) =>
+  (hasNextPage ? t('word.moreThan') : '') +
+  t(`inbox.heading.title.${viewType}`, { count }) +
+  (viewType !== 'archive' && viewType !== 'bin' && filterScope !== 'ALL'
+    ? t(`inbox.heading.scope.${filterScope}`)
+    : '');
+
+const DialogListItemLink = ({ href = '', ...props }: Omit<LinkProps, 'to'> & { href?: string }) => (
+  <Link state={{ fromView: location.pathname }} {...props} to={`${href}${location.search}`} />
+);
 
 const stripTitlelessSingleGroup = (
   groups: Record<string, DialogListGroupPropsSort>,
@@ -187,12 +207,6 @@ const useGroupedDialogs = ({
   const [bulkedIds, setBulkedIds] = useGlobalState<string[]>(QUERY_KEYS.BULK_MODE_SELECTED_IDS, []);
   const collapseGroups = !!displaySearchResults;
   const filterScope = (searchParams.get('systemLabel') || 'ALL') as FilterScope;
-  const getSearchTitle = (viewType: InboxViewType, count: number, hasNextPage: boolean, filterScope: FilterScope) =>
-    (hasNextPage ? t('word.moreThan') : '') +
-    t(`inbox.heading.title.${viewType}`, { count }) +
-    (viewType !== 'archive' && viewType !== 'bin' && filterScope !== 'ALL'
-      ? t(`inbox.heading.scope.${filterScope}`)
-      : '');
 
   const onScopeChange = (scope: FilterScope) => {
     if (!onFiltersChange || !filterState) return;
@@ -218,118 +232,131 @@ const useGroupedDialogs = ({
 
   const clockPrefix = t('word.clock_prefix');
   const formatString = `do MMMM yyyy ${clockPrefix ? `'${clockPrefix}' ` : ''}HH.mm`;
-  const allWithinSameYear = items.every((d) => new Date(d.contentUpdatedAt).getFullYear() === new Date().getFullYear());
   const useDateGrouping = !displaySearchResults;
 
-  const onToggleBulkId = (id: string) => {
-    if (bulkedIds?.includes(id)) {
-      const newBulkedIds = bulkedIds.filter((bulkedId) => bulkedId !== id);
-      setBulkedIds(newBulkedIds);
-      if (!newBulkedIds.length) {
-        setBulkMode(false);
+  const onToggleBulkId = useCallback(
+    (id: string) => {
+      if (bulkedIds?.includes(id)) {
+        const newBulkedIds = bulkedIds.filter((bulkedId) => bulkedId !== id);
+        setBulkedIds(newBulkedIds);
+        if (!newBulkedIds.length) {
+          setBulkMode(false);
+        }
+      } else {
+        setBulkedIds([...bulkedIds, id]);
       }
-    } else {
-      setBulkedIds([...bulkedIds, id]);
-    }
-  };
+    },
+    [bulkedIds, setBulkedIds, setBulkMode],
+  );
 
-  const formatDialogItem = (item: InboxItemInput, groupId: string): DialogListItemProps => {
-    const contextMenuId = 'dialog-context-menu-' + item.id;
-    const contextMenu: ContextMenuProps = {
-      id: contextMenuId,
-      placement: 'right',
-      color: item.recipient.type === 'person' ? 'person' : 'company',
-      items: [
-        {
-          id: 'select-multiple',
-          groupId: 'mark-as',
-          title: t('bulk_action.select_multiple'),
-          icon: CheckmarkIcon,
-          onClick: () => {
-            setBulkMode(true);
-            setBulkedIds([item.id]);
+  const formatDialogItem = useCallback(
+    (item: InboxItemInput, groupId: string): DialogListItemProps => {
+      const contextMenuId = 'dialog-context-menu-' + item.id;
+      const contextMenu: ContextMenuProps = {
+        id: contextMenuId,
+        placement: 'right',
+        color: item.recipient.type === 'person' ? 'person' : 'company',
+        items: [
+          {
+            id: 'select-multiple',
+            groupId: 'mark-as',
+            title: t('bulk_action.select_multiple'),
+            icon: CheckmarkIcon,
+            onClick: () => {
+              setBulkMode(true);
+              setBulkedIds([item.id]);
+            },
           },
-        },
-        ...(item ? systemLabelActions(item.id, item.label, item.unread) : []),
-        ...(item.seenByLabel
-          ? [
-              {
-                id: 'seenby-log',
-                groupId: 'logs',
-                title: item.seenByLabel,
-                icon: item.seenByLog,
-                onClick: () => {
-                  onSeenByLogModalChange({
-                    title: item.title,
-                    dialogId: item.id,
-                    items: item.seenByLog.items,
-                  });
+          ...(item ? systemLabelActions(item.id, item.label, item.unread) : []),
+          ...(item.seenByLabel
+            ? [
+                {
+                  id: 'seenby-log',
+                  groupId: 'logs',
+                  title: item.seenByLabel,
+                  icon: item.seenByLog,
+                  onClick: () => {
+                    onSeenByLogModalChange({
+                      title: item.title,
+                      dialogId: item.id,
+                      items: item.seenByLog.items,
+                    });
+                  },
                 },
-              },
-            ]
-          : []),
-        {
-          id: 'access-info',
-          groupId: 'logs',
-          title: t('dialog.access_info.menu_item'),
-          icon: InformationSquareIcon,
-          onClick: () => onAccessInfoModalChange({ dialogId: item.id, title: item.title }),
-        },
-      ].map((menuItem) => ({ ...menuItem, id: `${contextMenuId}-${menuItem.id}` })),
-      'aria-label': t('dialog.context_menu.label', { title: item.title }),
-    };
+              ]
+            : []),
+          {
+            id: 'access-info',
+            groupId: 'logs',
+            title: t('dialog.access_info.menu_item'),
+            icon: InformationSquareIcon,
+            onClick: () => onAccessInfoModalChange({ dialogId: item.id, title: item.title }),
+          },
+        ].map((menuItem) => ({ ...menuItem, id: `${contextMenuId}-${menuItem.id}` })),
+        'aria-label': t('dialog.context_menu.label', { title: item.title }),
+      };
 
-    const disabledBulkItem = bulkMode && bulkedIds.length >= MAX_COUNT_BULK_DIALOGS && !bulkedIds.includes(item.id);
+      const disabledBulkItem = bulkMode && bulkedIds.length >= MAX_COUNT_BULK_DIALOGS && !bulkedIds.includes(item.id);
 
-    return {
-      groupId,
-      title: item.title,
-      id: item.id,
-      recipientLabel: t('word.to'),
-      archivedAtLabel: item.viewType === 'archive' ? t(`status.archive`) : '',
-      trashedAtLabel: item.viewType === 'bin' ? t(`status.bin`) : '',
-      sender: item.sender,
-      summary: item.summary,
-      recipient: item.recipient,
-      color: item.recipient.type?.toLowerCase() as 'person' | 'company',
-      grouped: shouldGroup,
-      attachmentsCount: item.guiAttachmentCount,
-      seenByLog: item.seenByLog,
-      unread: item.unread,
-      unreadLabel: t('word.unread'),
-      unreadItemsLabel: t('word.unread_content'),
-      unreadItems: item.unreadItems,
-      selectable: bulkMode,
-      tabIndex: bulkMode ? 0 : undefined,
-      selected: bulkedIds?.includes(item.id),
-      controls: bulkMode ? (
-        <ItemSelect
-          checked={bulkedIds?.includes(item.id)}
-          onClick={() => onToggleBulkId(item.id)}
-          disabled={disabledBulkItem}
-        />
-      ) : (
-        <ContextMenu {...contextMenu} />
-      ),
-      status: getDialogStatus(item.status, t),
-      extendedStatusLabel: item.extendedStatus,
-      updatedAt: item.contentUpdatedAt,
-      updatedAtLabel: format(item.contentUpdatedAt, formatString),
-      dueAt: getDueAtProps(item.dueAt, item.status, t, (date) => format(date, formatString)),
-      sentCount: item.fromPartyTransmissionsCount ?? 0,
-      receivedCount: item.fromServiceOwnerTransmissionsCount ?? 0,
-      ariaLabel: item.title,
-      ...(bulkMode ? { onClick: () => onToggleBulkId(item.id) } : {}),
-      disabled: disabledBulkItem,
-      as: bulkMode
-        ? 'button'
-        : (props: LinkProps) => (
-            <Link state={{ fromView: location.pathname }} {...props} to={`/inbox/${item.id}/${location.search}`} />
-          ),
-    };
-  };
+      return {
+        groupId,
+        title: item.title,
+        id: item.id,
+        recipientLabel: t('word.to'),
+        archivedAtLabel: item.viewType === 'archive' ? t(`status.archive`) : '',
+        trashedAtLabel: item.viewType === 'bin' ? t(`status.bin`) : '',
+        sender: item.sender,
+        summary: item.summary,
+        recipient: item.recipient,
+        color: item.recipient.type?.toLowerCase() as 'person' | 'company',
+        grouped: shouldGroup,
+        attachmentsCount: item.guiAttachmentCount,
+        seenByLog: item.seenByLog,
+        unread: item.unread,
+        unreadLabel: t('word.unread'),
+        unreadItemsLabel: t('word.unread_content'),
+        unreadItems: item.unreadItems,
+        selectable: bulkMode,
+        tabIndex: bulkMode ? 0 : undefined,
+        selected: bulkedIds?.includes(item.id),
+        controls: bulkMode ? (
+          <ItemSelect
+            checked={bulkedIds?.includes(item.id)}
+            onClick={() => onToggleBulkId(item.id)}
+            disabled={disabledBulkItem}
+          />
+        ) : (
+          <ContextMenu {...contextMenu} />
+        ),
+        status: getDialogStatus(item.status, t),
+        extendedStatusLabel: item.extendedStatus,
+        updatedAt: item.contentUpdatedAt,
+        updatedAtLabel: format(item.contentUpdatedAt, formatString),
+        dueAt: getDueAtProps(item.dueAt, item.status, t, (date) => format(date, formatString)),
+        sentCount: item.fromPartyTransmissionsCount ?? 0,
+        receivedCount: item.fromServiceOwnerTransmissionsCount ?? 0,
+        ariaLabel: item.title,
+        ...(bulkMode ? { onClick: () => onToggleBulkId(item.id) } : { href: `/inbox/${item.id}/` }),
+        disabled: disabledBulkItem,
+        as: bulkMode ? 'button' : DialogListItemLink,
+      };
+    },
+    [
+      t,
+      format,
+      formatString,
+      shouldGroup,
+      bulkMode,
+      bulkedIds,
+      onToggleBulkId,
+      systemLabelActions,
+      onSeenByLogModalChange,
+      onAccessInfoModalChange,
+      setBulkMode,
+      setBulkedIds,
+    ],
+  );
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: This hook does not specify all of its dependencies
   const grouped = useMemo((): UseGroupedDialogsOutput => {
     if (isLoading) {
       return {
@@ -369,14 +396,14 @@ const useGroupedDialogs = ({
       return {
         groupedDialogs,
         groups: stripTitlelessSingleGroup(groups),
-        title: getSearchTitle(viewType, items.length, hasNextPage, filterScope),
+        title: getSearchTitle(t, viewType, items.length, hasNextPage, filterScope),
       };
     }
 
     const groupedItems: GroupedItem[] = [];
     const bankruptcyDialogs = items.filter((item) => item.serviceResource === BANKRUPTCY_SERVICE_RESOURCE);
     const regularDialogs = items.filter((item) => item.serviceResource !== BANKRUPTCY_SERVICE_RESOURCE);
-    const title = getSearchTitle(viewType, regularDialogs.length, hasNextPage, filterScope);
+    const title = getSearchTitle(t, viewType, regularDialogs.length, hasNextPage, filterScope);
 
     if (bankruptcyDialogs.length > 0) {
       groupedItems.push({
@@ -395,7 +422,18 @@ const useGroupedDialogs = ({
         orderIndex: null,
       });
     } else {
-      regularDialogs.reduce((acc, item, _, list) => {
+      const currentYear = new Date().getFullYear();
+      const allWithinSameYear = items.every((item) => new Date(item.contentUpdatedAt).getFullYear() === currentYear);
+
+      const countByViewType = new Map<string, number>();
+      if (displaySearchResults) {
+        for (const item of regularDialogs) {
+          countByViewType.set(item.viewType, (countByViewType.get(item.viewType) ?? 0) + 1);
+        }
+      }
+
+      const groupsById = new Map(groupedItems.map((group) => [group.id, group]));
+      for (const item of regularDialogs) {
         const updatedAt = new Date(item.contentUpdatedAt);
         const month = format(updatedAt, 'LLLL');
         const capitalizedMonth = month.charAt(0).toUpperCase() + month.slice(1);
@@ -409,11 +447,11 @@ const useGroupedDialogs = ({
         const groupByDate = !displaySearchResults;
         const label = displaySearchResults
           ? t(`inbox.heading.search_results.${groupKey}`, {
-              count: list.filter((i) => i.viewType === groupKey).length,
+              count: countByViewType.get(groupKey) ?? 0,
             })
           : groupKey;
 
-        const existingGroup = acc.find((group) => group.id === groupKey);
+        const existingGroup = groupsById.get(groupKey);
 
         if (existingGroup) {
           existingGroup.items.push(item);
@@ -424,11 +462,11 @@ const useGroupedDialogs = ({
               ? updatedAt.getMonth()
               : updatedAt.getFullYear()
             : viewTypeIndex;
-          acc.push({ id: groupKey, title: label, description: '', items: [item], orderIndex });
+          const newGroup = { id: groupKey, title: label, description: '', items: [item], orderIndex };
+          groupsById.set(groupKey, newGroup);
+          groupedItems.push(newGroup);
         }
-
-        return acc;
-      }, groupedItems);
+      }
     }
 
     const groups = Object.fromEntries(
@@ -446,7 +484,20 @@ const useGroupedDialogs = ({
     }
 
     return { groupedDialogs, groups: stripTitlelessSingleGroup(groups), title };
-  }, [items, displaySearchResults, t, format, viewType, allWithinSameYear, isLoading, isFetchingNextPage]);
+  }, [
+    items,
+    displaySearchResults,
+    useDateGrouping,
+    collapseGroups,
+    t,
+    format,
+    formatDialogItem,
+    viewType,
+    isLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    filterScope,
+  ]);
 
   return { ...grouped, description };
 };

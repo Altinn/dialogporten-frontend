@@ -208,7 +208,7 @@ export const useDialogs = ({
     previousPartyIdsRef.current = partyIds;
   }, [data, selectedParties]);
 
-  const content = data?.pages.flatMap((page) => page.searchDialogs?.items ?? []) || [];
+  const content = useMemo(() => data?.pages.flatMap((page) => page.searchDialogs?.items ?? []) ?? [], [data]);
   const lastPage = data?.pages?.[data?.pages.length - 1];
   const dialogCountInconclusive = isDialogCountInconclusive({
     partyIds,
@@ -216,7 +216,10 @@ export const useDialogs = ({
     itemsIsNull: lastPage?.searchDialogs?.items === null,
   });
   const orgMap = useMemo(() => buildOrganizationMap(organizations), [organizations]);
-  const dialogs = mapDialogToInboxItems(content, partyGraph, orgMap, format, disableFlipNamesPatch);
+  const dialogs = useMemo(
+    () => mapDialogToInboxItems(content, partyGraph, orgMap, format, disableFlipNamesPatch),
+    [content, partyGraph, orgMap, format, disableFlipNamesPatch],
+  );
   /*  isFetching && isPlaceholderData is used to determine if we are fetching the initial data for the query key */
   const isActuallyLoading = isLoading || (isFetching && isPlaceholderData);
 

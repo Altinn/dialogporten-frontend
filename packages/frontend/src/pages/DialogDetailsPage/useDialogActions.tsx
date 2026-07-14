@@ -13,6 +13,8 @@ import { useGlobalState } from '../../useGlobalState.ts';
 import { getNavigationOrigin } from '../../utils/viewType.ts';
 import { pruneSearchQueryParams } from '../Inbox/queryParams.ts';
 
+const EXCLUSIVE_LABELS = [SystemLabel.Default, SystemLabel.Archive, SystemLabel.Bin];
+
 export const useDialogActions = () => {
   const { t } = useTranslation();
   const { openSnackbar } = useSnackbar();
@@ -23,8 +25,6 @@ export const useDialogActions = () => {
   const [archiveLoading, setArchiveLoading] = useGlobalState<boolean>(QUERY_KEYS.SET_ARCHIVE_LABEL_LOADING, false);
   const [deleteLoading, setDeleteLoading] = useGlobalState<boolean>(QUERY_KEYS.SET_DELETE_LABEL_LOADING, false);
   const [undoLoading, setUndoLoading] = useGlobalState<boolean>(QUERY_KEYS.SET_UNDO_LABEL_LOADING, false);
-
-  const EXCLUSIVE_LABELS = [SystemLabel.Default, SystemLabel.Archive, SystemLabel.Bin];
 
   const handleUpdateLabel = useCallback(
     async (
@@ -61,96 +61,112 @@ export const useDialogActions = () => {
     [openSnackbar, t, queryClient],
   );
 
-  return (dialogId: string, currentLabels: SystemLabel[], isUnread: boolean): MenuItemProps[] => {
-    const currentLabel = (currentLabels || []).find((label) => EXCLUSIVE_LABELS.includes(label)) || SystemLabel.Default;
-    const items: MenuItemProps[] = [];
+  return useCallback(
+    (dialogId: string, currentLabels: SystemLabel[], isUnread: boolean): MenuItemProps[] => {
+      const currentLabel =
+        (currentLabels || []).find((label) => EXCLUSIVE_LABELS.includes(label)) || SystemLabel.Default;
+      const items: MenuItemProps[] = [];
 
-    if (dialogId && !isUnread) {
-      items.push({
-        id: 'mark-as-unread',
-        groupId: 'mark-as-unread',
-        icon: EyeClosedIcon,
-        title: t('dialog.toolbar.mark_as_unread'),
-        'aria-label': t('dialog.toolbar.mark_as_unread'),
-        as: 'button',
-        onClick: () => {
-          if (location.pathname.startsWith('/inbox/')) {
-            // Escape before a subscription of dialog cases a refetch and removes the label
-            const navigationOrigin = getNavigationOrigin(state);
-            navigate(navigationOrigin + pruneSearchQueryParams(search.toString()));
-          }
-          void handleUpdateLabel(
-            dialogId,
-            SystemLabel.MarkedAsUnopened,
-            'dialog.toolbar.toast.mark_as_unread_success',
-            'dialog.toolbar.toast.mark_as_unread_failed',
-            setDeleteLoading,
-          );
-        },
-        disabled: undoLoading,
-      });
-    }
+      if (dialogId && !isUnread) {
+        items.push({
+          id: 'mark-as-unread',
+          groupId: 'mark-as-unread',
+          icon: EyeClosedIcon,
+          title: t('dialog.toolbar.mark_as_unread'),
+          'aria-label': t('dialog.toolbar.mark_as_unread'),
+          as: 'button',
+          onClick: () => {
+            if (location.pathname.startsWith('/inbox/')) {
+              // Escape before a subscription of dialog cases a refetch and removes the label
+              const navigationOrigin = getNavigationOrigin(state);
+              navigate(navigationOrigin + pruneSearchQueryParams(search.toString()));
+            }
+            void handleUpdateLabel(
+              dialogId,
+              SystemLabel.MarkedAsUnopened,
+              'dialog.toolbar.toast.mark_as_unread_success',
+              'dialog.toolbar.toast.mark_as_unread_failed',
+              setDeleteLoading,
+            );
+          },
+          disabled: undoLoading,
+        });
+      }
 
-    if ([SystemLabel.Archive, SystemLabel.Bin].includes(currentLabel) && dialogId) {
-      items.push({
-        id: 'undo',
-        groupId: 'system-labels',
-        icon: InboxIcon,
-        title: t('dialog.toolbar.move_undo'),
-        'aria-label': t('dialog.toolbar.move_undo'),
-        as: 'button',
-        onClick: () =>
-          handleUpdateLabel(
-            dialogId,
-            SystemLabel.Default,
-            'dialog.toolbar.toast.move_to_inbox_success',
-            'dialog.toolbar.toast.move_to_inbox_failed',
-            setUndoLoading,
-          ),
-        disabled: archiveLoading,
-      });
-    }
+      if ([SystemLabel.Archive, SystemLabel.Bin].includes(currentLabel) && dialogId) {
+        items.push({
+          id: 'undo',
+          groupId: 'system-labels',
+          icon: InboxIcon,
+          title: t('dialog.toolbar.move_undo'),
+          'aria-label': t('dialog.toolbar.move_undo'),
+          as: 'button',
+          onClick: () =>
+            handleUpdateLabel(
+              dialogId,
+              SystemLabel.Default,
+              'dialog.toolbar.toast.move_to_inbox_success',
+              'dialog.toolbar.toast.move_to_inbox_failed',
+              setUndoLoading,
+            ),
+          disabled: archiveLoading,
+        });
+      }
 
-    if (currentLabel !== SystemLabel.Archive && dialogId) {
-      items.push({
-        id: 'archive',
-        groupId: 'system-labels',
-        icon: ArchiveIcon,
-        title: t('dialog.toolbar.move_to_archive'),
-        'aria-label': t('dialog.toolbar.move_to_archive'),
-        as: 'button',
-        onClick: () =>
-          handleUpdateLabel(
-            dialogId,
-            SystemLabel.Archive,
-            'dialog.toolbar.toast.move_to_archive_success',
-            'dialog.toolbar.toast.move_to_archive_failed',
-            setArchiveLoading,
-          ),
-        disabled: deleteLoading,
-      });
-    }
+      if (currentLabel !== SystemLabel.Archive && dialogId) {
+        items.push({
+          id: 'archive',
+          groupId: 'system-labels',
+          icon: ArchiveIcon,
+          title: t('dialog.toolbar.move_to_archive'),
+          'aria-label': t('dialog.toolbar.move_to_archive'),
+          as: 'button',
+          onClick: () =>
+            handleUpdateLabel(
+              dialogId,
+              SystemLabel.Archive,
+              'dialog.toolbar.toast.move_to_archive_success',
+              'dialog.toolbar.toast.move_to_archive_failed',
+              setArchiveLoading,
+            ),
+          disabled: deleteLoading,
+        });
+      }
 
-    if (currentLabel !== SystemLabel.Bin && dialogId) {
-      items.push({
-        id: 'delete',
-        groupId: 'system-labels',
-        icon: TrashIcon,
-        title: t('dialog.toolbar.move_to_bin'),
-        'aria-label': t('dialog.toolbar.move_to_bin'),
-        as: 'button',
-        onClick: () =>
-          handleUpdateLabel(
-            dialogId,
-            SystemLabel.Bin,
-            'dialog.toolbar.toast.move_to_bin_success',
-            'dialog.toolbar.toast.move_to_bin_failed',
-            setDeleteLoading,
-          ),
-        disabled: undoLoading,
-      });
-    }
+      if (currentLabel !== SystemLabel.Bin && dialogId) {
+        items.push({
+          id: 'delete',
+          groupId: 'system-labels',
+          icon: TrashIcon,
+          title: t('dialog.toolbar.move_to_bin'),
+          'aria-label': t('dialog.toolbar.move_to_bin'),
+          as: 'button',
+          onClick: () =>
+            handleUpdateLabel(
+              dialogId,
+              SystemLabel.Bin,
+              'dialog.toolbar.toast.move_to_bin_success',
+              'dialog.toolbar.toast.move_to_bin_failed',
+              setDeleteLoading,
+            ),
+          disabled: undoLoading,
+        });
+      }
 
-    return items;
-  };
+      return items;
+    },
+    [
+      t,
+      handleUpdateLabel,
+      archiveLoading,
+      deleteLoading,
+      undoLoading,
+      setArchiveLoading,
+      setDeleteLoading,
+      setUndoLoading,
+      navigate,
+      state,
+      search,
+    ],
+  );
 };
