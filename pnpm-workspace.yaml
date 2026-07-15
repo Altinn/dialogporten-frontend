@@ -1,6 +1,9 @@
 packages:
   - "packages/*"
 
+minimumReleaseAge: 10080
+trustPolicy: no-downgrade
+
 catalog:
   "@graphql-tools/stitch": ^9.4.23
   "@playwright/test": ^1.52.0
