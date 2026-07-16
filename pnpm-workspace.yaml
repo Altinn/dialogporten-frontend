@@ -1,7 +1,7 @@
 packages:
   - "packages/*"
 
-minimumReleaseAge: 10080
+minimumReleaseAge: 4320
 trustPolicy: no-downgrade
 
 catalog:
