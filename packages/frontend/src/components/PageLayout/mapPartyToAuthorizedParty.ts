@@ -1,7 +1,6 @@
 import type { AuthorizedParty } from '@altinn/altinn-components';
-import type { PartyFieldsFragment } from 'bff-types-generated';
+import type { PartyFieldsFragment, SubPartyFieldsFragment } from 'bff-types-generated';
 
-//TODO: Date of birth not available in party API
 /**
  * Extracts the identifier number from URN format
  * Format: "urn:altinn:{type}:identifier-no:{number}"
@@ -14,18 +13,17 @@ export const extractIdentifierNumber = (partyId?: string): string | undefined =>
   return parts[1];
 };
 
-//@ts-ignore: any type - match expecing from AuthorizedParty
-const toAuthorizedParty = (party) => {
+const toAuthorizedParty = (party: PartyFieldsFragment | SubPartyFieldsFragment): AuthorizedParty => {
   return {
     partyUuid: party.partyUuid,
     name: party.name,
     partyId: party.party,
     type: party.partyType,
     isDeleted: party.isDeleted,
-    onlyHierarchyElementWithNoAccess: party.hasOnlyAccessToSubParties ?? false,
+    onlyHierarchyElementWithNoAccess: 'hasOnlyAccessToSubParties' in party ? party.hasOnlyAccessToSubParties : false,
     authorizedResources: [],
     authorizedRoles: [],
-    dateOfBirth: party.dateOfBirth,
+    dateOfBirth: party.dateOfBirth ?? undefined,
     organizationNumber: party.partyType === 'Organization' ? extractIdentifierNumber(party.party) : undefined,
   };
 };

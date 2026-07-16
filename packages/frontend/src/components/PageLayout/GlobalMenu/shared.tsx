@@ -25,7 +25,6 @@ export const isRouteSelected = (currentRoute: string, targetRoute: PageRoutes, f
 
 export const createMenuItemComponent =
   ({ to, isExternal = false }: { to: string; isExternal?: boolean }): React.FC<MenuItemProps> =>
-  (props) => {
-    // @ts-ignore
+  ({ onChange, ...props }) => {
     return <Link {...props} to={to} {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})} />;
   };

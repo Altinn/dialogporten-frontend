@@ -82,7 +82,6 @@ const alertBannerMock = http.get('/api/alert-banner', () => {
 
 export const streamMock = http.get('/api/graphql/stream', async () => {
   const stream = new ReadableStream({
-    //ts-ignore
     start() {},
   });
 
