@@ -25,6 +25,7 @@ export type InMemoryStore = {
   services?: ServiceResource[];
   verifiedAddresses?: { value: string; addressType: string }[];
   notificationSettings?: NotificationSettingsResponse[];
+  username?: string | null;
 };
 
 const inMemoryStore: InMemoryStore = {
@@ -48,6 +49,7 @@ const inMemoryStore: InMemoryStore = {
       resourceIncludeList: [],
     },
   ],
+  username: null,
 };
 
 const isAuthenticatedMock = http.get('/api/isAuthenticated', () => {
@@ -573,6 +575,60 @@ const mutateAddFavoritePartyMock = graphql.mutation('AddFavoriteParty', (req) =>
   });
 });
 
+const mutateSetPreSelectedPartyMock = graphql.mutation('SetPreSelectedParty', (req) => {
+  const { partyUuid, operationType } = req.variables;
+
+  if (inMemoryStore.profile?.user?.profileSettingPreference) {
+    inMemoryStore.profile.user.profileSettingPreference.preselectedPartyUuid =
+      operationType === 'unset' ? null : (partyUuid ?? null);
+  }
+
+  return HttpResponse.json({
+    data: {
+      setPreSelectedParty: {
+        success: true,
+        message: 'Preselected party updated',
+      },
+    },
+  });
+});
+
+const getPartyUsernameMock = graphql.query('PartyUsername', () => {
+  return HttpResponse.json({
+    data: {
+      partyUsername: {
+        username: inMemoryStore.username ?? null,
+      },
+    },
+  });
+});
+
+const mutateSetUsernameMock = graphql.mutation('SetUsername', (req) => {
+  const { username } = req.variables;
+
+  if (username === 'taken.username') {
+    return HttpResponse.json({
+      data: {
+        setUsername: {
+          success: false,
+          message: 'Username is already taken',
+        },
+      },
+    });
+  }
+
+  inMemoryStore.username = username ?? null;
+
+  return HttpResponse.json({
+    data: {
+      setUsername: {
+        success: true,
+        message: 'Username updated',
+      },
+    },
+  });
+});
+
 const mutateDeleteFavoritePartyMock = graphql.mutation('DeleteFavoriteParty', (req) => {
   const { partyId } = req.variables;
 
@@ -699,6 +755,9 @@ export const handlers = [
   mutateUpdateProfileSettingPreferenceMock,
   mutateAddFavoritePartyMock,
   mutateDeleteFavoritePartyMock,
+  mutateSetPreSelectedPartyMock,
+  getPartyUsernameMock,
+  mutateSetUsernameMock,
   getServiceResourcesMock,
   getFilterServiceResourcesMock,
   dialogAccessInfoMock,
