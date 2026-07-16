@@ -708,8 +708,7 @@ export const aggregateFilterState = (filterState: FilterState, viewType: InboxVi
   const presets = presetFiltersByView[viewType];
   if (!presets) return filterState;
 
-  // @ts-ignore
-  const asArray = (v: unknown): DialogStatus[] => (v == null ? [] : Array.isArray(v) ? v : [v]);
+  const asArray = <T,>(v: T | T[] | null | undefined): T[] => (v == null ? [] : Array.isArray(v) ? v : [v]);
 
   return {
     ...filterState,
