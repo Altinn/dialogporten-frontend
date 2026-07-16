@@ -9,6 +9,9 @@ import {
   appURLBin,
   appURLDrafts,
   appURLInbox,
+  appURLProfileLanding,
+  appURLProfileNotifications,
+  appURLProfileParties,
   appURLSavedSearches,
   appURLSent,
   appUrlWithPlaywrightId,
@@ -23,12 +26,18 @@ if (!fs.existsSync(REPORTS_DIR)) {
   fs.mkdirSync(REPORTS_DIR, { recursive: true });
 }
 
-const expectWithFilterViolations = async (violations) => {
-  const filteredViolations = violations.filter((violation) => VIOLATION_FILTERS.includes(violation.impact));
+// TODO: drop once @altinn/altinn-components ships accessible SVG icons for linkIcon/modal-header
+// icons (tracked as a design-system bug, not something fixable in this repo).
+const KNOWN_ALTINN_COMPONENTS_A11Y_ISSUES = ['svg-img-alt'];
+
+const expectWithFilterViolations = async (violations, disabledRules: string[] = []) => {
+  const filteredViolations = violations
+    .filter((violation) => VIOLATION_FILTERS.includes(violation.impact))
+    .filter((violation) => !disabledRules.includes(violation.id));
   expect(filteredViolations).toEqual([]);
 };
 
-const testAccessibility = async (page: Page, url: string, name: string) => {
+const testAccessibility = async (page: Page, url: string, name: string, disabledRules: string[] = []) => {
   await page.goto(url);
   await page.waitForLoadState('networkidle');
   const accessibilityScanResults = await new AxeBuilder({ page }).withTags(WCAG_TAGS_CONFIG).analyze();
@@ -44,7 +53,7 @@ const testAccessibility = async (page: Page, url: string, name: string) => {
 
   console.info(`Accessibility report generated: ${reportPath}`);
 
-  await expectWithFilterViolations(accessibilityScanResults.violations);
+  await expectWithFilterViolations(accessibilityScanResults.violations, disabledRules);
 };
 
 test.describe('Axe test', () => {
@@ -55,11 +64,18 @@ test.describe('Axe test', () => {
     { name: 'Archive', path: appURLArchived },
     { name: 'SavedSearches', path: appURLSavedSearches },
     { name: 'Bin', path: appURLBin },
+    { name: 'ProfileLanding', path: appURLProfileLanding, disabledRules: KNOWN_ALTINN_COMPONENTS_A11Y_ISSUES },
+    { name: 'ProfileParties', path: appURLProfileParties, disabledRules: KNOWN_ALTINN_COMPONENTS_A11Y_ISSUES },
+    {
+      name: 'ProfileNotifications',
+      path: appURLProfileNotifications,
+      disabledRules: KNOWN_ALTINN_COMPONENTS_A11Y_ISSUES,
+    },
   ];
 
-  for (const { name, path } of testCases) {
+  for (const { name, path, disabledRules } of testCases) {
     test(`${name} - should not have any automatically detectable accessibility issues`, async ({ page }) => {
-      await testAccessibility(page, path, name);
+      await testAccessibility(page, path, name, disabledRules);
     });
   }
 
@@ -149,5 +165,19 @@ test.describe('Axe test', () => {
     await page.getByRole('button', { name: 'add' }).click();
     const accessibilityScanResultsFilterDropdown = await new AxeBuilder({ page }).withTags(WCAG_TAGS_CONFIG).analyze();
     await expectWithFilterViolations(accessibilityScanResultsFilterDropdown.violations);
+  });
+
+  test('should not have any automatically detectable accessibility issues for the profile settings modal', async ({
+    page,
+  }) => {
+    await page.goto(appURLProfileLanding);
+    await page.waitForLoadState('networkidle');
+
+    await page.getByRole('button', { name: 'Språk/language' }).click();
+    const accessibilityScanResultsLanguageModal = await new AxeBuilder({ page }).withTags(WCAG_TAGS_CONFIG).analyze();
+    await expectWithFilterViolations(
+      accessibilityScanResultsLanguageModal.violations,
+      KNOWN_ALTINN_COMPONENTS_A11Y_ISSUES,
+    );
   });
 });

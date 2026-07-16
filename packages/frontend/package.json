@@ -12,7 +12,7 @@
     "test": "vitest run",
     "bench": "vitest bench --run",
     "codegen:playwright": "playwright codegen",
-    "test:playwright": "npx playwright test --project=playwright",
+    "test:playwright": "npx playwright test --project=playwright --project=playwright-heavy",
     "test:playwright:mobile": "npx playwright test --project=playwright-mobile",
     "test:accessibility": "npx playwright test --project=accessibility",
     "install:browsers": "playwright install",

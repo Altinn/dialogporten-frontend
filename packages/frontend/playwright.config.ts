@@ -3,6 +3,10 @@ import { config } from 'dotenv';
 
 config();
 
+// Specs that put heavy load on the browser (e.g. 15 000 mock parties, long multi-step
+// flows) — isolated into their own project/worker, see `playwright-heavy` below.
+const HEAVY_SPECS = ['**/partiesExtreme.spec.ts', '**/savedSearchParties.spec.ts'];
+
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -33,11 +37,20 @@ export default defineConfig({
   projects: [
     {
       name: 'playwright',
+      // Heavy specs run in their own project (own browser process/worker) so their
+      // memory/CPU footprint doesn't degrade the rest of the suite sharing one
+      // long-lived browser process under `workers: 1` on CI.
+      testIgnore: HEAVY_SPECS,
       use: { ...devices['Desktop Firefox'] },
     },
     {
       name: 'playwright-mobile',
       use: { ...devices['iPhone 13'] },
+    },
+    {
+      name: 'playwright-heavy',
+      testMatch: HEAVY_SPECS,
+      use: { ...devices['Desktop Firefox'] },
     },
     {
       name: 'accessibility',
