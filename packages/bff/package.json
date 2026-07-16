@@ -7,7 +7,9 @@
     "start": "./src/app.ts",
     "build": "tsc",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
+    "test": "vitest run --config vitest.unit.config.ts",
+    "test:all": "vitest run",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
     "dev": "mprocs 'pnpm dev:start' 'pnpm dev:types'",
     "dev:start": "nodemon --watch 'src/**' --ext 'ts' --exec './src/app.ts'",
     "dev:types": "pnpm typecheck --watch",
@@ -74,6 +76,8 @@
   },
   "devDependencies": {
     "@swc-node/register": "catalog:",
+    "@swc/core": "^1.15.43",
+    "@testcontainers/postgresql": "^12.0.4",
     "@tsconfig/node22": "catalog:",
     "@types/cookie-parser": "^1.4.8",
     "@types/cors": "^2.8.18",
@@ -86,6 +90,7 @@
     "tsconfig-paths": "^4.2.0",
     "tslib": "^2.8.1",
     "typescript": "catalog:",
+    "unplugin-swc": "^1.5.9",
     "vitest": "catalog:"
   },
   "type": "module"
