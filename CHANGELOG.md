@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.168.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.167.0...v1.168.0) (2026-07-17)
+
+
+### Features
+
+* Hide parties related settings if single user is logged in ([#4447](https://github.com/Altinn/dialogporten-frontend/issues/4447)) ([3f81eda](https://github.com/Altinn/dialogporten-frontend/commit/3f81eda79d7b525594d558d5bce5ee9f4cbdc696))
+* Move dialog details modal triggers, update AC ([#4457](https://github.com/Altinn/dialogporten-frontend/issues/4457)) ([7a30a8e](https://github.com/Altinn/dialogporten-frontend/commit/7a30a8eb184ccd5991a513cdcd2c4b97e0625826))
+
+
+### Bug Fixes
+
+* **bff:** gzip GraphQL responses larger than 10 kB ([#4477](https://github.com/Altinn/dialogporten-frontend/issues/4477)) ([8897000](https://github.com/Altinn/dialogporten-frontend/commit/8897000e6847b4bcc5e76e563d190826c86967b3))
+* Restore SI sms feature flag guard ([#4451](https://github.com/Altinn/dialogporten-frontend/issues/4451)) ([996f432](https://github.com/Altinn/dialogporten-frontend/commit/996f4324272f88a7406cf459fb3c89d4954adf29))
+
 ## [1.167.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.166.2...v1.167.0) (2026-07-10)
 
 
