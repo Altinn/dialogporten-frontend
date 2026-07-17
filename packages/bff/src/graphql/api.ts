@@ -9,6 +9,7 @@ import { createHandler } from 'graphql-http/lib/use/fastify';
 import config from '../config.ts';
 import { encryptPersonUrnsInResponse } from '../party/personUrnTransformers.ts';
 import { decryptPersonUrnsDeep } from '../party/transformPersonUrns.ts';
+import { graphqlCompression } from './compression.ts';
 import { bffSchema, dialogportenSchema } from './schema.ts';
 
 const plugin: FastifyPluginAsync = async (fastify) => {
@@ -66,6 +67,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
   fastify.post(
     '/api/graphql',
     {
+      compress: graphqlCompression,
       preHandler: (request, reply, callback) => {
         /* Allow graphiql session to renew token since there will no be race conditions in the flow, with multiple requests */
         const shouldRefreshToken = request.headers.referer?.includes('/api/graphiql') ?? false;
