@@ -9,6 +9,7 @@ export function useGlobalStringState(queryKey: string, defaultValue: string): [s
   const cached = queryClient.getQueryData<string>([queryKey]);
   const [local, setLocal] = useState<string>(cached ?? defaultValue);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: setValue is recreated every render; sync only when local changes
   useEffect(() => {
     setValue(local);
   }, [local]);

@@ -1,10 +1,10 @@
-import { defaultAppURL } from '../';
 import { PageRoutes } from '../../src/pages/routes';
+import { defaultAppURL } from '../';
 import { expect, test } from '../fixtures';
 import { getSidebarMenuItem, openContextMenuForDialog } from './common';
 
 test.describe('Move dialogs between archive and bin', () => {
-  test('Move to bin and archive', async ({ page, isMobile }) => {
+  test('Move to bin and archive', async ({ page }) => {
     await page.goto(defaultAppURL);
     await page.waitForLoadState('networkidle');
 

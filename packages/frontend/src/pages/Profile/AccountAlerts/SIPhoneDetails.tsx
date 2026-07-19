@@ -8,8 +8,8 @@ import {
   Label,
   Section,
   Typography,
-  DsValidationMessage as ValidationMessage,
   useSnackbar,
+  DsValidationMessage as ValidationMessage,
 } from '@altinn/altinn-components';
 import type { DsValidationMessageProps as ValidationMessageProps } from '@altinn/altinn-components/dist/types/lib/components/DsComponents';
 import { useQueryClient } from '@tanstack/react-query';
@@ -18,9 +18,9 @@ import { useTranslation } from 'react-i18next';
 import { updateSIPrivatePhoneNumber } from '../../../api/queries.ts';
 import { QUERY_KEYS } from '../../../constants/queryKeys.ts';
 import styles from './AccountAlertsChannelDetails.module.css';
-import { VerificationCodeStep } from './VerificationCodeStep.tsx';
 import { useIsAlreadyVerified, useVerificationFlow } from './common.ts';
 import { isValidCountryCodeInput, isValidPhoneNumber, joinPhone, parsePhone } from './phone.ts';
+import { VerificationCodeStep } from './VerificationCodeStep.tsx';
 
 export const SIPhoneDetails = ({ phoneNumber }: { phoneNumber?: string }) => {
   const { t } = useTranslation();

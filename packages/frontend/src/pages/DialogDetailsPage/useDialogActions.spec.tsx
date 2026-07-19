@@ -1,8 +1,7 @@
 import { renderHook } from '@testing-library/react';
 import { SystemLabel } from 'bff-types-generated';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, expect, it } from 'vitest';
-import { vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { useDialogActions } from './useDialogActions';
 
 vi.mock('@altinn/altinn-components', () => ({

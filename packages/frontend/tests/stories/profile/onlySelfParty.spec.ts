@@ -1,5 +1,5 @@
-import { appURLProfileLanding, appURLProfileNotifications, appURLProfileParties } from '../..';
 import { PageRoutes } from '../../../src/pages/routes';
+import { appURLProfileLanding, appURLProfileNotifications, appURLProfileParties } from '../..';
 import { expect, test } from '../../fixtures';
 
 const PARTIES_LINK_NAME = 'Aktører og favoritter';

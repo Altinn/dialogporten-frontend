@@ -7,7 +7,7 @@ test.describe('Inbox BookmarkModal', () => {
     await page.waitForLoadState('networkidle');
   });
 
-  test('Save search from Inbox: open modal, change title, save', async ({ page, isMobile }) => {
+  test('Save search from Inbox: open modal, change title, save', async ({ page }) => {
     const toolbarArea = page.getByTestId('inbox-toolbar');
     await toolbarArea.getByRole('button', { name: /legg til/i }).click();
     await toolbarArea.locator('#tool-filter-add').getByRole('menuitem', { name: 'Tjenesteeier' }).click();
@@ -26,7 +26,7 @@ test.describe('Inbox BookmarkModal', () => {
     await expect(page.getByRole('button', { name: 'Lagret søk' })).toBeVisible();
   });
 
-  test('Save search from Inbox: cancel closes modal without saving', async ({ page, isMobile }) => {
+  test('Save search from Inbox: cancel closes modal without saving', async ({ page }) => {
     const toolbarArea = page.getByTestId('inbox-toolbar');
     await toolbarArea.getByRole('button', { name: /legg til/i }).click();
     await toolbarArea.locator('#tool-filter-add').getByRole('menuitem', { name: 'Tjenesteeier' }).click();
@@ -43,7 +43,7 @@ test.describe('Inbox BookmarkModal', () => {
     await expect(page.getByRole('button', { name: 'Lagret søk' })).not.toBeVisible();
   });
 
-  test('Edit saved search: open edit modal, change title, save', async ({ page, isMobile }) => {
+  test('Edit saved search: open edit modal, change title, save', async ({ page }) => {
     const toolbarArea = page.getByTestId('inbox-toolbar');
     await toolbarArea.getByRole('button', { name: /legg til/i }).click();
     await toolbarArea.locator('#tool-filter-add').getByRole('menuitem', { name: 'Tjenesteeier' }).click();
@@ -68,7 +68,7 @@ test.describe('Inbox BookmarkModal', () => {
     await expect(page.getByRole('button', { name: 'Lagret søk' })).toBeVisible();
   });
 
-  test('Edit saved search: delete from modal removes saved search', async ({ page, isMobile }) => {
+  test('Edit saved search: delete from modal removes saved search', async ({ page }) => {
     const toolbarArea = page.getByTestId('inbox-toolbar');
     await toolbarArea.getByRole('button', { name: /legg til/i }).click();
     await toolbarArea.locator('#tool-filter-add').getByRole('menuitem', { name: 'Tjenesteeier' }).click();

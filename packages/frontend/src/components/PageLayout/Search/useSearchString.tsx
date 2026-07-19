@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { QUERY_KEYS } from '../../../constants/queryKeys.ts';
-import { VariableGlobalQueryParams, getSearchStringFromQueryParams } from '../../../pages/Inbox/queryParams.ts';
+import { getSearchStringFromQueryParams, VariableGlobalQueryParams } from '../../../pages/Inbox/queryParams.ts';
 import { useGlobalStringState } from '../../../useGlobalState.ts';
 
 export const useSearchString = () => {

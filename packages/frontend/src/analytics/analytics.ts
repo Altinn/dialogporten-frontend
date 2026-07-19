@@ -91,13 +91,7 @@ const startPageTracking = (pageInfo: {
   }
 };
 
-const stopPageTracking = (pageInfo: {
-  pathname: string;
-  search: string;
-  hash: string;
-  state: string;
-  url: string;
-}) => {
+const stopPageTracking = (pageInfo: { pathname: string; search: string; hash: string; state: string; url: string }) => {
   if (!applicationInsights) return;
 
   const currentPath = pageInfo.pathname;

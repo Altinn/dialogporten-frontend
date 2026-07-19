@@ -1,5 +1,5 @@
-import { defaultAppURL } from '../';
 import { PageRoutes } from '../../src/pages/routes';
+import { defaultAppURL } from '../';
 import { expect, test } from '../fixtures';
 import { getSidebarMenuItem } from './common';
 
@@ -31,7 +31,7 @@ test.describe('Testing filter bar', () => {
     await expect(page.getByRole('link', { name: 'Søknad om personlig bilskilt' })).toBeVisible();
   });
 
-  test('should remove filters when changing view types', async ({ page, isMobile }) => {
+  test('should remove filters when changing view types', async ({ page }) => {
     await page.getByRole('button', { name: 'Legg til filter' }).click();
     await page.getByLabel('Tjenesteeier').click();
     await page.getByRole('option', { name: 'Skatteetaten' }).click();

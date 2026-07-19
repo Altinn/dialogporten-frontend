@@ -1,5 +1,5 @@
-import { DialogStatus, SystemLabel } from 'bff-types-generated';
 import type { SearchDialogFieldsFragment } from 'bff-types-generated';
+import { DialogStatus, SystemLabel } from 'bff-types-generated';
 
 export const dialogs: SearchDialogFieldsFragment[] = [
   // Dialogs for current end user

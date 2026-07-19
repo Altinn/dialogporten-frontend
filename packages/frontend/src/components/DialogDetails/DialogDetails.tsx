@@ -360,14 +360,12 @@ export const DialogDetails = ({
 
   if (isAuthLevelTooLow) {
     return (
-      <>
-        <DsAlert data-color="danger">
-          <Heading data-size="xs">{t('error.dialog.auth_level_too_low')}</Heading>
-          <DsParagraph>
-            <a href="/api/login?idporten_loa_high=true">{t('error.dialog.auth_level_too_low.link')}</a>
-          </DsParagraph>
-        </DsAlert>
-      </>
+      <DsAlert data-color="danger">
+        <Heading data-size="xs">{t('error.dialog.auth_level_too_low')}</Heading>
+        <DsParagraph>
+          <a href="/api/login?idporten_loa_high=true">{t('error.dialog.auth_level_too_low.link')}</a>
+        </DsParagraph>
+      </DsAlert>
     );
   }
 

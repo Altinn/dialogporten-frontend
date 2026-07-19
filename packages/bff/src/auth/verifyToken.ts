@@ -3,7 +3,7 @@ import axios from 'axios';
 import type { FastifyPluginAsync, FastifyReply, FastifyRequest, IdPortenUpdatedToken, ProviderConfig } from 'fastify';
 import fp from 'fastify-plugin';
 import config from '../config.ts';
-import { type SessionStorageToken, fetchOpenIDConfig, handleLogout } from './oidc.ts';
+import { fetchOpenIDConfig, handleLogout, type SessionStorageToken } from './oidc.ts';
 
 export const refreshToken = async (request: FastifyRequest, providerconfig: ProviderConfig) => {
   const token: SessionStorageToken | undefined = request.session.get('token');

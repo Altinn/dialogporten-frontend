@@ -4,13 +4,13 @@ import {
   type AvatarVariant,
   type BadgeProps,
   Button,
+  formatDisplayName,
   type SettingsGroupProps,
   type SettingsItemProps,
   type SettingsItemVariant,
   SnackbarDuration,
   type ToolbarSearchProps,
   type UsedByLogItemProps,
-  formatDisplayName,
   useSnackbar,
 } from '@altinn/altinn-components';
 import {
@@ -38,11 +38,11 @@ import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.ts
 import { useFeatureFlag } from '../../featureFlags/useFeatureFlag.ts';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { pruneSearchQueryParams } from '../Inbox/queryParams.ts';
-import { useSavedSearches } from '../SavedSearches/useSavedSearches.tsx';
 import { PageRoutes } from '../routes.ts';
+import { useSavedSearches } from '../SavedSearches/useSavedSearches.tsx';
 import { AccountAlertsChannelDetails } from './AccountAlerts/AccountAlertsChannelDetails.tsx';
-import { ServiceResourceNotificationsDetails } from './AccountAlerts/ServiceResourceNotificationsDetails.tsx';
 import type { Channel } from './AccountAlerts/common.ts';
+import { ServiceResourceNotificationsDetails } from './AccountAlerts/ServiceResourceNotificationsDetails.tsx';
 import { ContactProfileDetails } from './ContactProfileDetails.tsx';
 import { LanguageSettingsContent } from './LanguageSettingsContent.tsx';
 import { UsernameSetting } from './UsernameSetting.tsx';

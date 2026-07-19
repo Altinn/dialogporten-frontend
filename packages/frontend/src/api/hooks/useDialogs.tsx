@@ -12,8 +12,8 @@ import { useAuthenticatedInfiniteQuery } from '../../auth/useAuthenticatedInfini
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useFeatureFlag } from '../../featureFlags/useFeatureFlag.ts';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
-import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
 import { normalizeFilterDefaults, removeUndefinedValues } from '../../pages/Inbox/filters';
+import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
 import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
 import { useProfile } from '../../pages/Profile/useProfile.tsx';
 import { getPartyIds, mapDialogToInboxItems, mergeDialogItems } from '../../utils/dialog.ts';
@@ -167,7 +167,7 @@ export const useDialogs = ({
       placeholderData: keepPreviousData,
     });
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  // biome-ignore lint/correctness/useExhaustiveDependencies: re-merge the recommendations cache only when new pages arrive
   useEffect(() => {
     if (!data) return;
 

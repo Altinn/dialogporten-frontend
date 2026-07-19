@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react';
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import { useTranslation } from 'react-i18next';
-import { type Mock, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
 import { createCustomWrapper } from '../../../../tests/test-utils.tsx';
 import { useProfile } from '../../../pages/Profile/useProfile.tsx';
 import { buildPartyGraph } from '../../../utils/partyGraph.ts';
