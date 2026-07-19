@@ -242,6 +242,15 @@ if (applicationInsightsEnabled) {
               }
             }
           }
+
+          // Errors from browser-injected scripts (e.g. __gCrWeb in Chrome iOS) have no file URL on any frame
+          const parsedFrames: { fileName?: string }[] = exceptions.flatMap(
+            (exception: { parsedStack?: { fileName?: string }[] }) =>
+              Array.isArray(exception.parsedStack) ? exception.parsedStack : [],
+          );
+          if (parsedFrames.length > 0 && !parsedFrames.some((frame) => frame.fileName)) {
+            return false;
+          }
           break;
         }
       }
