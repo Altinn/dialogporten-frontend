@@ -486,10 +486,10 @@
             </div>
 
             <div class="button-container">
-                <a href="https://altinn.no" class="back-button" role="button">
+                <a href="https://altinn.no" class="back-button">
                     Til vanlig Altinn-innboks
                 </a>
-                <a href="https://altinn.no" class="back-button" role="button">
+                <a href="https://altinn.no" class="back-button">
                     Go to regular Altinn inbox
                 </a>
             </div>
@@ -512,7 +512,7 @@
                         <p><strong>Tjenester påvirket:</strong> Altinn-innboks</p>
                     </div>
                     
-                    <a href="https://altinn.no" class="mobile-button" role="button">
+                    <a href="https://altinn.no" class="mobile-button">
                         Til vanlig Altinn-innboks
                     </a>
                 </div>
@@ -533,7 +533,7 @@
                         <p><strong>Affected services:</strong> Altinn inbox</p>
                     </div>
                     
-                    <a href="https://altinn.no" class="mobile-button" role="button">
+                    <a href="https://altinn.no" class="mobile-button">
                         Go to regular Altinn inbox
                     </a>
                 </div>
@@ -564,7 +564,7 @@
 
     <script>
         // Set the start time dynamically
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', () => {
             const now = new Date();
             
             // Norwegian time format
@@ -596,7 +596,7 @@
             if (startTimeElementMobileEn) startTimeElementMobileEn.textContent = timeStringEn;
 
             // Auto-refresh every 5 minutes to check if service is back
-            setTimeout(function() {
+            setTimeout(() => {
                 if (confirm('Vil du sjekke om Altinn er tilgjengelig igjen?')) {
                     window.location.href = 'https://altinn.no';
                 }
@@ -604,7 +604,7 @@
         });
 
         // Keyboard navigation support
-        document.addEventListener('keydown', function(event) {
+        document.addEventListener('keydown', (event) => {
             if (event.key === 'Enter' && event.target.classList.contains('back-button')) {
                 window.location.href = event.target.href;
             }
@@ -613,11 +613,11 @@
 
 
         // Check if online/offline
-        window.addEventListener('online', function() {
+        window.addEventListener('online', () => {
             document.body.style.opacity = '1';
         });
 
-        window.addEventListener('offline', function() {
+        window.addEventListener('offline', () => {
             document.body.style.opacity = '0.7';
         });
 

@@ -1,5 +1,4 @@
-import { appUrlWithPlaywrightId } from '../';
-import { defaultAppURL } from '../';
+import { appUrlWithPlaywrightId, defaultAppURL } from '../';
 import { expect, test } from '../fixtures';
 
 test.describe('Bankruptcy dialogs group', () => {

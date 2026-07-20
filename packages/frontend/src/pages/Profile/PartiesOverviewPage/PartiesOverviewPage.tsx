@@ -8,6 +8,7 @@ import {
   ContextMenu,
   type ContextMenuProps,
   DsPagination,
+  formatDate,
   Heading,
   PageBase,
   Section,
@@ -22,7 +23,6 @@ import {
   useDsPagination,
   useSnackbar,
 } from '@altinn/altinn-components';
-import { formatDate } from '@altinn/altinn-components';
 import {
   BellIcon,
   FilesIcon,
@@ -42,8 +42,8 @@ import { Link, type LinkProps, Navigate } from 'react-router-dom';
 import { useParties } from '../../../api/hooks/useParties';
 import { hasOnlySelfParty } from '../../../api/hooks/usePartiesSelectors.ts';
 import {
-  type PartyItemProp,
   formatNorwegianId,
+  type PartyItemProp,
   useAccounts,
 } from '../../../components/PageLayout/Accounts/useAccounts';
 import { usePageTitle } from '../../../hooks/usePageTitle';
@@ -382,7 +382,7 @@ export const PartiesOverviewPage = () => {
 
   const totalPages = Math.max(1, Math.ceil(accountsTotal / PAGE_SIZE));
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  // biome-ignore lint/correctness/useExhaustiveDependencies: reset pagination only when search or filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [isSearching, deferredSearchValue, filterState, includeDeletedParties]);

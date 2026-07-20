@@ -1,19 +1,18 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.8.1/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.4/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
+    "useIgnoreFile": true,
     "defaultBranch": "main"
   },
-  "organizeImports": {
-    "enabled": true
-  },
+  "assist": { "actions": { "source": { "organizeImports": "on" } } },
   "formatter": {
     "formatWithErrors": true,
     "enabled": true,
     "lineWidth": 120,
     "lineEnding": "lf",
-    "ignore": [],
+    "includes": ["**"],
     "indentStyle": "space",
     "indentWidth": 2
   },
@@ -46,34 +45,46 @@
     "enabled": true,
     "rules": {
       "suspicious": {
-        "noConsoleLog": {
-          "level": "error"
-        },
-        "noArrayIndexKey": "off"
+        "noArrayIndexKey": "off",
+        "noConsole": { "level": "error", "options": { "allow": ["assert", "debug", "error", "info", "warn"] } }
       },
-      "recommended": true,
+      "preset": "recommended",
       "style": {
         "noUnusedTemplateLiteral": "off",
         "noNonNullAssertion": "off",
         "useTemplate": "off"
       },
       "correctness": {
-        "useExhaustiveDependencies": "warn"
+        "useExhaustiveDependencies": "warn",
+        "useParseIntRadix": "off"
       }
     }
   },
+  "overrides": [
+    {
+      "includes": ["maintenance-page/index.html"],
+      "linter": {
+        "rules": {
+          "complexity": { "noImportantStyles": "off" },
+          "style": { "noDescendingSpecificity": "off" }
+        }
+      }
+    }
+  ],
   "files": {
-    "ignore": [
-      ".azure",
-      ".github",
-      "node_modules",
-      "generated",
-      "dist",
-      "build",
-      ".docusaurus",
-      "test-results",
-      "mockServiceWorker.js",
-      "./package.json"
+    "includes": [
+      "**",
+      "!**/.azure",
+      "!**/.github",
+      "!**/node_modules",
+      "!**/generated",
+      "!**/dist",
+      "!**/build",
+      "!**/.docusaurus",
+      "!**/test-results",
+      "!**/mockServiceWorker.js",
+      "!**/*.svg",
+      "!package.json"
     ]
   }
 }

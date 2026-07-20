@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
-import { defaultAppURL } from '../';
 import { PageRoutes } from '../../src/pages/routes';
+import { defaultAppURL } from '../';
 import { expect, test } from '../fixtures';
 import { getSidebarMenuItem } from './common';
 
@@ -16,7 +16,10 @@ test.describe('DialogDetailsPage', () => {
   test('Check message opening, archiving and deleting', async ({
     page,
     isMobile,
-  }: { page: Page; isMobile: boolean }) => {
+  }: {
+    page: Page;
+    isMobile: boolean;
+  }) => {
     const archiveLink = getSidebarMenuItem(page, PageRoutes.archive);
     const binLink = getSidebarMenuItem(page, PageRoutes.bin);
 

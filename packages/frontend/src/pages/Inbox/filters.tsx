@@ -37,8 +37,7 @@ import {
 import type { Locale } from 'date-fns/locale';
 import { t } from 'i18next';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
-import { buildOrganizationMap } from '../../utils/organizations.ts';
-import { type OrganizationLookup, getOrganization } from '../../utils/organizations.ts';
+import { buildOrganizationMap, getOrganization, type OrganizationLookup } from '../../utils/organizations.ts';
 
 interface ServiceFilterProps {
   serviceResources: ServiceResource[];

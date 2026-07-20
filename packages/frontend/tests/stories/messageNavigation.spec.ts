@@ -1,7 +1,7 @@
-import { appUrlWithPlaywrightId } from '../';
 import { PageRoutes } from '../../src/pages/routes';
+import { appUrlWithPlaywrightId } from '../';
 import { expect, test } from '../fixtures';
-import { expectIsCompanyPage, expectIsNeutralPage, expectIsPersonPage, getSidebarMenuItem } from './common';
+import { expectIsCompanyPage, expectIsPersonPage, getSidebarMenuItem } from './common';
 
 test.describe('Message navigation', () => {
   const pageWithMockOrganizations = appUrlWithPlaywrightId('login-party-context');

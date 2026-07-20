@@ -2,9 +2,9 @@ import { useQuery } from '@tanstack/react-query';
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import { useSearchParams } from 'react-router-dom';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
-import { type PartyGroup, getSelectedGroupFromQueryParams } from '../../pages/Inbox/queryParams.ts';
+import { getSelectedGroupFromQueryParams, type PartyGroup } from '../../pages/Inbox/queryParams.ts';
 import type { PartyGraph } from '../../utils/partyGraph.ts';
-import { EMPTY_PARTY_GRAPH, buildPartyGraph } from '../../utils/partyGraph.ts';
+import { buildPartyGraph, EMPTY_PARTY_GRAPH } from '../../utils/partyGraph.ts';
 import type { ProfileType, SelfIdentifiedUserType } from './useParties.ts';
 
 /**
@@ -31,7 +31,7 @@ export const hasOnlySelfParty = (parties: PartyFieldsFragment[]): boolean => par
 
 const selectSelfIdentifiedUserType = (parties: PartyFieldsFragment[]): SelfIdentifiedUserType => {
   const endUser = parties.find((p) => p.isCurrentEndUser);
-  if (!endUser || endUser.partyType !== 'SelfIdentified') return 'None';
+  if (endUser?.partyType !== 'SelfIdentified') return 'None';
   if (endUser.party.includes('urn:altinn:person:idporten-email:')) return 'Email';
   if (endUser.party.includes('urn:altinn:person:legacy-selfidentified:')) return 'Legacy';
   return 'None';

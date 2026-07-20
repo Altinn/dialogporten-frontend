@@ -5,7 +5,7 @@ export const getIsAuthenticated = async (): Promise<boolean> => {
       cache: 'no-store',
     });
     return response.ok;
-  } catch (error) {
+  } catch {
     return false;
   }
 };

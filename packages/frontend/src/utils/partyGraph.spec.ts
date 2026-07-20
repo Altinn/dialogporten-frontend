@@ -1,6 +1,6 @@
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import { describe, expect, it } from 'vitest';
-import { EMPTY_PARTY_GRAPH, buildPartyGraph } from './partyGraph.ts';
+import { buildPartyGraph, EMPTY_PARTY_GRAPH } from './partyGraph.ts';
 
 const createParty = (overrides: Partial<PartyFieldsFragment> = {}): PartyFieldsFragment => ({
   party: 'urn:altinn:person:identifier-no:12345678901',

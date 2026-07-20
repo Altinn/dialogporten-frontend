@@ -7,7 +7,7 @@ import { useDialogsForRecommendations } from '../../api/hooks/useDialogsForRecom
 import { useFilterServiceResources } from '../../api/hooks/useServiceResource.ts';
 import { useDateFnsLocale } from '../../i18n/useDateFnsLocale.tsx';
 import { getOrganization } from '../../utils/organizations.ts';
-import { FilterCategory, createServiceFilter, formatDateRange, getFilters, readFiltersFromURLQuery } from './filters';
+import { createServiceFilter, FilterCategory, formatDateRange, getFilters, readFiltersFromURLQuery } from './filters';
 import { useOrganizations } from './useOrganizations.ts';
 
 interface UseFiltersOutput {

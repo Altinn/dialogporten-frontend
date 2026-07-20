@@ -17,7 +17,7 @@ import { Link, type LinkProps, Outlet, useLocation, useSearchParams } from 'reac
 import { useCurrentEndUser, useSelectedProfile } from '../../api/hooks/usePartiesSelectors.ts';
 import { getFrontPageLink } from '../../auth/url.ts';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
-import { type PartyGroup, getSearchStringFromQueryParams } from '../../pages/Inbox/queryParams.ts';
+import { getSearchStringFromQueryParams, type PartyGroup } from '../../pages/Inbox/queryParams.ts';
 import { useProfile } from '../../pages/Profile/useProfile.tsx';
 import { PageRoutes } from '../../pages/routes.ts';
 import { useGlobalState } from '../../useGlobalState.ts';
@@ -80,7 +80,7 @@ export const PageLayout: React.FC = () => {
     queryClient.setQueryData(['search'], () => searchString || '');
   }, [searchParams]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  // biome-ignore lint/correctness/useExhaustiveDependencies: rebuild breadcrumbs only when the route or language changes
   const breadcrumbItems = useMemo(() => {
     const isProfile = location.pathname.includes(PageRoutes.profile);
     const steps = [
@@ -213,12 +213,10 @@ export const PageLayout: React.FC = () => {
   };
 
   return (
-    <>
-      <Layout {...layoutProps}>
-        <Outlet />
-        <Snackbar />
-      </Layout>
-    </>
+    <Layout {...layoutProps}>
+      <Outlet />
+      <Snackbar />
+    </Layout>
   );
 };
 

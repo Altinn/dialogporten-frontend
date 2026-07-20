@@ -1,5 +1,5 @@
-import { defaultAppURL } from '../';
 import { PageRoutes } from '../../src/pages/routes';
+import { defaultAppURL } from '../';
 import { expect, test } from '../fixtures';
 import { expectIsCompanyPage, getSidebarMenuItem, performSearch } from './common';
 

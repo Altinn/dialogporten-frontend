@@ -22,7 +22,7 @@ const findDataById = async <T>(
   try {
     const data = await import(`./data/stories/${playwrightId}/${type}.ts`);
     return data[type];
-  } catch (error) {
+  } catch {
     return defaultData;
   }
 };

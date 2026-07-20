@@ -9,8 +9,8 @@ import { NotificationsPage } from './pages/Profile/NotificationsPage/Notificatio
 import { PartiesOverviewPage } from './pages/Profile/PartiesOverviewPage/PartiesOverviewPage.tsx';
 import { Profile } from './pages/Profile/Profile.tsx';
 import { RedirectPage } from './pages/RedirectPage/RedirectPage.tsx';
-import { SavedSearchesPage } from './pages/SavedSearches/SavedSearchesPage.tsx';
 import { PageRoutes } from './pages/routes.ts';
+import { SavedSearchesPage } from './pages/SavedSearches/SavedSearchesPage.tsx';
 import './app.css';
 import { usePageTracking } from './hooks/usePageTracking.ts';
 

@@ -1,8 +1,8 @@
 import { Button, Modal, Typography } from '@altinn/altinn-components';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { PreselectedActorModalProps, PreselectedPartyOperationType } from './PartiesOverviewPage';
 import styles from './confirmSetPreselectedActorModal.module.css';
+import type { PreselectedActorModalProps, PreselectedPartyOperationType } from './PartiesOverviewPage';
 
 interface ConfirmSetPreselectedActorModalProps {
   showActor: PreselectedActorModalProps | null;
@@ -26,7 +26,7 @@ export const ConfirmSetPreselectedActorModal = ({
     try {
       await onConfirm(showActor.party.uuid, showActor.operation);
       onClose();
-    } catch (error) {
+    } catch {
       // Error is logged in the mutation handler
     } finally {
       setIsSubmitting(false);
