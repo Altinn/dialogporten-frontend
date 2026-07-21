@@ -1,10 +1,10 @@
-import { defaultAppURL } from '../';
 import { PageRoutes } from '../../src/pages/routes';
+import { defaultAppURL } from '../';
 import { expect, test } from '../fixtures';
 import { getSidebarMenuItem } from './common';
 
 test.describe('Sidebar menu', () => {
-  test('Checking all items in sidebar', async ({ page, isMobile }) => {
+  test('Checking all items in sidebar', async ({ page }) => {
     await page.goto(defaultAppURL);
 
     await getSidebarMenuItem(page, PageRoutes.drafts).click();

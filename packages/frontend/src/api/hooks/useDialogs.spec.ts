@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
-  MAX_DIALOG_PARTY_SIZE,
-  MAX_SERVICE_RESOURCE_SIZE,
   isDialogCountInconclusive,
   isDialogQueryEnabled,
+  MAX_DIALOG_PARTY_SIZE,
+  MAX_SERVICE_RESOURCE_SIZE,
 } from './useDialogs.tsx';
 
 const createPartyIds = (count: number): string[] => Array.from({ length: count }, (_, i) => `urn:altinn:party:${i}`);

@@ -20,9 +20,9 @@ import { FixedGlobalQueryParams, pruneSearchQueryParams } from '../../pages/Inbo
 import { useProfile } from '../../pages/Profile/useProfile.tsx';
 import { PageRoutes } from '../../pages/routes.ts';
 import { useGlobalMenu } from './GlobalMenu/useGlobalMenu.tsx';
+import { mapPartiesToAuthorizedParties } from './mapPartyToAuthorizedParty';
 import { getSearchLabels, pruneSearchValue } from './Search/getSearchLabels.ts';
 import { useSearchString } from './Search/useSearchString.tsx';
-import { mapPartiesToAuthorizedParties } from './mapPartyToAuthorizedParty';
 
 interface UseHeaderConfigOutput {
   headerProps: GlobalHeaderProps;

@@ -1,5 +1,4 @@
-import type { ServiceResource } from 'bff-types-generated';
-import type { SavedSearchesFieldsFragment } from 'bff-types-generated';
+import type { SavedSearchesFieldsFragment, ServiceResource } from 'bff-types-generated';
 import type { Locale } from 'date-fns';
 import type { TFunction } from 'i18next';
 import { describe, expect, it } from 'vitest';

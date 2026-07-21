@@ -10,12 +10,13 @@ import {
   type GetFilterServiceResourcesQueryVariables,
   type GetServiceResourcesQuery,
   type GetServiceResourcesQueryVariables,
+  getSdk,
   type NotificationSettingsInput,
   type NotificationsettingsForCurrentUserQuery,
   type OrganizationsQuery,
   type PartyUsernameQuery,
-  type SavedSearchInput,
   type SavedSearchesQuery,
+  type SavedSearchInput,
   type SendVerificationCodeMutation,
   type SendVerificationCodeMutationVariables,
   type SetPreSelectedPartyMutation,
@@ -31,7 +32,6 @@ import {
   type VerifiedAddressesQuery,
   type VerifyAddressMutation,
   type VerifyAddressMutationVariables,
-  getSdk,
 } from 'bff-types-generated';
 import { ClientError, GraphQLClient, type RequestMiddleware, type ResponseMiddleware } from 'graphql-request';
 import { Analytics } from '../analytics/analytics.ts';

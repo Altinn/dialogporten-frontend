@@ -6,9 +6,9 @@ import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { useFilterServiceResources } from '../../api/hooks/useServiceResource.ts';
 import { useDateFnsLocale } from '../../i18n/useDateFnsLocale.tsx';
 import { buildOrganizationMap } from '../../utils/organizations.ts';
+import { PageRoutes } from '../routes.ts';
 import { buildFilterParams } from '../SavedSearches/searchUtils.ts';
 import { convertFilterStateToFilters } from '../SavedSearches/useSavedSearches.tsx';
-import { PageRoutes } from '../routes.ts';
 import { useOrganizations } from './useOrganizations.ts';
 
 interface SaveSearchInput {

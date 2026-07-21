@@ -108,7 +108,7 @@ export const filterSavedSearches = (
     }
 
     if (savedSearch?.data?.urn?.length > 0) {
-      return selectedPartyIds.includes(savedSearch?.data.urn[0]!);
+      return selectedPartyIds.includes(savedSearch.data.urn[0]!);
     }
 
     if (selectedPartyIds?.length !== savedSearch?.data?.urn?.length) {

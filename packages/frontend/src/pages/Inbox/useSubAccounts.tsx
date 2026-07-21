@@ -6,11 +6,11 @@ import { useSearchParams } from 'react-router-dom';
 import { MAX_DIALOG_PARTY_SIZE } from '../../api/hooks/useDialogs.tsx';
 import type { PartyItemProp } from '../../components/PageLayout/Accounts/useAccounts.tsx';
 import {
+  encodeSubAccountIds,
   FixedGlobalQueryParams,
+  getSelectedSubAccountsFromQueryParams,
   type PartyGroup,
   PartyGroups,
-  encodeSubAccountIds,
-  getSelectedSubAccountsFromQueryParams,
 } from './queryParams.ts';
 
 interface UseSubAccountsProps {
@@ -56,7 +56,7 @@ export const useSubAccounts = ({
   const allPersonsSelected = selectedGroup === PartyGroups.ALL_PERSONS;
   const isGroupSelected = selectedGroup !== null;
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  // biome-ignore lint/correctness/useExhaustiveDependencies: depend on the subAccounts param value, not the searchParams object identity
   const selectedSubAccountIds = useMemo(() => {
     return getSelectedSubAccountsFromQueryParams(searchParams);
   }, [searchParams.get(FixedGlobalQueryParams.subAccounts)]);

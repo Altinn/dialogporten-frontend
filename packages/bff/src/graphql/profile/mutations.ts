@@ -4,10 +4,10 @@ import config from '../../config.js';
 import { Response } from '../shared/types.ts';
 import { languageCodes, updateAltinnPersistentContextValue } from './languageCookie.ts';
 import {
-  type PreselectedPartyOperationType,
   addFavoriteParty,
   addFavoritePartyToGroup,
   deleteFavoriteParty,
+  type PreselectedPartyOperationType,
   setPreSelectedParty,
   updateLanguageInCore,
   updateShowClientUnits,

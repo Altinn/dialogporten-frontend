@@ -4,6 +4,7 @@
 :root {
   font-family: "Inter", sans-serif;
   /* Enable lowercase l with tail */
+  /* biome-ignore lint/complexity/noImportantStyles: must win over component-level font-feature-settings */
   font-feature-settings: "cv05" 1 !important;
   font-synthesis: none;
   text-rendering: optimizelegibility;

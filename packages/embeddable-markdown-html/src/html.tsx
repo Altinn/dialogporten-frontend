@@ -10,6 +10,7 @@ import { defaultClassMap } from './classMap.ts';
 import './styles.css';
 
 const production = { Fragment: prod.Fragment, jsx: prod.jsx, jsxs: prod.jsxs };
+
 import type { Schema } from 'hast-util-sanitize';
 import { defaultSchema } from 'rehype-sanitize';
 import { allowedTags } from './tags.ts';
@@ -29,7 +30,10 @@ const customSchema: Schema = {
 export const Html: ({
   children,
   onError,
-}: { children: string; onError: (error: ErrorEvent) => void }) => ReactElement | null = ({ children, onError }) => {
+}: {
+  children: string;
+  onError: (error: ErrorEvent) => void;
+}) => ReactElement | null = ({ children, onError }) => {
   const [reactContent, setReactContent] = useState<ReactElement | null>(null);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: Full control of what triggers this code is needed

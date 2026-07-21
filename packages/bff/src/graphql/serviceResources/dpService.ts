@@ -3,7 +3,7 @@ import axios from 'axios';
 import { type Context, getSessionToken } from '../../auth/oidc.js';
 import config from '../../config.js';
 import type { LocalizedText } from './registryTypes.ts';
-import { type ServiceResourceResponseDTO, type TransformedServiceResource, getLocalizedTitle } from './service.ts';
+import { getLocalizedTitle, type ServiceResourceResponseDTO, type TransformedServiceResource } from './service.ts';
 
 interface DpLocalization {
   languageCode: string;
