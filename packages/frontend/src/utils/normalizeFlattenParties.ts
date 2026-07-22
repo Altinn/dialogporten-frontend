@@ -1,5 +1,6 @@
 import { formatDisplayName } from '@altinn/altinn-components';
 import type { PartyFieldsFragment, SubPartyFieldsFragment } from 'bff-types-generated';
+
 type PartyField = PartyFieldsFragment | SubPartyFieldsFragment;
 
 /* normalizes the parties and sub parties to title case and returns a flatten lists of PartyFieldsFragment

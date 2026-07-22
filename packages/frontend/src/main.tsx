@@ -33,7 +33,7 @@ async function loadFeatures() {
       return {};
     }
     return await loadFeatureFlags();
-  } catch (error) {
+  } catch {
     return {};
   }
 }

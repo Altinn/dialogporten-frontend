@@ -1,4 +1,4 @@
-import React, { type ReactNode, type ErrorInfo, useEffect, useRef } from 'react';
+import React, { type ErrorInfo, type ReactNode, useEffect, useRef } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { QUERY_KEYS } from '../../constants/queryKeys';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
@@ -94,13 +94,7 @@ export const withErrorBoundary = (Component: React.ReactNode, componentName: str
   return <ErrorBoundaryWrapper componentName={componentName}>{Component}</ErrorBoundaryWrapper>;
 };
 
-function ErrorBoundaryWrapper({
-  children,
-  componentName,
-}: {
-  children: React.ReactNode;
-  componentName: string;
-}) {
+function ErrorBoundaryWrapper({ children, componentName }: { children: React.ReactNode; componentName: string }) {
   const [, setIsErrorState] = useGlobalState<boolean>(QUERY_KEYS.ERROR_STATE, false);
   const { logError } = useErrorLogger();
 

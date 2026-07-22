@@ -132,7 +132,6 @@ services:
       REDIS_CONNECTION_STRING: redis://:mysecretpassword@redis:6379/0
       PORT: 80
       NODE_ENV: production
-      COOKIE_SECURE: false
       AUTH_CONTEXT_COOKIE_DOMAIN: ${AUTH_CONTEXT_COOKIE_DOMAIN}
       # OpenTelemetry configuration (connect to Jaeger on host machine)
       OTEL_NAMESPACE: ${OTEL_NAMESPACE}

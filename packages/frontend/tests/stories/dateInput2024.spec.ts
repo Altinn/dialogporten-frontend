@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
-import { appUrlWithPlaywrightId } from '..';
 import { MOCKED_SYS_DATE } from '../../src/mocks/data/stories/date-2024/dialogs';
+import { appUrlWithPlaywrightId } from '..';
 import { expect, test } from '../fixtures';
 
 test.describe('Date filter, system date set 2024', () => {

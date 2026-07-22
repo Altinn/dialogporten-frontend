@@ -6,15 +6,15 @@ import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { updatePartyCookies } from '../../cookie.ts';
 import {
   FixedGlobalQueryParams,
-  type PartyGroup,
-  PartyGroups,
   getSelectedGroupFromQueryParams,
   getSelectedPartyFromQueryParams,
+  type PartyGroup,
+  PartyGroups,
 } from '../../pages/Inbox/queryParams.ts';
 import { useProfile } from '../../pages/Profile/useProfile.tsx';
 import { useGlobalState } from '../../useGlobalState.ts';
 import { normalizeFlattenParties } from '../../utils/normalizeFlattenParties.ts';
-import { EMPTY_PARTY_GRAPH, type PartyGraph, buildPartyGraph } from '../../utils/partyGraph.ts';
+import { buildPartyGraph, EMPTY_PARTY_GRAPH, type PartyGraph } from '../../utils/partyGraph.ts';
 import { graphQLSDK } from '../queries.ts';
 import { MAX_DIALOG_PARTY_SIZE } from './useDialogs.tsx';
 
@@ -300,7 +300,7 @@ export const useParties = (): UsePartiesOutput => {
   }, [selectedParties, currentEndUser, selectedGroup]);
 
   const selfIdentifiedUserType: SelfIdentifiedUserType = useMemo(() => {
-    if (!currentEndUser || currentEndUser.partyType !== 'SelfIdentified') return 'None';
+    if (currentEndUser?.partyType !== 'SelfIdentified') return 'None';
 
     if (currentEndUser.party.includes('urn:altinn:person:idporten-email:')) return 'Email';
     if (currentEndUser.party.includes('urn:altinn:person:legacy-selfidentified:')) return 'Legacy';

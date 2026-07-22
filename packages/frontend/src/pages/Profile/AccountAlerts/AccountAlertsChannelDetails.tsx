@@ -9,9 +9,9 @@ import {
   Section,
   Switch,
   Typography,
+  useSnackbar,
   DsValidationMessage as ValidationMessage,
   type DsValidationMessageProps as ValidationMessageProps,
-  useSnackbar,
 } from '@altinn/altinn-components';
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -25,10 +25,10 @@ import { useErrorLogger } from '../../../hooks/useErrorLogger.ts';
 import type { NotificationAccountsType } from '../NotificationsPage/NotificationsPage.tsx';
 import { useProfile } from '../useProfile.tsx';
 import styles from './AccountAlertsChannelDetails.module.css';
-import { VerificationCodeStep } from './VerificationCodeStep.tsx';
 import { type Channel, useIsAlreadyVerified, useVerificationFlow } from './common.ts';
 import { isValidEmail } from './email.ts';
 import { isValidCountryCodeInput, isValidPhoneNumber, joinPhone, parsePhone } from './phone.ts';
+import { VerificationCodeStep } from './VerificationCodeStep.tsx';
 
 export interface AccountAlertsChannelDetailsProps {
   channel: Channel;

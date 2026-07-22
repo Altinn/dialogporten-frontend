@@ -10,6 +10,7 @@ import {
   savedSearchesQuery,
 } from '../helpers/queries.js';
 import { describe, expect, randomItem } from '../helpers/testimports.js';
+
 const baseUrl = afUrl + 'api';
 
 /**
@@ -167,7 +168,7 @@ function getParties(cookie, pid) {
     return;
   }
   const data = resp.json();
-  if (!data.data || !data.data.parties) {
+  if (!data.data?.parties) {
     console.info(`No parties found in response data for ${pid}`);
     return [];
   }
@@ -242,6 +243,7 @@ function getProfile(cookie) {
  * @param {Array} parties - An array of party URIs.
  * @return {Object} - The response object from the request.
  */
+// biome-ignore lint/correctness/noUnusedVariables: kept for ad-hoc perf runs via the commented-out call above
 function getAllDialogsForCount(cookie, parties) {
   const payload = JSON.parse(JSON.stringify(getAllDialogsForCountQuery));
   for (const party of parties) {

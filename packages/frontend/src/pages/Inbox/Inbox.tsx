@@ -32,26 +32,26 @@ import { createFiltersURLQuery } from '../../auth/url.ts';
 import { DialogAccessInfoModal } from '../../components/DialogAccessInfoModal/DialogAccessInfoModal.tsx';
 import { Notice } from '../../components/Notice/Notice.tsx';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
+import { getPageRouteTitle } from '../../components/PageLayout/pageRouteToTitle.ts';
 import { getSearchWords } from '../../components/PageLayout/Search/getSearchLabels.ts';
 import { useSearchString } from '../../components/PageLayout/Search/useSearchString.tsx';
-import { getPageRouteTitle } from '../../components/PageLayout/pageRouteToTitle.ts';
 import { useHeaderConfig } from '../../components/PageLayout/useHeaderConfig.tsx';
-import { SINotice } from '../../components/SINotice/SINotice.tsx';
 import { SaveSearchButton } from '../../components/SavedSearchButton/SaveSearchButton.tsx';
 import { isSavedSearchDisabled } from '../../components/SavedSearchButton/savedSearchEnabled.ts';
 import { SeenByModal } from '../../components/SeenByModal/SeenByModal.tsx';
+import { SINotice } from '../../components/SINotice/SINotice.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useFeatureFlag } from '../../featureFlags/useFeatureFlag.ts';
 import { useAlertBanner } from '../../hooks/useAlertBanner.ts';
 import { usePageTitle } from '../../hooks/usePageTitle.tsx';
 import { useGlobalState } from '../../useGlobalState.ts';
-import { useSavedSearches } from '../SavedSearches/useSavedSearches.tsx';
 import { PageRoutes } from '../routes.ts';
+import { useSavedSearches } from '../SavedSearches/useSavedSearches.tsx';
 import { AccountNavigator } from './AccountNavigator.tsx';
 import { AlertBanner } from './AlertBanner.tsx';
 import { FilterCategory, hasValidFilters, readFiltersFromURLQuery } from './filters';
 import styles from './inbox.module.css';
-import { FixedGlobalQueryParams, PartyGroups, VariableGlobalQueryParams, encodeSubAccountIds } from './queryParams.ts';
+import { encodeSubAccountIds, FixedGlobalQueryParams, PartyGroups, VariableGlobalQueryParams } from './queryParams.ts';
 import { useBookmarkModal } from './useBookmarkModal.tsx';
 import { useFilters } from './useFilters.tsx';
 import useGroupedDialogs from './useGroupedDialogs.tsx';
@@ -416,60 +416,54 @@ export const Inbox = ({ viewType }: InboxProps) => {
       </div>
       <SINotice />
       <AlertBanner showAlertBanner={isAlertBannerEnabled && !!alertBannerContent} />
-      <>
-        <AccountNavigator
-          hidden={accountNavigatorHidden}
-          subAccounts={subAccounts}
-          partyIdsOverride={partyIdsOverride}
-        />
-        {/* Show a single notice: a fetch error takes priority, then the service limit, then the
+      <AccountNavigator hidden={accountNavigatorHidden} subAccounts={subAccounts} partyIdsOverride={partyIdsOverride} />
+      {/* Show a single notice: a fetch error takes priority, then the service limit, then the
             party limit — and the party limit only when the AccountNavigator isn't already offering
             a way out (it explains itself). */}
-        {isErrorDialogs ? (
-          <DsAlert data-color="danger">
-            <DsParagraph>{t('inbox.dialogs_error.description')}</DsParagraph>
-          </DsAlert>
-        ) : serviceLimitReached ? (
-          <Typography variant="subtle" size="sm">
-            <p>{t('inbox.service_limit_reached.description', { count: MAX_SERVICE_RESOURCE_SIZE })} </p>
-          </Typography>
-        ) : partyLimitExceeded && !accountNavigatorVisible ? (
-          <Typography variant="subtle" size="sm">
-            <p>
-              {t(
-                selectedGroup === PartyGroups.ALL_PERSONS
-                  ? 'inbox.party_limit_reached.description_persons'
-                  : 'inbox.party_limit_reached.description',
-                { count: MAX_DIALOG_PARTY_SIZE },
-              )}
-            </p>
-          </Typography>
-        ) : null}
-        <DialogList
-          title={
-            hideListHeader ? undefined : searchMode ? (
-              isLoading ? (
-                <Heading as="h2" loading>
-                  {t('word.loading')}
-                </Heading>
-              ) : (
-                title
-              )
-            ) : undefined
-          }
-          items={dialogItems}
-          groups={dialogListGroups}
-          sortGroupBy={sortGroupBy}
-          isLoading={isLoading}
-          highlightWords={highlightWords}
-          description={hideListHeader ? undefined : description}
-        />
-        {hasNextPage && (
-          <Button aria-label={t('dialog.aria.fetch_more')} onClick={fetchNextPage} variant="outline" size="lg">
-            <span data-size="md">{t('dialog.fetch_more')}</span>
-          </Button>
-        )}
-      </>
+      {isErrorDialogs ? (
+        <DsAlert data-color="danger">
+          <DsParagraph>{t('inbox.dialogs_error.description')}</DsParagraph>
+        </DsAlert>
+      ) : serviceLimitReached ? (
+        <Typography variant="subtle" size="sm">
+          <p>{t('inbox.service_limit_reached.description', { count: MAX_SERVICE_RESOURCE_SIZE })} </p>
+        </Typography>
+      ) : partyLimitExceeded && !accountNavigatorVisible ? (
+        <Typography variant="subtle" size="sm">
+          <p>
+            {t(
+              selectedGroup === PartyGroups.ALL_PERSONS
+                ? 'inbox.party_limit_reached.description_persons'
+                : 'inbox.party_limit_reached.description',
+              { count: MAX_DIALOG_PARTY_SIZE },
+            )}
+          </p>
+        </Typography>
+      ) : null}
+      <DialogList
+        title={
+          hideListHeader ? undefined : searchMode ? (
+            isLoading ? (
+              <Heading as="h2" loading>
+                {t('word.loading')}
+              </Heading>
+            ) : (
+              title
+            )
+          ) : undefined
+        }
+        items={dialogItems}
+        groups={dialogListGroups}
+        sortGroupBy={sortGroupBy}
+        isLoading={isLoading}
+        highlightWords={highlightWords}
+        description={hideListHeader ? undefined : description}
+      />
+      {hasNextPage && (
+        <Button aria-label={t('dialog.aria.fetch_more')} onClick={fetchNextPage} variant="outline" size="lg">
+          <span data-size="md">{t('dialog.fetch_more')}</span>
+        </Button>
+      )}
       <SeenByModal
         title={currentSeenByLogModal?.title}
         items={currentSeenByLogModal?.items}

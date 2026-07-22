@@ -203,7 +203,7 @@ describe('useSettings', () => {
 
     act(() => {
       const languageItem = result.current.settings.find((s) => s.id === 'language');
-      (languageItem?.children as { props: { onSelect: (lang: string) => void } }).props.onSelect(otherLanguage);
+      (languageItem!.children as { props: { onSelect: (lang: string) => void } }).props.onSelect(otherLanguage);
     });
 
     await act(async () => {
@@ -225,7 +225,7 @@ describe('useSettings', () => {
 
     act(() => {
       const languageItem = result.current.settings.find((s) => s.id === 'language');
-      (languageItem?.children as { props: { onSelect: (lang: string) => void } }).props.onSelect(otherLanguage);
+      (languageItem!.children as { props: { onSelect: (lang: string) => void } }).props.onSelect(otherLanguage);
     });
 
     await act(async () => {

@@ -7,14 +7,14 @@ import {
   Label,
   SnackbarDuration,
   Typography,
-  DsValidationMessage as ValidationMessage,
   useSnackbar,
+  DsValidationMessage as ValidationMessage,
 } from '@altinn/altinn-components';
 import { FilesIcon } from '@navikt/aksel-icons';
 import { type ChangeEvent, type FormEvent, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useUsername } from './useUsername.tsx';
 import styles from './usernameSetting.module.css';
+import { useUsername } from './useUsername.tsx';
 
 const USERNAME_MAX_LENGTH = 64;
 const USERNAME_REGEX = /^[a-z][a-z0-9._@-]{5,63}$/i;

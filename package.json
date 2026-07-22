@@ -10,7 +10,7 @@
     "biome:fix": "pnpm biome check --no-errors-on-unmatched --write"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.9.4",
+    "@biomejs/biome": "2.5.4",
     "lint-staged": "17.0.8",
     "mprocs": "^0.9.2",
     "turbo": "2.9.14"

@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
-import { appUrlWithPlaywrightId } from '../';
 import { PageRoutes } from '../../src/pages/routes';
+import { appUrlWithPlaywrightId } from '../';
 import { expect, test } from '../fixtures';
 import {
   expectIsCompanyPage,

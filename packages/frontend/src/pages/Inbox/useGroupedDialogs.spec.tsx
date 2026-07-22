@@ -1,12 +1,12 @@
 import { renderHook } from '@testing-library/react';
 import { type DialogStatus, SystemLabel } from 'bff-types-generated';
 import { useTranslation } from 'react-i18next';
-import { type Mock, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
 import { createCustomWrapper } from '../../../tests/test-utils.tsx';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
-import type { InboxItemInput } from './InboxItemInput.ts';
 import { isDueAtExpired } from './dueAt.ts';
+import type { InboxItemInput } from './InboxItemInput.ts';
 import useGroupedDialogs from './useGroupedDialogs.tsx';
 
 vi.mock('react-i18next', () => ({

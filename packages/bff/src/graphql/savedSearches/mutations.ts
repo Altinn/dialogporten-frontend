@@ -4,7 +4,7 @@ import { decryptPersonUrn } from '../../party/personUrnCipher.ts';
 import { getOrCreateProfile } from '../profile/service.ts';
 import { Response } from '../shared/types.ts';
 import { createSavedSearch, deleteSavedSearch, updateSavedSearch } from './service.ts';
-import { SavedSearchInput, SavedSearches } from './types.ts';
+import { SavedSearches, SavedSearchInput } from './types.ts';
 
 export const DeleteSavedSearch = extendType({
   type: 'Mutation',
