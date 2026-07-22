@@ -5,7 +5,6 @@ import {
   expectIsCompanyPage,
   expectIsPersonPage,
   getSearchbarInput,
-  getToolbarAccountInfo,
   performSearch,
   selectPartyFromToolbar,
 } from './common';

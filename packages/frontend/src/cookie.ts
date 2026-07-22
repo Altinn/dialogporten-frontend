@@ -26,6 +26,7 @@ const updateCookie = (key: PartyCookieName, value: string) => {
   const domain = getCookieDomain();
   const existing = getPartyFromCookie(key);
   if (existing !== value) {
+    // biome-ignore lint/suspicious/noDocumentCookie: the Cookie Store API is not supported in all target browsers
     document.cookie = `${key}=${value}; Path=/; Domain=${domain}`;
   }
 };

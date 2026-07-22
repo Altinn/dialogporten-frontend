@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react';
 import type { PartyFieldsFragment } from 'bff-types-generated';
-import { type Mock, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
 
 vi.mock('../../api/queries.ts', () => ({
   updateNotificationsetting: vi.fn(),

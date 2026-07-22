@@ -1,8 +1,8 @@
 import type { FilterState } from '@altinn/altinn-components';
 import { type SavedSearchesFieldsFragment, SystemLabel } from 'bff-types-generated';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
-import { FilterCategory, aggregateFilterState } from '../Inbox/filters';
-import { FixedGlobalQueryParams, PartyGroups, getSelectedGroupFromQueryParams } from '../Inbox/queryParams.ts';
+import { aggregateFilterState, FilterCategory } from '../Inbox/filters';
+import { FixedGlobalQueryParams, getSelectedGroupFromQueryParams, PartyGroups } from '../Inbox/queryParams.ts';
 import { PageRoutes } from '../routes.ts';
 import { fromPathToViewType } from './searchUtils.ts';
 import { convertFiltersToFilterState } from './useSavedSearches.tsx';

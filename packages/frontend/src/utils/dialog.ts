@@ -1,14 +1,14 @@
 import type { PartyFieldsFragment, SearchDialogFieldsFragment } from 'bff-types-generated';
 import { type TFunction, t } from 'i18next';
 import { getActorProps } from '../api/hooks/useDialogById.tsx';
-import { type LocalizationObject, getPreferredPropertyByLocale } from '../i18n/property.ts';
+import { getPreferredPropertyByLocale, type LocalizationObject } from '../i18n/property.ts';
 import type { FormatFunction } from '../i18n/useDateFnsLocale.tsx';
 import type { InboxItemInput } from '../pages/Inbox/InboxItemInput.ts';
 import {
-  type OrganizationLookup,
-  type OrganizationOutput,
   getOrganization,
   getOrganizationByLocale,
+  type OrganizationLookup,
+  type OrganizationOutput,
 } from './organizations.ts';
 import type { PartyGraph } from './partyGraph.ts';
 import { getViewTypes } from './viewType.ts';
@@ -42,7 +42,7 @@ export const getSeenByLabel = (
   const isSeenByEndUser = seenBy?.some((item) => item.isCurrentEndUser);
   const seenByOthersCount = seenBy?.filter((item) => !item.isCurrentEndUser).length;
 
-  let seenByLabel: string | undefined = undefined;
+  let seenByLabel: string | undefined;
   if (isSeenByEndUser) {
     seenByLabel = `${t('word.seenBy')} ${t('word.you')}`;
   }

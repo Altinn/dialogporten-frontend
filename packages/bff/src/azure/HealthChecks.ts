@@ -124,7 +124,7 @@ const performCheck = async (
 };
 
 const plugin: FastifyPluginAsync<Props> = async (fastify) => {
-  fastify.get('/api/health', async (req, reply) => {
+  fastify.get('/api/health', async (_req, reply) => {
     const overallStart = Date.now();
 
     try {

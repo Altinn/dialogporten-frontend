@@ -9,7 +9,7 @@ import {
 import { t } from 'i18next';
 import { getActorProps, getAttachmentLinks } from '../api/hooks/useDialogById.tsx';
 import type { ProfileType } from '../api/hooks/useParties.ts';
-import { type LocalizationObject, getPreferredPropertyByLocale } from '../i18n/property.ts';
+import { getPreferredPropertyByLocale, type LocalizationObject } from '../i18n/property.ts';
 import type { FormatFunction, Locale } from '../i18n/useDateFnsLocale.tsx';
 import type { OrganizationOutput } from './organizations.ts';
 

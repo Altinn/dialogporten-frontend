@@ -11,4 +11,4 @@ const test = base.extend<{
   },
 });
 
-export { test, expect };
+export { expect, test };

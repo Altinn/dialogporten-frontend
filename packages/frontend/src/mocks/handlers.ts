@@ -10,9 +10,9 @@ import {
   type ServiceResource,
   SystemLabel,
 } from 'bff-types-generated';
-import { http, HttpResponse, graphql } from 'msw';
-import { getMockedData } from './data.ts';
+import { graphql, HttpResponse, http } from 'msw';
 import { convertToDialogByIdTemplate, filterDialogs } from './data/base/helper.ts';
+import { getMockedData } from './data.ts';
 
 const data = await getMockedData(window.location.href);
 export type InMemoryStore = {

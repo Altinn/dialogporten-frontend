@@ -3,8 +3,8 @@ import {
   type AccountSearchProps,
   type AvatarGroupProps,
   type AvatarType,
-  type MenuItemGroups,
   formatDate,
+  type MenuItemGroups,
 } from '@altinn/altinn-components';
 import { useQueryClient } from '@tanstack/react-query';
 import type { PartyFieldsFragment } from 'bff-types-generated';
@@ -15,25 +15,25 @@ import { MAX_DIALOG_PARTY_SIZE } from '../../../api/hooks/useDialogs.tsx';
 import { QUERY_KEYS } from '../../../constants/queryKeys.ts';
 import {
   FixedGlobalQueryParams,
+  getSelectedGroupFromQueryParams,
   type PartyGroup,
   PartyGroups,
-  getSelectedGroupFromQueryParams,
 } from '../../../pages/Inbox/queryParams.ts';
 import { useProfile } from '../../../pages/Profile/useProfile.tsx';
 import { SettingsType } from '../../../pages/Profile/useSettings.tsx';
 import type { PageRoutes } from '../../../pages/routes.ts';
 import type { PartyGraph } from '../../../utils/partyGraph.ts';
 import {
-  type OrgSkeletonItem,
-  type PartyItemProp,
   buildOrgSkeleton,
   buildPersonSkeleton,
   mapOrgItemToAccount,
   mapPersonToAccount,
+  type OrgSkeletonItem,
+  type PartyItemProp,
 } from './accountComputations.ts';
 
-export { formatNorwegianId, formatOrgNo, getOrgNo } from './accountComputations.ts';
 export type { PartyItemProp } from './accountComputations.ts';
+export { formatNorwegianId, formatOrgNo, getOrgNo } from './accountComputations.ts';
 
 /** Account tile ids for the virtual group tiles. Kept identical to the URL `group` values. */
 export const ACCOUNT_GROUPS_KEYS = {

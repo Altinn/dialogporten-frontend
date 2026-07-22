@@ -4,7 +4,7 @@ import type { DialogStatus } from 'bff-types-generated';
 import { SystemLabel } from 'bff-types-generated';
 import { useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
-import { type Mock, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
 import { createCustomWrapper } from '../../../tests/test-utils.tsx';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';

@@ -19,14 +19,6 @@ param containerAppEnvironmentName = readEnvironmentVariable('CONTAINER_APP_ENVIR
 
 param additionalEnvironmentVariables = [
   {
-    name: 'COOKIE_SECURE'
-    value: 'false'
-  }
-  {
-    name: 'COOKIE_HTTP_ONLY'
-    value: 'false'
-  }
-  {
     name: 'APPLICATIONINSIGHTS_ENABLED'
     value: 'false'
   }

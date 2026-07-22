@@ -3,11 +3,11 @@ import z from 'zod';
 
 const envVariables = z.object({
   LOGGER_FORMAT: z.enum(['json', 'pretty']).default('pretty'),
-  LOG_LEVEL: z.nativeEnum(pino.levels.labels).default('info'),
+  LOG_LEVEL: z.enum(Object.values(pino.levels.labels)).default('info'),
   TEST_LOGGING: z
     .enum(['true', 'false'])
     .transform((val) => val === 'true')
-    .default('false'),
+    .default(false),
   OTEL_EXPORTER_OTLP_ENDPOINT: z.string().optional(),
 });
 

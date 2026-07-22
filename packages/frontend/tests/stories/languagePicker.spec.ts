@@ -2,7 +2,7 @@ import { defaultAppURL } from '../';
 import { expect, test } from '../fixtures';
 
 test.describe('Language picker', () => {
-  test('Check language picker functionality and query', async ({ page, isMobile }) => {
+  test('Check language picker functionality and query', async ({ page }) => {
     await page.goto(defaultAppURL);
 
     const listItem = page.getByRole('listitem').filter({ hasText: 'Melding om bortkjøring av snø' });

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { type Mock, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
 
 vi.mock('axios', () => {
   const post = vi.fn();

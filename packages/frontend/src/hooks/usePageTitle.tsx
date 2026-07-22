@@ -2,6 +2,7 @@ import type { FilterState } from '@altinn/altinn-components';
 import type { TFunction } from 'i18next';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+
 interface PageTitleOptions {
   baseTitle: string;
   searchValue?: string;
