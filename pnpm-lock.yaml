@@ -74,6 +74,12 @@ overrides:
   mdast-util-gfm-autolink-literal: 2.0.0
   protobufjs: '>=8.0.1'
   shell-quote: '>=1.8.4'
+  websocket-driver: '>=0.7.5'
+  brace-expansion@1: '>=1.1.16 <2'
+  brace-expansion@2: '>=2.1.2 <3'
+  brace-expansion@5: '>=5.0.7 <6'
+  js-yaml@3: '>=3.15.0 <4'
+  js-yaml@4: '>=4.3.0 <5'
 
 importers:
 
