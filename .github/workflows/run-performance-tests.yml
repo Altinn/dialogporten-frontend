@@ -68,7 +68,7 @@ jobs:
     environment: test
     steps:
       - name: Checkout code
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: OIDC Login to Azure Public Cloud
         uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 #v2
@@ -96,7 +96,7 @@ jobs:
             exit 1
           fi
       - name: Setup k6
-        uses: grafana/setup-k6-action@ffe7d7290dfa715e48c2ccc924d068444c94bde2 # v1.1.0
+        uses: grafana/setup-k6-action@db07bd9765aac508ef18982e52ab937fe633a065 # v1.2.1
       - name: Run K6 tests (testAfBrowserAndBff)
         run: |
             k6configName="testAfBrowserAndBff"
