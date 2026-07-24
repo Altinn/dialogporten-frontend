@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.169.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.168.0...v1.169.0) (2026-07-24)
+
+
+### Features
+
+* return to the originating list after moving a dialog ([#4490](https://github.com/Altinn/dialogporten-frontend/issues/4490)) ([6388960](https://github.com/Altinn/dialogporten-frontend/commit/6388960c4a7ccff0ac9f21e3a81734eb07b4397c))
+
+
+### Bug Fixes
+
+* **frontend:** drop App Insights exceptions from browser-injected scripts ([#4481](https://github.com/Altinn/dialogporten-frontend/issues/4481)) ([c6fe343](https://github.com/Altinn/dialogporten-frontend/commit/c6fe343def0ef0e0c8768de3dcee053ce7fac0b5))
+
 ## [1.168.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.167.0...v1.168.0) (2026-07-17)
 
 
