@@ -14,9 +14,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "pino": "9.3.2",
+    "pino": "9.14.0",
     "pino-opentelemetry-transport": "1.1.0",
-    "pino-pretty": "11.2.2"
+    "pino-pretty": "11.3.0"
   },
   "devDependencies": {
     "@types/node": "catalog:",
