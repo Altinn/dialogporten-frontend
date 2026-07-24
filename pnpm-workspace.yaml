@@ -2,6 +2,8 @@ packages:
   - "packages/*"
 
 minimumReleaseAge: 4320
+minimumReleaseAgeExclude:
+  - "@altinn/altinn-components"
 trustPolicy: no-downgrade
 
 catalog:
