@@ -25,6 +25,7 @@ import { type Locale, useDateFnsLocale, useFormat } from '../../i18n/useDateFnsL
 import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
 import { type ActivityLogEntry, getActivityHistory } from '../../utils/activities.tsx';
 import { createExpiryBadge, mediaTypeToExt, mediaTypeToIcon } from '../../utils/attachments.ts';
+import { isFirefoxOnIOS } from '../../utils/browser.ts';
 import { getSeenByLabel, getServiceOwnerLogo } from '../../utils/dialog.ts';
 import { getOrganization, getOrganizationByLocale, type OrganizationOutput } from '../../utils/organizations.ts';
 import { getTransmissions, type TimelineSegmentWithTransmissions } from '../../utils/transmissions.ts';
@@ -119,6 +120,11 @@ export const getDialogsById = (id: string): Promise<GetDialogByIdQuery> =>
     id,
   });
 
+export const getAttachmentTarget = (mediaType: string | null | undefined): AttachmentLinkProps['target'] => {
+  if (mediaType === 'text/html') return '_self';
+  return isFirefoxOnIOS() ? '_self' : '_blank';
+};
+
 export const getAttachmentLinks = (
   attachments: AttachmentFieldsFragment[],
   locale: Locale,
@@ -138,7 +144,7 @@ export const getAttachmentLinks = (
             metadata: mediaTypeToExt(url.mediaType),
             badge: createExpiryBadge(attachment.expiresAt, locale, t),
             icon: mediaTypeToIcon(url.mediaType),
-            target: url.mediaType === 'text/html' ? '_self' : '_blank',
+            target: getAttachmentTarget(url.mediaType),
           };
         }),
     );
