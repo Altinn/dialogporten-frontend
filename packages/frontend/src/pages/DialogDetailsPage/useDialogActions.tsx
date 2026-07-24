@@ -11,15 +11,14 @@ import { updateSystemLabel } from '../../api/queries';
 import { QUERY_KEYS } from '../../constants/queryKeys';
 import { useGlobalState } from '../../useGlobalState.ts';
 import { getNavigationOrigin } from '../../utils/viewType.ts';
-import { pruneSearchQueryParams } from '../Inbox/queryParams.ts';
+import { PageRoutes } from '../routes.ts';
 
 const EXCLUSIVE_LABELS = [SystemLabel.Default, SystemLabel.Archive, SystemLabel.Bin];
 
 export const useDialogActions = () => {
   const { t } = useTranslation();
   const { openSnackbar } = useSnackbar();
-  const { state } = useLocation();
-  const { search } = useLocation();
+  const { state, search, pathname } = useLocation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [archiveLoading, setArchiveLoading] = useGlobalState<boolean>(QUERY_KEYS.SET_ARCHIVE_LABEL_LOADING, false);
@@ -61,6 +60,18 @@ export const useDialogActions = () => {
     [openSnackbar, t, queryClient],
   );
 
+  const isDialogDetailsPage = pathname.startsWith('/inbox/');
+
+  const returnToList = useCallback(
+    (dialogId: string, destination?: string) => {
+      if (!isDialogDetailsPage) {
+        return;
+      }
+      navigate((destination ?? getNavigationOrigin(state)) + search, { state: { scrollToId: dialogId } });
+    },
+    [isDialogDetailsPage, navigate, state, search],
+  );
+
   return useCallback(
     (dialogId: string, currentLabels: SystemLabel[], isUnread: boolean): MenuItemProps[] => {
       const currentLabel =
@@ -76,11 +87,8 @@ export const useDialogActions = () => {
           'aria-label': t('dialog.toolbar.mark_as_unread'),
           as: 'button',
           onClick: () => {
-            if (location.pathname.startsWith('/inbox/')) {
-              // Escape before a subscription of dialog cases a refetch and removes the label
-              const navigationOrigin = getNavigationOrigin(state);
-              navigate(navigationOrigin + pruneSearchQueryParams(search.toString()));
-            }
+            // Escape before a subscription of dialog cases a refetch and removes the label
+            returnToList(dialogId);
             void handleUpdateLabel(
               dialogId,
               SystemLabel.MarkedAsUnopened,
@@ -101,14 +109,16 @@ export const useDialogActions = () => {
           title: t('dialog.toolbar.move_undo'),
           'aria-label': t('dialog.toolbar.move_undo'),
           as: 'button',
-          onClick: () =>
-            handleUpdateLabel(
+          onClick: () => {
+            returnToList(dialogId, PageRoutes.inbox);
+            void handleUpdateLabel(
               dialogId,
               SystemLabel.Default,
               'dialog.toolbar.toast.move_to_inbox_success',
               'dialog.toolbar.toast.move_to_inbox_failed',
               setUndoLoading,
-            ),
+            );
+          },
           disabled: archiveLoading,
         });
       }
@@ -121,14 +131,16 @@ export const useDialogActions = () => {
           title: t('dialog.toolbar.move_to_archive'),
           'aria-label': t('dialog.toolbar.move_to_archive'),
           as: 'button',
-          onClick: () =>
-            handleUpdateLabel(
+          onClick: () => {
+            returnToList(dialogId);
+            void handleUpdateLabel(
               dialogId,
               SystemLabel.Archive,
               'dialog.toolbar.toast.move_to_archive_success',
               'dialog.toolbar.toast.move_to_archive_failed',
               setArchiveLoading,
-            ),
+            );
+          },
           disabled: deleteLoading,
         });
       }
@@ -141,14 +153,16 @@ export const useDialogActions = () => {
           title: t('dialog.toolbar.move_to_bin'),
           'aria-label': t('dialog.toolbar.move_to_bin'),
           as: 'button',
-          onClick: () =>
-            handleUpdateLabel(
+          onClick: () => {
+            returnToList(dialogId);
+            void handleUpdateLabel(
               dialogId,
               SystemLabel.Bin,
               'dialog.toolbar.toast.move_to_bin_success',
               'dialog.toolbar.toast.move_to_bin_failed',
               setDeleteLoading,
-            ),
+            );
+          },
           disabled: undoLoading,
         });
       }
@@ -164,9 +178,7 @@ export const useDialogActions = () => {
       setArchiveLoading,
       setDeleteLoading,
       setUndoLoading,
-      navigate,
-      state,
-      search,
+      returnToList,
     ],
   );
 };

@@ -17,7 +17,7 @@ import {
   Typography,
 } from '@altinn/altinn-components';
 import { XMarkIcon } from '@navikt/aksel-icons';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { MAX_COUNT_BULK_DIALOGS, useBulkActions } from '../../api/hooks/useBulkActions.tsx';
@@ -68,6 +68,8 @@ export interface CurrentSeenByLog {
   items: SeenByLogItemProps[];
 }
 
+const MAX_SCROLL_TO_ITEM_ATTEMPTS = 5;
+
 export const Inbox = ({ viewType }: InboxProps) => {
   useMockError();
   const { t } = useTranslation();
@@ -88,6 +90,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const [bulkMode, setBulkMode] = useGlobalState<boolean>(QUERY_KEYS.BULK_MODE, false);
   const [bulkedIds, setBulkedIds] = useGlobalState<string[]>(QUERY_KEYS.BULK_MODE_SELECTED_IDS, []);
   const location = useLocation();
+  const scrolledToItem = useRef<string | undefined>(undefined);
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentSeenByLogModal, setCurrentSeenByLogModal] = useState<CurrentSeenByLog | null>(null);
   const [accessInfoModal, setAccessInfoModal] = useState<{ dialogId: string; title: string } | null>(null);
@@ -246,16 +249,31 @@ export const Inbox = ({ viewType }: InboxProps) => {
 
   const isLoading = isLoadingParties || isLoadingDialogs;
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: This hook does not specify all of its dependencies
+  const scrollToId: string | undefined = location?.state?.scrollToId;
+
   useEffect(() => {
-    const scrollToId = location?.state?.scrollToId;
-    const listElToScroll = document.getElementById(scrollToId);
-    if (!isLoading) {
-      if (listElToScroll) {
-        listElToScroll.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+    if (isLoading || !scrollToId || scrolledToItem.current === scrollToId) {
+      return;
     }
-  }, [isLoading]);
+
+    let attempt = 0;
+    let frameId = 0;
+
+    const scrollToItem = () => {
+      const listElToScroll = document.getElementById(scrollToId);
+      if (listElToScroll) {
+        scrolledToItem.current = scrollToId;
+        listElToScroll.scrollIntoView({ behavior: 'instant', block: 'center' });
+        return;
+      }
+      if (attempt++ < MAX_SCROLL_TO_ITEM_ATTEMPTS) {
+        frameId = requestAnimationFrame(scrollToItem);
+      }
+    };
+
+    scrollToItem();
+    return () => cancelAnimationFrame(frameId);
+  }, [isLoading, scrollToId]);
 
   const { groupedDialogs, groups, title, description } = useGroupedDialogs({
     onSeenByLogModalChange: setCurrentSeenByLogModal,
