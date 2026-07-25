@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { usePartyGraph } from '../../api/hooks/usePartiesSelectors.ts';
 import { graphQLSDK } from '../../api/queries.ts';
 import { getAccessAMUILink } from '../../auth/url.ts';
-import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
+import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.ts';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useFeatureFlag } from '../../featureFlags/useFeatureFlag.ts';
 

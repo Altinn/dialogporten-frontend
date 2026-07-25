@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { PartyUsernameQuery } from 'bff-types-generated';
 import { useState } from 'react';
 import { getPartyUsername, setUsername } from '../../api/queries.ts';
-import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
+import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.ts';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 
 interface SaveUsernameResult {

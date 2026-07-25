@@ -1,6 +1,6 @@
 import { Heading, PageBase, SettingsList, Toolbar } from '@altinn/altinn-components';
 import { t } from 'i18next';
-import { usePageTitle } from '../../hooks/usePageTitle.tsx';
+import { usePageTitle } from '../../hooks/usePageTitle.ts';
 import { SettingsType, useSettings } from './useSettings.tsx';
 
 export const Profile = () => {

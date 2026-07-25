@@ -2,7 +2,7 @@ import { Heading, Typography } from '@altinn/altinn-components';
 import { QuestionmarkCircleFillIcon } from '@navikt/aksel-icons';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import styles from './DialogHelp.module.css';
+import styles from './dialogHelp.module.css';
 
 export const DialogHelp = (): ReactElement => {
   const { t } = useTranslation();

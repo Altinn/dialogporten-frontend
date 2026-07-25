@@ -20,7 +20,7 @@ import { XMarkIcon } from '@navikt/aksel-icons';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useSearchParams } from 'react-router-dom';
-import { MAX_COUNT_BULK_DIALOGS, useBulkActions } from '../../api/hooks/useBulkActions.tsx';
+import { MAX_COUNT_BULK_DIALOGS, useBulkActions } from '../../api/hooks/useBulkActions.ts';
 import {
   type InboxViewType,
   MAX_DIALOG_PARTY_SIZE,
@@ -34,7 +34,7 @@ import { Notice } from '../../components/Notice/Notice.tsx';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
 import { getPageRouteTitle } from '../../components/PageLayout/pageRouteToTitle.ts';
 import { getSearchWords } from '../../components/PageLayout/Search/getSearchLabels.ts';
-import { useSearchString } from '../../components/PageLayout/Search/useSearchString.tsx';
+import { useSearchString } from '../../components/PageLayout/Search/useSearchString.ts';
 import { useHeaderConfig } from '../../components/PageLayout/useHeaderConfig.tsx';
 import { SaveSearchButton } from '../../components/SavedSearchButton/SaveSearchButton.tsx';
 import { isSavedSearchDisabled } from '../../components/SavedSearchButton/savedSearchEnabled.ts';
@@ -43,7 +43,7 @@ import { SINotice } from '../../components/SINotice/SINotice.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useFeatureFlag } from '../../featureFlags/useFeatureFlag.ts';
 import { useAlertBanner } from '../../hooks/useAlertBanner.ts';
-import { usePageTitle } from '../../hooks/usePageTitle.tsx';
+import { usePageTitle } from '../../hooks/usePageTitle.ts';
 import { useGlobalState } from '../../useGlobalState.ts';
 import { PageRoutes } from '../routes.ts';
 import { useSavedSearches } from '../SavedSearches/useSavedSearches.tsx';
@@ -53,9 +53,9 @@ import { FilterCategory, hasValidFilters, readFiltersFromURLQuery } from './filt
 import styles from './inbox.module.css';
 import { encodeSubAccountIds, FixedGlobalQueryParams, PartyGroups, VariableGlobalQueryParams } from './queryParams.ts';
 import { useBookmarkModal } from './useBookmarkModal.tsx';
-import { useFilters } from './useFilters.tsx';
+import { useFilters } from './useFilters.ts';
 import useGroupedDialogs from './useGroupedDialogs.tsx';
-import { useMockError } from './useMockError.tsx';
+import { useMockError } from './useMockError.ts';
 import { useSubAccounts } from './useSubAccounts.tsx';
 
 interface InboxProps {

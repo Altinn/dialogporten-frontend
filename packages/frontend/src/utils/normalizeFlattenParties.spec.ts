@@ -2,7 +2,7 @@ import type { PartyFieldsFragment } from 'bff-types-generated';
 import { describe, expect, it } from 'vitest';
 import { normalizeFlattenParties } from './normalizeFlattenParties.ts';
 
-describe('normalizeParties', () => {
+describe('normalizeFlattenParties', () => {
   const parties: PartyFieldsFragment[] = [
     {
       party: 'urn:altinn:person:identifier-no:1337',

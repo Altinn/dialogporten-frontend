@@ -24,7 +24,7 @@ import { QUERY_KEYS } from '../../../constants/queryKeys.ts';
 import { useErrorLogger } from '../../../hooks/useErrorLogger.ts';
 import type { NotificationAccountsType } from '../NotificationsPage/NotificationsPage.tsx';
 import { useProfile } from '../useProfile.tsx';
-import styles from './AccountAlertsChannelDetails.module.css';
+import styles from './accountAlertsChannelDetails.module.css';
 import { type Channel, useIsAlreadyVerified, useVerificationFlow } from './common.ts';
 import { isValidEmail } from './email.ts';
 import { isValidCountryCodeInput, isValidPhoneNumber, joinPhone, parsePhone } from './phone.ts';

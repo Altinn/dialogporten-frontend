@@ -14,7 +14,7 @@ import type { ReactNode } from 'react';
 import { useCallback, useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Link, type LinkProps, useSearchParams } from 'react-router-dom';
-import { MAX_COUNT_BULK_DIALOGS } from '../../api/hooks/useBulkActions.tsx';
+import { MAX_COUNT_BULK_DIALOGS } from '../../api/hooks/useBulkActions.ts';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';

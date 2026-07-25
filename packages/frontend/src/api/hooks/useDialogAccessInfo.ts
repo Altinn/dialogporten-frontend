@@ -1,5 +1,5 @@
 import type { DialogAccessInfoQuery } from 'bff-types-generated';
-import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
+import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.ts';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { graphQLSDK } from '../queries.ts';
 

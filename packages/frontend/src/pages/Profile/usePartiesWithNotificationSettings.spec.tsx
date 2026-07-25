@@ -6,7 +6,7 @@ vi.mock('../../api/queries.ts', () => ({
   updateNotificationsetting: vi.fn(),
 }));
 
-vi.mock('../../auth/useAuthenticatedQuery.tsx', () => ({
+vi.mock('../../auth/useAuthenticatedQuery.ts', () => ({
   useAuthenticatedQuery: vi.fn(),
 }));
 
@@ -17,8 +17,8 @@ vi.mock('./useNotificationSettings.tsx', () => ({
   })),
 }));
 
-import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
-import { usePartiesWithNotificationSettings } from './usePartiesWithNotificationSettings.tsx';
+import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.ts';
+import { usePartiesWithNotificationSettings } from './usePartiesWithNotificationSettings.ts';
 
 const makeParty = (
   overrides: Record<string, unknown> = {},
