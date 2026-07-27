@@ -1,6 +1,6 @@
 import type { VerifiedAddressesQuery } from 'bff-types-generated';
 import { getVerifiedAddresses } from '../../api/queries.ts';
-import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
+import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.ts';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 
 export const useVerifiedAddresses = () => {

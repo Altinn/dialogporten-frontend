@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { useAuthenticatedQuery } from '../auth/useAuthenticatedQuery.tsx';
+import { useAuthenticatedQuery } from '../auth/useAuthenticatedQuery.ts';
 import { QUERY_KEYS } from '../constants/queryKeys.ts';
 import type { AlertBannerContent, AlertBannerResponse } from './alertBanner.ts';
 

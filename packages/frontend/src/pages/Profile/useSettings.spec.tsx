@@ -54,7 +54,7 @@ vi.mock('../SavedSearches/useSavedSearches.tsx', () => ({
   useSavedSearches: vi.fn(() => ({ savedSearches: [] })),
 }));
 
-vi.mock('./usePartiesWithNotificationSettings.tsx', () => ({
+vi.mock('./usePartiesWithNotificationSettings.ts', () => ({
   usePartiesWithNotificationSettings: vi.fn(() => ({
     partiesWithNotificationSettings: [],
     uniqueEmailAddresses: [],

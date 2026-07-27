@@ -10,11 +10,11 @@ vi.mock('../../api/queries.ts', () => ({
   setUsername: (...args: unknown[]) => mockSetUsername(...args),
 }));
 
-vi.mock('../../auth/useAuthenticatedQuery.tsx', () => ({
+vi.mock('../../auth/useAuthenticatedQuery.ts', () => ({
   useAuthenticatedQuery: vi.fn(),
 }));
 
-import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
+import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.ts';
 import { useUsername } from './useUsername.tsx';
 
 describe('useUsername', () => {

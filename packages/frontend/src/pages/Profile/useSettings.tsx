@@ -46,7 +46,7 @@ import { ServiceResourceNotificationsDetails } from './AccountAlerts/ServiceReso
 import { ContactProfileDetails } from './ContactProfileDetails.tsx';
 import { LanguageSettingsContent } from './LanguageSettingsContent.tsx';
 import { UsernameSetting } from './UsernameSetting.tsx';
-import { usePartiesWithNotificationSettings } from './usePartiesWithNotificationSettings.tsx';
+import { usePartiesWithNotificationSettings } from './usePartiesWithNotificationSettings.ts';
 import { useProfile } from './useProfile.tsx';
 import { useUsername } from './useUsername.tsx';
 import { useVerifiedAddresses } from './useVerifiedAddresses.tsx';

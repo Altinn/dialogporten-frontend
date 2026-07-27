@@ -11,7 +11,7 @@ import {
   setShouldShowSubEntities,
   setShowClientUnits,
 } from '../../api/queries.ts';
-import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
+import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.ts';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useGlobalState, useGlobalStringState } from '../../useGlobalState.ts';
 import type { PreselectedPartyOperationType } from './PartiesOverviewPage/PartiesOverviewPage.tsx';

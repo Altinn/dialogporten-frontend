@@ -16,7 +16,7 @@ import { useParties } from '../../api/hooks/useParties.ts';
 import { DialogAccessInfoModal } from '../../components/DialogAccessInfoModal/DialogAccessInfoModal.tsx';
 import { DialogDetails } from '../../components/DialogDetails/DialogDetails.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
-import { usePageTitle } from '../../hooks/usePageTitle.tsx';
+import { usePageTitle } from '../../hooks/usePageTitle.ts';
 import { useDelegation } from './useDelegation.tsx';
 import { useDialogActions } from './useDialogActions.tsx';
 
