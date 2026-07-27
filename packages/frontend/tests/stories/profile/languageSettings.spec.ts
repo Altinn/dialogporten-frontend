@@ -1,10 +1,12 @@
+import { expect, test } from '@playwright/test';
 import { appURLProfileLanding } from '../..';
-import { expect, test } from '../../fixtures';
+
+const PROFILE_HEADING = 'Dine innstillinger i Altinn';
 
 test.describe('Profile Language Settings', () => {
   test('changing the language updates the UI and persists the choice', async ({ page }) => {
     await page.goto(appURLProfileLanding);
-    await page.waitForLoadState('networkidle');
+    await expect(page.getByRole('heading', { name: PROFILE_HEADING, level: 1 })).toBeVisible();
 
     await page.getByRole('button', { name: 'Språk/language' }).click();
 
@@ -20,7 +22,7 @@ test.describe('Profile Language Settings', () => {
 
   test('cancelling the language dialog keeps the current language', async ({ page }) => {
     await page.goto(appURLProfileLanding);
-    await page.waitForLoadState('networkidle');
+    await expect(page.getByRole('heading', { name: PROFILE_HEADING, level: 1 })).toBeVisible();
 
     await page.getByRole('button', { name: 'Språk/language' }).click();
     const dialog = page.getByRole('dialog');

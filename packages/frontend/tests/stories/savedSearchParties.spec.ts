@@ -1,8 +1,8 @@
-import type { Page } from '@playwright/test';
+import { expect, type Page, test } from '@playwright/test';
 import { PageRoutes } from '../../src/pages/routes';
 import { appUrlWithPlaywrightId } from '../';
-import { expect, test } from '../fixtures';
 import {
+  expectInboxLoaded,
   expectIsCompanyPage,
   expectIsPersonPage,
   getSidebarMenuItem,
@@ -41,7 +41,6 @@ async function switchParty(page: Page, partyName: string) {
   }
 
   await expect(page.locator('#toolbar-menu-root')).toContainText(partyName);
-  await page.waitForLoadState('networkidle');
 }
 
 test.describe('Saved search — party URL verification', () => {
@@ -51,7 +50,7 @@ test.describe('Saved search — party URL verification', () => {
     test.slow();
 
     await page.goto(BASE_URL);
-    await page.waitForLoadState('networkidle');
+    await expectInboxLoaded(page);
 
     //user 1 (default)
     await saveSearchAndDismiss(page, 'person1test');
@@ -69,15 +68,12 @@ test.describe('Saved search — party URL verification', () => {
 
     await link2.click();
     await page.waitForURL((url) => url.searchParams.has('search'));
-    await page.waitForLoadState('networkidle');
     await expectIsPersonPage(page);
     await expect(page.getByTestId('inbox-toolbar').getByRole('button', { name: 'Anne Andersen' })).toBeVisible();
 
     await page.locator('aside a[href*="/saved-searches"]').click();
-    await page.waitForLoadState('networkidle');
 
     await link1.click();
-    await page.waitForLoadState('networkidle');
     await expectIsPersonPage(page);
     await expect(page.getByTestId('inbox-toolbar').getByRole('button', { name: 'Test Testesen' })).toBeVisible();
 
@@ -85,7 +81,6 @@ test.describe('Saved search — party URL verification', () => {
     await switchParty(page, 'Alle virksomheter');
     await page.waitForURL((url) => url.searchParams.get('group') === 'ALL_COMPANIES');
     await expect(page.locator('#toolbar-menu-root')).toContainText('Alle virksomheter');
-    await page.waitForLoadState('networkidle');
     await saveSearchAndDismiss(page, 'allOrgsTest');
 
     await switchParty(page, 'Firma AS');
@@ -96,7 +91,6 @@ test.describe('Saved search — party URL verification', () => {
 
     // orgs navigation verification
     await page.locator('aside a[href*="/saved-searches"]').click();
-    await page.waitForLoadState('networkidle');
 
     const linkAllOrgs = page.locator(`a[href*="search=allOrgsTest"][href*="group=ALL_COMPANIES"]`);
     const linkOrg1 = page.locator(`a[href*="search=org1test"][href*="${ORG_1_URN_ENCODED}"]`);
@@ -111,42 +105,31 @@ test.describe('Saved search — party URL verification', () => {
     await page.waitForURL(
       (url) => url.searchParams.get('group') === 'ALL_COMPANIES' && url.searchParams.get('search') === 'allOrgsTest',
     );
-    await page.waitForLoadState('networkidle');
 
     await goToSavedSearches();
-    await page.waitForLoadState('networkidle');
     await linkOrg1.click();
     await page.waitForURL((url) => url.searchParams.has('search'));
-    await page.waitForLoadState('networkidle');
     await expectIsCompanyPage(page);
     await expect(page.getByTestId('inbox-toolbar').getByRole('button', { name: 'Firma AS' })).toBeVisible();
 
     await goToSavedSearches();
-    await page.waitForLoadState('networkidle');
     await linkOrg2.click();
     await page.waitForURL((url) => url.searchParams.has('search'));
-    await page.waitForLoadState('networkidle');
     await expectIsCompanyPage(page);
     await expect(page.getByTestId('inbox-toolbar').getByRole('button', { name: 'Testbedrift AS' })).toBeVisible();
 
     await goToSavedSearches();
-    await page.waitForLoadState('networkidle');
     await link1.click();
     await page.waitForURL((url) => url.searchParams.get('search') === 'person1test');
-    await page.waitForLoadState('networkidle');
     await expectIsPersonPage(page);
     await expect(page.getByTestId('inbox-toolbar').getByRole('button', { name: 'Test Testesen' })).toBeVisible();
 
     await goToSavedSearches();
-    await page.waitForLoadState('networkidle');
     await linkAllOrgs.click();
     await page.waitForURL((url) => url.searchParams.get('group') === 'ALL_COMPANIES');
-    await page.waitForLoadState('networkidle');
     await goToSavedSearches();
-    await page.waitForLoadState('networkidle');
     await link1.click();
     await page.waitForURL((url) => url.searchParams.get('search') === 'person1test');
-    await page.waitForLoadState('networkidle');
     await expectIsPersonPage(page);
     await expect(page.getByTestId('inbox-toolbar').getByRole('button', { name: 'Test Testesen' })).toBeVisible();
   });

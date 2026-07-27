@@ -1,7 +1,6 @@
-import type { Page } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { PageRoutes } from '../../src/pages/routes';
 import { defaultAppURL } from '../';
-import { expect, test } from '../fixtures';
 import { getSidebarMenuItem } from './common';
 
 test.describe('DialogDetailsPage', () => {
@@ -13,13 +12,7 @@ test.describe('DialogDetailsPage', () => {
     await expect(button).toBeDisabled();
   });
 
-  test('Check message opening, archiving and deleting', async ({
-    page,
-    isMobile,
-  }: {
-    page: Page;
-    isMobile: boolean;
-  }) => {
+  test('Check message opening, archiving and deleting', async ({ page }) => {
     const archiveLink = getSidebarMenuItem(page, PageRoutes.archive);
     const binLink = getSidebarMenuItem(page, PageRoutes.bin);
 
@@ -39,13 +32,7 @@ test.describe('DialogDetailsPage', () => {
       .click();
     await expect(page.getByText(/flyttet til arkiv/i)).toBeVisible();
 
-    if (isMobile) {
-      await page.getByRole('button', { name: 'Meny' }).click();
-      await page.getByRole('link', { name: 'Arkiv' }).click();
-      await page.getByRole('button', { name: 'Meny' }).click();
-    } else {
-      await archiveLink.click();
-    }
+    await archiveLink.click();
 
     await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).toBeVisible();
 
@@ -56,23 +43,11 @@ test.describe('DialogDetailsPage', () => {
       .click();
     await expect(page.getByText(/flyttet til papirkurv/i)).toBeVisible({ timeout: 10000 });
 
-    if (isMobile) {
-      await page.getByRole('button', { name: 'Meny' }).click();
-      await page.getByRole('link', { name: 'Papirkurv' }).click();
-      await page.getByRole('button', { name: 'Meny' }).click();
-    } else {
-      await binLink.click();
-    }
+    await binLink.click();
 
     await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).toBeVisible();
 
-    if (isMobile) {
-      await page.getByRole('button', { name: 'Meny' }).click();
-      await page.getByRole('link', { name: 'Arkiv' }).click();
-      await page.getByRole('button', { name: 'Meny' }).click();
-    } else {
-      await archiveLink.click();
-    }
+    await archiveLink.click();
     await expect(page.getByText('Arkivet er tomt')).toBeVisible();
   });
 });

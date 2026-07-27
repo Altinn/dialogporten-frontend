@@ -1,5 +1,5 @@
+import { expect, test } from '@playwright/test';
 import { baseURL } from '../';
-import { expect, test } from '../fixtures';
 import { expectIsCompanyPage, expectIsPersonPage, setPartyCookie } from './common';
 
 const appURL = `${baseURL}/?mock=true&playwrightId=login-party-context`;
@@ -14,7 +14,6 @@ test.describe('Cookie-based party preselection', () => {
   test('Preselects company party from cookie on load', async ({ page }) => {
     await setPartyCookie(page, FIRMA_AS_UUID);
     await page.goto(appURL);
-    await page.waitForLoadState('networkidle');
 
     // Firma AS should be the selected party (from cookie)
     await expect(page.locator('#toolbar-menu-root')).toContainText('Firma AS');
@@ -35,7 +34,6 @@ test.describe('Cookie-based party preselection', () => {
     // Start with Firma AS pre-selected via cookie
     await setPartyCookie(page, FIRMA_AS_UUID);
     await page.goto(appURL);
-    await page.waitForLoadState('networkidle');
 
     // Verify Firma AS is initially selected
     await expect(page.locator('#toolbar-menu-root')).toContainText('Firma AS');
@@ -63,7 +61,6 @@ test.describe('Cookie-based party preselection', () => {
     // Start with Firma AS pre-selected via cookie
     await setPartyCookie(page, FIRMA_AS_UUID);
     await page.goto(appURL);
-    await page.waitForLoadState('networkidle');
 
     // Verify Firma AS is initially selected
     await expect(page.locator('#toolbar-menu-root')).toContainText('Firma AS');
@@ -89,7 +86,6 @@ test.describe('Cookie-based party preselection', () => {
     // Start with Firma AS pre-selected via cookie
     await setPartyCookie(page, FIRMA_AS_UUID);
     await page.goto(appURL);
-    await page.waitForLoadState('networkidle');
 
     // Verify Firma AS is initially selected
     await expect(page.locator('#toolbar-menu-root')).toContainText('Firma AS');
@@ -116,7 +112,6 @@ test.describe('Cookie-based party preselection', () => {
   test('Preselects person party from cookie on load', async ({ page }) => {
     await setPartyCookie(page, PERSON_UUID);
     await page.goto(appURL);
-    await page.waitForLoadState('networkidle');
 
     // Person party should be selected (from cookie)
     await expect(page.locator('#toolbar-menu-root')).toContainText('Test Testesen');
@@ -134,7 +129,6 @@ test.describe('Cookie-based party preselection', () => {
   test('Preselects parent org with sub-parties from cookie on load', async ({ page }) => {
     await setPartyCookie(page, TESTBEDRIFT_UUID);
     await page.goto(appURL);
-    await page.waitForLoadState('networkidle');
 
     // Testbedrift AS should be selected (from cookie)
     await expect(page.locator('#toolbar-menu-root')).toContainText(/Testbedrift A[Ss]/i);
@@ -156,7 +150,6 @@ test.describe('Cookie-based party preselection', () => {
     // Set a cookie with a UUID that doesn't match any party
     await setPartyCookie(page, 'urn:altinn:organization:uuid:does-not-exist');
     await page.goto(appURL);
-    await page.waitForLoadState('networkidle');
 
     // Should fall back to the current end user (Test Testesen)
     await expect(page.locator('#toolbar-menu-root')).toContainText('Test Testesen');

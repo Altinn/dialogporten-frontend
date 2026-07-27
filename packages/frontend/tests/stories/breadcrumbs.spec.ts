@@ -1,5 +1,5 @@
+import { expect, test } from '@playwright/test';
 import { PageRoutes } from '../../src/pages/routes';
-import { expect, test } from '../fixtures';
 import { defaultAppURL } from '../index';
 import { getSidebarMenuItem } from './common';
 

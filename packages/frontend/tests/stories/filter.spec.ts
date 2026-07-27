@@ -1,6 +1,6 @@
+import { expect, test } from '@playwright/test';
 import { PageRoutes } from '../../src/pages/routes';
 import { defaultAppURL } from '../';
-import { expect, test } from '../fixtures';
 import { getSidebarMenuItem } from './common';
 
 test.describe('Testing filter bar', () => {

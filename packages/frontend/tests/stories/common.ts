@@ -18,6 +18,8 @@ export async function setPartyCookie(page: Page, partyUuid: string) {
   ]);
 }
 
+export const expectInboxLoaded = (page: Page) => expect(page.getByTestId('inbox-toolbar')).toBeVisible();
+
 export const getSidebar = (page: Page) => page.locator('aside');
 export const getSidebarMenuItem = (page: Page, route: string) => getSidebar(page).locator(`a[href^="${route}?"]`);
 export const getSearchbarInput = (page: Page) => page.locator("[name='Søk']");

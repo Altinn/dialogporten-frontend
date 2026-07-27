@@ -13,7 +13,7 @@
     "bench": "vitest bench --run",
     "codegen:playwright": "playwright codegen",
     "test:playwright": "playwright test --project=playwright --project=playwright-heavy",
-    "test:playwright:mobile": "playwright test --project=playwright-mobile",
+    "test:playwright:perf": "playwright test --project=playwright-perf --workers=1",
     "test:accessibility": "playwright test --project=accessibility",
     "install:browsers": "playwright install",
     "test:watch": "vitest watch",
