@@ -1,10 +1,9 @@
+import { expect, test } from '@playwright/test';
 import { appURLProfileLanding } from '../..';
-import { expect, test } from '../../fixtures';
 
 test.describe('Profile Landing Page', () => {
   test('displays user information and contact settings', async ({ page }) => {
     await page.goto(appURLProfileLanding);
-    await page.waitForLoadState('networkidle');
 
     await expect(page.locator('#main-content')).toContainText('Test Testesen');
     await expect(page.getByRole('button', { name: 'Adresse Kirkegata 25, 4307' })).toBeVisible();
@@ -12,7 +11,6 @@ test.describe('Profile Landing Page', () => {
 
   test('contact settings are interactive and open modals', async ({ page }) => {
     await page.goto(appURLProfileLanding);
-    await page.waitForLoadState('networkidle');
 
     await expect(page.getByText('Mobiltelefon')).toBeVisible();
     await expect(page.getByText('E-postadresse')).toBeVisible();

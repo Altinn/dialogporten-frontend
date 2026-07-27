@@ -1,12 +1,13 @@
+import { expect, test } from '@playwright/test';
 import { appURLProfileLanding } from '../..';
-import { expect, test } from '../../fixtures';
 
 const appURLUsernameManagement = `${appURLProfileLanding}&playwrightId=username-management`;
+const PROFILE_HEADING = 'Dine innstillinger i Altinn';
 
 test.describe('Profile Username Management', () => {
   test('creates a username and shows it in the settings list', async ({ page }) => {
     await page.goto(appURLUsernameManagement);
-    await page.waitForLoadState('networkidle');
+    await expect(page.getByRole('heading', { name: PROFILE_HEADING, level: 1 })).toBeVisible();
 
     await page.getByRole('button', { name: 'Brukernavn' }).click();
     const dialog = page.getByRole('dialog');
@@ -18,7 +19,7 @@ test.describe('Profile Username Management', () => {
 
   test('shows a format error for an invalid username', async ({ page }) => {
     await page.goto(appURLUsernameManagement);
-    await page.waitForLoadState('networkidle');
+    await expect(page.getByRole('heading', { name: PROFILE_HEADING, level: 1 })).toBeVisible();
 
     await page.getByRole('button', { name: 'Brukernavn' }).click();
     const dialog = page.getByRole('dialog');
@@ -34,7 +35,7 @@ test.describe('Profile Username Management', () => {
 
   test('shows a taken message when the username is already in use', async ({ page }) => {
     await page.goto(appURLUsernameManagement);
-    await page.waitForLoadState('networkidle');
+    await expect(page.getByRole('heading', { name: PROFILE_HEADING, level: 1 })).toBeVisible();
 
     await page.getByRole('button', { name: 'Brukernavn' }).click();
     const dialog = page.getByRole('dialog');
@@ -46,7 +47,7 @@ test.describe('Profile Username Management', () => {
 
   test('removes an existing username', async ({ page }) => {
     await page.goto(appURLUsernameManagement);
-    await page.waitForLoadState('networkidle');
+    await expect(page.getByRole('heading', { name: PROFILE_HEADING, level: 1 })).toBeVisible();
 
     await page.getByRole('button', { name: 'Brukernavn' }).click();
     const createDialog = page.getByRole('dialog');

@@ -1,5 +1,5 @@
+import { expect, test } from '@playwright/test';
 import { defaultAppURL } from '../';
-import { expect, test } from '../fixtures';
 
 test.describe('Language picker', () => {
   test('Check language picker functionality and query', async ({ page }) => {

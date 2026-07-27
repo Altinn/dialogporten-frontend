@@ -1,6 +1,6 @@
+import { expect, test } from '@playwright/test';
 import { PageRoutes } from '../../src/pages/routes';
 import { appUrlWithPlaywrightId } from '../';
-import { expect, test } from '../fixtures';
 import { expectIsCompanyPage, expectIsPersonPage, getSidebarMenuItem } from './common';
 
 test.describe('Message navigation', () => {
@@ -43,7 +43,7 @@ test.describe('Message navigation', () => {
   });
 
   /* Fix this later */
-  test('Back button navigates to previous page the message has been opened from', async ({ page, isMobile }) => {
+  test('Back button navigates to previous page the message has been opened from', async ({ page }) => {
     await page.goto(pageWithMockOrganizations);
 
     await expect(page.locator('h2').filter({ hasText: /^Skatten din for 2022$/ })).toBeVisible();
@@ -54,13 +54,7 @@ test.describe('Message navigation', () => {
       .click();
     await expect(page.getByText(/flyttet til papirkurv/i)).toBeVisible();
 
-    if (isMobile) {
-      await page.getByRole('button', { name: 'Meny' }).click();
-      await page.getByRole('link', { name: 'Papirkurv' }).click();
-      await page.getByRole('button', { name: 'Meny' }).click();
-    } else {
-      await getSidebarMenuItem(page, PageRoutes.bin).click();
-    }
+    await getSidebarMenuItem(page, PageRoutes.bin).click();
 
     await page.getByRole('link', { name: 'Skatten din for 2022' }).click();
     await page.getByRole('link', { name: 'Tilbake', exact: true }).click();

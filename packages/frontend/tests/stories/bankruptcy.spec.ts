@@ -1,5 +1,5 @@
+import { expect, test } from '@playwright/test';
 import { appUrlWithPlaywrightId, defaultAppURL } from '../';
-import { expect, test } from '../fixtures';
 
 test.describe('Bankruptcy dialogs group', () => {
   test('Bankruptcy group NOT present if no bankruptcy dialogs', async ({ page }) => {

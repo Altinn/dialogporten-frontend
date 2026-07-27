@@ -130,16 +130,6 @@ To specify a dataset:
 http://app.localhost/?mock=true&playwrightId=<folder-name>
 ```
 
-## Mobile Testing
-
-Run tests using a mobile viewport (iPhone 13):
-
-```bash
-pnpm test:playwright:mobile
-```
-
-The same test files are reused for mobile and desktop. Conditional logic within tests can detect the viewport.
-
 ## Accessibility Tests
 
 Run accessibility tests:

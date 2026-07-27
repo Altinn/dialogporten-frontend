@@ -1,20 +1,24 @@
+import { expect, type Page, test } from '@playwright/test';
 import { appURLProfileParties } from '../..';
-import { expect, test } from '../../fixtures';
+
+const PARTIES_HEADING = 'Aktører og favoritter';
+
+const gotoPartiesOverview = async (page: Page) => {
+  await page.goto(appURLProfileParties);
+  await expect(page.getByRole('heading', { name: PARTIES_HEADING, level: 1 })).toBeVisible();
+};
 
 test.describe('Parties Overview Page', () => {
   test('displays the list of parties grouped by favorites and organizations', async ({ page }) => {
-    await page.goto(appURLProfileParties);
-    await page.waitForLoadState('networkidle');
+    await gotoPartiesOverview(page);
 
-    await expect(page.getByRole('heading', { name: 'Aktører og favoritter', level: 1 })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Favoritter', level: 2 })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Virksomheter', level: 2 })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Firma AS Org. nr. :' })).toBeVisible();
   });
 
   test('search narrows the list down to matching parties', async ({ page }) => {
-    await page.goto(appURLProfileParties);
-    await page.waitForLoadState('networkidle');
+    await gotoPartiesOverview(page);
 
     await page.getByRole('searchbox', { name: 'Søk i aktører' }).fill('Firma');
 
@@ -24,8 +28,7 @@ test.describe('Parties Overview Page', () => {
   });
 
   test('filtering to persons hides organizations and the deleted-entities switch', async ({ page }) => {
-    await page.goto(appURLProfileParties);
-    await page.waitForLoadState('networkidle');
+    await gotoPartiesOverview(page);
 
     await page.getByRole('button', { name: 'Alle aktører' }).click();
     await page.getByRole('menuitemradio', { name: 'Personer' }).click();
@@ -38,8 +41,7 @@ test.describe('Parties Overview Page', () => {
   });
 
   test('expanding a party reveals its notification settings and org number', async ({ page }) => {
-    await page.goto(appURLProfileParties);
-    await page.waitForLoadState('networkidle');
+    await gotoPartiesOverview(page);
 
     await page.getByRole('button', { name: 'Testbedrift AS Org. nr. :' }).first().click();
 
@@ -49,8 +51,7 @@ test.describe('Parties Overview Page', () => {
   });
 
   test('toggling favorite moves a party into the Favoritter group', async ({ page }) => {
-    await page.goto(appURLProfileParties);
-    await page.waitForLoadState('networkidle');
+    await gotoPartiesOverview(page);
 
     await page.getByRole('button', { name: 'Legg til Testbedrift AS som favorittaktør' }).first().click();
 
@@ -58,8 +59,7 @@ test.describe('Parties Overview Page', () => {
   });
 
   test('setting a party as preselected updates its context menu action', async ({ page }) => {
-    await page.goto(appURLProfileParties);
-    await page.waitForLoadState('networkidle');
+    await gotoPartiesOverview(page);
 
     const orgListItem = page.getByRole('listitem').filter({ hasText: 'Testbedrift AS' }).first();
     await orgListItem.getByRole('button', { name: 'Åpne meny' }).click();

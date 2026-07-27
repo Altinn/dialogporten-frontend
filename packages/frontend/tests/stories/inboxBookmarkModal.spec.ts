@@ -1,10 +1,11 @@
+import { expect, test } from '@playwright/test';
 import { defaultAppURL } from '../';
-import { expect, test } from '../fixtures';
+import { expectInboxLoaded } from './common';
 
 test.describe('Inbox BookmarkModal', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(defaultAppURL);
-    await page.waitForLoadState('networkidle');
+    await expectInboxLoaded(page);
   });
 
   test('Save search from Inbox: open modal, change title, save', async ({ page }) => {

@@ -1,7 +1,7 @@
-import type { Page } from '@playwright/test';
+import { expect, type Page, test } from '@playwright/test';
 import { appURLProfileParties } from '../..';
-import { expect, test } from '../../fixtures';
 
+const PARTIES_HEADING = 'Aktører og favoritter';
 const PARTY_BUTTON_NAME = 'Testbedrift AS Org. nr. :';
 const SMS_ROW_NAME = 'Varslinger på SMS';
 const EMAIL_ROW_NAME = 'Varslinger på e-post';
@@ -9,7 +9,7 @@ const MOCK_INVALID_VERIFICATION_CODE = '000000';
 
 const openChannelSettingsForParty = async (page: Page, rowName: string) => {
   await page.goto(appURLProfileParties);
-  await page.waitForLoadState('networkidle');
+  await expect(page.getByRole('heading', { name: PARTIES_HEADING, level: 1 })).toBeVisible();
 
   await page.getByRole('button', { name: PARTY_BUTTON_NAME }).click();
   await page.getByRole('button', { name: rowName }).click();
@@ -70,7 +70,7 @@ test.describe('Account Alerts - SMS verification flow', () => {
     const sidebar = page.getByRole('navigation', { name: 'Sidebar' });
     await sidebar.getByRole('link', { name: 'Din profil' }).click();
     await sidebar.getByRole('link', { name: 'Aktører og favoritter' }).click();
-    await page.waitForLoadState('networkidle');
+    await expect(page.getByRole('heading', { name: PARTIES_HEADING, level: 1 })).toBeVisible();
 
     await page.getByRole('button', { name: PARTY_BUTTON_NAME }).click();
     await expect(page.getByRole('button', { name: SMS_ROW_NAME })).toContainText('+4748995855');
@@ -130,7 +130,7 @@ test.describe('Account Alerts - Email verification flow', () => {
     const sidebar = page.getByRole('navigation', { name: 'Sidebar' });
     await sidebar.getByRole('link', { name: 'Din profil' }).click();
     await sidebar.getByRole('link', { name: 'Aktører og favoritter' }).click();
-    await page.waitForLoadState('networkidle');
+    await expect(page.getByRole('heading', { name: PARTIES_HEADING, level: 1 })).toBeVisible();
 
     await page.getByRole('button', { name: PARTY_BUTTON_NAME }).click();
     await expect(page.getByRole('button', { name: EMAIL_ROW_NAME })).toContainText('nullstilt@altinn.xyz');

@@ -1,4 +1,4 @@
-import { expect, test } from '../fixtures';
+import { expect, test } from '@playwright/test';
 import { defaultAppURL } from '../index';
 
 test('ensure party is part of query string', async ({ page }) => {
