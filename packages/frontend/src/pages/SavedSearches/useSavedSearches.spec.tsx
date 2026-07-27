@@ -65,11 +65,11 @@ vi.mock('../../api/queries.ts', () => ({
   fetchSavedSearches: (...args: unknown[]) => mockFetchSavedSearches(...args),
 }));
 
-vi.mock('../../auth/useAuthenticatedQuery.tsx', () => ({
+vi.mock('../../auth/useAuthenticatedQuery.ts', () => ({
   useAuthenticatedQuery: vi.fn(),
 }));
 
-import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
+import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.ts';
 
 const makeSavedSearch = (overrides: Partial<SavedSearchesFieldsFragment> = {}): SavedSearchesFieldsFragment => ({
   id: 1,

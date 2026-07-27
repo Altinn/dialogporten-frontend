@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { useCurrentEndUser, useHasOnlySelfParty } from '../../../api/hooks/usePartiesSelectors.ts';
 import { PageRoutes } from '../../../pages/routes.ts';
-import { buildInboxMenu } from './inboxMenu.tsx';
-import { buildProfileMenu } from './profileMenu.tsx';
+import { buildInboxMenu } from './inboxMenu.ts';
+import { buildProfileMenu } from './profileMenu.ts';
 
 export interface UseGlobalMenuProps {
   sidebarMenu: MenuProps;

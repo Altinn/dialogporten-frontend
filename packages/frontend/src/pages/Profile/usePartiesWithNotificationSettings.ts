@@ -1,7 +1,7 @@
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import { useMemo } from 'react';
 import { updateNotificationsetting } from '../../api/queries.ts';
-import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
+import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.ts';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import type { NotificationAccountsType } from './NotificationsPage/NotificationsPage.tsx';
 import { useNotificationSettingsForCurrentUser } from './useNotificationSettings.tsx';
