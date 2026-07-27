@@ -24,7 +24,7 @@
     "@azure/app-configuration-provider": "2.2.0",
     "@azure/identity": "^4.6.0",
     "@azure/postgresql-auth": "^1.0.0-beta.1",
-    "@digdir/dialogporten-schema": "1.115.6-61fcf9a",
+    "@digdir/dialogporten-schema": "1.118.6",
     "@fastify/compress": "^9.0.0",
     "@fastify/cookie": "^11.0.2",
     "@fastify/cors": "^10.1.0",
