@@ -4,6 +4,8 @@ packages:
 minimumReleaseAge: 4320
 minimumReleaseAgeExclude:
   - "@altinn/altinn-components"
+  - brace-expansion@2.1.2
+  - brace-expansion@1.1.16
 trustPolicy: no-downgrade
 
 catalog:
