@@ -1,6 +1,6 @@
 import type { NotificationsettingsForCurrentUserQuery } from 'bff-types-generated';
 import { getNotificationsettingsForCurrentUser, updateNotificationsetting } from '../../api/queries.ts';
-import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
+import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.ts';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 
 export const useNotificationSettingsForCurrentUser = () => {

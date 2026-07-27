@@ -11,7 +11,7 @@ import { type ChangeEvent, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelectedPartyIds } from '../../api/hooks/usePartiesSelectors.ts';
 import { getPageRouteTitle } from '../../components/PageLayout/pageRouteToTitle.ts';
-import { usePageTitle } from '../../hooks/usePageTitle.tsx';
+import { usePageTitle } from '../../hooks/usePageTitle.ts';
 import { PageRoutes } from '../routes.ts';
 import { filterBookmarksBySearch } from './searchUtils.ts';
 import { useSavedSearches } from './useSavedSearches.tsx';

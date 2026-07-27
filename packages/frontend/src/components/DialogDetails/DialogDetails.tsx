@@ -33,7 +33,7 @@ import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { getDueAtProps } from '../../pages/Inbox/dueAt.ts';
 import { getDialogStatus } from '../../pages/Inbox/status.ts';
 import type { TimelineSegmentWithTransmissions } from '../../utils/transmissions.ts';
-import { ActivityLogModal } from '../ActivityLog/activityLogModal.tsx';
+import { ActivityLogModal } from '../ActivityLog/ActivityLogModal.tsx';
 import { AdditionalInfoContent } from '../AdditionalInfoContent/AdditionalInfoContent.tsx';
 import { MainContentReference } from '../MainContentReference/MainContentReference.tsx';
 import { SeenByModal } from '../SeenByModal/SeenByModal.tsx';

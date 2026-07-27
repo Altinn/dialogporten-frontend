@@ -30,7 +30,7 @@ import { i18n } from '../../../i18n/config.ts';
 import { pruneSearchQueryParams } from '../../../pages/Inbox/queryParams.ts';
 import { PageRoutes } from '../../../pages/routes.ts';
 import { createMenuItemComponent, isRouteSelected } from './shared.tsx';
-import type { UseGlobalMenuProps } from './useGlobalMenu.tsx';
+import type { UseGlobalMenuProps } from './useGlobalMenu.ts';
 
 export function buildInboxMenu({
   t,
