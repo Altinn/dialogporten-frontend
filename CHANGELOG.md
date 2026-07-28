@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.169.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.169.0...v1.169.1) (2026-07-28)
+
+
+### Bug Fixes
+
+* **bff:** avoid duplicate key error when creating profile concurrently ([#4500](https://github.com/Altinn/dialogporten-frontend/issues/4500)) ([e39f04f](https://github.com/Altinn/dialogporten-frontend/commit/e39f04f0dfce5e4ae5b9dd9afa764745ce9d4730))
+* **profile:** saved search improvements ([#4502](https://github.com/Altinn/dialogporten-frontend/issues/4502)) ([7501eb3](https://github.com/Altinn/dialogporten-frontend/commit/7501eb36c9dfea21f36bd8330301c4cb1558eecf))
+
 ## [1.169.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.168.0...v1.169.0) (2026-07-24)
 
 
