@@ -1,7 +1,7 @@
 import { logger } from '@altinn/dialogporten-node-logger';
 import { extendType, intArg, nonNull, stringArg } from 'nexus';
 import { decryptPersonUrn } from '../../party/personUrnCipher.ts';
-import { getOrCreateProfile } from '../profile/service.ts';
+import { ensureProfile } from '../profile/service.ts';
 import { Response } from '../shared/types.ts';
 import { createSavedSearch, deleteSavedSearch, updateSavedSearch } from './service.ts';
 import { SavedSearches, SavedSearchInput } from './types.ts';
@@ -62,10 +62,7 @@ export const CreateSavedSearch = extendType({
       },
       resolve: async (_, { name, data }, ctx) => {
         try {
-          const profile = await getOrCreateProfile(ctx);
-          if (!profile) {
-            throw new Error('Profile not found or could not be created');
-          }
+          const pid = await ensureProfile(ctx);
           if (!data) {
             throw new Error('Data are required to create a saved search');
           }
@@ -73,7 +70,7 @@ export const CreateSavedSearch = extendType({
             ...data,
             urn: Array.isArray(data.urn) ? data.urn.map((u: string) => decryptPersonUrn(u) as string) : data.urn,
           };
-          return await createSavedSearch({ name, data: resolvedData, profile });
+          return await createSavedSearch({ name, data: resolvedData, pid });
         } catch (error) {
           logger.error(error, 'Failed to create saved search:');
           return error;

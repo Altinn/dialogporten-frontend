@@ -4,6 +4,7 @@ import { DataSource } from 'typeorm';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { initRepositories } from '../../src/db.ts';
 import { Group, Party, ProfileTable, SavedSearch, type SavedSearchData } from '../../src/entities.ts';
+import { ensureProfile } from '../../src/graphql/profile/service.ts';
 import {
   createSavedSearch,
   deleteSavedSearch,
@@ -24,6 +25,9 @@ const createProfile = async (pid: string) => {
   profile.groups = [];
   return await dataSource.getRepository(ProfileTable).save(profile);
 };
+
+const contextForPid = (pid: string) =>
+  ({ session: { get: () => pid } }) as unknown as Parameters<typeof ensureProfile>[0];
 
 const searchData: SavedSearchData = {
   searchString: 'skatt',
@@ -76,9 +80,21 @@ describe('savedSearches against a real database', () => {
     ]);
   });
 
+  it('creates the profile row on demand, so a first saved search needs no existing profile', async () => {
+    const context = contextForPid('pid-new');
+
+    expect(await ensureProfile(context)).toBe('pid-new');
+    expect(await ensureProfile(context)).toBe('pid-new');
+    expect(await dataSource.getRepository(ProfileTable).find({ where: { pid: 'pid-new' } })).toHaveLength(1);
+
+    const created = await createSavedSearch({ name: 'Uten profil', data: searchData, pid: 'pid-new' });
+    expect(created.id).toBeGreaterThan(0);
+    expect(await listSavedSearches('pid-new')).toHaveLength(1);
+  });
+
   it('round-trips a saved search with its JSON data intact', async () => {
-    const profile = await createProfile('pid-1');
-    const created = await createSavedSearch({ name: 'Mine krav', data: searchData, profile });
+    await createProfile('pid-1');
+    const created = await createSavedSearch({ name: 'Mine krav', data: searchData, pid: 'pid-1' });
 
     expect(created.id).toBeGreaterThan(0);
 
@@ -90,10 +106,10 @@ describe('savedSearches against a real database', () => {
   });
 
   it('lists only searches belonging to the given profile', async () => {
-    const profileA = await createProfile('pid-a');
-    const profileB = await createProfile('pid-b');
-    await createSavedSearch({ name: 'A sin', data: searchData, profile: profileA });
-    await createSavedSearch({ name: 'B sin', data: searchData, profile: profileB });
+    await createProfile('pid-a');
+    await createProfile('pid-b');
+    await createSavedSearch({ name: 'A sin', data: searchData, pid: 'pid-a' });
+    await createSavedSearch({ name: 'B sin', data: searchData, pid: 'pid-b' });
 
     const searchesA = await listSavedSearches('pid-a');
     expect(searchesA.map((s) => s.name)).toEqual(['A sin']);
@@ -104,10 +120,10 @@ describe('savedSearches against a real database', () => {
 
   it('orders named searches alphabetically before unnamed ones', async () => {
     const profile = await createProfile('pid-1');
-    await createSavedSearch({ name: '', data: searchData, profile });
-    await createSavedSearch({ name: 'b-navn', data: searchData, profile });
+    await createSavedSearch({ name: '', data: searchData, pid: 'pid-1' });
+    await createSavedSearch({ name: 'b-navn', data: searchData, pid: 'pid-1' });
     await dataSource.getRepository(SavedSearch).insert({ data: searchData, profile });
-    await createSavedSearch({ name: 'a-navn', data: searchData, profile });
+    await createSavedSearch({ name: 'a-navn', data: searchData, pid: 'pid-1' });
 
     const searches = await listSavedSearches('pid-1');
     expect(searches.map((s) => s.name).slice(0, 2)).toEqual(['a-navn', 'b-navn']);
@@ -115,8 +131,8 @@ describe('savedSearches against a real database', () => {
   });
 
   it('updates the name of a saved search', async () => {
-    const profile = await createProfile('pid-1');
-    const created = await createSavedSearch({ name: 'Gammelt navn', data: searchData, profile });
+    await createProfile('pid-1');
+    const created = await createSavedSearch({ name: 'Gammelt navn', data: searchData, pid: 'pid-1' });
 
     const result = await updateSavedSearch(created.id, 'Nytt navn');
     expect(result.affected).toBe(1);
@@ -126,8 +142,8 @@ describe('savedSearches against a real database', () => {
   });
 
   it('deletes a saved search and reports affected rows', async () => {
-    const profile = await createProfile('pid-1');
-    const created = await createSavedSearch({ name: 'Slett meg', data: searchData, profile });
+    await createProfile('pid-1');
+    const created = await createSavedSearch({ name: 'Slett meg', data: searchData, pid: 'pid-1' });
 
     const result = await deleteSavedSearch(created.id);
     expect(result.affected).toBe(1);

@@ -127,9 +127,6 @@ const savedSearchesQueryOptions = (selectedPartyIds?: string[], enabled = true) 
   enabled: enabled && !!selectedPartyIds && selectedPartyIds.length > 0,
 });
 
-/**
- * Count-only view of the user's saved searches.
- */
 export const useSavedSearchesCount = (selectedPartyIds?: string[], enabled = true): number => {
   const { data } = useAuthenticatedQuery<SavedSearchesQuery>(savedSearchesQueryOptions(selectedPartyIds, enabled));
   return data?.savedSearches?.length ?? 0;
