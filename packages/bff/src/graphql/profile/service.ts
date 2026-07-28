@@ -19,23 +19,20 @@ export const getOrCreateProfile = async (context: Context): Promise<ProfileTable
     throw new Error('PID is required to get or create a profile');
   }
 
-  const profile = await ProfileRepository!.createQueryBuilder('profile').where('profile.pid = :pid', { pid }).getOne();
-  const token = getSessionToken(context);
-  const groups = token ? await getFavoritesFromCore(token.access_token) : [];
+  let profile = await ProfileRepository!.createQueryBuilder('profile').where('profile.pid = :pid', { pid }).getOne();
 
   if (!profile) {
-    const newProfile = new ProfileTable();
-    newProfile.pid = pid;
-    newProfile.groups = [];
+    await ProfileRepository!.createQueryBuilder().insert().into(ProfileTable).values({ pid }).orIgnore().execute();
 
-    const savedProfile = await ProfileRepository!.save(newProfile);
-    if (!savedProfile) {
+    profile = await ProfileRepository!.findOne({ where: { pid } });
+    if (!profile) {
       throw new Error('Fatal: Not able to create new profile');
     }
-    return savedProfile;
   }
 
-  profile.groups = groups;
+  const token = getSessionToken(context);
+  profile.groups = token ? await getFavoritesFromCore(token.access_token) : [];
+
   return profile;
 };
 
