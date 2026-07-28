@@ -51,7 +51,7 @@ vi.mock('../Inbox/queryParams.ts', () => ({
 }));
 
 vi.mock('../SavedSearches/useSavedSearches.tsx', () => ({
-  useSavedSearches: vi.fn(() => ({ savedSearches: [] })),
+  useSavedSearchesCount: vi.fn(() => 0),
 }));
 
 vi.mock('./usePartiesWithNotificationSettings.ts', () => ({

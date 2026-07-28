@@ -39,7 +39,7 @@ import { useFeatureFlag } from '../../featureFlags/useFeatureFlag.ts';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { pruneSearchQueryParams } from '../Inbox/queryParams.ts';
 import { PageRoutes } from '../routes.ts';
-import { useSavedSearches } from '../SavedSearches/useSavedSearches.tsx';
+import { useSavedSearchesCount } from '../SavedSearches/useSavedSearches.tsx';
 import { AccountAlertsChannelDetails } from './AccountAlerts/AccountAlertsChannelDetails.tsx';
 import type { Channel } from './AccountAlerts/common.ts';
 import { ServiceResourceNotificationsDetails } from './AccountAlerts/ServiceResourceNotificationsDetails.tsx';
@@ -159,10 +159,19 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
   } = useProfile();
   const { openSnackbar } = useSnackbar();
   const { logError } = useErrorLogger();
-  const { savedSearches } = useSavedSearches(selectedPartyIds);
   const { search: currentSearchQuery } = useLocation();
 
   const { t } = useTranslation();
+
+  const options = { ...getDefaultOptions(t), ...inputOptions };
+
+  const groupIncluded = (groupId: SettingsType): boolean => {
+    if (options.includeGroups?.length) return options.includeGroups.includes(groupId);
+    if (options.excludeGroups?.length) return !options.excludeGroups.includes(groupId);
+    return true;
+  };
+
+  const savedSearchesCount = useSavedSearchesCount(selectedPartyIds, groupIncluded(SettingsType.inboxShortcuts));
   const [searchString, setSearchString] = useState<string>('');
   const [selectedLanguage, setSelectedLanguage] = useState<string>(i18n.language);
   const { partiesWithNotificationSettings, uniqueEmailAddresses, uniquePhoneNumbers } =
@@ -251,8 +260,6 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
     );
   };
 
-  const options = { ...getDefaultOptions(t), ...inputOptions };
-
   const { accounts, accountGroups } = useAccounts({
     isLoading: isLoadingParties,
     parties,
@@ -273,12 +280,6 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
     () => new Map(partiesWithNotificationSettings.map((p) => [p.party, p])),
     [partiesWithNotificationSettings],
   );
-
-  const groupIncluded = (groupId: SettingsType): boolean => {
-    if (options.includeGroups?.length) return options.includeGroups.includes(groupId);
-    if (options.excludeGroups?.length) return !options.excludeGroups.includes(groupId);
-    return true;
-  };
 
   const settingsSearch = {
     name: 'settings-search',
@@ -716,7 +717,7 @@ export const useSettings = ({ options: inputOptions = {}, isLoading }: UseSettin
       linkIcon: true,
       icon: MagnifyingGlassIcon,
       badge: {
-        label: t('profile.saved_searches', { count: savedSearches.length }),
+        label: t('profile.saved_searches', { count: savedSearchesCount }),
       },
       summary: <p>{t('profile.settings.saved_searches_summary')}</p>,
     },
