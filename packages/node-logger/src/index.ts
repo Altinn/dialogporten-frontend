@@ -61,8 +61,9 @@ const createErrorLogger = (baseLogger: pino.Logger) => {
         baseLogger.error(errorOrObj, message || '');
       }
     } else {
-      // String or other primitive
-      baseLogger.error(errorOrObj, message);
+      // String or other primitive. pino v10 rejects a msg argument when the first
+      // argument is a string, so merge the two into a single message like v9 did.
+      baseLogger.error(message ? `${errorOrObj?.toString()} ${message}` : errorOrObj);
     }
   };
 };
@@ -93,7 +94,9 @@ const createFatalLogger = (baseLogger: pino.Logger) => {
         baseLogger.fatal(errorOrObj, message || '');
       }
     } else {
-      baseLogger.fatal(errorOrObj, message);
+      // pino v10 rejects a msg argument when the first argument is a string,
+      // so merge the two into a single message like v9 did.
+      baseLogger.fatal(message ? `${errorOrObj.toString()} ${message}` : errorOrObj);
     }
   };
 };
