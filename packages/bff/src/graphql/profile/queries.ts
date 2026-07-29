@@ -1,7 +1,8 @@
 import { extendType } from 'nexus';
+import { getSessionToken } from '../../auth/oidc.js';
 import config from '../../config.js';
 import { getLanguageFromAltinnContext, languageCodes, updateAltinnPersistentContextValue } from './languageCookie.ts';
-import { getOrCreateProfile, getUserFromCore } from './service.ts';
+import { getFavoritesFromCore, getOrCreateProfile, getUserFromCore } from './service.ts';
 
 export const ProfileQuery = extendType({
   type: 'Query',
@@ -9,9 +10,13 @@ export const ProfileQuery = extendType({
     t.field('profile', {
       type: 'Profile',
       resolve: async (_source, _args, ctx) => {
-        const profile = await getOrCreateProfile(ctx);
-        const user = await getUserFromCore(ctx);
-        const { groups, updatedAt } = profile;
+        const token = getSessionToken(ctx);
+        const [profile, user, groups] = await Promise.all([
+          getOrCreateProfile(ctx),
+          getUserFromCore(ctx),
+          token ? getFavoritesFromCore(token.access_token) : [],
+        ]);
+        const { updatedAt } = profile;
 
         const currentCookieLang = getLanguageFromAltinnContext(ctx.request.raw.cookies?.altinnPersistentContext);
 

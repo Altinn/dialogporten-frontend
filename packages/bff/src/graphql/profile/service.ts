@@ -11,13 +11,27 @@ const platformProfileAPI_url = platformBaseURL + '/profile/api/v1/';
 
 export type PreselectedPartyOperationType = 'set' | 'unset';
 
-export const getOrCreateProfile = async (context: Context): Promise<ProfileTable> => {
+const getPidOrThrow = (context: Context): string => {
   const pid = typeof context.session.get('pid') === 'string' ? (context.session.get('pid') as string) : '';
 
   if (!pid) {
     logger.error('No pid provided');
     throw new Error('PID is required to get or create a profile');
   }
+
+  return pid;
+};
+
+export const ensureProfile = async (context: Context): Promise<string> => {
+  const pid = getPidOrThrow(context);
+
+  await ProfileRepository!.createQueryBuilder().insert().into(ProfileTable).values({ pid }).orIgnore().execute();
+
+  return pid;
+};
+
+export const getOrCreateProfile = async (context: Context): Promise<ProfileTable> => {
+  const pid = getPidOrThrow(context);
 
   let profile = await ProfileRepository!.createQueryBuilder('profile').where('profile.pid = :pid', { pid }).getOne();
 
@@ -29,9 +43,6 @@ export const getOrCreateProfile = async (context: Context): Promise<ProfileTable
       throw new Error('Fatal: Not able to create new profile');
     }
   }
-
-  const token = getSessionToken(context);
-  profile.groups = token ? await getFavoritesFromCore(token.access_token) : [];
 
   return profile;
 };
