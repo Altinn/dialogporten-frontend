@@ -1,20 +1,20 @@
-import type { Page } from '@playwright/test';
+import { expect, type Page, test } from '@playwright/test';
 import { appURLProfileNotifications } from '../..';
-import { expect, test } from '../../fixtures';
+
+const NOTIFICATIONS_HEADING = 'Varslingsadresser';
 
 test.describe('Profile Notifications Page', () => {
   test('displays the primary SMS and email notification addresses', async ({ page }: { page: Page }) => {
     await page.goto(appURLProfileNotifications);
-    await page.waitForLoadState('networkidle');
 
-    await expect(page.getByRole('heading', { name: 'Varslingsadresser', level: 1 })).toBeVisible();
+    await expect(page.getByRole('heading', { name: NOTIFICATIONS_HEADING, level: 1 })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Varslinger på SMS' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Varslinger på e-post' })).toBeVisible();
   });
 
   test('opening an address shows the KRR-sourced contact info in a dialog', async ({ page }: { page: Page }) => {
     await page.goto(appURLProfileNotifications);
-    await page.waitForLoadState('networkidle');
+    await expect(page.getByRole('heading', { name: NOTIFICATIONS_HEADING, level: 1 })).toBeVisible();
 
     await page.getByRole('button', { name: 'Varslinger på SMS' }).click();
 

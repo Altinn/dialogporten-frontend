@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { ServiceResource } from 'bff-types-generated';
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
+import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.ts';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { fetchAllServiceResources, fetchConsumerServiceResources } from '../queries.ts';
 import { useParties } from './useParties.ts';

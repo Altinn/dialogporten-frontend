@@ -19,10 +19,10 @@ import { FilterCategory } from '../../pages/Inbox/filters.tsx';
 import { FixedGlobalQueryParams, pruneSearchQueryParams } from '../../pages/Inbox/queryParams.ts';
 import { useProfile } from '../../pages/Profile/useProfile.tsx';
 import { PageRoutes } from '../../pages/routes.ts';
-import { useGlobalMenu } from './GlobalMenu/useGlobalMenu.tsx';
+import { useGlobalMenu } from './GlobalMenu/useGlobalMenu.ts';
 import { mapPartiesToAuthorizedParties } from './mapPartyToAuthorizedParty';
 import { getSearchLabels, pruneSearchValue } from './Search/getSearchLabels.ts';
-import { useSearchString } from './Search/useSearchString.tsx';
+import { useSearchString } from './Search/useSearchString.ts';
 
 interface UseHeaderConfigOutput {
   headerProps: GlobalHeaderProps;

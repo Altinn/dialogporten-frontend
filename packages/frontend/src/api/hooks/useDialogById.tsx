@@ -15,7 +15,7 @@ import {
 } from 'bff-types-generated';
 import { type TFunction, t } from 'i18next';
 import { useCallback } from 'react';
-import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
+import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.ts';
 import type { DialogActionProps } from '../../components/DialogDetails/DialogDetails.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useFeatureFlag } from '../../featureFlags/useFeatureFlag.ts';

@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - name: 'Checking Out Code'
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           fetch-depth: 0
 
@@ -28,6 +28,9 @@ jobs:
 
       - name: Run Playwright tests
         run: pnpm --filter frontend test:playwright
+
+      - name: Run Playwright performance tests
+        run: pnpm --filter frontend test:playwright:perf
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()

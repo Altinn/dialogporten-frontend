@@ -1,5 +1,4 @@
-import { expect, type Page } from '@playwright/test';
-import { test } from '../fixtures';
+import { expect, type Page, test } from '@playwright/test';
 import { appUrlWithPlaywrightId } from '../index';
 
 /**

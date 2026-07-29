@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.169.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.169.0...v1.169.1) (2026-07-28)
+
+
+### Bug Fixes
+
+* **bff:** avoid duplicate key error when creating profile concurrently ([#4500](https://github.com/Altinn/dialogporten-frontend/issues/4500)) ([e39f04f](https://github.com/Altinn/dialogporten-frontend/commit/e39f04f0dfce5e4ae5b9dd9afa764745ce9d4730))
+* **profile:** saved search improvements ([#4502](https://github.com/Altinn/dialogporten-frontend/issues/4502)) ([7501eb3](https://github.com/Altinn/dialogporten-frontend/commit/7501eb36c9dfea21f36bd8330301c4cb1558eecf))
+
+## [1.169.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.168.0...v1.169.0) (2026-07-24)
+
+
+### Features
+
+* return to the originating list after moving a dialog ([#4490](https://github.com/Altinn/dialogporten-frontend/issues/4490)) ([6388960](https://github.com/Altinn/dialogporten-frontend/commit/6388960c4a7ccff0ac9f21e3a81734eb07b4397c))
+
+
+### Bug Fixes
+
+* **dialog:** bump to 0.68.18 of alitnn-components that fixes buttons in DialogBody render on top of the global menu ([#4493](https://github.com/Altinn/dialogporten-frontend/issues/4493)) ([ffd2dfd](https://github.com/Altinn/dialogporten-frontend/commit/ffd2dfdf586a55af4439e3e102666875ed95400d))
+* **frontend:** drop App Insights exceptions from browser-injected scripts ([#4481](https://github.com/Altinn/dialogporten-frontend/issues/4481)) ([c6fe343](https://github.com/Altinn/dialogporten-frontend/commit/c6fe343def0ef0e0c8768de3dcee053ce7fac0b5))
+
 ## [1.168.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.167.0...v1.168.0) (2026-07-17)
 
 

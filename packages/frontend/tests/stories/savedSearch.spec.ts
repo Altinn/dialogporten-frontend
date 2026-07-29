@@ -1,12 +1,12 @@
+import { expect, test } from '@playwright/test';
 import { PageRoutes } from '../../src/pages/routes';
 import { defaultAppURL } from '../';
-import { expect, test } from '../fixtures';
-import { expectIsCompanyPage, getSidebarMenuItem, performSearch } from './common';
+import { expectInboxLoaded, expectIsCompanyPage, getSidebarMenuItem, performSearch } from './common';
 
 test.describe('Saved search', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(defaultAppURL);
-    await page.waitForLoadState('networkidle');
+    await expectInboxLoaded(page);
   });
 
   test('Create and delete saved search', async ({ page }) => {
@@ -14,14 +14,13 @@ test.describe('Saved search', () => {
     await toolbarArea.getByRole('button', { name: /legg til/i }).click();
     await toolbarArea.locator('#tool-filter-add').getByRole('menuitem', { name: 'Tjenesteeier' }).click();
     await page.getByRole('option', { name: 'Oslo kommune' }).click();
-    await page.getByRole('option', { name: 'Oslo kommune' }).press('Escape');
+    await page.keyboard.press('Escape');
 
     await page.getByRole('button', { name: 'Lagre søk' }).click();
     await page.getByRole('dialog').getByRole('button', { name: 'Lagre søk' }).click();
     await expect(page.getByText('Søket ditt er lagret')).toBeVisible();
 
     await getSidebarMenuItem(page, PageRoutes.savedSearches).click();
-    await page.waitForLoadState('networkidle');
 
     const savedSearchItem = page.locator('li', { has: page.locator('a[href*="org=ok"]') }).first();
     await expect(savedSearchItem).toBeVisible();
@@ -33,18 +32,14 @@ test.describe('Saved search', () => {
     await expect(page.getByRole('main')).toContainText('Ingen lagrede søk');
   });
 
-  test('Saved search based on searchbar value', async ({ page, isMobile }) => {
-    await page.goto(defaultAppURL);
-
+  test('Saved search based on searchbar value', async ({ page }) => {
     await performSearch(page, 'skatten', 'enter');
 
     await page.getByRole('button', { name: 'Lagre søk' }).click();
     await page.getByRole('dialog').getByRole('button', { name: 'Lagre søk' }).click();
     await expect(page.getByRole('button', { name: 'Lagret søk' })).toBeVisible();
 
-    test.skip(isMobile, 'Sidebar is desktop-only');
     await getSidebarMenuItem(page, PageRoutes.savedSearches).click();
-    await page.waitForLoadState('networkidle');
 
     await expect(page.locator('a', { hasText: 'skatten' })).toBeVisible();
     await getSidebarMenuItem(page, PageRoutes.inbox).click();
@@ -58,13 +53,9 @@ test.describe('Saved search', () => {
   test('Saved search link shows correct result', async ({ page }) => {
     test.slow();
 
-    await page.goto(defaultAppURL);
-    await page.waitForLoadState('networkidle');
-
     await page.getByTestId('inbox-toolbar').getByRole('button', { name: 'Test Testesen' }).click();
     await page.getByRole('option', { name: 'Testbedrift As Avd Oslo' }).click();
     await page.waitForURL((url) => url.searchParams.get('party') === 'urn:altinn:organization:identifier-sub:2');
-    await page.waitForLoadState('networkidle');
     await page.getByRole('combobox', { name: 'Søk' }).click();
     await page.getByRole('combobox', { name: 'Søk' }).fill('innkalling');
     await page.getByRole('combobox', { name: 'Søk' }).press('Enter');
@@ -73,17 +64,13 @@ test.describe('Saved search', () => {
     await expect(page.getByText('Søket ditt er lagret')).toBeVisible();
 
     await page.getByTestId('sidebar-saved-searches').click();
-    await page.waitForLoadState('networkidle');
     await page.getByRole('link', { name: '« innkalling »' }).click();
-    await page.waitForLoadState('networkidle');
 
-    await expect(page.getByRole('link', { name: 'Innkalling til sesjon' })).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole('link', { name: 'Innkalling til sesjon' })).toBeVisible();
     await expectIsCompanyPage(page);
   });
 
   test('save search button is disabled when matching search exists also for predefined filters', async ({ page }) => {
-    await page.goto(defaultAppURL);
-
     /* Create saved search with Oslo kommune and folder=Archive (systemLabel) from inbox */
 
     await page.getByRole('button', { name: 'Legg til filter' }).click();
@@ -106,7 +93,7 @@ test.describe('Saved search', () => {
     await page.locator('#tool-filter-add').getByRole('menuitem', { name: 'Tjenesteeier' }).click();
     await page.locator('input[aria-controls="toolbar-filter-menu-org-listbox"]').fill('Oslo');
     await page.getByRole('option', { name: 'Oslo kommune' }).click();
-    await page.getByRole('option', { name: 'Oslo kommune' }).press('Escape');
+    await page.keyboard.press('Escape');
     await page.getByRole('button', { name: 'Legg til' }).click();
     await page.locator('#tool-filter-add').getByRole('menuitem', { name: 'Mappe' }).click();
     await page.getByRole('menuitemradio', { name: 'Arkiv' }).click();

@@ -1,6 +1,6 @@
 import type { OrganizationFieldsFragment, OrganizationsQuery } from 'bff-types-generated';
 import { fetchOrganizations } from '../../api/queries.ts';
-import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
+import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.ts';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 
 interface UseOrganizationsOutput {

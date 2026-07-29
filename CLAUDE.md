@@ -43,8 +43,8 @@ Services available at:
 pnpm dev                    # Vite dev server
 pnpm test                   # Unit tests (Vitest)
 pnpm test:watch             # Tests in watch mode
-pnpm test:playwright        # E2E tests (desktop)
-pnpm test:playwright:mobile # E2E tests (mobile)
+pnpm test:playwright        # E2E tests
+pnpm test:playwright:perf   # Performance specs (run alone, serially)
 pnpm test:accessibility     # Accessibility tests
 pnpm i18n:check             # Check translation completeness
 ```

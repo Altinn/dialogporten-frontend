@@ -1,5 +1,5 @@
+import { expect, test } from '@playwright/test';
 import { baseURL } from '../';
-import { expect, test } from '../fixtures';
 import { expectIsCompanyPage, expectIsPersonPage, setPartyCookie } from './common';
 
 const appURL = `${baseURL}/?mock=true&playwrightId=parties-extreme`;

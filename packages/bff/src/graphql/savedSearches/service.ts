@@ -4,7 +4,7 @@ import { type ProfileTable, SavedSearch, type SavedSearchData } from '../../enti
 interface CreateSavedSearch {
   name: string;
   data: SavedSearchData;
-  profile: ProfileTable;
+  pid: string;
 }
 
 export const listSavedSearches = async (pid: string | undefined) => {
@@ -18,11 +18,11 @@ export const listSavedSearches = async (pid: string | undefined) => {
     .getMany();
 };
 
-export const createSavedSearch = async ({ name, data, profile }: CreateSavedSearch) => {
+export const createSavedSearch = async ({ name, data, pid }: CreateSavedSearch) => {
   const newSavedSearch = new SavedSearch();
   newSavedSearch.name = name;
   newSavedSearch.data = data;
-  newSavedSearch.profile = profile;
+  newSavedSearch.profile = { pid } as ProfileTable;
   return await SavedSearchRepository!.save(newSavedSearch);
 };
 

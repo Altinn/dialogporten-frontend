@@ -17,7 +17,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { updateSIPrivatePhoneNumber } from '../../../api/queries.ts';
 import { QUERY_KEYS } from '../../../constants/queryKeys.ts';
-import styles from './AccountAlertsChannelDetails.module.css';
+import styles from './accountAlertsChannelDetails.module.css';
 import { useIsAlreadyVerified, useVerificationFlow } from './common.ts';
 import { isValidCountryCodeInput, isValidPhoneNumber, joinPhone, parsePhone } from './phone.ts';
 import { VerificationCodeStep } from './VerificationCodeStep.tsx';

@@ -13,7 +13,7 @@
     "bench": "vitest bench --run",
     "codegen:playwright": "playwright codegen",
     "test:playwright": "playwright test --project=playwright --project=playwright-heavy",
-    "test:playwright:mobile": "playwright test --project=playwright-mobile",
+    "test:playwright:perf": "playwright test --project=playwright-perf --workers=1",
     "test:accessibility": "playwright test --project=accessibility",
     "install:browsers": "playwright install",
     "test:watch": "vitest watch",
@@ -24,7 +24,7 @@
     "doctor": "npx react-doctor@latest"
   },
   "dependencies": {
-    "@altinn/altinn-components": "0.68.17",
+    "@altinn/altinn-components": "0.68.18",
     "@microsoft/applicationinsights-react-js": "19.4.1",
     "@microsoft/applicationinsights-web": "3.4.3",
     "@navikt/aksel-icons": "^7.37.0",

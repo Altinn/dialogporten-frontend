@@ -1,5 +1,5 @@
+import { expect, test } from '@playwright/test';
 import { appUrlWithPlaywrightId } from '../';
-import { expect, test } from '../fixtures';
 
 const appURL = appUrlWithPlaywrightId('service-filter');
 

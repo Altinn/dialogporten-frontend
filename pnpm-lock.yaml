@@ -75,8 +75,8 @@ overrides:
   protobufjs: '>=8.0.1'
   shell-quote: '>=1.8.4'
   websocket-driver: '>=0.7.5'
-  brace-expansion@1: '>=1.1.16 <2'
-  brace-expansion@2: '>=2.1.2 <3'
+  brace-expansion@1: 1.1.16
+  brace-expansion@2: 5.0.8
   brace-expansion@5: '>=5.0.7 <6'
   js-yaml@3: '>=3.15.0 <4'
   js-yaml@4: '>=4.3.0 <5'
@@ -116,8 +116,8 @@ importers:
         specifier: ^1.0.0-beta.1
         version: 1.0.0-beta.1(pg@8.18.0)
       '@digdir/dialogporten-schema':
-        specifier: 1.115.6-61fcf9a
-        version: 1.115.6-61fcf9a
+        specifier: 1.118.6
+        version: 1.118.6
       '@fastify/compress':
         specifier: ^9.0.0
         version: 9.0.0
@@ -520,8 +520,8 @@ importers:
   packages/frontend:
     dependencies:
       '@altinn/altinn-components':
-        specifier: 0.68.17
-        version: 0.68.17(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        specifier: 0.68.18
+        version: 0.68.18(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@microsoft/applicationinsights-react-js':
         specifier: 19.4.1
         version: 19.4.1(history@4.10.1)(react@19.2.3)(tslib@2.8.1)
@@ -733,8 +733,8 @@ packages:
     resolution: {integrity: sha512-ZgxV2+5qt3NLeUYBTsi6PLyHcENQWC0iFppFZekHSEDA2wcLdTUjnaJzimTEULHIvJuLRCkUs4JABdhuJktEag==}
     engines: {node: '>= 14.0.0'}
 
-  '@altinn/altinn-components@0.68.17':
-    resolution: {integrity: sha512-G6uoKGt0TXAX8U2kK8bUt6KIFq9SuDGA0wIFT65LQSIP5rp6kwRhG0meyoS9lXzePk5jLQJKrAEYVemgnC7q/w==}
+  '@altinn/altinn-components@0.68.18':
+    resolution: {integrity: sha512-zytH4j07nL8XMu7MzqjMf9Vd9LKuBR70ydBtm/S1yhOFDf3qLfyacYaW3vpNB9BXE6g+5C5z529n7ROujvvmcg==}
     peerDependencies:
       react: '>=18.3.1 || ^19.0.0'
       react-dom: '>=18.3.1 || ^19.0.0'
@@ -1902,8 +1902,8 @@ packages:
   '@digdir/designsystemet-web@1.14.0':
     resolution: {integrity: sha512-dmUnV/0wzTOSPnSGqQwjYyneuO+/QqfugAr2SP1N1m/VzfMal3Y5hD+AkDWWzWhJ7EJrhGtYwG5JVRM8iYuVeQ==}
 
-  '@digdir/dialogporten-schema@1.115.6-61fcf9a':
-    resolution: {integrity: sha512-1bFimGhmIayw9i4Ah18W9jtY+HnDaJPOciSGvz2rwlMbomJ5npUJvGOfKeM2jHqtyiJqZc/57On1ygrUIE9ktA==}
+  '@digdir/dialogporten-schema@1.118.6':
+    resolution: {integrity: sha512-lRlFqAF59sK7U1cm4taIZkXatS2/u12cQ6wgg4lmlS/roTtHCEfvLtNO5oCcfnEy8XeC2ZDEWdbXLRKMDOzc5Q==}
     engines: {node: '24'}
 
   '@discoveryjs/json-ext@0.5.7':
@@ -5306,12 +5306,13 @@ packages:
   brace-expansion@1.1.16:
     resolution: {integrity: sha512-IDw48K2/2kRkg9LdJxurvq3lV3aBgq0REY89duEqFRthjlPdXHKMj7EnQOXVckxzgisinf3nHfrcE2FufFLXMw==}
 
-  brace-expansion@2.1.2:
-    resolution: {integrity: sha512-w5JZcKgdhDOgOwm8H+KgbosopHMuGcl6qbulwjtz3SM7I7P3yW1eAjzMPLrIE+NQ9vjgANKHWeMHnrT0OXW1oA==}
-
   brace-expansion@5.0.7:
     resolution: {integrity: sha512-7oFy703dxfY3/NLxC1fh2SUCQ0H9rmAY+5EpDVfXjUTTs+HEwR2nYaqLv+GWcTsumwxPfiz6CzCNkwXwBUwqCA==}
     engines: {node: 18 || 20 || >=22}
+
+  brace-expansion@5.0.8:
+    resolution: {integrity: sha512-JZyDyq3D4AUifKTPOB7DELf6XsB3WdPuNxCtob1vFXPsSXhdAiHBWJ/tJ8HAc9aH84BK+5JFZLNkJKx3G9kzQg==}
+    engines: {node: 20 || >=22}
 
   braces@3.0.3:
     resolution: {integrity: sha512-yQbXgO/OSZVD2IsiLlro+7Hf6Q18EJrKSEsdoMzKePKXct3gvD8oLcOQdIzGupr5Fj+EDe8gO/lxc1BzfMpxvA==}
@@ -10897,7 +10898,7 @@ snapshots:
     dependencies:
       '@algolia/client-common': 5.48.0
 
-  '@altinn/altinn-components@0.68.17(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+  '@altinn/altinn-components@0.68.18(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@digdir/designsystemet-css': 1.14.0
       '@digdir/designsystemet-react': 1.14.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -12394,7 +12395,7 @@ snapshots:
       '@u-elements/u-details': 1.0.0
       '@u-elements/u-tabs': 1.0.3
 
-  '@digdir/dialogporten-schema@1.115.6-61fcf9a': {}
+  '@digdir/dialogporten-schema@1.118.6': {}
 
   '@discoveryjs/json-ext@0.5.7': {}
 
@@ -17430,11 +17431,11 @@ snapshots:
       balanced-match: 1.0.2
       concat-map: 0.0.1
 
-  brace-expansion@2.1.2:
-    dependencies:
-      balanced-match: 1.0.2
-
   brace-expansion@5.0.7:
+    dependencies:
+      balanced-match: 4.0.4
+
+  brace-expansion@5.0.8:
     dependencies:
       balanced-match: 4.0.4
 
@@ -20729,11 +20730,11 @@ snapshots:
 
   minimatch@5.1.9:
     dependencies:
-      brace-expansion: 2.1.2
+      brace-expansion: 5.0.8
 
   minimatch@9.0.9:
     dependencies:
-      brace-expansion: 2.1.2
+      brace-expansion: 5.0.8
 
   minimist@1.2.8: {}
 

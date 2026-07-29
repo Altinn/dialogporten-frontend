@@ -1,6 +1,5 @@
-import type { Page } from '@playwright/test';
+import { expect, type Page, test } from '@playwright/test';
 import { appUrlWithPlaywrightId } from '../';
-import { expect, test } from '../fixtures';
 import {
   expectIsCompanyPage,
   expectIsPersonPage,
@@ -13,7 +12,7 @@ test.describe('LoginPartyContext', () => {
   test.beforeEach(async ({ page }: { page: Page }) => {
     const dateScenarioPage = appUrlWithPlaywrightId('login-party-context');
     await page.goto(dateScenarioPage);
-    await page.waitForLoadState('networkidle');
+    await expect(page.locator('#toolbar-menu-root')).toContainText('Test Testesen');
   });
 
   test('Shows correct messages for person party by default', async ({ page }: { page: Page }) => {

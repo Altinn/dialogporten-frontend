@@ -22,7 +22,7 @@ import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { useFilterServiceResources } from '../../api/hooks/useServiceResource.ts';
 import { createSavedSearch, deleteSavedSearch, fetchSavedSearches, updateSavedSearch } from '../../api/queries.ts';
-import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.tsx';
+import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.ts';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { useDateFnsLocale } from '../../i18n/useDateFnsLocale.tsx';
@@ -119,6 +119,19 @@ export const filterSavedSearches = (
   });
 };
 
+const savedSearchesQueryOptions = (selectedPartyIds?: string[], enabled = true) => ({
+  queryKey: [QUERY_KEYS.SAVED_SEARCHES, selectedPartyIds],
+  queryFn: fetchSavedSearches,
+  retry: 3,
+  staleTime: 1000 * 60 * 20,
+  enabled: enabled && !!selectedPartyIds && selectedPartyIds.length > 0,
+});
+
+export const useSavedSearchesCount = (selectedPartyIds?: string[], enabled = true): number => {
+  const { data } = useAuthenticatedQuery<SavedSearchesQuery>(savedSearchesQueryOptions(selectedPartyIds, enabled));
+  return data?.savedSearches?.length ?? 0;
+};
+
 export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesOutput => {
   const [isCTALoading, setIsCTALoading] = useState<boolean>(false);
   const [openedSavedSearch, setOpenedSavedSearch] = useState<string | null>(null);
@@ -134,13 +147,9 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
   const { openSnackbar } = useSnackbar();
   const { logError } = useErrorLogger();
 
-  const { data, isLoading, isSuccess } = useAuthenticatedQuery<SavedSearchesQuery>({
-    queryKey: [QUERY_KEYS.SAVED_SEARCHES, selectedPartyIds],
-    queryFn: fetchSavedSearches,
-    retry: 3,
-    staleTime: 1000 * 60 * 20,
-    enabled: !!selectedPartyIds && selectedPartyIds?.length > 0,
-  });
+  const { data, isLoading, isSuccess } = useAuthenticatedQuery<SavedSearchesQuery>(
+    savedSearchesQueryOptions(selectedPartyIds),
+  );
 
   const endUsersSavedSearches = (data?.savedSearches ?? []) as SavedSearchesFieldsFragment[];
   const currentPartySavedSearches = filterSavedSearches(endUsersSavedSearches, selectedPartyIds || []);

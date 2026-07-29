@@ -30,6 +30,11 @@ if (!fs.existsSync(REPORTS_DIR)) {
 // icons (tracked as a design-system bug, not something fixable in this repo).
 const KNOWN_ALTINN_COMPONENTS_A11Y_ISSUES = ['svg-img-alt'];
 
+const expectPageRendered = async (page: Page) => {
+  await expect(page.getByRole('main')).toBeVisible();
+  await expect(page.locator('[aria-busy="true"]')).toHaveCount(0);
+};
+
 const expectWithFilterViolations = async (violations, disabledRules: string[] = []) => {
   const filteredViolations = violations
     .filter((violation) => VIOLATION_FILTERS.includes(violation.impact))
@@ -39,7 +44,7 @@ const expectWithFilterViolations = async (violations, disabledRules: string[] = 
 
 const testAccessibility = async (page: Page, url: string, name: string, disabledRules: string[] = []) => {
   await page.goto(url);
-  await page.waitForLoadState('networkidle');
+  await expectPageRendered(page);
   const accessibilityScanResults = await new AxeBuilder({ page }).withTags(WCAG_TAGS_CONFIG).analyze();
 
   const reportPath = path.join(REPORTS_DIR, `axe-report-${name.replace(/\W/g, '_')}.html`);
@@ -83,7 +88,7 @@ test.describe('Axe test', () => {
     page,
   }) => {
     await page.goto(appURLInbox);
-    await page.waitForLoadState('networkidle');
+    await expectPageRendered(page);
     const toolbarArea = page.getByTestId('inbox-toolbar');
     await toolbarArea.getByRole('button', { name: 'add' }).click();
 
@@ -144,7 +149,7 @@ test.describe('Axe test', () => {
     page,
   }) => {
     await page.goto(appURLInbox);
-    await page.waitForLoadState('networkidle');
+    await expectPageRendered(page);
     await page.getByTestId('searchbar-input').fill('mel');
 
     const accessibilityScanResultsSearchBar = await new AxeBuilder({ page }).withTags(WCAG_TAGS_CONFIG).analyze();
@@ -171,7 +176,7 @@ test.describe('Axe test', () => {
     page,
   }) => {
     await page.goto(appURLProfileLanding);
-    await page.waitForLoadState('networkidle');
+    await expectPageRendered(page);
 
     await page.getByRole('button', { name: 'Språk/language' }).click();
     const accessibilityScanResultsLanguageModal = await new AxeBuilder({ page }).withTags(WCAG_TAGS_CONFIG).analyze();
