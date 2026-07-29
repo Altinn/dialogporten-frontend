@@ -107,6 +107,8 @@ test.describe('Transmissions and dialog history', () => {
     await page.goto(appUrlWithPlaywrightId('transmissions'));
     await page.getByRole('link', { name: 'This has no sender name' }).click();
 
+    await page.getByRole('button', { name: 'Vis mer' }).click();
+
     const empty = page.getByRole('button', { name: /Sak 5: tom melding.*ingen innhold/ });
     await expect(empty).toBeVisible();
     await expect(empty).not.toHaveAttribute('aria-disabled', 'true');

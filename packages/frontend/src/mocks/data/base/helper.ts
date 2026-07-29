@@ -98,9 +98,14 @@ export const filterDialogs = ({
 
 export const getMockedMainContent = (dialogId: string) => {
   const idWithLegacyHTML = '019241f7-6f45-72fd-a574-f19d358aaf4e';
+  const idWithLocalizedContentUrls = '019241f7-8218-7756-be82-5310042c3d95';
 
   if (idWithLegacyHTML === dialogId) {
     return getMockedHTMLFCEContent();
+  }
+
+  if (idWithLocalizedContentUrls === dialogId) {
+    return getMockedLocalizedMarkdownFCEContent();
   }
 
   return {
@@ -111,6 +116,18 @@ export const getMockedMainContent = (dialogId: string) => {
         languageCode: 'nb',
       },
     ],
+  };
+};
+
+export const getMockedLocalizedMarkdownFCEContent = (transmissionId?: string) => {
+  const idParam = transmissionId ? `&id=${transmissionId}` : '';
+
+  return {
+    mediaType: 'application/vnd.dialogporten.frontchannelembed-url;type=text/markdown',
+    value: ['nb', 'nn', 'en'].map((languageCode) => ({
+      value: `https://dialogporten-serviceprovider.net/fce-markdown-localized?lang=${languageCode}${idParam}`,
+      languageCode,
+    })),
   };
 };
 
@@ -263,7 +280,7 @@ export const getMockedTransmissions = (dialogId: string) => {
             ],
             mediaType: 'text/plain',
           },
-          contentReference: getMockedFCEContent('transmission-1'),
+          contentReference: getMockedLocalizedMarkdownFCEContent('transmission-1'),
         },
         attachments: [],
       },
@@ -634,6 +651,32 @@ export const getMockedTransmissions = (dialogId: string) => {
             ],
           },
         ],
+      },
+      {
+        id: 'language-fce',
+        isAuthorized: true,
+        createdAt: '2024-08-16T07:00:00.000Z',
+        type: TransmissionType.Information,
+        sender: { actorType: ActorType.ServiceOwner, actorId: null, actorName: null },
+        content: {
+          title: {
+            value: [
+              { value: 'Språktest: innhold per språk', languageCode: 'nb' },
+              { value: 'Språktest: innhald per språk', languageCode: 'nn' },
+              { value: 'Language test: content per language', languageCode: 'en' },
+            ],
+            mediaType: 'text/plain',
+          },
+          summary: {
+            value: [
+              { value: 'Bytt språk i menyen for å se innholdet under bytte', languageCode: 'nb' },
+              { value: 'Switch language in the menu to see the content below change', languageCode: 'en' },
+            ],
+            mediaType: 'text/plain',
+          },
+          contentReference: getMockedLocalizedMarkdownFCEContent('language-fce'),
+        },
+        attachments: [],
       },
     ];
   }
