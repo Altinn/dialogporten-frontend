@@ -9,7 +9,7 @@
         icon: /icons/react_logo.png
     - Docs:
         href: http://docs.localhost/
-        icon: /icons/docusaurus.png
+        icon: /icons/docs.svg
         description: Docs
 
 - BFF:

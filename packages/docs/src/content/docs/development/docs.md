@@ -1,8 +1,8 @@
 ---
 title: "Documentation"
 ---
-This site is built with [Docusaurus](https://docusaurus.io/) and contains useful information about the project, including development, deployment and guidelines, intended
-for development.
+This site is built with [Starlight](https://starlight.astro.build/), a documentation theme for [Astro](https://astro.build/), and contains useful information
+about the project, including development, deployment and guidelines, intended for development.
 
 ## Drawings
 

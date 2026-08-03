@@ -80,7 +80,6 @@
       "!**/generated",
       "!**/dist",
       "!**/build",
-      "!**/.docusaurus",
       "!**/test-results",
       "!**/mockServiceWorker.js",
       "!**/*.svg",
