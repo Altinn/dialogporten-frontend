@@ -31,11 +31,12 @@ jobs:
         env:
           BASEURL: '/dialogporten-frontend/'
           URL: 'https://digdir.github.io'
+          ASTRO_TELEMETRY_DISABLED: '1'
 
       - name: 'Prep folder'
         run: |
           mkdir gh-pages
-          cp -r ./packages/docs/build/* gh-pages
+          cp -r ./packages/docs/dist/* gh-pages
 
       - name: 'upload'
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1

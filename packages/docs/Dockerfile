@@ -1,6 +1,7 @@
 FROM node:22-slim AS build
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
+ENV ASTRO_TELEMETRY_DISABLED=1
 RUN corepack enable
 
 WORKDIR /app
@@ -12,12 +13,12 @@ RUN pnpm --filter docs run build
 
 # For dev
 EXPOSE 80
-CMD ["pnpm", "--filter", "docs", "run", "start", "--port", "80", "--host", "0.0.0.0"]
+CMD ["pnpm", "--filter", "docs", "run", "dev", "--port", "80", "--host", "0.0.0.0"]
 
 # ---
 
 FROM nginx:1.25-alpine
-COPY --from=build /app/packages/docs/build/ /usr/share/nginx/html/
+COPY --from=build /app/packages/docs/dist/ /usr/share/nginx/html/
 
 EXPOSE 80
 

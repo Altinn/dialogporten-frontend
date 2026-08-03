@@ -1,0 +1,46 @@
+---
+title: "GraphQL and typegen"
+tableOfContents: false
+---
+
+![Deploy process](./typegen.svg)
+
+The application uses GraphQL for communication.
+The build pipeline goes as follow:
+
+1. The `Dialogporten` project publishes the npm package [@digdir/dialogporten-schma](https://www.npmjs.com/package/@digdir/dialogporten-schema) any time the schema changes. The package includes the raw graphql schema converted into a JavaScript file that exports it as a string and export the from the package.
+
+1. We add the @digdir/dialogporten-schema npm package as a dependency to our project `bff`.
+
+1. In the `bff` application we define our own GraphQL schema code-first, then we [stitch it](https://the-guild.dev/graphql/stitching) together with the schema we get from `Dialogporten`
+
+1. In `bff-types-generated` we import the stitched schema from `bff`
+
+    - Then we define GraphQL queries and fragment queries that the frontend need in `./packages/bff-types-generated/queries`
+
+    - And then generate TypeScript types from the GraphQL schema as well as functions from the GraphQL queries
+
+    - Only GraphQL types that we have defined a queries/fragment-queries for will actually be generated
+
+1. In the `frontend` we import the `bff-types-generated` package and have ready types and functions that we can use in the frontend
+
+## Development
+
+### When `dialogporten` releases new schema versions
+
+1. Update the package version in `dialogporten-types-generated` based on [the newest verison](https://www.npmjs.com/package/@digdir/dialogporten-schema?activeTab=versions)
+
+1. Check for schema changes using [npmdiff.dev](https://npmdiff.dev/) and see if there is any breaking changes
+
+1. Rebuild the project to ensure that there are no new build problems
+
+
+### Caveats
+
+Currently there are no `dev` tasks that watches for changes setup in `dialogporten-types-generated` and `bff-types-generated` so you may need to rebuild the whole project if you do one of the followign changes:
+
+- Change the schema definitions in the `bff`. The `bff` itself will hot-reload but not the rest.
+
+- Change or write new Graph queries (and fragment queris) in `bff-types-generated`
+
+**TODO**: using `turborepo` setup `dev` tasks and Docker `watch` statements for all of this so that it all rebuilds autoamtically
