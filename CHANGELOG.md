@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.170.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.169.1...v1.170.0) (2026-08-04)
+
+
+### Features
+
+* **fce:** update embedded content when the user changes language ([#4504](https://github.com/Altinn/dialogporten-frontend/issues/4504)) ([77ea335](https://github.com/Altinn/dialogporten-frontend/commit/77ea335e1b61f4de593e10ac234f1bd371e3006a))
+
 ## [1.169.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.169.0...v1.169.1) (2026-07-28)
 
 
