@@ -148,26 +148,28 @@ Accessibility logic resides in `axe.test.ts`. You can reuse `createHtmlReport` f
 
 ## Documentation
 
-Our project documentation is built using [Docusaurus](https://docusaurus.io/), a modern static website generator. The documentation is located in the `packages/docs/` directory.
+Our project documentation is built using [Starlight](https://starlight.astro.build/), a documentation theme for [Astro](https://astro.build/). The documentation is located in the `packages/docs/` directory.
 
 ### Documentation Structure
 
 ```
-packages/docs/docs/
+packages/docs/src/content/docs/
 ├── architecture/    # System architecture documentation
 ├── deployment/      # Deployment processes and configurations
 ├── development/     # Development guidelines and setup
-└── notes/          # Additional project notes and business rules
+├── featureFlags/    # Feature flag documentation
+└── notes/           # Additional project notes and business rules
 ```
 
 ### Contributing to Documentation
 
-1. **Location**: All documentation files are in the `packages/docs/docs/` directory
-2. **Format**: Documentation is written in MDX format (`.mdx` files), which supports Markdown with React components
-3. **Diagrams**: We use [tldraw](https://www.tldraw.com/) for creating diagrams
-   - Save diagram source files as `.tldr` format
+1. **Location**: All documentation files are in the `packages/docs/src/content/docs/` directory
+2. **Format**: Pages are written as Markdown (`.md`) or MDX (`.mdx`, which also supports components). Every page needs a `title` in its frontmatter
+3. **Diagrams**: We use [Excalidraw](https://excalidraw.com/) for creating diagrams
+   - Save diagram source files as `.excalidraw` format
    - Export diagrams as `.svg` files
-   - Always keep both `.tldr` and `.svg` files together in the same directory
+   - Always keep both `.excalidraw` and `.svg` files together in the same directory
+   - Mermaid diagrams are written as ` ```mermaid ` code fences and rendered in the browser
 
 ### Running Documentation Locally
 
@@ -181,15 +183,17 @@ pnpm --filter docs run run:docker
 ```
 
 The documentation will be available at:
-- Local development: http://localhost:3000
+- Local development: http://localhost:4321
 - Docker: http://localhost:8080
+- Full docker-compose setup (`make dev`): https://docs.localhost
 
 ### Documentation Guidelines
 
 1. **File Organization**:
    - Place new documentation in the appropriate subdirectory
    - Use clear, descriptive filenames
-   - Include a frontmatter section in MDX files with title and sidebar position
+   - The sidebar is generated from the folder structure, so adding a page is enough to publish it
+   - Include a frontmatter section with a `title` (use `sidebar.order` to control ordering)
 
 2. **Diagrams**:
    - Create diagrams using https://excalidraw.com/
