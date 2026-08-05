@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.170.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.170.0...v1.170.1) (2026-08-05)
+
+
+### Bug Fixes
+
+* **a11y:** render GET gui actions as links instead of buttons ([#4517](https://github.com/Altinn/dialogporten-frontend/issues/4517)) ([cadb487](https://github.com/Altinn/dialogporten-frontend/commit/cadb4874ee5cbf60a15f1efd86d199806131af8c))
+
 ## [1.170.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.169.1...v1.170.0) (2026-08-04)
 
 
