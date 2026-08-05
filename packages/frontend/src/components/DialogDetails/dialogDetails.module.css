@@ -1,0 +1,9 @@
+.dialogActionButton:any-link {
+  color: var(--dsc-button-color);
+  text-decoration: none;
+}
+
+.dialogActionButton:any-link:hover {
+  color: var(--dsc-button-color--hover);
+  text-decoration: none;
+}
