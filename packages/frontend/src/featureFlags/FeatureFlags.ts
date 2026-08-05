@@ -14,6 +14,7 @@ export const featureFlagDefinitions = [
   { key: 'auth.orgsNotReadyToDealWithDelegations', type: 'string-array', default: [] },
   { key: 'profil.enableSIPhoneEdit', type: 'boolean', default: false },
   { key: 'profile.enableSetUserName', type: 'boolean', default: false },
+  { key: 'fce.enablePreferHeader', type: 'boolean', default: false },
 ] as const satisfies readonly FeatureFlagDefinition[];
 
 export type FeatureFlagKey = (typeof featureFlagDefinitions)[number]['key'];

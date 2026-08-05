@@ -12,6 +12,7 @@ const defaultFeatureFlags: Record<string, boolean> = {
   'dialogporten.disableSubscriptions': false,
   'profil.enableSIPhoneEdit': false,
   'profile.enableSetUserName': false,
+  'fce.enablePreferHeader': false,
 };
 
 const defaultAppConfigValues: Record<string, string[]> = {
