@@ -29,6 +29,9 @@ jobs:
       - name: Run Playwright tests
         run: pnpm --filter frontend test:playwright
 
+      - name: Run Playwright heavy tests
+        run: pnpm --filter frontend test:playwright:heavy
+
       - name: Run Playwright performance tests
         run: pnpm --filter frontend test:playwright:perf
 

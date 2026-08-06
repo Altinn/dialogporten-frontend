@@ -82,8 +82,11 @@ pnpm install:browsers
 Run all tests:
 
 ```bash
-pnpm test:playwright
+pnpm test:playwright && pnpm test:playwright:heavy && pnpm test:playwright:perf
 ```
+
+The heavy and performance specs run as separate invocations so they don't compete with
+the main suite for the single Vite dev server.
 
 Run code test generator (use app.localhost/?mock=true to access mock data):
 
