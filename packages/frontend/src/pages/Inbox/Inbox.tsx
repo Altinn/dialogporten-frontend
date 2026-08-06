@@ -30,6 +30,7 @@ import {
 import { useParties } from '../../api/hooks/useParties.ts';
 import { createFiltersURLQuery } from '../../auth';
 import { DialogAccessInfoModal } from '../../components/DialogAccessInfoModal/DialogAccessInfoModal.tsx';
+import { ExportSearchResultsButton } from '../../components/ExportSearchResultsButton/ExportSearchResultsButton.tsx';
 import { Notice } from '../../components/Notice/Notice.tsx';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
 import { getPageRouteTitle } from '../../components/PageLayout/pageRouteToTitle.ts';
@@ -106,6 +107,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const { inboxSearch } = useHeaderConfig(filterState);
 
   const isAlertBannerEnabled = useFeatureFlag<boolean>('inbox.enableAlertBanner');
+  const isExportSearchResultsEnabled = useFeatureFlag<boolean>('inbox.enableExportSearchResults');
   const alertBannerContent = useAlertBanner();
 
   const onFiltersChange = useCallback(
@@ -421,6 +423,11 @@ export const Inbox = ({ viewType }: InboxProps) => {
               filterState={savedSearchFilterState}
               onSaveClick={openSaveModal}
               onEditClick={openEditModal}
+            />
+            <ExportSearchResultsButton
+              hidden={!isExportSearchResultsEnabled || bulkMode || isLoading || hideListHeader}
+              items={dialogs}
+              fileNameBase={t(getPageRouteTitle(PageRoutes[viewType]))}
             />
           </Toolbar>
         ) : (

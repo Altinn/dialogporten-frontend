@@ -9,6 +9,7 @@ export interface FeatureFlagDefinition {
 export const featureFlagDefinitions = [
   { key: 'dialogporten.disableFlipNamesPatch', type: 'boolean', default: false },
   { key: 'inbox.enableAlertBanner', type: 'boolean', default: false },
+  { key: 'inbox.enableExportSearchResults', type: 'boolean', default: false },
   { key: 'dialogporten.disableSubscriptions', type: 'boolean', default: false },
   { key: 'auth.orgsNotReadyToDealWithDelegations', type: 'string-array', default: [] },
   { key: 'profil.enableSIPhoneEdit', type: 'boolean', default: false },
