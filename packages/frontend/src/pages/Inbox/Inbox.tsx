@@ -28,7 +28,7 @@ import {
   useDialogs,
 } from '../../api/hooks/useDialogs.tsx';
 import { useParties } from '../../api/hooks/useParties.ts';
-import { createFiltersURLQuery } from '../../auth/url.ts';
+import { createFiltersURLQuery } from '../../auth';
 import { DialogAccessInfoModal } from '../../components/DialogAccessInfoModal/DialogAccessInfoModal.tsx';
 import { Notice } from '../../components/Notice/Notice.tsx';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
@@ -41,7 +41,7 @@ import { isSavedSearchDisabled } from '../../components/SavedSearchButton/savedS
 import { SeenByModal } from '../../components/SeenByModal/SeenByModal.tsx';
 import { SINotice } from '../../components/SINotice/SINotice.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
-import { useFeatureFlag } from '../../featureFlags/useFeatureFlag.ts';
+import { useFeatureFlag } from '../../featureFlags';
 import { useAlertBanner } from '../../hooks/useAlertBanner.ts';
 import { usePageTitle } from '../../hooks/usePageTitle.ts';
 import { useGlobalState } from '../../useGlobalState.ts';
@@ -110,7 +110,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
 
   const onFiltersChange = useCallback(
     (filters: FilterState, clearSearch = false) => {
-      // Update state synchronously so ToolbarFilter sees it immediately
       setFilterState(filters);
 
       const allowedFilters = Object.values(FilterCategory);
@@ -435,9 +434,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
       <SINotice />
       <AlertBanner showAlertBanner={isAlertBannerEnabled && !!alertBannerContent} />
       <AccountNavigator hidden={accountNavigatorHidden} subAccounts={subAccounts} partyIdsOverride={partyIdsOverride} />
-      {/* Show a single notice: a fetch error takes priority, then the service limit, then the
-            party limit — and the party limit only when the AccountNavigator isn't already offering
-            a way out (it explains itself). */}
       {isErrorDialogs ? (
         <DsAlert data-color="danger">
           <DsParagraph>{t('inbox.dialogs_error.description')}</DsParagraph>

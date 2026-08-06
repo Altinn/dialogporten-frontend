@@ -32,11 +32,15 @@
       "@types/hast": "3.0.5",
       "mdast-util-gfm-autolink-literal": "2.0.0",
       "protobufjs": ">=8.0.1",
-      "shell-quote": ">=1.8.4",
+      "shell-quote": ">=1.9.0",
       "websocket-driver": ">=0.7.5",
       "brace-expansion@1": "1.1.16",
-      "brace-expansion@2": "5.0.8",
-      "brace-expansion@5": ">=5.0.7 <6",
+      "brace-expansion@2": "5.0.9",
+      "brace-expansion@5": ">=5.0.9 <6",
+      "postcss@8": ">=8.5.23 <9",
+      "fast-uri@3": ">=3.1.5 <4",
+      "fast-uri@4": ">=4.1.2 <5",
+      "find-my-way@9": ">=9.7.0 <10",
       "js-yaml@3": ">=3.15.0 <4",
       "js-yaml@4": ">=4.3.0 <5"
     }

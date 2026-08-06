@@ -57,7 +57,7 @@
     "dotenv": "catalog:",
     "jsdom": "^26.1.0",
     "msw": "^2.11.1",
-    "tsx": "^4.19.4",
+    "tsx": "^4.23.7",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:",
