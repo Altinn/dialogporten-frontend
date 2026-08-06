@@ -20,7 +20,9 @@ The build pipeline goes as follow:
 
     - And then generate TypeScript types from the GraphQL schema as well as functions from the GraphQL queries
 
-    - Only GraphQL types that we have defined a queries/fragment-queries for will actually be generated
+    - This produces two files: `generated/schema-types.ts`, holding a type for every type in the stitched schema, and `generated/sdk.ts`, holding a type per query/fragment plus the `getSdk()` client. Both are re-exported from the package, so importers see a single flat surface
+
+    - The two files must stay separate. From v6, `typescript-operations` emits its own copy of every enum and input object its queries touch, and only skips this when `importSchemaTypesFrom` points it at another file. Merging them back into one output makes each of those types be declared twice
 
 1. In the `frontend` we import the `bff-types-generated` package and have ready types and functions that we can use in the frontend
 
@@ -28,7 +30,7 @@ The build pipeline goes as follow:
 
 ### When `dialogporten` releases new schema versions
 
-1. Update the package version in `dialogporten-types-generated` based on [the newest verison](https://www.npmjs.com/package/@digdir/dialogporten-schema?activeTab=versions)
+1. Update the package version in `@digdir/dialogporten-schema` based on [the newest version](https://www.npmjs.com/package/@digdir/dialogporten-schema?activeTab=versions) in `bff`
 
 1. Check for schema changes using [npmdiff.dev](https://npmdiff.dev/) and see if there is any breaking changes
 
@@ -37,10 +39,7 @@ The build pipeline goes as follow:
 
 ### Caveats
 
-Currently there are no `dev` tasks that watches for changes setup in `dialogporten-types-generated` and `bff-types-generated` so you may need to rebuild the whole project if you do one of the followign changes:
+`bff-types-generated` watches its own `queries` folder, so new or edited GraphQL queries rebuild automatically.
 
-- Change the schema definitions in the `bff`. The `bff` itself will hot-reload but not the rest.
+It does **not** watch the `bff` schema — `schema.ts` lives at the package root, outside the watched `src/**`. If you change the schema definitions in `bff`, the `bff` itself hot-reloads but the generated types do not; rebuild `bff-types-generated` manually.
 
-- Change or write new Graph queries (and fragment queris) in `bff-types-generated`
-
-**TODO**: using `turborepo` setup `dev` tasks and Docker `watch` statements for all of this so that it all rebuilds autoamtically

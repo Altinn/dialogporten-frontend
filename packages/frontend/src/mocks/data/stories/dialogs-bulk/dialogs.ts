@@ -102,6 +102,7 @@ function generateDialog(index: number): SearchDialogFieldsFragment {
     guiAttachmentCount: index % 5,
     status,
     createdAt: createdDate.toISOString(),
+    dueAt: null,
     seenSinceLastContentUpdate: seen
       ? [
           {

@@ -3,6 +3,7 @@ import type { OrganizationFieldsFragment } from 'bff-types-generated';
 export const organizations: OrganizationFieldsFragment[] = [
   {
     id: 'acn',
+    contact: null,
     name: {
       en: 'ACN Test org',
       nb: 'ACN Test org',
@@ -15,6 +16,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'afs',
+    contact: null,
     name: {
       en: 'Avfall Sør AS',
       nb: 'Avfall Sør AS',
@@ -27,6 +29,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'bft',
+    contact: null,
     name: {
       en: 'BFT Test org',
       nb: 'BFT Test org',
@@ -39,6 +42,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'bits',
+    contact: null,
     name: {
       en: 'BITS AS',
       nb: 'BITS AS',
@@ -51,6 +55,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'brg',
+    contact: null,
     name: {
       en: 'Brønnøysund Register Centre',
       nb: 'Brønnøysundregistrene',
@@ -63,6 +68,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'brm',
+    contact: null,
     name: {
       en: 'Brannvesenet Midt IKS',
       nb: 'Brannvesenet Midt IKS',
@@ -75,6 +81,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'buf',
+    contact: null,
     name: {
       en: 'The Norwegian Directorate for Children, Youth and Family Affairs',
       nb: 'Barne-, ungdoms- og familiedirektoratet',
@@ -87,6 +94,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'dat',
+    contact: null,
     name: {
       en: 'Norwegian Labour Inspection Authority',
       nb: 'Arbeidstilsynet',
@@ -99,6 +107,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'dibk',
+    contact: null,
     name: {
       en: 'Norwegian Building Authority',
       nb: 'Direktoratet for byggkvalitet',
@@ -111,6 +120,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'digdir',
+    contact: null,
     name: {
       en: 'Norwegian Digitalisation Agency',
       nb: 'Digitaliseringsdirektoratet',
@@ -123,6 +133,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'dihe',
+    contact: null,
     name: {
       en: 'Digital Helgeland ',
       nb: 'Digitale Helgeland',
@@ -135,6 +146,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'dmf',
+    contact: null,
     name: {
       en: 'The Directorate of Mining',
       nb: 'Direktoratet for mineralforvaltning',
@@ -147,6 +159,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'din',
+    contact: null,
     name: {
       en: 'The Norwegian Courts',
       nb: 'Domstolene i Norge',
@@ -159,6 +172,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'dsa',
+    contact: null,
     name: {
       en: 'Norwegian Radiation and Nuclear Safety Authority',
       nb: 'Direktoratet for Strålevern og Atomsikkerhet',
@@ -171,6 +185,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'dsb',
+    contact: null,
     name: {
       en: 'The Norwegian Directorate for Civil Protection',
       nb: 'Direktoratet for samfunnssikkerhet og beredskap',
@@ -183,6 +198,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'fd',
+    contact: null,
     name: {
       en: 'The Norwegian Directorate of Fisheries',
       nb: 'Fiskeridirektoratet',
@@ -195,6 +211,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'fhi',
+    contact: null,
     name: {
       en: 'The Norwegian Institute of Public Health',
       nb: 'Folkehelseinstituttet',
@@ -207,6 +224,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'fjel',
+    contact: null,
     name: {
       en: 'Fjellinjen AS',
       nb: 'Fjellinjen AS',
@@ -219,6 +237,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'fors',
+    contact: null,
     name: {
       en: 'The Norwegian Armed Forces',
       nb: 'Forsvaret',
@@ -231,6 +250,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'gk',
+    contact: null,
     name: {
       en: 'The Criminal Cases Review Commission',
       nb: 'Gjenopptakelseskommisjonen',
@@ -243,6 +263,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'hdir',
+    contact: null,
     name: {
       en: 'Norwegian Directorate of Health',
       nb: 'Helsedirektoratet',
@@ -255,6 +276,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'hemit',
+    contact: null,
     name: {
       en: "Central Norway Regional Health Authority's IT department",
       nb: 'Hemit HF',
@@ -267,6 +289,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'hi',
+    contact: null,
     name: {
       en: 'Institute of Marine Research',
       nb: 'Havforskningsinstituttet',
@@ -279,6 +302,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'hko',
+    contact: null,
     name: {
       en: 'Horten municipality',
       nb: 'Horten kommune',
@@ -291,6 +315,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'hmrhf',
+    contact: null,
     name: {
       en: 'Helse Møre og Romsdal',
       nb: 'Helse Møre og Romsdal',
@@ -303,6 +328,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'ikta',
+    contact: null,
     name: {
       en: 'IKT Agder IKS',
       nb: 'IKT Agder IKS',
@@ -315,6 +341,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'indi',
+    contact: null,
     name: {
       en: 'Indigo IKT IKS',
       nb: 'Indigo IKT IKS',
@@ -327,6 +354,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'k1103',
+    contact: null,
     name: {
       en: 'The municipality of Stavanger',
       nb: 'Stavanger kommune',
@@ -339,6 +367,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'krt',
+    contact: null,
     name: {
       en: 'The Financial Supervisory Authority of Norway',
       nb: 'Finanstilsynet',
@@ -351,6 +380,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'ksdigi',
+    contact: null,
     name: {
       en: 'KS Digital',
       nb: 'KS Digitale fellestjenester',
@@ -363,6 +393,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'kt',
+    contact: null,
     name: {
       en: 'Norwegian Competition Authority',
       nb: 'Konkurransetilsynet',
@@ -375,6 +406,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'kv',
+    contact: null,
     name: {
       en: 'Norwegian Mapping Authority',
       nb: 'Kartverket',
@@ -387,6 +419,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'kyv',
+    contact: null,
     name: {
       en: 'The Norwegian Coastal Administration',
       nb: 'Kystverket',
@@ -399,6 +432,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'lt',
+    contact: null,
     name: {
       en: 'Civil Aviation Authority of Norway',
       nb: 'Luftfartstilsynet',
@@ -411,6 +445,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'lts',
+    contact: null,
     name: {
       en: 'Norwegian Gaming and Foundation Authority',
       nb: 'Lotteri- og stiftelsestilsynet',
@@ -423,6 +458,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'mat',
+    contact: null,
     name: {
       en: 'Norwegian Food Safety Authority',
       nb: 'Mattilsynet',
@@ -435,6 +471,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'mdir',
+    contact: null,
     name: {
       en: 'Norwegian Environment Agency',
       nb: 'Miljødirektoratet',
@@ -447,6 +484,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'nb',
+    contact: null,
     name: {
       en: 'Norges Bank',
       nb: 'Norges Bank',
@@ -459,6 +497,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'nbib',
+    contact: null,
     name: {
       en: 'National Library of Norway',
       nb: 'Nasjonalbiblioteket',
@@ -471,6 +510,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'nfk',
+    contact: null,
     name: {
       en: 'Nordre Follo kommune',
       nb: 'Nordre Follo kommune',
@@ -483,6 +523,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'nhn',
+    contact: null,
     name: {
       en: 'Norwegian Healthnet',
       nb: 'Norsk helsenett',
@@ -495,6 +536,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'nkom',
+    contact: null,
     name: {
       en: 'The Norwegian Communications Authority',
       nb: 'Nasjonal kommunikasjonsmyndighet',
@@ -507,6 +549,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'nkr',
+    contact: null,
     name: {
       en: 'Arts and Culture Norway',
       nb: 'Kulturdirektoratet',
@@ -519,6 +562,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'nav',
+    contact: null,
     name: {
       en: 'Norwegian Labour and Welfare Administration (NAV)',
       nb: 'Arbeids- og velferdsetaten (NAV)',
@@ -531,6 +575,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'npd',
+    contact: null,
     name: {
       en: 'Norwegian Offshore Directorate',
       nb: 'Sokkeldirektoratet',
@@ -543,6 +588,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'npe',
+    contact: null,
     name: {
       en: 'Norwegian System of Patient Injury Compensation',
       nb: 'Norsk pasientskadeerstatning',
@@ -555,6 +601,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'nsm',
+    contact: null,
     name: {
       en: 'National Security Agency',
       nb: 'Nasjonal sikkerhetsmyndighet',
@@ -567,6 +614,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'oed',
+    contact: null,
     name: {
       en: 'Ministry of Energy',
       nb: 'Energidepartementet',
@@ -589,12 +637,14 @@ export const organizations: OrganizationFieldsFragment[] = [
     homepage: 'https://www.oslo.kommune.no/',
     environments: ['tt02'],
     contact: {
+      email: null,
       phone: '21 80 21 80',
       url: 'https://www.oslo.kommune.no/kontakt-oss/',
     },
   },
   {
     id: 'oko',
+    contact: null,
     name: {
       en: 'National Authority for Investigation and Prosecution of Economic and Environmental Crime',
       nb: 'Økokrim',
@@ -607,6 +657,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'pat',
+    contact: null,
     name: {
       en: 'Norwegian Industrial Property Office',
       nb: 'Patentstyret',
@@ -619,6 +670,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'rir',
+    contact: null,
     name: {
       en: 'ROMSDALSHALVØYA INTERKOMMUNALE RENOVASJONSSELSKAP IKS',
       nb: 'ROMSDALSHALVØYA INTERKOMMUNALE RENOVASJONSSELSKAP IKS',
@@ -631,6 +683,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'ssikt',
+    contact: null,
     name: {
       en: 'SØRE SUNNMØRE IKT KOMMUNALT OPPGÅVEFELLESSKAP',
       nb: 'SØRE SUNNMØRE IKT KOMMUNALT OPPGÅVEFELLESSKAP',
@@ -643,6 +696,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'sfd',
+    contact: null,
     name: {
       en: 'Norwegian Maritime Authority',
       nb: 'Sjøfartsdirektoratet',
@@ -655,6 +709,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'sfvt',
+    contact: null,
     name: {
       en: 'County Governor of Vestfold and Telemark',
       nb: 'Statsforvalteren i Vestfold og Telemark',
@@ -667,6 +722,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'skd',
+    contact: null,
     name: {
       en: 'Norwegian Tax Administration',
       nb: 'Skatteetaten',
@@ -679,6 +735,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'slv',
+    contact: null,
     name: {
       en: 'The Norwegian Medical Products Agency',
       nb: 'Direktoratet for medisinske produkter',
@@ -691,6 +748,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'spk',
+    contact: null,
     name: {
       en: 'Norwegian Public Service Pension Fund',
       nb: 'Statens pensjonskasse',
@@ -703,6 +761,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'srf',
+    contact: null,
     name: {
       en: 'Norwegian Civil Affairs Authority',
       nb: 'Statens Sivilrettsforvaltning',
@@ -715,6 +774,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'ssb',
+    contact: null,
     name: {
       en: 'Statistics Norway',
       nb: 'Statistisk sentralbyrå',
@@ -727,6 +787,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'staf',
+    contact: null,
     name: {
       en: 'County Governor',
       nb: 'Statsforvalterens fellestjenester',
@@ -739,6 +800,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'stami',
+    contact: null,
     name: {
       en: 'The National Institute of Occupational Health',
       nb: 'Statens arbeidsmiljøinstitutt',
@@ -751,6 +813,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'svv',
+    contact: null,
     name: {
       en: 'The Norwegian Public Roads Administration',
       nb: 'Statens vegvesen',
@@ -763,6 +826,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'sym',
+    contact: null,
     name: {
       en: 'Symfoni AS',
       nb: 'Symfoni AS',
@@ -775,6 +839,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'tad',
+    contact: null,
     name: {
       en: 'Norwegian Customs',
       nb: 'Tolletaten',
@@ -787,6 +852,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'tra',
+    contact: null,
     name: {
       en: 'Supervisory Authority for Legal Services',
       nb: 'Advokattilsynet',
@@ -799,6 +865,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'ttd',
+    contact: null,
     name: {
       en: 'Test Ministry',
       nb: 'Testdepartementet',
@@ -811,6 +878,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'udi',
+    contact: null,
     name: {
       en: 'The Norwegian Directorate of Immigration',
       nb: 'Utlendingsdirektoratet',
@@ -823,6 +891,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'udir',
+    contact: null,
     name: {
       en: 'Norwegian Directorate for Education and Training',
       nb: 'Utdanningsdirektoratet',
@@ -835,6 +904,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'valg',
+    contact: null,
     name: {
       en: 'Election Directorate',
       nb: 'Valgdirektoratet',
@@ -847,6 +917,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'dfo',
+    contact: null,
     name: {
       en: 'The Norwegian Agency for Public and Financial Management (DFØ)',
       nb: 'Direktoratet for forvaltning og økonomistyring',
@@ -859,6 +930,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'skm',
+    contact: null,
     name: {
       en: 'Norwegian civil security clearance authority',
       nb: 'Sivil klareringsmyndighet',
@@ -871,6 +943,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'slk',
+    contact: null,
     name: {
       en: 'Norwegian State Educational Loan Fund',
       nb: 'Statens Lånekasse for utdanning',
@@ -883,6 +956,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'hb',
+    contact: null,
     name: {
       en: 'Norwegian State Housing Bank',
       nb: 'Husbanken',
@@ -895,6 +969,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'slf',
+    contact: null,
     name: {
       en: 'Norwegian Agriculture Agency',
       nb: 'Landbruksdirektoratet',
@@ -907,6 +982,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'nve',
+    contact: null,
     name: {
       en: 'Norwegian Water Resources and Energy Directorate',
       nb: 'Norges vassdrags- og energidirektorat',
@@ -919,6 +995,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'bk',
+    contact: null,
     name: {
       en: 'City of Bergen',
       nb: 'Bergen kommune',
@@ -931,6 +1008,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'ks',
+    contact: null,
     name: {
       en: 'Municipalities/County Municipalities',
       nb: 'Kommuner/fylkeskommuner',
@@ -943,6 +1021,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'dpa',
+    contact: null,
     name: {
       en: 'Norwegian Data Protection Authority',
       nb: 'Datatilsynet',
@@ -955,6 +1034,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'pod',
+    contact: null,
     name: {
       en: 'Police',
       nb: 'Politiet',
@@ -967,6 +1047,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'sht',
+    contact: null,
     name: {
       en: 'Accident Investigation Board Norway',
       nb: 'Statens havarikommisjon',
@@ -979,6 +1060,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'eno',
+    contact: null,
     name: {
       en: 'Enova SF',
       nb: 'Enova SF',
@@ -991,6 +1073,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'k5501',
+    contact: null,
     name: {
       en: 'Trondheim Municipality',
       nb: 'Trondheim kommune',
@@ -1003,6 +1086,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'k3030',
+    contact: null,
     name: {
       en: 'Lillestrøm kommune',
       nb: 'Lillestrøm kommune',
@@ -1015,6 +1099,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'nokut',
+    contact: null,
     name: {
       en: 'NOKUT (The Norwegian Agency for Quality Assurance in Education)',
       nb: 'NOKUT (Nasjonalt organ for kvalitet i utdanningen)',
@@ -1027,6 +1112,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'pol',
+    contact: null,
     name: {
       en: 'The Norwegian Police Service',
       nb: 'Politi- og lensmannsetaten',
@@ -1039,6 +1125,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'rmt',
+    contact: null,
     name: {
       en: 'Remidt IKS',
       nb: 'Remidt IKS',
@@ -1051,6 +1138,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'mna',
+    contact: null,
     name: {
       en: 'MIDTRE NAMDAL AVFALLSSELSKAP IKS',
       nb: 'MIDTRE NAMDAL AVFALLSSELSKAP IKS',
@@ -1063,6 +1151,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'vigo',
+    contact: null,
     name: {
       en: 'Novari IKS',
       nb: 'Novari IKS',
@@ -1075,6 +1164,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'fk30',
+    contact: null,
     name: {
       en: 'Viken Fylkeskommune',
       nb: 'Viken Fylkeskommune',
@@ -1087,6 +1177,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'tffa',
+    contact: null,
     name: {
       en: 'Norwegian Motor Insurers’ Bureau',
       nb: 'Trafikkforsikringsforeningen',
@@ -1099,6 +1190,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'asf',
+    contact: null,
     name: {
       en: 'Altinn Sentralforvaltning',
       nb: 'Altinn Sentralforvaltning',
@@ -1111,6 +1203,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'ehls',
+    contact: null,
     name: {
       en: 'Direktoratet for e-helse',
       nb: 'Direktoratet for e-helse',
@@ -1123,6 +1216,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'fk',
+    contact: null,
     name: {
       en: 'Fellesordning for avtalefestet pensjon',
       nb: 'Fellesordning for avtalefestet pensjon',
@@ -1135,6 +1229,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'fkd',
+    contact: null,
     name: {
       en: 'Fiskeri- og kystdepartementet',
       nb: 'Fiskeri- og kystdepartementet',
@@ -1147,6 +1242,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'htil',
+    contact: null,
     name: {
       en: 'Statens Helsetilsyn',
       nb: 'Statens Helsetilsyn',
@@ -1159,6 +1255,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'k0231',
+    contact: null,
     name: {
       en: 'Skedsmo kommune',
       nb: 'Skedsmo kommune',
@@ -1171,6 +1268,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'klif',
+    contact: null,
     name: {
       en: 'Statens forurensningstilsyn',
       nb: 'Statens forurensningstilsyn',
@@ -1183,6 +1281,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'lat',
+    contact: null,
     name: {
       en: 'Luftambulansetjenesten HF',
       nb: 'Luftambulansetjenesten HF',
@@ -1195,6 +1294,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'si',
+    contact: null,
     name: {
       en: 'Statens innkrevingssentral',
       nb: 'Statens innkrevingssentral',
@@ -1207,6 +1307,7 @@ export const organizations: OrganizationFieldsFragment[] = [
   },
   {
     id: 'sft',
+    contact: null,
     name: {
       en: 'Klima- og forurensningsdirektoratet',
       nb: 'Klima- og forurensningsdirektoratet',

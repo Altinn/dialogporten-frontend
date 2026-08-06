@@ -11,6 +11,7 @@ export const parties: PartyFieldsFragment[] = [
     hasOnlyAccessToSubParties: false,
     partyUuid: 'party:uuid:here',
     partyId: 1,
+    dateOfBirth: null,
   },
   {
     party: 'urn:altinn:organization:identifier-no:213294342',
@@ -25,6 +26,7 @@ export const parties: PartyFieldsFragment[] = [
         partyUuid: 'urn:altinn:person:identifier-no:1337',
         isDeleted: true,
         partyId: 2,
+        dateOfBirth: null,
       },
     ],
     name: 'LATTERMILD ORIENTAL TIGER AS',
@@ -32,6 +34,7 @@ export const parties: PartyFieldsFragment[] = [
     isDeleted: false,
     partyUuid: 'party:uuid:here',
     partyId: 3,
+    dateOfBirth: null,
   },
   {
     party: 'urn:altinn:organization:identifier-no:313549461',
@@ -46,6 +49,7 @@ export const parties: PartyFieldsFragment[] = [
         partyUuid: 'urn:altinn:person:identifier-no:1337',
         isDeleted: true,
         partyId: 4,
+        dateOfBirth: null,
       },
       {
         party: 'urn:altinn:organization:identifier-no:311615688',
@@ -55,6 +59,7 @@ export const parties: PartyFieldsFragment[] = [
         partyUuid: 'urn:altinn:person:identifier-no:1337',
         isDeleted: false,
         partyId: 5,
+        dateOfBirth: null,
       },
     ],
     name: 'ORDENTLIG VIRTUELL TIGER AS',
@@ -62,6 +67,7 @@ export const parties: PartyFieldsFragment[] = [
     isDeleted: false,
     partyUuid: 'party:uuid:here',
     partyId: 6,
+    dateOfBirth: null,
   },
   {
     party: 'urn:altinn:organization:identifier-no:313776816',
@@ -76,6 +82,7 @@ export const parties: PartyFieldsFragment[] = [
         partyUuid: 'urn:altinn:person:identifier-no:1337',
         isDeleted: false,
         partyId: 7,
+        dateOfBirth: null,
       },
     ],
     name: 'PLUTSELIG NYBAKT TIGER AS',
@@ -83,6 +90,7 @@ export const parties: PartyFieldsFragment[] = [
     isDeleted: false,
     partyUuid: 'party:uuid:here',
     partyId: 8,
+    dateOfBirth: null,
   },
   {
     party: 'urn:altinn:organization:identifier-no:312409216',
@@ -97,6 +105,7 @@ export const parties: PartyFieldsFragment[] = [
         partyUuid: 'urn:altinn:person:identifier-no:1337',
         isDeleted: false,
         partyId: 9,
+        dateOfBirth: null,
       },
     ],
     name: 'STYRBAR UTTRYKKSFULL TIGER AS',
@@ -104,5 +113,6 @@ export const parties: PartyFieldsFragment[] = [
     isDeleted: false,
     partyUuid: 'party:uuid:here',
     partyId: 10,
+    dateOfBirth: null,
   },
 ];

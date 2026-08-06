@@ -7,12 +7,7 @@ import {
 } from '@altinn/altinn-components';
 import { MagnifyingGlassIcon, PencilIcon, TrashIcon } from '@navikt/aksel-icons';
 import { useQueryClient } from '@tanstack/react-query';
-import type {
-  SavedSearchData,
-  SavedSearchesFieldsFragment,
-  SavedSearchesQuery,
-  SearchDataValueFilter,
-} from 'bff-types-generated';
+import type { SavedSearchData, SavedSearchesFieldsFragment, SavedSearchesQuery } from 'bff-types-generated';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps, useNavigate } from 'react-router-dom';
@@ -62,7 +57,7 @@ const randomString = () => {
     .slice(2, 2 + Math.floor(Math.random() * 11));
 };
 
-export const convertFilterStateToFilters = (filters: FilterState): SearchDataValueFilter[] => {
+export const convertFilterStateToFilters = (filters: FilterState): Array<{ id: string; value: string }> => {
   return Object.entries(filters).flatMap(([key, values]) => {
     if (Array.isArray(values)) {
       return values.map((value) => ({ id: key, value: String(value) }));

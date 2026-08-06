@@ -23,6 +23,7 @@ const generateOrganizations = (): PartyFieldsFragment[] =>
       isDeleted: false,
       partyUuid: `urn:altinn:organization:uuid:storvirksomhet-${pad(num)}`,
       partyId: 1000 + num,
+      dateOfBirth: null,
       hasOnlyAccessToSubParties: false,
     };
   });
@@ -37,6 +38,7 @@ export const parties: PartyFieldsFragment[] = [
     isDeleted: false,
     partyUuid: 'urn:altinn:person:uuid:stortest-person',
     partyId: 1,
+    dateOfBirth: null,
     hasOnlyAccessToSubParties: false,
   },
   ...generateOrganizations(),

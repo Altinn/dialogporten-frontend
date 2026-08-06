@@ -10,6 +10,7 @@ const createParty = (overrides: Partial<PartyFieldsFragment> = {}): PartyFieldsF
   isDeleted: false,
   partyUuid: 'uuid-1',
   partyId: 1,
+  dateOfBirth: null,
   hasOnlyAccessToSubParties: false,
   subParties: [],
   ...overrides,
@@ -68,6 +69,7 @@ describe('mapPartiesToAuthorizedParties', () => {
       isDeleted: false,
       partyUuid: 'uuid-sub',
       partyId: 3,
+      dateOfBirth: null,
     };
 
     const parentOrg = createParty({

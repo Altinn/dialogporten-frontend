@@ -185,6 +185,7 @@ export const useDialogs = ({
         searchDialogs: {
           items: allNewItems,
           hasNextPage: false,
+          continuationToken: null,
         },
       });
     } else if (allNewItems.length === 0) {
@@ -202,6 +203,7 @@ export const useDialogs = ({
         searchDialogs: {
           items: mergedItems,
           hasNextPage,
+          continuationToken: null,
         },
       });
     }

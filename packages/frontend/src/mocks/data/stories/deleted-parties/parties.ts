@@ -12,6 +12,7 @@ export const parties: PartyFieldsFragment[] = [
     hasOnlyAccessToSubParties: false,
     partyUuid: 'party:uuid:enduser',
     partyId: 1,
+    dateOfBirth: null,
   },
   // Active organizations (10 total)
   {
@@ -24,6 +25,7 @@ export const parties: PartyFieldsFragment[] = [
     isDeleted: false,
     partyUuid: 'party:uuid:active-1',
     partyId: 2,
+    dateOfBirth: null,
   },
   {
     party: 'urn:altinn:organization:identifier-no:313549461',
@@ -38,6 +40,7 @@ export const parties: PartyFieldsFragment[] = [
         partyUuid: 'party:uuid:active-subparty-1',
         isDeleted: false,
         partyId: 3,
+        dateOfBirth: null,
       },
     ],
     name: 'ORDENTLIG VIRTUELL TIGER AS',
@@ -45,6 +48,7 @@ export const parties: PartyFieldsFragment[] = [
     isDeleted: false,
     partyUuid: 'party:uuid:active-2',
     partyId: 4,
+    dateOfBirth: null,
   },
   {
     party: 'urn:altinn:organization:identifier-no:313776816',
@@ -56,6 +60,7 @@ export const parties: PartyFieldsFragment[] = [
     isDeleted: false,
     partyUuid: 'party:uuid:active-3',
     partyId: 5,
+    dateOfBirth: null,
   },
   {
     party: 'urn:altinn:organization:identifier-no:312409216',
@@ -67,6 +72,7 @@ export const parties: PartyFieldsFragment[] = [
     isDeleted: false,
     partyUuid: 'party:uuid:active-4',
     partyId: 6,
+    dateOfBirth: null,
   },
   {
     party: 'urn:altinn:organization:identifier-no:315073693',
@@ -78,6 +84,7 @@ export const parties: PartyFieldsFragment[] = [
     isDeleted: false,
     partyUuid: 'party:uuid:active-5',
     partyId: 7,
+    dateOfBirth: null,
   },
   {
     party: 'urn:altinn:organization:identifier-no:314518748',
@@ -89,6 +96,7 @@ export const parties: PartyFieldsFragment[] = [
     isDeleted: false,
     partyUuid: 'party:uuid:active-6',
     partyId: 8,
+    dateOfBirth: null,
   },
   {
     party: 'urn:altinn:organization:identifier-no:316892451',
@@ -100,6 +108,7 @@ export const parties: PartyFieldsFragment[] = [
     isDeleted: false,
     partyUuid: 'party:uuid:active-7',
     partyId: 9,
+    dateOfBirth: null,
   },
   {
     party: 'urn:altinn:organization:identifier-no:317654823',
@@ -111,6 +120,7 @@ export const parties: PartyFieldsFragment[] = [
     isDeleted: false,
     partyUuid: 'party:uuid:active-8',
     partyId: 10,
+    dateOfBirth: null,
   },
   {
     party: 'urn:altinn:organization:identifier-no:318945672',
@@ -122,6 +132,7 @@ export const parties: PartyFieldsFragment[] = [
     isDeleted: false,
     partyUuid: 'party:uuid:active-9',
     partyId: 11,
+    dateOfBirth: null,
   },
   {
     party: 'urn:altinn:organization:identifier-no:319823456',
@@ -133,6 +144,7 @@ export const parties: PartyFieldsFragment[] = [
     isDeleted: false,
     partyUuid: 'party:uuid:active-10',
     partyId: 12,
+    dateOfBirth: null,
   },
   // Deleted organizations (5 total)
   {
@@ -145,6 +157,7 @@ export const parties: PartyFieldsFragment[] = [
     isDeleted: true,
     partyUuid: 'party:uuid:deleted-1',
     partyId: 13,
+    dateOfBirth: null,
   },
   {
     party: 'urn:altinn:organization:identifier-no:311615696',
@@ -159,6 +172,7 @@ export const parties: PartyFieldsFragment[] = [
         partyUuid: 'party:uuid:deleted-subparty-1',
         isDeleted: true,
         partyId: 14,
+        dateOfBirth: null,
       },
     ],
     name: 'AVVIKLET FORRETNING TIGER AS',
@@ -166,6 +180,7 @@ export const parties: PartyFieldsFragment[] = [
     isDeleted: true,
     partyUuid: 'party:uuid:deleted-2',
     partyId: 15,
+    dateOfBirth: null,
   },
   {
     party: 'urn:altinn:organization:identifier-no:412567893',
@@ -177,6 +192,7 @@ export const parties: PartyFieldsFragment[] = [
     isDeleted: true,
     partyUuid: 'party:uuid:deleted-3',
     partyId: 16,
+    dateOfBirth: null,
   },
   {
     party: 'urn:altinn:organization:identifier-no:413892765',
@@ -188,6 +204,7 @@ export const parties: PartyFieldsFragment[] = [
     isDeleted: true,
     partyUuid: 'party:uuid:deleted-4',
     partyId: 17,
+    dateOfBirth: null,
   },
   {
     party: 'urn:altinn:organization:identifier-no:414678923',
@@ -199,5 +216,6 @@ export const parties: PartyFieldsFragment[] = [
     isDeleted: true,
     partyUuid: 'party:uuid:deleted-5',
     partyId: 18,
+    dateOfBirth: null,
   },
 ];

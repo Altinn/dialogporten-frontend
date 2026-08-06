@@ -289,7 +289,7 @@ const getDialogByIdMock = graphql.query('getDialogById', (options) => {
         seenAt: new Date().toISOString(),
         seenBy: {
           actorType: null,
-          actorId: party?.party,
+          actorId: party?.party ?? null,
           actorName: formatDisplayName({
             fullName: party?.name ?? '',
             type: 'person',
