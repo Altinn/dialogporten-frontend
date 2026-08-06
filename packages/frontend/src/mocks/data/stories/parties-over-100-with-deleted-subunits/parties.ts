@@ -43,6 +43,7 @@ const generateSubUnits = (): SubPartyFieldsFragment[] => {
       isDeleted: false,
       partyUuid: `urn:altinn:organization:uuid:storselskap-sub-${pad(num)}`,
       partyId: 2000 + num,
+      dateOfBirth: null,
     } satisfies SubPartyFieldsFragment;
   });
 
@@ -56,6 +57,7 @@ const generateSubUnits = (): SubPartyFieldsFragment[] => {
       isDeleted: true,
       partyUuid: `urn:altinn:organization:uuid:storselskap-sub-deleted-${pad(num)}`,
       partyId: 2900 + num,
+      dateOfBirth: null,
     } satisfies SubPartyFieldsFragment;
   });
 
@@ -72,6 +74,7 @@ export const parties: PartyFieldsFragment[] = [
     isDeleted: false,
     partyUuid: 'urn:altinn:person:uuid:stortest-person',
     partyId: 1,
+    dateOfBirth: null,
     hasOnlyAccessToSubParties: false,
   },
   {
@@ -83,6 +86,7 @@ export const parties: PartyFieldsFragment[] = [
     isDeleted: false,
     partyUuid: 'urn:altinn:organization:uuid:storselskap-as',
     partyId: 1000,
+    dateOfBirth: null,
     hasOnlyAccessToSubParties: false,
   },
 ];

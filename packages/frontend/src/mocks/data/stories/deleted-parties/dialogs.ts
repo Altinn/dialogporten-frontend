@@ -12,6 +12,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     serviceResourceType: 'correspondenceservice',
     status: DialogStatus.RequiresAttention,
     createdAt: '2024-01-15T10:00:00Z',
+    dueAt: null,
     contentUpdatedAt: '2024-01-15T10:00:00Z',
     content: {
       title: {
@@ -51,6 +52,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     serviceResourceType: 'correspondenceservice',
     status: DialogStatus.InProgress,
     createdAt: '2024-02-10T12:00:00Z',
+    dueAt: null,
     contentUpdatedAt: '2024-02-10T12:00:00Z',
     content: {
       title: {
@@ -89,6 +91,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     serviceResourceType: 'correspondenceservice',
     status: DialogStatus.RequiresAttention,
     createdAt: '2024-03-05T09:30:00Z',
+    dueAt: null,
     contentUpdatedAt: '2024-03-05T09:30:00Z',
     content: {
       title: {
@@ -127,6 +130,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     serviceResourceType: 'correspondenceservice',
     status: DialogStatus.Completed,
     createdAt: '2024-01-20T14:15:00Z',
+    dueAt: null,
     contentUpdatedAt: '2024-01-25T16:20:00Z',
     content: {
       title: {
@@ -165,6 +169,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     serviceResourceType: 'correspondenceservice',
     status: DialogStatus.RequiresAttention,
     createdAt: '2024-02-28T11:45:00Z',
+    dueAt: null,
     contentUpdatedAt: '2024-02-28T11:45:00Z',
     content: {
       title: {
@@ -203,6 +208,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     serviceResourceType: 'correspondenceservice',
     status: DialogStatus.InProgress,
     createdAt: '2024-03-12T08:20:00Z',
+    dueAt: null,
     contentUpdatedAt: '2024-03-12T08:20:00Z',
     content: {
       title: {
@@ -241,6 +247,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     serviceResourceType: 'correspondenceservice',
     status: DialogStatus.RequiresAttention,
     createdAt: '2024-01-30T10:00:00Z',
+    dueAt: null,
     contentUpdatedAt: '2024-01-30T10:00:00Z',
     content: {
       title: {
@@ -279,6 +286,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     serviceResourceType: 'correspondenceservice',
     status: DialogStatus.Completed,
     createdAt: '2024-02-05T13:30:00Z',
+    dueAt: null,
     contentUpdatedAt: '2024-02-10T09:15:00Z',
     content: {
       title: {
@@ -317,6 +325,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     serviceResourceType: 'correspondenceservice',
     status: DialogStatus.RequiresAttention,
     createdAt: '2024-03-01T09:00:00Z',
+    dueAt: null,
     contentUpdatedAt: '2024-03-01T09:00:00Z',
     content: {
       title: {
@@ -355,6 +364,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     serviceResourceType: 'correspondenceservice',
     status: DialogStatus.InProgress,
     createdAt: '2024-02-15T14:00:00Z',
+    dueAt: null,
     contentUpdatedAt: '2024-02-15T14:00:00Z',
     content: {
       title: {
@@ -393,6 +403,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     serviceResourceType: 'correspondenceservice',
     status: DialogStatus.RequiresAttention,
     createdAt: '2024-03-10T11:00:00Z',
+    dueAt: null,
     contentUpdatedAt: '2024-03-10T11:00:00Z',
     content: {
       title: {
@@ -431,6 +442,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     serviceResourceType: 'correspondenceservice',
     status: DialogStatus.InProgress,
     createdAt: '2024-02-20T10:30:00Z',
+    dueAt: null,
     contentUpdatedAt: '2024-02-20T10:30:00Z',
     content: {
       title: {
@@ -470,6 +482,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     serviceResourceType: 'correspondenceservice',
     status: DialogStatus.NotApplicable,
     createdAt: '2023-12-15T09:00:00Z',
+    dueAt: null,
     contentUpdatedAt: '2023-12-15T09:00:00Z',
     content: {
       title: {
@@ -508,6 +521,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     serviceResourceType: 'correspondenceservice',
     status: DialogStatus.NotApplicable,
     createdAt: '2023-11-20T14:30:00Z',
+    dueAt: null,
     contentUpdatedAt: '2023-11-20T14:30:00Z',
     content: {
       title: {
@@ -546,6 +560,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     serviceResourceType: 'correspondenceservice',
     status: DialogStatus.NotApplicable,
     createdAt: '2023-10-10T11:15:00Z',
+    dueAt: null,
     contentUpdatedAt: '2023-10-10T11:15:00Z',
     content: {
       title: {
@@ -584,6 +599,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     serviceResourceType: 'correspondenceservice',
     status: DialogStatus.NotApplicable,
     createdAt: '2023-09-15T10:00:00Z',
+    dueAt: null,
     contentUpdatedAt: '2023-09-15T10:00:00Z',
     content: {
       title: {
@@ -622,6 +638,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     serviceResourceType: 'correspondenceservice',
     status: DialogStatus.NotApplicable,
     createdAt: '2023-08-20T13:00:00Z',
+    dueAt: null,
     contentUpdatedAt: '2023-08-20T13:00:00Z',
     content: {
       title: {
@@ -660,6 +677,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     serviceResourceType: 'correspondenceservice',
     status: DialogStatus.NotApplicable,
     createdAt: '2023-07-10T09:30:00Z',
+    dueAt: null,
     contentUpdatedAt: '2023-07-10T09:30:00Z',
     content: {
       title: {

@@ -21,6 +21,7 @@ const customDialogs: SearchDialogFieldsFragment[] = [
     guiAttachmentCount: 1,
     status: DialogStatus.RequiresAttention,
     createdAt: '2024-05-23T23:00:00.000Z',
+    dueAt: null,
     content: {
       title: {
         mediaType: 'text/plain',
@@ -63,6 +64,7 @@ const customDialogs: SearchDialogFieldsFragment[] = [
     guiAttachmentCount: 1,
     status: DialogStatus.RequiresAttention,
     createdAt: '2024-01-23T23:00:00.000Z',
+    dueAt: null,
     content: {
       title: {
         mediaType: 'text/plain',
@@ -105,6 +107,7 @@ const customDialogs: SearchDialogFieldsFragment[] = [
     guiAttachmentCount: 1,
     status: DialogStatus.RequiresAttention,
     createdAt: '2024-02-23T23:00:00.000Z',
+    dueAt: null,
     content: {
       title: {
         mediaType: 'text/plain',
@@ -147,6 +150,7 @@ const customDialogs: SearchDialogFieldsFragment[] = [
     guiAttachmentCount: 1,
     status: DialogStatus.RequiresAttention,
     createdAt: '2024-03-23T23:00:00.000Z',
+    dueAt: null,
     content: {
       title: {
         mediaType: 'text/plain',
@@ -189,6 +193,7 @@ const customDialogs: SearchDialogFieldsFragment[] = [
     guiAttachmentCount: 1,
     status: DialogStatus.RequiresAttention,
     createdAt: '2024-05-23T23:00:00.000Z',
+    dueAt: null,
     content: {
       title: {
         mediaType: 'text/plain',
@@ -231,6 +236,7 @@ const customDialogs: SearchDialogFieldsFragment[] = [
     guiAttachmentCount: 1,
     status: DialogStatus.RequiresAttention,
     createdAt: '2024-05-23T23:00:00.000Z',
+    dueAt: null,
     content: {
       title: {
         mediaType: 'text/plain',

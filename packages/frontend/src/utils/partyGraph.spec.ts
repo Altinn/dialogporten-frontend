@@ -10,6 +10,7 @@ const createParty = (overrides: Partial<PartyFieldsFragment> = {}): PartyFieldsF
   isDeleted: false,
   partyUuid: 'uuid-person-1',
   partyId: 1,
+  dateOfBirth: null,
   hasOnlyAccessToSubParties: false,
   subParties: [],
   ...overrides,
@@ -22,6 +23,7 @@ const personParty = createParty({
   isCurrentEndUser: true,
   partyUuid: 'uuid-person-enduser',
   partyId: 1,
+  dateOfBirth: null,
 });
 
 const orgParty = createParty({
@@ -31,6 +33,7 @@ const orgParty = createParty({
   isCurrentEndUser: false,
   partyUuid: 'uuid-org-1',
   partyId: 2,
+  dateOfBirth: null,
   subParties: [
     {
       party: 'urn:altinn:organization:identifier-no:999888001',
@@ -40,6 +43,7 @@ const orgParty = createParty({
       isDeleted: false,
       partyUuid: 'uuid-sub-a',
       partyId: 3,
+      dateOfBirth: null,
     },
     {
       party: 'urn:altinn:organization:identifier-no:999888002',
@@ -49,6 +53,7 @@ const orgParty = createParty({
       isDeleted: true,
       partyUuid: 'uuid-sub-b',
       partyId: 4,
+      dateOfBirth: null,
     },
   ],
 });
@@ -60,6 +65,7 @@ const promotedSubA = createParty({
   isCurrentEndUser: false,
   partyUuid: 'uuid-sub-a',
   partyId: 3,
+  dateOfBirth: null,
   subParties: [],
 });
 
@@ -71,6 +77,7 @@ const promotedSubB = createParty({
   isDeleted: true,
   partyUuid: 'uuid-sub-b',
   partyId: 4,
+  dateOfBirth: null,
   subParties: [],
 });
 
@@ -162,6 +169,7 @@ describe('buildPartyGraph', () => {
           party: `urn:altinn:organization:identifier-no:${String(i).padStart(9, '0')}`,
           partyUuid: `uuid-${i}`,
           partyId: i,
+          dateOfBirth: null,
           name: `Org ${i}`,
         }),
       );

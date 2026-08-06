@@ -37,6 +37,7 @@ const generateMockServiceJourneyDialogs = (): SearchDialogFieldsFragment[] =>
       guiAttachmentCount: 0,
       status: STATUSES[i % STATUSES.length],
       createdAt,
+      dueAt: null,
       seenSinceLastContentUpdate: [],
       content: {
         title: {

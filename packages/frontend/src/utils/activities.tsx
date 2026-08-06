@@ -89,8 +89,8 @@ export const getDialogHistoryForActivities = (
     return {
       id: activity.id,
       summary: getActivityText(activity, actorProps, description, transmissionTitle),
-      byline: format(activity.createdAt, formatString),
-      datetime: activity.createdAt,
+      byline: activity.createdAt ? format(activity.createdAt, formatString) : '',
+      datetime: activity.createdAt ?? undefined,
       type: 'activity',
     };
   });

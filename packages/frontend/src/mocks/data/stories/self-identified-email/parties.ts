@@ -11,6 +11,7 @@ export const parties: PartyFieldsFragment[] = [
     partyUuid: 'ab9608d1-3838-4b42-bfed-0def441b7126',
     hasOnlyAccessToSubParties: false,
     partyId: 1,
+    dateOfBirth: null,
   },
   {
     party: 'urn:altinn:person:legacy-selfidentified:testyman',
@@ -22,6 +23,7 @@ export const parties: PartyFieldsFragment[] = [
     partyUuid: '5b9608d1-3838-4b43-bfed-0def441b7128',
     hasOnlyAccessToSubParties: false,
     partyId: 2,
+    dateOfBirth: null,
   },
   {
     party: 'urn:altinn:person:legacy-selfidentified:testyman2',
@@ -33,5 +35,6 @@ export const parties: PartyFieldsFragment[] = [
     partyUuid: '5b9608d1-3838-4b43-bfed-0def441ba128',
     hasOnlyAccessToSubParties: false,
     partyId: 3,
+    dateOfBirth: null,
   },
 ];

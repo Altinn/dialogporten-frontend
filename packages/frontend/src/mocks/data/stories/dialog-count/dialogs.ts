@@ -17,6 +17,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2024-12-06T12:13:47.153Z',
+    dueAt: null,
     content: {
       title: {
         mediaType: 'text/plain',
@@ -67,6 +68,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2024-12-06T12:13:16.560Z',
+    dueAt: null,
     content: {
       title: {
         mediaType: 'text/plain',
@@ -117,6 +119,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2024-12-06T12:12:50.334Z',
+    dueAt: null,
     content: {
       title: {
         mediaType: 'text/plain',
@@ -167,6 +170,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2024-12-06T12:12:13.052Z',
+    dueAt: null,
     content: {
       title: {
         mediaType: 'text/plain',
@@ -217,6 +221,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2024-12-06T12:11:46.929Z',
+    dueAt: null,
 
     content: {
       title: {
@@ -268,6 +273,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2024-12-06T12:11:18.314Z',
+    dueAt: null,
     content: {
       title: {
         mediaType: 'text/plain',
@@ -318,6 +324,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2024-12-06T12:10:50.693Z',
+    dueAt: null,
     content: {
       title: {
         mediaType: 'text/plain',
@@ -368,6 +375,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2024-12-06T12:10:09.823Z',
+    dueAt: null,
     content: {
       title: {
         mediaType: 'text/plain',
@@ -418,6 +426,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2024-12-06T12:09:34.433Z',
+    dueAt: null,
     content: {
       title: {
         mediaType: 'text/plain',
@@ -468,6 +477,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2024-12-06T09:51:21.416Z',
+    dueAt: null,
     content: {
       title: {
         mediaType: 'text/plain',

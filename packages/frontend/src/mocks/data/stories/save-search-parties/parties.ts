@@ -11,6 +11,7 @@ export const parties: PartyFieldsFragment[] = [
     isDeleted: false,
     partyUuid: 'urn:altinn:person:uuid:test-testesen',
     partyId: 1,
+    dateOfBirth: null,
     hasOnlyAccessToSubParties: false,
   },
   {
@@ -22,6 +23,7 @@ export const parties: PartyFieldsFragment[] = [
     isDeleted: false,
     partyUuid: 'urn:altinn:person:uuid:anne-andersen',
     partyId: 2,
+    dateOfBirth: null,
     hasOnlyAccessToSubParties: false,
   },
   {
@@ -33,6 +35,7 @@ export const parties: PartyFieldsFragment[] = [
     isDeleted: false,
     partyUuid: 'urn:altinn:organization:uuid:firma-as',
     partyId: 3,
+    dateOfBirth: null,
     hasOnlyAccessToSubParties: false,
   },
   {
@@ -44,6 +47,7 @@ export const parties: PartyFieldsFragment[] = [
     isDeleted: false,
     partyUuid: 'urn:altinn:organization:uuid:testbedrift-as',
     partyId: 4,
+    dateOfBirth: null,
     hasOnlyAccessToSubParties: false,
   },
   {
@@ -55,6 +59,7 @@ export const parties: PartyFieldsFragment[] = [
     isDeleted: false,
     partyUuid: 'urn:altinn:organization:uuid:rorror-as',
     partyId: 5,
+    dateOfBirth: null,
     hasOnlyAccessToSubParties: false,
   },
 ];

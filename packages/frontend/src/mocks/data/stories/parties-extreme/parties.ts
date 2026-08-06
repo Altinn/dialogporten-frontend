@@ -126,6 +126,7 @@ function generatePerson(index: number): PartyFieldsFragment {
     isDeleted: false,
     partyUuid: `urn:altinn:person:uuid:${(index + 1).toString().padStart(6, '0')}`,
     partyId: index + 1,
+    dateOfBirth: null,
     hasOnlyAccessToSubParties: false,
     subParties: [],
   };
@@ -146,6 +147,7 @@ function generateOrganization(index: number, partyId: number): PartyFieldsFragme
     isDeleted: false,
     partyUuid: `urn:altinn:organization:uuid:${(index + 1).toString().padStart(6, '0')}`,
     partyId,
+    dateOfBirth: null,
     hasOnlyAccessToSubParties: false,
     subParties: [],
   };

@@ -8,6 +8,8 @@ minimumReleaseAgeExclude:
   - brace-expansion@2.1.2 || 5.0.8
   - brace-expansion@1.1.16
 trustPolicy: no-downgrade
+trustPolicyExclude:
+  - semver@6.3.1
 
 catalog:
   "@graphql-tools/stitch": ^9.4.23

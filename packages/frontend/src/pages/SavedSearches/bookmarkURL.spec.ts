@@ -104,15 +104,14 @@ describe('buildSavedSearchURL', () => {
     filters?: Array<{ id?: string; value?: string } | null>,
     fromView?: string,
   ): SavedSearchesFieldsFragment => ({
-    __typename: 'SavedSearches',
     id: 1,
     name: 'Test Search',
     createdAt: '2024-01-01',
     updatedAt: '2024-01-01',
     data: {
-      __typename: 'SavedSearchData',
-      searchString,
-      filters,
+      searchString: searchString ?? null,
+      filters:
+        filters?.map((filter) => (filter ? { id: filter.id ?? null, value: filter.value ?? null } : null)) ?? null,
       fromView: fromView || PageRoutes.inbox,
       urn: null,
     },
@@ -188,15 +187,14 @@ describe('findMatchingSavedSearch', () => {
     filters?: Array<{ id?: string; value?: string } | null>,
     fromView?: string,
   ): SavedSearchesFieldsFragment => ({
-    __typename: 'SavedSearches',
     id,
     name: `Search ${id}`,
     createdAt: '2024-01-01',
     updatedAt: '2024-01-01',
     data: {
-      __typename: 'SavedSearchData',
-      searchString,
-      filters,
+      searchString: searchString ?? null,
+      filters:
+        filters?.map((filter) => (filter ? { id: filter.id ?? null, value: filter.value ?? null } : null)) ?? null,
       fromView: fromView || PageRoutes.inbox,
       urn: null,
     },

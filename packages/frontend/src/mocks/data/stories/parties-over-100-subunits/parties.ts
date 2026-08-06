@@ -22,6 +22,7 @@ const generateSubUnits = (): SubPartyFieldsFragment[] =>
       isDeleted: false,
       partyUuid: `urn:altinn:organization:uuid:storselskap-sub-${pad(num)}`,
       partyId: 2000 + num,
+      dateOfBirth: null,
     };
   });
 
@@ -35,6 +36,7 @@ export const parties: PartyFieldsFragment[] = [
     isDeleted: false,
     partyUuid: 'urn:altinn:person:uuid:stortest-person',
     partyId: 1,
+    dateOfBirth: null,
     hasOnlyAccessToSubParties: false,
   },
   {
@@ -46,6 +48,7 @@ export const parties: PartyFieldsFragment[] = [
     isDeleted: false,
     partyUuid: 'urn:altinn:organization:uuid:storselskap-as',
     partyId: 1000,
+    dateOfBirth: null,
     hasOnlyAccessToSubParties: false,
   },
 ];

@@ -20,6 +20,7 @@ const dialogsWithServiceResourceBankruptcy: SearchDialogFieldsFragment[] = [
     guiAttachmentCount: 1,
     status: DialogStatus.Awaiting,
     createdAt: '2024-05-23T23:00:00.000Z',
+    dueAt: null,
     seenSinceLastContentUpdate: [],
     content: {
       title: {
@@ -63,6 +64,7 @@ const dialogsWithServiceResourceBankruptcy: SearchDialogFieldsFragment[] = [
     guiAttachmentCount: 1,
     status: DialogStatus.RequiresAttention,
     createdAt: '2024-05-23T23:00:00.000Z',
+    dueAt: null,
     content: {
       title: {
         mediaType: 'text/plain',

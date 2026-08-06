@@ -19,6 +19,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     guiAttachmentCount: 1,
     status: DialogStatus.RequiresAttention,
     createdAt: '2024-05-23T23:00:00.000Z',
+    dueAt: null,
     seenSinceLastContentUpdate: [
       {
         id: 'c4f4d846-2fe7-4172-badc-abc48f9af8a5',

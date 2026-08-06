@@ -7,7 +7,7 @@ export const useDialogsForRecommendations = (): SearchDialogFieldsFragment[] => 
   const { data: recommendationsCache } = useQuery<GetAllDialogsForPartiesQuery>({
     queryKey: [QUERY_KEYS.DIALOGS_FOR_RECOMMENDATIONS],
     enabled: false,
-    queryFn: async () => ({ searchDialogs: { items: [], hasNextPage: false } }),
+    queryFn: async () => ({ searchDialogs: { items: [], hasNextPage: false, continuationToken: null } }),
   });
   return recommendationsCache?.searchDialogs?.items ?? [];
 };

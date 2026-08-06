@@ -11,6 +11,7 @@ export const parties: PartyFieldsFragment[] = [
     hasOnlyAccessToSubParties: false,
     partyUuid: 'urn:altinn:person:identifier-no:1337',
     partyId: 1,
+    dateOfBirth: null,
   },
   {
     party: 'urn:altinn:organization:identifier-no:1',
@@ -22,6 +23,7 @@ export const parties: PartyFieldsFragment[] = [
     hasOnlyAccessToSubParties: false,
     partyUuid: 'urn:altinn:person:identifier-no:1337',
     partyId: 2,
+    dateOfBirth: null,
   },
   {
     party: 'urn:altinn:organization:identifier-no:2',
@@ -31,6 +33,7 @@ export const parties: PartyFieldsFragment[] = [
     isDeleted: false,
     hasOnlyAccessToSubParties: false,
     partyId: 9,
+    dateOfBirth: null,
     partyUuid: 'urn:altinn:person:identifier-no:1337',
     subParties: [
       {
@@ -41,6 +44,7 @@ export const parties: PartyFieldsFragment[] = [
         isDeleted: false,
         partyUuid: 'urn:altinn:person:identifier-no:1337',
         partyId: 3,
+        dateOfBirth: null,
       },
       {
         party: 'urn:altinn:organization:identifier-sub:2',
@@ -50,6 +54,7 @@ export const parties: PartyFieldsFragment[] = [
         isDeleted: false,
         partyUuid: 'urn:altinn:person:identifier-no:1337',
         partyId: 4,
+        dateOfBirth: null,
       },
     ],
   },
@@ -62,6 +67,7 @@ export const parties: PartyFieldsFragment[] = [
     hasOnlyAccessToSubParties: false,
     partyUuid: 'urn:altinn:person:identifier-no:1337',
     partyId: 2,
+    dateOfBirth: null,
     subParties: [
       {
         party: 'urn:altinn:organization:id-mycompanyas-sub:1',
@@ -71,6 +77,7 @@ export const parties: PartyFieldsFragment[] = [
         isDeleted: false,
         partyUuid: 'urn:altinn:person:identifier-no:1337',
         partyId: 6,
+        dateOfBirth: null,
       },
       {
         party: 'urn:altinn:organization:id-mycompanyas-sub:2',
@@ -80,6 +87,7 @@ export const parties: PartyFieldsFragment[] = [
         isDeleted: false,
         partyUuid: 'urn:altinn:person:identifier-no:1337',
         partyId: 7,
+        dateOfBirth: null,
       },
     ],
   },
