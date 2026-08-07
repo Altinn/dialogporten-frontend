@@ -9,7 +9,7 @@ import {
 } from '@altinn/altinn-components';
 import { DialogLookupGrantType } from 'bff-types-generated';
 import { useTranslation } from 'react-i18next';
-import { Link, type LinkProps, useLocation } from 'react-router-dom';
+import { Link, type LinkProps, useLocation } from 'react-router';
 import { useDialogAccessInfo } from '../../api/hooks/useDialogAccessInfo.ts';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { getAccessAMUILink } from '../../auth/url.ts';

@@ -1,5 +1,5 @@
 import type { MenuItemProps } from '@altinn/altinn-components';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { PageRoutes } from '../../../pages/routes.ts';
 
 export const isRouteSelected = (currentRoute: string, targetRoute: PageRoutes, fromView?: string) => {

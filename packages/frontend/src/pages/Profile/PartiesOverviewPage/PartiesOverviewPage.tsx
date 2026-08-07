@@ -38,7 +38,7 @@ import {
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import { type ElementType, useDeferredValue, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, type LinkProps, Navigate } from 'react-router-dom';
+import { Link, type LinkProps, Navigate } from 'react-router';
 import { useParties } from '../../../api/hooks/useParties';
 import { hasOnlySelfParty } from '../../../api/hooks/usePartiesSelectors.ts';
 import {

@@ -4,7 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { SystemLabel } from 'bff-types-generated';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router';
 import { Analytics } from '../../analytics/analytics.ts';
 import { getDialogMoveEvent } from '../../analytics/analyticsEvents.ts';
 import { updateSystemLabel } from '../../api/queries';

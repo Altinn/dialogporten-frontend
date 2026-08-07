@@ -2,7 +2,7 @@ import type { MenuItemGroups, MenuItemProps } from '@altinn/altinn-components';
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import { useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router';
 import { MAX_DIALOG_PARTY_SIZE } from '../../api/hooks/useDialogs.tsx';
 import type { PartyItemProp } from '../../components/PageLayout/Accounts/useAccounts.tsx';
 import {

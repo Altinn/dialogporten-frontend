@@ -1,6 +1,6 @@
 import { DsAlert, DsParagraph, Heading } from '@altinn/altinn-components';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { useAlertBanner } from '../../hooks/useAlertBanner.ts';
 
 interface AlertBannerProps {

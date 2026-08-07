@@ -1,6 +1,6 @@
 import { Article, ArticleHeader, Button, PageBase, Typography } from '@altinn/altinn-components';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router';
 import { usePageTitle } from '../../hooks/usePageTitle.ts';
 
 export const ErrorPage = () => {

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import type { PartyFieldsFragment } from 'bff-types-generated';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { getSelectedGroupFromQueryParams, type PartyGroup } from '../../pages/Inbox/queryParams.ts';
 import type { PartyGraph } from '../../utils/partyGraph.ts';
