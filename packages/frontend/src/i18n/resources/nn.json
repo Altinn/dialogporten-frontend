@@ -481,5 +481,13 @@
   "word.to": "til",
   "word.unread": "Ulest",
   "word.unread_content": "Ulest innhald",
-  "word.you": "deg"
+  "word.you": "deg",
+  "filter_bar.export_results": "Eksporter",
+  "filter_bar.export_results_aria": "Eksporter {count, plural, one {# treff} other {# treff}} til CSV",
+  "inbox.export.column.title": "Tittel",
+  "inbox.export.column.date": "Dato",
+  "inbox.export.column.from": "Frå",
+  "inbox.export.column.to": "Til",
+  "inbox.export.column.status": "Status",
+  "inbox.export.column.due_at": "Frist"
 }
