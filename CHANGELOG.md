@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.171.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.170.1...v1.171.0) (2026-08-07)
+
+
+### Features
+
+* **inbox:** export search results to CSV ([#4525](https://github.com/Altinn/dialogporten-frontend/issues/4525)) ([e2b68a8](https://github.com/Altinn/dialogporten-frontend/commit/e2b68a8e078d58ad637b482efb331193b3aa7deb))
+
 ## [1.170.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.170.0...v1.170.1) (2026-08-05)
 
 
