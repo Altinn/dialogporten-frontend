@@ -8,6 +8,7 @@ import { isValidURL } from '../../auth/url.ts';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.ts';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { getAcceptLanguageHeader } from '../../i18n/acceptLanguage.ts';
+import { getPreferTimeZoneHeader } from '../../i18n/timeZone.ts';
 import styles from './mainContentReference.module.css';
 
 interface MainContentReferenceProps {
@@ -74,6 +75,7 @@ export const MainContentReference = memo(({ content, dialogToken, id, dialogId }
         headers: {
           'Content-Type': 'text/plain',
           'Accept-Language': getAcceptLanguageHeader(language),
+          Prefer: getPreferTimeZoneHeader(),
           Authorization: `Bearer ${dialogToken}`,
         },
       });

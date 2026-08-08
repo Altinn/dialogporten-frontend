@@ -359,8 +359,13 @@ This is HTML generated from markdown.
 `,
 };
 
+const resolveFceTimeZone = (request: Request): string =>
+  request.headers.get('Prefer')?.match(/timezone="([^"]+)"/)?.[1] ?? 'ukjent';
+
 const getMainContentMarkdownMock = http.get('https://dialogporten-serviceprovider.net/fce-markdown', ({ request }) => {
-  return HttpResponse.text(mainContentMarkdownByLanguage[resolveFceLanguage(request)]);
+  return HttpResponse.text(
+    `${mainContentMarkdownByLanguage[resolveFceLanguage(request)]}\n\nPrefer timezone: ${resolveFceTimeZone(request)}\n`,
+  );
 });
 
 const localizedMainContentMarkdownByLanguage: Record<FceLanguage, string> = {
