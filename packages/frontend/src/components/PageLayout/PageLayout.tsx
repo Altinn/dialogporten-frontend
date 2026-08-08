@@ -13,7 +13,7 @@ import type { PartyFieldsFragment } from 'bff-types-generated';
 import i18n from 'i18next';
 import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, type LinkProps, Outlet, useLocation, useSearchParams } from 'react-router-dom';
+import { Link, type LinkProps, Outlet, useLocation, useSearchParams } from 'react-router';
 import { useCurrentEndUser, useSelectedProfile } from '../../api/hooks/usePartiesSelectors.ts';
 import { getFrontPageLink } from '../../auth/url.ts';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';

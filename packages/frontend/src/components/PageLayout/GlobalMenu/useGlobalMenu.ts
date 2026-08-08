@@ -1,6 +1,6 @@
 import type { MenuProps } from '@altinn/altinn-components';
 import { useTranslation } from 'react-i18next';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 import { useCurrentEndUser, useHasOnlySelfParty } from '../../../api/hooks/usePartiesSelectors.ts';
 import { PageRoutes } from '../../../pages/routes.ts';
 import { buildInboxMenu } from './inboxMenu.ts';

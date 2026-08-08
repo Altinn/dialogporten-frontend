@@ -1,7 +1,7 @@
 import { Button, type ButtonSize, type MenuItemProps, Pagination, Typography } from '@altinn/altinn-components';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router';
 import { MAX_DIALOG_PARTY_SIZE } from '../../api/hooks/useDialogs.tsx';
 import { encodeSubAccountIds, FixedGlobalQueryParams } from './queryParams.ts';
 

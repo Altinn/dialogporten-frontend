@@ -10,7 +10,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { SavedSearchData, SavedSearchesFieldsFragment, SavedSearchesQuery } from 'bff-types-generated';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, type LinkProps, useNavigate } from 'react-router-dom';
+import { Link, type LinkProps, useNavigate } from 'react-router';
 import { Analytics } from '../../analytics/analytics.ts';
 import { ANALYTICS_EVENTS } from '../../analytics/analyticsEvents.ts';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';

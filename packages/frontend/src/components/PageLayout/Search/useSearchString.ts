@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router';
 import { QUERY_KEYS } from '../../../constants/queryKeys.ts';
 import { getSearchStringFromQueryParams, VariableGlobalQueryParams } from '../../../pages/Inbox/queryParams.ts';
 import { useGlobalStringState } from '../../../useGlobalState.ts';
