@@ -156,7 +156,6 @@ if (applicationInsightsEnabled) {
         overridePageViewDuration: false,
         samplingPercentage: 100,
         appId: 'arbeidsflate-frontend',
-        enableDebug: true,
         maxAjaxCallsPerView: 2000,
       },
     });
