@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.171.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.171.0...v1.171.1) (2026-08-11)
+
+
+### Bug Fixes
+
+* **attachments:** open attachments in same tab on Firefox for iOS ([#4491](https://github.com/Altinn/dialogporten-frontend/issues/4491)) ([7dcb630](https://github.com/Altinn/dialogporten-frontend/commit/7dcb6304a09805a34014dbf1b6fc3cf79cfefb1b))
+
 ## [1.171.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.170.1...v1.171.0) (2026-08-07)
 
 
