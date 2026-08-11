@@ -98,9 +98,14 @@ export const filterDialogs = ({
 
 export const getMockedMainContent = (dialogId: string) => {
   const idWithLegacyHTML = '019241f7-6f45-72fd-a574-f19d358aaf4e';
+  const idWithLocalizedContentUrls = '019241f7-8218-7756-be82-5310042c3d95';
 
   if (idWithLegacyHTML === dialogId) {
     return getMockedHTMLFCEContent();
+  }
+
+  if (idWithLocalizedContentUrls === dialogId) {
+    return getMockedLocalizedMarkdownFCEContent();
   }
 
   return {
@@ -111,6 +116,18 @@ export const getMockedMainContent = (dialogId: string) => {
         languageCode: 'nb',
       },
     ],
+  };
+};
+
+export const getMockedLocalizedMarkdownFCEContent = (transmissionId?: string) => {
+  const idParam = transmissionId ? `&id=${transmissionId}` : '';
+
+  return {
+    mediaType: 'application/vnd.dialogporten.frontchannelembed-url;type=text/markdown',
+    value: ['nb', 'nn', 'en'].map((languageCode) => ({
+      value: `https://dialogporten-serviceprovider.net/fce-markdown-localized?lang=${languageCode}${idParam}`,
+      languageCode,
+    })),
   };
 };
 
@@ -168,6 +185,7 @@ export const getMockedActivities = (id: string): DialogByIdFieldsFragment['activ
         ],
         type: ActivityType.Information,
         createdAt: '2023-12-03T10:45:00.000Z',
+        transmissionId: null,
       },
       {
         id: Math.random() + '-activity',
@@ -184,6 +202,7 @@ export const getMockedActivities = (id: string): DialogByIdFieldsFragment['activ
         ],
         type: ActivityType.Information,
         createdAt: '2023-12-04T10:45:00.000Z',
+        transmissionId: null,
       },
       {
         id: Math.random() + '-activity',
@@ -200,6 +219,7 @@ export const getMockedActivities = (id: string): DialogByIdFieldsFragment['activ
         ],
         type: ActivityType.Information,
         createdAt: '2025-12-31T10:45:00.000Z',
+        transmissionId: null,
       },
       {
         id: Math.random() + '-activity',
@@ -226,6 +246,7 @@ export const getMockedActivities = (id: string): DialogByIdFieldsFragment['activ
       description: [],
       type: ActivityType.Information,
       createdAt: new Date().toISOString(),
+      transmissionId: null,
     },
   ];
 };
@@ -236,6 +257,7 @@ export const getMockedTransmissions = (dialogId: string) => {
     return [
       {
         id: 'transmission-1',
+        relatedTransmissionId: null,
         createdAt: '2024-07-30T18:12:54.233Z',
         isAuthorized: true,
         type: TransmissionType.Information,
@@ -263,7 +285,7 @@ export const getMockedTransmissions = (dialogId: string) => {
             ],
             mediaType: 'text/plain',
           },
-          contentReference: getMockedFCEContent('transmission-1'),
+          contentReference: getMockedLocalizedMarkdownFCEContent('transmission-1'),
         },
         attachments: [],
       },
@@ -303,6 +325,7 @@ export const getMockedTransmissions = (dialogId: string) => {
       },
       {
         id: 'transmission-3',
+        relatedTransmissionId: null,
         createdAt: '2024-07-31T18:12:54.233Z',
         isAuthorized: false,
         type: TransmissionType.Information,
@@ -336,6 +359,7 @@ export const getMockedTransmissions = (dialogId: string) => {
       },
       {
         id: 'transmission-999',
+        relatedTransmissionId: null,
         createdAt: '2024-07-31T11:12:54.233Z',
         isAuthorized: true,
         type: TransmissionType.Information,
@@ -403,6 +427,7 @@ export const getMockedTransmissions = (dialogId: string) => {
       },
       {
         id: 'transmission-system',
+        relatedTransmissionId: null,
         isAuthorized: true,
         createdAt: '2024-08-13T12:12:54.233Z',
         type: TransmissionType.Information,
@@ -437,6 +462,7 @@ export const getMockedTransmissions = (dialogId: string) => {
       // Case 1: isAuthorized=false + API-only attachment → A: filter
       {
         id: 'case1-filter-unauthorized-api',
+        relatedTransmissionId: null,
         isAuthorized: false,
         createdAt: '2024-08-15T01:00:00.000Z',
         type: TransmissionType.Information,
@@ -468,6 +494,7 @@ export const getMockedTransmissions = (dialogId: string) => {
       // Case 2: isAuthorized=false + has GUI attachment → B: disabled
       {
         id: 'case2-disabled-unauthorized-gui',
+        relatedTransmissionId: null,
         isAuthorized: false,
         createdAt: '2024-08-15T02:00:00.000Z',
         type: TransmissionType.Information,
@@ -499,6 +526,7 @@ export const getMockedTransmissions = (dialogId: string) => {
       // Case 3: isAuthorized=true + API-only attachment → A: filter
       {
         id: 'case3-filter-authorized-api',
+        relatedTransmissionId: null,
         isAuthorized: true,
         createdAt: '2024-08-15T03:00:00.000Z',
         type: TransmissionType.Information,
@@ -530,6 +558,7 @@ export const getMockedTransmissions = (dialogId: string) => {
       // Case 4: isAuthorized=true + visible content → visible
       {
         id: 'case4-visible',
+        relatedTransmissionId: null,
         isAuthorized: true,
         createdAt: '2024-08-15T04:00:00.000Z',
         type: TransmissionType.Information,
@@ -550,6 +579,7 @@ export const getMockedTransmissions = (dialogId: string) => {
       // Case 5: isAuthorized=true + no visible content → C: show empty message
       {
         id: 'case5-empty',
+        relatedTransmissionId: null,
         isAuthorized: true,
         createdAt: '2024-08-15T05:00:00.000Z',
         type: TransmissionType.Information,
@@ -567,6 +597,7 @@ export const getMockedTransmissions = (dialogId: string) => {
       // Case 6: isAuthorized=true + only a GUI link with isAuthorized=false (sentinel URL) → shows disabled link
       {
         id: 'case6-unauthorized-link',
+        relatedTransmissionId: null,
         isAuthorized: true,
         createdAt: '2024-08-15T06:00:00.000Z',
         type: TransmissionType.Information,
@@ -598,6 +629,7 @@ export const getMockedTransmissions = (dialogId: string) => {
       // Case 7: isAuthorized=true + summary and GUI attachment → visible
       {
         id: 'case7-summary-and-gui-attachment',
+        relatedTransmissionId: null,
         isAuthorized: true,
         createdAt: '2024-08-15T07:00:00.000Z',
         type: TransmissionType.Information,
@@ -634,6 +666,33 @@ export const getMockedTransmissions = (dialogId: string) => {
             ],
           },
         ],
+      },
+      {
+        id: 'language-fce',
+        relatedTransmissionId: null,
+        isAuthorized: true,
+        createdAt: '2024-08-16T07:00:00.000Z',
+        type: TransmissionType.Information,
+        sender: { actorType: ActorType.ServiceOwner, actorId: null, actorName: null },
+        content: {
+          title: {
+            value: [
+              { value: 'Språktest: innhold per språk', languageCode: 'nb' },
+              { value: 'Språktest: innhald per språk', languageCode: 'nn' },
+              { value: 'Language test: content per language', languageCode: 'en' },
+            ],
+            mediaType: 'text/plain',
+          },
+          summary: {
+            value: [
+              { value: 'Bytt språk i menyen for å se innholdet under bytte', languageCode: 'nb' },
+              { value: 'Switch language in the menu to see the content below change', languageCode: 'en' },
+            ],
+            mediaType: 'text/plain',
+          },
+          contentReference: getMockedLocalizedMarkdownFCEContent('language-fce'),
+        },
+        attachments: [],
       },
     ];
   }
@@ -695,6 +754,7 @@ export const convertToDialogByIdTemplate = (input: SearchDialogFieldsFragment): 
     seenSinceLastContentUpdate: input.seenSinceLastContentUpdate,
     status: input.status,
     createdAt: input.createdAt,
+    dueAt: input.dueAt,
     contentUpdatedAt: input.contentUpdatedAt,
     isContentSeen: input.endUserContext?.systemLabels?.includes(SystemLabel.MarkedAsUnopened)
       ? false

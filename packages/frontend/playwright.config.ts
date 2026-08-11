@@ -5,8 +5,8 @@ config();
 
 const PERF_SPECS = ['**/partiesExtreme.spec.ts'];
 
-// Specs that put heavy load on the browser (long multi-step flows) — isolated into
-// their own project/worker, see `playwright-heavy` below.
+// Specs that put heavy load on the browser (long multi-step flows) — run as their own
+// invocation via `test:playwright:heavy`, not alongside the main project.
 const HEAVY_SPECS = ['**/savedSearchParties.spec.ts'];
 
 /**

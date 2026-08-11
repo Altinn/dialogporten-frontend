@@ -1,15 +1,15 @@
 import { renderHook } from '@testing-library/react';
 import { SystemLabel } from 'bff-types-generated';
 import type { ReactNode } from 'react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { PageRoutes } from '../routes';
 import { useDialogActions } from './useDialogActions';
 
 const navigateMock = vi.fn();
 
-vi.mock('react-router-dom', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('react-router-dom')>();
+vi.mock('react-router', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react-router')>();
   return { ...actual, useNavigate: () => navigateMock };
 });
 

@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.171.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.170.1...v1.171.0) (2026-08-07)
+
+
+### Features
+
+* **inbox:** export search results to CSV ([#4525](https://github.com/Altinn/dialogporten-frontend/issues/4525)) ([e2b68a8](https://github.com/Altinn/dialogporten-frontend/commit/e2b68a8e078d58ad637b482efb331193b3aa7deb))
+
+## [1.170.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.170.0...v1.170.1) (2026-08-05)
+
+
+### Bug Fixes
+
+* **a11y:** render GET gui actions as links instead of buttons ([#4517](https://github.com/Altinn/dialogporten-frontend/issues/4517)) ([cadb487](https://github.com/Altinn/dialogporten-frontend/commit/cadb4874ee5cbf60a15f1efd86d199806131af8c))
+
+## [1.170.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.169.1...v1.170.0) (2026-08-04)
+
+
+### Features
+
+* **fce:** update embedded content when the user changes language ([#4504](https://github.com/Altinn/dialogporten-frontend/issues/4504)) ([77ea335](https://github.com/Altinn/dialogporten-frontend/commit/77ea335e1b61f4de593e10ac234f1bd371e3006a))
+
 ## [1.169.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.169.0...v1.169.1) (2026-07-28)
 
 

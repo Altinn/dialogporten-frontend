@@ -16,6 +16,7 @@ const makeDialog = (id: string, party: string, title: string): SearchDialogField
   guiAttachmentCount: 0,
   status: DialogStatus.RequiresAttention,
   createdAt: '2023-12-23T23:00:00.000Z',
+  dueAt: null,
   seenSinceLastContentUpdate: [],
   content: {
     title: {

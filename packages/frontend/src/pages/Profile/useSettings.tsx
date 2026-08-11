@@ -29,7 +29,7 @@ import {
 import i18n from 'i18next';
 import { type ChangeEvent, type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, type LinkProps, useLocation } from 'react-router-dom';
+import { Link, type LinkProps, useLocation } from 'react-router';
 import { useParties } from '../../api/hooks/useParties.ts';
 import { hasOnlySelfParty, useSILegacyParties } from '../../api/hooks/usePartiesSelectors.ts';
 import { updateLanguage } from '../../api/queries.ts';

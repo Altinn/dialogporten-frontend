@@ -8,7 +8,7 @@ import {
 import type { ChangeEvent } from 'react';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, type LinkProps, useLocation, useNavigate } from 'react-router-dom';
+import { Link, type LinkProps, useLocation, useNavigate } from 'react-router';
 import { Analytics } from '../../analytics/analytics.ts';
 import { ANALYTICS_EVENTS } from '../../analytics/analyticsEvents.ts';
 import { useParties } from '../../api/hooks/useParties.ts';

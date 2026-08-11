@@ -1,13 +1,15 @@
 packages:
   - "packages/*"
 
-minimumReleaseAge: 4320
+minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
   - "@altinn/altinn-components"
-  # Renovate security update: brace-expansion@5.0.8
-  - brace-expansion@2.1.2 || 5.0.8
   - brace-expansion@1.1.16
+  # Renovate security update: js-yaml@3.15.1
+  - js-yaml@3.15.1
 trustPolicy: no-downgrade
+trustPolicyExclude:
+  - semver@6.3.1
 
 catalog:
   "@graphql-tools/stitch": ^9.4.23
@@ -25,8 +27,8 @@ catalog:
   graphql: ^16.11.0
   graphql-request: ^7.2.0
   nodemon: ^3.1.14
-  react: 19.2.3
-  react-dom: 19.2.3
+  react: 19.2.8
+  react-dom: 19.2.8
   typescript: ^5.8.3
   vite: 8.1.4
   vitest: ^4.1.3

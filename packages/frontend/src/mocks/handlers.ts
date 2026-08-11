@@ -289,7 +289,7 @@ const getDialogByIdMock = graphql.query('getDialogById', (options) => {
         seenAt: new Date().toISOString(),
         seenBy: {
           actorType: null,
-          actorId: party?.party,
+          actorId: party?.party ?? null,
           actorName: formatDisplayName({
             fullName: party?.name ?? '',
             type: 'person',
@@ -314,8 +314,15 @@ const getDialogByIdMock = graphql.query('getDialogById', (options) => {
   });
 });
 
-const getMainContentMarkdownMock = http.get('https://dialogporten-serviceprovider.net/fce-markdown', () => {
-  return HttpResponse.text(`# Info i markdown
+type FceLanguage = 'nb' | 'nn' | 'en';
+
+const resolveFceLanguage = (request: Request): FceLanguage => {
+  const requested = request.headers.get('Accept-Language')?.split(',')[0]?.split(';')[0]?.split('-')[0]?.trim();
+  return requested === 'nn' || requested === 'en' ? requested : 'nb';
+};
+
+const mainContentMarkdownByLanguage: Record<FceLanguage, string> = {
+  nb: `# Info i markdown
 
 Dette er HTML som er generert fra markdown.
 
@@ -331,22 +338,75 @@ Dette er HTML som er generert fra markdown.
 3. **Lenker**: Lag lenker med \`[link-tekst](url)\`. For eksempel: \`[CommonMark](https://commonmark.org)\`.
 4. **Fet tekst**: Bruk \`**\` eller \`__\` for å lage fet tekst. F.eks. \`**dette er viktig**\`.
 5. **Kodeblokker**: Bruk tre backticks (\`\`\`) for å lage kodeblokker eller enkel backtick for inline kode (f.eks. \`\` \`kode\` \`\`).
-`);
+`,
+  nn: `# Info i markdown
+
+Dette er HTML som er generert frå markdown.
+
+## Grunnleggjande konsept frå markdown
+
+1. **Overskrifter**: Bruk \`#\` for å lage overskrifter.
+2. **Lister**: For punktlister, bruk \`-\`, \`+\` eller \`*\`.
+`,
+  en: `# Information in markdown
+
+This is HTML generated from markdown.
+
+## Basic markdown concepts
+
+1. **Headings**: Use \`#\` to create headings.
+2. **Lists**: Use \`-\`, \`+\` or \`*\` for bullet lists.
+`,
+};
+
+const getMainContentMarkdownMock = http.get('https://dialogporten-serviceprovider.net/fce-markdown', ({ request }) => {
+  return HttpResponse.text(mainContentMarkdownByLanguage[resolveFceLanguage(request)]);
 });
+
+const localizedMainContentMarkdownByLanguage: Record<FceLanguage, string> = {
+  nb: '# Innhold hentet fra bokmåls-URL',
+  nn: '# Innhald henta frå nynorsk-URL',
+  en: '# Content fetched from the English URL',
+};
+
+const getLocalizedMainContentMarkdownMock = http.get(
+  'https://dialogporten-serviceprovider.net/fce-markdown-localized',
+  ({ request }) => {
+    const params = new URL(request.url).searchParams;
+    const lang = params.get('lang');
+    const id = params.get('id');
+    const language: FceLanguage = lang === 'nn' || lang === 'en' ? lang : 'nb';
+    return HttpResponse.text(`${localizedMainContentMarkdownByLanguage[language]}${id ? ` (id=${id})` : ''}`);
+  },
+);
+
+const transmissionMarkdownHeadingByLanguage: Record<FceLanguage, string> = {
+  nb: 'Info i markdown for transmission',
+  nn: 'Info i markdown for transmisjon',
+  en: 'Information in markdown for transmission',
+};
 
 const getContentMarkdownMock = http.get(
   'https://dialogporten-serviceprovider.net/fce-markdown-transmission',
   ({ request }) => {
     const url = new URL(request.url);
     const id = url.searchParams.get('id');
-    return HttpResponse.text(`# Info i markdown for transmission (id=${id})`);
+    const heading = transmissionMarkdownHeadingByLanguage[resolveFceLanguage(request)];
+    return HttpResponse.text(`# ${heading} (id=${id})`);
   },
 );
+
+const htmlContentByLanguage: Record<FceLanguage, { heading: string; body: string }> = {
+  nb: { heading: 'Tittel i arvet HTML', body: 'Brødtekst!' },
+  nn: { heading: 'Tittel i arva HTML', body: 'Brødtekst!' },
+  en: { heading: 'Title in legacy HTML', body: 'Body text!' },
+};
 
 const getMainContentHtmlMock = http.get('https://dialogporten-serviceprovider.net/fce-html', ({ request }) => {
   const url = new URL(request.url);
   const id = url.searchParams.get('id');
-  return HttpResponse.text(`<html><body><h1>Tittel i arvet HTML</h1><p>Brødtekst! ${id}</p></body></html>`);
+  const { heading, body } = htmlContentByLanguage[resolveFceLanguage(request)];
+  return HttpResponse.text(`<html><body><h1>${heading}</h1><p>${body} ${id}</p></body></html>`);
 });
 
 const getAllPartiesMock = graphql.query('parties', () => {
@@ -738,6 +798,7 @@ export const handlers = [
   getAllPartiesMock,
   getDialogByIdMock,
   getMainContentMarkdownMock,
+  getLocalizedMainContentMarkdownMock,
   getMainContentHtmlMock,
   getSavedSearchesMock,
   getProfileMock,

@@ -1,6 +1,6 @@
 import type { PartyFieldsFragment } from 'bff-types-generated';
 import { useEffect, useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.ts';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { updatePartyCookies } from '../../cookie.ts';

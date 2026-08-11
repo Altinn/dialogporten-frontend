@@ -28,7 +28,7 @@ export interface InboxItemInput {
   viewType: InboxViewType;
   viewTypes: InboxViewType[];
   seenByLog: SeenByLogProps;
-  dueAt?: string;
+  dueAt?: string | null;
   seenSinceLastContentUpdate: SeenLogFieldsFragment[];
   serviceResource?: string;
   serviceResourceType?: string;

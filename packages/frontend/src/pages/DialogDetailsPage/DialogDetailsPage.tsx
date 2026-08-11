@@ -9,7 +9,7 @@ import { ArrowRedoIcon, ClockDashedIcon, InformationSquareIcon } from '@navikt/a
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, type LinkProps, useLocation, useParams } from 'react-router-dom';
+import { Link, type LinkProps, useLocation, useParams } from 'react-router';
 import { useDialogById } from '../../api/hooks/useDialogById.tsx';
 import { useDialogByIdSubscription } from '../../api/hooks/useDialogByIdSubscription.ts';
 import { useParties } from '../../api/hooks/useParties.ts';

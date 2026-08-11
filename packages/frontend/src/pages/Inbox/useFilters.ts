@@ -1,7 +1,7 @@
 import type { FilterProps, FilterState } from '@altinn/altinn-components';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { useDialogsForRecommendations } from '../../api/hooks/useDialogsForRecommendations.tsx';
 import { useFilterServiceResources } from '../../api/hooks/useServiceResource.ts';

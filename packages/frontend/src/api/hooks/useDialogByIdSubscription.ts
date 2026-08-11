@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { type DialogEventPayload, DialogEventType } from 'bff-types-generated';
 import { useCallback, useEffect, useRef } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router';
 import { SSE } from 'sse.js';
 import { config } from '../../config.ts';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';

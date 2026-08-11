@@ -16,7 +16,7 @@
       "cache": false
     },
     "build": {
-      "env": ["BASEURL", "URL", "BUILD_VERSION"],
+      "env": ["BASEURL", "URL", "BUILD_VERSION", "ASTRO_TELEMETRY_DISABLED"],
       "dependsOn": ["build:bff-types-generated", "prepare:@altinn/dialogporten-node-logger"],
       "cache": false
     },

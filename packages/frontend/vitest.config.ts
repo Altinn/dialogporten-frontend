@@ -7,7 +7,7 @@ export default defineConfig({
   test: {
     server: {
       deps: {
-        inline: [/react-router-dom/, /@altinn\/altinn-components/],
+        inline: [/react-router/, /@altinn\/altinn-components/],
       },
     },
     exclude: ['node_modules', 'tests'], // tests for Playwright

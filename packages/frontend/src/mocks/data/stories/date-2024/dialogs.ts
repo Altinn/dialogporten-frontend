@@ -23,6 +23,7 @@ const dialogsWithMockedSystemDate: SearchDialogFieldsFragment[] = [
     guiAttachmentCount: 1,
     status: DialogStatus.RequiresAttention,
     createdAt: '2024-05-23T23:00:00.000Z',
+    dueAt: null,
     seenSinceLastContentUpdate: [],
     content: {
       title: {
@@ -67,6 +68,7 @@ const dialogsWithMockedSystemDate: SearchDialogFieldsFragment[] = [
     guiAttachmentCount: 1,
     status: DialogStatus.RequiresAttention,
     createdAt: '2024-05-23T23:00:00.000Z',
+    dueAt: null,
     content: {
       title: {
         mediaType: 'text/plain',
@@ -112,6 +114,7 @@ const dialogsWithMockedSystemDate: SearchDialogFieldsFragment[] = [
     guiAttachmentCount: 0,
     status: DialogStatus.RequiresAttention,
     createdAt: '2023-12-04T11:45:00.000Z',
+    dueAt: null,
     seenSinceLastContentUpdate: [],
     content: {
       title: {

@@ -125,17 +125,7 @@ fragment TransmissionFields on Transmission {
     }
   }
   attachments {
-    id
-    displayName {
-      value
-      languageCode
-    }
-    urls {
-      id
-      url
-      consumerType
-      mediaType
-    }
+    ...AttachmentFields
   }
 }
 

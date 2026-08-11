@@ -37,6 +37,7 @@ const personParty: PartyFieldsFragment = {
   isDeleted: false,
   partyUuid: 'uuid-person',
   partyId: 1,
+  dateOfBirth: null,
   hasOnlyAccessToSubParties: false,
   subParties: [],
 };
@@ -49,6 +50,7 @@ const orgParty: PartyFieldsFragment = {
   isDeleted: false,
   partyUuid: 'uuid-org',
   partyId: 2,
+  dateOfBirth: null,
   hasOnlyAccessToSubParties: false,
   subParties: [
     {
@@ -59,6 +61,7 @@ const orgParty: PartyFieldsFragment = {
       isDeleted: false,
       partyUuid: 'uuid-sub',
       partyId: 3,
+      dateOfBirth: null,
     },
   ],
 };
@@ -71,6 +74,7 @@ const promotedSubParty: PartyFieldsFragment = {
   isDeleted: false,
   partyUuid: 'uuid-sub',
   partyId: 3,
+  dateOfBirth: null,
   hasOnlyAccessToSubParties: false,
   subParties: [],
 };
@@ -83,6 +87,10 @@ const organizations: OrganizationFieldsFragment[] = [
     id: 'org-1',
     name: { nb: 'Skatteetaten', nn: 'Skatteetaten', en: 'Tax Administration' },
     logo: 'https://example.com/logo.png',
+    orgnr: null,
+    homepage: null,
+    environments: null,
+    contact: null,
   },
 ];
 const orgMap = buildOrganizationMap(organizations);

@@ -60,13 +60,11 @@ export const useBookmarkModal = ({
       return buildFilterParams(state.search, deps);
     }
     const draftSavedSearch: SavedSearchesFieldsFragment = {
-      __typename: 'SavedSearches',
       id: 0,
       name: '',
       createdAt: '',
       updatedAt: '',
       data: {
-        __typename: 'SavedSearchData',
         filters: convertFilterStateToFilters(filterState),
         urn: selectedPartyIds,
         searchString: enteredSearchValue,

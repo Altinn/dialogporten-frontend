@@ -8,7 +8,7 @@
 - #{issue number}
 
 ### Dokumentasjon / testdekning
-<!--- Oppgi om du har lagt til eller oppdatert dokumentasjonen som er relevant for endringene. Enten i Readme eller i Docosauros på `./packages/docs/docs` -->
+<!--- Oppgi om du har lagt til eller oppdatert dokumentasjonen som er relevant for endringene. Enten i Readme eller i dokumentasjonssiden (Starlight) på `./packages/docs/src/content/docs` -->
 
 - [ ] Dokumentasjon er oppdatert eller ikke relevant / nødvendig.
 - [ ] Det er blitt lagt til nye tester / eksiterende tester er blitt utvidet, eller tester er ikke relevant.

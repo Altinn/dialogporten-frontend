@@ -19,6 +19,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     guiAttachmentCount: 1,
     status: DialogStatus.RequiresAttention,
     createdAt: '2024-05-23T23:00:00.000Z',
+    dueAt: null,
     content: {
       title: {
         mediaType: 'text/plain',
@@ -61,6 +62,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     guiAttachmentCount: 1,
     status: DialogStatus.RequiresAttention,
     createdAt: '2024-05-23T23:00:00.000Z',
+    dueAt: null,
     content: {
       title: {
         mediaType: 'text/plain',
@@ -103,6 +105,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     guiAttachmentCount: 1,
     status: DialogStatus.RequiresAttention,
     createdAt: '2024-05-23T23:00:00.000Z',
+    dueAt: null,
     content: {
       title: {
         mediaType: 'text/plain',

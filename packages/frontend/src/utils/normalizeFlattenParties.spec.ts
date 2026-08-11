@@ -14,6 +14,7 @@ describe('normalizeFlattenParties', () => {
       isDeleted: false,
       partyUuid: 'urn:altinn:person:identifier-no:1337',
       partyId: 1,
+      dateOfBirth: null,
     },
     {
       party: 'urn:altinn:organization:identifier-no:1',
@@ -28,6 +29,7 @@ describe('normalizeFlattenParties', () => {
           partyUuid: 'urn:altinn:person:identifier-no:1337',
           isDeleted: false,
           partyId: 2,
+          dateOfBirth: null,
         },
       ],
       name: 'MYSUSÆTER OG ØSTRE GAUSDAL',
@@ -35,6 +37,7 @@ describe('normalizeFlattenParties', () => {
       isDeleted: false,
       partyUuid: 'urn:altinn:person:identifier-no:1338',
       partyId: 3,
+      dateOfBirth: null,
     },
   ];
 

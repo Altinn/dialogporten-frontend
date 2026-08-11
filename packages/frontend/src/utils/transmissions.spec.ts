@@ -162,6 +162,7 @@ describe('getTransmissionVisibility', () => {
         {
           id: 'a1',
           displayName: [],
+          expiresAt: null,
           urls: [
             { id: 'u1', url: 'https://api.example.com', consumerType: AttachmentUrlConsumer.Api, mediaType: null },
           ],
@@ -178,6 +179,7 @@ describe('getTransmissionVisibility', () => {
         {
           id: 'a1',
           displayName: [],
+          expiresAt: null,
           urls: [
             {
               id: 'u1',
@@ -199,6 +201,7 @@ describe('getTransmissionVisibility', () => {
         {
           id: 'a1',
           displayName: [],
+          expiresAt: null,
           urls: [
             { id: 'u1', url: 'https://api.example.com', consumerType: AttachmentUrlConsumer.Api, mediaType: null },
           ],
@@ -220,6 +223,7 @@ describe('getTransmissionVisibility', () => {
         {
           id: 'a1',
           displayName: [],
+          expiresAt: null,
           urls: [
             { id: 'u1', url: 'https://api.example.com', consumerType: AttachmentUrlConsumer.Api, mediaType: null },
           ],
@@ -250,6 +254,7 @@ describe('getTransmissionVisibility', () => {
         {
           id: 'a1',
           displayName: [],
+          expiresAt: null,
           urls: [
             {
               id: 'u1',
@@ -275,6 +280,7 @@ describe('getTransmissionVisibility', () => {
         {
           id: 'a1',
           displayName: [{ value: 'tilbakemelding', languageCode: 'nb' }],
+          expiresAt: null,
           urls: [
             {
               id: 'u1',

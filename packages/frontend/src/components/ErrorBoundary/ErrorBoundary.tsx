@@ -1,5 +1,5 @@
 import React, { type ErrorInfo, type ReactNode, useEffect, useRef } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router';
 import { QUERY_KEYS } from '../../constants/queryKeys';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { PageRoutes } from '../../pages/routes';

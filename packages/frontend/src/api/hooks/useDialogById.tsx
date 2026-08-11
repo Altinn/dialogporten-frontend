@@ -93,7 +93,7 @@ export interface DialogByIdDetails {
   /* all actions (including end-user) that have seen the dialog since last update */
   seenByLog: SeenByLogProps;
   /* due date for dialog: This is the last date when the dialog is expected to be completed. */
-  dueAt?: string;
+  dueAt?: string | null;
   /* view type of dialog, used for grouping in inbox */
   viewType: InboxViewType;
   /* Number of outgoing transmissions */

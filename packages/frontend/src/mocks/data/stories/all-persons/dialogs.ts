@@ -23,6 +23,7 @@ const makePersonDialog = (id: string, party: string, title: string): SearchDialo
   guiAttachmentCount: 0,
   status: DialogStatus.RequiresAttention,
   createdAt: '2024-03-01T09:00:00.000Z',
+  dueAt: null,
   seenSinceLastContentUpdate: [],
   content: {
     title: {

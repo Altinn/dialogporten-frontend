@@ -1,7 +1,7 @@
 import { Heading, PageBase, SettingsList, Toolbar } from '@altinn/altinn-components';
 import type { NotificationSettingsResponse, PartyFieldsFragment } from 'bff-types-generated';
 import { useTranslation } from 'react-i18next';
-import { Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router';
 import { useParties } from '../../../api/hooks/useParties.ts';
 import { hasOnlySelfParty } from '../../../api/hooks/usePartiesSelectors.ts';
 import { usePageTitle } from '../../../hooks/usePageTitle';

@@ -11,5 +11,6 @@ export const parties: PartyFieldsFragment[] = [
     partyUuid: 'urn:altinn:person:uuid:test-testesen',
     hasOnlyAccessToSubParties: false,
     partyId: 1,
+    dateOfBirth: null,
   },
 ];

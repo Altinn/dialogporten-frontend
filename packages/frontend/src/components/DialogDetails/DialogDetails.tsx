@@ -38,6 +38,7 @@ import { AdditionalInfoContent } from '../AdditionalInfoContent/AdditionalInfoCo
 import { MainContentReference } from '../MainContentReference/MainContentReference.tsx';
 import { SeenByModal } from '../SeenByModal/SeenByModal.tsx';
 import { DialogHelp } from './DialogHelp.tsx';
+import styles from './dialogDetails.module.css';
 
 interface DialogDetailsProps {
   dialog: DialogByIdDetails | undefined | null;
@@ -92,7 +93,31 @@ export interface DialogActionProps {
   hidden?: boolean;
 }
 
-const handleDialogActionClick = async (
+const dialogActionsMaxItems = 2;
+
+const isNavigationAction = ({ httpMethod, prompt, disabled }: DialogActionProps): boolean =>
+  httpMethod === 'GET' && !prompt && !disabled;
+
+const trackGuiActionClick = ({ id, title, url, httpMethod, prompt }: DialogActionProps): void => {
+  Analytics.trackEvent(ANALYTICS_EVENTS.GUI_ACTION_CLICK, {
+    'action.id': id,
+    'action.title': title,
+    'action.httpMethod': httpMethod,
+    'action.hasPrompt': !!prompt,
+    'action.url': url,
+  });
+};
+
+const trackNavigationSuccess = ({ id, title, httpMethod }: DialogActionProps): void => {
+  Analytics.trackEvent(ANALYTICS_EVENTS.GUI_ACTION_SUCCESS, {
+    'action.id': id,
+    'action.title': title,
+    'action.httpMethod': httpMethod,
+    'action.type': 'external_link',
+  });
+};
+
+const performDialogAction = async (
   props: DialogActionProps,
   dialogToken: string,
   responseFinished: () => void,
@@ -105,14 +130,7 @@ const handleDialogActionClick = async (
 ): Promise<void> => {
   const { id, title, url, httpMethod, prompt } = props;
 
-  // Track the GUI action click event
-  Analytics.trackEvent(ANALYTICS_EVENTS.GUI_ACTION_CLICK, {
-    'action.id': id,
-    'action.title': title,
-    'action.httpMethod': httpMethod,
-    'action.hasPrompt': !!prompt,
-    'action.url': url,
-  });
+  trackGuiActionClick(props);
 
   if (prompt && !window.confirm(prompt)) {
     Analytics.trackEvent(ANALYTICS_EVENTS.GUI_ACTION_CANCELLED, {
@@ -125,113 +143,109 @@ const handleDialogActionClick = async (
   }
 
   if (httpMethod === 'GET') {
-    Analytics.trackEvent(ANALYTICS_EVENTS.GUI_ACTION_SUCCESS, {
-      'action.id': id,
-      'action.title': title,
-      'action.httpMethod': httpMethod,
-      'action.type': 'external_link',
-    });
+    trackNavigationSuccess(props);
     responseFinished();
     window.location.href = url;
-  } else {
-    try {
-      const response = await Analytics.trackFetchDependency(
-        `DialogAction_${httpMethod}`,
-        fetch(url, {
-          method: httpMethod,
-          headers: {
-            Authorization: `Bearer ${dialogToken}`,
-            Accept: 'application/json',
-          },
-        }),
-      );
+    return;
+  }
 
-      if (!response.ok) {
-        // Special handling for 422 Unprocessable Entity (grace period not satisfied)
-        if (response.status === 422) {
-          try {
-            const errorData = await response.json();
-            const gracePeriodDays = errorData.gracePeriodDays;
-            const deletionAllowedAt = errorData.deletionAllowedAt;
+  try {
+    const response = await Analytics.trackFetchDependency(
+      `DialogAction_${httpMethod}`,
+      fetch(url, {
+        method: httpMethod,
+        headers: {
+          Authorization: `Bearer ${dialogToken}`,
+          Accept: 'application/json',
+        },
+      }),
+    );
 
-            if (deletionAllowedAt) {
-              const deletionDate = new Date(deletionAllowedAt);
-              const formattedDate = format(deletionDate, 'do MMMM yyyy');
-
-              openSnackbar({
-                message: t('dialog.gui_action.delete_grace_period', {
-                  date: formattedDate,
-                  days: gracePeriodDays,
-                }),
-                color: 'danger',
-                duration: 10000,
-              });
-
-              Analytics.trackEvent(ANALYTICS_EVENTS.GUI_ACTION_CANCELLED, {
-                'action.id': id,
-                'action.title': title,
-                'cancellation.reason': 'grace_period_not_satisfied',
-                'gracePeriod.days': gracePeriodDays,
-              });
-
-              onError();
-              responseFinished();
-              return;
-            }
-          } catch (parseError) {
-            // JSON parse failed - fall through to generic error handling
-            logError(
-              parseError as Error,
-              {
-                context: 'DialogDetails.handleDialogActionClick.422.parseError',
-                url,
-                httpMethod,
-              },
-              'Failed to parse 422 error response',
-            );
-          }
-        }
-
-        // Generic error handling for all other errors (including unparseable 422s)
-        let responseBody = '';
+    if (!response.ok) {
+      // Special handling for 422 Unprocessable Entity (grace period not satisfied)
+      if (response.status === 422) {
         try {
-          responseBody = await response.text();
-        } catch {}
+          const errorData = await response.json();
+          const gracePeriodDays = errorData.gracePeriodDays;
+          const deletionAllowedAt = errorData.deletionAllowedAt;
 
-        openSnackbar({
-          message: t('dialog.gui_action.failed'),
-          color: 'danger',
-          duration: SnackbarDuration.normal,
-        });
+          if (deletionAllowedAt) {
+            const deletionDate = new Date(deletionAllowedAt);
+            const formattedDate = format(deletionDate, 'do MMMM yyyy');
 
-        logError(
-          new Error(`HTTP ${response.status}: ${response.statusText}`),
-          {
-            context: 'DialogDetails.handleDialogActionClick.response',
-            url,
-            httpMethod,
-            status: response.status,
-            statusText: response.statusText,
-            responseBody,
-          },
-          `Dialog action failed: ${response.statusText}`,
-        );
-        onError();
+            openSnackbar({
+              message: t('dialog.gui_action.delete_grace_period', {
+                date: formattedDate,
+                days: gracePeriodDays,
+              }),
+              color: 'danger',
+              duration: 10000,
+            });
+
+            Analytics.trackEvent(ANALYTICS_EVENTS.GUI_ACTION_CANCELLED, {
+              'action.id': id,
+              'action.title': title,
+              'cancellation.reason': 'grace_period_not_satisfied',
+              'gracePeriod.days': gracePeriodDays,
+            });
+
+            onError();
+            responseFinished();
+            return;
+          }
+        } catch (parseError) {
+          // JSON parse failed - fall through to generic error handling
+          logError(
+            parseError as Error,
+            {
+              context: 'DialogDetails.performDialogAction.422.parseError',
+              url,
+              httpMethod,
+            },
+            'Failed to parse 422 error response',
+          );
+        }
       }
-    } catch (error) {
+
+      // Generic error handling for all other errors (including unparseable 422s)
+      let responseBody = '';
+      try {
+        responseBody = await response.text();
+      } catch {}
+
+      openSnackbar({
+        message: t('dialog.gui_action.failed'),
+        color: 'danger',
+        duration: SnackbarDuration.normal,
+      });
+
       logError(
-        error as Error,
+        new Error(`HTTP ${response.status}: ${response.statusText}`),
         {
-          context: 'DialogDetails.handleDialogActionClick.fetch',
+          context: 'DialogDetails.performDialogAction.response',
           url,
           httpMethod,
+          status: response.status,
+          statusText: response.statusText,
+          responseBody,
         },
-        'Error performing dialog action',
+        `Dialog action failed: ${response.statusText}`,
       );
       onError();
-    } finally {
-      responseFinished();
     }
+  } catch (error) {
+    logError(
+      error as Error,
+      {
+        context: 'DialogDetails.performDialogAction.fetch',
+        url,
+        httpMethod,
+      },
+      'Error performing dialog action',
+    );
+    onError();
+  } finally {
+    responseFinished();
   }
 };
 
@@ -381,29 +395,51 @@ export const DialogDetails = ({
   const clockPrefix = t('word.clock_prefix');
   const formatString = clockPrefix ? `do MMMM yyyy '${clockPrefix}' HH.mm` : `do MMMM yyyy HH.mm`;
   const numberOfTransmissionGroups = 3;
-  const dialogActions: DialogActionButtonProps[] = dialog.guiActions.map((action) => ({
-    id: action.id,
-    label: action.title,
-    disabled: !!isLoading || !!action.disabled || actionIdLoading === action.id || actionIdUpdating === action.id,
-    priority: action.priority.toLocaleLowerCase() as DialogButtonPriority,
-    loading: actionIdLoading === action.id || actionIdUpdating === action.id,
-    hidden: action.hidden,
-    onClick: () => {
-      setActionIdLoading(action.id);
-      setActionIdUpdating(action.id);
-      dialogToken &&
-        void handleDialogActionClick(
-          action,
-          dialogToken,
-          () => setActionIdLoading(''),
-          () => setActionIdUpdating(''),
-          logError,
-          openSnackbar,
-          t,
-          format,
-        );
-    },
-  }));
+  const visibleActionCount = dialog.guiActions.filter((action) => !action.hidden).length;
+  const rendersAsComboButton = visibleActionCount > dialogActionsMaxItems;
+  const dialogActions: DialogActionButtonProps[] = dialog.guiActions.map((action) => {
+    const isBusy = actionIdLoading === action.id || actionIdUpdating === action.id;
+    const commonProps = {
+      id: action.id,
+      label: action.title,
+      priority: action.priority.toLocaleLowerCase() as DialogButtonPriority,
+      hidden: action.hidden,
+    };
+
+    if (!rendersAsComboButton && isNavigationAction(action)) {
+      return {
+        ...commonProps,
+        as: 'a',
+        href: action.url,
+        className: styles.dialogActionButton,
+        onClick: () => {
+          trackGuiActionClick(action);
+          trackNavigationSuccess(action);
+        },
+      };
+    }
+
+    return {
+      ...commonProps,
+      disabled: !!isLoading || !!action.disabled || isBusy,
+      loading: isBusy,
+      onClick: () => {
+        setActionIdLoading(action.id);
+        setActionIdUpdating(action.id);
+        dialogToken &&
+          void performDialogAction(
+            action,
+            dialogToken,
+            () => setActionIdLoading(''),
+            () => setActionIdUpdating(''),
+            logError,
+            openSnackbar,
+            t,
+            format,
+          );
+      },
+    };
+  });
 
   const headerBadge =
     dialog.viewType === 'bin' || dialog.viewType === 'archive'
@@ -458,7 +494,7 @@ export const DialogDetails = ({
             items={dialog.attachments}
           />
         )}
-        <DialogActions items={dialogActions} id="gui-actions" />
+        <DialogActions items={dialogActions} maxItems={dialogActionsMaxItems} id="gui-actions" />
       </DialogBody>
       {transmissions?.length > 0 && (
         <Timeline>
