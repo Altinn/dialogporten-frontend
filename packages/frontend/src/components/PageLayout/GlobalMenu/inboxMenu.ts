@@ -1,6 +1,7 @@
 import type { MenuItemProps, MenuItemSize, MenuProps, Theme } from '@altinn/altinn-components';
 import {
   ArchiveIcon,
+  ArrowRightLeftIcon,
   BellIcon,
   Buildings2Icon,
   ChatExclamationmarkIcon,
@@ -20,6 +21,7 @@ import {
 import {
   getAboutNewAltinnLink,
   getAccessAMUILink,
+  getBrokerboxLink,
   getFrontPageLink,
   getInboxHelpLink,
   getNeedHelpLink,
@@ -284,6 +286,17 @@ export function buildInboxMenu({
         as: 'a',
         href: getAccessAMUILink(),
         title: t('altinn.access_management'),
+        selected: false,
+      },
+      {
+        id: 'brokerbox',
+        groupId: 'global',
+        size: 'lg',
+        icon: ArrowRightLeftIcon,
+        title: t('altinn.brokerbox'),
+        as: createMenuItemComponent({
+          to: getBrokerboxLink(),
+        }),
         selected: false,
       },
       {

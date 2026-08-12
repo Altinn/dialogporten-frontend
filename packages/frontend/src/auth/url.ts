@@ -98,6 +98,17 @@ export const getAccessAMUILink = () => {
   return hostMap[getEnvByHost()];
 };
 
+export const getBrokerboxLink = () => {
+  const hostMap: Record<hostEnv, string> = {
+    local: 'https://brokerbox.ui.at23.altinn.cloud/brokerbox/ui',
+    at23: 'https://brokerbox.ui.at23.altinn.cloud/brokerbox/ui',
+    tt02: 'https://brokerbox.ui.tt02.altinn.no/brokerbox/ui',
+    yt: 'https://brokerbox.ui.at23.altinn.cloud/brokerbox/ui',
+    prod: 'https://brokerbox.ui.altinn.no/brokerbox/ui',
+  };
+  return hostMap[getEnvByHost()];
+};
+
 export const getAltinn2AccountLink = () => `${getAccessAMUILink()}/altinn2account`;
 
 const INFO_PORTAL_HOST_MAP: Record<hostEnv, string> = {
