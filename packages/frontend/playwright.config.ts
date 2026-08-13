@@ -18,9 +18,10 @@ export default defineConfig({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  // The Vite dev server is the shared bottleneck, not the browser: on the 4-vCPU CI
-  // runner three workers starve it and assertions time out across unrelated specs.
-  workers: process.env.CI ? 2 : 3,
+  // The Vite dev server is the shared bottleneck, not the browser: parallel workers starve it and
+  // assertions time out across unrelated specs. CI therefore runs one worker per shard, with each
+  // shard on its own runner and its own dev server (cf. workflow-playwright-test.yml).
+  workers: process.env.CI ? 1 : 3,
   timeout: 30000,
   expect: { timeout: 10000 },
   reporter: 'html',

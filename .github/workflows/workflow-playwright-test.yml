@@ -5,7 +5,51 @@ on:
 
 jobs:
   playwright-tests:
-    name: 'Playwright Tests'
+    name: 'Playwright Tests (shard ${{ matrix.shard }}/3)'
+    env:
+      PLAYWRIGHT_TEST_BASE_URL: 'http://localhost:5173' # vite default port
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
+
+    steps:
+      - name: 'Checking Out Code'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: 'Installing Dependencies'
+        uses: ./.github/actions/install
+
+      - name: Install Playwright Browsers
+        run: pnpm --filter frontend install:browsers
+
+      - name: Run Playwright tests
+        run: pnpm --filter frontend test:playwright --shard=${{ matrix.shard }}/3
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: playwright-report-shard-${{ matrix.shard }}
+          path: packages/frontend/playwright-report/
+          retention-days: 7
+
+      - name: Store artifacts
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: failure()
+        with:
+          name: playwright-screenshots-shard-${{ matrix.shard }}
+          path: packages/frontend/test-results
+          retention-days: 3
+
+  playwright-serial-tests:
+    name: 'Playwright Heavy and Performance Tests'
     env:
       PLAYWRIGHT_TEST_BASE_URL: 'http://localhost:5173' # vite default port
     runs-on: ubuntu-latest
@@ -26,9 +70,6 @@ jobs:
       - name: Install Playwright Browsers
         run: pnpm --filter frontend install:browsers
 
-      - name: Run Playwright tests
-        run: pnpm --filter frontend test:playwright
-
       - name: Run Playwright heavy tests
         run: pnpm --filter frontend test:playwright:heavy
 
@@ -38,7 +79,7 @@ jobs:
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
-          name: playwright-report
+          name: playwright-report-serial
           path: packages/frontend/playwright-report/
           retention-days: 7
 
@@ -46,6 +87,6 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: failure()
         with:
-          name: playwright-screenshots
+          name: playwright-screenshots-serial
           path: packages/frontend/test-results
           retention-days: 3
