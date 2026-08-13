@@ -7,7 +7,9 @@ import { type DialogByIdDetails, EmbeddableMediaType } from '../../api/hooks/use
 import { isValidURL } from '../../auth/url.ts';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.ts';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
+import { useFeatureFlag } from '../../featureFlags/useFeatureFlag.ts';
 import { getAcceptLanguageHeader } from '../../i18n/acceptLanguage.ts';
+import { getPreferTimeZoneHeader } from '../../i18n/timeZone.ts';
 import styles from './mainContentReference.module.css';
 
 interface MainContentReferenceProps {
@@ -63,6 +65,7 @@ const getContent = (mediaType: EmbeddableMediaType, data: string) => {
 export const MainContentReference = memo(({ content, dialogToken, id, dialogId }: MainContentReferenceProps) => {
   const { t, i18n } = useTranslation();
   const language = i18n.language;
+  const enablePreferHeader = useFeatureFlag<boolean>('fce.enablePreferHeader');
   const validURL = content?.url ? isValidURL(content.url) : false;
   const { data, isSuccess, isError, isLoading, refetch, error } = useAuthenticatedQuery<string, MainContentError>({
     queryKey: [QUERY_KEYS.MAIN_CONTENT_REFERENCE, id, dialogId, language],
@@ -74,6 +77,7 @@ export const MainContentReference = memo(({ content, dialogToken, id, dialogId }
         headers: {
           'Content-Type': 'text/plain',
           'Accept-Language': getAcceptLanguageHeader(language),
+          ...(enablePreferHeader ? { Prefer: getPreferTimeZoneHeader() } : {}),
           Authorization: `Bearer ${dialogToken}`,
         },
       });

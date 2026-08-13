@@ -6,10 +6,17 @@ import { createCustomWrapper } from '../../../tests/test-utils.tsx';
 import { EmbeddableMediaType } from '../../api/hooks/useDialogById.tsx';
 import { MainContentReference } from './MainContentReference.tsx';
 
+const { flags } = vi.hoisted(() => ({ flags: { 'fce.enablePreferHeader': true } as Record<string, boolean> }));
+
+vi.mock('../../featureFlags/useFeatureFlag.ts', () => ({
+  useFeatureFlag: (key: string) => flags[key] ?? false,
+}));
+
 describe('MainContentReference caching', () => {
   let fetchSpy: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
+    flags['fce.enablePreferHeader'] = true;
     fetchSpy = vi.fn().mockResolvedValue({
       ok: true,
       text: () => Promise.resolve('# Hello'),
@@ -20,6 +27,7 @@ describe('MainContentReference caching', () => {
 
   afterEach(async () => {
     vi.unstubAllGlobals();
+    vi.restoreAllMocks();
     await i18n.changeLanguage('nb');
   });
 
@@ -30,6 +38,8 @@ describe('MainContentReference caching', () => {
 
   const acceptLanguageOf = (call: [string, RequestInit]) =>
     (call[1].headers as Record<string, string>)['Accept-Language'];
+
+  const preferOf = (call: [string, RequestInit]) => (call[1].headers as Record<string, string>).Prefer;
 
   it('should not re-fetch content when dialogToken changes', async () => {
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -68,6 +78,41 @@ describe('MainContentReference caching', () => {
     await waitFor(() => expect(contentFetchCount(fetchSpy, contentUrl)).toBe(1));
 
     expect(acceptLanguageOf(contentFetchCalls(fetchSpy, contentUrl)[0])).toBe('en, nb;q=0.9, nn;q=0.8');
+  });
+
+  it("should send the browser's time zone as a Prefer header", async () => {
+    vi.spyOn(Intl, 'DateTimeFormat').mockReturnValue({
+      resolvedOptions: () => ({ timeZone: 'America/New_York' }) as Intl.ResolvedDateTimeFormatOptions,
+    } as Intl.DateTimeFormat);
+
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const wrapper = createCustomWrapper(queryClient);
+    const contentUrl = 'https://example.com/content';
+    const content = { url: contentUrl, mediaType: EmbeddableMediaType.markdown };
+
+    render(<MainContentReference content={content} dialogToken="token-1" id="dialog-1" dialogId="dialog-1" />, {
+      wrapper,
+    });
+
+    await waitFor(() => expect(contentFetchCount(fetchSpy, contentUrl)).toBe(1));
+
+    expect(preferOf(contentFetchCalls(fetchSpy, contentUrl)[0])).toBe('timezone="America/New_York"');
+  });
+
+  it('should not send a Prefer header when fce.enablePreferHeader is off', async () => {
+    flags['fce.enablePreferHeader'] = false;
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const wrapper = createCustomWrapper(queryClient);
+    const contentUrl = 'https://example.com/content';
+    const content = { url: contentUrl, mediaType: EmbeddableMediaType.markdown };
+
+    render(<MainContentReference content={content} dialogToken="token-1" id="dialog-1" dialogId="dialog-1" />, {
+      wrapper,
+    });
+
+    await waitFor(() => expect(contentFetchCount(fetchSpy, contentUrl)).toBe(1));
+
+    expect(preferOf(contentFetchCalls(fetchSpy, contentUrl)[0])).toBeUndefined();
   });
 
   it('should re-fetch content when the language changes, and reuse the cache when switching back', async () => {

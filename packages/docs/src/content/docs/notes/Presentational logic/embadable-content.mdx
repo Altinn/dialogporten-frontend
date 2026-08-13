@@ -17,6 +17,24 @@ For examples of how to use the markdown syntax, see [CommonMark examples](https:
    - (For legacy HTML) Transforms raw HTML into sanitized, styled React components, ensuring safe display of dynamic HTML.
 3. The sanitized content is then displayed in the Arbeidsflate interface.
 
+## Request headers
+
+Arbeidsflate sends the same set of headers on every content reference request, both for `mainContentReference` and for `contentReference` on transmissions.
+
+| Header            | Example value                     | Purpose                                                                                                                                                |
+| ----------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Authorization`   | `Bearer <dialog token>`           | The dialog token issued by Dialogporten for the dialog being viewed. Use it to authorize the request and to identify the end user.                       |
+| `Accept-Language` | `en, nb;q=0.9, nn;q=0.8`          | The language the end user has selected in Arbeidsflate, followed by the remaining supported languages (`nb`, `nn`, `en`) with descending q values. Serve the content in the highest ranked language you support. |
+| `Prefer`          | `timezone="Europe/Oslo"`          | The end user's IANA time zone, read from the browser (`Intl.DateTimeFormat().resolvedOptions().timeZone`). Format dates and times in the content for this time zone instead of assuming UTC or Norwegian local time. See [RFC 7240](https://datatracker.ietf.org/doc/html/rfc7240). |
+| `Content-Type`    | `text/plain`                      | The content type Arbeidsflate expects back.                                                                                                            |
+
+Notes for service owners:
+
+- `Authorization` and `Prefer` are not CORS-safelisted request headers, so the content endpoint must allow them in `Access-Control-Allow-Headers` on the preflight response. A response that only allows `Authorization` will start failing preflight once `Prefer` is sent.
+- The response varies by `Accept-Language` and `Prefer`, so set `Vary: Accept-Language, Prefer` if the content is cached.
+- The time zone comes from the end user's device and can be any IANA name (for example `America/New_York` for a user abroad), not only `Europe/Oslo`. Fall back to `Europe/Oslo` if the value is missing or unknown to you.
+- Arbeidsflate caches the fetched content per dialog and language for the duration of the visit, so expect one request per language the user switches to.
+
 ## Restrictions
 
 For security reasons, the content is sanitized and only certain tags are allowed.
