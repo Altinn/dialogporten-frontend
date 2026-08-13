@@ -1,7 +1,7 @@
 export const features = {
   'dialogporten.disableFlipNamesPatch': false,
   'inbox.enableAlertBanner': false,
-  'inbox.enableExportSearchResults': false,
+  'inbox.enableExportSearchResults': true,
   'dialogporten.disableSubscriptions': false,
   'fce.enablePreferHeader': false,
 };

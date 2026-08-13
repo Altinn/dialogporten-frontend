@@ -1,7 +1,13 @@
 import { DialogStatus } from 'bff-types-generated';
 import type { TFunction } from 'i18next';
 import { describe, expect, it } from 'vitest';
-import { buildDialogCsvRows, escapeCsvValue, serializeCsv, toCsvFileName } from './exportDialogsCsv.ts';
+import {
+  buildDialogCsvRows,
+  escapeCsvValue,
+  getOrganizationNumber,
+  serializeCsv,
+  toCsvFileName,
+} from './exportDialogsCsv.ts';
 import type { InboxItemInput } from './InboxItemInput.ts';
 
 const t = ((key: string) => key) as unknown as TFunction<'translation', undefined>;
@@ -11,6 +17,7 @@ const formatDate = (date: string) => `d:${date}`;
 const createItem = (overrides: Partial<InboxItemInput> = {}): InboxItemInput =>
   ({
     id: 'dialog-1',
+    party: 'urn:altinn:organization:identifier-no:999888777',
     title: 'Søknad om tilskudd',
     contentUpdatedAt: '2026-08-06T10:00:00Z',
     sender: { name: 'Skatteetaten', type: 'company' },
@@ -53,9 +60,10 @@ describe('buildDialogCsvRows', () => {
 
     expect(rows[0]).toEqual([
       'inbox.export.column.title',
-      'inbox.export.column.date',
+      'inbox.export.column.updated_at',
       'inbox.export.column.from',
       'inbox.export.column.to',
+      'inbox.export.column.org_no',
       'inbox.export.column.status',
       'inbox.export.column.due_at',
     ]);
@@ -64,6 +72,7 @@ describe('buildDialogCsvRows', () => {
       'dt:2026-08-06T10:00:00Z',
       'Skatteetaten',
       'Ola Nordmann',
+      '999888777',
       'REQUIRES_ATTENTION',
       'd:2026-09-01T00:00:00Z',
     ]);
@@ -71,7 +80,7 @@ describe('buildDialogCsvRows', () => {
 
   it('leaves the due at column empty when there is no deadline', () => {
     const rows = buildDialogCsvRows([createItem({ dueAt: null })], { t, formatDateTime, formatDate });
-    expect(rows[1]?.[5]).toBe('');
+    expect(rows[1]?.[6]).toBe('');
   });
 
   it('leaves date columns empty for unparseable timestamps', () => {
@@ -85,6 +94,21 @@ describe('buildDialogCsvRows', () => {
 
   it('returns only the header when there are no dialogs', () => {
     expect(buildDialogCsvRows([], { t, formatDateTime, formatDate })).toHaveLength(1);
+  });
+});
+
+describe('getOrganizationNumber', () => {
+  it('extracts the organization number from an organization urn', () => {
+    expect(getOrganizationNumber('urn:altinn:organization:identifier-no:999888777')).toBe('999888777');
+  });
+
+  it('never exposes the identifier of a person urn', () => {
+    expect(getOrganizationNumber('urn:altinn:person:identifier-no:11111111111')).toBe('');
+  });
+
+  it('returns an empty value for an unknown or missing urn', () => {
+    expect(getOrganizationNumber('urn:altinn:systemuser:uuid:abc')).toBe('');
+    expect(getOrganizationNumber(undefined)).toBe('');
   });
 });
 
