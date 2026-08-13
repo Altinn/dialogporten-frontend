@@ -485,9 +485,10 @@
   "filter_bar.export_results": "Eksporter",
   "filter_bar.export_results_aria": "Eksporter {count, plural, one {# treff} other {# treff}} til CSV",
   "inbox.export.column.title": "Tittel",
-  "inbox.export.column.date": "Dato",
+  "inbox.export.column.updated_at": "Sist oppdatert",
   "inbox.export.column.from": "Frå",
   "inbox.export.column.to": "Til",
+  "inbox.export.column.org_no": "Orgnr",
   "inbox.export.column.status": "Status",
   "inbox.export.column.due_at": "Frist"
 }

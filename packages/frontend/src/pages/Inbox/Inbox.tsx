@@ -424,11 +424,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
               onSaveClick={openSaveModal}
               onEditClick={openEditModal}
             />
-            <ExportSearchResultsButton
-              hidden={!isExportSearchResultsEnabled || bulkMode || isLoading || hideListHeader}
-              items={dialogs}
-              fileNameBase={t(getPageRouteTitle(PageRoutes[viewType]))}
-            />
           </Toolbar>
         ) : (
           <Toolbar>
@@ -485,6 +480,11 @@ export const Inbox = ({ viewType }: InboxProps) => {
           <span data-size="md">{t('dialog.fetch_more')}</span>
         </Button>
       )}
+      <ExportSearchResultsButton
+        hidden={!isExportSearchResultsEnabled || bulkMode || isLoading || hideListHeader}
+        items={dialogs}
+        fileNameBase={t(getPageRouteTitle(PageRoutes[viewType]))}
+      />
       <SeenByModal
         title={currentSeenByLogModal?.title}
         items={currentSeenByLogModal?.items}

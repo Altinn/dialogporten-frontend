@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { buildDialogCsvRows, downloadCsv, serializeCsv, toCsvFileName } from '../../pages/Inbox/exportDialogsCsv.ts';
 import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
+import styles from './exportSearchResultsButton.module.css';
 
 export type ExportSearchResultsButtonProps = {
   hidden?: boolean;
@@ -38,15 +39,17 @@ export const ExportSearchResultsButton = ({
   };
 
   return (
-    <Button
-      size="xs"
-      className={className}
-      onClick={onExport}
-      variant={variant}
-      aria-label={t('filter_bar.export_results_aria', { count: items.length })}
-    >
-      <FileCsvIcon />
-      <span>{t('filter_bar.export_results')}</span>
-    </Button>
+    <div className={styles.wrapper}>
+      <Button
+        size="xs"
+        className={className}
+        onClick={onExport}
+        variant={variant}
+        aria-label={t('filter_bar.export_results_aria', { count: items.length })}
+      >
+        <FileCsvIcon />
+        <span>{t('filter_bar.export_results')}</span>
+      </Button>
+    </div>
   );
 };
