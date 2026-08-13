@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.172.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.171.1...v1.172.0) (2026-08-13)
+
+
+### Features
+
+* **fce:** send the end user time zone as a Prefer header on content reference requests ([#4516](https://github.com/Altinn/dialogporten-frontend/issues/4516)) ([35dd093](https://github.com/Altinn/dialogporten-frontend/commit/35dd093326176d172f03eb88d449513a1a3031c1))
+
+
+### Bug Fixes
+
+* **attachments:** revert same-tab workaround for Firefox for iOS ([#4535](https://github.com/Altinn/dialogporten-frontend/issues/4535)) ([a6b5bd6](https://github.com/Altinn/dialogporten-frontend/commit/a6b5bd64f6c421b8d71bb7f27fc224287c138516))
+* **inbox:** move CSV export below the list and add org number column ([#4540](https://github.com/Altinn/dialogporten-frontend/issues/4540)) ([cee97da](https://github.com/Altinn/dialogporten-frontend/commit/cee97da7d8be6f1a653950e9f6e398414d4bcb8b))
+
 ## [1.171.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.171.0...v1.171.1) (2026-08-11)
 
 
