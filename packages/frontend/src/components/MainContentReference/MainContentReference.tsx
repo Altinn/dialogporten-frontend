@@ -68,7 +68,7 @@ export const MainContentReference = memo(({ content, dialogToken, id, dialogId }
   const enablePreferHeader = useFeatureFlag<boolean>('fce.enablePreferHeader');
   const validURL = content?.url ? isValidURL(content.url) : false;
   const { data, isSuccess, isError, isLoading, refetch, error } = useAuthenticatedQuery<string, MainContentError>({
-    queryKey: [QUERY_KEYS.MAIN_CONTENT_REFERENCE, id, dialogId, language],
+    queryKey: [QUERY_KEYS.MAIN_CONTENT_REFERENCE, content!.url, id, dialogId, language],
     staleTime: Number.POSITIVE_INFINITY,
     gcTime: 10 * 1000 * 60,
     refetchOnMount: false,
