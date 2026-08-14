@@ -8,6 +8,8 @@ export interface InboxItemInput {
   title: string;
   summary: string;
   sender: AvatarProps;
+  serviceOwnerName?: string;
+  senderName?: string;
   recipient: AvatarProps;
   createdAt: string;
   status: DialogStatus;

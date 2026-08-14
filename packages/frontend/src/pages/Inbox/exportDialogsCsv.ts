@@ -29,8 +29,9 @@ export const buildDialogCsvRows = (
   const header = [
     t('inbox.export.column.title'),
     t('inbox.export.column.updated_at'),
-    t('inbox.export.column.from'),
-    t('inbox.export.column.to'),
+    t('inbox.export.column.service_owner'),
+    t('inbox.export.column.sender_name'),
+    t('inbox.export.column.actor'),
     t('inbox.export.column.org_no'),
     t('inbox.export.column.status'),
     t('inbox.export.column.due_at'),
@@ -39,7 +40,8 @@ export const buildDialogCsvRows = (
   const rows = items.map((item) => [
     item.title ?? '',
     safeFormat(item.contentUpdatedAt, formatDateTime),
-    item.sender?.name ?? '',
+    item.serviceOwnerName ?? '',
+    item.senderName ?? '',
     item.recipient?.name ?? '',
     getOrganizationNumber(item.party),
     item.status ?? '',
