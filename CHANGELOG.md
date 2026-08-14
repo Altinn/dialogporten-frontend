@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.172.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.172.0...v1.172.1) (2026-08-14)
+
+
+### Bug Fixes
+
+* **inbox:** split sender into service owner and stated sender name ([#4541](https://github.com/Altinn/dialogporten-frontend/issues/4541)) ([e555e34](https://github.com/Altinn/dialogporten-frontend/commit/e555e34d40a4713b5eaaf64d16940e4af6676929))
+
 ## [1.172.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.171.1...v1.172.0) (2026-08-13)
 
 
