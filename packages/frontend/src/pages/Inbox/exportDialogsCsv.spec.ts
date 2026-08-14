@@ -20,7 +20,9 @@ const createItem = (overrides: Partial<InboxItemInput> = {}): InboxItemInput =>
     party: 'urn:altinn:organization:identifier-no:999888777',
     title: 'Søknad om tilskudd',
     contentUpdatedAt: '2026-08-06T10:00:00Z',
-    sender: { name: 'Skatteetaten', type: 'company' },
+    sender: { name: 'NAV Arbeid', type: 'company' },
+    serviceOwnerName: 'Skatteetaten',
+    senderName: 'NAV Arbeid',
     recipient: { name: 'Ola Nordmann', type: 'person' },
     status: DialogStatus.RequiresAttention,
     dueAt: '2026-09-01T00:00:00Z',
@@ -61,8 +63,9 @@ describe('buildDialogCsvRows', () => {
     expect(rows[0]).toEqual([
       'inbox.export.column.title',
       'inbox.export.column.updated_at',
-      'inbox.export.column.from',
-      'inbox.export.column.to',
+      'inbox.export.column.service_owner',
+      'inbox.export.column.sender_name',
+      'inbox.export.column.actor',
       'inbox.export.column.org_no',
       'inbox.export.column.status',
       'inbox.export.column.due_at',
@@ -71,6 +74,7 @@ describe('buildDialogCsvRows', () => {
       'Søknad om tilskudd',
       'dt:2026-08-06T10:00:00Z',
       'Skatteetaten',
+      'NAV Arbeid',
       'Ola Nordmann',
       '999888777',
       'REQUIRES_ATTENTION',
@@ -78,9 +82,15 @@ describe('buildDialogCsvRows', () => {
     ]);
   });
 
+  it('leaves the stated sender name empty when the dialog has none', () => {
+    const rows = buildDialogCsvRows([createItem({ senderName: undefined })], { t, formatDateTime, formatDate });
+    expect(rows[1]?.[3]).toBe('');
+    expect(rows[1]?.[2]).toBe('Skatteetaten');
+  });
+
   it('leaves the due at column empty when there is no deadline', () => {
     const rows = buildDialogCsvRows([createItem({ dueAt: null })], { t, formatDateTime, formatDate });
-    expect(rows[1]?.[6]).toBe('');
+    expect(rows[1]?.[7]).toBe('');
   });
 
   it('leaves date columns empty for unparseable timestamps', () => {

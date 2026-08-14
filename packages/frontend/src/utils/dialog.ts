@@ -93,6 +93,8 @@ export function mapDialogToInboxItems(
         imageUrl: getServiceOwnerLogo(senderName, serviceOwner, serviceOwnerNbName),
         imageUrlAlt: t('dialog.imageAltURL', { companyName: getPreferredPropertyByLocale(senderName)?.value }),
       },
+      serviceOwnerName: serviceOwner?.name ?? item.org,
+      senderName: getPreferredPropertyByLocale(senderName)?.value || undefined,
       recipient: {
         name: actualReceiverParty?.name ?? '',
         type: actualReceiverParty?.partyType === 'Organization' ? 'company' : 'person',
