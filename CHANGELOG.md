@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.172.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.172.2...v1.172.3) (2026-08-17)
+
+
+### Bug Fixes
+
+* **fce:** content is nullable for url - needs guard ([f57610b](https://github.com/Altinn/dialogporten-frontend/commit/f57610b0b17fc5c94a7e69500b0813391d95ec59))
+
 ## [1.172.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.172.1...v1.172.2) (2026-08-14)
 
 
