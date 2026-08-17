@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.172.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.172.1...v1.172.2) (2026-08-14)
+
+
+### Bug Fixes
+
+* reloads the FCE if URL changes via DIALOG_UPDATED ([#4543](https://github.com/Altinn/dialogporten-frontend/issues/4543)) ([b1efe40](https://github.com/Altinn/dialogporten-frontend/commit/b1efe40f1772800593c450a094d3cc5692e26f45))
+
 ## [1.172.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.172.0...v1.172.1) (2026-08-14)
 
 
