@@ -482,8 +482,6 @@
   "word.unread": "Ulest",
   "word.unread_content": "Ulest innhald",
   "word.you": "deg",
-  "filter_bar.export_results": "Eksporter",
-  "filter_bar.export_results_aria": "Eksporter {count, plural, one {# treff} other {# treff}} til CSV",
   "inbox.export.column.title": "Tittel",
   "inbox.export.column.updated_at": "Sist oppdatert",
   "inbox.export.column.service_owner": "Tenesteeigar",
@@ -491,5 +489,7 @@
   "inbox.export.column.actor": "Aktør",
   "inbox.export.column.org_no": "Orgnr",
   "inbox.export.column.status": "Status",
-  "inbox.export.column.due_at": "Frist"
+  "inbox.export.column.due_at": "Frist",
+  "inbox.export.button": "Last ned til fil",
+  "inbox.export.button_aria": "Last ned {count, plural, one {# treff} other {# treff}} til fil"
 }
