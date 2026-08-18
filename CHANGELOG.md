@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.172.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.172.3...v1.172.4) (2026-08-18)
+
+
+### Bug Fixes
+
+* **inbox:** restyle export as a download action below the list ([#4548](https://github.com/Altinn/dialogporten-frontend/issues/4548)) ([447dc9f](https://github.com/Altinn/dialogporten-frontend/commit/447dc9fc1e81a31bc00dd3bc96b3726f2be8b274))
+
 ## [1.172.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.172.2...v1.172.3) (2026-08-17)
 
 
