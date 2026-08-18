@@ -482,8 +482,6 @@
   "word.unread": "Unread",
   "word.unread_content": "Unread content",
   "word.you": "you",
-  "filter_bar.export_results": "Export",
-  "filter_bar.export_results_aria": "Export {count, plural, one {# result} other {# results}} to CSV",
   "inbox.export.column.title": "Title",
   "inbox.export.column.updated_at": "Last updated",
   "inbox.export.column.service_owner": "Service owner",
@@ -491,5 +489,7 @@
   "inbox.export.column.actor": "Actor",
   "inbox.export.column.org_no": "Org. no.",
   "inbox.export.column.status": "Status",
-  "inbox.export.column.due_at": "Due at"
+  "inbox.export.column.due_at": "Due at",
+  "inbox.export.button": "Download to file",
+  "inbox.export.button_aria": "Download {count, plural, one {# result} other {# results}} to file"
 }

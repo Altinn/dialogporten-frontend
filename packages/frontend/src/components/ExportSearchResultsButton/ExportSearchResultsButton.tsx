@@ -1,5 +1,5 @@
 import { Button } from '@altinn/altinn-components';
-import { FileCsvIcon } from '@navikt/aksel-icons';
+import { DownloadIcon } from '@navikt/aksel-icons';
 import type { ButtonHTMLAttributes, RefAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
@@ -11,7 +11,6 @@ export type ExportSearchResultsButtonProps = {
   hidden?: boolean;
   items: InboxItemInput[];
   fileNameBase: string;
-  variant?: 'ghost' | 'outline';
 } & ButtonHTMLAttributes<HTMLButtonElement> &
   RefAttributes<HTMLButtonElement>;
 
@@ -20,7 +19,6 @@ export const ExportSearchResultsButton = ({
   className,
   items,
   fileNameBase,
-  variant = 'ghost',
 }: ExportSearchResultsButtonProps) => {
   const { t } = useTranslation();
   const format = useFormat();
@@ -41,14 +39,14 @@ export const ExportSearchResultsButton = ({
   return (
     <div className={styles.wrapper}>
       <Button
-        size="xs"
+        size="sm"
         className={className}
         onClick={onExport}
-        variant={variant}
-        aria-label={t('filter_bar.export_results_aria', { count: items.length })}
+        variant="ghost"
+        aria-label={t('inbox.export.button_aria', { count: items.length })}
       >
-        <FileCsvIcon />
-        <span>{t('filter_bar.export_results')}</span>
+        <DownloadIcon />
+        {t('inbox.export.button')}
       </Button>
     </div>
   );
