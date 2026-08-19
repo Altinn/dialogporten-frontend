@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.173.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.172.4...v1.173.0) (2026-08-19)
+
+
+### Features
+
+* add Skyra survey and cookie banner behind global.enableSkyra ([#4550](https://github.com/Altinn/dialogporten-frontend/issues/4550)) ([01ffc8e](https://github.com/Altinn/dialogporten-frontend/commit/01ffc8e5a668423acb2fa523364193cbbf87cf90))
+
+
+### Bug Fixes
+
+* **inbox:** match service owner filter search on org code ([#4553](https://github.com/Altinn/dialogporten-frontend/issues/4553)) ([0bc698b](https://github.com/Altinn/dialogporten-frontend/commit/0bc698b01dac7532657394261c95e485f23b11c1))
+
 ## [1.172.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.172.3...v1.172.4) (2026-08-18)
 
 
