@@ -175,6 +175,11 @@ const createDateOptions = (): MenuItemProps[] => {
   }));
 };
 
+export const getServiceOwnerSearchWords = (org: OrganizationFieldsFragment, title: string): string[] => {
+  const words = [title, org.id];
+  return Array.from(new Set(words.filter((word): word is string => Boolean(word?.trim()))));
+};
+
 const createServiceOwnerFilter = (
   allDialogs: CountableDialogFieldsFragment[],
   allOrganizations: OrganizationFieldsFragment[],
@@ -200,14 +205,16 @@ const createServiceOwnerFilter = (
     },
     items: allOrganizations
       .map((org) => {
-        const localizedOrg = getOrganization(orgLookup, org.id ?? '');
+        const orgId = org.id ?? '';
+        const title = getOrganization(orgLookup, orgId)?.name ?? '';
         return {
-          id: org.id ?? '',
+          id: orgId,
           name: FilterCategory.ORG,
-          title: localizedOrg?.name ?? '',
-          value: org.id ?? '',
+          title,
+          value: orgId,
           role: 'checkbox',
-          groupId: mostRelevantOrgs.has(org.id ?? '') ? 'most-relevant' : 'service-owners',
+          searchWords: getServiceOwnerSearchWords(org, title),
+          groupId: mostRelevantOrgs.has(orgId) ? 'most-relevant' : 'service-owners',
         };
       })
       .sort((a, b) => {
