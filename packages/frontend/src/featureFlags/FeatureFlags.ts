@@ -15,6 +15,7 @@ export const featureFlagDefinitions = [
   { key: 'profil.enableSIPhoneEdit', type: 'boolean', default: false },
   { key: 'profile.enableSetUserName', type: 'boolean', default: false },
   { key: 'fce.enablePreferHeader', type: 'boolean', default: false },
+  { key: 'global.enableSkyra', type: 'boolean', default: false },
 ] as const satisfies readonly FeatureFlagDefinition[];
 
 export type FeatureFlagKey = (typeof featureFlagDefinitions)[number]['key'];

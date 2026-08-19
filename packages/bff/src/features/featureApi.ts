@@ -13,6 +13,7 @@ const defaultFeatureFlags: Record<string, boolean> = {
   'profil.enableSIPhoneEdit': false,
   'profile.enableSetUserName': false,
   'fce.enablePreferHeader': false,
+  'global.enableSkyra': false,
 };
 
 const defaultAppConfigValues: Record<string, string[]> = {
