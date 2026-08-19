@@ -23,3 +23,11 @@ Element.prototype.matches = function matches(selector: string): boolean {
   }
   return originalMatches.call(this, selector);
 };
+
+const cssNamespace = globalThis as unknown as { CSS?: { escape?: (value: string) => string } };
+if (typeof cssNamespace.CSS?.escape !== 'function') {
+  cssNamespace.CSS = {
+    ...cssNamespace.CSS,
+    escape: (value: string) => String(value).replace(/[^\w\u00A0-\uFFFF-]/g, (char) => `\\${char}`),
+  };
+}

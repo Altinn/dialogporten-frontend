@@ -6,7 +6,9 @@ import {
   type LayoutProps,
   type LayoutTheme,
   type Size,
+  SkyraSurvey,
   Snackbar,
+  useConsent,
 } from '@altinn/altinn-components';
 import { useQueryClient } from '@tanstack/react-query';
 import type { PartyFieldsFragment } from 'bff-types-generated';
@@ -17,6 +19,7 @@ import { Link, type LinkProps, Outlet, useLocation, useSearchParams } from 'reac
 import { useCurrentEndUser, useSelectedProfile } from '../../api/hooks/usePartiesSelectors.ts';
 import { getFrontPageLink } from '../../auth/url.ts';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
+import { useFeatureFlag } from '../../featureFlags';
 import { getSearchStringFromQueryParams, type PartyGroup } from '../../pages/Inbox/queryParams.ts';
 import { useProfile } from '../../pages/Profile/useProfile.tsx';
 import { PageRoutes } from '../../pages/routes.ts';
@@ -51,6 +54,8 @@ export const PageLayout: React.FC = () => {
   const { sidebarMenu } = useGlobalMenu();
   const { state } = useLocation();
   const fromView = (state as { fromView?: string })?.fromView;
+  const { consent, rejectAll, acceptAll, isAnswered } = useConsent();
+  const isSkyraEnabled = useFeatureFlag<boolean>('global.enableSkyra');
 
   useProfile();
 
@@ -210,10 +215,18 @@ export const PageLayout: React.FC = () => {
       ariaLabel: t('breadcrumbs.aria_label'),
       items: breadcrumbItems,
     },
+    cookieBanner:
+      !isSkyraEnabled || isAnswered
+        ? undefined
+        : {
+            onAccept: acceptAll,
+            onReject: rejectAll,
+          },
   };
 
   return (
     <Layout {...layoutProps}>
+      {isSkyraEnabled && <SkyraSurvey consent={consent.statistics} />}
       <Outlet />
       <Snackbar />
     </Layout>

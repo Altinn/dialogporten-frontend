@@ -108,13 +108,13 @@ const INFO_PORTAL_HOST_MAP: Record<hostEnv, string> = {
   prod: 'https://info.altinn.no',
 };
 
-type LinkPathConfig = {
+export type LinkPathConfig = {
   nb: string;
   en: string;
   nn: string;
 };
 
-const createInfoPortalLink = (pathConfig: LinkPathConfig, language?: string) => {
+export const createInfoPortalLink = (pathConfig: LinkPathConfig, language?: string) => {
   const baseHost = INFO_PORTAL_HOST_MAP[getEnvByHost()];
 
   let path: string;
@@ -221,7 +221,6 @@ export const getCookieDomain = () => {
   return hostMap[getEnvByHost()] || hostMap.prod;
 };
 
-/* Used for footer links */
 const getInfoSiteURL = (language?: string) => {
   const baseUrl = INFO_PORTAL_HOST_MAP[getEnvByHost()] || INFO_PORTAL_HOST_MAP.prod;
 
@@ -232,62 +231,6 @@ const getInfoSiteURL = (language?: string) => {
     return `${baseUrl}/nn`;
   }
   return baseUrl;
-};
-
-const getFooterPathForLanguage = (path: string, language?: string): string => {
-  if (language === 'en') {
-    const pathMap: Record<string, string> = {
-      '/om-altinn/': '/about-altinn/',
-      '/hjelp/': '/help/',
-      '/om-altinn/driftsmeldinger/': '/about-altinn/service-announcements/',
-      '/om-altinn/personvern/': '/about-altinn/privacy/',
-      '/om-altinn/tilgjengelighet/': '/about-altinn/tilgjengelighet/',
-    };
-    return pathMap[path] || path;
-  }
-
-  if (language === 'nn') {
-    const pathMap: Record<string, string> = {
-      '/om-altinn/': '/om-altinn/',
-      '/hjelp/': '/hjelp/',
-      '/om-altinn/driftsmeldinger/': '/om-altinn/driftsmeldingar/',
-      '/om-altinn/personvern/': '/om-altinn/personvern/',
-      '/om-altinn/tilgjengelighet/': '/om-altinn/tilgjengelighet/',
-    };
-    return pathMap[path] || path;
-  }
-
-  return path;
-};
-
-export const getFooterLink = (path: string, language?: string) => {
-  const mappedPath = getFooterPathForLanguage(path, language);
-  return getInfoSiteURL(language) + mappedPath;
-};
-
-export const getFooterLinks = (language?: string) => {
-  return [
-    {
-      href: getFooterLink('/hjelp/', language),
-      resourceId: 'footer.nav.help_contact',
-    },
-    {
-      href: getFooterLink('/om-altinn/', language),
-      resourceId: 'footer.nav.about_altinn',
-    },
-    {
-      href: getFooterLink('/om-altinn/driftsmeldinger/', language),
-      resourceId: 'footer.nav.service_announcements',
-    },
-    {
-      href: getFooterLink('/om-altinn/personvern/', language),
-      resourceId: 'footer.nav.privacy_policy',
-    },
-    {
-      href: getFooterLink('/om-altinn/tilgjengelighet/', language),
-      resourceId: 'footer.nav.accessibility',
-    },
-  ];
 };
 
 export const isValidURL = (url: string) => {
