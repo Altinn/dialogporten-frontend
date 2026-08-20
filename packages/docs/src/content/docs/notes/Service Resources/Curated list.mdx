@@ -26,6 +26,7 @@ Only the following resource types are included in the UI:
 
 - **`GenericAccessResource`** — Generic, non-Studio resources
 - **`AltinnApp`** — Altinn 3 applications
+- **`MigratedApp`** — Services migrated from Altinn 2 to Altinn 3
 - **`CorrespondenceService`** — [Correspondence services](https://docs.altinn.studio/en/correspondence/)
 
 **Business rationale:** These types are supported by the UI and represent the service categories end users should interact with.
@@ -46,6 +47,10 @@ Only the following resource types are included in the UI:
 
 ---
 
+### 1.5 Valid Resource URN
+- **Rule:** Only resources whose identifier yields a URN matching `^urn:altinn:resource:[a-z0-9_-]{4,}$` are included (`onlyValidResourceUrns`).
+---
+
 ## 2. Environment-Specific Test Data Exclusion
 
 The system detects the deployment environment and applies additional exclusions to remove test resources.
@@ -58,7 +63,7 @@ Example lists:
 - `tt02TestIds`
 - `at23TestIds`
 
-Cf. `packages/bff/src/graphql/types/serviceResources/serviceResourceIds.ts`
+Cf. `packages/bff/src/graphql/serviceResources/testIds.ts`
 
 **Business rationale:** The Resource Registry currently lacks a reliable dedicated flag (e.g. `isTestResource`) for identifying test resources, so environment-specific ID lists are used as a safeguard.
 

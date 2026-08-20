@@ -13,6 +13,7 @@ export const sharedConfig: ResourceFilters = {
   includeResourceTypes: ['GenericAccessResource', 'AltinnApp', 'MigratedApp', 'CorrespondenceService'],
   onlyVisible: true,
   onlyDelegable: true,
+  onlyValidResourceUrns: true,
 };
 
 /**
