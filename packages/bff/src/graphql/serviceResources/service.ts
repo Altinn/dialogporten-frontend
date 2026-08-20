@@ -1,5 +1,6 @@
 import { logger } from '@altinn/dialogporten-node-logger';
 import config from '../../config.js';
+import { isNotifiableResourceIdentifier } from '../shared/resourceUrn.ts';
 import { getEnvironmentConfig } from './config.ts';
 import type { LocalizedText, Resource } from './registryTypes.ts';
 
@@ -14,7 +15,9 @@ export interface ServiceResourceResponseDTO extends Omit<TransformedServiceResou
   title: string;
 }
 
-export const serviceResourcesRedisKey = 'arbeidsflate-service-resources:v5';
+/* Bump this to instantly invalidate cache */
+const serviceResourcesRedisVersion = 8;
+export const serviceResourcesRedisKey = 'arbeidsflate-service-resources:v' + serviceResourcesRedisVersion;
 
 export function getSupportedLanguage(defaultLanguage: 'nb' | 'nn' | 'en', language?: string): string[] {
   const supportedLanguages = ['nb', 'nn', 'en'];
@@ -82,6 +85,8 @@ export interface ResourceFilters {
   onlyVisible?: boolean;
   /** Only include resources that are delegable */
   onlyDelegable?: boolean;
+  /** Only include resources whose identifier forms a valid `urn:altinn:resource:` URN */
+  onlyValidResourceUrns?: boolean;
   /** Filter by resource status - only include these statuses */
   includeResourceStatuses?: string[];
   /** Filter by resource status - exclude these statuses */
@@ -139,8 +144,15 @@ export async function storeServiceResourcesInRedis(filters?: ResourceFilters): P
         }
 
         // Filter by delegable resources only
-        if (filters.onlyDelegable === true) {
+        if (filters.onlyDelegable) {
           if (!resource.delegable) {
+            return false;
+          }
+        }
+
+        // Filter out identifiers that cannot be expressed as a valid resource URN
+        if (filters.onlyValidResourceUrns) {
+          if (!isNotifiableResourceIdentifier(resource.identifier)) {
             return false;
           }
         }
