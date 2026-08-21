@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.173.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.173.0...v1.173.1) (2026-08-20)
+
+
+### Bug Fixes
+
+* **bff:** filter invalid resource URNs from the curated service list ([#4559](https://github.com/Altinn/dialogporten-frontend/issues/4559)) ([13b7e6b](https://github.com/Altinn/dialogporten-frontend/commit/13b7e6bf675a516e646a1f2a7461cd28af5e6b73))
+* **header:** bump altinn-components to 0.72.2 to fix inect header while drawer is open ([#4561](https://github.com/Altinn/dialogporten-frontend/issues/4561)) ([1b961ec](https://github.com/Altinn/dialogporten-frontend/commit/1b961ec8ef67554b15d14e174f740440fb754115))
+
 ## [1.173.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.172.4...v1.173.0) (2026-08-19)
 
 
