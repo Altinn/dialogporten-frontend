@@ -19,6 +19,7 @@ import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { usePageTitle } from '../../hooks/usePageTitle.ts';
 import { useDelegation } from './useDelegation.tsx';
 import { useDialogActions } from './useDialogActions.tsx';
+import { useNotificationLogs } from './useNotificationLogs.tsx';
 
 export const DialogDetailsPage = () => {
   const { id: dialogId } = useParams();
@@ -41,6 +42,8 @@ export const DialogDetailsPage = () => {
   const isLoading = isLoadingDialog || (!isSuccess && !isError);
   const displayDialogActions = !!(dialogId && dialog && !isLoading);
   const { delegationHref } = useDelegation(dialogId, dialog?.party, dialog?.org);
+  const { notificationLogs } = useNotificationLogs(dialogId);
+  console.info('notificationLogs', notificationLogs);
 
   usePageTitle({ baseTitle: dialog?.title || '' });
   const createLabelUpdateActions = useDialogActions();

@@ -37,4 +37,5 @@ export const QUERY_KEYS = {
   HAS_INITIALIZED_PARTY_SELECTION: 'hasInitializedPartySelection',
   USERNAME: 'username',
   NOTIFICATION_ADDRESS_BY_ORG_NUMBER: 'notificationAddressByOrgNumber',
+  NOTIFICATION_LOGS: 'notificationLogs',
 };
