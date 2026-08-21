@@ -42,6 +42,49 @@ export const NotificationAddressResponse = objectType({
   },
 });
 
+export const NotificationLogsResponse = objectType({
+  name: 'NotificationLogsResponse',
+  description: 'Represents an historical log entry for notifications',
+  definition(t) {
+    t.string('notificationId', {
+      description: 'Unique identifier for the notification the log entry belongs to',
+      resolve: (obj) => obj.notificationId,
+    });
+    t.nullable.string('dialogId', {
+      description: 'Unique identifier for the dialog the notification was sent for',
+      resolve: (obj) => obj.dialogId,
+    });
+    t.nullable.string('transmissionId', {
+      description: 'Unique identifier for the transmission the notification was sent for, if any',
+      resolve: (obj) => obj.transmissionId,
+    });
+    t.nullable.string('type', {
+      description: 'The type of the log entry, e.g. Notification',
+      resolve: (obj) => obj.type,
+    });
+    t.nullable.string('channel', {
+      description: 'The channel the notification was sent on, e.g. Email or Sms',
+      resolve: (obj) => obj.channel,
+    });
+    t.nullable.string('destination', {
+      description: 'The address the notification was sent to, e.g. an email address or a phone number',
+      resolve: (obj) => obj.destination,
+    });
+    t.nullable.string('status', {
+      description: 'The current status of the notification, e.g. Email_Delivered',
+      resolve: (obj) => obj.status,
+    });
+    t.nullable.string('requestedSendTime', {
+      description: 'ISO 8601 timestamp for when the notification was requested to be sent',
+      resolve: (obj) => obj.requestedSendTime,
+    });
+    t.nullable.string('lastUpdateTime', {
+      description: 'ISO 8601 timestamp for when the status of the notification was last updated',
+      resolve: (obj) => obj.lastUpdateTime,
+    });
+  },
+});
+
 export const OrganizationResponse = objectType({
   name: 'OrganizationResponse',
   description: 'Represents an organization with notification addresses',
