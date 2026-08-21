@@ -1,6 +1,7 @@
-import { extendType, list, stringArg } from 'nexus';
+import { extendType, list, nonNull, stringArg } from 'nexus';
 import {
   getNotificationAddressByOrgNumber,
+  getNotificationLogs,
   getNotificationsettingsForCurrentUser,
   getVerifiedAddresses,
 } from './service.ts';
@@ -23,6 +24,17 @@ export const NotificationsQuery = extendType({
       },
     });
 
+    t.field('notificationLogs', {
+      type: list('NotificationLogsResponse'),
+      args: {
+        dialogId: nonNull(stringArg()),
+      },
+      resolve: async (_source, { dialogId }, ctx) => {
+        return (await getNotificationLogs(dialogId, ctx)) ?? [];
+      },
+    });
+
+    // TODO: (Breaking change) Poor choice of naming for this field, remove 'get-'
     t.field('getNotificationAddressByOrgNumber', {
       type: OrganizationResponse,
       args: {
