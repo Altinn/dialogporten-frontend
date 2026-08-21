@@ -12,11 +12,11 @@
   "devDependencies": {
     "@biomejs/biome": "2.5.4",
     "lint-staged": "17.0.8",
-    "mprocs": "^0.9.2",
+    "mprocs": "0.9.2",
     "turbo": "2.9.14"
   },
   "engines": {
-    "node": ">=22.22.0"
+    "node": "v26.7.0"
   },
   "lint-staged": {
     "**/*.*": "biome check --staged --no-errors-on-unmatched --write"
@@ -31,18 +31,18 @@
     "overrides": {
       "@types/hast": "3.0.5",
       "mdast-util-gfm-autolink-literal": "2.0.0",
-      "protobufjs": ">=8.0.1",
-      "shell-quote": ">=1.9.0",
-      "websocket-driver": ">=0.7.5",
+      "protobufjs": "8.7.2",
+      "shell-quote": "1.10.0",
+      "websocket-driver": "0.7.5",
       "brace-expansion@1": "1.1.16",
       "brace-expansion@2": "5.0.9",
-      "brace-expansion@5": ">=5.0.9 <6",
-      "postcss@8": ">=8.5.23 <9",
-      "fast-uri@3": ">=3.1.5 <4",
-      "fast-uri@4": ">=4.1.2 <5",
-      "find-my-way@9": ">=9.7.0 <10",
+      "brace-expansion@5": "5.0.9",
+      "postcss@8": "8.5.26",
+      "fast-uri@3": "3.1.5",
+      "fast-uri@4": "4.1.2",
+      "find-my-way@9": "9.9.0",
       "js-yaml@3": "3.15.1",
-      "js-yaml@4": ">=4.3.1 <5"
+      "js-yaml@4": "4.3.1"
     }
   }
 }
