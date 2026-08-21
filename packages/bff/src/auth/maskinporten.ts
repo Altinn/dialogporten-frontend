@@ -16,7 +16,7 @@ const TOKEN_TTL_MARGIN_SECONDS = 30;
 const ASSERTION_LIFETIME_SECONDS = 100;
 
 const cacheKey = (scope: string) => `maskinporten:token:${scope}`;
-const ALTINN_TOKEN_CACHE_KEY = 'maskinporten:altinn-token';
+const ALTINN_TOKEN_CACHE_KEY = 'maskinporten:altinn-token:2';
 const platformExchangeTokenEndpointURL = `${config.platformBaseURL}/authentication/api/v1/exchange/maskinporten`;
 
 const buildClientAssertion = (): string => {

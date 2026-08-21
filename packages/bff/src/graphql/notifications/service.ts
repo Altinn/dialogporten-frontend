@@ -1,12 +1,14 @@
 import { logger } from '@altinn/dialogporten-node-logger';
 import axios, { isAxiosError } from 'axios';
+import { getAltinnToken } from '../../auth/maskinporten.js';
 import { type Context, getSessionToken } from '../../auth/oidc.js';
 import config from '../../config.ts';
 import type { NotificationSettingsInputData, SendVerificationCodeInputData, VerifyAddressInputData } from './types.ts';
 
 const { platformBaseURL } = config;
 
-const platformProfileAPI_url = platformBaseURL + '/profile/api/v1/';
+const platformNotificationsAPIUrl = platformBaseURL + '/notifications/api/v1/';
+const platformProfileAPIURL = platformBaseURL + '/profile/api/v1/';
 
 export const getNotificationsettingsForCurrentUser = async (context: Context) => {
   const token = getSessionToken(context);
@@ -17,7 +19,7 @@ export const getNotificationsettingsForCurrentUser = async (context: Context) =>
 
   let data = [] as unknown[];
   try {
-    const response = await axios.get(`${platformProfileAPI_url}users/current/notificationsettings/parties`, {
+    const response = await axios.get(`${platformProfileAPIURL}users/current/notificationsettings/parties`, {
       timeout: 30000,
       headers: {
         Authorization: `Bearer ${token.access_token}`,
@@ -55,7 +57,7 @@ export const sendVerificationCode = async (data: SendVerificationCodeInputData, 
   }
 
   try {
-    const response = await axios.post(`${platformProfileAPI_url}users/current/verification/send`, data, {
+    const response = await axios.post(`${platformProfileAPIURL}users/current/verification/send`, data, {
       timeout: 30000,
       headers: {
         Authorization: `Bearer ${token.access_token}`,
@@ -104,7 +106,7 @@ export const updateNotificationsSetting = async (input: NotificationSettingsInpu
   }
   try {
     const response = await axios.patch(
-      `${platformProfileAPI_url}users/current/notificationsettings/parties/${partyUuid}`,
+      `${platformProfileAPIURL}users/current/notificationsettings/parties/${partyUuid}`,
       payload,
       {
         timeout: 30000,
@@ -139,7 +141,7 @@ export const deleteNotificationsSetting = async (partyUuid: string, context: Con
   }
   try {
     const response = await axios.delete(
-      `${platformProfileAPI_url}users/current/notificationsettings/parties/${partyUuid}`,
+      `${platformProfileAPIURL}users/current/notificationsettings/parties/${partyUuid}`,
       {
         timeout: 30000,
         headers: {
@@ -170,7 +172,7 @@ export const getNotificationAddressByOrgNumber = async (orgnr: string, context: 
     return;
   }
   const { data, status, statusText } = await axios
-    .get(`${platformProfileAPI_url}organizations/${orgnr}/notificationaddresses/mandatory`, {
+    .get(`${platformProfileAPIURL}organizations/${orgnr}/notificationaddresses/mandatory`, {
       timeout: 30000,
       headers: {
         Authorization: `Bearer ${token.access_token}`,
@@ -196,7 +198,7 @@ export const verifyAddress = async (data: VerifyAddressInputData, context: Conte
   }
   try {
     await axios.post(
-      `${platformProfileAPI_url}users/current/verification/verify`,
+      `${platformProfileAPIURL}users/current/verification/verify`,
       { value: data.value, type: data.type, verificationCode: data.verificationCode },
       {
         timeout: 30000,
@@ -236,7 +238,7 @@ export const getVerifiedAddresses = async (context: Context) => {
     throw new Error('No token found in session');
   }
   try {
-    const response = await axios.get(`${platformProfileAPI_url}users/current/verification/verified-addresses`, {
+    const response = await axios.get(`${platformProfileAPIURL}users/current/verification/verified-addresses`, {
       timeout: 30000,
       headers: {
         Authorization: `Bearer ${token.access_token}`,
@@ -251,6 +253,38 @@ export const getVerifiedAddresses = async (context: Context) => {
   }
 };
 
+export const getNotificationLogs = async (dialogId: string) => {
+  let token: string;
+  try {
+    token = await getAltinnToken();
+  } catch (error) {
+    logger.error(error, 'Failed to obtain Altinn token for notification logs');
+    return [];
+  }
+
+  try {
+    const response = await axios.get(
+      `${platformNotificationsAPIUrl}future/log?dialogId=${encodeURIComponent(dialogId)}`,
+      {
+        timeout: 30000,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+      },
+    );
+    return response.data ?? [];
+  } catch (error) {
+    if (isAxiosError(error)) {
+      logger.error({ status: error.response?.status, body: error.response?.data }, 'Failed to fetch notification logs');
+    } else {
+      logger.error(error, 'Failed to fetch notification logs');
+    }
+    return [];
+  }
+};
+
 export const updateSIPrivatePhoneNumber = async (value: string | null, context: Context) => {
   const token = getSessionToken(context);
   if (!token) {
@@ -259,7 +293,7 @@ export const updateSIPrivatePhoneNumber = async (value: string | null, context: 
   }
   try {
     await axios.put(
-      `${platformProfileAPI_url}users/current/notificationsettings/private/phonenumber`,
+      `${platformProfileAPIURL}users/current/notificationsettings/private/phonenumber`,
       { value },
       {
         timeout: 30000,

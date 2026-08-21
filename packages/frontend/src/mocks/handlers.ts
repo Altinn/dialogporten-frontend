@@ -1,6 +1,7 @@
 import { formatDisplayName } from '@altinn/altinn-components';
 import {
   type DialogByIdFieldsFragment,
+  type NotificationLogsResponse,
   type NotificationSettingsResponse,
   type OrganizationFieldsFragment,
   type PartyFieldsFragment,
@@ -24,6 +25,7 @@ export type InMemoryStore = {
   features?: Record<string, boolean>;
   services?: ServiceResource[];
   verifiedAddresses?: { value: string; addressType: string }[];
+  notificationLogs?: NotificationLogsResponse[];
   notificationSettings?: NotificationSettingsResponse[];
   username?: string | null;
 };
@@ -37,6 +39,7 @@ const inMemoryStore: InMemoryStore = {
   features: data.features,
   services: data.services,
   verifiedAddresses: [],
+  notificationLogs: [],
   notificationSettings: [
     {
       userId: 20625133,
@@ -152,6 +155,15 @@ const mockVerifiedAddresses = graphql.query('verifiedAddresses', () => {
   return HttpResponse.json({
     data: {
       verifiedAddresses: inMemoryStore.verifiedAddresses,
+    },
+  });
+});
+
+const mockNotificationLogs = graphql.query('notificationLogs', ({ variables }) => {
+  const { dialogId } = variables as { dialogId: string };
+  return HttpResponse.json({
+    data: {
+      notificationLogs: (inMemoryStore.notificationLogs ?? []).filter((log) => log.dialogId === dialogId),
     },
   });
 });
@@ -831,6 +843,7 @@ export const handlers = [
   mockUpdateNotificationSetting,
   mockGetNotificationAddressByOrgNumber,
   mockVerifiedAddresses,
+  mockNotificationLogs,
   mockSendVerificationCode,
   mockVerifyAddress,
   featuresMock,
