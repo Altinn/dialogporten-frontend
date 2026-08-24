@@ -757,6 +757,58 @@ export const getMockedTransmissions = (dialogId: string) => {
   return [];
 };
 
+/* A service owner can put a confirmation prompt on an authorized action; the default mock action is
+   unauthorized, and so renders disabled and cannot exercise that flow. */
+export const dialogWithPromptAction = '019241f7-8218-7756-be82-promptaction';
+
+const getMockedGuiActions = (id: string): DialogByIdFieldsFragment['guiActions'] => {
+  if (id === dialogWithPromptAction) {
+    return [
+      {
+        id: 'confirm-with-prompt',
+        url: 'https://dialogporten-serviceprovider.net/mutate/state-1/3',
+        isAuthorized: true,
+        isDeleteDialogAction: false,
+        action: 'submit',
+        authorizationAttribute: null,
+        priority: GuiActionPriority.Primary,
+        httpMethod: HttpVerb.Post,
+        title: [
+          {
+            languageCode: 'nb',
+            value: 'Send inn',
+          },
+        ],
+        prompt: [
+          {
+            languageCode: 'nb',
+            value: 'Er du sikker på at du vil sende inn?',
+          },
+        ],
+      },
+    ];
+  }
+  return [
+    {
+      id,
+      url: 'urn:dialogporten:unauthorized',
+      isAuthorized: false,
+      isDeleteDialogAction: false,
+      action: 'submit',
+      authorizationAttribute: null,
+      priority: GuiActionPriority.Primary,
+      httpMethod: HttpVerb.Get,
+      title: [
+        {
+          languageCode: 'nb',
+          value: 'Til skjema',
+        },
+      ],
+      prompt: [],
+    },
+  ];
+};
+
 export const convertToDialogByIdTemplate = (input: SearchDialogFieldsFragment): DialogByIdFieldsFragment => {
   return {
     id: input.id,
@@ -790,25 +842,7 @@ export const convertToDialogByIdTemplate = (input: SearchDialogFieldsFragment): 
     transmissions: getMockedTransmissions(input.id),
     fromServiceOwnerTransmissionsCount: 3,
     fromPartyTransmissionsCount: 4,
-    guiActions: [
-      {
-        id: input.id,
-        url: 'urn:dialogporten:unauthorized',
-        isAuthorized: false,
-        isDeleteDialogAction: false,
-        action: 'submit',
-        authorizationAttribute: null,
-        priority: GuiActionPriority.Primary,
-        httpMethod: HttpVerb.Get,
-        title: [
-          {
-            languageCode: 'nb',
-            value: 'Til skjema',
-          },
-        ],
-        prompt: [],
-      },
-    ],
+    guiActions: getMockedGuiActions(input.id),
     seenSinceLastContentUpdate: input.seenSinceLastContentUpdate,
     status: input.status,
     createdAt: input.createdAt,
