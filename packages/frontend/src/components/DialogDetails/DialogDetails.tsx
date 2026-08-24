@@ -22,6 +22,7 @@ import {
 } from '@altinn/altinn-components';
 import type { ActivityLogSegmentProps } from '@altinn/altinn-components/dist/types/lib/components';
 import { DialogEventType, DialogStatus } from 'bff-types-generated';
+import type { TFunction } from 'i18next';
 import { type ReactElement, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Analytics } from '../../analytics/analytics.ts';
@@ -117,20 +118,30 @@ const trackNavigationSuccess = ({ id, title, httpMethod }: DialogActionProps): v
   });
 };
 
-const performDialogAction = async (
-  props: DialogActionProps,
-  dialogToken: string,
-  responseFinished: () => void,
-  onError: () => void,
-  logError: (error: Error, context?: Record<string, unknown>, errorMessage?: string) => void,
-  openSnackbar: (config: { message: string; color: SnackbarColor; duration: number }) => void,
-  // biome-ignore lint/suspicious/noExplicitAny: i18next t function has complex overloaded types
-  t: any,
-  format: (date: Date | string, formatStr: string) => string,
-): Promise<void> => {
-  const { id, title, url, httpMethod, prompt } = props;
+interface PerformDialogActionArgs {
+  action: DialogActionProps;
+  dialogToken: string;
+  onRequestSettled: () => void;
+  onNoUpdateExpected: () => void;
+  logError: (error: Error, context?: Record<string, unknown>, errorMessage?: string) => void;
+  openSnackbar: (config: { message: string; color: SnackbarColor; duration: number }) => void;
+  t: TFunction<'translation', undefined>;
+  format: (date: Date | string, formatStr: string) => string;
+}
 
-  trackGuiActionClick(props);
+const performDialogAction = async ({
+  action,
+  dialogToken,
+  onRequestSettled,
+  onNoUpdateExpected,
+  logError,
+  openSnackbar,
+  t,
+  format,
+}: PerformDialogActionArgs): Promise<void> => {
+  const { id, title, url, httpMethod, prompt } = action;
+
+  trackGuiActionClick(action);
 
   if (prompt && !window.confirm(prompt)) {
     Analytics.trackEvent(ANALYTICS_EVENTS.GUI_ACTION_CANCELLED, {
@@ -138,13 +149,15 @@ const performDialogAction = async (
       'action.title': title,
       'cancellation.reason': 'user_declined_prompt',
     });
-    responseFinished();
+    // Nothing was sent, so no dialog update will ever be pushed for this click.
+    onNoUpdateExpected();
+    onRequestSettled();
     return;
   }
 
   if (httpMethod === 'GET') {
-    trackNavigationSuccess(props);
-    responseFinished();
+    trackNavigationSuccess(action);
+    onRequestSettled();
     window.location.href = url;
     return;
   }
@@ -189,8 +202,8 @@ const performDialogAction = async (
               'gracePeriod.days': gracePeriodDays,
             });
 
-            onError();
-            responseFinished();
+            onNoUpdateExpected();
+            onRequestSettled();
             return;
           }
         } catch (parseError) {
@@ -231,7 +244,7 @@ const performDialogAction = async (
         },
         `Dialog action failed: ${response.statusText}`,
       );
-      onError();
+      onNoUpdateExpected();
     }
   } catch (error) {
     logError(
@@ -243,9 +256,9 @@ const performDialogAction = async (
       },
       'Error performing dialog action',
     );
-    onError();
+    onNoUpdateExpected();
   } finally {
-    responseFinished();
+    onRequestSettled();
   }
 };
 
@@ -427,16 +440,16 @@ export const DialogDetails = ({
         setActionIdLoading(action.id);
         setActionIdUpdating(action.id);
         dialogToken &&
-          void performDialogAction(
+          void performDialogAction({
             action,
             dialogToken,
-            () => setActionIdLoading(''),
-            () => setActionIdUpdating(''),
+            onRequestSettled: () => setActionIdLoading(''),
+            onNoUpdateExpected: () => setActionIdUpdating(''),
             logError,
             openSnackbar,
             t,
             format,
-          );
+          });
       },
     };
   });
