@@ -167,7 +167,13 @@ export const getMockedUnauthorizedFCEContent = () => {
   };
 };
 
+/* A dialog is not required to have any activities; this one deliberately has none. */
+export const dialogWithoutActivities = '019241f7-8218-7756-be82-noactivities';
+
 export const getMockedActivities = (id: string): DialogByIdFieldsFragment['activities'] => {
+  if (id === dialogWithoutActivities) {
+    return [];
+  }
   if (id === '019241f7-8218-7756-be82-123qwe456rtA') {
     return [
       {
@@ -253,6 +259,58 @@ export const getMockedActivities = (id: string): DialogByIdFieldsFragment['activ
 
 export const getMockedTransmissions = (dialogId: string) => {
   const dialogWithTransmissions = '019241f7-8218-7756-be82-123qwe456rtA';
+  if (dialogId === dialogWithoutActivities) {
+    return [
+      {
+        id: 'transmission-from-agency',
+        relatedTransmissionId: null,
+        isAuthorized: true,
+        createdAt: '2024-07-30T18:12:54.233Z',
+        type: TransmissionType.Information,
+        sender: {
+          actorType: ActorType.ServiceOwner,
+          actorId: null,
+          actorName: null,
+        },
+        content: {
+          title: {
+            value: [{ value: 'Melding fra etaten', languageCode: 'nb' }],
+            mediaType: 'text/plain',
+          },
+          summary: {
+            value: [{ value: 'Vi trenger noen opplysninger fra deg.', languageCode: 'nb' }],
+            mediaType: 'text/plain',
+          },
+          contentReference: null,
+        },
+        attachments: [],
+      },
+      {
+        id: 'transmission-own-reply',
+        relatedTransmissionId: 'transmission-from-agency',
+        isAuthorized: true,
+        createdAt: '2024-07-31T18:12:54.233Z',
+        type: TransmissionType.Submission,
+        sender: {
+          actorType: ActorType.PartyRepresentative,
+          actorId: null,
+          actorName: 'NORDMANN KARI',
+        },
+        content: {
+          title: {
+            value: [{ value: 'Mitt svar til etaten', languageCode: 'nb' }],
+            mediaType: 'text/plain',
+          },
+          summary: {
+            value: [{ value: 'Opplysningene stemmer.', languageCode: 'nb' }],
+            mediaType: 'text/plain',
+          },
+          contentReference: null,
+        },
+        attachments: [],
+      },
+    ];
+  }
   if (dialogId === dialogWithTransmissions) {
     return [
       {

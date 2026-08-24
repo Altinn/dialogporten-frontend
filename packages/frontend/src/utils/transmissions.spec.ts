@@ -1,6 +1,14 @@
-import { AttachmentUrlConsumer, type TransmissionFieldsFragment } from 'bff-types-generated';
+import {
+  ActivityType,
+  ActorType,
+  AttachmentUrlConsumer,
+  type DialogActivityFragment,
+  type TransmissionFieldsFragment,
+  TransmissionType,
+} from 'bff-types-generated';
 import { describe, expect, it } from 'vitest';
-import { getTransmissionVisibility, groupTransmissions } from './transmissions.ts';
+import type { Locale } from '../i18n/useDateFnsLocale.tsx';
+import { getTransmissions, getTransmissionVisibility, groupTransmissions } from './transmissions.ts';
 
 describe('groupTransmissions', () => {
   const transmissions: TransmissionFieldsFragment[] = [
@@ -299,5 +307,64 @@ describe('getTransmissionVisibility', () => {
       ],
     });
     expect(getTransmissionVisibility(t)).toBe('visible');
+  });
+});
+
+describe('unread state', () => {
+  const transmissionOfType = (type: TransmissionType): TransmissionFieldsFragment =>
+    ({
+      id: 'own-reply',
+      relatedTransmissionId: null,
+      createdAt: '2026-08-01T10:00:00Z',
+      isAuthorized: true,
+      type,
+      sender: { actorType: ActorType.PartyRepresentative, actorId: null, actorName: 'Den sykmeldte' },
+      content: {
+        title: { value: [{ value: 'Mitt svar', languageCode: 'nb' }] },
+        summary: { value: [{ value: 'Svar', languageCode: 'nb' }] },
+      },
+      attachments: [],
+    }) as unknown as TransmissionFieldsFragment;
+
+  const anActivity = {
+    id: 'a1',
+    type: ActivityType.Information,
+    createdAt: '2026-08-01T09:00:00Z',
+    transmissionId: null,
+    description: [],
+    performedBy: { actorType: ActorType.ServiceOwner, actorId: null, actorName: null },
+  } as unknown as DialogActivityFragment;
+
+  const unreadOf = (type: TransmissionType, activities?: DialogActivityFragment[]) =>
+    getTransmissions({
+      transmissions: [transmissionOfType(type)],
+      format: (date) => String(date),
+      stopReversingPersonNameOrder: true,
+      locale: {} as Locale,
+      activities,
+    })[0].items[0].unread;
+
+  // A dialog is not required to have any activities, and that must not change how the end user's
+  // own transmissions are presented back to them.
+  it.each([TransmissionType.Submission, TransmissionType.Correction])(
+    'should never mark an end-user %s as unread, with or without activities',
+    (type) => {
+      expect(unreadOf(type, [anActivity])).toBeUndefined();
+      expect(unreadOf(type, [])).toBeUndefined();
+      expect(unreadOf(type, undefined)).toBeUndefined();
+    },
+  );
+
+  it('should still mark an unopened incoming transmission as unread', () => {
+    expect(unreadOf(TransmissionType.Information, [anActivity])).toBe(true);
+  });
+
+  it('should mark an incoming transmission as read once it has been opened', () => {
+    const opened = {
+      ...anActivity,
+      transmissionId: 'own-reply',
+      type: ActivityType.TransmissionOpened,
+    } as unknown as DialogActivityFragment;
+    expect(unreadOf(TransmissionType.Information, [opened])).toBeUndefined();
   });
 });
