@@ -116,19 +116,12 @@ export const groupTransmissions = (transmissions: TransmissionFieldsFragment[]):
  * @returns {boolean} `true` if the transmission is unread, otherwise `false`.
  */
 const isTransmissionUnread = (id: string, type: TransmissionType, activities?: DialogActivityFragment[]): boolean => {
-  if (activities && activities.length > 0) {
-    for (let i = 0; i < activities.length; i++) {
-      const activity = activities[i];
-      const endUserTransmission = type === TransmissionType.Correction || type === TransmissionType.Submission;
-      if (
-        endUserTransmission ||
-        (activity.transmissionId === id && activity.type === ActivityType.TransmissionOpened)
-      ) {
-        return false;
-      }
-    }
+  if (type === TransmissionType.Correction || type === TransmissionType.Submission) {
+    return false;
   }
-  return true;
+  return !activities?.some(
+    (activity) => activity.transmissionId === id && activity.type === ActivityType.TransmissionOpened,
+  );
 };
 
 const getClockFormatString = () => {
