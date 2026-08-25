@@ -25,4 +25,45 @@ export const allowedTags = [
   'tr',
   'td',
   'th',
+  /* forms */
+  'form',
+  'fieldset',
+  'legend',
+  'label',
+  'input',
+  'textarea',
+  'select',
+  'optgroup',
+  'option',
+  'datalist',
+  'button',
+  'output',
 ];
+
+export const allowedInputTypes = [
+  'text',
+  'search',
+  'email',
+  'tel',
+  'url',
+  'number',
+  'date',
+  'datetime-local',
+  'month',
+  'week',
+  'time',
+  'checkbox',
+  'radio',
+  'range',
+  'color',
+  'file',
+  'hidden',
+  'submit',
+  'reset',
+];
+
+export const allowedButtonTypes = ['submit', 'reset', 'button'];
+
+export const allowedFormMethods = ['get', 'post'];
+
+export const allowedEncTypes = ['application/x-www-form-urlencoded', 'multipart/form-data'];
