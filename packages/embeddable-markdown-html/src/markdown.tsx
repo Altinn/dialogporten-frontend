@@ -11,6 +11,7 @@ import remarkToRehype from 'remark-rehype';
 import { unified } from 'unified';
 import { defaultClassMap } from './classMap.ts';
 import { FormContextProvider, formComponents } from './formComponents.tsx';
+import { flattenHtmlIndentation } from './htmlIndentation.ts';
 import { sanitizeSchema } from './schema.ts';
 import type { EmbeddableContentProps } from './types.ts';
 
@@ -21,6 +22,9 @@ const production = { Fragment: prod.Fragment, jsx: prod.jsx, jsxs: prod.jsxs, co
 /**
  * Renders markdown as React elements in common mark: https://spec.commonmark.org/0.31.2/spec.json,
  * extended with GitHub flavoured tables and inline html limited to the sanitized allow list.
+ *
+ * A body that is really HTML rather than markdown has its indentation flattened first, so that
+ * pretty-printed markup is not mistaken for indented code blocks - see ./htmlIndentation.ts.
  */
 export const Markdown = ({ children, onError, onSubmit, formPolicy }: EmbeddableContentProps): ReactElement | null => {
   const [reactContent, setReactContent] = useState<ReactElement | null>(null);
@@ -36,7 +40,7 @@ export const Markdown = ({ children, onError, onSubmit, formPolicy }: Embeddable
       .use(rehypeSanitize, sanitizeSchema)
       .use(addClasses, defaultClassMap)
       .use(rehypeReact, production)
-      .process(children)
+      .process(flattenHtmlIndentation(children))
       .then((vfile: { result: ReactElement }) => setReactContent(vfile.result as ReactElement))
       .catch(onError);
   }, [children]);

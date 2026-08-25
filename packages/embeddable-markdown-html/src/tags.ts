@@ -22,9 +22,16 @@ export const allowedTags = [
   'table',
   'thead',
   'tbody',
+  'tfoot',
   'tr',
   'td',
   'th',
+  'caption',
+  'colgroup',
+  'col',
+  /* layout + media */
+  'div',
+  'img',
   /* forms */
   'form',
   'fieldset',
