@@ -1,0 +1,22 @@
+query labelAssignmentLog($dialogId: UUID!) {
+  labelAssignmentLog(dialogId: $dialogId) {
+    labelAssignmentLog {
+      ...LabelAssignmentLogFields
+    }
+    errors {
+      __typename
+      message
+    }
+  }
+}
+
+fragment LabelAssignmentLogFields on LabelAssignmentLog {
+  name
+  action
+  createdAt
+  performedBy {
+    actorId
+    actorName
+    actorType
+  }
+}

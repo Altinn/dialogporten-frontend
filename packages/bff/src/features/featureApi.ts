@@ -15,6 +15,7 @@ const defaultFeatureFlags: Record<string, boolean> = {
   'fce.enablePreferHeader': false,
   'global.enableSkyra': false,
   'dialogDetails.enableNotificationLogs': false,
+  'dialogDetails.enableLabelAssignmentLogs': false,
 };
 
 const defaultAppConfigValues: Record<string, string[]> = {
