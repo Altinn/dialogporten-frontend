@@ -1,5 +1,6 @@
 import { formatDisplayName } from '@altinn/altinn-components';
 import {
+  ActorType,
   type DialogByIdFieldsFragment,
   type NotificationLogsResponse,
   type NotificationSettingsResponse,
@@ -810,6 +811,45 @@ const dialogAccessInfoMock = graphql.query('dialogAccessInfo', ({ variables }) =
   });
 });
 
+const labelAssignmentLogMock = graphql.query('labelAssignmentLog', ({ variables }) => {
+  const { dialogId } = variables as { dialogId: string };
+  const dialog = inMemoryStore.dialogs?.find((d) => d.id === dialogId);
+
+  if (!dialog) {
+    return HttpResponse.json({
+      data: {
+        labelAssignmentLog: {
+          labelAssignmentLog: [],
+          errors: [{ __typename: 'LabelAssignmentLogNotFound', message: 'Dialog not found' }],
+        },
+      },
+    });
+  }
+
+  const party = inMemoryStore.parties?.find((p) => p.isCurrentEndUser);
+  const performedBy = {
+    actorType: ActorType.PartyRepresentative,
+    actorId: party?.party ?? null,
+    actorName: party?.name ?? null,
+  };
+
+  return HttpResponse.json({
+    data: {
+      labelAssignmentLog: {
+        labelAssignmentLog: (dialog.endUserContext?.systemLabels ?? [])
+          .filter((label) => label !== SystemLabel.Default)
+          .map((label) => ({
+            name: label,
+            action: 'set',
+            createdAt: dialog.contentUpdatedAt,
+            performedBy,
+          })),
+        errors: [],
+      },
+    },
+  });
+});
+
 export const handlers = [
   isAuthenticatedMock,
   getAllDialogsForPartiesMock,
@@ -840,6 +880,7 @@ export const handlers = [
   getServiceResourcesMock,
   getFilterServiceResourcesMock,
   dialogAccessInfoMock,
+  labelAssignmentLogMock,
   mockNotificationsettingsForCurrentUser,
   mockUpdateNotificationSetting,
   mockGetNotificationAddressByOrgNumber,
