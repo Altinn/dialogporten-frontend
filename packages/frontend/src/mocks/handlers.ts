@@ -1,5 +1,6 @@
 import { formatDisplayName } from '@altinn/altinn-components';
 import {
+  ActorType,
   type DialogByIdFieldsFragment,
   type NotificationLogsResponse,
   type NotificationSettingsResponse,
@@ -12,7 +13,12 @@ import {
   SystemLabel,
 } from 'bff-types-generated';
 import { graphql, HttpResponse, http } from 'msw';
-import { convertToDialogByIdTemplate, filterDialogs, getMockedNotificationLogs } from './data/base/helper.ts';
+import {
+  convertToDialogByIdTemplate,
+  filterDialogs,
+  getMockedLabelAssignmentLogs,
+  getMockedNotificationLogs,
+} from './data/base/helper.ts';
 import { getMockedData } from './data.ts';
 
 const data = await getMockedData(window.location.href);
@@ -810,6 +816,73 @@ const dialogAccessInfoMock = graphql.query('dialogAccessInfo', ({ variables }) =
   });
 });
 
+const labelAssignmentLogMock = graphql.query('labelAssignmentLog', ({ variables }) => {
+  const { dialogId } = variables as { dialogId: string };
+  const dialog = inMemoryStore.dialogs?.find((d) => d.id === dialogId);
+
+  if (!dialog) {
+    return HttpResponse.json({
+      data: {
+        labelAssignmentLog: {
+          labelAssignmentLog: [],
+          errors: [{ __typename: 'LabelAssignmentLogNotFound', message: 'Dialog not found' }],
+        },
+      },
+    });
+  }
+
+  const party = inMemoryStore.parties?.find((p) => p.isCurrentEndUser);
+  const performedBy = {
+    actorType: ActorType.PartyRepresentative,
+    actorId: party?.party ?? null,
+    actorName: party?.name ?? null,
+  };
+
+  const mocked = getMockedLabelAssignmentLogs(dialogId);
+  if (mocked.length > 0) {
+    return HttpResponse.json({
+      data: {
+        labelAssignmentLog: { labelAssignmentLog: mocked, errors: [] },
+      },
+    });
+  }
+
+  const exclusiveLabels: SystemLabel[] = [SystemLabel.Default, SystemLabel.Archive, SystemLabel.Bin];
+  const labelNames: Record<SystemLabel, string> = {
+    [SystemLabel.Default]: 'systemlabel:Default',
+    [SystemLabel.Archive]: 'systemlabel:Archive',
+    [SystemLabel.Bin]: 'systemlabel:Bin',
+    [SystemLabel.MarkedAsUnopened]: 'systemlabel:MarkedAsUnopened',
+    [SystemLabel.Sent]: 'systemlabel:Sent',
+  };
+
+  const entries = (dialog.endUserContext?.systemLabels ?? [])
+    .filter((label) => label !== SystemLabel.Default)
+    .flatMap((label) => {
+      const set = { name: labelNames[label], action: 'set', createdAt: dialog.contentUpdatedAt, performedBy };
+      return exclusiveLabels.includes(label)
+        ? [
+            set,
+            {
+              name: labelNames[SystemLabel.Default],
+              action: 'removed',
+              createdAt: dialog.contentUpdatedAt,
+              performedBy,
+            },
+          ]
+        : [set];
+    });
+
+  return HttpResponse.json({
+    data: {
+      labelAssignmentLog: {
+        labelAssignmentLog: entries,
+        errors: [],
+      },
+    },
+  });
+});
+
 export const handlers = [
   isAuthenticatedMock,
   getAllDialogsForPartiesMock,
@@ -840,6 +913,7 @@ export const handlers = [
   getServiceResourcesMock,
   getFilterServiceResourcesMock,
   dialogAccessInfoMock,
+  labelAssignmentLogMock,
   mockNotificationsettingsForCurrentUser,
   mockUpdateNotificationSetting,
   mockGetNotificationAddressByOrgNumber,

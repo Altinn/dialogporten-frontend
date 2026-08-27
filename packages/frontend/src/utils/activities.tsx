@@ -5,6 +5,7 @@ import { getActorProps } from '../api/hooks/useDialogById.tsx';
 import type { ProfileType } from '../api/hooks/useParties.ts';
 import { getPreferredPropertyByLocale, type LocalizationObject } from '../i18n/property.ts';
 import type { FormatFunction, Locale } from '../i18n/useDateFnsLocale.tsx';
+import { getLabelAssignmentLogEntries, type LabelAssignmentLog } from './labelAssignmentLogs.tsx';
 import { getNotificationLogEntries, type NotificationLog } from './notificationLogs.tsx';
 import type { OrganizationOutput } from './organizations.ts';
 import { getTransmissions, getTransmissionVisibility, type TransmissionItemWithMeta } from './transmissions.ts';
@@ -112,6 +113,12 @@ export type ActivityLogEntry =
   | {
       id: string;
       date: string;
+      type: 'label';
+      items: ActivityLogItemProps[];
+    }
+  | {
+      id: string;
+      date: string;
       type: 'transmission';
       items: TransmissionItemWithMeta[];
     };
@@ -128,12 +135,14 @@ export type ActivityLogEntry =
  * @param senderName
  * @param locale
  * @param notificationLogs - The list of notification log entries for the dialog.
- * @returns An array of activity, notification and transmission log entries, sorted by date (descending).
+ * @param labelAssignmentLogs - The list of system label changes made by end users on the dialog.
+ * @returns An array of activity, notification, label and transmission log entries, sorted by date (descending).
  */
 export const getActivityHistory = ({
   activities,
   transmissions,
   notificationLogs = [],
+  labelAssignmentLogs = [],
   format,
   serviceOwner,
   selectedProfile,
@@ -145,6 +154,7 @@ export const getActivityHistory = ({
   activities: DialogActivityFragment[];
   transmissions: TransmissionFieldsFragment[];
   notificationLogs?: NotificationLog[];
+  labelAssignmentLogs?: LabelAssignmentLog[];
   format: FormatFunction;
   stopReversingPersonNameOrder: boolean;
   serviceOwner?: OrganizationOutput;
@@ -264,9 +274,22 @@ export const getActivityHistory = ({
     type: 'notification' as const,
   }));
 
+  const labelAssignmentActivities: ActivityLogEntry[] = getLabelAssignmentLogEntries({
+    labelAssignmentLogs,
+    format,
+    stopReversingPersonNameOrder,
+    serviceOwner,
+    senderName,
+    serviceOwnerNbName,
+  }).map((entry) => ({
+    ...entry,
+    type: 'label' as const,
+  }));
+
   return [
     ...dialogHistoryActivities,
     ...notificationActivities,
+    ...labelAssignmentActivities,
     ...dialogHistoryTransmissions,
     ...apiOnlyTransmissionActivities,
     ...disabledTransmissionActivities,

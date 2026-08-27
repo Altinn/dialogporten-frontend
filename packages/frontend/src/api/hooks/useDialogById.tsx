@@ -26,12 +26,14 @@ import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
 import { type ActivityLogEntry, getActivityHistory } from '../../utils/activities.tsx';
 import { createExpiryBadge, mediaTypeToExt, mediaTypeToIcon } from '../../utils/attachments.ts';
 import { getSeenByLabel, getServiceOwnerLogo } from '../../utils/dialog.ts';
+import type { LabelAssignmentLog } from '../../utils/labelAssignmentLogs.tsx';
 import type { NotificationLog } from '../../utils/notificationLogs.tsx';
 import { getOrganization, getOrganizationByLocale, type OrganizationOutput } from '../../utils/organizations.ts';
 import { getTransmissions, type TimelineSegmentWithTransmissions } from '../../utils/transmissions.ts';
 import { getViewTypes } from '../../utils/viewType.ts';
 import { graphQLSDK } from '../queries.ts';
 import type { InboxViewType } from './useDialogs.tsx';
+import { useLabelAssignmentLog } from './useLabelAssignmentLog.ts';
 import { useNotificationLogs } from './useNotificationLogs.tsx';
 import type { ProfileType } from './useParties.ts';
 import { useSelectedProfile } from './usePartiesSelectors.ts';
@@ -253,6 +255,7 @@ export function mapDialogToInboxItem({
   selectedProfile,
   locale,
   notificationLogs = [],
+  labelAssignmentLogs = [],
 }: {
   item: DialogByIdFieldsFragment | null | undefined;
   parties: PartyFieldsFragment[];
@@ -262,6 +265,7 @@ export function mapDialogToInboxItem({
   selectedProfile: ProfileType;
   locale: Locale;
   notificationLogs?: NotificationLog[];
+  labelAssignmentLogs?: LabelAssignmentLog[];
 }): DialogByIdDetails | undefined {
   if (!item) {
     return undefined;
@@ -370,6 +374,7 @@ export function mapDialogToInboxItem({
       activities: item.activities,
       transmissions: item.transmissions,
       notificationLogs,
+      labelAssignmentLogs,
       format,
       serviceOwner,
       selectedProfile,
@@ -394,10 +399,12 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
   const format = useFormat();
   const { locale } = useDateFnsLocale();
   const { organizations, isLoading: isOrganizationsLoading } = useOrganizations();
+
   const queryClient = useQueryClient();
   const disableFlipNamesPatch = useFeatureFlag<boolean>('dialogporten.disableFlipNamesPatch');
   const selectedProfile = useSelectedProfile();
   const { notificationLogs } = useNotificationLogs(id);
+  const { entries: labelAssignmentLogs } = useLabelAssignmentLog(id);
   const partyURIs = parties.map((party) => party.party);
   const { data, isSuccess, isLoading, isError, dataUpdatedAt } = useAuthenticatedQuery<GetDialogByIdQuery>({
     queryKey: [QUERY_KEYS.DIALOG_BY_ID, id],
@@ -442,6 +449,7 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
       selectedProfile,
       locale,
       notificationLogs,
+      labelAssignmentLogs,
     }),
     dataUpdatedAt,
     isError,

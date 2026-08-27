@@ -492,6 +492,45 @@ export const getMockedNotificationLogs = (dialogId: string): NotificationLogsRes
   return [];
 };
 
+const labelAssignmentActors: Record<string, string> = {
+  'SØSTER FANTASIFULL 2024': 'urn:altinn:person:identifier-ephemeral:2b34ab491b',
+  'NORDMANN OLA': 'urn:altinn:person:identifier-ephemeral:7f1c9d2e04',
+};
+
+const labelAssignment = (name: string, action: string, createdAt: string, actorName = 'SØSTER FANTASIFULL 2024') => ({
+  name,
+  action,
+  createdAt,
+  performedBy: {
+    actorType: ActorType.PartyRepresentative,
+    actorId: labelAssignmentActors[actorName],
+    actorName,
+  },
+});
+
+export const getMockedLabelAssignmentLogs = (dialogId: string) => {
+  if (dialogId !== '019241f7-8218-7756-be82-123qwe456rtA') {
+    return [];
+  }
+
+  return [
+    // filed into the archive: the removal of the inbox label is the other half of the same move
+    labelAssignment('systemlabel:Archive', 'set', '2024-08-20T10:15:00.000Z'),
+    labelAssignment('systemlabel:Default', 'removed', '2024-08-20T10:15:00.000Z'),
+    // moved back out again by someone else on the same party
+    labelAssignment('systemlabel:Default', 'set', '2024-08-21T11:30:00.000Z', 'NORDMANN OLA'),
+    labelAssignment('systemlabel:Archive', 'removed', '2024-08-21T11:30:00.000Z', 'NORDMANN OLA'),
+    // marked as unread, then read again when the dialog was next opened
+    labelAssignment('systemlabel:MarkedAsUnopened', 'set', '2024-08-22T09:00:00.000Z'),
+    labelAssignment('systemlabel:MarkedAsUnopened', 'removed', '2024-08-22T14:45:00.000Z'),
+    // thrown in the bin
+    labelAssignment('systemlabel:Bin', 'set', '2024-08-23T16:20:00.000Z'),
+    labelAssignment('systemlabel:Default', 'removed', '2024-08-23T16:20:00.000Z'),
+    // Sent says nothing about who filed the dialog, so it is not part of the log
+    labelAssignment('systemlabel:Sent', 'set', '2024-08-23T16:20:00.000Z'),
+  ];
+};
+
 export const getMockedTransmissions = (dialogId: string) => {
   const dialogWithTransmissions = '019241f7-8218-7756-be82-123qwe456rtA';
   if (dialogId === dialogWithoutActivities) {

@@ -4,6 +4,7 @@ packages:
 minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
   - "@altinn/altinn-components"
+  - "@digdir/dialogporten-schema"
   - brace-expansion@1.1.16
   # Renovate security update: js-yaml@3.15.1
   - js-yaml@3.15.1
