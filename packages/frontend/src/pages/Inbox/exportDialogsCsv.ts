@@ -34,6 +34,7 @@ export const buildDialogCsvRows = (
     t('inbox.export.column.actor'),
     t('inbox.export.column.org_no'),
     t('inbox.export.column.status'),
+    t('inbox.export.column.read_status'),
     t('inbox.export.column.due_at'),
   ];
 
@@ -45,10 +46,17 @@ export const buildDialogCsvRows = (
     item.recipient?.name ?? '',
     getOrganizationNumber(item.party),
     item.status ?? '',
+    getReadStatus(item, t),
     safeFormat(item.dueAt, formatDate),
   ]);
 
   return [header, ...rows];
+};
+
+export const getReadStatus = (item: InboxItemInput, t: TFunction<'translation', undefined>): string => {
+  if (item.unread) return t('word.unread');
+  if (item.unreadItems) return t('word.unread_content');
+  return t('word.read');
 };
 
 /* Only organizations get an identifier column: the person variant of this urn carries a

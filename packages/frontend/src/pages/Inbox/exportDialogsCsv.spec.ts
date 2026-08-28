@@ -5,6 +5,7 @@ import {
   buildDialogCsvRows,
   escapeCsvValue,
   getOrganizationNumber,
+  getReadStatus,
   serializeCsv,
   toCsvFileName,
 } from './exportDialogsCsv.ts';
@@ -26,6 +27,8 @@ const createItem = (overrides: Partial<InboxItemInput> = {}): InboxItemInput =>
     recipient: { name: 'Ola Nordmann', type: 'person' },
     status: DialogStatus.RequiresAttention,
     dueAt: '2026-09-01T00:00:00Z',
+    unread: false,
+    unreadItems: false,
     ...overrides,
   }) as InboxItemInput;
 
@@ -68,6 +71,7 @@ describe('buildDialogCsvRows', () => {
       'inbox.export.column.actor',
       'inbox.export.column.org_no',
       'inbox.export.column.status',
+      'inbox.export.column.read_status',
       'inbox.export.column.due_at',
     ]);
     expect(rows[1]).toEqual([
@@ -78,6 +82,7 @@ describe('buildDialogCsvRows', () => {
       'Ola Nordmann',
       '999888777',
       'REQUIRES_ATTENTION',
+      'word.read',
       'd:2026-09-01T00:00:00Z',
     ]);
   });
@@ -90,7 +95,18 @@ describe('buildDialogCsvRows', () => {
 
   it('leaves the due at column empty when there is no deadline', () => {
     const rows = buildDialogCsvRows([createItem({ dueAt: null })], { t, formatDateTime, formatDate });
-    expect(rows[1]?.[7]).toBe('');
+    expect(rows[1]?.[8]).toBe('');
+  });
+
+  it('reports the read status of each dialog', () => {
+    const rows = buildDialogCsvRows(
+      [createItem({ unread: true }), createItem({ unread: false, unreadItems: true }), createItem()],
+      { t, formatDateTime, formatDate },
+    );
+
+    expect(rows[1]?.[7]).toBe('word.unread');
+    expect(rows[2]?.[7]).toBe('word.unread_content');
+    expect(rows[3]?.[7]).toBe('word.read');
   });
 
   it('leaves date columns empty for unparseable timestamps', () => {
@@ -104,6 +120,20 @@ describe('buildDialogCsvRows', () => {
 
   it('returns only the header when there are no dialogs', () => {
     expect(buildDialogCsvRows([], { t, formatDateTime, formatDate })).toHaveLength(1);
+  });
+});
+
+describe('getReadStatus', () => {
+  it('reports an unread dialog as unread even when it also has unopened items', () => {
+    expect(getReadStatus(createItem({ unread: true, unreadItems: true }), t)).toBe('word.unread');
+  });
+
+  it('reports unread content for a read dialog with unopened items', () => {
+    expect(getReadStatus(createItem({ unread: false, unreadItems: true }), t)).toBe('word.unread_content');
+  });
+
+  it('reports a dialog without unopened items as read', () => {
+    expect(getReadStatus(createItem({ unread: false, unreadItems: undefined }), t)).toBe('word.read');
   });
 });
 

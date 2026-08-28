@@ -217,6 +217,7 @@
   "inbox.heading.title.inbox": "{count, plural, =0 {No results} one {# result} other {# results}}",
   "inbox.heading.title.sent": "{count, plural, =0 {Nothing sent} one {# sent} other {# sent}}",
   "inbox.service_limit_reached.description": "Select max {count} services to see the content.",
+  "inbox.service_owner_limit_reached.description": "Select max {count} service owners to see the content.",
   "inbox.party_limit_reached.description": "You have selected more than {count} organisations. Select fewer organisations to see messages.",
   "inbox.party_limit_reached.description_persons": "You have selected more than {count} persons. Select fewer persons to see messages.",
   "inbox.dialogs_error.description": "An error has occurred: We were unable to fetch your content here.",
@@ -480,6 +481,7 @@
   "word.shortcuts": "Shortcuts",
   "word.born": "Born: ",
   "word.to": "to",
+  "word.read": "Read",
   "word.unread": "Unread",
   "word.unread_content": "Unread content",
   "word.you": "you",
@@ -490,6 +492,7 @@
   "inbox.export.column.actor": "Actor",
   "inbox.export.column.org_no": "Org. no.",
   "inbox.export.column.status": "Status",
+  "inbox.export.column.read_status": "Read status",
   "inbox.export.column.due_at": "Due at",
   "inbox.export.button": "Download to file",
   "inbox.export.button_aria": "Download {count, plural, one {# result} other {# results}} to file"
