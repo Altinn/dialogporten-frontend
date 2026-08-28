@@ -217,6 +217,7 @@
   "inbox.heading.title.inbox": "{count, plural, =0 {Ingen treff} one {# treff} other {# treff}}",
   "inbox.heading.title.sent": "{count, plural, =0 {Ingen sendt} one {# sendt} other {# sendt}}",
   "inbox.service_limit_reached.description": "Vel maks {count} tenester for å sjå innhaldet.",
+  "inbox.service_owner_limit_reached.description": "Vel maks {count} tenesteeigarar for å sjå innhaldet.",
   "inbox.party_limit_reached.description": "Du har valt fleire enn {count} verksemder. Vel færre verksemder for å sjå meldingar.",
   "inbox.party_limit_reached.description_persons": "Du har valt fleire enn {count} personar. Vel færre personar for å sjå meldingar.",
   "inbox.dialogs_error.description": "Det har oppstått ein feil: Vi klarte ikkje å hente innhaldet ditt her.",
