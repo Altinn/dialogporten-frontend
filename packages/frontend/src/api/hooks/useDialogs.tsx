@@ -24,17 +24,24 @@ import { useParties } from './useParties.ts';
 /* Number of max parties used to fetch dialogs with party input param from Dialogporten */
 export const MAX_DIALOG_PARTY_SIZE = 100;
 export const MAX_SERVICE_RESOURCE_SIZE = 20;
+export const MAX_SERVICE_OWNER_SIZE = 20;
 
 export type InboxViewType = 'inbox' | 'drafts' | 'sent' | 'archive' | 'bin';
 
 export const isDialogQueryEnabled = ({
   queryPartyURIs,
   serviceResources,
+  serviceOwners,
 }: {
   queryPartyURIs: string[];
   serviceResources: string[];
+  serviceOwners: string[];
 }): boolean => {
   if (serviceResources.length > MAX_SERVICE_RESOURCE_SIZE) {
+    return false;
+  }
+
+  if (serviceOwners.length > MAX_SERVICE_OWNER_SIZE) {
     return false;
   }
 
@@ -110,14 +117,18 @@ export const useDialogs = ({
   const previousTokensRef = useRef<string>('');
   const viewTypeKey = viewType ?? 'global';
   const queryPartyURIs = allOrganizationsSelected && !isPartyIdsOverridden && serviceResources?.length ? [] : partyIds;
-  const isQueryEnabled = isDialogQueryEnabled({ queryPartyURIs, serviceResources });
+  const serviceOwners = useMemo(
+    () => (Array.isArray(filterState?.org) ? (filterState.org as string[]) : []),
+    [filterState?.org],
+  );
+  const isQueryEnabled = isDialogQueryEnabled({ queryPartyURIs, serviceResources, serviceOwners });
   const partyLimitExceeded = queryPartyURIs.length > MAX_DIALOG_PARTY_SIZE;
 
   const queryVariables = normalizeFilterDefaults({
     filters: {
       partyURIs: queryPartyURIs,
       status: filterState?.status ? (filterState.status as [DialogStatus]) : undefined,
-      org: Array.isArray(filterState?.org) && filterState?.org?.length > 0 ? (filterState?.org as string[]) : undefined,
+      org: serviceOwners.length > 0 ? serviceOwners : undefined,
       systemLabel: filterState?.systemLabel as SystemLabel[] | undefined,
       isContentSeen: filterState?.isContentSeen as string[] | undefined,
       updatedAfter: filterState?.updated,
