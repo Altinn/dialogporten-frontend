@@ -481,6 +481,7 @@
   "word.shortcuts": "Snarveier",
   "word.born": "Født: ",
   "word.to": "til",
+  "word.read": "Lest",
   "word.unread": "Ulest",
   "word.unread_content": "Ulest innhold",
   "word.you": "deg",
@@ -491,6 +492,7 @@
   "inbox.export.column.actor": "Aktør",
   "inbox.export.column.org_no": "Orgnr",
   "inbox.export.column.status": "Status",
+  "inbox.export.column.read_status": "Lest/ulest",
   "inbox.export.column.due_at": "Frist",
   "inbox.export.button": "Last ned til fil",
   "inbox.export.button_aria": "Last ned {count, plural, one {# treff} other {# treff}} til fil"
