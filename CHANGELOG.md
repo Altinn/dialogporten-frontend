@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.173.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.173.2...v1.173.3) (2026-08-29)
+
+
+### Bug Fixes
+
+* **header:** account selector glitch when cookie banner was open ([#4580](https://github.com/Altinn/dialogporten-frontend/issues/4580)) ([e2af804](https://github.com/Altinn/dialogporten-frontend/commit/e2af804d8755a496a57aed44705b521162108561))
+* **skyra:** reload on path change ([#4582](https://github.com/Altinn/dialogporten-frontend/issues/4582)) ([2888b1e](https://github.com/Altinn/dialogporten-frontend/commit/2888b1e94e9271ba4c43fc30335386a3b65d31c9))
+
 ## [1.173.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.173.1...v1.173.2) (2026-08-28)
 
 
