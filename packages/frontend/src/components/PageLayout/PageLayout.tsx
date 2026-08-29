@@ -9,6 +9,7 @@ import {
   SkyraSurvey,
   Snackbar,
   useConsent,
+  useSkyraReload,
 } from '@altinn/altinn-components';
 import { useQueryClient } from '@tanstack/react-query';
 import type { PartyFieldsFragment } from 'bff-types-generated';
@@ -52,10 +53,11 @@ export const PageLayout: React.FC = () => {
   const { headerProps } = useHeaderConfig();
   const footer: FooterProps = useFooter();
   const { sidebarMenu } = useGlobalMenu();
-  const { state } = useLocation();
+  const { state, pathname } = useLocation();
   const fromView = (state as { fromView?: string })?.fromView;
   const { consent, rejectAll, acceptAll, isAnswered } = useConsent();
   const isSkyraEnabled = useFeatureFlag<boolean>('global.enableSkyra');
+  useSkyraReload(pathname);
 
   useProfile();
 

@@ -492,8 +492,8 @@ importers:
   packages/frontend:
     dependencies:
       '@altinn/altinn-components':
-        specifier: 0.72.2
-        version: 0.72.2(@types/react@19.2.7)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+        specifier: 0.72.5
+        version: 0.72.5(@types/react@19.2.7)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@microsoft/applicationinsights-react-js':
         specifier: 19.4.1
         version: 19.4.1(history@4.10.1)(react@19.2.8)(tslib@2.8.1)
@@ -628,8 +628,8 @@ packages:
   '@adobe/css-tools@4.4.4':
     resolution: {integrity: sha512-Elp+iwUx5rN5+Y8xLt5/GRoG20WGoDCQ/1Fb+1LiGtvwbDavuSk0jhD/eZdckHAuzcDzccnkv+rEjyWfRx18gg==}
 
-  '@altinn/altinn-components@0.72.2':
-    resolution: {integrity: sha512-yZyMlDMXzdwtjCMP6t+VdEidlwAJa+Kq7s/IclG4V9qi7uAem9jq3o9D3e+3xcyqdmi2Vy075ITkhfkcXl9r/g==}
+  '@altinn/altinn-components@0.72.5':
+    resolution: {integrity: sha512-MUc1VCvCnni/MUTZrJwImWWiFP6f3DLUcvfZnGMvfE5sSxHMYQ+o9rFJIXslqgSF3wUASxMNmL57FEV64whf/A==}
     peerDependencies:
       react: '>=18.3.1 || ^19.0.0'
       react-dom: '>=18.3.1 || ^19.0.0'
@@ -7456,7 +7456,7 @@ snapshots:
 
   '@adobe/css-tools@4.4.4': {}
 
-  '@altinn/altinn-components@0.72.2(@types/react@19.2.7)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+  '@altinn/altinn-components@0.72.5(@types/react@19.2.7)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
       '@digdir/designsystemet-css': 1.14.0
       '@digdir/designsystemet-react': 1.14.0(@types/react@19.2.7)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
