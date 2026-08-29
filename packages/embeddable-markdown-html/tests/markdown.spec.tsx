@@ -103,12 +103,12 @@ describe('Markdown: common mark + table support', () => {
   });
 
   /* Tests for unsupported tags */
-  test('should not render image', async () => {
-    const markdownString = '![image example](./example.png) *something else*';
+  test('should render image', async () => {
+    const markdownString = '![image example](https://example.com/example.png) *something else*';
     const { container } = render(<Markdown onError={() => {}}>{markdownString}</Markdown>);
     await waitFor(() => {
       expect(container.querySelector('em')).toBeInTheDocument();
-      expect(container.querySelector('img')).not.toBeInTheDocument();
+      expect(container.querySelector('img')).toHaveAttribute('alt', 'image example');
     });
   });
 
@@ -142,12 +142,12 @@ describe('Markdown: common mark + table support', () => {
     });
   });
 
-  test('should sanitize raw <div> HTML but render emphasized text', async () => {
+  test('should render raw <div> HTML alongside emphasized text', async () => {
     const markdownString = '*emphasis* <div>raw html</div>';
     const { container } = render(<Markdown onError={() => {}}>{markdownString}</Markdown>);
     await waitFor(() => {
       expect(container.querySelector('em')).toHaveTextContent('emphasis');
-      expect(container.innerHTML).not.toContain('<div>');
+      expect(container.querySelector('div')).toHaveTextContent('raw html');
     });
   });
 
