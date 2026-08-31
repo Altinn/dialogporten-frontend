@@ -15,6 +15,7 @@ import type { InMemoryStore } from '../../handlers.ts';
 
 export const MAX_PARTY_URIS = 100;
 export const MAX_SERVICE_RESOURCES = 20;
+export const MAX_SERVICE_OWNERS = 20;
 
 export const filterDialogs = ({
   inMemoryStore,
@@ -32,7 +33,7 @@ export const filterDialogs = ({
   partyURIs: string[];
   serviceResources?: string[];
   search?: string;
-  org?: string;
+  org?: string | string[];
   label?: string;
   status?: string | string[];
   updatedBefore?: string;
@@ -43,9 +44,11 @@ export const filterDialogs = ({
 
   const partyURIList = partyURIs ?? [];
   const serviceResourceList = serviceResources ?? [];
+  const orgList = Array.isArray(org) ? org : org ? [org] : [];
 
   if (partyURIList.length > MAX_PARTY_URIS) return null;
   if (serviceResourceList.length > MAX_SERVICE_RESOURCES) return null;
+  if (orgList.length > MAX_SERVICE_OWNERS) return null;
   if (partyURIList.length === 0 && serviceResourceList.length === 0) return null;
 
   if (partyURIList.length > 0) {
@@ -72,7 +75,7 @@ export const filterDialogs = ({
       (!updatedBefore || dialog.contentUpdatedAt < updatedBefore) &&
       (!updatedAfter || dialog.contentUpdatedAt > updatedAfter);
 
-    const matchesOrg = !org?.length || org.includes(dialog.org);
+    const matchesOrg = !orgList.length || orgList.includes(dialog.org);
 
     const matchesLabels =
       !labels.length || dialog.endUserContext?.systemLabels?.some((dialogLabel) => labels.includes(dialogLabel));

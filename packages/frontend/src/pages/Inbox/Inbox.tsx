@@ -24,6 +24,7 @@ import { MAX_COUNT_BULK_DIALOGS, useBulkActions } from '../../api/hooks/useBulkA
 import {
   type InboxViewType,
   MAX_DIALOG_PARTY_SIZE,
+  MAX_SERVICE_OWNER_SIZE,
   MAX_SERVICE_RESOURCE_SIZE,
   useDialogs,
 } from '../../api/hooks/useDialogs.tsx';
@@ -135,6 +136,8 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const selectedServices = (filterState.service ?? []) as string[];
   const selectedServicesCount = selectedServices.length;
   const serviceLimitReached = selectedServicesCount > MAX_SERVICE_RESOURCE_SIZE;
+  const selectedServiceOwners = (filterState.org ?? []) as string[];
+  const serviceOwnerLimitReached = selectedServiceOwners.length > MAX_SERVICE_OWNER_SIZE;
 
   const {
     accounts,
@@ -443,6 +446,10 @@ export const Inbox = ({ viewType }: InboxProps) => {
       ) : serviceLimitReached ? (
         <Typography variant="subtle" size="sm">
           <p>{t('inbox.service_limit_reached.description', { count: MAX_SERVICE_RESOURCE_SIZE })} </p>
+        </Typography>
+      ) : serviceOwnerLimitReached ? (
+        <Typography variant="subtle" size="sm">
+          <p>{t('inbox.service_owner_limit_reached.description', { count: MAX_SERVICE_OWNER_SIZE })}</p>
         </Typography>
       ) : partyLimitExceeded && !accountNavigatorVisible ? (
         <Typography variant="subtle" size="sm">

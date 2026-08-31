@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.173.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.173.2...v1.173.3) (2026-08-29)
+
+
+### Bug Fixes
+
+* **header:** account selector glitch when cookie banner was open ([#4580](https://github.com/Altinn/dialogporten-frontend/issues/4580)) ([e2af804](https://github.com/Altinn/dialogporten-frontend/commit/e2af804d8755a496a57aed44705b521162108561))
+* **skyra:** reload on path change ([#4582](https://github.com/Altinn/dialogporten-frontend/issues/4582)) ([2888b1e](https://github.com/Altinn/dialogporten-frontend/commit/2888b1e94e9271ba4c43fc30335386a3b65d31c9))
+
+## [1.173.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.173.1...v1.173.2) (2026-08-28)
+
+
+### Bug Fixes
+
+* **guiAction:** re-enable gui action when the prompt is declined ([#4569](https://github.com/Altinn/dialogporten-frontend/issues/4569)) ([56f08ea](https://github.com/Altinn/dialogporten-frontend/commit/56f08ea78472db4c89394f191d9423988d44334f))
+* **inbox:** add read status column to CSV export ([#4579](https://github.com/Altinn/dialogporten-frontend/issues/4579)) ([6ed043b](https://github.com/Altinn/dialogporten-frontend/commit/6ed043b9c1af2508faffc6d31a0683f48231444b))
+* **inbox:** never mark the end user's own transmissions as unread even though list of activities is empty ([#4567](https://github.com/Altinn/dialogporten-frontend/issues/4567)) ([a0fbdf8](https://github.com/Altinn/dialogporten-frontend/commit/a0fbdf870d242e6f2f07e44791a093bc8dd4891b))
+* **inbox:** show a notice when more than 20 service owners are selected ([#4578](https://github.com/Altinn/dialogporten-frontend/issues/4578)) ([64ffaa7](https://github.com/Altinn/dialogporten-frontend/commit/64ffaa73b24de495117f5008bee8f7ac8587be70))
+
 ## [1.173.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.173.0...v1.173.1) (2026-08-20)
 
 

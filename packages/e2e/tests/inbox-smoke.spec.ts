@@ -19,7 +19,7 @@ test.describe('Inbox smoke tests', () => {
     await page.getByRole('link', { name: 'BACK OFF! Dette er en' }).click();
 
     await expect(page).toHaveURL(`${baseURL}/inbox/0198cc16-d75d-75ad-b6bc-2337d64363dd/`);
-    await expect(page.getByText(/Digitaliseringsdirektoratet\s*til Ustabil Konditor/)).toBeVisible();
+    await expect(page.getByText(/Digitaliseringsdirektoratet.*til.*Ustabil Konditor/)).toBeVisible();
 
     await expect(
       page

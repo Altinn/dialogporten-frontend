@@ -5,10 +5,12 @@ import { appURLInbox } from '../index';
  * Covers the notices shown when the dialog query cannot run, so the inbox is never
  * a silent blank:
  *  - the service-resource limit (>20 services),
+ *  - the service-owner limit (>20 service owners),
  *  - a failed dialog fetch.
  */
 
 const SERVICE_LIMIT_NOTICE = 'Velg maks 20 tjenester';
+const SERVICE_OWNER_LIMIT_NOTICE = 'Velg maks 20 tjenesteeiere';
 const DIALOGS_ERROR_NOTICE = 'En feil har oppstått';
 
 test.describe('Service-resource limit (> 20 services)', () => {
@@ -20,6 +22,26 @@ test.describe('Service-resource limit (> 20 services)', () => {
     await page.goto(appURL);
 
     await expect(page.getByText(SERVICE_LIMIT_NOTICE)).toBeVisible();
+  });
+});
+
+test.describe('Service-owner limit (> 20 service owners)', () => {
+  // 21 service owner filters pushed in via the URL — over MAX_SERVICE_OWNER_SIZE (20).
+  const manyServiceOwners = Array.from({ length: 21 }, (_, i) => `org=org-${i}`).join('&');
+  const appURL = `${appURLInbox}&${manyServiceOwners}`;
+
+  test('shows the service-owner-limit notice and does not run the query', async ({ page }) => {
+    await page.goto(appURL);
+
+    await expect(page.getByText(SERVICE_OWNER_LIMIT_NOTICE)).toBeVisible();
+  });
+
+  test('shows only the service notice when both limits are exceeded', async ({ page }) => {
+    const manyServices = Array.from({ length: 21 }, (_, i) => `service=urn:altinn:resource:svc-${i}`).join('&');
+    await page.goto(`${appURL}&${manyServices}`);
+
+    await expect(page.getByText(SERVICE_LIMIT_NOTICE)).toBeVisible();
+    await expect(page.getByText(SERVICE_OWNER_LIMIT_NOTICE)).toBeHidden();
   });
 });
 
