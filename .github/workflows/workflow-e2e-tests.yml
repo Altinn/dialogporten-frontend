@@ -28,7 +28,7 @@ permissions:
 jobs:
   e2e-tests:
     name: Run E2E Tests
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     environment: ${{ inputs.environment }}
     outputs:
       test_status: ${{ steps.run-tests.outcome }}
@@ -57,7 +57,7 @@ jobs:
         uses: ./.github/actions/install
 
       - name: Install Playwright dependencies
-        run: pnpm --filter e2e install:browsers
+        run: pnpm --filter e2e exec playwright install --with-deps chromium
 
       - name: Run E2E Tests
         id: run-tests
