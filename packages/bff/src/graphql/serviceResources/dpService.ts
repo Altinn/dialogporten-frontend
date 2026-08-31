@@ -98,11 +98,10 @@ export async function getDpServiceResources(langs: string[], context: Context): 
   try {
     const items = await fetchDpServiceResources(context, langs);
 
-    const resources: TransformedServiceResource[] = items.map((item) => ({
+    const resources: Omit<TransformedServiceResource, 'resourceType'>[] = items.map((item) => ({
       id: item.serviceResource.id,
       title: localizationsToLocalizedText(item.serviceResource.name ?? []),
       org: (item.serviceOwner?.code ?? '').toLowerCase(),
-      resourceType: '',
     }));
 
     return resources.map((r) => ({

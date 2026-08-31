@@ -11,6 +11,7 @@ import {
   type GetServiceResourcesQuery,
   type GetServiceResourcesQueryVariables,
   getSdk,
+  type NotificationLogsQuery,
   type NotificationSettingsInput,
   type NotificationsettingsForCurrentUserQuery,
   type OrganizationsQuery,
@@ -267,6 +268,9 @@ export const setShowClientUnits = (shouldShowClientUnits: boolean): Promise<SetS
   graphQLSDK.setShowClientUnits({ shouldShowClientUnits });
 
 export const getVerifiedAddresses = (): Promise<VerifiedAddressesQuery> => graphQLSDK.verifiedAddresses();
+
+export const getNotificationLogs = (dialogId: string): Promise<NotificationLogsQuery> =>
+  graphQLSDK.notificationLogs({ dialogId });
 
 export const verifyAddress = (data: VerifyAddressMutationVariables['data']): Promise<VerifyAddressMutation> =>
   graphQLSDK.verifyAddress({ data });
