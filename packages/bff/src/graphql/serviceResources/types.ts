@@ -21,11 +21,5 @@ export const ServiceResource = objectType({
         return resource.org;
       },
     });
-    t.string('resourceType', {
-      description: 'Type of the service resource',
-      resolve: (resource) => {
-        return resource.resourceType;
-      },
-    });
   },
 });

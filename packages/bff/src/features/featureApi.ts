@@ -14,6 +14,7 @@ const defaultFeatureFlags: Record<string, boolean> = {
   'profile.enableSetUserName': false,
   'fce.enablePreferHeader': false,
   'global.enableSkyra': false,
+  'dialogDetails.enableNotificationLogs': false,
 };
 
 const defaultAppConfigValues: Record<string, string[]> = {

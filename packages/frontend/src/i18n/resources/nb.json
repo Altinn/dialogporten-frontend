@@ -217,6 +217,7 @@
   "inbox.heading.title.inbox": "{count, plural, =0 {Ingen treff} one {# treff} other {# treff}}",
   "inbox.heading.title.sent": "{count, plural, =0 {Ingen sendt} one {# sendt} other {# sendt}}",
   "inbox.service_limit_reached.description": "Velg maks {count} tjenester for å se innholdet.",
+  "inbox.service_owner_limit_reached.description": "Velg maks {count} tjenesteeiere for å se innholdet.",
   "inbox.party_limit_reached.description": "Du har valgt flere enn {count} virksomheter. Velg færre virksomheter for å se meldinger.",
   "inbox.party_limit_reached.description_persons": "Du har valgt flere enn {count} personer. Velg færre personer for å se meldinger.",
   "inbox.dialogs_error.description": "En feil har oppstått: Vi klarte ikke å hente innholdet ditt her.",
@@ -480,6 +481,7 @@
   "word.shortcuts": "Snarveier",
   "word.born": "Født: ",
   "word.to": "til",
+  "word.read": "Lest",
   "word.unread": "Ulest",
   "word.unread_content": "Ulest innhold",
   "word.you": "deg",
@@ -490,6 +492,7 @@
   "inbox.export.column.actor": "Aktør",
   "inbox.export.column.org_no": "Orgnr",
   "inbox.export.column.status": "Status",
+  "inbox.export.column.read_status": "Lest/ulest",
   "inbox.export.column.due_at": "Frist",
   "inbox.export.button": "Last ned til fil",
   "inbox.export.button_aria": "Last ned {count, plural, one {# treff} other {# treff}} til fil"

@@ -11,7 +11,7 @@ export interface TransformedServiceResource {
   resourceType: string;
 }
 
-export interface ServiceResourceResponseDTO extends Omit<TransformedServiceResource, 'title'> {
+export interface ServiceResourceResponseDTO extends Omit<TransformedServiceResource, 'title' | 'resourceType'> {
   title: string;
 }
 

@@ -15,6 +15,7 @@ import type { InMemoryStore } from '../../handlers.ts';
 
 export const MAX_PARTY_URIS = 100;
 export const MAX_SERVICE_RESOURCES = 20;
+export const MAX_SERVICE_OWNERS = 20;
 
 export const filterDialogs = ({
   inMemoryStore,
@@ -32,7 +33,7 @@ export const filterDialogs = ({
   partyURIs: string[];
   serviceResources?: string[];
   search?: string;
-  org?: string;
+  org?: string | string[];
   label?: string;
   status?: string | string[];
   updatedBefore?: string;
@@ -43,9 +44,11 @@ export const filterDialogs = ({
 
   const partyURIList = partyURIs ?? [];
   const serviceResourceList = serviceResources ?? [];
+  const orgList = Array.isArray(org) ? org : org ? [org] : [];
 
   if (partyURIList.length > MAX_PARTY_URIS) return null;
   if (serviceResourceList.length > MAX_SERVICE_RESOURCES) return null;
+  if (orgList.length > MAX_SERVICE_OWNERS) return null;
   if (partyURIList.length === 0 && serviceResourceList.length === 0) return null;
 
   if (partyURIList.length > 0) {
@@ -72,7 +75,7 @@ export const filterDialogs = ({
       (!updatedBefore || dialog.contentUpdatedAt < updatedBefore) &&
       (!updatedAfter || dialog.contentUpdatedAt > updatedAfter);
 
-    const matchesOrg = !org?.length || org.includes(dialog.org);
+    const matchesOrg = !orgList.length || orgList.includes(dialog.org);
 
     const matchesLabels =
       !labels.length || dialog.endUserContext?.systemLabels?.some((dialogLabel) => labels.includes(dialogLabel));
@@ -167,7 +170,13 @@ export const getMockedUnauthorizedFCEContent = () => {
   };
 };
 
+/* A dialog is not required to have any activities; this one deliberately has none. */
+export const dialogWithoutActivities = '019241f7-8218-7756-be82-noactivities';
+
 export const getMockedActivities = (id: string): DialogByIdFieldsFragment['activities'] => {
+  if (id === dialogWithoutActivities) {
+    return [];
+  }
   if (id === '019241f7-8218-7756-be82-123qwe456rtA') {
     return [
       {
@@ -253,6 +262,58 @@ export const getMockedActivities = (id: string): DialogByIdFieldsFragment['activ
 
 export const getMockedTransmissions = (dialogId: string) => {
   const dialogWithTransmissions = '019241f7-8218-7756-be82-123qwe456rtA';
+  if (dialogId === dialogWithoutActivities) {
+    return [
+      {
+        id: 'transmission-from-agency',
+        relatedTransmissionId: null,
+        isAuthorized: true,
+        createdAt: '2024-07-30T18:12:54.233Z',
+        type: TransmissionType.Information,
+        sender: {
+          actorType: ActorType.ServiceOwner,
+          actorId: null,
+          actorName: null,
+        },
+        content: {
+          title: {
+            value: [{ value: 'Melding fra etaten', languageCode: 'nb' }],
+            mediaType: 'text/plain',
+          },
+          summary: {
+            value: [{ value: 'Vi trenger noen opplysninger fra deg.', languageCode: 'nb' }],
+            mediaType: 'text/plain',
+          },
+          contentReference: null,
+        },
+        attachments: [],
+      },
+      {
+        id: 'transmission-own-reply',
+        relatedTransmissionId: 'transmission-from-agency',
+        isAuthorized: true,
+        createdAt: '2024-07-31T18:12:54.233Z',
+        type: TransmissionType.Submission,
+        sender: {
+          actorType: ActorType.PartyRepresentative,
+          actorId: null,
+          actorName: 'NORDMANN KARI',
+        },
+        content: {
+          title: {
+            value: [{ value: 'Mitt svar til etaten', languageCode: 'nb' }],
+            mediaType: 'text/plain',
+          },
+          summary: {
+            value: [{ value: 'Opplysningene stemmer.', languageCode: 'nb' }],
+            mediaType: 'text/plain',
+          },
+          contentReference: null,
+        },
+        attachments: [],
+      },
+    ];
+  }
   if (dialogId === dialogWithTransmissions) {
     return [
       {
@@ -699,6 +760,58 @@ export const getMockedTransmissions = (dialogId: string) => {
   return [];
 };
 
+/* A service owner can put a confirmation prompt on an authorized action; the default mock action is
+   unauthorized, and so renders disabled and cannot exercise that flow. */
+export const dialogWithPromptAction = '019241f7-8218-7756-be82-promptaction';
+
+const getMockedGuiActions = (id: string): DialogByIdFieldsFragment['guiActions'] => {
+  if (id === dialogWithPromptAction) {
+    return [
+      {
+        id: 'confirm-with-prompt',
+        url: 'https://dialogporten-serviceprovider.net/mutate/state-1/3',
+        isAuthorized: true,
+        isDeleteDialogAction: false,
+        action: 'submit',
+        authorizationAttribute: null,
+        priority: GuiActionPriority.Primary,
+        httpMethod: HttpVerb.Post,
+        title: [
+          {
+            languageCode: 'nb',
+            value: 'Send inn',
+          },
+        ],
+        prompt: [
+          {
+            languageCode: 'nb',
+            value: 'Er du sikker på at du vil sende inn?',
+          },
+        ],
+      },
+    ];
+  }
+  return [
+    {
+      id,
+      url: 'urn:dialogporten:unauthorized',
+      isAuthorized: false,
+      isDeleteDialogAction: false,
+      action: 'submit',
+      authorizationAttribute: null,
+      priority: GuiActionPriority.Primary,
+      httpMethod: HttpVerb.Get,
+      title: [
+        {
+          languageCode: 'nb',
+          value: 'Til skjema',
+        },
+      ],
+      prompt: [],
+    },
+  ];
+};
+
 export const convertToDialogByIdTemplate = (input: SearchDialogFieldsFragment): DialogByIdFieldsFragment => {
   return {
     id: input.id,
@@ -732,25 +845,7 @@ export const convertToDialogByIdTemplate = (input: SearchDialogFieldsFragment): 
     transmissions: getMockedTransmissions(input.id),
     fromServiceOwnerTransmissionsCount: 3,
     fromPartyTransmissionsCount: 4,
-    guiActions: [
-      {
-        id: input.id,
-        url: 'urn:dialogporten:unauthorized',
-        isAuthorized: false,
-        isDeleteDialogAction: false,
-        action: 'submit',
-        authorizationAttribute: null,
-        priority: GuiActionPriority.Primary,
-        httpMethod: HttpVerb.Get,
-        title: [
-          {
-            languageCode: 'nb',
-            value: 'Til skjema',
-          },
-        ],
-        prompt: [],
-      },
-    ],
+    guiActions: getMockedGuiActions(input.id),
     seenSinceLastContentUpdate: input.seenSinceLastContentUpdate,
     status: input.status,
     createdAt: input.createdAt,

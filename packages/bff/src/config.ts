@@ -50,7 +50,7 @@ const envVariables = z.object({
   MASKINPORTEN_CLIENT_ID: z.string().default(''),
   MASKINPORTEN_JWK: z.string().default(''),
   MASKINPORTEN_ISSUER: z.string().default('https://test.maskinporten.no/'),
-  MASKINPORTEN_SCOPE: z.string().default('altinn:register/partylookup.admin'),
+  MASKINPORTEN_SCOPE: z.string().default('altinn:register/partylookup.admin altinn:serviceowner/notifications.create'),
   OCP_APIM_SUBSCRIPTION_KEY: z.string().default(''),
   REGISTER_SUBSCRIPTION_KEY: z.string().default(''),
 });

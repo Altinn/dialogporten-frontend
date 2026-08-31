@@ -1,8 +1,9 @@
 ---
 title: "Maskinporten"
 ---
-Machine-to-machine flow used by the BFF for the Altinn Register `set-username` / party-query
-endpoints, which require an admin scope no end-user token carries.
+Machine-to-machine flow used by the BFF for endpoints that require a scope no end-user token
+carries: the Altinn Register `set-username` / party-query endpoints, and the Altinn Notifications
+log endpoint behind the `notificationLogs` query.
 
 > Status: token exchange is being verified end-to-end. Treat the exchange step as provisional.
 
@@ -13,17 +14,18 @@ sequenceDiagram
     participant BFF
     participant Maskinporten
     participant Altinn as Altinn Auth
-    participant Register
+    participant API as Register / Notifications
 
     BFF->>Maskinporten: JWT-bearer grant (signed client_assertion)
-    Maskinporten-->>BFF: access_token (scope altinn:register/partylookup.admin)
+    Maskinporten-->>BFF: access_token (all scopes in MASKINPORTEN_SCOPE)
     BFF->>Altinn: GET /authentication/api/v1/exchange/maskinporten (Bearer maskinporten-token)
     Altinn-->>BFF: Altinn token
-    BFF->>Register: POST parties/set-username | parties/query (Bearer Altinn token + Ocp-Apim-Subscription-Key)
-    Register-->>BFF: 200 / problem+json
+    BFF->>API: POST parties/set-username | parties/query (+ Ocp-Apim-Subscription-Key)<br/>GET notifications/api/v1/future/log?dialogId=...
+    API-->>BFF: 200 / problem+json
 ```
 
-Both tokens are cached in Redis, each keyed off its own expiry.
+Both tokens are cached in Redis, each keyed off its own expiry. One token covers every scope in
+`MASKINPORTEN_SCOPE`, so adding a scope does not add a second token round-trip.
 
 ## Config (BFF)
 
@@ -32,7 +34,7 @@ Both tokens are cached in Redis, each keyed off its own expiry.
 | `MASKINPORTEN_CLIENT_ID` | Maskinporten integration client id |
 | `MASKINPORTEN_JWK` | Private JWK (JSON) signing the `client_assertion`; store as secret |
 | `MASKINPORTEN_ISSUER` | Issuer base URL; token endpoint is `<issuer>token` |
-| `MASKINPORTEN_SCOPE` | Requested scope (`altinn:register/partylookup.admin`) |
+| `MASKINPORTEN_SCOPE` | Space-separated scopes: `altinn:register/partylookup.admin` (register) and `altinn:serviceowner/notifications.create` (notification logs) |
 | `REGISTER_SUBSCRIPTION_KEY` | APIM key for register endpoints (`Ocp-Apim-Subscription-Key`) |
 
 The `set-username` UI is gated by the `profile.enableSetUserName` feature flag.

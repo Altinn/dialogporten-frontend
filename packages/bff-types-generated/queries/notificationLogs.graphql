@@ -1,0 +1,13 @@
+query notificationLogs($dialogId: String!) {
+  notificationLogs(dialogId: $dialogId) {
+    notificationId
+    dialogId
+    transmissionId
+    type
+    channel
+    destination
+    status
+    requestedSendTime
+    lastUpdateTime
+  }
+}
