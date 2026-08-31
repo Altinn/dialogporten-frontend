@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.174.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.173.3...v1.174.0) (2026-08-31)
+
+
+### Features
+
+* **notifications:** fetch notification logs behind a feature flag ([#4576](https://github.com/Altinn/dialogporten-frontend/issues/4576)) ([a500ac0](https://github.com/Altinn/dialogporten-frontend/commit/a500ac06744e37dc4086116f75957e54652286fd))
+
 ## [1.173.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.173.2...v1.173.3) (2026-08-29)
 
 
