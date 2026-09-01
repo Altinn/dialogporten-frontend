@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.174.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.174.0...v1.174.1) (2026-09-01)
+
+
+### Bug Fixes
+
+* **scripts:** biome:fix-staged invoking missing husky binary ([#4587](https://github.com/Altinn/dialogporten-frontend/issues/4587)) ([5ee8c51](https://github.com/Altinn/dialogporten-frontend/commit/5ee8c513f66ebeb1d39fd05d4d54ad16ca3b3226))
+
 ## [1.174.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.173.3...v1.174.0) (2026-08-31)
 
 
