@@ -6,7 +6,7 @@
     "hooks:enable": "git config core.hooksPath .hooks",
     "hooks:disable": "git config --unset core.hooksPath",
     "hooks:status": "if [ \"$(git config core.hooksPath)\" == \".hooks\" ]; then echo 'Git hooks is enabled'; else echo 'git hooks is disabled'; fi",
-    "biome:fix-staged": "pnpm husky check --staged --fix",
+    "biome:fix-staged": "pnpm biome check --staged --no-errors-on-unmatched --write",
     "biome:fix": "pnpm biome check --no-errors-on-unmatched --write"
   },
   "devDependencies": {
