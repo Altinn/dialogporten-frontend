@@ -25,8 +25,8 @@ The BFF uses OpenTelemetry with the OTLP exporter configured in `packages/bff/sr
 
 ```typescript
 import { NodeSDK } from '@opentelemetry/sdk-node';
-import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
-import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http';
+import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
+import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-grpc';
 ```
 
 #### Key Features:
@@ -87,7 +87,7 @@ This enables correlation with frontend telemetry.
 
 ### Configuration
 
-The frontend uses Application Insights SDK directly, configured in `packages/frontend/src/analytics.ts`:
+The frontend uses Application Insights SDK directly, configured in `packages/frontend/src/analytics/analytics.ts`:
 
 ```typescript
 import { ApplicationInsights } from '@microsoft/applicationinsights-web';
@@ -96,40 +96,55 @@ import { ReactPlugin } from '@microsoft/applicationinsights-react-js';
 
 #### Key Features:
 1. **React Integration**: Automatic component lifecycle tracking
-2. **Route Tracking**: Automatic page view tracking
-3. **Error Handling**: Unhandled promise rejection tracking
+2. **Route Tracking**: Manual page view tracking via the `usePageTracking` hook (`enableAutoRouteTracking: false`), limited to an allowlist of routes
+3. **Error Handling**: Manual `trackException` calls with noise filtering (`enableUnhandledPromiseRejectionTracking: false`)
 4. **CORS Correlation**: Cross-origin request correlation
 5. **Manual Dependency Tracking**: Custom fetch tracking with backend correlation
 
 #### Configuration Highlights:
 - **Disabled Automatic Tracking**: `disableAjaxTracking: true, disableFetchTracking: true`
 - **Enhanced Correlation**: `enableCorsCorrelation: true`
-- **Debug Mode**: `enableDebug: true` for development
-- **Custom Sampling**: Configurable sampling percentage
+- **Debug Mode**: Not enabled. Do not set `enableDebug` — it makes `_throwInternal` throw before `clearSent`, which wedges failed telemetry in sessionStorage until it trips the 48h limit
+- **Sampling**: `samplingPercentage: 100` — no client-side sampling
 
 ### Trace Correlation
 
 The frontend correlates with backend traces through the `trackFetchDependency` function:
 
 ```typescript
-export const trackFetchDependency = async (url: string, options: RequestInit = {}) => {
-  // ... request execution ...
-  
+const trackFetchDependency = async (
+  name: string,
+  fetchPromise: Promise<Response>,
+  startTime: number = Date.now(),
+): Promise<Response> => {
+  // ... await the promise, record status and duration ...
+
   // Extract backend trace ID from response
   backendTraceId = response.headers.get('X-Trace-Id') || backendTraceId;
-  
+
   // Track dependency with correlation
   Analytics.trackDependency({
-    id: backendTraceId || `${Date.now()}`, // Use backend trace ID when available
+    id: backendTraceId,
+    target: targetUrl,
+    name,
+    duration,
+    success,
+    responseCode: responseStatus,
     properties: {
       'backend.traceId': backendTraceId,
-      'correlation.source': 'frontend',
-      'request.type': 'graphql',
-      'timing.correctionFlag': 'true'
-    }
+      'correlation.source': 'backend-response',
+      'request.type': name.includes('GraphQL') ? 'graphql' : 'http',
+    },
+    type: 'HTTP',
   });
 };
 ```
+
+**Note**: dependency telemetry is currently discarded before it leaves the browser. All
+deployed environments set `applicationInsightsDisableDependencyTracking` to `'true'`, and the
+telemetry initializer drops every `RemoteDependencyData` envelope when that flag is on. The
+correlation described above works, but the resulting telemetry does not reach Application
+Insights until that parameter is flipped in `.azure/applications/frontend/*.bicepparam`.
 
 ### Error Filtering
 
@@ -164,11 +179,17 @@ sequenceDiagram
 ### BFF Environment Variables
 ```bash
 # OpenTelemetry OTLP endpoint (automatically set by Azure Container Apps)
-OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4318"
+OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4317"
 
-# OpenTelemetry protocol (optional, defaults to http/protobuf)
-OTEL_EXPORTER_OTLP_PROTOCOL="http/protobuf"  # Options: http/protobuf, http/json, grpc
+# Trace sampling ratio, 0-1 (optional, defaults to 1 = sample everything)
+OTEL_TRACES_SAMPLER_ARG="1"
+
+# OpenTelemetry protocol (parsed but NOT honoured - see note below)
+OTEL_EXPORTER_OTLP_PROTOCOL="grpc"  # Options: http/protobuf, http/json, grpc
 ```
+
+**Note**: `OTEL_EXPORTER_OTLP_PROTOCOL` is validated and logged at startup, but the exporters
+in `instrumentation.ts` are hardcoded to the gRPC variants, so changing it has no effect.
 
 **Note**: When `OTEL_EXPORTER_OTLP_ENDPOINT` is not set, the BFF runs in local development mode with console output for logs and traces.
 

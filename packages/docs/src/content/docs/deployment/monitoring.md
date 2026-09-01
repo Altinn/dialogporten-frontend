@@ -33,9 +33,9 @@ Arbeidsflate uses OpenTelemetry for collecting and routing telemetry data:
 
 ### Implementation Details
 - Traces and logs are configured to use Application Insights as destination
-- Uses standard OpenTelemetry instrumentation for .NET
+- Uses the OpenTelemetry Node SDK (`@opentelemetry/sdk-node`) in the BFF; the frontend uses the Application Insights Web SDK directly
 - Automatic correlation of distributed traces across services
-- Custom metrics and traces can be added through the OpenTelemetry SDK
+- Custom traces can be added through the OpenTelemetry SDK. Metrics are **not** routed anywhere: the Container Apps environment declares `tracesConfiguration` and `logsConfiguration` only, so any exported metrics are discarded by the agent
 
 ## Redis Dashboard
 
