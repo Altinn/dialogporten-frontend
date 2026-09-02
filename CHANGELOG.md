@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.175.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.174.1...v1.175.0) (2026-09-02)
+
+
+### Features
+
+* **notifications:** show notification log entries in the dialog activity log ([#4596](https://github.com/Altinn/dialogporten-frontend/issues/4596)) ([22dd881](https://github.com/Altinn/dialogporten-frontend/commit/22dd881da42a0244b4db96ce3272c32a21824da4))
+
 ## [1.174.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.174.0...v1.174.1) (2026-09-01)
 
 
