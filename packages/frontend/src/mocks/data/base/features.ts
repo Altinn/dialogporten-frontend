@@ -4,4 +4,5 @@ export const features = {
   'inbox.enableExportSearchResults': true,
   'dialogporten.disableSubscriptions': false,
   'fce.enablePreferHeader': false,
+  'dialogDetails.enableNotificationLogs': true,
 };

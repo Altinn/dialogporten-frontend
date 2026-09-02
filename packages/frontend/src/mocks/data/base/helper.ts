@@ -5,6 +5,7 @@ import {
   type DialogByIdFieldsFragment,
   GuiActionPriority,
   HttpVerb,
+  type NotificationLogsResponse,
   type PartyFieldsFragment,
   type SearchDialogFieldsFragment,
   SystemLabel,
@@ -173,6 +174,24 @@ export const getMockedUnauthorizedFCEContent = () => {
 /* A dialog is not required to have any activities; this one deliberately has none. */
 export const dialogWithoutActivities = '019241f7-8218-7756-be82-noactivities';
 
+const serviceOwnerActor = {
+  actorType: ActorType.ServiceOwner,
+  actorId: 'actor-01',
+  actorName: 'Skatteetaten',
+};
+
+const partyActor = {
+  actorType: ActorType.PartyRepresentative,
+  actorId: 'urn:altinn:person:identifier-ephemeral:2b34ab491b',
+  actorName: 'NORDMANN KARI',
+};
+
+const otherPartyActor = {
+  actorType: ActorType.PartyRepresentative,
+  actorId: 'urn:altinn:person:identifier-ephemeral:9c11de772a',
+  actorName: 'NORDMANN PER',
+};
+
 export const getMockedActivities = (id: string): DialogByIdFieldsFragment['activities'] => {
   if (id === dialogWithoutActivities) {
     return [];
@@ -180,12 +199,16 @@ export const getMockedActivities = (id: string): DialogByIdFieldsFragment['activ
   if (id === '019241f7-8218-7756-be82-123qwe456rtA') {
     return [
       {
-        id: Math.random() + '-activity',
-        performedBy: {
-          actorType: ActorType.ServiceOwner,
-          actorId: 'actor-01',
-          actorName: 'Skatteetaten',
-        },
+        id: 'activity-dialog-created',
+        performedBy: serviceOwnerActor,
+        description: [],
+        type: ActivityType.DialogCreated,
+        createdAt: '2024-05-23T23:00:00.000Z',
+        transmissionId: null,
+      },
+      {
+        id: 'activity-information-sent',
+        performedBy: serviceOwnerActor,
         description: [
           {
             value: 'Meldingen ble sendt.',
@@ -193,16 +216,20 @@ export const getMockedActivities = (id: string): DialogByIdFieldsFragment['activ
           },
         ],
         type: ActivityType.Information,
-        createdAt: '2023-12-03T10:45:00.000Z',
+        createdAt: '2024-07-30T18:12:54.233Z',
         transmissionId: null,
       },
       {
-        id: Math.random() + '-activity',
-        performedBy: {
-          actorType: ActorType.ServiceOwner,
-          actorId: 'actor-01',
-          actorName: 'Skatteetaten',
-        },
+        id: 'activity-dialog-opened',
+        performedBy: partyActor,
+        description: [],
+        type: ActivityType.DialogOpened,
+        createdAt: '2024-07-31T09:15:00.000Z',
+        transmissionId: null,
+      },
+      {
+        id: 'activity-information-opened',
+        performedBy: serviceOwnerActor,
         description: [
           {
             value: 'Meldingen ble åpnet.',
@@ -210,16 +237,76 @@ export const getMockedActivities = (id: string): DialogByIdFieldsFragment['activ
           },
         ],
         type: ActivityType.Information,
-        createdAt: '2023-12-04T10:45:00.000Z',
+        createdAt: '2024-07-31T09:16:00.000Z',
         transmissionId: null,
       },
       {
-        id: Math.random() + '-activity',
-        performedBy: {
-          actorType: ActorType.ServiceOwner,
-          actorId: 'actor-01',
-          actorName: 'Skatteetaten',
-        },
+        id: 'activity-transmission-opened',
+        performedBy: partyActor,
+        transmissionId: 'transmission-2',
+        type: ActivityType.TransmissionOpened,
+        description: [],
+        createdAt: '2024-07-31T18:20:00.000Z',
+      },
+      {
+        id: 'activity-sent-to-form-fill',
+        performedBy: serviceOwnerActor,
+        description: [],
+        type: ActivityType.SentToFormFill,
+        createdAt: '2024-08-13T12:00:00.000Z',
+        transmissionId: null,
+      },
+      {
+        id: 'activity-form-saved',
+        performedBy: otherPartyActor,
+        description: [],
+        type: ActivityType.FormSaved,
+        createdAt: '2024-08-13T12:13:00.000Z',
+        transmissionId: null,
+      },
+      {
+        id: 'activity-form-submitted',
+        performedBy: otherPartyActor,
+        description: [],
+        type: ActivityType.FormSubmitted,
+        createdAt: '2024-08-13T12:20:00.000Z',
+        transmissionId: null,
+      },
+      {
+        id: 'activity-sent-to-signing',
+        performedBy: serviceOwnerActor,
+        description: [],
+        type: ActivityType.SentToSigning,
+        createdAt: '2024-08-14T08:00:00.000Z',
+        transmissionId: null,
+      },
+      {
+        id: 'activity-signature-provided',
+        performedBy: partyActor,
+        description: [],
+        type: ActivityType.SignatureProvided,
+        createdAt: '2024-08-14T09:30:00.000Z',
+        transmissionId: null,
+      },
+      {
+        id: 'activity-sent-to-payment',
+        performedBy: serviceOwnerActor,
+        description: [],
+        type: ActivityType.SentToPayment,
+        createdAt: '2024-08-15T10:00:00.000Z',
+        transmissionId: null,
+      },
+      {
+        id: 'activity-payment-made',
+        performedBy: partyActor,
+        description: [],
+        type: ActivityType.PaymentMade,
+        createdAt: '2024-08-15T10:45:00.000Z',
+        transmissionId: null,
+      },
+      {
+        id: 'activity-information-expired',
+        performedBy: serviceOwnerActor,
         description: [
           {
             value: 'Denne meldingen er utløpt.',
@@ -227,37 +314,182 @@ export const getMockedActivities = (id: string): DialogByIdFieldsFragment['activ
           },
         ],
         type: ActivityType.Information,
-        createdAt: '2025-12-31T10:45:00.000Z',
+        createdAt: '2024-11-27T15:36:52.131Z',
         transmissionId: null,
-      },
-      {
-        id: Math.random() + '-activity',
-        performedBy: {
-          actorType: ActorType.ServiceOwner,
-          actorId: 'actor-01',
-          actorName: 'Skatteetaten',
-        },
-        transmissionId: 'transmission-2',
-        type: ActivityType.TransmissionOpened,
-        description: [],
-        createdAt: '2025-12-31T10:45:00.000Z',
       },
     ];
   }
   return [
     {
-      id: Math.random() + '-activity',
+      id: `${id}-activity-dialog-created`,
       performedBy: {
         actorType: ActorType.ServiceOwner,
         actorId: 'digdir',
-        actorName: 'Digitaliseringdirektoratet',
+        actorName: 'Digitaliseringsdirektoratet',
       },
       description: [],
+      type: ActivityType.DialogCreated,
+      createdAt: '2024-05-23T23:00:00.000Z',
+      transmissionId: null,
+    },
+    {
+      id: `${id}-activity-information`,
+      performedBy: {
+        actorType: ActorType.ServiceOwner,
+        actorId: 'digdir',
+        actorName: 'Digitaliseringsdirektoratet',
+      },
+      description: [
+        {
+          value: 'Dialogen er tilgjengelig for deg.',
+          languageCode: 'nb',
+        },
+      ],
       type: ActivityType.Information,
-      createdAt: new Date().toISOString(),
+      createdAt: '2024-05-24T08:30:00.000Z',
       transmissionId: null,
     },
   ];
+};
+
+export const dialogWithNotificationLogs = '019241f7-5fa0-7336-934d-716a8e5bbb49';
+
+const notificationLog = (
+  dialogId: string,
+  notificationId: string,
+  overrides: Partial<NotificationLogsResponse>,
+): NotificationLogsResponse => ({
+  dialogId,
+  notificationId,
+  transmissionId: null,
+  type: 'Notification',
+  channel: 'Email',
+  destination: 'kari.nordmann@example.com',
+  status: 'Email_Delivered',
+  requestedSendTime: null,
+  lastUpdateTime: null,
+  ...overrides,
+});
+
+export const getMockedNotificationLogs = (dialogId: string): NotificationLogsResponse[] => {
+  if (dialogId === '019241f7-8218-7756-be82-123qwe456rtA') {
+    return [
+      notificationLog(dialogId, 'ae0e2f9f-eb4f-4aab-9f72-7d47e425a507', {
+        requestedSendTime: '2024-07-30T18:15:00.000Z',
+        lastUpdateTime: '2024-07-30T18:16:43.716Z',
+      }),
+      notificationLog(dialogId, 'a37b3ad6-4418-40ea-b4d7-32dbd2e91a8a', {
+        destination: 'post@firma-as.no',
+        requestedSendTime: '2024-07-30T18:15:00.000Z',
+        lastUpdateTime: '2024-07-30T18:16:54.035Z',
+      }),
+      notificationLog(dialogId, 'b18c0d31-5b71-4c9f-8a45-6f0f4c1c4a10', {
+        channel: 'Sms',
+        destination: '+4799887766',
+        status: 'SMS_Accepted',
+        requestedSendTime: '2024-07-30T18:15:00.000Z',
+        lastUpdateTime: '2024-07-30T18:15:22.512Z',
+      }),
+      notificationLog(dialogId, 'd0706926-2c76-4eb1-b723-885268c442be', {
+        type: 'Reminder',
+        requestedSendTime: '2024-08-07T09:00:00.000Z',
+        lastUpdateTime: '2024-08-07T09:02:28.962Z',
+      }),
+      notificationLog(dialogId, 'e4ad6a2e-5f1f-47ec-82ab-fbeabc483be8', {
+        type: 'Reminder',
+        destination: 'post@firma-as.no',
+        status: 'Email_Failed_Bounced',
+        requestedSendTime: '2024-08-07T09:00:00.000Z',
+        lastUpdateTime: '2024-08-07T09:01:29.462Z',
+      }),
+      notificationLog(dialogId, 'f2a5b8c4-1d33-4e77-9a02-3b7e5c9d0a11', {
+        transmissionId: 'transmission-2',
+        type: 'Composed',
+        status: 'Email_Succeeded',
+        requestedSendTime: '2024-08-13T12:05:00.000Z',
+        lastUpdateTime: '2024-08-13T12:06:11.004Z',
+      }),
+      notificationLog(dialogId, 'c7d9e0f1-2a34-4b56-8c78-9d0e1f2a3b4c', {
+        channel: 'Sms',
+        destination: '+4799887766',
+        status: 'SMS_Sending',
+        requestedSendTime: '2024-08-15T10:05:00.000Z',
+        lastUpdateTime: '2024-08-15T10:05:03.881Z',
+      }),
+      notificationLog(dialogId, '1b2c3d4e-5f60-4a71-8b82-9c0d1e2f3a4b', {
+        channel: 'Sms',
+        destination: '+4791122334',
+        status: 'SMS_Failed_TTL',
+        requestedSendTime: '2024-08-16T07:30:00.000Z',
+        lastUpdateTime: '2024-08-18T07:30:00.000Z',
+      }),
+      notificationLog(dialogId, '9e8d7c6b-5a40-4f3e-8d2c-1b0a9f8e7d6c', {
+        type: 'Reminder',
+        destination: 'post@firma-as.no',
+        status: 'Email_Delivered',
+        requestedSendTime: '2024-08-18T09:00:00.000Z',
+        lastUpdateTime: '2024-08-18T09:00:12.004Z',
+      }),
+      notificationLog(dialogId, '9e8d7c6b-5a41-4f3e-8d2c-1b0a9f8e7d6c', {
+        type: 'Reminder',
+        destination: 'regnskap@firma-as.no',
+        status: 'Email_Delivered',
+        requestedSendTime: '2024-08-18T09:00:00.000Z',
+        lastUpdateTime: '2024-08-18T09:01:12.004Z',
+      }),
+      notificationLog(dialogId, '9e8d7c6b-5a42-4f3e-8d2c-1b0a9f8e7d6c', {
+        type: 'Reminder',
+        destination: 'daglig.leder@firma-as.no',
+        status: 'Email_Delivered',
+        requestedSendTime: '2024-08-18T09:00:00.000Z',
+        lastUpdateTime: '2024-08-18T09:02:12.004Z',
+      }),
+      notificationLog(dialogId, '9e8d7c6b-5a43-4f3e-8d2c-1b0a9f8e7d6c', {
+        type: 'Reminder',
+        destination: 'styret@firma-as.no',
+        status: 'Email_Delivered',
+        requestedSendTime: '2024-08-18T09:00:00.000Z',
+        lastUpdateTime: '2024-08-18T09:03:12.004Z',
+      }),
+      notificationLog(dialogId, '9e8d7c6b-5a44-4f3e-8d2c-1b0a9f8e7d6c', {
+        type: 'Reminder',
+        destination: 'hr@firma-as.no',
+        status: 'Email_Failed_Bounced',
+        requestedSendTime: '2024-08-18T09:00:00.000Z',
+        lastUpdateTime: '2024-08-18T09:04:12.004Z',
+      }),
+      notificationLog(dialogId, '0a1b2c3d-4e5f-4a6b-8c9d-0e1f2a3b4c5d', {
+        type: 'Instant',
+        channel: 'Sms',
+        destination: '+4790011223',
+        status: 'SMS_Delivered',
+        requestedSendTime: '2024-08-19T13:20:00.000Z',
+        lastUpdateTime: '2024-08-19T13:20:08.114Z',
+      }),
+    ];
+  }
+
+  if (dialogId === dialogWithNotificationLogs) {
+    return [
+      notificationLog(dialogId, '5f8c1a20-9d44-4f0e-8b21-7c3e6a9d1f02', {
+        requestedSendTime: '2023-03-11T07:05:00.000Z',
+        lastUpdateTime: '2023-03-11T07:06:12.310Z',
+      }),
+      notificationLog(dialogId, '6a9d2b31-0e55-4a1f-9c32-8d4f7b0e2a13', {
+        channel: 'Sms',
+        destination: '+4799887766',
+        requestedSendTime: '2023-03-11T07:05:00.000Z',
+        lastUpdateTime: '2023-03-11T07:05:41.128Z',
+      }),
+      notificationLog(dialogId, '7b0e3c42-1f66-4b20-8d43-9e5a8c1f3b24', {
+        type: 'Reminder',
+        requestedSendTime: '2024-07-15T08:45:00.000Z',
+        lastUpdateTime: '2024-07-15T08:47:55.902Z',
+      }),
+    ];
+  }
+
+  return [];
 };
 
 export const getMockedTransmissions = (dialogId: string) => {

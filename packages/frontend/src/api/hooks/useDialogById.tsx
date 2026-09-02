@@ -26,11 +26,13 @@ import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
 import { type ActivityLogEntry, getActivityHistory } from '../../utils/activities.tsx';
 import { createExpiryBadge, mediaTypeToExt, mediaTypeToIcon } from '../../utils/attachments.ts';
 import { getSeenByLabel, getServiceOwnerLogo } from '../../utils/dialog.ts';
+import type { NotificationLog } from '../../utils/notificationLogs.tsx';
 import { getOrganization, getOrganizationByLocale, type OrganizationOutput } from '../../utils/organizations.ts';
 import { getTransmissions, type TimelineSegmentWithTransmissions } from '../../utils/transmissions.ts';
 import { getViewTypes } from '../../utils/viewType.ts';
 import { graphQLSDK } from '../queries.ts';
 import type { InboxViewType } from './useDialogs.tsx';
+import { useNotificationLogs } from './useNotificationLogs.tsx';
 import type { ProfileType } from './useParties.ts';
 import { useSelectedProfile } from './usePartiesSelectors.ts';
 
@@ -250,6 +252,7 @@ export function mapDialogToInboxItem(
   stopReversingPersonNameOrder: boolean,
   selectedProfile: ProfileType,
   locale: Locale,
+  notificationLogs: NotificationLog[] = [],
 ): DialogByIdDetails | undefined {
   if (!item) {
     return undefined;
@@ -357,6 +360,7 @@ export function mapDialogToInboxItem(
       stopReversingPersonNameOrder,
       activities: item.activities,
       transmissions: item.transmissions,
+      notificationLogs,
       format,
       serviceOwner,
       selectedProfile,
@@ -384,6 +388,7 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
   const queryClient = useQueryClient();
   const disableFlipNamesPatch = useFeatureFlag<boolean>('dialogporten.disableFlipNamesPatch');
   const selectedProfile = useSelectedProfile();
+  const { notificationLogs } = useNotificationLogs(id);
   const partyURIs = parties.map((party) => party.party);
   const { data, isSuccess, isLoading, isError, dataUpdatedAt } = useAuthenticatedQuery<GetDialogByIdQuery>({
     queryKey: [QUERY_KEYS.DIALOG_BY_ID, id],
@@ -427,6 +432,7 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
       disableFlipNamesPatch,
       selectedProfile,
       locale,
+      notificationLogs,
     ),
     dataUpdatedAt,
     isError,

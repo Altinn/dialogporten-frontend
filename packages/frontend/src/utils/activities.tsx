@@ -5,6 +5,7 @@ import { getActorProps } from '../api/hooks/useDialogById.tsx';
 import type { ProfileType } from '../api/hooks/useParties.ts';
 import { getPreferredPropertyByLocale, type LocalizationObject } from '../i18n/property.ts';
 import type { FormatFunction, Locale } from '../i18n/useDateFnsLocale.tsx';
+import { getNotificationLogEntries, type NotificationLog } from './notificationLogs.tsx';
 import type { OrganizationOutput } from './organizations.ts';
 import { getTransmissions, getTransmissionVisibility, type TransmissionItemWithMeta } from './transmissions.ts';
 
@@ -67,7 +68,7 @@ const getActivityText = (
 export const getDialogHistoryForActivities = (
   activities: DialogActivityFragment[],
   format: FormatFunction,
-  transmissions: TransmissionFieldsFragment[],
+  transmissionTitles: Record<string, string>,
   stopReversingPersonNameOrder: boolean,
   serviceOwner?: OrganizationOutput,
   senderName?: LocalizationObject[] | undefined,
@@ -77,8 +78,7 @@ export const getDialogHistoryForActivities = (
     const clockPrefix = t('word.clock_prefix');
     const formatString = `do MMMM yyyy ${clockPrefix ? `'${clockPrefix}' ` : ''}HH.mm`;
     const description = getPreferredPropertyByLocale(activity.description)?.value;
-    const relatedTransmission = transmissions.find((transmission) => transmission.id === activity.transmissionId);
-    const transmissionTitle = getPreferredPropertyByLocale(relatedTransmission?.content.title.value)?.value;
+    const transmissionTitle = activity.transmissionId ? transmissionTitles[activity.transmissionId] : undefined;
     const actorProps: AvatarProps = getActorProps(
       activity.performedBy,
       stopReversingPersonNameOrder,
@@ -106,6 +106,12 @@ export type ActivityLogEntry =
   | {
       id: string;
       date: string;
+      type: 'notification';
+      items: ActivityLogItemProps[];
+    }
+  | {
+      id: string;
+      date: string;
       type: 'transmission';
       items: TransmissionItemWithMeta[];
     };
@@ -121,11 +127,13 @@ export type ActivityLogEntry =
  * @param stopReversingPersonNameOrder
  * @param senderName
  * @param locale
- * @returns An array of activity and transmission log entries, sorted by date (descending).
+ * @param notificationLogs - The list of notification log entries for the dialog.
+ * @returns An array of activity, notification and transmission log entries, sorted by date (descending).
  */
 export const getActivityHistory = ({
   activities,
   transmissions,
+  notificationLogs = [],
   format,
   serviceOwner,
   selectedProfile,
@@ -136,6 +144,7 @@ export const getActivityHistory = ({
 }: {
   activities: DialogActivityFragment[];
   transmissions: TransmissionFieldsFragment[];
+  notificationLogs?: NotificationLog[];
   format: FormatFunction;
   stopReversingPersonNameOrder: boolean;
   serviceOwner?: OrganizationOutput;
@@ -147,10 +156,16 @@ export const getActivityHistory = ({
   const clockPrefix = t('word.clock_prefix');
   const formatString = `do MMMM yyyy ${clockPrefix ? `'${clockPrefix}' ` : ''}HH.mm`;
 
+  const transmissionTitles: Record<string, string> = {};
+  for (const transmission of transmissions) {
+    const title = getPreferredPropertyByLocale(transmission.content.title.value)?.value;
+    if (title) transmissionTitles[transmission.id] = title;
+  }
+
   const dialogHistoryActivities: ActivityLogEntry[] = getDialogHistoryForActivities(
     activities,
     format,
-    transmissions,
+    transmissionTitles,
     stopReversingPersonNameOrder,
     serviceOwner,
     senderName,
@@ -240,8 +255,18 @@ export const getActivityHistory = ({
       ],
     }));
 
+  const notificationActivities: ActivityLogEntry[] = getNotificationLogEntries({
+    notificationLogs,
+    format,
+    locale,
+  }).map((entry) => ({
+    ...entry,
+    type: 'notification' as const,
+  }));
+
   return [
     ...dialogHistoryActivities,
+    ...notificationActivities,
     ...dialogHistoryTransmissions,
     ...apiOnlyTransmissionActivities,
     ...disabledTransmissionActivities,
