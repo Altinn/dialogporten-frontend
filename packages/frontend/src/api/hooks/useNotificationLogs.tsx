@@ -1,10 +1,9 @@
 import type { NotificationLogsQuery } from 'bff-types-generated';
-import { getNotificationLogs } from '../../api/queries.ts';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.ts';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useFeatureFlag } from '../../featureFlags/useFeatureFlag.ts';
-
-type NotificationLog = NonNullable<NonNullable<NotificationLogsQuery['notificationLogs']>[number]>;
+import type { NotificationLog } from '../../utils/notificationLogs.tsx';
+import { getNotificationLogs } from '../queries.ts';
 
 interface UseNotificationLogsOutput {
   notificationLogs: NotificationLog[];

@@ -333,7 +333,7 @@ export const DialogDetails = ({
         datetime: dialogHistoryItem.date,
         items: dialogHistoryItem.items.map((item) => ({
           id: item.id,
-          summary: dialogHistoryItem.type === 'activity' ? item.summary : '',
+          summary: dialogHistoryItem.type !== 'transmission' ? item.summary : '',
           datetime: item.datetime,
           byline: item.datetime ? format(item.datetime, 'do MMMM yyyy HH.mm') : '',
         })),

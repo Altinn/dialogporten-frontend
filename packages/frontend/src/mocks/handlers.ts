@@ -12,7 +12,7 @@ import {
   SystemLabel,
 } from 'bff-types-generated';
 import { graphql, HttpResponse, http } from 'msw';
-import { convertToDialogByIdTemplate, filterDialogs } from './data/base/helper.ts';
+import { convertToDialogByIdTemplate, filterDialogs, getMockedNotificationLogs } from './data/base/helper.ts';
 import { getMockedData } from './data.ts';
 
 const data = await getMockedData(window.location.href);
@@ -161,9 +161,10 @@ const mockVerifiedAddresses = graphql.query('verifiedAddresses', () => {
 
 const mockNotificationLogs = graphql.query('notificationLogs', ({ variables }) => {
   const { dialogId } = variables as { dialogId: string };
+  const stored = (inMemoryStore.notificationLogs ?? []).filter((log) => log.dialogId === dialogId);
   return HttpResponse.json({
     data: {
-      notificationLogs: (inMemoryStore.notificationLogs ?? []).filter((log) => log.dialogId === dialogId),
+      notificationLogs: stored.length > 0 ? stored : getMockedNotificationLogs(dialogId),
     },
   });
 });
