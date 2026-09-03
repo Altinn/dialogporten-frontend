@@ -17,7 +17,7 @@ CMD ["pnpm", "--filter", "docs", "run", "dev", "--port", "80", "--host", "0.0.0.
 
 # ---
 
-FROM nginx:1.25-alpine
+FROM nginx:1.29-alpine@sha256:5616878291a2eed594aee8db4dade5878cf7edcb475e59193904b198d9b830de
 COPY --from=build /app/packages/docs/dist/ /usr/share/nginx/html/
 
 EXPOSE 80
