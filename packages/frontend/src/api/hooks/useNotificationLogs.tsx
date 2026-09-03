@@ -1,7 +1,7 @@
 import type { NotificationLogsQuery } from 'bff-types-generated';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.ts';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
-import { useFeatureFlag } from '../../featureFlags/useFeatureFlag.ts';
+import { useFeatureFlag } from '../../featureFlags';
 import type { NotificationLog } from '../../utils/notificationLogs.tsx';
 import { getNotificationLogs } from '../queries.ts';
 

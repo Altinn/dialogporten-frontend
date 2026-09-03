@@ -128,6 +128,7 @@ export type ActivityLogEntry =
  * @param senderName
  * @param locale
  * @param notificationLogs - The list of notification log entries for the dialog.
+ * @param serviceOwnerNbName
  * @returns An array of activity, notification and transmission log entries, sorted by date (descending).
  */
 export const getActivityHistory = ({
