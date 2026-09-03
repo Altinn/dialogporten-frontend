@@ -244,16 +244,25 @@ const getContactButtons = (
   return buttons;
 };
 
-export function mapDialogToInboxItem(
-  item: DialogByIdFieldsFragment | null | undefined,
-  parties: PartyFieldsFragment[],
-  organizations: OrganizationFieldsFragment[],
-  format: FormatFunction,
-  stopReversingPersonNameOrder: boolean,
-  selectedProfile: ProfileType,
-  locale: Locale,
-  notificationLogs: NotificationLog[] = [],
-): DialogByIdDetails | undefined {
+export function mapDialogToInboxItem({
+  item,
+  parties,
+  organizations,
+  format,
+  stopReversingPersonNameOrder,
+  selectedProfile,
+  locale,
+  notificationLogs = [],
+}: {
+  item: DialogByIdFieldsFragment | null | undefined;
+  parties: PartyFieldsFragment[];
+  organizations: OrganizationFieldsFragment[];
+  format: FormatFunction;
+  stopReversingPersonNameOrder: boolean;
+  selectedProfile: ProfileType;
+  locale: Locale;
+  notificationLogs?: NotificationLog[];
+}): DialogByIdDetails | undefined {
   if (!item) {
     return undefined;
   }
@@ -424,16 +433,16 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
   return {
     isLoading,
     isSuccess,
-    dialog: mapDialogToInboxItem(
-      data?.dialogById?.dialog,
+    dialog: mapDialogToInboxItem({
+      item: data?.dialogById?.dialog,
       parties,
       organizations,
       format,
-      disableFlipNamesPatch,
+      stopReversingPersonNameOrder: disableFlipNamesPatch,
       selectedProfile,
       locale,
       notificationLogs,
-    ),
+    }),
     dataUpdatedAt,
     isError,
     isAuthLevelTooLow:
