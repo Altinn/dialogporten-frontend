@@ -174,9 +174,11 @@ jobs:
 
   tag-issues-with-environment:
     name: Tag deployed PRs and issues for prod
-    needs: [deploy-apps, deploy-infrastructure]
+    needs: [get-versions-from-github, deploy-apps, deploy-infrastructure]
     if: ${{ always() && !failure() && !cancelled() && needs.deploy-apps.outputs.deployment_executed == 'true' }}
     uses: ./.github/workflows/workflow-tag-issues-with-environment.yml
     with:
       environment-label: prod
+      from-sha: ${{ needs.get-versions-from-github.outputs.apps_version_sha }}
+      to-sha: v${{ inputs.version }}
       version: ${{ inputs.version }}
