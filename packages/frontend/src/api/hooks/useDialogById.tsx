@@ -394,6 +394,7 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
   const format = useFormat();
   const { locale } = useDateFnsLocale();
   const { organizations, isLoading: isOrganizationsLoading } = useOrganizations();
+
   const queryClient = useQueryClient();
   const disableFlipNamesPatch = useFeatureFlag<boolean>('dialogporten.disableFlipNamesPatch');
   const selectedProfile = useSelectedProfile();
