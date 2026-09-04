@@ -101,6 +101,9 @@ describe('useDialogByIdSubscription', () => {
 
     expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: [QUERY_KEYS.DIALOG_BY_ID] });
     expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: [QUERY_KEYS.DIALOGS] });
+    /* the activity log is assembled from queries of its own, and goes stale with the dialog */
+    expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: [QUERY_KEYS.NOTIFICATION_LOGS] });
+    expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: [QUERY_KEYS.LABEL_ASSIGNMENT_LOG] });
   });
 
   it('does not connect when mock=true', () => {

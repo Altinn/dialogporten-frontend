@@ -22,14 +22,7 @@ export interface NotificationLogEntry {
   items: ActivityLogItemProps[];
 }
 
-export const hiddenStatuses: ReadonlySet<string> = new Set([
-  'email_new',
-  'email_sending',
-  'sms_new',
-  'sms_sending',
-  'new',
-  'sending',
-]);
+export const hiddenStatuses: ReadonlySet<string> = new Set(['new', 'sending']);
 
 const normalize = (value?: string | null): string => (value ?? '').trim().toLowerCase();
 

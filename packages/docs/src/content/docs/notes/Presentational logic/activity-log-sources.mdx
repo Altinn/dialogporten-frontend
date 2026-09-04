@@ -1,0 +1,119 @@
+---
+title: "The Activity Log and Its Sources"
+---
+The activity log is a chronological list of all history of the dialog. The history is derived from different sources, consolidated and collected in one timeline.
+
+## The four sources
+
+| Source | Comes from | Contributes |
+|---|---|---|
+| **Activities** | `dialog.activities` on the dialog itself | One sentence per activity |
+| **Transmissions** | `dialog.transmissions` on the dialog itself | An expandable card, or one sentence, depending on visibility |
+| **Notification log** | `notificationLogs(dialogId)`, a separate query | One sentence per correlated dispatch |
+| **Label assignment log** | `labelAssignmentLog(dialogId)`, a separate query | One sentence per label change worth reporting |
+
+They are combined in `getActivityHistory` and sorted by date, newest first. The two newest sources are behind feature flags — `dialogDetails.enableNotificationLogs` and `dialogDetails.enableLabelAssignmentLogs`, both off by default — so the log degrades to activities and transmissions when either is unavailable.
+
+## Rules that apply to every source
+
+- **One list, not sections.** Nothing gets its own heading or its own component. A new source earns a line in the existing log or it does not ship.
+- **One entry, one sentence.** The only exception is a fully visible transmission, which is a card because it has expandable content.
+- **Passive voice, actor last, actor emphasised.** *"Dialogen ble … av **Kari Nordmann**."* This is what makes four unrelated sources read as one log rather than as interleaved voices.
+- **One actor resolution.** Every source runs `performedBy` through the same `getActorProps`, so person-name flipping (`dialogporten.disableFlipNamesPatch`), system-user and organisation detection from the `actorId` URN, and the service-owner fallback to `senderName` or the organisation name behave identically everywhere. A service owner arrives with no `actorId` and no `actorName` and resolves to the dialog's sender name when one is given, otherwise the organisation name.
+- **The timestamp is the sort key and the byline.** Entries with the same timestamp keep the order their source returned them in.
+
+## 1. Activities
+
+The most direct source: each `DialogActivityFragment` maps by its `type` to one sentence.
+
+| `ActivityType` | Bokmål |
+|---|---|
+| `DialogCreated` | Dialogen ble opprettet av `{actor}`. |
+| `DialogOpened` | Dialogen ble åpnet av `{actor}`. |
+| `DialogClosed` | Dialogen ble lukket av `{actor}`. |
+| `DialogDeleted` / `DialogRestored` | Dialogen ble slettet / gjenopprettet av `{actor}`. |
+| `Information` | `{actor}`: `{description}` |
+| `TransmissionOpened` | `{transmission}` åpnet av `{actor}`. |
+| `FormSaved` / `FormSubmitted` | Skjemaet ble lagret / sendt inn av `{actor}`. |
+| `PaymentMade` | Betalingen ble utført av `{actor}`. |
+| `SignatureProvided` | Signert av `{actor}`. |
+| `SentTo…` | Sendt til utfylling / betaling / innsending / signering av `{actor}`. |
+| `CorrespondenceOpened` / `CorrespondenceConfirmed` | Meldingen ble åpnet / bekreftet av `{actor}`. |
+
+`Information` is the only type carrying service-owner-authored text; the rest are fixed sentences.
+
+**Unknown types are printed raw.** An `ActivityType` with no case falls through to rendering the enum value itself. See [Where the sources disagree](#where-the-sources-disagree).
+
+## 2. Transmissions
+
+A transmission is classified before it is rendered, and the classification decides whether the user gets a card or a sentence. The order of the checks matters — the first match wins.
+
+| # | Condition | Outcome |
+|---|---|---|
+| A | Has attachments, none GUI-consumable, no summary and no content reference | `filter` — dropped from the timeline, shown in the log as *"Forsendelse kun med maskinlesbart vedlegg"* |
+| B | `isAuthorized` is false | `disabled` — card stays in the timeline but cannot expand; in the log it reads *"Forsendelse du har ikke tilgang til"* |
+| C | Authorized, but no summary, no content reference and no GUI attachment | `empty` — expands to an empty-state explanation; in the log only the title is shown |
+| D | Anything else | `visible` — a normal expandable card |
+
+Only **D** becomes a card in the log. **A**, **B** and **C** become plain sentences, because there is nothing worth expanding.
+
+Related transmissions are grouped into one segment via `relatedTransmissionId`, resolved as a bidirectional graph so a chain of replies collapses into a single entry rather than several.
+
+## 3. Notification log
+
+This source is an MVP, and its rules are mostly about **not flooding the log**.
+
+### Interpreting the data
+
+- **`requestedSendTime` decides placement**, not `lastUpdateTime`. When no send time was reported, the last update time is used as a fallback so the entry still has a position.
+- **In-flight notifications are hidden.** `New` and `Sending` are invisible until the dispatch reaches a final status — before that there is nothing useful to tell the user.
+- **`Succeeded` and `Accepted` both read "ble sendt".** Only `Delivered` reads "ble levert". We do not imply delivery from an accepted hand-off.
+
+### Grouping
+
+The API has no correlation id, so Arbeidsflate derives one: **type + status + channel + `transmissionId` + `requestedSendTime`**.
+
+- The same dispatch to several recipients becomes **one** entry.
+- A different outcome splits it. Two recipients who both received it are one line; one who received it and one whose address bounced are two, each with its own reason.
+
+### Wording
+
+The sentence is `{type} på {channel} til {recipients} {status}.`
+
+- **The channel is named once, in its own slot.** The status says only what happened to the dispatch, not how it travelled — `Delivered` reads "ble levert" whether it went by email or SMS.
+- **`Instant` and `Composed` are both just "Varsel".** These are service-owner delivery mechanics and say nothing to the recipient. Only `Reminder` gets its own word, because "påminnelse" tells the user something real.
+- **Failure reasons are kept distinct**, following the [notification status reference](https://docs.altinn.studio/nb/notifications/reference/notification-status/#emailnotificationresulttype-e-postresultat). A bounce, a spam filter and an expiry read differently because they mean different things to whoever needs to act.
+- **At most three recipients are listed**, the rest are counted. Without the cap, one dispatch to many organisation addresses fills the log with addresses.
+- **An unknown value degrades, it does not hide.** Unknown type becomes "Varsel", unknown status becomes "har ukjent status". Hiding a notification the user actually received is worse than describing it generically — and the gap would be invisible to us.
+
+## 4. Label assignment log
+
+End-user system label changes: where the dialog sits for this user. The operations are `set` and `remove`; the labels are `DEFAULT`, `ARCHIVE`, `BIN`, `SENT` and `MARKED_AS_UNOPENED`.
+
+Names arrive prefixed — `systemlabel:MarkedAsUnopened`. Parsing ignores the prefix, the casing and any underscores, so the API's `PascalCase` and the GraphQL enum's `SCREAMING_SNAKE_CASE` land on the same label. Removals are accepted as both `remove` and `removed`.
+
+### What is excluded
+
+- **`SENT` is never shown.** It is logged as set by the service owner after the dialog was created, which makes it an attempt to put the dialog in a desired state rather than something a user did. Future labels should be judged by the same test: **is this a user operation?**
+- **An entry that cannot become a sentence is dropped**, never printed raw. This is safe because a unit test requires every value of the `SystemLabel` enum to have both a `set` and a `remove` sentence in nb, nn and en — a new label upstream fails the build instead of silently disappearing.
+
+### What becomes a line
+
+- **`DEFAULT` is never set.** The platform expresses "in the inbox" as the absence of the other two folder labels, so moving a dialog back to the inbox is a `remove` of `ARCHIVE` or `BIN`, never a `set` of `DEFAULT`. The "flyttet til innboksen" sentence exists but is not reachable with current API behaviour.
+- **One move, one sentence.** The folders are mutually exclusive, so a move writes a `set` of the destination and a `remove` of the origin at the same instant. Entries are grouped by (timestamp, actor), and a `remove` of a folder label is dropped when the same group holds a folder `set`. Moving from the bin to the archive says the dialog was archived — not that it first lost its bin label.
+- **A `remove` that arrives alone is still shown.** This is not an edge case: it is how the return to the inbox appears, and it is what happens when the dialog is **updated** — the platform clears the archive or bin label so the dialog resurfaces, and seeing why it reappeared is the useful part.
+- **Read and unread are never collapsed.** `MARKED_AS_UNOPENED` sits outside the folder logic, so both directions say something. *"Dialogen ble markert som lest"* is what a reader sees when a dialog they had marked unread is opened again.
+- **Different actors never collapse into each other.** The actor is part of the grouping key, so a `set` by a user and a `remove` by the service owner in the same instant are two events by two parties, and both are reported.
+
+### Every sentence
+
+All eight follow the shared form, `Dialogen ble … av {actor}.`
+
+| Label | `set` | `remove` |
+|---|---|---|
+| `BIN` | flyttet til papirkurven | tatt ut av papirkurven |
+| `ARCHIVE` | flyttet til arkivet | tatt ut av arkivet |
+| `DEFAULT` | flyttet til innboksen *(unreachable)* | tatt ut av innboksen |
+| `MARKED_AS_UNOPENED` | markert som ulest | markert som lest |
+
+Nynorsk and English carry the same meaning.
