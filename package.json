@@ -10,10 +10,10 @@
     "biome:fix": "pnpm biome check --no-errors-on-unmatched --write"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.4",
-    "lint-staged": "17.0.8",
+    "@biomejs/biome": "2.5.11",
+    "lint-staged": "17.4.1",
     "mprocs": "^0.9.2",
-    "turbo": "2.9.14"
+    "turbo": "2.10.12"
   },
   "engines": {
     "node": ">=22.22.0"
@@ -30,18 +30,18 @@
   "pnpm": {
     "overrides": {
       "@types/hast": "3.0.5",
-      "mdast-util-gfm-autolink-literal": "2.0.0",
+      "mdast-util-gfm-autolink-literal": "2.0.1",
       "protobufjs": ">=8.0.1",
       "shell-quote": ">=1.9.0",
       "websocket-driver": ">=0.7.5",
-      "brace-expansion@1": "1.1.16",
+      "brace-expansion@1": "1.1.18",
       "brace-expansion@2": "5.0.9",
       "brace-expansion@5": ">=5.0.9 <6",
       "postcss@8": ">=8.5.23 <9",
       "fast-uri@3": ">=3.1.5 <4",
       "fast-uri@4": ">=4.1.2 <5",
       "find-my-way@9": ">=9.7.0 <10",
-      "js-yaml@3": "3.15.1",
+      "js-yaml@3": "3.15.2",
       "js-yaml@4": ">=4.3.1 <5"
     }
   }
