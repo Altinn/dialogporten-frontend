@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.175.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.175.0...v1.175.1) (2026-09-04)
+
+
+### Bug Fixes
+
+* **ci:** tag all PRs in the deployed range for prod ([#4603](https://github.com/Altinn/dialogporten-frontend/issues/4603)) ([d4413bf](https://github.com/Altinn/dialogporten-frontend/commit/d4413bf355f086d0bd9cedfeba9e3f04b3070830))
+* **skyra:** update language ([#4608](https://github.com/Altinn/dialogporten-frontend/issues/4608)) ([a482890](https://github.com/Altinn/dialogporten-frontend/commit/a4828903156ce7408e8c16441b938c97ced1ce08))
+
 ## [1.175.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.174.1...v1.175.0) (2026-09-02)
 
 
