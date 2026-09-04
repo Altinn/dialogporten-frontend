@@ -6,4 +6,5 @@ export const features = {
   'fce.enablePreferHeader': false,
   'dialogDetails.enableNotificationLogs': true,
   'dialogDetails.enableLabelAssignmentLogs': true,
+  'global.enableSkyra': true,
 };
