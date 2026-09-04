@@ -11,15 +11,15 @@ param tags object
 param applicationGatewayWhitelistedIps array = []
 
 // Network address ranges
-var vnetAddressPrefix = '10.0.0.0/16'
+var vnetAddressPrefix = '10.1.0.0/16'
 
 // Subnet address ranges
-var defaultSubnetAddressPrefix = '10.0.0.0/24'
-var applicationGatewaySubnetAddressPrefix = '10.0.1.0/24'
-var containerAppEnvSubnetAddressPrefix = '10.0.2.0/23' // required size for the container app environment is /23
-var postgresqlSubnetAddressPrefix = '10.0.4.0/24'
-var redisSubnetAddressPrefix = '10.0.5.0/24'
-var sshJumperSubnetAddressPrefix = '10.0.6.0/24'
+var defaultSubnetAddressPrefix = '10.1.0.0/24'
+var applicationGatewaySubnetAddressPrefix = '10.1.1.0/24'
+var containerAppEnvSubnetAddressPrefix = '10.1.2.0/23' // required size for the container app environment is /23
+var postgresqlSubnetAddressPrefix = '10.1.4.0/24'
+var redisSubnetAddressPrefix = '10.1.5.0/24'
+var sshJumperSubnetAddressPrefix = '10.1.6.0/24'
 
 var commonHttpProperties = {
   protocol: '*'
@@ -185,7 +185,7 @@ resource containerAppEnvironmentNSG 'Microsoft.Network/networkSecurityGroups@202
           protocol: '*'
           sourcePortRange: '*'
           sourceAddressPrefix: '*'
-          destinationAddressPrefix: '10.0.0.62'
+          destinationAddressPrefix: cidrHost(defaultSubnetAddressPrefix, 62)
           access: 'Allow'
           priority: 130
           direction: 'Inbound'
@@ -434,6 +434,7 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-09-01' = {
 
 output virtualNetworkName string = virtualNetwork.name
 output virtualNetworkId string = virtualNetwork.id
+output defaultSubnetAddressPrefix string = defaultSubnetAddressPrefix
 output defaultSubnetId string = resourceId('Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, 'default')
 output applicationGatewaySubnetId string = resourceId(
   'Microsoft.Network/virtualNetworks/subnets',
