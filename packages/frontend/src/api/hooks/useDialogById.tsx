@@ -18,7 +18,7 @@ import { useCallback } from 'react';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.ts';
 import type { DialogActionProps } from '../../components/DialogDetails/DialogDetails.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
-import { useFeatureFlag } from '../../featureFlags/useFeatureFlag.ts';
+import { useFeatureFlag } from '../../featureFlags';
 import { getPreferredPropertyByLocale, type LocalizationObject, type ValueType } from '../../i18n/property.ts';
 import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
 import { type Locale, useDateFnsLocale, useFormat } from '../../i18n/useDateFnsLocale.tsx';
