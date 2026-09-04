@@ -5,4 +5,5 @@ export const features = {
   'dialogporten.disableSubscriptions': false,
   'fce.enablePreferHeader': false,
   'dialogDetails.enableNotificationLogs': true,
+  'global.enableSkyra': false,
 };
