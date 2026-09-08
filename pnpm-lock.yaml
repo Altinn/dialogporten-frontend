@@ -121,8 +121,8 @@ importers:
         specifier: ^1.0.0-beta.1
         version: 1.0.0-beta.1(pg@8.18.0)
       '@digdir/dialogporten-schema':
-        specifier: 1.118.6
-        version: 1.118.6
+        specifier: 1.120.0
+        version: 1.120.0
       '@fastify/compress':
         specifier: ^9.0.0
         version: 9.0.0
@@ -1130,8 +1130,8 @@ packages:
   '@digdir/designsystemet-web@1.14.0':
     resolution: {integrity: sha512-dmUnV/0wzTOSPnSGqQwjYyneuO+/QqfugAr2SP1N1m/VzfMal3Y5hD+AkDWWzWhJ7EJrhGtYwG5JVRM8iYuVeQ==}
 
-  '@digdir/dialogporten-schema@1.118.6':
-    resolution: {integrity: sha512-lRlFqAF59sK7U1cm4taIZkXatS2/u12cQ6wgg4lmlS/roTtHCEfvLtNO5oCcfnEy8XeC2ZDEWdbXLRKMDOzc5Q==}
+  '@digdir/dialogporten-schema@1.120.0':
+    resolution: {integrity: sha512-IsvK+esLqXIw2TlolQEdKi0ijjdVVaEXiwl3GWAfcodsWXTs4Jr6U1Org86Rugk7S0kJy2XPHxn9RLMtHZRRiA==}
     engines: {node: '24'}
 
   '@emnapi/core@1.11.1':
@@ -8121,7 +8121,7 @@ snapshots:
       '@u-elements/u-details': 1.0.0
       '@u-elements/u-tabs': 1.0.3
 
-  '@digdir/dialogporten-schema@1.118.6': {}
+  '@digdir/dialogporten-schema@1.120.0': {}
 
   '@emnapi/core@1.11.1':
     dependencies:

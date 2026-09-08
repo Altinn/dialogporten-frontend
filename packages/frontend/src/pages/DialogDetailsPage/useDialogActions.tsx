@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router';
 import { Analytics } from '../../analytics/analytics.ts';
 import { getDialogMoveEvent } from '../../analytics/analyticsEvents.ts';
+import { invalidateDialogQueries } from '../../api/invalidateDialogQueries.ts';
 import { updateSystemLabel } from '../../api/queries';
 import { QUERY_KEYS } from '../../constants/queryKeys';
 import { useGlobalState } from '../../useGlobalState.ts';
@@ -45,8 +46,7 @@ export const useDialogActions = () => {
             'move.to': toLabel,
           });
 
-          await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.DIALOGS] });
-          await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.DIALOG_BY_ID] });
+          await invalidateDialogQueries(queryClient);
           showSnackbar(successKey, 'company');
         } else {
           showSnackbar(failureKey, 'danger');

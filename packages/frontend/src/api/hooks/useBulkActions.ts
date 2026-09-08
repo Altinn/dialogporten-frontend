@@ -6,8 +6,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Analytics } from '../../analytics/analytics.ts';
 import { getDialogMoveEvent } from '../../analytics/analyticsEvents.ts';
-import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
+import { invalidateDialogQueries } from '../invalidateDialogQueries.ts';
 import { bulkUpdateSystemLabels } from '../queries.ts';
 
 /* Dialogporten only allows 100 dialogs to be bulked per request */
@@ -65,8 +65,7 @@ export const useBulkActions = ({
           'move.to': toLabel,
         });
 
-        await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.DIALOGS] });
-        await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.DIALOG_BY_ID] });
+        await invalidateDialogQueries(queryClient);
         showSnackbar(successKey, 'company');
       } else {
         showSnackbar(failureKey, 'danger');

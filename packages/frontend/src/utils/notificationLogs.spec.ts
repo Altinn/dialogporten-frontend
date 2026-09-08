@@ -11,7 +11,7 @@ const log = (overrides: Partial<NotificationLog>): NotificationLog => ({
   type: 'Notification',
   channel: 'Email',
   destination: 'kari@example.com',
-  status: 'Email_Delivered',
+  status: 'Delivered',
   requestedSendTime: '2024-08-24T14:54:53.511Z',
   lastUpdateTime: '2024-08-24T14:56:43.716Z',
   ...overrides,
@@ -20,37 +20,29 @@ const log = (overrides: Partial<NotificationLog>): NotificationLog => ({
 const documentedTypes = ['Notification', 'Reminder', 'Instant', 'Composed'];
 const documentedChannels = ['Email', 'Sms'];
 const documentedStatuses = [
-  'Email_New',
-  'Email_Sending',
-  'Email_Succeeded',
-  'Email_Delivered',
-  'Email_Failed',
-  'Email_Failed_RecipientNotIdentified',
-  'Email_Failed_InvalidFormat',
-  'Email_Failed_RecipientReserved',
-  'Email_Failed_SuppressedRecipient',
-  'Email_Failed_TransientError',
-  'Email_Failed_Bounced',
-  'Email_Failed_FilteredSpam',
-  'Email_Failed_Quarantined',
-  'Email_Failed_TTL',
-  'SMS_New',
-  'SMS_Sending',
-  'SMS_Accepted',
-  'SMS_Delivered',
-  'SMS_Failed',
-  'SMS_Failed_InvalidRecipient',
-  'SMS_Failed_RecipientReserved',
-  'SMS_Failed_BarredReceiver',
-  'SMS_Failed_Deleted',
-  'SMS_Failed_Expired',
-  'SMS_Failed_Undelivered',
-  'SMS_Failed_RecipientNotIdentified',
-  'SMS_Failed_Rejected',
-  'SMS_Failed_TTL',
+  'New',
+  'Sending',
+  'Accepted',
+  'Succeeded',
+  'Delivered',
+  'Failed',
+  'Failed_RecipientNotIdentified',
+  'Failed_RecipientReserved',
+  'Failed_InvalidFormat',
+  'Failed_InvalidRecipient',
+  'Failed_SuppressedRecipient',
+  'Failed_TransientError',
+  'Failed_BarredReceiver',
+  'Failed_Bounced',
+  'Failed_FilteredSpam',
+  'Failed_Quarantined',
+  'Failed_Deleted',
+  'Failed_Expired',
+  'Failed_Rejected',
+  'Failed_Undelivered',
+  'Failed_TTL',
 ];
 
-const unprefixed = (status: string) => status.replace(/^(Email|SMS)_/, '').toLowerCase();
 const resources: [string, Record<string, string>][] = [
   ['nb', nb],
   ['nn', nn],
@@ -70,15 +62,11 @@ describe('the documented vocabulary has a label in every language', () => {
     }
   });
 
-  it.each(resources)(
-    '%s labels every status, prefixed as documented and bare as the log returns it',
-    (_l, resource) => {
-      for (const status of documentedStatuses) {
-        expect(resource).toHaveProperty(`notification_log.status.${status.toLowerCase()}`);
-        expect(resource).toHaveProperty(`notification_log.status.${unprefixed(status)}`);
-      }
-    },
-  );
+  it.each(resources)('%s labels every status the log returns', (_lang, resource) => {
+    for (const status of documentedStatuses) {
+      expect(resource).toHaveProperty(`notification_log.status.${status.toLowerCase()}`);
+    }
+  });
 
   it.each(resources)('%s has a fallback for an unrecognised value in every namespace', (_lang, resource) => {
     for (const namespace of ['type', 'channel', 'status']) {
@@ -89,15 +77,11 @@ describe('the documented vocabulary has a label in every language', () => {
   it('covers the full documented surface', () => {
     expect(documentedTypes).toHaveLength(4);
     expect(documentedChannels).toHaveLength(2);
-    expect(documentedStatuses).toHaveLength(28);
+    expect(documentedStatuses).toHaveLength(21);
   });
 
   it('carries no status label outside the documented vocabulary', () => {
-    const allowed = new Set([
-      ...documentedStatuses.map((status) => status.toLowerCase()),
-      ...documentedStatuses.map(unprefixed),
-      'unknown',
-    ]);
+    const allowed = new Set([...documentedStatuses.map((status) => status.toLowerCase()), 'unknown']);
     const declared = Object.keys(nb)
       .filter((key) => key.startsWith('notification_log.status.'))
       .map((key) => key.replace('notification_log.status.', ''));
@@ -108,30 +92,31 @@ describe('the documented vocabulary has a label in every language', () => {
   it('keeps distinct failure reasons distinct rather than flattening them', () => {
     const byKey = (key: string) => (nb as Record<string, string>)[key];
 
-    expect(byKey('notification_log.status.email_failed_bounced')).not.toBe(
-      byKey('notification_log.status.email_failed_filteredspam'),
-    );
-    expect(byKey('notification_log.status.sms_failed_expired')).not.toBe(
-      byKey('notification_log.status.sms_failed_ttl'),
-    );
+    for (const [a, b] of [
+      ['failed_bounced', 'failed_filteredspam'],
+      ['failed_expired', 'failed_ttl'],
+      ['failed_invalidformat', 'failed_invalidrecipient'],
+    ]) {
+      expect(byKey(`notification_log.status.${a}`)).toBeDefined();
+      expect(byKey(`notification_log.status.${a}`)).not.toBe(byKey(`notification_log.status.${b}`));
+    }
   });
 });
 
 describe('hiddenStatuses', () => {
-  const inFlight = documentedStatuses.filter((status) => /_(New|Sending)$/.test(status));
+  const inFlight = ['New', 'Sending'];
 
-  it.each(inFlight)('hides %s in both the prefixed and unprefixed form', (status) => {
+  it.each(inFlight)('hides %s, which has not reached a result yet', (status) => {
     expect(hiddenStatuses.has(status.toLowerCase())).toBe(true);
-    expect(hiddenStatuses.has(unprefixed(status))).toBe(true);
   });
 
   it('hides nothing beyond the statuses the reference documents as temporary', () => {
-    const allowed = new Set([...inFlight.map((status) => status.toLowerCase()), ...inFlight.map(unprefixed)]);
+    const allowed = new Set(inFlight.map((status) => status.toLowerCase()));
     expect([...hiddenStatuses].filter((status) => !allowed.has(status))).toEqual([]);
   });
 
   it('hides nothing that has reached a final delivery result', () => {
-    for (const status of ['email_delivered', 'sms_delivered', 'email_failed_bounced', 'sms_failed_ttl', 'delivered']) {
+    for (const status of ['delivered', 'succeeded', 'accepted', 'failed_bounced', 'failed_ttl']) {
       expect(hiddenStatuses.has(status)).toBe(false);
     }
   });
@@ -152,11 +137,11 @@ describe('groupNotificationLogs', () => {
   it('keeps channels, types, transmissions and outcomes apart', () => {
     const result = groupNotificationLogs([
       log({ notificationId: '1' }),
-      log({ notificationId: '2', channel: 'Sms', destination: '+4799887766', status: 'SMS_Delivered' }),
+      log({ notificationId: '2', channel: 'Sms', destination: '+4799887766', status: 'Delivered' }),
       log({ notificationId: '3', type: 'Reminder' }),
       log({ notificationId: '4', transmissionId: 'transmission-2' }),
-      log({ notificationId: '5', destination: 'per@example.com', status: 'Email_Failed_Bounced' }),
-      log({ notificationId: '6', destination: 'ola@example.com', status: 'Email_Succeeded' }),
+      log({ notificationId: '5', destination: 'per@example.com', status: 'Failed_Bounced' }),
+      log({ notificationId: '6', destination: 'ola@example.com', status: 'Succeeded' }),
     ]);
 
     expect(result).toHaveLength(6);
@@ -164,12 +149,12 @@ describe('groupNotificationLogs', () => {
 
   it('keeps distinct failure reasons apart instead of merging them', () => {
     const result = groupNotificationLogs([
-      log({ notificationId: '1', status: 'Email_Failed_Bounced' }),
-      log({ notificationId: '2', destination: 'per@example.com', status: 'Email_Failed_FilteredSpam' }),
+      log({ notificationId: '1', status: 'Failed_Bounced' }),
+      log({ notificationId: '2', destination: 'per@example.com', status: 'Failed_FilteredSpam' }),
     ]);
 
     expect(result).toHaveLength(2);
-    expect(result.map((group) => group.status).sort()).toEqual(['email_failed_bounced', 'email_failed_filteredspam']);
+    expect(result.map((group) => group.status).sort()).toEqual(['failed_bounced', 'failed_filteredspam']);
   });
 
   it('keeps entries of an unrecognised type instead of dropping a notification the user received', () => {

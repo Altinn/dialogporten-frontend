@@ -17,6 +17,7 @@ export const featureFlagDefinitions = [
   { key: 'fce.enablePreferHeader', type: 'boolean', default: false },
   { key: 'global.enableSkyra', type: 'boolean', default: false },
   { key: 'dialogDetails.enableNotificationLogs', type: 'boolean', default: false },
+  { key: 'dialogDetails.enableLabelAssignmentLogs', type: 'boolean', default: false },
 ] as const satisfies readonly FeatureFlagDefinition[];
 
 export type FeatureFlagKey = (typeof featureFlagDefinitions)[number]['key'];

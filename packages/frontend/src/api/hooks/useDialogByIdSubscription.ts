@@ -4,11 +4,11 @@ import { useCallback, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { SSE } from 'sse.js';
 import { config } from '../../config.ts';
-import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useFeatureFlag } from '../../featureFlags/useFeatureFlag.ts';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { pruneSearchQueryParams } from '../../pages/Inbox/queryParams.ts';
 import { getNavigationOrigin } from '../../utils/viewType.ts';
+import { invalidateDialogQueries } from '../invalidateDialogQueries.ts';
 import { getSubscriptionQuery } from '../subscription.ts';
 
 type EventSourceEvent = Error & {
@@ -146,8 +146,7 @@ export const useDialogByIdSubscription = (
             const navigationOrigin = getNavigationOrigin(location.state);
             navigate(navigationOrigin + pruneSearchQueryParams(search.toString()));
           } else if (updatedType === DialogEventType.DialogUpdated) {
-            void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.DIALOG_BY_ID] });
-            void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.DIALOGS] });
+            void invalidateDialogQueries(queryClient);
           }
         } catch (e) {
           logError(

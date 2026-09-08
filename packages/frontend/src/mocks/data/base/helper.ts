@@ -365,7 +365,7 @@ const notificationLog = (
   type: 'Notification',
   channel: 'Email',
   destination: 'kari.nordmann@example.com',
-  status: 'Email_Delivered',
+  status: 'Delivered',
   requestedSendTime: null,
   lastUpdateTime: null,
   ...overrides,
@@ -386,7 +386,7 @@ export const getMockedNotificationLogs = (dialogId: string): NotificationLogsRes
       notificationLog(dialogId, 'b18c0d31-5b71-4c9f-8a45-6f0f4c1c4a10', {
         channel: 'Sms',
         destination: '+4799887766',
-        status: 'SMS_Accepted',
+        status: 'Accepted',
         requestedSendTime: '2024-07-30T18:15:00.000Z',
         lastUpdateTime: '2024-07-30T18:15:22.512Z',
       }),
@@ -398,63 +398,63 @@ export const getMockedNotificationLogs = (dialogId: string): NotificationLogsRes
       notificationLog(dialogId, 'e4ad6a2e-5f1f-47ec-82ab-fbeabc483be8', {
         type: 'Reminder',
         destination: 'post@firma-as.no',
-        status: 'Email_Failed_Bounced',
+        status: 'Failed_Bounced',
         requestedSendTime: '2024-08-07T09:00:00.000Z',
         lastUpdateTime: '2024-08-07T09:01:29.462Z',
       }),
       notificationLog(dialogId, 'f2a5b8c4-1d33-4e77-9a02-3b7e5c9d0a11', {
         transmissionId: 'transmission-2',
         type: 'Composed',
-        status: 'Email_Succeeded',
+        status: 'Succeeded',
         requestedSendTime: '2024-08-13T12:05:00.000Z',
         lastUpdateTime: '2024-08-13T12:06:11.004Z',
       }),
       notificationLog(dialogId, 'c7d9e0f1-2a34-4b56-8c78-9d0e1f2a3b4c', {
         channel: 'Sms',
         destination: '+4799887766',
-        status: 'SMS_Sending',
+        status: 'Sending',
         requestedSendTime: '2024-08-15T10:05:00.000Z',
         lastUpdateTime: '2024-08-15T10:05:03.881Z',
       }),
       notificationLog(dialogId, '1b2c3d4e-5f60-4a71-8b82-9c0d1e2f3a4b', {
         channel: 'Sms',
         destination: '+4791122334',
-        status: 'SMS_Failed_TTL',
+        status: 'Failed_TTL',
         requestedSendTime: '2024-08-16T07:30:00.000Z',
         lastUpdateTime: '2024-08-18T07:30:00.000Z',
       }),
       notificationLog(dialogId, '9e8d7c6b-5a40-4f3e-8d2c-1b0a9f8e7d6c', {
         type: 'Reminder',
         destination: 'post@firma-as.no',
-        status: 'Email_Delivered',
+        status: 'Delivered',
         requestedSendTime: '2024-08-18T09:00:00.000Z',
         lastUpdateTime: '2024-08-18T09:00:12.004Z',
       }),
       notificationLog(dialogId, '9e8d7c6b-5a41-4f3e-8d2c-1b0a9f8e7d6c', {
         type: 'Reminder',
         destination: 'regnskap@firma-as.no',
-        status: 'Email_Delivered',
+        status: 'Delivered',
         requestedSendTime: '2024-08-18T09:00:00.000Z',
         lastUpdateTime: '2024-08-18T09:01:12.004Z',
       }),
       notificationLog(dialogId, '9e8d7c6b-5a42-4f3e-8d2c-1b0a9f8e7d6c', {
         type: 'Reminder',
         destination: 'daglig.leder@firma-as.no',
-        status: 'Email_Delivered',
+        status: 'Delivered',
         requestedSendTime: '2024-08-18T09:00:00.000Z',
         lastUpdateTime: '2024-08-18T09:02:12.004Z',
       }),
       notificationLog(dialogId, '9e8d7c6b-5a43-4f3e-8d2c-1b0a9f8e7d6c', {
         type: 'Reminder',
         destination: 'styret@firma-as.no',
-        status: 'Email_Delivered',
+        status: 'Delivered',
         requestedSendTime: '2024-08-18T09:00:00.000Z',
         lastUpdateTime: '2024-08-18T09:03:12.004Z',
       }),
       notificationLog(dialogId, '9e8d7c6b-5a44-4f3e-8d2c-1b0a9f8e7d6c', {
         type: 'Reminder',
         destination: 'hr@firma-as.no',
-        status: 'Email_Failed_Bounced',
+        status: 'Failed_Bounced',
         requestedSendTime: '2024-08-18T09:00:00.000Z',
         lastUpdateTime: '2024-08-18T09:04:12.004Z',
       }),
@@ -462,7 +462,7 @@ export const getMockedNotificationLogs = (dialogId: string): NotificationLogsRes
         type: 'Instant',
         channel: 'Sms',
         destination: '+4790011223',
-        status: 'SMS_Delivered',
+        status: 'Delivered',
         requestedSendTime: '2024-08-19T13:20:00.000Z',
         lastUpdateTime: '2024-08-19T13:20:08.114Z',
       }),
@@ -490,6 +490,61 @@ export const getMockedNotificationLogs = (dialogId: string): NotificationLogsRes
   }
 
   return [];
+};
+
+const labelAssignmentActors: Record<string, string> = {
+  'SØSTER FANTASIFULL 2024': 'urn:altinn:person:identifier-ephemeral:2b34ab491b',
+  'NORDMANN OLA': 'urn:altinn:person:identifier-ephemeral:7f1c9d2e04',
+};
+
+const labelAssignmentPartyRepresentative = (
+  name: string,
+  action: string,
+  createdAt: string,
+  actorName = 'SØSTER FANTASIFULL 2024',
+) => ({
+  name,
+  action,
+  createdAt,
+  performedBy: {
+    actorType: ActorType.PartyRepresentative,
+    actorId: labelAssignmentActors[actorName],
+    actorName,
+  },
+});
+
+const labelAssignmentServiceOwner = (name: string, action: string, createdAt: string) => ({
+  name,
+  action,
+  createdAt,
+  performedBy: {
+    actorType: ActorType.ServiceOwner,
+    actorId: null,
+    actorName: null,
+  },
+});
+
+export const getMockedLabelAssignmentLogs = (dialogId: string) => {
+  if (dialogId !== '019241f7-8218-7756-be82-123qwe456rtA') {
+    return [];
+  }
+
+  return [
+    // filed into the archive: the removal of the inbox label is the other half of the same move
+    labelAssignmentPartyRepresentative('systemlabel:Archive', 'set', '2024-08-20T10:15:00.000Z'),
+    labelAssignmentPartyRepresentative('systemlabel:Default', 'removed', '2024-08-20T10:15:00.000Z'),
+    // moved back out again by someone else on the same party
+    labelAssignmentPartyRepresentative('systemlabel:Default', 'set', '2024-08-21T11:30:00.000Z', 'NORDMANN OLA'),
+    labelAssignmentPartyRepresentative('systemlabel:Archive', 'removed', '2024-08-21T11:30:00.000Z', 'NORDMANN OLA'),
+    // marked as unread, then read again when the dialog was next opened
+    labelAssignmentPartyRepresentative('systemlabel:MarkedAsUnopened', 'set', '2024-08-22T09:00:00.000Z'),
+    labelAssignmentPartyRepresentative('systemlabel:MarkedAsUnopened', 'removed', '2024-08-22T14:45:00.000Z'),
+    // thrown in the bin
+    labelAssignmentPartyRepresentative('systemlabel:Bin', 'set', '2024-08-23T16:20:00.000Z'),
+    labelAssignmentServiceOwner('systemlabel:Bin', 'removed', '2024-08-23T16:20:00.000Z'),
+    // Sent says nothing about who filed the dialog, so it is not part of the log
+    labelAssignmentPartyRepresentative('systemlabel:Sent', 'set', '2024-08-23T16:20:00.000Z'),
+  ];
 };
 
 export const getMockedTransmissions = (dialogId: string) => {
