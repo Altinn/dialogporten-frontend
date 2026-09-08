@@ -58,6 +58,23 @@ jobs:
       dockerImageBaseName: ghcr.io/altinn/dialogporten-frontend-
       version: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
 
+  update-manifests:
+    name: Update manifest image tags for at23
+    needs:
+      [
+        get-current-version,
+        generate-git-short-sha,
+        docker-build-and-push,
+        check-for-changes,
+      ]
+    if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasApplicationChanges == 'true') }}
+    uses: ./.github/workflows/workflow-dispatch-update-manifests.yml
+    with:
+      environment: at23
+      image_tag: ${{ needs.get-current-version.outputs.version }}-${{ needs.generate-git-short-sha.outputs.gitShortSha }}
+    secrets:
+      MANIFESTS_PAT: ${{ secrets.MANIFESTS_PAT }}
+
   deploy-documentation:
     uses: ./.github/workflows/workflow-deploy-docs.yml
 

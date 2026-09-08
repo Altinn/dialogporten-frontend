@@ -110,6 +110,17 @@ jobs:
     secrets:
       GH_TOKEN: ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}
 
+  update-manifests:
+    name: Update manifest image tags for yt01
+    needs: [check-for-changes, deploy-infrastructure]
+    if: ${{ always() && !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.check-for-changes.outputs.hasApplicationChanges == 'true') }}
+    uses: ./.github/workflows/workflow-dispatch-update-manifests.yml
+    with:
+      environment: yt01
+      image_tag: ${{ github.event.client_payload.version }}
+    secrets:
+      MANIFESTS_PAT: ${{ secrets.MANIFESTS_PAT }}
+
   send-slack-message-on-failure:
     name: Send Slack message on failure
     needs: [deploy-infrastructure, upload-source-maps, deploy-apps]
