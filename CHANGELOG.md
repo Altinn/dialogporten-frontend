@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.176.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.175.1...v1.176.0) (2026-09-08)
+
+
+### Features
+
+* **ci:** bump manifest image tags from the deploy pipelines ([#4607](https://github.com/Altinn/dialogporten-frontend/issues/4607)) ([fd70aac](https://github.com/Altinn/dialogporten-frontend/commit/fd70aacc4491d52b4354790e58355bed7f264320))
+* **dialog:** add useLabelAssignmentLog hook for the label assignment… ([#4577](https://github.com/Altinn/dialogporten-frontend/issues/4577)) ([273de9f](https://github.com/Altinn/dialogporten-frontend/commit/273de9f9b17ddf8986d0ffde3abc6955db4eec2a))
+
 ## [1.175.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.175.0...v1.175.1) (2026-09-04)
 
 
