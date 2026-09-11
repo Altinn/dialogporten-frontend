@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.176.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.176.0...v1.176.1) (2026-09-11)
+
+
+### Bug Fixes
+
+* **texts:** rewrite activity log sentences in active voice ([#4618](https://github.com/Altinn/dialogporten-frontend/issues/4618)) ([685e7f6](https://github.com/Altinn/dialogporten-frontend/commit/685e7f6ae99c2d78e1378cf7c2213579d31b37ce))
+
 ## [1.176.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.175.1...v1.176.0) (2026-09-08)
 
 
