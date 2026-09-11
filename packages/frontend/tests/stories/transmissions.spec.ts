@@ -71,6 +71,9 @@ test.describe('Transmissions and dialog history', () => {
 
     await disabled.click({ force: true });
     await expect(disabled).not.toHaveAttribute('aria-expanded', 'true');
+
+    await page.getByRole('button', { name: /aktivitetslogg/i }).click();
+    await expect(page.getByText('Forsendelse du ikke har tilgang til', { exact: true })).toHaveCount(2);
   });
 
   // Case 3: isAuthorized=true + API-only attachment → A: filter (not shown anywhere in transmission list)

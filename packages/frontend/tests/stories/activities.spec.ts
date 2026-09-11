@@ -66,17 +66,16 @@ test.describe('Activity history - transmissions and activities', () => {
     const dialog = page.getByRole('dialog');
 
     // A move writes both a set and a remove; only the set is worth a sentence
-    await expect(dialog.getByText('Dialogen ble flyttet til arkivet av Fantasifull 2024 Søster.')).toBeVisible();
-    await expect(dialog.getByText('Dialogen ble flyttet til papirkurven av Fantasifull 2024 Søster.')).toBeVisible();
-    await expect(dialog.getByText('Dialogen ble tatt ut av arkivet')).toHaveCount(0);
-    await expect(dialog.getByText('Dialogen ble tatt ut av innboksen')).toHaveCount(0);
+    await expect(dialog.getByText('Fantasifull 2024 Søster flyttet meldingen til arkivet.')).toBeVisible();
+    await expect(dialog.getByText('Fantasifull 2024 Søster flyttet meldingen til papirkurven.')).toBeVisible();
+    await expect(dialog.getByText('flyttet meldingen ut av innboksen')).toHaveCount(0);
 
     // Whoever performed the change is named, with the same name handling as every other entry
-    await expect(dialog.getByText('Dialogen ble flyttet til innboksen av Ola Nordmann.')).toBeVisible();
+    await expect(dialog.getByText('Ola Nordmann flyttet meldingen til innboksen.')).toHaveCount(1);
 
     // Read and unread are orthogonal to the folder, so both halves say something
-    await expect(dialog.getByText('Dialogen ble markert som ulest av Fantasifull 2024 Søster.')).toBeVisible();
-    await expect(dialog.getByText('Dialogen ble markert som lest av Fantasifull 2024 Søster.')).toBeVisible();
+    await expect(dialog.getByText('Fantasifull 2024 Søster markerte meldingen som ulest.')).toBeVisible();
+    await expect(dialog.getByText('Fantasifull 2024 Søster markerte meldingen som lest.')).toBeVisible();
 
     // Sent is not something anyone filed, so it stays out of the log
     await expect(dialog.getByText('sendt av Fantasifull 2024 Søster')).toHaveCount(0);

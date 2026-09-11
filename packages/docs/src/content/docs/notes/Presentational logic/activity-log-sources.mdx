@@ -18,7 +18,8 @@ They are combined in `getActivityHistory` and sorted by date, newest first. The 
 
 - **One list, not sections.** Nothing gets its own heading or its own component. A new source earns a line in the existing log or it does not ship.
 - **One entry, one sentence.** The only exception is a fully visible transmission, which is a card because it has expandable content.
-- **Passive voice, actor last, actor emphasised.** *"Dialogen ble … av **Kari Nordmann**."* This is what makes four unrelated sources read as one log rather than as interleaved voices.
+- **Active voice, actor first, actor emphasised.** *"**Kari Nordmann** flyttet meldingen til arkivet."* This is what makes four unrelated sources read as one log rather than as interleaved voices. A sentence with no actor — a notification, a transmission the user cannot open — says what happened to the thing itself rather than inventing someone to do it.
+- **It is a *melding*, never a *dialog*.** *Dialog* is the data model; the sentence uses the word the user knows it by.
 - **One actor resolution.** Every source runs `performedBy` through the same `getActorProps`, so person-name flipping (`dialogporten.disableFlipNamesPatch`), system-user and organisation detection from the `actorId` URN, and the service-owner fallback to `senderName` or the organisation name behave identically everywhere. A service owner arrives with no `actorId` and no `actorName` and resolves to the dialog's sender name when one is given, otherwise the organisation name.
 - **The timestamp is the sort key and the byline.** Entries with the same timestamp keep the order their source returned them in.
 
@@ -28,19 +29,21 @@ The most direct source: each `DialogActivityFragment` maps by its `type` to one 
 
 | `ActivityType` | Bokmål |
 |---|---|
-| `DialogCreated` | Dialogen ble opprettet av `{actor}`. |
-| `DialogOpened` | Dialogen ble åpnet av `{actor}`. |
-| `DialogClosed` | Dialogen ble lukket av `{actor}`. |
-| `DialogDeleted` / `DialogRestored` | Dialogen ble slettet / gjenopprettet av `{actor}`. |
+| `DialogCreated` | `{actor}` opprettet meldingen. |
+| `DialogOpened` | `{actor}` åpnet meldingen. |
+| `DialogClosed` | `{actor}` lukket meldingen. |
+| `DialogDeleted` / `DialogRestored` | `{actor}` slettet / gjenopprettet meldingen. |
 | `Information` | `{actor}`: `{description}` |
-| `TransmissionOpened` | `{transmission}` åpnet av `{actor}`. |
-| `FormSaved` / `FormSubmitted` | Skjemaet ble lagret / sendt inn av `{actor}`. |
-| `PaymentMade` | Betalingen ble utført av `{actor}`. |
-| `SignatureProvided` | Signert av `{actor}`. |
-| `SentTo…` | Sendt til utfylling / betaling / innsending / signering av `{actor}`. |
-| `CorrespondenceOpened` / `CorrespondenceConfirmed` | Meldingen ble åpnet / bekreftet av `{actor}`. |
+| `TransmissionOpened` | `{actor}` åpnet «`{transmission}`». |
+| `FormSaved` / `FormSubmitted` | `{actor}` lagret / sendte inn skjemaet. |
+| `PaymentMade` | `{actor}` betalte. |
+| `SignatureProvided` | `{actor}` signerte. |
+| `SentTo…` | `{actor}` sendte meldingen til skjemautfylling / betaling / innsending / signering. |
+| `CorrespondenceOpened` / `CorrespondenceConfirmed` | `{actor}` åpnet / bekreftet meldingen. |
 
-`Information` is the only type carrying service-owner-authored text; the rest are fixed sentences.
+`Information` is the only type carrying service-owner-authored text; the rest are fixed sentences. The transmission title is free text in the middle of a sentence, so it is quoted.
+
+**Same event, same sentence; different event, different verb.** `DialogOpened` and `CorrespondenceOpened` both read *åpnet meldingen*, because to the user they are the same thing. `DialogRestored` keeps *gjenopprettet*: it undoes a deletion, which is not the same as bringing a message back from the bin — that is a label change, and reads *flyttet meldingen til innboksen*.
 
 **Unknown types are printed raw.** An `ActivityType` with no case falls through to rendering the enum value itself. See [Where the sources disagree](#where-the-sources-disagree).
 
@@ -51,11 +54,11 @@ A transmission is classified before it is rendered, and the classification decid
 | # | Condition | Outcome |
 |---|---|---|
 | A | Has attachments, none GUI-consumable, no summary and no content reference | `filter` — dropped from the timeline, shown in the log as *"Forsendelse kun med maskinlesbart vedlegg"* |
-| B | `isAuthorized` is false | `disabled` — card stays in the timeline but cannot expand; in the log it reads *"Forsendelse du har ikke tilgang til"* |
+| B | `isAuthorized` is false | `disabled` — card stays in the timeline but cannot expand; in the log it reads *"Forsendelse du ikke har tilgang til"* |
 | C | Authorized, but no summary, no content reference and no GUI attachment | `empty` — expands to an empty-state explanation; in the log only the title is shown |
 | D | Anything else | `visible` — a normal expandable card |
 
-Only **D** becomes a card in the log. **A**, **B** and **C** become plain sentences, because there is nothing worth expanding.
+Only **D** becomes a card in the log. **A**, **B** and **C** become plain sentences, because there is nothing worth expanding. The sentence for **B** ends in a preposition, so *tilgang til* (and *access to*) is joined by a non-breaking space: on a narrow screen the line would otherwise break before *til*, and the first line reads as a complete sentence without it.
 
 Related transmissions are grouped into one segment via `relatedTransmissionId`, resolved as a bidirectional graph so a chain of replies collapses into a single entry rather than several.
 
@@ -80,6 +83,7 @@ The API has no correlation id, so Arbeidsflate derives one: **type + status + ch
 
 The sentence is `{type} på {channel} til {recipients} {status}.`
 
+- **The notification is the subject.** There is no actor to put first, so the sentence says what happened to the dispatch.
 - **The channel is named once, in its own slot.** The status says only what happened to the dispatch, not how it travelled — `Delivered` reads "ble levert" whether it went by email or SMS.
 - **`Instant` and `Composed` are both just "Varsel".** These are service-owner delivery mechanics and say nothing to the recipient. Only `Reminder` gets its own word, because "påminnelse" tells the user something real.
 - **Failure reasons are kept distinct**, following the [notification status reference](https://docs.altinn.studio/nb/notifications/reference/notification-status/#emailnotificationresulttype-e-postresultat). A bounce, a spam filter and an expiry read differently because they mean different things to whoever needs to act.
@@ -99,21 +103,22 @@ Names arrive prefixed — `systemlabel:MarkedAsUnopened`. Parsing ignores the pr
 
 ### What becomes a line
 
-- **`DEFAULT` is never set.** The platform expresses "in the inbox" as the absence of the other two folder labels, so moving a dialog back to the inbox is a `remove` of `ARCHIVE` or `BIN`, never a `set` of `DEFAULT`. The "flyttet til innboksen" sentence exists but is not reachable with current API behaviour.
+- **`DEFAULT` is never set.** The platform expresses "in the inbox" as the absence of the other two folder labels, so moving a dialog back to the inbox is a `remove` of `ARCHIVE` or `BIN`, never a `set` of `DEFAULT`. The `set` of `DEFAULT` has a sentence, but it is not reachable with current API behaviour.
+- **A move says where the message went, in the words of the buttons.** *Flytt til arkivet*, *Flytt til papirkurven* and *Flytt til innboksen* are logged as *flyttet meldingen til arkivet*, *til papirkurven* and *til innboksen*. So the `remove` of `ARCHIVE` or `BIN` reads *flyttet meldingen til innboksen*, and where the message came from is usually the entry below it. Like the button, it says *innboksen* even when the message also carries `SENT` and so lands in *Sendt*.
 - **One move, one sentence.** The folders are mutually exclusive, so a move writes a `set` of the destination and a `remove` of the origin at the same instant. Entries are grouped by (timestamp, actor), and a `remove` of a folder label is dropped when the same group holds a folder `set`. Moving from the bin to the archive says the dialog was archived — not that it first lost its bin label.
 - **A `remove` that arrives alone is still shown.** This is not an edge case: it is how the return to the inbox appears, and it is what happens when the dialog is **updated** — the platform clears the archive or bin label so the dialog resurfaces, and seeing why it reappeared is the useful part.
-- **Read and unread are never collapsed.** `MARKED_AS_UNOPENED` sits outside the folder logic, so both directions say something. *"Dialogen ble markert som lest"* is what a reader sees when a dialog they had marked unread is opened again.
+- **Read and unread are never collapsed.** `MARKED_AS_UNOPENED` sits outside the folder logic, so both directions say something. *"… markerte meldingen som lest"* is what a reader sees when a dialog they had marked unread is opened again.
 - **Different actors never collapse into each other.** The actor is part of the grouping key, so a `set` by a user and a `remove` by the service owner in the same instant are two events by two parties, and both are reported.
 
 ### Every sentence
 
-All eight follow the shared form, `Dialogen ble … av {actor}.`
+All eight follow the shared form, `{actor} … meldingen …`.
 
 | Label | `set` | `remove` |
 |---|---|---|
-| `BIN` | flyttet til papirkurven | tatt ut av papirkurven |
-| `ARCHIVE` | flyttet til arkivet | tatt ut av arkivet |
-| `DEFAULT` | flyttet til innboksen *(unreachable)* | tatt ut av innboksen |
-| `MARKED_AS_UNOPENED` | markert som ulest | markert som lest |
+| `BIN` | flyttet meldingen til papirkurven | flyttet meldingen til innboksen |
+| `ARCHIVE` | flyttet meldingen til arkivet | flyttet meldingen til innboksen |
+| `DEFAULT` | flyttet meldingen til innboksen *(unreachable)* | flyttet meldingen ut av innboksen |
+| `MARKED_AS_UNOPENED` | markerte meldingen som ulest | markerte meldingen som lest |
 
 Nynorsk and English carry the same meaning.
