@@ -23,6 +23,12 @@ param tags object
 @description('Whether to provision a storage account + container for PostgreSQL restore backups')
 param enableBackupVault bool = false
 
+@description('Suffix appended to the server name, e.g. "-v2". Allows a second instance alongside the original.')
+param nameSuffix string = ''
+
+@description('Whether to write the databaseConnectionString secret to Key Vault. Set false for the v2 server until cutover.')
+param writeConnectionStringSecret bool = true
+
 @export()
 type Sku = {
   name: 'Standard_B1ms' | 'Standard_B2s' | 'Standard_B4ms' | 'Standard_B8ms' | 'Standard_B12ms' | 'Standard_B16ms' | 'Standard_B20ms' | 'Standard_D2ads_v5' | 'Standard_D4ads_v5' | 'Standard_D8ads_v5'
@@ -87,7 +93,7 @@ module saveAdmPassword '../keyvault/upsertSecret.bicep' = {
 }
 
 resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2024-08-01' = {
-  name: '${namePrefix}-postgres'
+  name: '${namePrefix}-postgres${nameSuffix}'
   location: location
   properties: {
     version: postgresVersion
@@ -147,7 +153,7 @@ module backupVaultStorageContainer '../storageContainer/main.bicep' = if (enable
 
 var secretName = 'databaseConnectionString'
 var secretValue = 'postgres://${administratorLogin}:${administratorLoginPassword}@${postgres.properties.fullyQualifiedDomainName}:5432/${databaseName}?ssl=true'
-module psqlConnectionObject '../keyvault/upsertSecret.bicep' = {
+module psqlConnectionObject '../keyvault/upsertSecret.bicep' = if (writeConnectionStringSecret) {
   name: secretName
   params: {
     destKeyVaultName: keyVaultName
@@ -158,4 +164,4 @@ module psqlConnectionObject '../keyvault/upsertSecret.bicep' = {
 }
 
 output serverName string = postgres.name
-output connectionStringSecretUri string = psqlConnectionObject.outputs.secretUri
+output connectionStringSecretUri string = psqlConnectionObject.?outputs.secretUri ?? ''

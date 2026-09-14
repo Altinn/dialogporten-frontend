@@ -275,6 +275,33 @@ module postgresql '../modules/postgreSql/create.bicep' = {
   }
 }
 
+module postgresqlV2 '../modules/postgreSql/create.bicep' = {
+  scope: resourceGroup
+  name: 'postgresqlV2'
+  params: {
+    namePrefix: namePrefix
+    nameSuffix: '-v2'
+    writeConnectionStringSecret: false
+    subnetId: vnet.outputs.postgresqlSubnetId
+    location: location
+    keyVaultName: environmentKeyVault.outputs.name
+    srcKeyVault: srcKeyVault
+    srcSecretName: 'dialogportenPgAdminPasswordV2${environment}'
+    administratorLoginPassword: contains(keyVaultSourceKeys, 'dialogportenPgAdminPassword${environment}')
+      ? srcKeyVaultResource.getSecret('dialogportenPgAdminPassword${environment}')
+      : secrets.dialogportenPgAdminPassword
+    privateDnsZoneArmResourceId: postgresqlPrivateDnsZone.outputs.id
+    sku: postgresConfiguration.sku
+    storage: postgresConfiguration.storage
+    highAvailability: postgresConfiguration.?highAvailability
+    availabilityZone: postgresConfiguration.availabilityZone
+    backupRetentionDays: postgresConfiguration.backupRetentionDays
+    postgresVersion: postgresConfiguration.version
+    tags: tags
+    enableBackupVault: false
+  }
+}
+
 module sshJumper '../modules/ssh-jumper/main.bicep' = {
   scope: resourceGroup
   name: 'sshJumper'
@@ -286,6 +313,7 @@ module sshJumper '../modules/ssh-jumper/main.bicep' = {
     sshPublicKey: secrets.sourceKeyVaultSshJumperSshPublicKey
     adminLoginGroupObjectId: entraDevelopersGroupId
     vmSize: sshJumperVmSize
+    defaultSubnetAddressPrefix: vnet.outputs.defaultSubnetAddressPrefix
   }
 }
 
