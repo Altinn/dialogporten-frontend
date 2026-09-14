@@ -56,7 +56,8 @@ export const PageLayout: React.FC = () => {
   const { state, pathname } = useLocation();
   const fromView = (state as { fromView?: string })?.fromView;
   const { consent, rejectAll, acceptAll, isAnswered } = useConsent();
-  const isSkyraEnabled = useFeatureFlag<boolean>('global.enableSkyra');
+  const isCookieBannerEnabled = useFeatureFlag<boolean>('global.enableCookieBanner');
+  const isSkyraEnabled = useFeatureFlag<boolean>('global.enableSkyra') && isCookieBannerEnabled;
   useSkyraReload(pathname);
 
   useProfile();
@@ -218,7 +219,7 @@ export const PageLayout: React.FC = () => {
       items: breadcrumbItems,
     },
     cookieBanner:
-      !isSkyraEnabled || isAnswered
+      !isCookieBannerEnabled || isAnswered
         ? undefined
         : {
             onAccept: acceptAll,

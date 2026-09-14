@@ -6,7 +6,7 @@ import { useFeatureFlag } from '../../../featureFlags';
 export const useFooter = (): FooterProps => {
   const { t, i18n } = useTranslation();
   const { clear } = useConsent();
-  const isSkyraEnabled = useFeatureFlag<boolean>('global.enableSkyra');
+  const isCookieBannerEnabled = useFeatureFlag<boolean>('global.enableCookieBanner');
   const language = i18n.language;
 
   return {
@@ -56,7 +56,7 @@ export const useFooter = (): FooterProps => {
             language,
           ),
         },
-        ...(isSkyraEnabled
+        ...(isCookieBannerEnabled
           ? [
               {
                 id: 'footer.nav.cookies',

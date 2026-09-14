@@ -16,6 +16,7 @@ export const featureFlagDefinitions = [
   { key: 'profile.enableSetUserName', type: 'boolean', default: false },
   { key: 'fce.enablePreferHeader', type: 'boolean', default: false },
   { key: 'global.enableSkyra', type: 'boolean', default: false },
+  { key: 'global.enableCookieBanner', type: 'boolean', default: false },
   { key: 'dialogDetails.enableNotificationLogs', type: 'boolean', default: false },
   { key: 'dialogDetails.enableLabelAssignmentLogs', type: 'boolean', default: false },
 ] as const satisfies readonly FeatureFlagDefinition[];
