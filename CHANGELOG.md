@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.176.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.176.1...v1.176.2) (2026-09-14)
+
+
+### Bug Fixes
+
+* **analytics:** respect cookie consent for Application Insights ([#4628](https://github.com/Altinn/dialogporten-frontend/issues/4628)) ([3b95f26](https://github.com/Altinn/dialogporten-frontend/commit/3b95f26f4635aef5ab326ea24e7598bfbcff0551))
+* **skyra:** bump altinn-components to fix language in survey not properly set initially ([#4629](https://github.com/Altinn/dialogporten-frontend/issues/4629)) ([6403d5f](https://github.com/Altinn/dialogporten-frontend/commit/6403d5fcd70a0e8b8ed823069ed784d8c0626c68))
+* **survey:** bump altinn-components to fix language picker bug in Skyra survey ([#4626](https://github.com/Altinn/dialogporten-frontend/issues/4626)) ([5b37f5a](https://github.com/Altinn/dialogporten-frontend/commit/5b37f5aa347094bcef26ed5fb573edc0a56aaf5f))
+
 ## [1.176.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.176.0...v1.176.1) (2026-09-11)
 
 
