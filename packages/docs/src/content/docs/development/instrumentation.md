@@ -107,6 +107,12 @@ import { ReactPlugin } from '@microsoft/applicationinsights-react-js';
 - **Debug Mode**: Not enabled. Do not set `enableDebug` — it makes `_throwInternal` throw before `clearSent`, which wedges failed telemetry in sessionStorage until it trips the 48h limit
 - **Sampling**: `samplingPercentage: 100` — no client-side sampling
 
+### Consent
+
+`analytics.ts` does not load Application Insights at import time. `useAnalyticsConsent` (called from `App`) decides whether it may run and calls `setAnalyticsEnabled`.
+
+Application Insights only runs when `global.enableCookieBanner` is on and the user has accepted statistics cookies in the cookie banner. With the flag off there is no way to give consent, so it stays off. Rejecting, or withdrawing consent through the footer's cookie link, unloads the SDK if it is running and removes its `ai_user` and `ai_session` cookies and the `ai_session` localStorage entry.
+
 ### Trace Correlation
 
 The frontend correlates with backend traces through the `trackFetchDependency` function:

@@ -12,11 +12,13 @@ import { RedirectPage } from './pages/RedirectPage/RedirectPage.tsx';
 import { PageRoutes } from './pages/routes.ts';
 import { SavedSearchesPage } from './pages/SavedSearches/SavedSearchesPage.tsx';
 import './app.css';
+import { useAnalyticsConsent } from './hooks/useAnalyticsConsent.ts';
 import { usePageTracking } from './hooks/usePageTracking.ts';
 
 function App() {
+  const isAnalyticsAllowed = useAnalyticsConsent();
   // Add page tracking
-  usePageTracking();
+  usePageTracking(isAnalyticsAllowed);
 
   return (
     <div className="app">

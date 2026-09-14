@@ -14,6 +14,7 @@ const defaultFeatureFlags: Record<string, boolean> = {
   'profile.enableSetUserName': false,
   'fce.enablePreferHeader': false,
   'global.enableSkyra': false,
+  'global.enableCookieBanner': false,
   'dialogDetails.enableNotificationLogs': false,
   'dialogDetails.enableLabelAssignmentLogs': false,
 };

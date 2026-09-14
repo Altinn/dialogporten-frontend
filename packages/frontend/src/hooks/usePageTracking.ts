@@ -2,11 +2,15 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router';
 import { Analytics } from '../analytics/analytics.ts';
 
-export const usePageTracking = () => {
+export const usePageTracking = (isAnalyticsAllowed: boolean) => {
   const location = useLocation();
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: Intentionally track only on pathname changes (avoid duplicate page views caused by query/state churn).
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Intentionally track only on pathname and consent changes (avoid duplicate page views caused by query/state churn).
   useEffect(() => {
+    if (!isAnalyticsAllowed) {
+      return;
+    }
+
     if (!Analytics.isValidTrackablePage(location.pathname)) {
       console.debug(`Skipping page tracking for route: ${location.pathname}`);
       return;
@@ -27,5 +31,5 @@ export const usePageTracking = () => {
     return () => {
       Analytics.stopPageTracking(pageInfo);
     };
-  }, [location.pathname]);
+  }, [location.pathname, isAnalyticsAllowed]);
 };

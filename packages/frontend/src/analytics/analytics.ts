@@ -7,7 +7,7 @@ import type { AnalyticsEventName } from './analyticsEvents.ts';
 
 let applicationInsights: ApplicationInsights | null = null;
 
-const applicationInsightsEnabled = config.applicationInsightsInstrumentationKey && import.meta.env.PROD;
+const applicationInsightsConfigured = config.applicationInsightsInstrumentationKey && import.meta.env.PROD;
 
 const pageMapping: Record<string, string> = {
   [PageRoutes.inbox]: 'Inbox',
@@ -133,7 +133,7 @@ const trackEvent = (eventName: AnalyticsEventName, properties?: Record<string, s
   });
 };
 
-if (applicationInsightsEnabled) {
+const initApplicationInsights = () => {
   const reactPlugin = new ReactPlugin();
   try {
     applicationInsights = new ApplicationInsights({
@@ -257,40 +257,44 @@ if (applicationInsightsEnabled) {
     console.error('Failed to initialize Application Insights:', error);
     applicationInsights = null;
   }
-} else {
-  console.warn('ApplicationInsightsInstrumentationKey is undefined. Tracking is disabled.');
-}
-
-const noop = () => {};
-
-// Mock functions for when analytics is disabled
-const mockStartPageTracking = (_pageInfo: {
-  pathname: string;
-  search: string;
-  hash: string;
-  state: string;
-  url: string;
-}) => {};
-
-const mockStopPageTracking = (_pageInfo: {
-  pathname: string;
-  search: string;
-  hash: string;
-  state: string;
-  url: string;
-}) => {};
-
-const mockTrackEvent = (_action: string, _properties?: Record<string, string | number | boolean>) => {};
-
-const mockTrackFetchDependency = async (
-  _name: string,
-  fetchPromise: Promise<Response>,
-  _startTime: number = Date.now(),
-): Promise<Response> => {
-  return fetchPromise;
 };
 
-const mockIsValidTrackablePage = (_pathname: string): boolean => false;
+const removeApplicationInsightsStorage = () => {
+  try {
+    for (const cookieName of ['ai_user', 'ai_session']) {
+      // biome-ignore lint/suspicious/noDocumentCookie: the Cookie Store API is not supported in all target browsers
+      document.cookie = `${cookieName}=; Path=/; Max-Age=0`;
+    }
+    localStorage.removeItem('ai_session');
+  } catch (error) {
+    console.warn('Failed to remove Application Insights cookies and storage:', error);
+  }
+};
+
+export const setAnalyticsEnabled = (enabled: boolean) => {
+  if (!applicationInsightsConfigured) {
+    return;
+  }
+
+  if (enabled) {
+    if (!applicationInsights) {
+      initApplicationInsights();
+    }
+    return;
+  }
+
+  try {
+    applicationInsights?.unload(false);
+  } catch (error) {
+    console.error('Failed to unload Application Insights:', error);
+  }
+  applicationInsights = null;
+  removeApplicationInsightsStorage();
+};
+
+if (!applicationInsightsConfigured) {
+  console.warn('ApplicationInsightsInstrumentationKey is undefined. Tracking is disabled.');
+}
 
 // Enhanced helper function to track fetch requests with same operation ID
 const trackFetchDependency = async (
@@ -298,7 +302,7 @@ const trackFetchDependency = async (
   fetchPromise: Promise<Response>,
   startTime: number = Date.now(),
 ): Promise<Response> => {
-  if (!applicationInsightsEnabled) {
+  if (!applicationInsights) {
     return fetchPromise;
   }
 
@@ -344,12 +348,16 @@ const trackFetchDependency = async (
 };
 
 export const Analytics = {
-  isEnabled: applicationInsightsEnabled,
-  startPageTracking: applicationInsightsEnabled ? startPageTracking : mockStartPageTracking,
-  stopPageTracking: applicationInsightsEnabled ? stopPageTracking : mockStopPageTracking,
-  trackEvent: applicationInsightsEnabled ? trackEvent : mockTrackEvent,
-  trackException: applicationInsights?.trackException.bind(applicationInsights) || noop,
-  trackDependency: applicationInsights?.trackDependencyData.bind(applicationInsights) || noop,
-  trackFetchDependency: applicationInsightsEnabled ? trackFetchDependency : mockTrackFetchDependency,
-  isValidTrackablePage: applicationInsightsEnabled ? isValidTrackablePage : mockIsValidTrackablePage,
+  get isEnabled() {
+    return applicationInsights !== null;
+  },
+  startPageTracking,
+  stopPageTracking,
+  trackEvent,
+  trackException: (...args: Parameters<ApplicationInsights['trackException']>) =>
+    applicationInsights?.trackException(...args),
+  trackDependency: (...args: Parameters<ApplicationInsights['trackDependencyData']>) =>
+    applicationInsights?.trackDependencyData(...args),
+  trackFetchDependency,
+  isValidTrackablePage,
 };
