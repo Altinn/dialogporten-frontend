@@ -66,29 +66,36 @@ Related transmissions are grouped into one segment via `relatedTransmissionId`, 
 
 This source is an MVP, and its rules are mostly about **not flooding the log**.
 
-### Interpreting the data
+### What reaches the frontend
 
-- **`requestedSendTime` decides placement**, not `lastUpdateTime`. When no send time was reported, the last update time is used as a fallback so the entry still has a position.
-- **In-flight notifications are hidden.** `New` and `Sending` are invisible until the dispatch reaches a final status — before that there is nothing useful to tell the user.
-- **`Succeeded` and `Accepted` both read "ble sendt".** Only `Delivered` reads "ble levert". We do not imply delivery from an accepted hand-off.
+The BFF filters the upstream log before it answers `notificationLogs`, so everything the frontend receives is worth a line:
+
+- **Only delivered notifications.** `Delivered` passes. Every other status — in flight, handed off but not confirmed, or failed — is dropped. The log reports what the user actually received.
+- **Statuses carry no channel prefix.** The log returns `Delivered`, not the `Email_Delivered` / `SMS_Delivered` shown in Altinn's status reference. The channel is in its own field.
+- **`Instant` and `Composed` dispatches are dropped.** `Notification`, `Reminder` and any type we do not recognise pass through.
+
+### Placement
+
+- **`lastUpdateTime` decides placement.** For a delivered notification it is when the provider reported the delivery, so the entry sits where the user actually got it.
+- **A dispatch to several recipients sits at the latest of their delivery times**, because only then is *"… til A, B og C ble levert"* true.
+- When no delivery time was reported, the requested send time is used instead. With neither, the entry has no position and is dropped.
 
 ### Grouping
 
-The API has no correlation id, so Arbeidsflate derives one: **type + status + channel + `transmissionId` + `requestedSendTime`**.
+The API has no correlation id, so Arbeidsflate derives one: **type + channel + `transmissionId` + `requestedSendTime`**. The recipients of one dispatch share its requested send time, while each has a delivery time of its own — which is why grouping and placement use different timestamps.
 
 - The same dispatch to several recipients becomes **one** entry.
-- A different outcome splits it. Two recipients who both received it are one line; one who received it and one whose address bounced are two, each with its own reason.
+- When no send time was reported, the last update time stands in for it in the key.
 
 ### Wording
 
-The sentence is `{type} på {channel} til {recipients} {status}.`
+The sentence is `{type} på {channel} til {recipients} ble levert.` Only delivered notifications reach the frontend, so the outcome is part of the sentence rather than a slot of its own.
 
 - **The notification is the subject.** There is no actor to put first, so the sentence says what happened to the dispatch.
-- **The channel is named once, in its own slot.** The status says only what happened to the dispatch, not how it travelled — `Delivered` reads "ble levert" whether it went by email or SMS.
-- **`Instant` and `Composed` are both just "Varsel".** These are service-owner delivery mechanics and say nothing to the recipient. Only `Reminder` gets its own word, because "påminnelse" tells the user something real.
-- **Failure reasons are kept distinct**, following the [notification status reference](https://docs.altinn.studio/nb/notifications/reference/notification-status/#emailnotificationresulttype-e-postresultat). A bounce, a spam filter and an expiry read differently because they mean different things to whoever needs to act.
+- **The channel is named once, in its own slot.** Delivery reads "ble levert" whether it went by email or SMS.
+- **Only `Reminder` gets its own word**, because "påminnelse" tells the user something real. Everything else is "Varsel".
 - **At most three recipients are listed**, the rest are counted. Without the cap, one dispatch to many organisation addresses fills the log with addresses.
-- **An unknown value degrades, it does not hide.** Unknown type becomes "Varsel", unknown status becomes "har ukjent status". Hiding a notification the user actually received is worse than describing it generically — and the gap would be invisible to us.
+- **An unknown value degrades, it does not hide.** An unknown type becomes "Varsel" and an unknown channel "ukjent kanal". Hiding a notification the user actually received is worse than describing it generically — and the gap would be invisible to us.
 
 ## 4. Label assignment log
 

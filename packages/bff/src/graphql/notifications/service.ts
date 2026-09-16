@@ -3,6 +3,7 @@ import axios, { isAxiosError } from 'axios';
 import { getAltinnToken } from '../../auth/maskinporten.js';
 import { type Context, getSessionToken } from '../../auth/oidc.js';
 import config from '../../config.ts';
+import { filterNotificationLogs } from './notificationLogs.ts';
 import type { NotificationSettingsInputData, SendVerificationCodeInputData, VerifyAddressInputData } from './types.ts';
 
 const { platformBaseURL } = config;
@@ -274,7 +275,7 @@ export const getNotificationLogs = async (dialogId: string) => {
         },
       },
     );
-    return response.data ?? [];
+    return filterNotificationLogs(response.data);
   } catch (error) {
     if (isAxiosError(error)) {
       logger.error({ status: error.response?.status, body: error.response?.data }, 'Failed to fetch notification logs');

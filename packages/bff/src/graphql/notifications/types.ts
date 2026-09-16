@@ -71,7 +71,7 @@ export const NotificationLogsResponse = objectType({
       resolve: (obj) => obj.destination,
     });
     t.nullable.string('status', {
-      description: 'The current status of the notification, e.g. Email_Delivered',
+      description: 'The status of the notification. Only Delivered notifications are returned',
       resolve: (obj) => obj.status,
     });
     t.nullable.string('requestedSendTime', {
