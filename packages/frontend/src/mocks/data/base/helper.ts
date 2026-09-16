@@ -174,6 +174,8 @@ export const getMockedUnauthorizedFCEContent = () => {
 /* A dialog is not required to have any activities; this one deliberately has none. */
 export const dialogWithoutActivities = '019241f7-8218-7756-be82-noactivities';
 
+export const dialogWithEmptyActivityLog = '019241f7-8218-7756-be82-emptyactivitylog';
+
 const serviceOwnerActor = {
   actorType: ActorType.ServiceOwner,
   actorId: 'actor-01',
@@ -193,7 +195,7 @@ const otherPartyActor = {
 };
 
 export const getMockedActivities = (id: string): DialogByIdFieldsFragment['activities'] => {
-  if (id === dialogWithoutActivities) {
+  if (id === dialogWithoutActivities || id === dialogWithEmptyActivityLog) {
     return [];
   }
   if (id === '019241f7-8218-7756-be82-123qwe456rtA') {

@@ -71,4 +71,14 @@ test.describe('Activity history - transmissions and activities', () => {
     // Sent is not something anyone filed, so it stays out of the log
     await expect(dialog.getByText('sendt av Fantasifull 2024 Søster')).toHaveCount(0);
   });
+
+  test('shows a message when the activity log is empty', async ({ page }) => {
+    await page.goto(appUrlWithPlaywrightId('empty-activity-log'));
+    await page.getByRole('link', { name: 'Dialog med tom aktivitetslogg' }).click();
+    await page.getByRole('button', { name: 'Aktivitetslogg' }).first().click();
+
+    const dialog = page.getByRole('dialog');
+
+    await expect(dialog.getByText('Det er ingen aktivitet å vise for denne meldingen.')).toBeVisible();
+  });
 });

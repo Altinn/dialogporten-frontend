@@ -72,6 +72,7 @@
   "dialog.access_info.open_access_management": "See my powers of attorney",
   "dialog.access_info.outro": "You can change or relinquish powers of attorney through access management.",
   "dialog.access_info.service.identifier_short": "# {id}",
+  "dialog.activity_log.empty": "There is no activity to show for this message.",
   "dialog.activity_log.title": "Activity log",
   "dialog.aria.fetch_more": "Fetch and show more dialogs",
   "dialog.context_menu.label": "Context menu for dialog with title {title}",
