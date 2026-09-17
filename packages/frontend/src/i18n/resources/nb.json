@@ -72,6 +72,7 @@
   "dialog.access_info.open_access_management": "Se mine fullmakter",
   "dialog.access_info.outro": "Du kan endre eller si fra deg fullmakter gjennom tilgangsstyring.",
   "dialog.access_info.service.identifier_short": "# {id}",
+  "dialog.activity_log.empty": "Det er ingen aktivitet å vise for denne meldingen.",
   "dialog.activity_log.title": "Aktivitetslogg",
   "dialog.aria.fetch_more": "Hent og vis flere dialoger",
   "dialog.context_menu.label": "Kontekstmeny for dialog med tittel {title}",
