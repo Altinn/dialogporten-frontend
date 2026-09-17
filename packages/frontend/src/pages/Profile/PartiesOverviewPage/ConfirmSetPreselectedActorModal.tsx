@@ -36,13 +36,15 @@ export const ConfirmSetPreselectedActorModal = ({
   return (
     <Modal open={!!showActor} onClose={onClose} closedBy="none">
       <Typography>
-        {showActor.operation === 'set' ? (
-          <p>{t('profile.parties.confirm_set_preselected_actor', { name: showActor?.party?.name })}</p>
-        ) : (
-          <p>{t('profile.parties.confirm_unset_preselected_actor', { name: showActor?.party?.name })}</p>
-        )}
+        <h1>
+          {showActor.operation === 'set' ? t('profile.set_preselected_party') : t('profile.unset_preselected_party')}
+        </h1>
+        <p>
+          {showActor.operation === 'set'
+            ? t('profile.parties.confirm_set_preselected_actor', { name: showActor?.party?.name })
+            : t('profile.parties.confirm_unset_preselected_actor', { name: showActor?.party?.name })}
+        </p>
       </Typography>
-
       <div className={styles.buttonGroupContainer}>
         <Button onClick={handleConfirm} disabled={isSubmitting} type="button">
           {showActor.operation === 'set'

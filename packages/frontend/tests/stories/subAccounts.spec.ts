@@ -6,14 +6,14 @@ test.describe('Multiselect subaccounts', () => {
     await page.goto(defaultAppURL);
     await page.getByTestId('inbox-toolbar').getByRole('button', { name: 'Test Testesen' }).click();
     await page.getByRole('option', { name: 'Alle virksomheter' }).click();
-    await page.getByRole('button', { name: 'enheter' }).isVisible();
+    await expect(page.getByTestId('inbox-toolbar').getByRole('button', { name: /^\d+ aktører$/ })).toBeVisible();
   });
 
   test('sub account menu is rendered when parent unit is selected', async ({ page }) => {
     await page.goto(defaultAppURL);
     await page.getByTestId('inbox-toolbar').getByRole('button', { name: 'Test Testesen' }).click();
     await page.getByText('TTestbedrift AS Org. nr. : 2').click();
-    await page.getByRole('button', { name: 'enheter' }).isVisible();
+    await expect(page.getByTestId('inbox-toolbar').getByRole('button', { name: 'Alle enheter' })).toBeVisible();
   });
 
   test('selected sub accounts should only', async ({ page }) => {

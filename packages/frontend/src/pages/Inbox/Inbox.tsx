@@ -38,6 +38,8 @@ import { getPageRouteTitle } from '../../components/PageLayout/pageRouteToTitle.
 import { getSearchWords } from '../../components/PageLayout/Search/getSearchLabels.ts';
 import { useSearchString } from '../../components/PageLayout/Search/useSearchString.ts';
 import { useHeaderConfig } from '../../components/PageLayout/useHeaderConfig.tsx';
+import { PartyLimitInfoModal } from '../../components/PartyLimitInfoModal/PartyLimitInfoModal.tsx';
+import { usePartyLimitInfoModal } from '../../components/PartyLimitInfoModal/usePartyLimitInfoModal.ts';
 import { SaveSearchButton } from '../../components/SavedSearchButton/SaveSearchButton.tsx';
 import { isSavedSearchDisabled } from '../../components/SavedSearchButton/savedSearchEnabled.ts';
 import { SeenByModal } from '../../components/SeenByModal/SeenByModal.tsx';
@@ -161,6 +163,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     subAccounts,
     onSelectSubAccount,
     getSubAccountLabel,
+    subAccountsMenuTitle,
     partyIdsOverride,
     searchable: subAccountsSearchable,
     subAccountGroups,
@@ -174,6 +177,12 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const searchMode = hasValidFilters(filterState) || !!validSearchString;
   const showSubAccountsMenu = subAccounts.length > 0;
   const accountNavigatorVisible = !accountNavigatorHidden;
+
+  const accountSelectionKey = selectedGroup ?? selectedPartyIds.join(',');
+  const { isOpen: partyLimitInfoModalOpen, close: closePartyLimitInfoModal } = usePartyLimitInfoModal(
+    accountNavigatorVisible,
+    accountSelectionKey,
+  );
 
   const subAccountsParamForSave = useMemo(() => {
     if (subAccountsParam) return subAccountsParam;
@@ -393,7 +402,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
                 groups={subAccountGroups}
                 onSelectId={onSelectSubAccount}
                 label={getSubAccountLabel()}
-                title={t('parties.subunit.change_label')}
+                title={subAccountsMenuTitle}
                 searchable={subAccountsSearchable}
                 virtualized={subAccounts.length > 20}
               />
@@ -503,6 +512,11 @@ export const Inbox = ({ viewType }: InboxProps) => {
         title={accessInfoModal?.title}
         isOpen={!!accessInfoModal}
         onClose={() => setAccessInfoModal(null)}
+      />
+      <PartyLimitInfoModal
+        isOpen={partyLimitInfoModalOpen}
+        onClose={closePartyLimitInfoModal}
+        partyLimit={MAX_DIALOG_PARTY_SIZE}
       />
       <BookmarkModal {...bookmarkModalProps} />
       {footerActions.length > 0 && <BulkFooter hidden={!bulkMode} actions={footerActions} />}
