@@ -20,7 +20,38 @@ param adminLoginGroupObjectId string
 @description('The VM size for the SSH Jumper virtual machine')
 param vmSize string = 'Standard_B1ms'
 
+@description('First day of the nightly patch window, yyyy-MM-dd. Defaults to tomorrow so the value is never in the past when the maintenance configuration is created.')
+param patchWindowStartDate string = dateTimeAdd(utcNow(), 'P1D', 'yyyy-MM-dd')
+
 var name = '${namePrefix}-ssh-jumper'
+
+// Nightly customer-managed patch window, installing from live package repositories.
+resource maintenanceConfiguration 'Microsoft.Maintenance/maintenanceConfigurations@2023-04-01' = {
+  name: '${namePrefix}-vm-maint-conf'
+  location: location
+  properties: {
+    maintenanceScope: 'InGuestPatch'
+    extensionProperties: {
+      InGuestPatchMode: 'User'
+    }
+    maintenanceWindow: {
+      startDateTime: '${patchWindowStartDate} 01:00'
+      duration: '02:00'
+      recurEvery: '1Day'
+      timeZone: 'W. Europe Standard Time'
+    }
+    installPatches: {
+      rebootSetting: 'IfRequired'
+      linuxParameters: {
+        classificationsToInclude: [
+          'Critical'
+          'Security'
+        ]
+      }
+    }
+  }
+  tags: tags
+}
 
 resource publicIp 'Microsoft.Network/publicIPAddresses@2023-11-01' = {
   name: '${name}-ip'
@@ -86,6 +117,7 @@ module virtualMachine '../../modules/virtualMachine/main.bicep' = {
     location: location
     tags: tags
     adminLoginGroupObjectId: adminLoginGroupObjectId
+    maintenanceConfigurationId: maintenanceConfiguration.id
     enableJit: true
     hardwareProfile: {
       vmSize: vmSize
