@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.176.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.176.2...v1.176.3) (2026-09-17)
+
+
+### Bug Fixes
+
+* **activitylogs:** show a message when the activity log is empty ([#4637](https://github.com/Altinn/dialogporten-frontend/issues/4637)) ([5156dfc](https://github.com/Altinn/dialogporten-frontend/commit/5156dfcb928eb95190175fd80140496faada98f0))
+* **name:** update heuristics for name standardization by upgrading altinn-components to 0.73.3 ([#4635](https://github.com/Altinn/dialogporten-frontend/issues/4635)) ([27306ac](https://github.com/Altinn/dialogporten-frontend/commit/27306ac685ab9fb8a75fe1eca42b7fac104d050d))
+
 ## [1.176.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.176.1...v1.176.2) (2026-09-16)
 
 
