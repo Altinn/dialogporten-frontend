@@ -9,10 +9,8 @@ import { at23TestIds, prodTestIDs, tt02TestIds } from './testIds.ts';
  * Shared configuration across environments
  */
 export const sharedConfig: ResourceFilters = {
-  excludeOrgCodes: ['acn', 'bft', 'ttd'],
+  excludeOrgCodes: ['acn', 'bft'],
   includeResourceTypes: ['GenericAccessResource', 'AltinnApp', 'MigratedApp', 'CorrespondenceService'],
-  onlyVisible: true,
-  onlyDelegable: true,
   onlyValidResourceUrns: true,
 };
 

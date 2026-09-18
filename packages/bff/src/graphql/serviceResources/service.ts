@@ -2,13 +2,14 @@ import { logger } from '@altinn/dialogporten-node-logger';
 import config from '../../config.js';
 import { isNotifiableResourceIdentifier } from '../shared/resourceUrn.ts';
 import { getEnvironmentConfig } from './config.ts';
-import type { LocalizedText, Resource } from './registryTypes.ts';
+import type { LocalizedText, Resource, ResourceStatus } from './registryTypes.ts';
 
 export interface TransformedServiceResource {
   id: string;
   title: LocalizedText;
   org: string;
   resourceType: string;
+  status?: ResourceStatus;
 }
 
 export interface ServiceResourceResponseDTO extends Omit<TransformedServiceResource, 'title' | 'resourceType'> {
@@ -16,7 +17,7 @@ export interface ServiceResourceResponseDTO extends Omit<TransformedServiceResou
 }
 
 /* Bump this to instantly invalidate cache */
-const serviceResourcesRedisVersion = 8;
+const serviceResourcesRedisVersion = 9;
 export const serviceResourcesRedisKey = 'arbeidsflate-service-resources:v' + serviceResourcesRedisVersion;
 
 export function getSupportedLanguage(defaultLanguage: 'nb' | 'nn' | 'en', language?: string): string[] {
@@ -198,6 +199,7 @@ export async function storeServiceResourcesInRedis(filters?: ResourceFilters): P
         ''
       ).toLowerCase(),
       resourceType: resource.resourceType,
+      status: resource.status,
     }));
 
     await redisClient.set(serviceResourcesRedisKey, JSON.stringify(transformedResources), 'EX', 60 * 60 * 24); // Store for 24 hours

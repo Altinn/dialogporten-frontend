@@ -342,6 +342,7 @@
   "profile.service_notifications.active_for_all": "Receiving notifications for all services",
   "profile.service_notifications.active_for_count": "{count, plural, =1 {Active for # service} other {Active for # services}}",
   "profile.service_notifications.cancel": "Cancel",
+  "profile.service_notifications.expired": "Expired",
   "profile.service_notifications.filter_default_body": "Add specific services to limit notifications to only those. Note that you will not be notified about new services added in the future until you add them here.",
   "profile.service_notifications.filter_default_heading": "You receive notifications for all services.",
   "profile.service_notifications.selected_count": "{count, plural, =0 {No services selected} =1 {# service selected} other {# services selected}}",

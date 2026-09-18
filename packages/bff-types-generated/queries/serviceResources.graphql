@@ -3,5 +3,6 @@ query getServiceResources($ids: [String!], $resourceType: [String], $org: [Strin
     id
     title
     org
+    status
   }
 }

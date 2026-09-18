@@ -15,9 +15,10 @@ Resources from the following organization codes are excluded:
 
 - **`acn`** — Accenture (test/development organization)
 - **`bft`** — Brønnøysund Register Centre test services
-- **`ttd`** — Test Technology Development services
 
 **Business rationale:** These organizations primarily provide test services, internal tools, or development resources that should not appear in the production user interface.
+
+**Note:** `ttd` is no longer excluded. Users have selected notifications for `ttd` resources, and a selected resource that is filtered out can neither be seen nor turned off by the user. Keep this in mind before adding new organization codes to the list.
 
 ---
 
@@ -33,17 +34,17 @@ Only the following resource types are included in the UI:
 
 ---
 
-### 1.3 Visibility Requirement
-- **Rule:** Only resources with `visible: true` are included.
+### 1.3 Visibility (not required)
+- **Rule:** Resources are included regardless of `visible`.
 
-**Business rationale:** Only resources intended to be shown in the delegation UI make sense to display.
+**Business rationale:** Users have selected notifications for resources with `visible: false`. Filtering them out kept the selection active but hid it, so the user could neither see it nor turn it off individually. Services the user has selected are shown, even when we no longer consider them meaningful to be notified about.
 
 ---
 
-### 1.4 Delegation Capability
-- **Rule:** Only resources with `delegable: true` are included.
+### 1.4 Delegation Capability (not required)
+- **Rule:** Resources are included regardless of `delegable`.
 
-**Business rationale:** Ensures the resource can actually be used for delegation and therefore is relevant in the UI.
+**Business rationale:** Same as 1.3: users have selected notifications for resources with `delegable: false`, and those selections must be visible so the user can turn them off.
 
 ---
 
