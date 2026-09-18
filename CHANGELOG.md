@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.177.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.177.0...v1.177.1) (2026-09-18)
+
+
+### Bug Fixes
+
+* **notifications:** expand scope of service resources for notification settings and mark expired or withdrawn ones ([#4645](https://github.com/Altinn/dialogporten-frontend/issues/4645)) ([04f2753](https://github.com/Altinn/dialogporten-frontend/commit/04f2753ff96d81ec870243b599c60823904edd69))
+
 ## [1.177.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.176.3...v1.177.0) (2026-09-18)
 
 
