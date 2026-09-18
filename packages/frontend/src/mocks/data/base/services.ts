@@ -5,7 +5,7 @@ export const baseServices: ServiceResource[] = [
     id: 'app_nav_barnehagelister',
     title: 'Barnehagelister',
     org: 'nav',
-    status: 'Deprecated',
+    deprecated: true,
   },
   {
     id: 'asf-migratedcorrespondence-2996-120202',
@@ -1021,7 +1021,7 @@ export const baseServices: ServiceResource[] = [
     id: 'app_hdir_a2-5323-1',
     title: 'Bevillingsordning for tilvirkning av alkohol',
     org: 'hdir',
-    status: 'Withdrawn',
+    deprecated: true,
   },
   {
     id: 'app_skd_a2-3019-202200',

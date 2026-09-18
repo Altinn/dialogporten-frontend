@@ -24,8 +24,6 @@ import { getOrganization } from '../../../utils/organizations.ts';
 import { useOrganizations } from '../../Inbox/useOrganizations.ts';
 import type { NotificationAccountsType } from '../NotificationsPage/NotificationsPage.tsx';
 
-const EXPIRED_RESOURCE_STATUSES = new Set(['Deprecated', 'Withdrawn']);
-
 export interface ServiceResourceNotificationsDetailsProps {
   notificationParty?: NotificationAccountsType | null;
 }
@@ -209,7 +207,7 @@ export const ServiceResourceNotificationsDetails = ({
                           id={id!}
                           icon={BellIcon}
                           title={
-                            EXPIRED_RESOURCE_STATUSES.has(resource.status ?? '') ? (
+                            resource.deprecated ? (
                               <>
                                 {title} <Badge color="warning">{t('profile.service_notifications.expired')}</Badge>
                               </>

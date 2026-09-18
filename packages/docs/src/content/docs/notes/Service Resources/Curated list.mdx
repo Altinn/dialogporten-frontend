@@ -1,14 +1,41 @@
 ---
 title: "Service Resources Filtering"
 ---
-## Source
+The list of services in the notification settings ("Varsle kun om enkelttjenester") comes from the Altinn Resource Registry (RR). The BFF fetches the full list from RR, filters it and caches the result in Redis. On each request it returns the list sorted by title in the requested language. The code is in `packages/bff/src/graphql/serviceResources/`.
 
-The system integrates with the Altinn Resource Registry via: [The Resource Registry](https://platform.altinn.no/resourceregistry/api/v1/resource/resourcelist?includeAltinn2=false&includeApps=true&includeMigratedApps=true)
-The returned list is then **post-filtered** before being shown in the UI.
+## Rules per environment
+
+All environments use the same rules. The only difference is which test ID list is applied:
+
+| Environment | `PLATFORM_BASEURL` | Test ID list applied |
+|---|---|---|
+| Prod | `https://platform.altinn.no` | `at23TestIds` (see the warning below) |
+| TT02 (staging) | `https://platform.tt02.altinn.no` | `tt02TestIds` |
+| AT23 (test) | `https://platform.at23.altinn.cloud` | `at23TestIds` |
+| YT01 | `https://platform.yt01.altinn.cloud` | `at23TestIds` |
+| Local | Set in `.env` (the BFF defaults to AT23) | Follows the URL, so `at23TestIds` by default |
+
+:::caution[Prod uses the AT23 test ID list]
+`getEnvironmentConfig` treats a platform URL containing `af.altinn.no` as prod, but the prod platform URL is `https://platform.altinn.no`. Prod therefore gets `at23TestIds`. None of those IDs exist in prod, so in practice no test services are excluded in prod, and the services in `prodTestIDs` are shown.
+:::
+
+A service is shown when all of these are true:
+
+1. RR returns it for the request in 3.1, which leaves out Altinn 2 services.
+2. Its owner is not `acn` or `bft` (1.1).
+3. Its type is `GenericAccessResource`, `AltinnApp`, `MigratedApp` or `CorrespondenceService` (1.2).
+4. Its identifier forms a valid resource URN (1.5).
+5. Its identifier is not in the test ID list for the environment (2.1).
+
+These are not checked:
+
+- `visible` (1.3) and `delegable` (1.4).
+- Status. Services of type `MigratedApp` or with status `Deprecated` or `Withdrawn` are shown, but marked as deprecated with the badge "Utløpt" (1.6).
+- Whether the owner is `ttd` (1.1).
 
 ---
 
-## 1. Global Filtering Rules (always applied)
+## 1. Rules for All Environments
 
 ### 1.1 Excluded Organizations
 Resources from the following organization codes are excluded:
@@ -27,7 +54,7 @@ Only the following resource types are included in the UI:
 
 - **`GenericAccessResource`** — Generic, non-Studio resources
 - **`AltinnApp`** — Altinn 3 applications
-- **`MigratedApp`** — Services migrated from Altinn 2 to Altinn 3
+- **`MigratedApp`** — Services migrated from Altinn 2 to Altinn 3 (always marked as deprecated, see 1.6)
 - **`CorrespondenceService`** — [Correspondence services](https://docs.altinn.studio/en/correspondence/)
 
 **Business rationale:** These types are supported by the UI and represent the service categories end users should interact with.
@@ -49,22 +76,24 @@ Only the following resource types are included in the UI:
 ---
 
 ### 1.5 Valid Resource URN
-- **Rule:** Only resources whose identifier yields a URN matching `^urn:altinn:resource:[a-z0-9_-]{4,}$` are included (`onlyValidResourceUrns`).
+- **Rule:** Only resources whose identifier yields a URN matching `^urn:altinn:resource:[a-z0-9_-]{4,}$` are included (`onlyValidResourceUrns`). This leaves out, for example, Altinn 1 identifiers with a version suffix and identifiers with uppercase letters.
+
+**Business rationale:** Notification choices are saved as `urn:altinn:resource:` URNs, so a service whose identifier doesn't form a valid URN can't be used as a choice.
+
+---
+
+### 1.6 Deprecated Services (not filtered)
+- **Rule:** Resources are included regardless of `status`. The BFF sets `deprecated` to true when the type is `MigratedApp` or the status is `Deprecated` or `Withdrawn`. Deprecated services get the warning badge "Utløpt" in the notification settings.
+
+**Business rationale:** Same as 1.3: users must be able to see and turn off choices for these services. The badge shows which of them are deprecated.
+
 ---
 
 ## 2. Environment-Specific Test Data Exclusion
 
-The system detects the deployment environment and applies additional exclusions to remove test resources.
-
-### 2.1 Exclude Initial ID Lists
-- **Rule:** Resources are excluded if their IDs match an environment-specific list of known test resources (typically identified by obvious test names/titles).
-
-Example lists:
-- `prodTestIDs`
-- `tt02TestIds`
-- `at23TestIds`
-
-Cf. `packages/bff/src/graphql/serviceResources/testIds.ts`
+### 2.1 Test ID Lists
+- **Rule:** Resources are excluded if their identifier is in the test ID list for the environment. The lists (`prodTestIDs`, `tt02TestIds` and `at23TestIds`) are in `packages/bff/src/graphql/serviceResources/testIds.ts`.
+- **How the environment is detected:** `getEnvironmentConfig` in `config.ts` checks `PLATFORM_BASEURL`. A URL containing `af.altinn.no` gets `prodTestIDs`, a URL containing `tt02` gets `tt02TestIds`, and any other URL gets `at23TestIds`. See [Rules per environment](#rules-per-environment) for the result in each environment.
 
 **Business rationale:** The Resource Registry currently lacks a reliable dedicated flag (e.g. `isTestResource`) for identifying test resources, so environment-specific ID lists are used as a safeguard.
 
@@ -73,6 +102,7 @@ Cf. `packages/bff/src/graphql/serviceResources/testIds.ts`
 ## 3. Resource Registry Integration
 
 ### 3.1 URL Parameters
+The BFF fetches `{PLATFORM_BASEURL}/resourceregistry/api/v1/resource/resourcelist` with these parameters ([prod example](https://platform.altinn.no/resourceregistry/api/v1/resource/resourcelist?includeAltinn2=false&includeApps=true&includeMigratedApps=true)):
 
 - **`includeAltinn2=false`** — Excludes legacy Altinn 2 services
 
@@ -82,9 +112,16 @@ Cf. `packages/bff/src/graphql/serviceResources/testIds.ts`
 
 ---
 
-## 4. Maintenance Considerations / Future Improvements
+## 4. Service Owner Names (not a filter)
 
+`excludeOrgsInProd` in `packages/bff/src/graphql/organizations/service.ts` removes `bits`, `bft` and `acn` from the list of service owners when the BFF runs with `ENVIRONMENT=prod`. That list is only used to look up an owner's name and logo. It never decides which services are shown. When an owner is missing from it, the UI shows the organization code instead of the name.
+
+---
+
+## 5. Maintenance Considerations / Future Improvements
+
+- When you change the filters, bump `serviceResourcesRedisVersion` in `service.ts`. The filtered list is cached in Redis for 24 hours and refreshed in the background every 6 hours, so without a bump the old list can be served for up to 6 hours after deploy. Sorting and `deprecated` are computed per request from the cached data, so changing them doesn't need a bump.
 - Test ID arrays (`prodTestIDs`, `tt02TestIds`, `at23TestIds`) require periodic review and updates.
-- The organization exclusion list may need updates as new test organizations are created.
+- The organization exclusion list may need updates as new test organizations are created (see the note in 1.1).
 - The included resource type list should be revisited if/when new resource types are introduced.
 - Long-term goal: the Resource Registry should expose a dedicated flag (e.g. `isTestResource`) so test resources can be filtered reliably without maintaining environment-specific ID lists.

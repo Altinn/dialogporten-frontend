@@ -12,8 +12,27 @@ export interface TransformedServiceResource {
   status?: ResourceStatus;
 }
 
-export interface ServiceResourceResponseDTO extends Omit<TransformedServiceResource, 'title' | 'resourceType'> {
+export interface ServiceResourceResponseDTO
+  extends Omit<TransformedServiceResource, 'title' | 'resourceType' | 'status'> {
   title: string;
+  deprecated?: boolean;
+}
+
+const deprecatedResourceStatuses: ResourceStatus[] = ['Deprecated', 'Withdrawn'];
+
+export function isDeprecatedServiceResource({
+  resourceType,
+  status,
+}: Pick<TransformedServiceResource, 'resourceType' | 'status'>): boolean {
+  return (
+    resourceType.toLowerCase() === 'migratedapp' ||
+    deprecatedResourceStatuses.some((s) => s.toLowerCase() === (status ?? '').toLowerCase())
+  );
+}
+
+export function sortServiceResourcesByTitle<T extends { title: string }>(resources: T[], lang: string): T[] {
+  const collator = new Intl.Collator(lang, { sensitivity: 'base' });
+  return resources.toSorted((a, b) => collator.compare(a.title, b.title));
 }
 
 /* Bump this to instantly invalidate cache */
@@ -258,10 +277,14 @@ export async function getServiceResourcesFromRedis(
       resources = await storeServiceResourcesInRedis(getEnvironmentConfig(config.platformBaseURL));
     }
 
-    return applyServiceResourceQueryFilters(resources, filters).map((r) => ({
-      ...r,
-      title: getLocalizedTitle(r.title, langs),
-    }));
+    return sortServiceResourcesByTitle(
+      applyServiceResourceQueryFilters(resources, filters).map(({ resourceType, status, ...r }) => ({
+        ...r,
+        title: getLocalizedTitle(r.title, langs),
+        deprecated: isDeprecatedServiceResource({ resourceType, status }),
+      })),
+      langs[0],
+    );
   } catch (error) {
     logger.error(error, 'Error retrieving service resources from Redis:');
     return [];

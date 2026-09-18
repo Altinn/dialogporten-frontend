@@ -7,11 +7,7 @@ const SERVICES_ROW_NAME = 'Varsle kun om enkelttjenester';
 const EXPIRED_BADGE = 'Utløpt';
 
 test.describe('Account Alerts - service notifications', () => {
-  test('services that are deprecated or withdrawn in the resource registry are marked as expired', async ({
-    page,
-  }: {
-    page: Page;
-  }) => {
+  test('deprecated services are marked as expired', async ({ page }: { page: Page }) => {
     await page.goto(appURLProfileParties);
     await expect(page.getByRole('heading', { name: PARTIES_HEADING, level: 1 })).toBeVisible();
 

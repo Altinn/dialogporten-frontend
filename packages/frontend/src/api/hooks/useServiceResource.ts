@@ -48,17 +48,13 @@ const useServiceResourcesQuery = (
 
   const serviceResources = useMemo(
     () =>
-      ((data?.serviceResources ?? []) as ServiceResource[])
-        .map(
-          (item) =>
-            ({
-              ...item,
-              id: `urn:altinn:resource:${item?.id ?? ''}`,
-            }) as ServiceResource,
-        )
-        .sort((a, b) => {
-          return (a.title ?? '').localeCompare(b.title ?? '', undefined, { sensitivity: 'base' });
-        }),
+      ((data?.serviceResources ?? []) as ServiceResource[]).map(
+        (item) =>
+          ({
+            ...item,
+            id: `urn:altinn:resource:${item?.id ?? ''}`,
+          }) as ServiceResource,
+      ),
     [data?.serviceResources],
   );
 

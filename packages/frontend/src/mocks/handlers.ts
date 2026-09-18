@@ -737,10 +737,14 @@ const mutateDeleteFavoritePartyMock = graphql.mutation('DeleteFavoriteParty', (r
   });
 });
 
+const serviceTitleCollator = new Intl.Collator('nb', { sensitivity: 'base' });
+const sortServicesByTitle = (services: ServiceResource[] = []) =>
+  [...services].sort((a, b) => serviceTitleCollator.compare(a.title ?? '', b.title ?? ''));
+
 const getServiceResourcesMock = graphql.query('getServiceResources', () => {
   return HttpResponse.json({
     data: {
-      serviceResources: inMemoryStore.services,
+      serviceResources: sortServicesByTitle(inMemoryStore.services),
     },
   });
 });
@@ -748,7 +752,7 @@ const getServiceResourcesMock = graphql.query('getServiceResources', () => {
 const getFilterServiceResourcesMock = graphql.query('getFilterServiceResources', () => {
   return HttpResponse.json({
     data: {
-      serviceResources: inMemoryStore.services,
+      serviceResources: sortServicesByTitle(inMemoryStore.services),
     },
   });
 });
