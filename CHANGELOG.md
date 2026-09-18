@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.177.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.177.1...v1.177.2) (2026-09-18)
+
+
+### Bug Fixes
+
+* **notifications:** change color of deprecated badge to neutral ([#4649](https://github.com/Altinn/dialogporten-frontend/issues/4649)) ([bbdfa8a](https://github.com/Altinn/dialogporten-frontend/commit/bbdfa8a61f73f42dcc1a9d3b4ff3080db3a2d67d))
+* **notifications:** sort service resources in the BFF and change rule for flag deprecated ones ([#4647](https://github.com/Altinn/dialogporten-frontend/issues/4647)) ([4bd9f9a](https://github.com/Altinn/dialogporten-frontend/commit/4bd9f9aecd5188d6e81af7e9311c80b8f79c56d1))
+
 ## [1.177.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.177.0...v1.177.1) (2026-09-18)
 
 
