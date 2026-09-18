@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.177.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.176.3...v1.177.0) (2026-09-18)
+
+
+### Features
+
+* Add info modal for all parties, extending 100 ([#4435](https://github.com/Altinn/dialogporten-frontend/issues/4435)) ([c4c9c1e](https://github.com/Altinn/dialogporten-frontend/commit/c4c9c1e47425ad49280ad852cc0064c9b5cd5d58))
+
+
+### Bug Fixes
+
+* **Skyra:** do not load script before consent is given ([#4644](https://github.com/Altinn/dialogporten-frontend/issues/4644)) ([ceec594](https://github.com/Altinn/dialogporten-frontend/commit/ceec5945b821f6ba86ae89649ba866b559e3b991))
+
 ## [1.176.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.176.2...v1.176.3) (2026-09-17)
 
 
