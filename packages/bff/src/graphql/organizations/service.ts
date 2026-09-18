@@ -45,8 +45,8 @@ interface TransformedOrganization {
   contact?: OrganizationContact;
 }
 
-const organizationsRedisKey = 'arbeidsflate-organizations:v2';
-const excludeOrgsInProd = ['bits', 'bft', 'acn', 'ttd'];
+const organizationsRedisKey = 'arbeidsflate-organizations:v3';
+const excludeOrgsInProd = ['bits', 'bft', 'acn'];
 
 const filterProdOrgs = (orgs: TransformedOrganization[]) => {
   if (config.environment === 'prod') {

@@ -12,12 +12,31 @@ export interface TransformedServiceResource {
   status?: ResourceStatus;
 }
 
-export interface ServiceResourceResponseDTO extends Omit<TransformedServiceResource, 'title' | 'resourceType'> {
+export interface ServiceResourceResponseDTO
+  extends Omit<TransformedServiceResource, 'title' | 'resourceType' | 'status'> {
   title: string;
+  deprecated?: boolean;
+}
+
+const deprecatedResourceStatuses: ResourceStatus[] = ['Deprecated', 'Withdrawn'];
+
+export function isDeprecatedServiceResource({
+  resourceType,
+  status,
+}: Pick<TransformedServiceResource, 'resourceType' | 'status'>): boolean {
+  return (
+    resourceType.toLowerCase() === 'migratedapp' ||
+    deprecatedResourceStatuses.some((s) => s.toLowerCase() === (status ?? '').toLowerCase())
+  );
+}
+
+export function sortServiceResourcesByTitle<T extends { title: string }>(resources: T[], lang: string): T[] {
+  const collator = new Intl.Collator(lang, { sensitivity: 'base' });
+  return resources.toSorted((a, b) => collator.compare(a.title, b.title));
 }
 
 /* Bump this to instantly invalidate cache */
-const serviceResourcesRedisVersion = 9;
+const serviceResourcesRedisVersion = 10;
 export const serviceResourcesRedisKey = 'arbeidsflate-service-resources:v' + serviceResourcesRedisVersion;
 
 export function getSupportedLanguage(defaultLanguage: 'nb' | 'nn' | 'en', language?: string): string[] {
@@ -37,15 +56,17 @@ export function getSupportedLanguage(defaultLanguage: 'nb' | 'nn' | 'en', langua
   return preferredMapping[language];
 }
 
+const normalizeTitle = (title?: string): string => (title ?? '').replace(/\s+/g, ' ').trim();
+
 export function getLocalizedTitle(title: LocalizedText, langs: string[]): string {
   for (const lang of langs) {
-    const value = title[lang as keyof LocalizedText];
+    const value = normalizeTitle(title[lang as keyof LocalizedText]);
     if (value) {
       return value;
     }
   }
   // Fallback: return the first available value, or empty string
-  const values = Object.values(title).filter(Boolean);
+  const values = Object.values(title).map(normalizeTitle).filter(Boolean);
   return values[0] || '';
 }
 
@@ -258,10 +279,14 @@ export async function getServiceResourcesFromRedis(
       resources = await storeServiceResourcesInRedis(getEnvironmentConfig(config.platformBaseURL));
     }
 
-    return applyServiceResourceQueryFilters(resources, filters).map((r) => ({
-      ...r,
-      title: getLocalizedTitle(r.title, langs),
-    }));
+    return sortServiceResourcesByTitle(
+      applyServiceResourceQueryFilters(resources, filters).map(({ resourceType, status, ...r }) => ({
+        ...r,
+        title: getLocalizedTitle(r.title, langs),
+        deprecated: isDeprecatedServiceResource({ resourceType, status }),
+      })),
+      langs[0],
+    );
   } catch (error) {
     logger.error(error, 'Error retrieving service resources from Redis:');
     return [];

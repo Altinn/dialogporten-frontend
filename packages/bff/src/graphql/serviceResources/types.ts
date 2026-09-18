@@ -21,10 +21,11 @@ export const ServiceResource = objectType({
         return resource.org;
       },
     });
-    t.string('status', {
-      description: 'Status of the service resource in the Altinn resource registry, e.g. Active or Deprecated',
+    t.boolean('deprecated', {
+      description:
+        'True if the service resource is a MigratedApp or is Deprecated or Withdrawn in the resource registry',
       resolve: (resource) => {
-        return resource.status;
+        return resource.deprecated;
       },
     });
   },

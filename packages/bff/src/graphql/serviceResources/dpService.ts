@@ -3,7 +3,12 @@ import axios from 'axios';
 import { type Context, getSessionToken } from '../../auth/oidc.js';
 import config from '../../config.js';
 import type { LocalizedText } from './registryTypes.ts';
-import { getLocalizedTitle, type ServiceResourceResponseDTO, type TransformedServiceResource } from './service.ts';
+import {
+  getLocalizedTitle,
+  type ServiceResourceResponseDTO,
+  sortServiceResourcesByTitle,
+  type TransformedServiceResource,
+} from './service.ts';
 
 interface DpLocalization {
   languageCode: string;
@@ -98,16 +103,19 @@ export async function getDpServiceResources(langs: string[], context: Context): 
   try {
     const items = await fetchDpServiceResources(context, langs);
 
-    const resources: Omit<TransformedServiceResource, 'resourceType'>[] = items.map((item) => ({
+    const resources: Omit<TransformedServiceResource, 'resourceType' | 'status'>[] = items.map((item) => ({
       id: item.serviceResource.id,
       title: localizationsToLocalizedText(item.serviceResource.name ?? []),
       org: (item.serviceOwner?.code ?? '').toLowerCase(),
     }));
 
-    return resources.map((r) => ({
-      ...r,
-      title: getLocalizedTitle(r.title, langs),
-    }));
+    return sortServiceResourcesByTitle(
+      resources.map((r) => ({
+        ...r,
+        title: getLocalizedTitle(r.title, langs),
+      })),
+      langs[0],
+    );
   } catch (error) {
     logger.error(error, 'Error retrieving Dialogporten service resources:');
     return [];
