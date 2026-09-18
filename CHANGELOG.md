@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.177.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.177.2...v1.177.3) (2026-09-18)
+
+
+### Bug Fixes
+
+* **notification:** calculation of height of rows in list was incorrect ([#4650](https://github.com/Altinn/dialogporten-frontend/issues/4650)) ([9ef9514](https://github.com/Altinn/dialogporten-frontend/commit/9ef9514ad62fddf405debfb5236c549d3ea9c99e))
+
 ## [1.177.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.177.1...v1.177.2) (2026-09-18)
 
 
