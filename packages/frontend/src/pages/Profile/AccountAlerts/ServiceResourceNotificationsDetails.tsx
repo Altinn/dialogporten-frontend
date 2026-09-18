@@ -1,4 +1,5 @@
 import {
+  Badge,
   Button,
   ButtonGroup,
   DsSpinner,
@@ -22,6 +23,8 @@ import { useErrorLogger } from '../../../hooks/useErrorLogger.ts';
 import { getOrganization } from '../../../utils/organizations.ts';
 import { useOrganizations } from '../../Inbox/useOrganizations.ts';
 import type { NotificationAccountsType } from '../NotificationsPage/NotificationsPage.tsx';
+
+const EXPIRED_RESOURCE_STATUSES = new Set(['Deprecated', 'Withdrawn']);
 
 export interface ServiceResourceNotificationsDetailsProps {
   notificationParty?: NotificationAccountsType | null;
@@ -185,6 +188,7 @@ export const ServiceResourceNotificationsDetails = ({
                   {virtualizer.getVirtualItems().map((virtualRow) => {
                     const resource = filteredResources[virtualRow.index];
                     const { id } = resource;
+                    const title = resource.title ?? resource.id ?? undefined;
                     return (
                       <div
                         key={id}
@@ -204,7 +208,15 @@ export const ServiceResourceNotificationsDetails = ({
                           variant="switch"
                           id={id!}
                           icon={BellIcon}
-                          title={resource.title ?? resource.id ?? undefined}
+                          title={
+                            EXPIRED_RESOURCE_STATUSES.has(resource.status ?? '') ? (
+                              <>
+                                {title} <Badge color="warning">{t('profile.service_notifications.expired')}</Badge>
+                              </>
+                            ) : (
+                              title
+                            )
+                          }
                           description={
                             getOrganization(organizations, resource.org ?? '')?.name ?? resource.org ?? undefined
                           }

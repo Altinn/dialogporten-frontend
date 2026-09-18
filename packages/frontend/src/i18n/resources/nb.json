@@ -342,6 +342,7 @@
   "profile.service_notifications.active_for_all": "Mottar varsler for alle tjenester",
   "profile.service_notifications.active_for_count": "{count, plural, =1 {Aktiv for # tjeneste} other {Aktiv for # tjenester}}",
   "profile.service_notifications.cancel": "Avbryt",
+  "profile.service_notifications.expired": "Utløpt",
   "profile.service_notifications.filter_default_body": "Legg til enkelttjenester for å begrense varsler til kun disse. Merk at du ikke vil bli varslet om nye tjenester som legges til i fremtiden før du har lagt dem til her.",
   "profile.service_notifications.filter_default_heading": "Du mottar varsler for alle tjenester.",
   "profile.service_notifications.selected_count": "{count, plural, =0 {Ingen tjenester valgt} =1 {# tjeneste valgt} other {# tjenester valgt}}",

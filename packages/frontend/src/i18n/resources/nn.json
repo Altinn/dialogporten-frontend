@@ -342,6 +342,7 @@
   "profile.service_notifications.active_for_all": "Mottar varslingar for alle tenester",
   "profile.service_notifications.active_for_count": "{count, plural, =1 {Aktiv for # teneste} other {Aktiv for # tenester}}",
   "profile.service_notifications.cancel": "Avbryt",
+  "profile.service_notifications.expired": "Utløpt",
   "profile.service_notifications.filter_default_body": "Legg til enkelttenester for å avgrense varslingar til berre desse. Merk at du ikkje vil bli varsla om nye tenester som vert lagt til i framtida før du har lagt dei til her.",
   "profile.service_notifications.filter_default_heading": "Du mottar varslingar for alle tenester.",
   "profile.service_notifications.selected_count": "{count, plural, =0 {Ingen tenester valde} =1 {# teneste vald} other {# tenester valde}}",

@@ -21,5 +21,11 @@ export const ServiceResource = objectType({
         return resource.org;
       },
     });
+    t.string('status', {
+      description: 'Status of the service resource in the Altinn resource registry, e.g. Active or Deprecated',
+      resolve: (resource) => {
+        return resource.status;
+      },
+    });
   },
 });
