@@ -1,5 +1,46 @@
 import { describe, expect, it } from 'vitest';
-import { isDeprecatedServiceResource, sortServiceResourcesByTitle } from '../src/graphql/serviceResources/service.ts';
+import { getEnvironmentConfig } from '../src/graphql/serviceResources/config.ts';
+import {
+  getLocalizedTitle,
+  isDeprecatedServiceResource,
+  sortServiceResourcesByTitle,
+} from '../src/graphql/serviceResources/service.ts';
+import { at23TestIds, prodTestIDs, tt02TestIds } from '../src/graphql/serviceResources/testIds.ts';
+
+describe('getLocalizedTitle', () => {
+  it('trims the title and collapses repeated whitespace', () => {
+    expect(getLocalizedTitle({ nb: '  Fond for lyd  og bilde \t- Film ' }, ['nb'])).toBe(
+      'Fond for lyd og bilde - Film',
+    );
+  });
+
+  it('falls back to the next language when the preferred title is blank', () => {
+    expect(getLocalizedTitle({ nb: '   ', nn: ' Søknad ' }, ['nb', 'nn', 'en'])).toBe('Søknad');
+    expect(getLocalizedTitle({ nb: ' ', en: ' Application' }, ['nb', 'nn'])).toBe('Application');
+  });
+
+  it('sorts titles with leading whitespace by their first visible letter', () => {
+    const resources = [' Fond for lyd og bilde', 'Arbeidsgiver', 'Egenmelding'].map((nb) => ({
+      title: getLocalizedTitle({ nb }, ['nb']),
+    }));
+    expect(sortServiceResourcesByTitle(resources, 'nb').map((r) => r.title)).toEqual([
+      'Arbeidsgiver',
+      'Egenmelding',
+      'Fond for lyd og bilde',
+    ]);
+  });
+});
+
+describe('getEnvironmentConfig', () => {
+  it.each([
+    ['https://platform.altinn.no', prodTestIDs],
+    ['https://platform.tt02.altinn.no', tt02TestIds],
+    ['https://platform.at23.altinn.cloud', at23TestIds],
+    ['https://platform.yt01.altinn.cloud', at23TestIds],
+  ])('excludes the test IDs for the environment of %s', (platformUrl, testIds) => {
+    expect(getEnvironmentConfig(platformUrl).excludeIds).toBe(testIds);
+  });
+});
 
 describe('isDeprecatedServiceResource', () => {
   it('treats migrated apps as deprecated regardless of status', () => {

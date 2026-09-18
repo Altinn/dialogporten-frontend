@@ -36,7 +36,7 @@ export function sortServiceResourcesByTitle<T extends { title: string }>(resourc
 }
 
 /* Bump this to instantly invalidate cache */
-const serviceResourcesRedisVersion = 9;
+const serviceResourcesRedisVersion = 10;
 export const serviceResourcesRedisKey = 'arbeidsflate-service-resources:v' + serviceResourcesRedisVersion;
 
 export function getSupportedLanguage(defaultLanguage: 'nb' | 'nn' | 'en', language?: string): string[] {
@@ -56,15 +56,17 @@ export function getSupportedLanguage(defaultLanguage: 'nb' | 'nn' | 'en', langua
   return preferredMapping[language];
 }
 
+const normalizeTitle = (title?: string): string => (title ?? '').replace(/\s+/g, ' ').trim();
+
 export function getLocalizedTitle(title: LocalizedText, langs: string[]): string {
   for (const lang of langs) {
-    const value = title[lang as keyof LocalizedText];
+    const value = normalizeTitle(title[lang as keyof LocalizedText]);
     if (value) {
       return value;
     }
   }
   // Fallback: return the first available value, or empty string
-  const values = Object.values(title).filter(Boolean);
+  const values = Object.values(title).map(normalizeTitle).filter(Boolean);
   return values[0] || '';
 }
 

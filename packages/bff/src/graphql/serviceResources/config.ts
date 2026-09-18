@@ -21,7 +21,7 @@ export function getEnvironmentConfig(platformUrl: string): ResourceFilters {
   const envSpecific: ResourceFilters = {};
 
   // Production environment
-  if (platformUrl.includes('af.altinn.no')) {
+  if (platformUrl.includes('platform.altinn.no')) {
     envSpecific.excludeIds = prodTestIDs;
   }
   // Test/Staging environment (TT02)

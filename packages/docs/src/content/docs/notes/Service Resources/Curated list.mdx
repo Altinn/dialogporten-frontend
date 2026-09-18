@@ -9,15 +9,11 @@ All environments use the same rules. The only difference is which test ID list i
 
 | Environment | `PLATFORM_BASEURL` | Test ID list applied |
 |---|---|---|
-| Prod | `https://platform.altinn.no` | `at23TestIds` (see the warning below) |
+| Prod | `https://platform.altinn.no` | `prodTestIDs` |
 | TT02 (staging) | `https://platform.tt02.altinn.no` | `tt02TestIds` |
 | AT23 (test) | `https://platform.at23.altinn.cloud` | `at23TestIds` |
 | YT01 | `https://platform.yt01.altinn.cloud` | `at23TestIds` |
 | Local | Set in `.env` (the BFF defaults to AT23) | Follows the URL, so `at23TestIds` by default |
-
-:::caution[Prod uses the AT23 test ID list]
-`getEnvironmentConfig` treats a platform URL containing `af.altinn.no` as prod, but the prod platform URL is `https://platform.altinn.no`. Prod therefore gets `at23TestIds`. None of those IDs exist in prod, so in practice no test services are excluded in prod, and the services in `prodTestIDs` are shown.
-:::
 
 A service is shown when all of these are true:
 
@@ -93,7 +89,7 @@ Only the following resource types are included in the UI:
 
 ### 2.1 Test ID Lists
 - **Rule:** Resources are excluded if their identifier is in the test ID list for the environment. The lists (`prodTestIDs`, `tt02TestIds` and `at23TestIds`) are in `packages/bff/src/graphql/serviceResources/testIds.ts`.
-- **How the environment is detected:** `getEnvironmentConfig` in `config.ts` checks `PLATFORM_BASEURL`. A URL containing `af.altinn.no` gets `prodTestIDs`, a URL containing `tt02` gets `tt02TestIds`, and any other URL gets `at23TestIds`. See [Rules per environment](#rules-per-environment) for the result in each environment.
+- **How the environment is detected:** `getEnvironmentConfig` in `config.ts` checks `PLATFORM_BASEURL`. A URL containing `platform.altinn.no` gets `prodTestIDs`, a URL containing `tt02` gets `tt02TestIds`, and any other URL gets `at23TestIds`. See [Rules per environment](#rules-per-environment) for the result in each environment.
 
 **Business rationale:** The Resource Registry currently lacks a reliable dedicated flag (e.g. `isTestResource`) for identifying test resources, so environment-specific ID lists are used as a safeguard.
 
