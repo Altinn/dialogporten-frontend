@@ -209,7 +209,7 @@ export const ServiceResourceNotificationsDetails = ({
                           title={
                             resource.deprecated ? (
                               <>
-                                {title} <Badge color="warning">{t('profile.service_notifications.expired')}</Badge>
+                                {title} <Badge color="neutral">{t('profile.service_notifications.expired')}</Badge>
                               </>
                             ) : (
                               title
