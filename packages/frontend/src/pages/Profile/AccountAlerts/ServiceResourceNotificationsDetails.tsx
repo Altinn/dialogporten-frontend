@@ -37,7 +37,6 @@ export const ServiceResourceNotificationsDetails = ({
   const queryClient = useQueryClient();
   const { serviceResources, isLoading: isLoadingResources } = useNotificationServiceResources();
   const { organizations } = useOrganizations();
-
   const notificationSetting = notificationParty?.notificationSettings;
 
   const [enabledResources, setEnabledResources] = useState<Set<string>>(
@@ -108,10 +107,13 @@ export const ServiceResourceNotificationsDetails = ({
     computeMaxListHeight();
   }, [isFilterEnabled, computeMaxListHeight]);
 
+  const getItemKey = useCallback((index: number) => filteredResources[index].id!, [filteredResources]);
+
   const virtualizer = useVirtualizer({
     count: filteredResources.length,
     getScrollElement: () => scrollRef.current,
     estimateSize: () => 64,
+    getItemKey,
     overscan: 10,
   });
 
@@ -189,7 +191,7 @@ export const ServiceResourceNotificationsDetails = ({
                     const title = resource.title ?? resource.id ?? undefined;
                     return (
                       <div
-                        key={id}
+                        key={virtualRow.key}
                         style={{
                           position: 'absolute',
                           top: 0,
