@@ -1,5 +1,5 @@
-import type { ActivityLogSegmentProps } from '@altinn/altinn-components';
 import {
+  type ActivityLogSegmentProps,
   type BadgeColor,
   type BadgeSize,
   type BadgeVariant,
