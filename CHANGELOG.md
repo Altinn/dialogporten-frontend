@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.177.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.177.3...v1.177.4) (2026-09-21)
+
+
+### Bug Fixes
+
+* **notifications:** distinguish dialog access check failures from denials ([#4653](https://github.com/Altinn/dialogporten-frontend/issues/4653)) ([8a774c9](https://github.com/Altinn/dialogporten-frontend/commit/8a774c9bedd7b35add87b52dd507f4d3f4388b56))
+
 ## [1.177.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.177.2...v1.177.3) (2026-09-18)
 
 
