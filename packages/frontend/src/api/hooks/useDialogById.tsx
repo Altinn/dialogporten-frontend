@@ -403,7 +403,6 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
   const queryClient = useQueryClient();
   const disableFlipNamesPatch = useFeatureFlag<boolean>('dialogporten.disableFlipNamesPatch');
   const selectedProfile = useSelectedProfile();
-  const { notificationLogs } = useNotificationLogs(id);
   const { entries: labelAssignmentLogs } = useLabelAssignmentLog(id);
   const partyURIs = parties.map((party) => party.party);
   const { data, isSuccess, isLoading, isError, dataUpdatedAt } = useAuthenticatedQuery<GetDialogByIdQuery>({
@@ -425,6 +424,8 @@ export const useDialogById = (parties: PartyFieldsFragment[], id?: string): UseD
     },
     enabled: typeof id !== 'undefined' && partyURIs.length > 0,
   });
+
+  const { notificationLogs } = useNotificationLogs(id, !!data?.dialogById?.dialog);
 
   const refreshDialogToken = useCallback(async (): Promise<string | undefined> => {
     if (!id) return undefined;

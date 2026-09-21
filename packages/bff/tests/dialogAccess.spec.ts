@@ -47,16 +47,17 @@ describe('assertDialogAccess', () => {
     const assertDialogAccess = await importSut();
     await expect(assertDialogAccess(DIALOG_ID, contextWithToken())).rejects.toMatchObject({
       message: 'Not authorized to access this dialog',
-      extensions: { code: 'UNAUTHORIZED', http: { status: 401 } },
+      extensions: { code: 'FORBIDDEN', http: { status: 403 } },
     });
   });
 
   it('denies when the lookup returns a different dialog', async () => {
     (axios.post as unknown as Mock).mockResolvedValueOnce(lookupResponse('0198f0a1-0000-0000-0000-000000000000'));
     const assertDialogAccess = await importSut();
-    await expect(assertDialogAccess(DIALOG_ID, contextWithToken())).rejects.toThrow(
-      'Not authorized to access this dialog',
-    );
+    await expect(assertDialogAccess(DIALOG_ID, contextWithToken())).rejects.toMatchObject({
+      message: 'Not authorized to access this dialog',
+      extensions: { code: 'FORBIDDEN' },
+    });
   });
 
   it('accepts a case-insensitive dialogId match', async () => {
@@ -65,27 +66,38 @@ describe('assertDialogAccess', () => {
     await expect(assertDialogAccess(DIALOG_ID, contextWithToken())).resolves.toBeUndefined();
   });
 
-  it('denies when there is no session token', async () => {
+  it('reports a missing session token as unauthenticated, not as a denial', async () => {
     const assertDialogAccess = await importSut();
-    await expect(assertDialogAccess(DIALOG_ID, contextWithoutToken())).rejects.toThrow(
-      'Not authorized to access this dialog',
-    );
+    await expect(assertDialogAccess(DIALOG_ID, contextWithoutToken())).rejects.toMatchObject({
+      message: 'No valid session for this dialog',
+      extensions: { code: 'UNAUTHENTICATED', http: { status: 401 } },
+    });
     expect(axios.post as unknown as Mock).not.toHaveBeenCalled();
   });
 
-  it('fails closed when the lookup returns GraphQL errors', async () => {
+  it('fails closed as unavailable when the lookup returns GraphQL errors', async () => {
     (axios.post as unknown as Mock).mockResolvedValueOnce({ data: { errors: [{ message: 'boom' }] } });
     const assertDialogAccess = await importSut();
-    await expect(assertDialogAccess(DIALOG_ID, contextWithToken())).rejects.toThrow(
-      'Not authorized to access this dialog',
-    );
+    await expect(assertDialogAccess(DIALOG_ID, contextWithToken())).rejects.toMatchObject({
+      message: 'Dialog access check is unavailable',
+      extensions: { code: 'DIALOG_ACCESS_CHECK_UNAVAILABLE', http: { status: 503 } },
+    });
   });
 
-  it('fails closed when the lookup request throws', async () => {
+  it('fails closed as unavailable when the lookup request throws', async () => {
     (axios.post as unknown as Mock).mockRejectedValueOnce({ isAxiosError: true, response: { status: 503 } });
     const assertDialogAccess = await importSut();
-    await expect(assertDialogAccess(DIALOG_ID, contextWithToken())).rejects.toThrow(
-      'Not authorized to access this dialog',
-    );
+    await expect(assertDialogAccess(DIALOG_ID, contextWithToken())).rejects.toMatchObject({
+      message: 'Dialog access check is unavailable',
+      extensions: { code: 'DIALOG_ACCESS_CHECK_UNAVAILABLE' },
+    });
+  });
+
+  it('does not report an expired session upstream as a denial', async () => {
+    (axios.post as unknown as Mock).mockRejectedValueOnce({ isAxiosError: true, response: { status: 401 } });
+    const assertDialogAccess = await importSut();
+    await expect(assertDialogAccess(DIALOG_ID, contextWithToken())).rejects.toMatchObject({
+      extensions: { code: 'DIALOG_ACCESS_CHECK_UNAVAILABLE' },
+    });
   });
 });

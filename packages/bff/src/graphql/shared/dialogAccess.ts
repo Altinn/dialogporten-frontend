@@ -6,7 +6,7 @@ import config from '../../config.ts';
 
 const DIALOG_ID_URN_PREFIX = 'urn:altinn:dialog-id:';
 
-const dialogLookupQuery = /* GraphQL */ `
+const dialogLookupQuery = `
   query DialogAccessCheck($instanceRef: String!) {
     dialogLookup(instanceRef: $instanceRef) {
       lookup {
@@ -25,11 +25,6 @@ interface DialogLookupResponse {
   errors?: { message?: string }[];
 }
 
-const unauthorized = () =>
-  new GraphQLError('Not authorized to access this dialog', {
-    extensions: { code: 'UNAUTHORIZED', http: { status: 401 } },
-  });
-
 /**
  * Confirms the signed-in user is authorized to see the dialog
  */
@@ -37,7 +32,9 @@ export const assertDialogAccess = async (dialogId: string, context: Context): Pr
   const token = getSessionToken(context);
   if (!token) {
     logger.error('No token found in session for dialog access check');
-    throw unauthorized();
+    throw new GraphQLError('No valid session for this dialog', {
+      extensions: { code: 'UNAUTHENTICATED', http: { status: 401 } },
+    });
   }
 
   let body: DialogLookupResponse;
@@ -67,17 +64,23 @@ export const assertDialogAccess = async (dialogId: string, context: Context): Pr
     } else {
       logger.error(error, 'dialogLookup access check failed upstream');
     }
-    throw unauthorized();
+    throw new GraphQLError('Dialog access check is unavailable', {
+      extensions: { code: 'DIALOG_ACCESS_CHECK_UNAVAILABLE', http: { status: 503 } },
+    });
   }
 
   if (body?.errors?.length) {
     logger.error({ errors: body.errors, dialogId }, 'dialogLookup access check returned GraphQL errors');
-    throw unauthorized();
+    throw new GraphQLError('Dialog access check is unavailable', {
+      extensions: { code: 'DIALOG_ACCESS_CHECK_UNAVAILABLE', http: { status: 503 } },
+    });
   }
 
   const lookedUpId = body?.data?.dialogLookup?.lookup?.dialogId;
   if (!lookedUpId || lookedUpId.toLowerCase() !== dialogId.toLowerCase()) {
     logger.warn({ dialogId }, 'dialogLookup returned no accessible dialog; denying access');
-    throw unauthorized();
+    throw new GraphQLError('Not authorized to access this dialog', {
+      extensions: { code: 'FORBIDDEN', http: { status: 403 } },
+    });
   }
 };

@@ -10,14 +10,15 @@ interface UseNotificationLogsOutput {
   isLoading: boolean;
 }
 
-export const useNotificationLogs = (dialogId?: string): UseNotificationLogsOutput => {
+export const useNotificationLogs = (dialogId?: string, hasDialogAccess = false): UseNotificationLogsOutput => {
   const enableNotificationLogs = useFeatureFlag<boolean>('dialogDetails.enableNotificationLogs');
 
   const { data, isLoading } = useAuthenticatedQuery<NotificationLogsQuery>({
     queryKey: [QUERY_KEYS.NOTIFICATION_LOGS, dialogId],
     queryFn: () => getNotificationLogs(dialogId!),
-    enabled: !!dialogId && enableNotificationLogs,
+    enabled: !!dialogId && hasDialogAccess && enableNotificationLogs,
     refetchOnWindowFocus: false,
+    retry: false,
   });
 
   if (!enableNotificationLogs) {
