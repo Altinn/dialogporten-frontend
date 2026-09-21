@@ -17,6 +17,7 @@ const defaultFeatureFlags: Record<string, boolean> = {
   'global.enableCookieBanner': false,
   'dialogDetails.enableNotificationLogs': false,
   'dialogDetails.enableLabelAssignmentLogs': false,
+  'dialogDetails.enableActivityLogFilter': false,
 };
 
 const defaultAppConfigValues: Record<string, string[]> = {

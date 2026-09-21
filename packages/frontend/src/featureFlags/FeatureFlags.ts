@@ -19,6 +19,7 @@ export const featureFlagDefinitions = [
   { key: 'global.enableCookieBanner', type: 'boolean', default: false },
   { key: 'dialogDetails.enableNotificationLogs', type: 'boolean', default: false },
   { key: 'dialogDetails.enableLabelAssignmentLogs', type: 'boolean', default: false },
+  { key: 'dialogDetails.enableActivityLogFilter', type: 'boolean', default: false },
 ] as const satisfies readonly FeatureFlagDefinition[];
 
 export type FeatureFlagKey = (typeof featureFlagDefinitions)[number]['key'];

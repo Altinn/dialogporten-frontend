@@ -123,6 +123,8 @@ export type ActivityLogEntry =
       items: TransmissionItemWithMeta[];
     };
 
+export type ActivityLogEntryType = ActivityLogEntry['type'];
+
 /**
  * Generates a combined and sorted history of activities and transmissions for a dialog.
  *
