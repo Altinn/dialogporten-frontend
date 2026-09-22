@@ -114,10 +114,11 @@ const mockNotificationsettingsForCurrentUser = graphql.query('notificationsettin
 });
 
 const mockUpdateNotificationSetting = graphql.mutation('UpdateNotificationSetting', ({ variables }) => {
-  const { partyUuid, emailAddress, phoneNumber } = variables.data as {
+  const { partyUuid, emailAddress, phoneNumber, resourceIncludeList } = variables.data as {
     partyUuid: string;
     emailAddress?: string | null;
     phoneNumber?: string | null;
+    resourceIncludeList?: (string | null)[] | null;
   };
 
   const settings = inMemoryStore.notificationSettings ?? [];
@@ -132,7 +133,8 @@ const mockUpdateNotificationSetting = graphql.mutation('UpdateNotificationSettin
     smsVerificationStatus:
       phoneNumber !== undefined ? (phoneNumber ? 'Verified' : null) : (existing?.smsVerificationStatus ?? null),
     needsConfirmation: false,
-    resourceIncludeList: existing?.resourceIncludeList ?? [],
+    resourceIncludeList:
+      resourceIncludeList !== undefined ? resourceIncludeList : (existing?.resourceIncludeList ?? []),
   };
 
   inMemoryStore.notificationSettings = [...settings.filter((s) => s?.partyUuid !== partyUuid), updated];
