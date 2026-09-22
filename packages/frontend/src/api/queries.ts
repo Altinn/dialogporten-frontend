@@ -70,6 +70,8 @@ const requestMiddleware: RequestMiddleware = (request) => {
   return request;
 };
 
+const SUPPRESSED_ERROR_CODES = new Set(['DIALOG_ACCESS_CHECK_UNAVAILABLE']);
+
 const responseMiddleware: ResponseMiddleware = (response) => {
   try {
     if (!Analytics.isEnabled) {
@@ -96,6 +98,13 @@ const responseMiddleware: ResponseMiddleware = (response) => {
       error.message = errorMessage;
 
       if (errorMessage.includes('Request failed with status code 401')) {
+        return;
+      }
+
+      if (
+        graphqlErrors.length > 0 &&
+        graphqlErrors.every((e) => SUPPRESSED_ERROR_CODES.has(String(e.extensions?.code)))
+      ) {
         return;
       }
 
