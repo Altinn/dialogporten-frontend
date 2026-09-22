@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.178.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.177.4...v1.178.0) (2026-09-22)
+
+
+### Features
+
+* **notifications:** group selected services at the top of the service list ([#4663](https://github.com/Altinn/dialogporten-frontend/issues/4663)) ([de99fc0](https://github.com/Altinn/dialogporten-frontend/commit/de99fc0c5b7ed9514ca9da0dbdc5c278d39d8b26))
+
 ## [1.177.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.177.3...v1.177.4) (2026-09-21)
 
 
