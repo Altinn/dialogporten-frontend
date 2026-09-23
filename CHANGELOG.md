@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.179.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.178.0...v1.179.0) (2026-09-23)
+
+
+### Features
+
+* **activitylogs:** add type filter and free-text search ([#4655](https://github.com/Altinn/dialogporten-frontend/issues/4655)) ([9cb7b77](https://github.com/Altinn/dialogporten-frontend/commit/9cb7b7707e3010cf579ebb6ada7cc9d91bfbd4e1))
+
 ## [1.178.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.177.4...v1.178.0) (2026-09-22)
 
 
