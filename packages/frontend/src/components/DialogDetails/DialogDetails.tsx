@@ -1,4 +1,5 @@
 import {
+  type ActivityLogSegmentProps,
   type BadgeColor,
   type BadgeSize,
   type BadgeVariant,
@@ -20,7 +21,6 @@ import {
   Typography,
   useSnackbar,
 } from '@altinn/altinn-components';
-import type { ActivityLogSegmentProps } from '@altinn/altinn-components/dist/types/lib/components';
 import { DialogEventType, DialogStatus } from 'bff-types-generated';
 import type { TFunction } from 'i18next';
 import { type ReactElement, useMemo, useState } from 'react';
@@ -327,22 +327,21 @@ export const DialogDetails = ({
       return [];
     }
 
-    return dialog.activityHistory.map((dialogHistoryItem) => {
-      return {
-        id: dialogHistoryItem.id,
-        datetime: dialogHistoryItem.date,
-        items: dialogHistoryItem.items.map((item) => ({
-          id: item.id,
-          summary: dialogHistoryItem.type !== 'transmission' ? item.summary : '',
-          datetime: item.datetime,
-          byline: item.datetime ? format(item.datetime, 'do MMMM yyyy HH.mm') : '',
-        })),
-        children:
-          dialogHistoryItem.type === 'transmission' ? (
+    return dialog.activityHistory.map((dialogHistoryItem): ActivityLogSegmentProps => {
+      if (dialogHistoryItem.type === 'transmission') {
+        return {
+          id: dialogHistoryItem.id,
+          kind: dialogHistoryItem.type,
+          datetime: dialogHistoryItem.date,
+          searchText: dialogHistoryItem.items
+            .map((item) => [item.title, item.summary].filter(Boolean).join(' '))
+            .join(' '),
+          children: (highlightWords: string[]) => (
             <TransmissionList
               items={dialogHistoryItem.items.map((item) => {
                 return {
                   ...item,
+                  highlightWords,
                   // C: empty-state message | B (contentRef): lazy-load embedded content
                   children: item.isEmpty ? (
                     <Typography>
@@ -361,7 +360,17 @@ export const DialogDetails = ({
                 };
               })}
             />
-          ) : null,
+          ),
+        };
+      }
+
+      const [entry] = dialogHistoryItem.items;
+      return {
+        id: dialogHistoryItem.id,
+        kind: dialogHistoryItem.type,
+        datetime: dialogHistoryItem.date,
+        byline: entry?.datetime ? format(entry.datetime, 'do MMMM yyyy HH.mm') : '',
+        summary: entry?.summary,
       };
     });
   }, [dialog, dialogToken]);
