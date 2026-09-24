@@ -1,3 +1,4 @@
+export * from './correspondence/mutations.ts';
 export * from './correspondence/queries.ts';
 export * from './correspondence/types.ts';
 export * from './notifications/mutations.ts';

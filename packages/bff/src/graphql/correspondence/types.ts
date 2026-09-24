@@ -7,8 +7,19 @@ export const CorrespondenceForwardingCheck = objectType({
     t.nonNull.boolean('allowed', {
       description: 'True only when the correspondence allows forwarding; false when it does not or the check failed',
     });
-    t.nullable.string('forwardUrl', {
-      description: 'Endpoint to POST the forward request to with the dialog token, set only when allowed',
+  },
+});
+
+export const ForwardCorrespondenceResult = objectType({
+  name: 'ForwardCorrespondenceResult',
+  description: 'Outcome of forwarding a correspondence by email',
+  definition(t) {
+    t.nonNull.boolean('success');
+    t.nullable.int('status', {
+      description: 'HTTP status from Correspondence when the forward failed',
+    });
+    t.nullable.int('errorCode', {
+      description: 'Correspondence error code from the problem details when the forward failed',
     });
   },
 });

@@ -782,7 +782,10 @@ const dialogAccessInfoMock = graphql.query('dialogAccessInfo', ({ variables }) =
     data: {
       dialogLookup: {
         lookup: {
-          instanceRef,
+          instanceRef:
+            dialog.serviceResourceType?.toLowerCase() === 'correspondenceservice'
+              ? `urn:altinn:correspondence-id:${dialog.id}`
+              : instanceRef,
           dialogId: dialog.id,
           serviceResource: {
             id: dialog.serviceResource,
@@ -818,6 +821,39 @@ const dialogAccessInfoMock = graphql.query('dialogAccessInfo', ({ variables }) =
         },
         errors: [],
       },
+    },
+  });
+});
+
+const nonForwardableCorrespondenceIds = new Set(['019241f7-67dc-7562-a56f-1634796039e5']);
+
+const correspondenceForwardingCheckMock = graphql.query('correspondenceForwardingCheck', ({ variables }) => {
+  const { correspondenceId } = variables as { correspondenceId: string };
+  const allowed =
+    !nonForwardableCorrespondenceIds.has(correspondenceId) &&
+    !!inMemoryStore.dialogs?.some((d) => d.id === correspondenceId);
+
+  return HttpResponse.json({
+    data: {
+      correspondenceForwardingCheck: { allowed },
+    },
+  });
+});
+
+const forwardErrorCodesByEmail: Record<string, number> = {
+  'allerede.videresendt@example.com': 1064,
+  'ikke.lest@example.com': 1065,
+};
+
+const forwardCorrespondenceMock = graphql.mutation('forwardCorrespondence', ({ variables }) => {
+  const { forwardTo } = variables as { forwardTo?: string };
+  const errorCode = forwardErrorCodesByEmail[forwardTo?.toLowerCase() ?? ''];
+
+  return HttpResponse.json({
+    data: {
+      forwardCorrespondence: errorCode
+        ? { success: false, status: 400, errorCode }
+        : { success: true, status: null, errorCode: null },
     },
   });
 });
@@ -919,6 +955,8 @@ export const handlers = [
   getServiceResourcesMock,
   getFilterServiceResourcesMock,
   dialogAccessInfoMock,
+  correspondenceForwardingCheckMock,
+  forwardCorrespondenceMock,
   labelAssignmentLogMock,
   mockNotificationsettingsForCurrentUser,
   mockUpdateNotificationSetting,
