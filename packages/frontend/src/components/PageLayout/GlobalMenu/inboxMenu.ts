@@ -9,7 +9,6 @@ import {
   FileCheckmarkIcon,
   HeartIcon,
   InboxFillIcon,
-  InformationSquareIcon,
   MagnifyingGlassIcon,
   MenuGridIcon,
   PadlockLockedFillIcon,
@@ -18,14 +17,13 @@ import {
   TrashIcon,
 } from '@navikt/aksel-icons';
 import {
-  getAboutNewAltinnLink,
   getAccessAMUILink,
   getFrontPageLink,
   getInboxHelpLink,
   getNeedHelpLink,
   getNewFormLink,
   getStartNewBusinessLink,
-} from '../../../auth/url.ts';
+} from '../../../auth';
 import { i18n } from '../../../i18n/config.ts';
 import { pruneSearchQueryParams } from '../../../pages/Inbox/queryParams.ts';
 import { PageRoutes } from '../../../pages/routes.ts';
@@ -104,16 +102,6 @@ export function buildInboxMenu({
   ];
 
   const helpItems: MenuItemProps[] = [
-    {
-      id: 'about-altinn',
-      'data-testid': 'about-altinn',
-      groupId: 'help',
-      icon: InformationSquareIcon,
-      title: t('global_menu.about_altinn'),
-      as: createMenuItemComponent({
-        to: getAboutNewAltinnLink(i18n.language),
-      }),
-    },
     {
       id: 'start-business',
       'data-testid': 'start-business',
