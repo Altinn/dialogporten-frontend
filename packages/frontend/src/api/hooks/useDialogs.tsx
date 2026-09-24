@@ -52,16 +52,6 @@ export const isDialogQueryEnabled = ({
   return queryPartyURIs.length > 0 && queryPartyURIs.length <= MAX_DIALOG_PARTY_SIZE;
 };
 
-export const isDialogCountInconclusive = ({
-  partyIds,
-  hasNextPage,
-  itemsIsNull,
-}: {
-  partyIds: string[];
-  hasNextPage: boolean;
-  itemsIsNull: boolean;
-}): boolean => hasNextPage || itemsIsNull || partyIds.length >= MAX_DIALOG_PARTY_SIZE;
-
 interface UseDialogsProps {
   filterState?: FilterState;
   search?: string;
@@ -72,7 +62,6 @@ interface UseDialogsProps {
 
 interface UseDialogsOutput {
   dialogs: InboxItemInput[];
-  dialogCountInconclusive: boolean;
   isSuccess: boolean;
   isLoading: boolean;
   isError: boolean;
@@ -222,12 +211,6 @@ export const useDialogs = ({
   }, [data, selectedParties]);
 
   const content = useMemo(() => data?.pages.flatMap((page) => page.searchDialogs?.items ?? []) ?? [], [data]);
-  const lastPage = data?.pages?.[data?.pages.length - 1];
-  const dialogCountInconclusive = isDialogCountInconclusive({
-    partyIds,
-    hasNextPage: lastPage?.searchDialogs?.hasNextPage === true,
-    itemsIsNull: lastPage?.searchDialogs?.items === null,
-  });
   const orgMap = useMemo(() => buildOrganizationMap(organizations), [organizations]);
   const dialogs = useMemo(
     () => mapDialogToInboxItems(content, partyGraph, orgMap, format, disableFlipNamesPatch),
@@ -242,7 +225,6 @@ export const useDialogs = ({
     isError,
     fetchNextPage,
     dialogs,
-    dialogCountInconclusive,
     hasNextPage: isQueryEnabled ? (data?.pages?.[data?.pages.length - 1]?.searchDialogs?.hasNextPage ?? false) : false,
     isFetchingNextPage,
     isQueryEnabled,
