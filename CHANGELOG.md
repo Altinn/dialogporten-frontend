@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.179.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.179.0...v1.179.1) (2026-09-24)
+
+
+### Bug Fixes
+
+* **i18n:** use British spelling in English translations ([#4666](https://github.com/Altinn/dialogporten-frontend/issues/4666)) ([7991e72](https://github.com/Altinn/dialogporten-frontend/commit/7991e720b0745c6437443962f122144265a9bc20))
+
 ## [1.179.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.178.0...v1.179.0) (2026-09-23)
 
 
