@@ -10,4 +10,13 @@ export const defaultClassMap: ClassMap = {
   h5: '__fce-header-5',
   h6: '__fce-header-6',
   strong: '__fce-strong',
+  form: '__fce-form',
+  fieldset: '__fce-fieldset',
+  legend: '__fce-legend',
+  label: '__fce-label',
+  input: '__fce-input',
+  textarea: '__fce-input',
+  select: '__fce-input',
+  button: '__fce-button',
+  output: '__fce-output',
 };

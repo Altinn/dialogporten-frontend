@@ -1,6 +1,7 @@
 import { Alert, Button, Typography } from '@altinn/altinn-components';
-import { Html, Markdown } from 'embeddable-markdown-html';
-import { memo } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { type FormPolicy, type FormSubmission, Html, Markdown } from 'embeddable-markdown-html';
+import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Analytics } from '../../analytics/analytics.ts';
 import { type DialogByIdDetails, EmbeddableMediaType } from '../../api/hooks/useDialogById.tsx';
@@ -23,11 +24,17 @@ type MainContentError = Error & {
   status: number;
 };
 
-const getContent = (mediaType: EmbeddableMediaType, data: string) => {
+interface FormHandling {
+  onSubmit: (submission: FormSubmission) => void;
+  formPolicy: FormPolicy;
+}
+
+const getContent = (mediaType: EmbeddableMediaType, data: string, formHandling: FormHandling) => {
   switch (mediaType) {
     case EmbeddableMediaType.markdown:
       return (
         <Markdown
+          {...formHandling}
           onError={(error: ErrorEvent) => {
             Analytics.trackException({
               exception: error.error,
@@ -44,6 +51,7 @@ const getContent = (mediaType: EmbeddableMediaType, data: string) => {
     case EmbeddableMediaType.html:
       return (
         <Html
+          {...formHandling}
           onError={(e: ErrorEvent) => {
             Analytics.trackException({
               exception: e.error,
@@ -65,8 +73,74 @@ const getContent = (mediaType: EmbeddableMediaType, data: string) => {
 export const MainContentReference = memo(({ content, dialogToken, id, dialogId }: MainContentReferenceProps) => {
   const { t, i18n } = useTranslation();
   const language = i18n.language;
+  const queryClient = useQueryClient();
   const enablePreferHeader = useFeatureFlag<boolean>('fce.enablePreferHeader');
   const validURL = content?.url ? isValidURL(content.url) : false;
+
+  /* A form in an embed posts back to the service owner that served it. Relative actions resolve
+     against the embed's own url, and allowSameOrigin stays off so an embed cannot aim a submission
+     at arbeidsflate itself. */
+  const formPolicy = useMemo<FormPolicy>(() => ({ baseUrl: content?.url }), [content?.url]);
+
+  const submitForm = useCallback(
+    async (submission: FormSubmission) => {
+      const isGet = submission.method === 'get';
+      const isMultipart = submission.encType === 'multipart/form-data';
+      const url = new URL(submission.action);
+      const encoded = new URLSearchParams();
+
+      for (const [key, value] of submission.formData.entries()) {
+        if (typeof value === 'string') {
+          encoded.append(key, value);
+        }
+      }
+
+      if (isGet) {
+        for (const [key, value] of encoded.entries()) {
+          url.searchParams.append(key, value);
+        }
+      }
+
+      try {
+        const response = await fetch(url, {
+          method: isGet ? 'GET' : 'POST',
+          headers: {
+            Authorization: `Bearer ${dialogToken}`,
+            'Accept-Language': getAcceptLanguageHeader(language),
+            // multipart bodies carry their own boundary, so the browser has to set that header
+            ...(isGet || isMultipart ? {} : { 'Content-Type': 'application/x-www-form-urlencoded' }),
+          },
+          // files only survive a multipart submission, where FormData is passed through as-is
+          body: isGet ? undefined : isMultipart ? submission.formData : encoded,
+        });
+
+        if (!response.ok) {
+          throw Object.assign(new Error(`Failed to submit form: ${response.status} ${response.statusText}`), {
+            status: response.status,
+          });
+        }
+
+        /* The service owner acts on the submission by changing the dialog, so both the dialog and
+           the embed body have to be re-read to show what came of it. */
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.DIALOG_BY_ID, dialogId] }),
+          queryClient.invalidateQueries({
+            queryKey: [QUERY_KEYS.MAIN_CONTENT_REFERENCE, content?.url, id, dialogId, language],
+          }),
+        ]);
+      } catch (e) {
+        Analytics.trackException({
+          exception: e as Error,
+          properties: {
+            url: submission.action,
+            method: submission.method,
+            errorType: 'form_submit_error',
+          },
+        });
+      }
+    },
+    [content?.url, dialogId, dialogToken, id, language, queryClient],
+  );
   const { data, isSuccess, isError, isLoading, refetch, error } = useAuthenticatedQuery<string, MainContentError>({
     queryKey: [QUERY_KEYS.MAIN_CONTENT_REFERENCE, content?.url, id, dialogId, language],
     staleTime: Number.POSITIVE_INFINITY,
@@ -153,5 +227,9 @@ export const MainContentReference = memo(({ content, dialogToken, id, dialogId }
     return null;
   }
 
-  return <Typography className={styles.mainContentReference}>{getContent(content.mediaType, data)}</Typography>;
+  return (
+    <Typography className={styles.mainContentReference}>
+      {getContent(content.mediaType, data, { onSubmit: submitForm, formPolicy })}
+    </Typography>
+  );
 });
