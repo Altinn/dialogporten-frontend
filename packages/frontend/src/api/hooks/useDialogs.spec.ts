@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import {
-  isDialogCountInconclusive,
   isDialogQueryEnabled,
   MAX_DIALOG_PARTY_SIZE,
   MAX_SERVICE_OWNER_SIZE,
@@ -91,32 +90,5 @@ describe('isDialogQueryEnabled', () => {
         serviceOwners,
       }),
     ).toBe(false);
-  });
-});
-
-describe('isDialogCountInconclusive', () => {
-  it('should be false when partyIds are under limit and no next page', () => {
-    const partyIds = createPartyIds(5);
-    expect(isDialogCountInconclusive({ partyIds, hasNextPage: false, itemsIsNull: false })).toBe(false);
-  });
-
-  it('should be true when partyIds equal MAX_DIALOG_PARTY_SIZE', () => {
-    const partyIds = createPartyIds(MAX_DIALOG_PARTY_SIZE);
-    expect(isDialogCountInconclusive({ partyIds, hasNextPage: false, itemsIsNull: false })).toBe(true);
-  });
-
-  it('should be true when partyIds exceed MAX_DIALOG_PARTY_SIZE', () => {
-    const partyIds = createPartyIds(MAX_DIALOG_PARTY_SIZE + 1);
-    expect(isDialogCountInconclusive({ partyIds, hasNextPage: false, itemsIsNull: false })).toBe(true);
-  });
-
-  it('should be true when hasNextPage is true regardless of partyIds count', () => {
-    const partyIds = createPartyIds(5);
-    expect(isDialogCountInconclusive({ partyIds, hasNextPage: true, itemsIsNull: false })).toBe(true);
-  });
-
-  it('should be true when items is null regardless of partyIds count', () => {
-    const partyIds = createPartyIds(5);
-    expect(isDialogCountInconclusive({ partyIds, hasNextPage: false, itemsIsNull: true })).toBe(true);
   });
 });
