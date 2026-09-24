@@ -1,0 +1,17 @@
+mutation forwardCorrespondence(
+  $correspondenceId: String!
+  $dialogToken: String!
+  $forwardTo: String!
+  $forwardingText: String
+) {
+  forwardCorrespondence(
+    correspondenceId: $correspondenceId
+    dialogToken: $dialogToken
+    forwardTo: $forwardTo
+    forwardingText: $forwardingText
+  ) {
+    success
+    status
+    errorCode
+  }
+}

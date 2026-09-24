@@ -31,6 +31,10 @@ export const ANALYTICS_EVENTS = {
   DIALOG_MOVE_TO_MARKED_AS_UNOPENED_SUCCESS: 'Dialog.Move.ToMarkedAsUnopened.Success',
   DIALOG_MOVE_TO_SENT_SUCCESS: 'Dialog.Move.ToSent.Success',
 
+  // Dialog Forward Actions
+  DIALOG_FORWARD_OPEN: 'Dialog.Forward.Open',
+  DIALOG_FORWARD_SUBMIT: 'Dialog.Forward.Submit',
+
   // Saved Search Actions
   SAVED_SEARCH_CREATE_SUCCESS: 'SavedSearch.Create.Success',
   SAVED_SEARCH_DELETE_SUCCESS: 'SavedSearch.Delete.Success',
