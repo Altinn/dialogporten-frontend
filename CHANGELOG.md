@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.179.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.179.1...v1.179.2) (2026-09-24)
+
+
+### Bug Fixes
+
+* **menu:** remove about new altinn link from global menu ([#4670](https://github.com/Altinn/dialogporten-frontend/issues/4670)) ([bafbdeb](https://github.com/Altinn/dialogporten-frontend/commit/bafbdeb043a1fafe5657e335e8a328871d929a82))
+
 ## [1.179.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.179.0...v1.179.1) (2026-09-24)
 
 
