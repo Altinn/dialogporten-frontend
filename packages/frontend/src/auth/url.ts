@@ -144,17 +144,6 @@ export const getFrontPageLink = (language?: string) => {
   return getInfoSiteURL(language);
 };
 
-export const getAboutNewAltinnLink = (language?: string) => {
-  return createInfoPortalLink(
-    {
-      nb: '/nyheter/om-nye-altinn/',
-      en: '/en/news/About-the-new-Altinn/',
-      nn: '/nn/nyheiter/om-nye-altinn/',
-    },
-    language,
-  );
-};
-
 export const getAlternativeLoginLink = (language?: string) => {
   return createInfoPortalLink(
     {
