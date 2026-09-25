@@ -341,7 +341,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
 
     const parameters: Record<string, string> = {
       redirect_uri: `${hostname}/api/cb`,
-      scope: 'digdir:dialogporten.noconsent openid altinn:portal/enduser',
+      scope: 'digdir:dialogporten.noconsent openid altinn:portal/enduser altinn:correspondence.forward.check',
       acr_values: queryParameters?.idporten_loa_high ? 'idporten-loa-high' : 'idporten-loa-substantial',
       state,
       client_id,

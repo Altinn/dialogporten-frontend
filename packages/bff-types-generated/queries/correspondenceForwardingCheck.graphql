@@ -1,0 +1,5 @@
+query correspondenceForwardingCheck($correspondenceId: String!) {
+  correspondenceForwardingCheck(correspondenceId: $correspondenceId) {
+    allowed
+  }
+}

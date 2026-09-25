@@ -5,7 +5,7 @@ import {
   type MenuItemProps,
   type PageMenuProps,
 } from '@altinn/altinn-components';
-import { ArrowRedoIcon, ClockDashedIcon, InformationSquareIcon } from '@navikt/aksel-icons';
+import { ArrowRedoIcon, ClockDashedIcon, EnvelopeClosedIcon, InformationSquareIcon } from '@navikt/aksel-icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,7 +15,9 @@ import { useDialogByIdSubscription } from '../../api/hooks/useDialogByIdSubscrip
 import { useParties } from '../../api/hooks/useParties.ts';
 import { DialogAccessInfoModal } from '../../components/DialogAccessInfoModal/DialogAccessInfoModal.tsx';
 import { DialogDetails } from '../../components/DialogDetails/DialogDetails.tsx';
+import { ForwardDialogModal } from '../../components/ForwardDialogModal/ForwardDialogModal.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
+import { useFeatureFlag } from '../../featureFlags/useFeatureFlag.ts';
 import { usePageTitle } from '../../hooks/usePageTitle.ts';
 import { useDelegation } from './useDelegation.tsx';
 import { useDialogActions } from './useDialogActions.tsx';
@@ -25,6 +27,8 @@ export const DialogDetailsPage = () => {
   const [isActivityLogOpen, setIsActivityLogOpen] = useState<boolean>(false);
   const [isAccessInfoOpen, setIsAccessInfoOpen] = useState<boolean>(false);
   const [isSeenByLogOpen, setIsSeenByLogOpen] = useState<boolean>(false);
+  const [isForwardOpen, setIsForwardOpen] = useState<boolean>(false);
+  const enableForwardByEmail = useFeatureFlag<boolean>('dialogDetails.enableForwardByEmail');
   const { parties } = useParties();
   const { t } = useTranslation();
   const location = useLocation();
@@ -56,6 +60,19 @@ export const DialogDetailsPage = () => {
         },
       ] as MenuItemProps[])
     : [];
+  const forwardByEmailItem =
+    enableForwardByEmail && dialog?.serviceResourceType?.toLowerCase() === 'correspondenceservice'
+      ? ([
+          {
+            id: 'forward-by-email',
+            groupId: 'forward',
+            title: t('dialog.forward.menu_item'),
+            as: 'button',
+            icon: EnvelopeClosedIcon,
+            onClick: () => setIsForwardOpen(true),
+          },
+        ] as MenuItemProps[])
+      : [];
   const seenByLog = dialog?.seenByLog;
   const contextMenu: ContextMenuProps = {
     id: 'dialog-context-menu',
@@ -64,6 +81,7 @@ export const DialogDetailsPage = () => {
     'aria-label': t('dialog.context_menu.label', { title: dialog?.title }),
     items: [
       ...delegationLink,
+      ...forwardByEmailItem,
       ...(dialogId && dialog ? createLabelUpdateActions(dialogId, dialog?.label ?? [], dialog?.unread) : []),
       ...(seenByLog?.items?.length
         ? [
@@ -155,6 +173,13 @@ export const DialogDetailsPage = () => {
         title={dialog?.title}
         isOpen={isAccessInfoOpen}
         onClose={() => setIsAccessInfoOpen(false)}
+      />
+      <ForwardDialogModal
+        dialogId={dialogId}
+        dialogToken={dialog?.dialogToken}
+        refreshDialogToken={refreshDialogToken}
+        isOpen={isForwardOpen}
+        onClose={() => setIsForwardOpen(false)}
       />
     </DialogLayout>
   );

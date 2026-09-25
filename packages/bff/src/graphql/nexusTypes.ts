@@ -1,3 +1,6 @@
+export * from './correspondence/mutations.ts';
+export * from './correspondence/queries.ts';
+export * from './correspondence/types.ts';
 export * from './notifications/mutations.ts';
 export * from './notifications/queries.ts';
 export * from './notifications/types.ts';
