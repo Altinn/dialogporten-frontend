@@ -46,7 +46,7 @@ param storage StorageConfiguration
 
 @export()
 type HighAvailabilityConfiguration = {
-  mode: 'ZoneRedundant' | 'SameZone' | 'Disabled'
+  mode: 'ZoneRedundant' | 'SameZone'
   standbyAvailabilityZone: string?
 }
 
