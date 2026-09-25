@@ -283,7 +283,7 @@ export function mapDialogToInboxItem({
   const serviceOwnerNbName = getOrganizationByLocale(organizations || [], item.org, 'nb')?.name;
   const senderName = item.content.senderName?.value;
   const extendedStatusObj = item.content.extendedStatus?.value;
-  const { seenByLabel } = getSeenByLabel(item.seenSinceLastContentUpdate, t);
+  const seenByLabel = getSeenByLabel(item.seenSinceLastContentUpdate, t);
   const transmissions = getTransmissions({
     transmissions: item.transmissions,
     format,
