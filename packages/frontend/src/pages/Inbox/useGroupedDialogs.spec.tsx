@@ -1,5 +1,8 @@
+import type { DialogListItemProps } from '@altinn/altinn-components';
 import { renderHook } from '@testing-library/react';
 import { type DialogStatus, SystemLabel } from 'bff-types-generated';
+import { format as dateFnsFormat } from 'date-fns';
+import { nb } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
 import { afterEach, beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
 import { createCustomWrapper } from '../../../tests/test-utils.tsx';
@@ -555,6 +558,162 @@ describe('useGroupedDialogs', () => {
     expect(groupKeys).not.toContain('archive');
     expect(groupKeys).toContain('2025');
     expect(groupKeys).toContain('2024');
+  });
+});
+
+describe('useGroupedDialogs grouping', () => {
+  const BANKRUPTCY_SERVICE_RESOURCE = 'urn:altinn:resource:app_brg_konkursbehandling';
+  const currentYear = new Date().getFullYear();
+  const t = vi.fn((key) => key);
+  const format = vi.fn((date: Date | string, formatStr: string) => dateFnsFormat(date, formatStr, { locale: nb }));
+
+  const makeItem = (id: string, contentUpdatedAt: string, overrides: Partial<InboxItemInput> = {}): InboxItemInput => ({
+    ...mockData[0],
+    id,
+    title: `Dialog ${id}`,
+    contentUpdatedAt,
+    createdAt: contentUpdatedAt,
+    ...overrides,
+  });
+
+  const renderGroupedDialogs = (items: InboxItemInput[], displaySearchResults: boolean) =>
+    renderHook(
+      () =>
+        useGroupedDialogs({
+          items,
+          displaySearchResults,
+          viewType: 'inbox',
+          isLoading: false,
+          hasNextPage: false,
+          onSeenByLogModalChange: () => {},
+          onAccessInfoModalChange: () => {},
+          applicablePartyCount: 1,
+        }),
+      { wrapper: createCustomWrapper() },
+    );
+
+  const groupIdsById = (dialogs: DialogListItemProps[]) =>
+    Object.fromEntries(dialogs.map(({ id, groupId }) => [id, groupId]));
+
+  beforeEach(() => {
+    t.mockClear();
+    format.mockClear();
+    (useTranslation as Mock).mockReturnValue({ t });
+    (useFormat as Mock).mockReturnValue(format);
+  });
+
+  it('groups by capitalised month when all dialogs are from the current year', () => {
+    const { result } = renderGroupedDialogs(
+      [
+        makeItem('jan', `${currentYear}-01-15T12:00:00.000Z`),
+        makeItem('mar-1', `${currentYear}-03-10T12:00:00.000Z`),
+        makeItem('mar-2', `${currentYear}-03-20T12:00:00.000Z`),
+      ],
+      false,
+    );
+
+    expect(result.current.groups).toEqual({
+      Januar: { title: 'Januar', description: '', orderIndex: 0 },
+      Mars: { title: 'Mars', description: '', orderIndex: 2 },
+    });
+    expect(result.current.groupedDialogs.map((dialog) => dialog.id)).toEqual(['mar-2', 'mar-1', 'jan']);
+    expect(groupIdsById(result.current.groupedDialogs)).toEqual({ jan: 'Januar', 'mar-1': 'Mars', 'mar-2': 'Mars' });
+    expect(result.current.title).toBe('inbox.heading.title.inbox');
+  });
+
+  it('groups by year when dialogs span several years', () => {
+    const { result } = renderGroupedDialogs(
+      [
+        makeItem('this-year', `${currentYear}-03-10T12:00:00.000Z`),
+        makeItem('last-year-1', `${currentYear - 1}-06-10T12:00:00.000Z`),
+        makeItem('last-year-2', `${currentYear - 1}-01-10T12:00:00.000Z`),
+      ],
+      false,
+    );
+
+    expect(result.current.groups).toEqual({
+      [currentYear]: { title: `${currentYear}`, description: '', orderIndex: currentYear },
+      [currentYear - 1]: { title: `${currentYear - 1}`, description: '', orderIndex: currentYear - 1 },
+    });
+    expect(groupIdsById(result.current.groupedDialogs)).toEqual({
+      'this-year': `${currentYear}`,
+      'last-year-1': `${currentYear - 1}`,
+      'last-year-2': `${currentYear - 1}`,
+    });
+  });
+
+  it('does not format month names when dialogs span several years', () => {
+    renderGroupedDialogs(
+      [
+        makeItem('this-year', `${currentYear}-03-10T12:00:00.000Z`),
+        makeItem('last-year', `${currentYear - 1}-06-10T12:00:00.000Z`),
+      ],
+      false,
+    );
+
+    expect(format).not.toHaveBeenCalledWith(expect.anything(), 'LLLL');
+  });
+
+  it('puts all search results in a single collapsed group regardless of view type', () => {
+    const { result } = renderGroupedDialogs(
+      [
+        makeItem('inbox', `${currentYear}-03-10T12:00:00.000Z`, { viewType: 'inbox' }),
+        makeItem('archive', `${currentYear - 1}-06-10T12:00:00.000Z`, { viewType: 'archive' }),
+        makeItem('bin', `${currentYear - 2}-01-10T12:00:00.000Z`, { viewType: 'bin' }),
+      ],
+      true,
+    );
+
+    expect(result.current.groups).toEqual({});
+    expect(groupIdsById(result.current.groupedDialogs)).toEqual({
+      inbox: 'collapsed',
+      archive: 'collapsed',
+      bin: 'collapsed',
+    });
+    expect(result.current.title).toBe('inbox.heading.title.inbox');
+    expect(t).toHaveBeenCalledWith('inbox.heading.title.inbox', { count: 3 });
+  });
+
+  it('keeps bankruptcy dialogs in their own group next to the collapsed search group', () => {
+    const { result } = renderGroupedDialogs(
+      [
+        makeItem('regular-1', `${currentYear}-03-10T12:00:00.000Z`),
+        makeItem('bankruptcy', `${currentYear}-02-10T12:00:00.000Z`, {
+          serviceResource: BANKRUPTCY_SERVICE_RESOURCE,
+        }),
+        makeItem('regular-2', `${currentYear}-01-10T12:00:00.000Z`, { viewType: 'archive' }),
+      ],
+      true,
+    );
+
+    expect(result.current.groups).toEqual({
+      bankruptcy: { orderIndex: 9999 },
+      collapsed: { description: 'search.results.description', orderIndex: null },
+    });
+    expect(groupIdsById(result.current.groupedDialogs)).toEqual({
+      'regular-1': 'collapsed',
+      bankruptcy: 'bankruptcy',
+      'regular-2': 'collapsed',
+    });
+    expect(t).toHaveBeenCalledWith('inbox.heading.title.inbox', { count: 2 });
+  });
+
+  it('keeps bankruptcy dialogs in their own group next to the month groups', () => {
+    const { result } = renderGroupedDialogs(
+      [
+        makeItem('regular', `${currentYear}-03-10T12:00:00.000Z`),
+        makeItem('bankruptcy', `${currentYear}-02-10T12:00:00.000Z`, {
+          serviceResource: BANKRUPTCY_SERVICE_RESOURCE,
+        }),
+      ],
+      false,
+    );
+
+    expect(result.current.groups).toEqual({
+      bankruptcy: { orderIndex: 9999 },
+      Mars: { title: 'Mars', description: '', orderIndex: 2 },
+    });
+    expect(groupIdsById(result.current.groupedDialogs)).toEqual({ regular: 'Mars', bankruptcy: 'bankruptcy' });
   });
 });
 
