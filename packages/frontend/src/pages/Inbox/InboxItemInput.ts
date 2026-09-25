@@ -1,5 +1,5 @@
 import type { AvatarProps, SeenByLogProps } from '@altinn/altinn-components';
-import type { DialogStatus, SeenLogFieldsFragment, SystemLabel } from 'bff-types-generated';
+import type { DialogStatus, SystemLabel } from 'bff-types-generated';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 
 export interface InboxItemInput {
@@ -11,17 +11,13 @@ export interface InboxItemInput {
   serviceOwnerName?: string;
   senderName?: string;
   recipient: AvatarProps;
-  createdAt: string;
   status: DialogStatus;
   extendedStatus?: string;
-  isContentSeen: boolean;
   /* Has unread items (i.e. transimssions), could still be unread: false on top-level */
   unreadItems?: boolean;
   contentUpdatedAt: string;
   label: SystemLabel[];
-  org: string;
   guiAttachmentCount: number;
-  seenByOthersCount: number;
   fromServiceOwnerTransmissionsCount: number;
   fromPartyTransmissionsCount: number;
   unread: boolean;
@@ -31,7 +27,5 @@ export interface InboxItemInput {
   viewTypes: InboxViewType[];
   seenByLog: SeenByLogProps;
   dueAt?: string | null;
-  seenSinceLastContentUpdate: SeenLogFieldsFragment[];
   serviceResource?: string;
-  serviceResourceType?: string;
 }

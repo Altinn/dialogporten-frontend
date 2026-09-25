@@ -153,7 +153,7 @@ describe('mapDialogToToInboxItems', () => {
   it('should resolve organization name from orgMap', () => {
     const result = mapDialogToInboxItems([createDialog()], partyGraph, orgMap, mockFormat, false);
 
-    expect(result[0].org).toBe('org-1');
+    expect(result[0].serviceOwnerName).toBe('Skatteetaten');
   });
 
   it('should handle empty input array', () => {
