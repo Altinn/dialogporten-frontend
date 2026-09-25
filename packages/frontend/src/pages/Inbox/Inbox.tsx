@@ -294,7 +294,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
     items: dialogs,
     hasNextPage,
     displaySearchResults: searchMode,
-    filters: filterState,
     filterState,
     onFiltersChange,
     viewType,
