@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.179.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.179.2...v1.179.3) (2026-10-07)
+
+
+### Bug Fixes
+
+* configure certificate Key Vault in Bicep parameters ([#4688](https://github.com/Altinn/dialogporten-frontend/issues/4688)) ([2fc4cab](https://github.com/Altinn/dialogporten-frontend/commit/2fc4cabfa80493d1770c1195577c4add7302ca88))
+
 ## [1.179.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.179.1...v1.179.2) (2026-09-24)
 
 
