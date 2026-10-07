@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.179.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.179.3...v1.179.4) (2026-10-07)
+
+
+### Bug Fixes
+
+* **dialogs:** label the last-updated date in list and details ([#4691](https://github.com/Altinn/dialogporten-frontend/issues/4691)) ([54dd0fb](https://github.com/Altinn/dialogporten-frontend/commit/54dd0fb14930d787ecd7d9a7c4126f782cf45995))
+
 ## [1.179.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.179.2...v1.179.3) (2026-10-07)
 
 
