@@ -36,7 +36,7 @@ param applicationGatewayConfiguration = {
       enableAvailabilityTest: true
     }
   ]
-  sslCertificateKeyVaultName: readEnvironmentVariable('CERTIFICATE_KEY_VAULT_NAME')
+  sslCertificateKeyVaultName: 'dis-tls-cert'
 }
 
 // PostgreSQL Configuration

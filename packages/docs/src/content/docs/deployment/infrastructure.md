@@ -23,9 +23,9 @@ Use the following steps:
 
 - Create an SSH key in Azure and discard the private key. We will use the `az cli` to access the virtual machine so storing the `ssh key` is only a security risk. 
 
-- Create a new environment in GitHub and add the following secrets: `AZURE_CLIENT_ID`, `AZURE_SOURCE_KEY_VAULT_NAME`, `AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP`, `AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID`, `AZURE_SUBSCRIPTION_ID`, `AZURE_TENANT_ID`, `AZURE_CERTIFICATE_KEY_VAULT_NAME` and `AZURE_SOURCE_KEY_VAULT_SSH_JUMPER_SSH_PUBLIC_KEY`
+- Create a new environment in GitHub and add the following secrets: `AZURE_CLIENT_ID`, `AZURE_SOURCE_KEY_VAULT_NAME`, `AZURE_SOURCE_KEY_VAULT_RESOURCE_GROUP`, `AZURE_SOURCE_KEY_VAULT_SUBSCRIPTION_ID`, `AZURE_SUBSCRIPTION_ID`, `AZURE_TENANT_ID` and `AZURE_SOURCE_KEY_VAULT_SSH_JUMPER_SSH_PUBLIC_KEY`
 
-- Add a new file for the environment `.azure/infrastructure/<env>.bicepparam`. `<env>` must match the environment created in GitHub.
+- Add a new file for the environment `.azure/infrastructure/<env>.bicepparam`. `<env>` must match the environment created in GitHub. Set `applicationGatewayConfiguration.sslCertificateKeyVaultName` in this file; all environments currently use `dis-tls-cert`.
 
 - Add the new environment in the `dispatch-infrastructure.yml` list of environments. 
 
