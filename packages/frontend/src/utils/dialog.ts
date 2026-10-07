@@ -35,10 +35,7 @@ export const getSeenAtLabel = (seenAt: string, format: FormatFunction): string =
   return format(new Date(seenAt), formatString);
 };
 
-export const getSeenByLabel = (
-  seenBy: SeenByItem[],
-  t: TFunction<'translation', undefined>,
-): { isSeenByEndUser: boolean; seenByOthersCount: number; seenByLabel: string | undefined } => {
+export const getSeenByLabel = (seenBy: SeenByItem[], t: TFunction<'translation', undefined>): string | undefined => {
   const isSeenByEndUser = seenBy?.some((item) => item.isCurrentEndUser);
   const seenByOthersCount = seenBy?.filter((item) => !item.isCurrentEndUser).length;
 
@@ -50,7 +47,7 @@ export const getSeenByLabel = (
     seenByLabel = (seenByLabel ?? t('word.seenBy')) + (isSeenByEndUser ? ` + ` : ' ') + seenByOthersCount;
   }
 
-  return { isSeenByEndUser, seenByOthersCount, seenByLabel };
+  return seenByLabel;
 };
 
 export function mapDialogToInboxItems(
@@ -74,13 +71,12 @@ export function mapDialogToInboxItems(
 
     const serviceOwner = getOrganization(organizations, item.org);
     const serviceOwnerNbName = getOrganizationByLocale(organizations, item.org, 'nb')?.name;
-    const { isSeenByEndUser, seenByOthersCount, seenByLabel } = getSeenByLabel(item.seenSinceLastContentUpdate, t);
+    const seenByLabel = getSeenByLabel(item.seenSinceLastContentUpdate, t);
     const viewTypes = getViewTypes({ status: item.status, systemLabel: item.endUserContext?.systemLabels });
 
     return {
       id: item.id,
       party: item.party,
-      isContentSeen: item.isContentSeen,
       title: getPreferredPropertyByLocale(titleObj)?.value ?? '',
       dueAt: item.dueAt,
       summary: getPreferredPropertyByLocale(summaryObj)?.value ?? '',
@@ -100,20 +96,13 @@ export function mapDialogToInboxItems(
         type: actualReceiverParty?.partyType === 'Organization' ? 'company' : 'person',
         variant: receiverParty && isSubParty && actualReceiverParty?.partyType === 'Organization' ? 'outline' : 'solid',
       },
-      serviceResourceType: item.serviceResourceType,
-      color: actualReceiverParty?.partyType === 'Organization' ? 'company' : 'person',
       contentUpdatedAt: item.contentUpdatedAt,
       guiAttachmentCount: item.guiAttachmentCount ?? 0,
-      createdAt: item.createdAt,
       unreadItems: item.hasUnopenedContent,
       status: item.status ?? 'UnknownStatus',
       extendedStatus: getPreferredPropertyByLocale(extendedStatusObj)?.value || undefined,
-      isSeenByEndUser,
       label: item.endUserContext?.systemLabels,
-      org: item.org,
       seenByLabel,
-      seenByOthersCount,
-      seenSinceLastContentUpdate: item.seenSinceLastContentUpdate,
       seenByLog: {
         collapsible: true,
         endUserLabel: t('word.you'),
