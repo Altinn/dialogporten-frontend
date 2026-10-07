@@ -44,4 +44,17 @@ describe('buildFilterParams', () => {
     const params = buildFilterParams(makeSavedSearch({ searchString: '' }), deps);
     expect(params).toEqual([]);
   });
+
+  it('does not show the stored party or group selection as filters', () => {
+    const params = buildFilterParams(
+      makeSavedSearch({
+        filters: [
+          { id: 'group', value: 'ALL_COMPANIES' },
+          { id: 'party', value: 'urn:altinn:organization:identifier-no:1' },
+        ],
+      }),
+      deps,
+    );
+    expect(params).toEqual([]);
+  });
 });

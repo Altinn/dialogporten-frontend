@@ -180,6 +180,52 @@ describe('buildSavedSearchURL', () => {
   });
 });
 
+describe('saved search selection', () => {
+  const ORG_URN = 'urn:altinn:organization:identifier-no:1';
+  const SUB_URNS = ['urn:altinn:organization:identifier-no:11', 'urn:altinn:organization:identifier-no:12'];
+
+  const createSelectionSearch = (
+    urn: string[],
+    filters: Array<{ id: string; value: string }>,
+  ): SavedSearchesFieldsFragment => ({
+    id: 1,
+    name: 'Test Search',
+    createdAt: '2024-01-01',
+    updatedAt: '2024-01-01',
+    data: { searchString: 'q', filters, fromView: PageRoutes.inbox, urn },
+  });
+
+  const toURL = (path: string) => new URL(path, 'http://localhost');
+
+  it('opens a stored party even when the urn holds several sub-units', () => {
+    const url = toURL(buildSavedSearchURL(createSelectionSearch(SUB_URNS, [{ id: 'party', value: ORG_URN }])));
+    expect(url.searchParams.getAll('party')).toEqual([ORG_URN]);
+    expect(url.searchParams.has('group')).toBe(false);
+  });
+
+  it('opens a stored group even when the urn holds a single party', () => {
+    const url = toURL(
+      buildSavedSearchURL(createSelectionSearch([SUB_URNS[0]], [{ id: 'group', value: 'ALL_COMPANIES' }])),
+    );
+    expect(url.searchParams.getAll('group')).toEqual(['ALL_COMPANIES']);
+    expect(url.searchParams.has('party')).toBe(false);
+  });
+
+  it('opens a stored group when the urn is empty', () => {
+    const url = toURL(buildSavedSearchURL(createSelectionSearch([], [{ id: 'group', value: 'ALL_COMPANIES' }])));
+    expect(url.searchParams.getAll('group')).toEqual(['ALL_COMPANIES']);
+  });
+
+  it('does not add the stored selection to the current state URL', () => {
+    const url = toURL(
+      buildCurrentStateURL({ group: ['ALL_COMPANIES'], party: [ORG_URN], status: ['NEW'] }, '', 'inbox'),
+    );
+    expect(url.searchParams.has('group')).toBe(false);
+    expect(url.searchParams.has('party')).toBe(false);
+    expect(url.searchParams.get('status')).toBe('NEW');
+  });
+});
+
 describe('findMatchingSavedSearch', () => {
   const createSavedSearch = (
     id: number,

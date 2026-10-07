@@ -7,8 +7,43 @@ import { getSearchLabels } from '../../components/PageLayout/Search/getSearchLab
 import type { OrganizationLookup } from '../../utils/organizations.ts';
 import { getOrganization } from '../../utils/organizations.ts';
 import { DateFilterOption, formatDateRange, formatSingleDate } from '../Inbox/filters';
-import { decodeSubAccountIds } from '../Inbox/queryParams.ts';
+import { decodeSubAccountIds, FixedGlobalQueryParams, isPartyGroup, type PartyGroup } from '../Inbox/queryParams.ts';
 import { PageRoutes } from '../routes.ts';
+
+export interface SavedSearchSelection {
+  group?: PartyGroup;
+  party?: string;
+}
+
+export const selectionFilterIds: string[] = [FixedGlobalQueryParams.group, FixedGlobalQueryParams.party];
+
+export const isSelectionFilterId = (id: string | null | undefined): boolean => selectionFilterIds.includes(id ?? '');
+
+export const createSelectionFilters = (
+  selectedGroup: PartyGroup | null,
+  selectedPartyId: string | undefined,
+): Array<{ id: string; value: string }> => {
+  if (selectedGroup) {
+    return [{ id: FixedGlobalQueryParams.group, value: selectedGroup }];
+  }
+  if (selectedPartyId && !selectedPartyId.includes('person')) {
+    return [{ id: FixedGlobalQueryParams.party, value: selectedPartyId }];
+  }
+  return [];
+};
+
+export const getSavedSearchSelection = (savedSearch: SavedSearchesFieldsFragment): SavedSearchSelection | undefined => {
+  const filters = savedSearch.data?.filters ?? [];
+  const group = filters.find((filter) => filter?.id === FixedGlobalQueryParams.group)?.value;
+  if (isPartyGroup(group)) {
+    return { group };
+  }
+  const party = filters.find((filter) => filter?.id === FixedGlobalQueryParams.party)?.value;
+  if (party) {
+    return { party };
+  }
+  return undefined;
+};
 
 export const fromPathToViewType = (path: string | null | undefined): InboxViewType | undefined => {
   if (!path) return undefined;
@@ -58,7 +93,10 @@ export const buildFilterParams = (
   const mapped: { order: number; item: QueryItemProps }[] = filters
     .filter(
       (filter) =>
-        filter?.value && !['fromDate', 'toDate'].includes(filter?.id ?? '') && filter?.value !== 'fromAndToDate',
+        filter?.value &&
+        !['fromDate', 'toDate'].includes(filter?.id ?? '') &&
+        !isSelectionFilterId(filter?.id) &&
+        filter?.value !== 'fromAndToDate',
     )
     .map((filter) => {
       const order = orderOf(filter?.id);

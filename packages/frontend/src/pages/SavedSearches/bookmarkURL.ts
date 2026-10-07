@@ -4,7 +4,7 @@ import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
 import { aggregateFilterState, FilterCategory } from '../Inbox/filters';
 import { FixedGlobalQueryParams, getSelectedGroupFromQueryParams, PartyGroups } from '../Inbox/queryParams.ts';
 import { PageRoutes } from '../routes.ts';
-import { fromPathToViewType } from './searchUtils.ts';
+import { fromPathToViewType, getSavedSearchSelection, isSelectionFilterId } from './searchUtils.ts';
 import { convertFiltersToFilterState } from './useSavedSearches.tsx';
 
 const routeForViewType = (viewType: InboxViewType | undefined): PageRoutes => {
@@ -50,6 +50,9 @@ export const buildCurrentStateURL = (
   const aggregated = viewType !== 'inbox' ? aggregateFilterState(filterState, viewType) : filterState;
 
   for (const [key, values] of Object.entries(aggregated)) {
+    if (isSelectionFilterId(key)) {
+      continue;
+    }
     if (Array.isArray(values)) {
       for (const val of values) {
         if (key === FilterCategory.STATUS && val === SystemLabel.Default) {
@@ -75,7 +78,13 @@ export const buildSavedSearchURL = (savedSearch: SavedSearchesFieldsFragment) =>
   let partyParam: string | null = null;
   let groupParam: string | null = null;
 
-  if (urn && urn.length > 1) {
+  const selection = getSavedSearchSelection(savedSearch);
+
+  if (selection?.group) {
+    groupParam = selection.group;
+  } else if (selection?.party) {
+    partyParam = selection.party;
+  } else if (urn && urn.length > 1) {
     // A multi-party saved search is a group. Persons and companies never mix in one group.
     const allPersons = urn.every((u) => u?.includes('person'));
     groupParam = allPersons ? PartyGroups.ALL_PERSONS : PartyGroups.ALL_COMPANIES;
@@ -102,6 +111,9 @@ export const buildSavedSearchURL = (savedSearch: SavedSearchesFieldsFragment) =>
   const aggregated = viewType !== 'inbox' && viewType ? aggregateFilterState(filterState, viewType) : filterState;
 
   for (const [key, values] of Object.entries(aggregated)) {
+    if (isSelectionFilterId(key)) {
+      continue;
+    }
     if (Array.isArray(values)) {
       for (const val of values) {
         if (key === FilterCategory.STATUS && val === SystemLabel.Default) {

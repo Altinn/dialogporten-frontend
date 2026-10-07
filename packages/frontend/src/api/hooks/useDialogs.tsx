@@ -71,6 +71,7 @@ interface UseDialogsOutput {
   isQueryEnabled: boolean;
   partyLimitExceeded: boolean;
   applicablePartyCount: number;
+  partyURIs: string[];
 }
 
 export const useDialogs = ({
@@ -230,5 +231,6 @@ export const useDialogs = ({
     isQueryEnabled,
     partyLimitExceeded,
     applicablePartyCount: partyIds.length,
+    partyURIs: queryPartyURIs,
   };
 };

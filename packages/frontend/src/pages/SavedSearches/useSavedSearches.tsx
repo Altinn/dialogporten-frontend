@@ -22,10 +22,16 @@ import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { useDateFnsLocale } from '../../i18n/useDateFnsLocale.tsx';
 import { buildOrganizationMap } from '../../utils/organizations.ts';
+import type { PartyGroup } from '../Inbox/queryParams.ts';
 import { useOrganizations } from '../Inbox/useOrganizations.ts';
 import { PageRoutes } from '../routes.ts';
 import { buildCurrentStateURL, buildSavedSearchURL } from './bookmarkURL.ts';
-import { buildFilterParams, fromPathToViewType } from './searchUtils.ts';
+import {
+  buildFilterParams,
+  createSelectionFilters,
+  fromPathToViewType,
+  getSavedSearchSelection,
+} from './searchUtils.ts';
 
 interface UseSavedSearchesOutput {
   savedSearches: SavedSearchesFieldsFragment[];
@@ -45,7 +51,7 @@ interface UseSavedSearchesOutput {
 
 interface HandleSaveSearchProps {
   filters: FilterState;
-  selectedParties: string[];
+  partyURIs: string[];
   enteredSearchValue: string;
   viewType: InboxViewType;
   name?: string;
@@ -96,8 +102,17 @@ export const convertFiltersToFilterState = (
 export const filterSavedSearches = (
   savedSearches: SavedSearchesFieldsFragment[],
   selectedPartyIds: string[],
+  selectedGroup: PartyGroup | null = null,
 ): SavedSearchesFieldsFragment[] => {
   return (savedSearches ?? []).filter((savedSearch) => {
+    const selection = getSavedSearchSelection(savedSearch);
+    if (selection?.group) {
+      return selectedGroup === selection.group;
+    }
+    if (selection?.party) {
+      return !selectedGroup && selectedPartyIds.includes(selection.party);
+    }
+
     if (!savedSearch?.data.urn?.length) {
       return true;
     }
@@ -133,7 +148,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
   const { organizations } = useOrganizations();
   const orgMap = useMemo(() => buildOrganizationMap(organizations), [organizations]);
   const { serviceResourceById } = useFilterServiceResources();
-  const { currentEndUser, setSelectedPartyIds, setSelectedParties, partyGraph } = useParties();
+  const { currentEndUser, setSelectedPartyIds, setSelectedParties, partyGraph, selectedGroup } = useParties();
   const { locale } = useDateFnsLocale();
   const navigate = useNavigate();
 
@@ -147,11 +162,11 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
   );
 
   const endUsersSavedSearches = (data?.savedSearches ?? []) as SavedSearchesFieldsFragment[];
-  const currentPartySavedSearches = filterSavedSearches(endUsersSavedSearches, selectedPartyIds || []);
+  const currentPartySavedSearches = filterSavedSearches(endUsersSavedSearches, selectedPartyIds || [], selectedGroup);
 
   const saveSearch = async ({
     filters,
-    selectedParties,
+    partyURIs,
     enteredSearchValue,
     viewType,
     name,
@@ -159,8 +174,11 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
     try {
       setIsCTALoading(true);
       const data: SavedSearchData = {
-        filters: convertFilterStateToFilters(filters),
-        urn: selectedParties,
+        filters: [
+          ...convertFilterStateToFilters(filters),
+          ...createSelectionFilters(selectedGroup, selectedPartyIds?.[0]),
+        ],
+        urn: partyURIs,
         searchString: enteredSearchValue,
         fromView: PageRoutes[viewType],
       };
@@ -170,7 +188,7 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
         'search.viewType': viewType,
         'search.hasSearchString': !!enteredSearchValue,
         'search.searchStringLength': enteredSearchValue?.length || 0,
-        'search.partyCount': selectedParties?.length || 0,
+        'search.partyCount': partyURIs?.length || 0,
         'search.filterCount': Object.keys(filters).length,
       });
 
@@ -258,6 +276,9 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
 
   const getSavedSearchGroupId = useCallback(
     (savedSearch: SavedSearchesFieldsFragment): string => {
+      const selection = getSavedSearchSelection(savedSearch);
+      if (selection?.group) return 'all-organizations';
+      if (selection?.party) return selection.party;
       const urn = savedSearch.data?.urn;
       if (!urn?.length) return 'personal';
       if (urn.length === 1 && urn[0] === currentEndUser?.party) return 'personal';
@@ -323,8 +344,13 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
     const groupId = getSavedSearchGroupId(savedSearch);
     const params = buildFilterParams(savedSearch, { organizations: orgMap, serviceResourceById, locale, t });
     /* PartyId for person users cannot be exposed in url because in risk of leaking sensitive info */
+    const selection = getSavedSearchSelection(savedSearch);
     const isPersonBookmark =
-      savedSearch?.data?.urn?.length === 1 && savedSearch.data?.urn[0]?.includes('urn:altinn:person:identifier-no:');
+      !selection &&
+      savedSearch?.data?.urn?.length === 1 &&
+      savedSearch.data?.urn[0]?.includes('urn:altinn:person:identifier-no:');
+    const bookmarkPartyUrn =
+      selection?.party ?? (!selection && savedSearch?.data?.urn?.length === 1 ? savedSearch.data.urn[0] : undefined);
     return {
       id: searchId,
       groupId,
@@ -333,8 +359,8 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
       onClick: () => {
         if (isPersonBookmark && savedSearch?.data?.urn?.[0]) {
           setSelectedPartyIds([savedSearch?.data?.urn?.[0]], null);
-        } else if (!isPersonBookmark && savedSearch?.data?.urn?.length === 1 && savedSearch?.data?.urn?.[0]) {
-          const party = partyGraph.partyByUrn.get(savedSearch.data.urn[0]);
+        } else if (!isPersonBookmark && bookmarkPartyUrn) {
+          const party = partyGraph.partyByUrn.get(bookmarkPartyUrn);
           if (party) {
             setSelectedParties([party]);
           }
