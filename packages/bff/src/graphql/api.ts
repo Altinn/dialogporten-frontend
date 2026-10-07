@@ -67,6 +67,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
   fastify.post(
     '/api/graphql',
     {
+      bodyLimit: 5 * 1024 * 1024,
       compress: graphqlCompression,
       preHandler: (request, reply, callback) => {
         /* Allow graphiql session to renew token since there will no be race conditions in the flow, with multiple requests */
