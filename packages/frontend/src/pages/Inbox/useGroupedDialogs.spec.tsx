@@ -426,6 +426,29 @@ describe('useGroupedDialogs', () => {
     expect(result.current.groupedDialogs.every((dialog) => dialog.grouped === true)).toBe(true);
   });
 
+  it('should show the bare updated date with a last updated tooltip', () => {
+    const { result } = renderHook(
+      () =>
+        useGroupedDialogs({
+          items: mockData,
+          displaySearchResults: false,
+          viewType: 'inbox',
+          isLoading: false,
+          hasNextPage: false,
+          onSeenByLogModalChange: () => {},
+          onAccessInfoModalChange: () => {},
+          applicablePartyCount: 1,
+        }),
+      {
+        wrapper: createCustomWrapper(),
+      },
+    );
+
+    const dialog = result.current.groupedDialogs.find((item) => item.id === mockData[0].id);
+    expect(dialog?.updatedAtLabel).toBe(mockData[0].contentUpdatedAt);
+    expect(dialog?.tooltips).toEqual({ updatedAt: 'dialog.tooltip.updated_at' });
+  });
+
   it('should generat groups orderIndex correctly', () => {
     const { result } = renderHook(
       () =>

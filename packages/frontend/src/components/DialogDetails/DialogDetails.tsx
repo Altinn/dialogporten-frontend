@@ -381,7 +381,7 @@ export const DialogDetails = ({
         <DialogHeader
           loading
           updatedAt={new Date().toISOString()}
-          updatedAtLabel={format(new Date(), 'do MMMM yyyy HH.mm').toString()}
+          updatedAtLabel={t('dialog.updated_at', { date: format(new Date(), 'do MMMM yyyy HH.mm') })}
           dueAt={{
             datetime: new Date().toISOString(),
             label: format(new Date(), 'do MMMM yyyy HH.mm').toString(),
@@ -477,7 +477,7 @@ export const DialogDetails = ({
     <>
       <DialogHeader
         updatedAt={dialog.updatedAt}
-        updatedAtLabel={format(dialog.updatedAt, formatString)}
+        updatedAtLabel={t('dialog.updated_at', { date: format(dialog.updatedAt, formatString) })}
         dueAt={getDueAtProps(dialog.dueAt, dialog.status, t, (date) => format(date, formatString))}
         status={getDialogStatus(dialog.status, t)}
         badge={headerBadge}
