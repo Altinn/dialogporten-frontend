@@ -329,6 +329,7 @@ const useGroupedDialogs = ({
         extendedStatusLabel: item.extendedStatus,
         updatedAt: item.contentUpdatedAt,
         updatedAtLabel: format(item.contentUpdatedAt, formatString),
+        tooltips: { updatedAt: t('dialog.tooltip.updated_at') },
         dueAt: getDueAtProps(item.dueAt, item.status, t, (date) => format(date, formatString)),
         sentCount: item.fromPartyTransmissionsCount ?? 0,
         receivedCount: item.fromServiceOwnerTransmissionsCount ?? 0,
