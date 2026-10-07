@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.179.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.179.4...v1.179.5) (2026-10-07)
+
+
+### Bug Fixes
+
+* **saved-searches:** store the parties used to fetch dialogs ([#4695](https://github.com/Altinn/dialogporten-frontend/issues/4695)) ([7380b4a](https://github.com/Altinn/dialogporten-frontend/commit/7380b4a5b400ec36d7072eccf6ca86a1461622f8))
+
 ## [1.179.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.179.3...v1.179.4) (2026-10-07)
 
 
