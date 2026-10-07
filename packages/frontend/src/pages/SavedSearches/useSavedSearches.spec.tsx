@@ -24,6 +24,7 @@ vi.mock('../../api/hooks/useParties.ts', () => ({
     currentEndUser: { party: 'urn:altinn:person:identifier-no:1' },
     setSelectedPartyIds: vi.fn(),
     partyGraph: { partyByUrn: new Map() },
+    selectedGroup: null,
   })),
 }));
 
@@ -69,7 +70,12 @@ vi.mock('../../auth/useAuthenticatedQuery.ts', () => ({
   useAuthenticatedQuery: vi.fn(),
 }));
 
+import { useParties } from '../../api/hooks/useParties.ts';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.ts';
+
+const ORG_URN = 'urn:altinn:organization:identifier-no:1';
+const SUB_URN_1 = 'urn:altinn:organization:identifier-no:11';
+const SUB_URN_2 = 'urn:altinn:organization:identifier-no:12';
 
 const makeSavedSearch = (overrides: Partial<SavedSearchesFieldsFragment> = {}): SavedSearchesFieldsFragment => ({
   id: 1,
@@ -193,6 +199,36 @@ describe('filterSavedSearches', () => {
   it('returns empty array when given empty input', () => {
     expect(filterSavedSearches([], ['urn:altinn:person:identifier-no:1'])).toEqual([]);
   });
+
+  it('matches a search with a stored group only when that group is selected', () => {
+    const groupSearch = makeSavedSearch({
+      id: 10,
+      data: {
+        urn: [SUB_URN_1, SUB_URN_2],
+        filters: [{ id: 'group', value: 'ALL_COMPANIES' }],
+        searchString: '',
+        fromView: '/',
+      },
+    });
+    expect(filterSavedSearches([groupSearch], [ORG_URN], 'ALL_COMPANIES')).toHaveLength(1);
+    expect(filterSavedSearches([groupSearch], [ORG_URN], 'ALL_PERSONS')).toHaveLength(0);
+    expect(filterSavedSearches([groupSearch], [ORG_URN])).toHaveLength(0);
+  });
+
+  it('matches a search with a stored party by that party, not by the urn', () => {
+    const partySearch = makeSavedSearch({
+      id: 11,
+      data: {
+        urn: [SUB_URN_1, SUB_URN_2],
+        filters: [{ id: 'party', value: ORG_URN }],
+        searchString: '',
+        fromView: '/',
+      },
+    });
+    expect(filterSavedSearches([partySearch], [ORG_URN])).toHaveLength(1);
+    expect(filterSavedSearches([partySearch], [SUB_URN_1])).toHaveLength(0);
+    expect(filterSavedSearches([partySearch], [ORG_URN], 'ALL_COMPANIES')).toHaveLength(0);
+  });
 });
 
 describe('useSavedSearches', () => {
@@ -265,6 +301,38 @@ describe('useSavedSearches', () => {
     expect(result.current.items.find((i) => i.id === '3')?.groupId).toBe('all-organizations');
   });
 
+  it('assigns group IDs from the stored selection instead of the urn', () => {
+    setupAuthQuery({
+      data: {
+        savedSearches: [
+          makeSavedSearch({
+            id: 20,
+            data: {
+              urn: [SUB_URN_1, SUB_URN_2],
+              filters: [{ id: 'party', value: ORG_URN }],
+              searchString: '',
+              fromView: '/',
+            },
+          }),
+          makeSavedSearch({
+            id: 21,
+            data: {
+              urn: [SUB_URN_1],
+              filters: [{ id: 'group', value: 'ALL_COMPANIES' }],
+              searchString: '',
+              fromView: '/',
+            },
+          }),
+        ],
+      },
+    });
+
+    const { result } = renderHook(() => useSavedSearches([ORG_URN]), { wrapper: createCustomWrapper() });
+
+    expect(result.current.items.find((i) => i.id === '20')?.groupId).toBe(ORG_URN);
+    expect(result.current.items.find((i) => i.id === '21')?.groupId).toBe('all-organizations');
+  });
+
   it('builds groups from saved searches', () => {
     setupAuthQuery();
 
@@ -306,17 +374,83 @@ describe('useSavedSearches', () => {
     await act(async () => {
       id = await result.current.saveSearch({
         filters: { status: ['REQUIRES_ATTENTION'] },
-        selectedParties: ['urn:altinn:person:identifier-no:1'],
+        partyURIs: ['urn:altinn:person:identifier-no:1'],
         enteredSearchValue: 'test',
         viewType: 'inbox',
       });
     });
 
     expect(mockCreateSavedSearch).toHaveBeenCalledOnce();
+    expect(mockCreateSavedSearch).toHaveBeenCalledWith(
+      '',
+      expect.objectContaining({
+        urn: ['urn:altinn:person:identifier-no:1'],
+        filters: [{ id: 'status', value: 'REQUIRES_ATTENTION' }],
+      }),
+    );
     expect(id).toBe('42');
     expect(mockOpenSnackbar).toHaveBeenCalledWith(
       expect.objectContaining({ message: 'savedSearches.saved_success', color: 'company' }),
     );
+  });
+
+  it('saveSearch stores the dialog parties as urn and the selected organization as a party filter', async () => {
+    setupAuthQuery();
+    mockCreateSavedSearch.mockResolvedValue({ createSavedSearch: { id: 43 } });
+
+    const { result } = renderHook(() => useSavedSearches([ORG_URN]), { wrapper: createCustomWrapper() });
+
+    await act(async () => {
+      await result.current.saveSearch({
+        filters: { status: ['REQUIRES_ATTENTION'] },
+        partyURIs: [SUB_URN_1, SUB_URN_2],
+        enteredSearchValue: '',
+        viewType: 'inbox',
+      });
+    });
+
+    expect(mockCreateSavedSearch).toHaveBeenCalledWith(
+      '',
+      expect.objectContaining({
+        urn: [SUB_URN_1, SUB_URN_2],
+        filters: [
+          { id: 'status', value: 'REQUIRES_ATTENTION' },
+          { id: 'party', value: ORG_URN },
+        ],
+      }),
+    );
+  });
+
+  it('saveSearch stores the selected group as a group filter', async () => {
+    setupAuthQuery();
+    mockCreateSavedSearch.mockResolvedValue({ createSavedSearch: { id: 44 } });
+    const defaultUseParties = vi.mocked(useParties).getMockImplementation()!;
+    vi.mocked(useParties).mockImplementation(
+      () => ({ ...defaultUseParties(), selectedGroup: 'ALL_COMPANIES' }) as ReturnType<typeof useParties>,
+    );
+
+    try {
+      const { result } = renderHook(() => useSavedSearches([ORG_URN]), { wrapper: createCustomWrapper() });
+
+      await act(async () => {
+        await result.current.saveSearch({
+          filters: {},
+          partyURIs: [SUB_URN_1, SUB_URN_2],
+          enteredSearchValue: 'test',
+          viewType: 'inbox',
+        });
+      });
+
+      expect(mockCreateSavedSearch).toHaveBeenCalledWith(
+        '',
+        expect.objectContaining({
+          urn: [SUB_URN_1, SUB_URN_2],
+          filters: [{ id: 'group', value: 'ALL_COMPANIES' }],
+        }),
+      );
+    } finally {
+      vi.mocked(useParties).mockImplementation(defaultUseParties);
+    }
   });
 
   it('saveSearch shows error snackbar on failure', async () => {
@@ -330,7 +464,7 @@ describe('useSavedSearches', () => {
     await act(async () => {
       await result.current.saveSearch({
         filters: {},
-        selectedParties: [],
+        partyURIs: [],
         enteredSearchValue: '',
         viewType: 'inbox',
       });
@@ -446,7 +580,7 @@ describe('useSavedSearches', () => {
     act(() => {
       savePromise = result.current.saveSearch({
         filters: {},
-        selectedParties: [],
+        partyURIs: [],
         enteredSearchValue: '',
         viewType: 'inbox',
       });

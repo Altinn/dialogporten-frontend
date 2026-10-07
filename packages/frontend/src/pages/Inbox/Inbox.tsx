@@ -197,16 +197,6 @@ export const Inbox = ({ viewType }: InboxProps) => {
     };
   }, [filterState, subAccountsParamForSave]);
 
-  const { bookmarkModalProps, openSaveModal, openEditModal } = useBookmarkModal({
-    filterState: savedSearchFilterState,
-    enteredSearchValue,
-    viewType,
-    selectedPartyIds,
-    saveSearch,
-    updateSavedSearchTitle: (id, name) => onSaveSearch?.(id, name) ?? Promise.resolve(),
-    deleteSavedSearch: onDeleteSavedSearch,
-  });
-
   const savedSearchDisabled = isSavedSearchDisabled(savedSearchFilterState, partyIdsOverride, enteredSearchValue);
   const onResetAllFilter = () => {
     onFiltersChange({}, true);
@@ -222,12 +212,23 @@ export const Inbox = ({ viewType }: InboxProps) => {
     isQueryEnabled,
     partyLimitExceeded,
     applicablePartyCount,
+    partyURIs,
   } = useDialogs({
     viewType,
     filterState,
     search: validSearchString,
     serviceResources: selectedServices,
     partyIdsOverride: partyIdsOverride?.length ? partyIdsOverride : [],
+  });
+
+  const { bookmarkModalProps, openSaveModal, openEditModal } = useBookmarkModal({
+    filterState: savedSearchFilterState,
+    enteredSearchValue,
+    viewType,
+    partyURIs,
+    saveSearch,
+    updateSavedSearchTitle: (id, name) => onSaveSearch?.(id, name) ?? Promise.resolve(),
+    deleteSavedSearch: onDeleteSavedSearch,
   });
 
   const isLimitReached = !isQueryEnabled;

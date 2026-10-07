@@ -13,7 +13,7 @@ import { useOrganizations } from './useOrganizations.ts';
 
 interface SaveSearchInput {
   filters: FilterState;
-  selectedParties: string[];
+  partyURIs: string[];
   enteredSearchValue: string;
   viewType: InboxViewType;
   name?: string;
@@ -23,7 +23,7 @@ interface UseBookmarkModalProps {
   filterState: FilterState;
   enteredSearchValue: string;
   viewType: InboxViewType;
-  selectedPartyIds: string[];
+  partyURIs: string[];
   saveSearch: (props: SaveSearchInput) => Promise<string | undefined>;
   updateSavedSearchTitle: (id: string, name: string) => Promise<void> | void;
   deleteSavedSearch: (id: string) => Promise<void>;
@@ -35,7 +35,7 @@ export const useBookmarkModal = ({
   filterState,
   enteredSearchValue,
   viewType,
-  selectedPartyIds,
+  partyURIs,
   saveSearch,
   updateSavedSearchTitle,
   deleteSavedSearch,
@@ -66,13 +66,13 @@ export const useBookmarkModal = ({
       updatedAt: '',
       data: {
         filters: convertFilterStateToFilters(filterState),
-        urn: selectedPartyIds,
+        urn: partyURIs,
         searchString: enteredSearchValue,
         fromView: PageRoutes[viewType],
       },
     };
     return buildFilterParams(draftSavedSearch, deps);
-  }, [state, filterState, selectedPartyIds, enteredSearchValue, viewType, orgMap, serviceResourceById, locale, t]);
+  }, [state, filterState, partyURIs, enteredSearchValue, viewType, orgMap, serviceResourceById, locale, t]);
 
   const isEdit = state.kind === 'edit';
 
@@ -109,7 +109,7 @@ export const useBookmarkModal = ({
           onClick: async () => {
             const id = await saveSearch({
               filters: filterState,
-              selectedParties: selectedPartyIds,
+              partyURIs,
               enteredSearchValue,
               viewType,
               name: inputValue,
