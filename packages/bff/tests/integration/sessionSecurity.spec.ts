@@ -6,6 +6,7 @@ import axios from 'axios';
 import Fastify, { type FastifyInstance } from 'fastify';
 import { Redis } from 'ioredis';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import oidc from '../../src/auth/oidc.ts';
 import { RevocableRedisStore, sessionKeyPrefix } from '../../src/auth/sessionStore.ts';
 import userApi from '../../src/auth/userApi.ts';
 import verifyToken from '../../src/auth/verifyToken.ts';
@@ -80,6 +81,7 @@ beforeAll(async () => {
     store: new RevocableRedisStore(redis),
   });
   await server.register(verifyToken);
+  await server.register(oidc);
   await server.register(userApi);
   server.post('/seed', async (request) => {
     request.session.set('pid', 'test-pid');
@@ -121,6 +123,23 @@ describe('BFF session security', () => {
 
   it('returns 401 for an anonymous API request', async () => {
     expect((await server.inject({ url: '/protected' })).statusCode).toBe(401);
+    expect(protectedHandler).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['valid', 300_000],
+    ['expired', -60_000],
+  ] as const)('destroys the session and redirects on logout when the access token is %s', async (_, offset) => {
+    const { cookies, sessionId } = await seedSession(accessToken(offset));
+    expect(await redis.exists(sessionKeyPrefix + sessionId)).toBe(1);
+
+    const response = await server.inject({ url: '/api/logout', cookies });
+
+    expect(response.statusCode).toBe(302);
+    expect(response.headers.location).toBe(`${provider.end_session_endpoint}?id_token_hint=id-token`);
+    expect(await redis.exists(sessionKeyPrefix + sessionId)).toBe(0);
+    expect(axios.post).not.toHaveBeenCalled();
+    expect((await server.inject({ url: '/protected', cookies })).statusCode).toBe(401);
     expect(protectedHandler).not.toHaveBeenCalled();
   });
 
