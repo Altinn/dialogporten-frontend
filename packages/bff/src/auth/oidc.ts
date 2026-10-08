@@ -12,6 +12,7 @@ import fp from 'fastify-plugin';
 import jwt from 'jsonwebtoken';
 import config from '../config.js';
 import redisClient from '../redisClient.js';
+import { sessionKeyPrefix } from './sessionStore.ts';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -232,7 +233,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
         .replace(base64PaddingRE, '');
 
       const cookie = `arbeidsflate=${sessionId}.${signature}`;
-      const key = `sess:${sessionId}`;
+      const key = `${sessionKeyPrefix}${sessionId}`;
       await redisClient.set(key, JSON.stringify(session), 'EX', expiresInSeconds);
 
       reply.status(200).send({ cookie, expires: expiresIn });

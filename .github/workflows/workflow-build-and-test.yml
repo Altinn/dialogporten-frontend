@@ -72,6 +72,12 @@ jobs:
       - name: 'Running Unit Tests'
         run: pnpm turbo test
 
+  integration-test:
+    name: 'BFF integration tests'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/workflow-bff-integration-tests.yml
+
   build:
     name: 'Builds'
     runs-on: self-hosted
