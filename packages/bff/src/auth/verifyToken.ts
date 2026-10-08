@@ -3,13 +3,13 @@ import axios from 'axios';
 import type { FastifyPluginAsync, FastifyReply, FastifyRequest, IdPortenUpdatedToken, ProviderConfig } from 'fastify';
 import fp from 'fastify-plugin';
 import config from '../config.ts';
-import { fetchOpenIDConfig, handleLogout, type SessionStorageToken } from './oidc.ts';
+import { fetchOpenIDConfig, type SessionStorageToken } from './oidc.ts';
 
 export const refreshToken = async (request: FastifyRequest, providerconfig: ProviderConfig) => {
   const token: SessionStorageToken | undefined = request.session.get('token');
   const { client_id, client_secret } = config;
 
-  if (!token) {
+  if (!token?.access_token) {
     return;
   }
 
@@ -23,6 +23,7 @@ export const refreshToken = async (request: FastifyRequest, providerconfig: Prov
 
   const refreshResponse = await axios.post(tokenEndpoint, body, {
     timeout: 30000,
+    maxRedirects: 0,
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
       Authorization: authEncoded,
@@ -72,7 +73,7 @@ const getIsTokenValid = async (
 ): Promise<ValidationStatus> => {
   const token: SessionStorageToken | undefined = request.session.get('token');
 
-  if (!token) {
+  if (!token?.access_token) {
     return 'missing_token';
   }
 
@@ -89,12 +90,13 @@ const getIsTokenValid = async (
       // Ensure that the token has been updated and valid after the refresh
       const updatedToken: SessionStorageToken | undefined = request.session.get('token');
       const updatedAccessTokenExpiresAt = new Date(updatedToken?.access_token_expires_at || '');
-      if (updatedAccessTokenExpiresAt > now) {
+      if (updatedToken?.access_token && updatedAccessTokenExpiresAt.getTime() > Date.now()) {
         return 'refreshed';
       }
       return 'refresh_token_expired';
-    } catch (error) {
-      logger.error(error, 'Unable to refresh token');
+    } catch {
+      // Axios errors include the client secret and refresh token in the request configuration.
+      logger.error('Unable to refresh token');
       return 'refresh_token_expired';
     }
   }
@@ -108,16 +110,19 @@ const plugin: FastifyPluginAsync = async (fastify, _) => {
 
   fastify.decorate('verifyToken', (allowTokenRefresh: boolean) => {
     return async (request: FastifyRequest, reply: FastifyReply) => {
+      request.tokenIsValid = false;
       try {
         const validationStatus: ValidationStatus = await getIsTokenValid(request, allowTokenRefresh, providerConfig);
-        if (validationStatus === 'refresh_token_expired' || validationStatus === 'missing_token') {
-          // Redirect to force a new login if the refresh token has expired or if the token is missing
-          return handleLogout(request, reply, providerConfig);
+        if (validationStatus === 'refresh_token_expired') {
+          await request.session.destroy();
+          reply.clearCookie('arbeidsflate', { path: '/' });
         }
         request.tokenIsValid = validationStatus === 'access_token_valid' || validationStatus === 'refreshed';
-      } catch (e) {
-        logger.error(e, 'Unable to verify token');
-        request.tokenIsValid = false;
+      } catch {
+        logger.error('Unable to verify token');
+      }
+      if (!request.tokenIsValid) {
+        return reply.code(401).send({ isAuthenticated: false });
       }
     };
   });
