@@ -30,7 +30,7 @@ sequenceDiagram
 Logout is done by calling the logout endpoint on id-porten with id token as hint, and a successful logout will redirect to the logged out route on our app.
 
 Our app also supports a route for front-channel logout, which all apps within the circle-of-trust are required to have.
-This route destroys the session, provided current session id from id-porten. Local logout also destroys sessions without an ID token and clears the browser cookie.
+This route checks the issuer and revokes all indexed BFF sessions for the provider's session ID. Legacy single-session indexes remain supported during rollout. Revoked sessions cannot be recreated by delayed writes, even after the short revocation marker expires. Local logout also destroys sessions without an ID token and clears the browser cookie.
 
 Protected API requests return HTTP 401 before running a handler when the access token is missing or expired. `/api/isAuthenticated` can refresh tokens; ordinary GraphQL requests keep the existing separate refresh flow. Redis session expiry is capped by the remaining access/refresh-token lifetime. Redis telemetry records command names only, because Lua arguments contain session credentials.
 

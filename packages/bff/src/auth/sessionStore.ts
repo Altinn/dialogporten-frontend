@@ -8,6 +8,8 @@ type RedisSession = Session & { __redisSessionId?: string };
 
 export const sessionKeyPrefix = 'sess:';
 export const revokedSessionKeyPrefix = 'sess-revoked:';
+export const idpSessionKeyPrefix = 'idp-sessions:';
+const revokedIdpSessionKeyPrefix = 'idp-sid-revoked:';
 const defaultTtlSeconds = 60 * 60 * 24;
 export const revokedSessionTtlSeconds = 2 * 60;
 
@@ -15,8 +17,44 @@ const setUnlessRevokedScript = `
 if redis.call('EXISTS', KEYS[2]) == 1 then
   return 0
 end
-return redis.call('SET', KEYS[1], ARGV[1], 'EX', ARGV[2], ARGV[3])
+if #KEYS == 5 and redis.call('EXISTS', KEYS[5]) == 1 then
+  return 0
+end
+local result = redis.call('SET', KEYS[1], ARGV[1], 'EX', ARGV[2], ARGV[3])
+if result and #KEYS == 5 then
+  redis.call('SADD', KEYS[3], ARGV[4])
+  if redis.call('TTL', KEYS[3]) < tonumber(ARGV[2]) then
+    redis.call('EXPIRE', KEYS[3], ARGV[2])
+  end
+  redis.call('SET', KEYS[4], ARGV[4], 'EX', ARGV[2])
+end
+return result
 `;
+
+const destroyIdpSessionsScript = `
+redis.call('SET', KEYS[3], '1', 'EX', ARGV[4])
+local sessions = redis.call('SMEMBERS', KEYS[1])
+local legacy = redis.call('GET', KEYS[2])
+if legacy then table.insert(sessions, legacy) end
+for _, sessionId in ipairs(sessions) do
+  redis.call('SET', ARGV[1] .. sessionId, '1', 'EX', ARGV[3])
+  redis.call('DEL', ARGV[2] .. sessionId)
+end
+return redis.call('DEL', KEYS[1], KEYS[2])
+`;
+
+export const destroyIdpSessions = (redis: Redis, sid: string) =>
+  redis.eval(
+    destroyIdpSessionsScript,
+    3,
+    idpSessionKeyPrefix + sid,
+    `idp-sid:${sid}`,
+    revokedIdpSessionKeyPrefix + sid,
+    revokedSessionKeyPrefix,
+    sessionKeyPrefix,
+    revokedSessionTtlSeconds,
+    defaultTtlSeconds,
+  );
 
 const getTtlSeconds = (session: Session) => {
   const expires = session.cookie.expires;
@@ -60,16 +98,25 @@ export class RevocableRedisStore implements SessionStore {
       return;
     }
     const isPersisted = session.__redisSessionId === sessionId;
+    const keys = [sessionKeyPrefix + sessionId, revokedSessionKeyPrefix + sessionId];
+    // Keep the legacy index usable by older replicas during a rolling deployment.
+    if (session.idpSid) {
+      keys.push(
+        idpSessionKeyPrefix + session.idpSid,
+        `idp-sid:${session.idpSid}`,
+        revokedIdpSessionKeyPrefix + session.idpSid,
+      );
+    }
     settle(
       this.redis
         .eval(
           setUnlessRevokedScript,
-          2,
-          sessionKeyPrefix + sessionId,
-          revokedSessionKeyPrefix + sessionId,
+          keys.length,
+          ...keys,
           JSON.stringify(session),
           ttlSeconds,
           isPersisted ? 'XX' : 'NX',
+          sessionId,
         )
         .then((result) => {
           if (result === 'OK') {
