@@ -134,7 +134,7 @@ describe('savedSearches against a real database', () => {
     await createProfile('pid-1');
     const created = await createSavedSearch({ name: 'Gammelt navn', data: searchData, pid: 'pid-1' });
 
-    const result = await updateSavedSearch(created.id, 'Nytt navn');
+    const result = await updateSavedSearch(created.id, 'Nytt navn', 'pid-1');
     expect(result.affected).toBe(1);
 
     const searches = await listSavedSearches('pid-1');
@@ -145,11 +145,31 @@ describe('savedSearches against a real database', () => {
     await createProfile('pid-1');
     const created = await createSavedSearch({ name: 'Slett meg', data: searchData, pid: 'pid-1' });
 
-    const result = await deleteSavedSearch(created.id);
+    const result = await deleteSavedSearch(created.id, 'pid-1');
     expect(result.affected).toBe(1);
     expect(await listSavedSearches('pid-1')).toHaveLength(0);
 
-    const secondAttempt = await deleteSavedSearch(created.id);
+    const secondAttempt = await deleteSavedSearch(created.id, 'pid-1');
     expect(secondAttempt.affected).toBe(0);
+  });
+  it('does not let another session owner update or delete a saved search by guessing its ID', async () => {
+    await createProfile('pid-owner');
+    await createProfile('pid-other');
+    const created = await createSavedSearch({ name: 'Private search', data: searchData, pid: 'pid-owner' });
+    expect((await updateSavedSearch(created.id, 'Changed', 'pid-other')).affected).toBe(0);
+    expect((await deleteSavedSearch(created.id, 'pid-other')).affected).toBe(0);
+    expect(await listSavedSearches('pid-owner')).toMatchObject([{ id: created.id, name: 'Private search' }]);
+  });
+
+  it('requires a session identity before updating or deleting a saved search', async () => {
+    await createProfile('pid-owner');
+    const created = await createSavedSearch({ name: 'Private search', data: searchData, pid: 'pid-owner' });
+    await expect(updateSavedSearch(created.id, 'Changed', undefined as unknown as string)).rejects.toThrow(
+      'Missing session identity',
+    );
+    await expect(deleteSavedSearch(created.id, undefined as unknown as string)).rejects.toThrow(
+      'Missing session identity',
+    );
+    expect(await listSavedSearches('pid-owner')).toMatchObject([{ id: created.id, name: 'Private search' }]);
   });
 });
