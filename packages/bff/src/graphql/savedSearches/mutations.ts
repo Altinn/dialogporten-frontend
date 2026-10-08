@@ -14,10 +14,10 @@ export const DeleteSavedSearch = extendType({
       args: {
         id: nonNull(intArg()),
       },
-      resolve: async (_, args) => {
+      resolve: async (_, args, ctx) => {
         const { id } = args;
         try {
-          const result = await deleteSavedSearch(id);
+          const result = await deleteSavedSearch(id, ctx.session.get('pid'));
           return { success: result?.affected && result?.affected > 0, message: 'Saved search deleted successfully' };
         } catch (error) {
           logger.error(error, 'Failed to delete saved search:');
@@ -37,11 +37,11 @@ export const UpdateSavedSearch = extendType({
         id: nonNull(intArg()),
         name: stringArg(),
       },
-      resolve: async (_, args) => {
+      resolve: async (_, args, ctx) => {
         const { id, name } = args;
         try {
-          await updateSavedSearch(id, name);
-          return { success: true, message: 'Saved search updated successfully' };
+          const result = await updateSavedSearch(id, name, ctx.session.get('pid'));
+          return { success: result.affected === 1, message: 'Saved search updated successfully' };
         } catch (error) {
           logger.error(error, 'Failed to updated saved search:');
           return { success: false, message: 'Failed to updated saved search' };
