@@ -1010,7 +1010,73 @@ export const getMockedTransmissions = (dialogId: string) => {
    unauthorized, and so renders disabled and cannot exercise that flow. */
 export const dialogWithPromptAction = '019241f7-8218-7756-be82-promptaction';
 
+export const dialogWithMultipleActions = '019241f7-8218-7756-be82-multiactions';
+
 const getMockedGuiActions = (id: string): DialogByIdFieldsFragment['guiActions'] => {
+  if (id === dialogWithMultipleActions) {
+    return [
+      {
+        id: 'read-guidance',
+        url: 'https://info.altinn.no/om-altinn/',
+        isAuthorized: true,
+        isDeleteDialogAction: false,
+        action: 'read',
+        authorizationAttribute: null,
+        priority: GuiActionPriority.Tertiary,
+        httpMethod: HttpVerb.Get,
+        title: [{ languageCode: 'nb', value: 'Les veiledning' }],
+        prompt: [],
+      },
+      {
+        id: 'request-extension',
+        url: 'https://dialogporten-serviceprovider.net/mutate/extension',
+        isAuthorized: true,
+        isDeleteDialogAction: false,
+        action: 'write',
+        authorizationAttribute: null,
+        priority: GuiActionPriority.Secondary,
+        httpMethod: HttpVerb.Post,
+        title: [{ languageCode: 'nb', value: 'Be om utsettelse' }],
+        prompt: [{ languageCode: 'nb', value: 'Vil du be om utsettelse?' }],
+      },
+      {
+        id: 'open-form',
+        url: 'https://info.altinn.no/skjemaoversikt/',
+        isAuthorized: true,
+        isDeleteDialogAction: false,
+        action: 'submit',
+        authorizationAttribute: null,
+        priority: GuiActionPriority.Primary,
+        httpMethod: HttpVerb.Get,
+        title: [{ languageCode: 'nb', value: 'Gå til skjema' }],
+        prompt: [],
+      },
+      {
+        id: 'delete-dialog',
+        url: 'https://dialogporten-serviceprovider.net/mutate/delete',
+        isAuthorized: true,
+        isDeleteDialogAction: true,
+        action: 'delete',
+        authorizationAttribute: null,
+        priority: GuiActionPriority.Tertiary,
+        httpMethod: HttpVerb.Delete,
+        title: [{ languageCode: 'nb', value: 'Slett dialogen' }],
+        prompt: [],
+      },
+      {
+        id: 'withdraw',
+        url: 'urn:dialogporten:unauthorized',
+        isAuthorized: false,
+        isDeleteDialogAction: false,
+        action: 'withdraw',
+        authorizationAttribute: null,
+        priority: GuiActionPriority.Secondary,
+        httpMethod: HttpVerb.Post,
+        title: [{ languageCode: 'nb', value: 'Trekk tilbake' }],
+        prompt: [],
+      },
+    ];
+  }
   if (id === dialogWithPromptAction) {
     return [
       {
