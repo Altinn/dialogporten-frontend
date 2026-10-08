@@ -4,6 +4,7 @@ import type { Redis } from 'ioredis';
 
 type Callback = Parameters<SessionStore['destroy']>[1];
 type CallbackSession = Parameters<SessionStore['get']>[1];
+type RedisSession = Session & { __redisSessionId?: string };
 
 export const sessionKeyPrefix = 'sess:';
 export const revokedSessionKeyPrefix = 'sess-revoked:';
@@ -14,8 +15,7 @@ const setUnlessRevokedScript = `
 if redis.call('EXISTS', KEYS[2]) == 1 then
   return 0
 end
-redis.call('SET', KEYS[1], ARGV[1], 'EX', ARGV[2])
-return 1
+return redis.call('SET', KEYS[1], ARGV[1], 'EX', ARGV[2], ARGV[3])
 `;
 
 const getTtlSeconds = (session: Session) => {
@@ -35,26 +35,40 @@ export class RevocableRedisStore implements SessionStore {
 
   get(sessionId: string, callback: CallbackSession) {
     settle(
-      this.redis.get(sessionKeyPrefix + sessionId).then((data) => (data ? (JSON.parse(data) as Session) : null)),
+      this.redis.get(sessionKeyPrefix + sessionId).then((data) => {
+        if (!data) return null;
+        // Fastify reconstructs sessions by copying enumerable string keys, including for legacy Redis data.
+        return { ...JSON.parse(data), __redisSessionId: sessionId } as RedisSession;
+      }),
       callback,
     );
   }
 
-  set(sessionId: string, session: Session, callback: Callback) {
+  set(sessionId: string, session: RedisSession, callback: Callback) {
     const ttlSeconds = getTtlSeconds(session);
     if (ttlSeconds <= 0) {
       this.destroy(sessionId, callback);
       return;
     }
+    const isPersisted = session.__redisSessionId === sessionId;
     settle(
-      this.redis.eval(
-        setUnlessRevokedScript,
-        2,
-        sessionKeyPrefix + sessionId,
-        revokedSessionKeyPrefix + sessionId,
-        JSON.stringify(session),
-        ttlSeconds,
-      ),
+      this.redis
+        .eval(
+          setUnlessRevokedScript,
+          2,
+          sessionKeyPrefix + sessionId,
+          revokedSessionKeyPrefix + sessionId,
+          JSON.stringify(session),
+          ttlSeconds,
+          isPersisted ? 'XX' : 'NX',
+        )
+        .then((result) => {
+          if (result === 'OK') {
+            session.__redisSessionId = sessionId;
+          } else if (!isPersisted) {
+            throw new Error('Session could not be created');
+          }
+        }),
       callback,
     );
   }

@@ -59,6 +59,7 @@ pnpm test:playwright -g 'myStory.spec.ts'
 ```bash
 pnpm dev                    # Start with file watching
 pnpm test                   # Unit tests
+pnpm test:integration       # Redis/PostgreSQL regressions; uses Docker or TEST_REDIS_URL / TEST_DATABASE_URL
 pnpm typeorm                # TypeORM CLI
 ```
 
