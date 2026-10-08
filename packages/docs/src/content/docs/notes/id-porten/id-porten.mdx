@@ -34,5 +34,9 @@ This route checks the issuer and revokes all indexed BFF sessions for the provid
 
 Protected API requests return HTTP 401 before running a handler when the access token is missing or expired. `/api/isAuthenticated` can refresh tokens; ordinary GraphQL requests keep the existing separate refresh flow. Redis session expiry is capped by the remaining access/refresh-token lifetime. Redis telemetry records command names only, because Lua arguments contain session credentials.
 
+## Test-session initialization
+
+`/api/init-session` requires `ENABLE_INIT_SESSION_ENDPOINT=true` and is not registered when `ENVIRONMENT=prod`. It accepts only RS256 access tokens whose signature and issuer match the configured provider's JWKS, with a future expiry, an 11-digit `pid`, and the `digdir:dialogporten.noconsent` scope. Unsigned or fabricated payloads are rejected. The response remains `{ cookie, expires }` for performance-test clients; test tokens must come from that trusted issuer and signing key set.
+
 Run `pnpm --filter bff test:integration` for the Redis-backed login, logout, expiry and revocation regressions. The suite uses Docker, or isolated `TEST_REDIS_URL` and `TEST_DATABASE_URL` services.
 

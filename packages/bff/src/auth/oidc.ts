@@ -12,7 +12,8 @@ import fp from 'fastify-plugin';
 import jwt from 'jsonwebtoken';
 import config from '../config.js';
 import redisClient from '../redisClient.js';
-import { destroyIdpSessions, sessionKeyPrefix } from './sessionStore.ts';
+import { createAccessTokenVerifier } from './accessTokenVerifier.ts';
+import { destroyIdpSessions } from './sessionStore.ts';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -161,6 +162,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
   const { client_id, oidc_url, hostname, client_secret } = config;
   const issuerURL = `https://${oidc_url}/.well-known/openid-configuration`;
   const providerConfig = await fetchOpenIDConfig(issuerURL);
+  const verifyAccessToken = createAccessTokenVerifier(providerConfig);
 
   const handleFrontChannelLogout = async (request: FastifyRequest, reply: FastifyReply) => {
     const { iss, sid } = request.query as { iss?: string; sid?: string };
@@ -182,49 +184,32 @@ const plugin: FastifyPluginAsync = async (fastify) => {
     }
   };
 
-  /* * Initializes the session with JWT token and (optional) time to live in seconds */
   const handleInitSession = async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const { token } = request.body as { token: string };
-
-      if (!token) {
-        return reply.status(400).send({ error: 'Token is required' });
-      }
-
-      const now = new Date();
-      const decoded = JSON.parse(Buffer.from(token.split('.')[1], 'base64url').toString());
-      const pid = decoded.pid;
-      const exp = decoded.exp;
-      const expiresIn = new Date(exp * 1000).toISOString();
-      const expiresInSeconds = exp - Math.floor(now.getTime() / 1000);
-
-      const session = {
-        token: {
-          access_token: token,
-          access_token_expires_at: expiresIn,
-          tokenUpdatedAt: now.toISOString(),
-        },
-        pid,
-        locale: 'en',
-      };
-
-      const base64PaddingRE = /=/gu;
-      const sessionId = generateSessionId();
-      const signature = crypto
-        .createHmac('sha256', config.secret)
-        .update(sessionId)
-        .digest('base64')
-        .replace(base64PaddingRE, '');
-
-      const cookie = `arbeidsflate=${sessionId}.${signature}`;
-      const key = `${sessionKeyPrefix}${sessionId}`;
-      await redisClient.set(key, JSON.stringify(session), 'EX', expiresInSeconds);
-
-      reply.status(200).send({ cookie, expires: expiresIn });
-    } catch (error) {
-      logger.error(error, 'Error initializing session:');
-      reply.status(500).send({ error: 'Failed to initialize session' });
+    const { token } = (request.body ?? {}) as { token?: unknown };
+    if (typeof token !== 'string' || !token) {
+      return reply.status(400).send({ error: 'Token is required' });
     }
+
+    let claims: Awaited<ReturnType<typeof verifyAccessToken>>;
+    try {
+      claims = await verifyAccessToken(token);
+    } catch {
+      return reply.status(401).send({ error: 'Invalid token' });
+    }
+
+    const expiresIn = new Date(claims.exp! * 1000).toISOString();
+    const previousSession = request.session;
+    await previousSession.destroy();
+    await previousSession.regenerate();
+    request.session.set('token', {
+      access_token: token,
+      access_token_expires_at: expiresIn,
+      tokenUpdatedAt: new Date().toISOString(),
+    } as SessionStorageToken);
+    request.session.set('pid', claims.pid);
+    request.session.set('locale', 'en');
+    await request.session.save();
+    return reply.status(200).send({ cookie: `arbeidsflate=${request.session.encryptedSessionId}`, expires: expiresIn });
   };
 
   const handleAuthRequest = async (request: FastifyRequest, reply: FastifyReply) => {
@@ -391,7 +376,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
   fastify.get('/api/logout', async (request, reply) => handleLogout(request, reply, providerConfig));
   fastify.get('/api/frontchannel-logout', handleFrontChannelLogout);
 
-  if (config.enableInitSessionEndpoint) {
+  if (config.enableInitSessionEndpoint && config.environment !== 'prod') {
     fastify.post('/api/init-session', handleInitSession);
   }
 };
