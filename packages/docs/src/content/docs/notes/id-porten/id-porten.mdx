@@ -3,7 +3,7 @@ title: "ID Porten"
 ---
 ## Login and session management
 
-Our app needs to connect to id-porten
+The BFF uses the configured OIDC provider for login and keeps tokens in Redis. The browser receives a signed, opaque session ID in a Secure, HttpOnly, SameSite=Lax cookie. Successful login rotates the session ID and removes the previous session and its login challenge state.
 
 ```mermaid
 sequenceDiagram
@@ -16,8 +16,8 @@ sequenceDiagram
     BFF->>IDPorten: OpenID Connect
     IDPorten-->>BFF: Access / ID / Refresh Tokens
     IDPorten->>BFF: Cache
-    BFF-->>FrontEnd: Encrypted Cookie
-    FrontEnd->>BFF: Api Call (Encrypted Cookie)
+    BFF-->>FrontEnd: Signed Session Cookie
+    FrontEnd->>BFF: Api Call (Signed Session Cookie)
     BFF->>ExternalAPI: Forwards Api Call with Access Token
     ExternalAPI-->>BFF: API Response
     BFF-->>FrontEnd: API Response
@@ -30,5 +30,9 @@ sequenceDiagram
 Logout is done by calling the logout endpoint on id-porten with id token as hint, and a successful logout will redirect to the logged out route on our app.
 
 Our app also supports a route for front-channel logout, which all apps within the circle-of-trust are required to have.
-This route destroys the session, provided current session id from id-porten.
+This route destroys the session, provided current session id from id-porten. Local logout also destroys sessions without an ID token and clears the browser cookie.
+
+Protected API requests return HTTP 401 before running a handler when the access token is missing or expired. `/api/isAuthenticated` can refresh tokens; ordinary GraphQL requests keep the existing separate refresh flow. Redis session expiry is capped by the remaining access/refresh-token lifetime. Redis telemetry records command names only, because Lua arguments contain session credentials.
+
+Run `pnpm --filter bff test:integration` for the Redis-backed login, logout, expiry and revocation regressions. The suite uses Docker, or isolated `TEST_REDIS_URL` and `TEST_DATABASE_URL` services.
 
