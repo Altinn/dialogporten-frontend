@@ -9,10 +9,10 @@ import cors from '@fastify/cors';
 import formBody from '@fastify/formbody';
 import type { FastifySessionOptions } from '@fastify/session';
 import session from '@fastify/session';
-import RedisStore from 'connect-redis';
 import Fastify, { type FastifyError } from 'fastify';
 import fastifyGraphiql from 'fastify-graphiql';
 import { oidc, userApi, verifyToken } from './auth/index.ts';
+import { RevocableRedisStore } from './auth/sessionStore.ts';
 import healthChecks from './azure/HealthChecks.ts';
 import healthProbes from './azure/HealthProbes.ts';
 import config from './config.ts';
@@ -69,9 +69,7 @@ const startServer = async (): Promise<void> => {
   };
 
   if (redisConnectionString) {
-    const store = new RedisStore({
-      client: redisClient,
-    });
+    const store = new RevocableRedisStore(redisClient);
 
     logger.info('Setting up fastify-session with a Redis store');
     server.register(session, { ...cookieSessionConfig, store });
