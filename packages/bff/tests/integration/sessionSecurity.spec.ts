@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { logger } from '@altinn/dialogporten-node-logger';
 import cookie from '@fastify/cookie';
 import session from '@fastify/session';
@@ -5,6 +6,7 @@ import { RedisContainer, type StartedRedisContainer } from '@testcontainers/redi
 import axios from 'axios';
 import Fastify, { type FastifyInstance } from 'fastify';
 import { Redis } from 'ioredis';
+import jwt from 'jsonwebtoken';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import oidc from '../../src/auth/oidc.ts';
 import { RevocableRedisStore, sessionKeyPrefix } from '../../src/auth/sessionStore.ts';
@@ -41,6 +43,7 @@ const provider = {
   token_endpoint: 'https://idp.example/token',
   end_session_endpoint: 'https://idp.example/logout',
 };
+let providerSessionId = randomUUID();
 let container: StartedRedisContainer | undefined;
 let redis: Redis;
 let server: FastifyInstance;
@@ -62,6 +65,39 @@ const seedSession = async (token: unknown) => {
   const response = await server.inject({ method: 'POST', url: '/seed', payload: { token } });
   return { cookies: cookiesFrom(response), sessionId: response.json<{ sessionId: string }>().sessionId };
 };
+const beginLogin = async () => {
+  const response = await server.inject({ url: '/api/login' });
+  const url = new URL(response.headers.location!);
+  return {
+    cookies: cookiesFrom(response),
+    state: url.searchParams.get('state')!,
+    nonce: url.searchParams.get('nonce')!,
+  };
+};
+const tokenResponse = (nonce: string, overrides: Record<string, unknown> = {}) => ({
+  data: {
+    access_token: 'access-token',
+    refresh_token: 'refresh-token',
+    expires_in: 300,
+    refresh_token_expires_in: 3600,
+    scope: 'openid',
+    token_type: 'Bearer',
+    id_token: jwt.sign(
+      {
+        pid: 'test-pid',
+        sub: 'test-sub',
+        nonce,
+        sid: providerSessionId,
+        iss: provider.issuer,
+        aud: 'test-client',
+        exp: Math.floor(Date.now() / 1000) + 300,
+        ...overrides,
+      },
+      'test-key',
+    ),
+  },
+});
+
 beforeAll(async () => {
   let url = process.env.TEST_REDIS_URL;
   if (!url) {
@@ -90,10 +126,18 @@ beforeAll(async () => {
     return { sessionId: request.session.sessionId };
   });
   server.get('/protected', { preHandler: server.verifyToken(false) }, protectedHandler);
+  server.get('/session', async (request) => ({
+    pid: request.session.get('pid') ?? null,
+    sessionId: request.session.sessionId,
+    state: request.session.get('state') ?? null,
+    nonce: request.session.get('nonce') ?? null,
+    codeVerifier: request.session.get('codeVerifier') ?? null,
+  }));
 });
 
 beforeEach(() => {
   vi.clearAllMocks();
+  providerSessionId = randomUUID();
 });
 afterAll(async () => {
   await server?.close();
@@ -158,6 +202,54 @@ describe('BFF session security', () => {
     expect((await server.inject({ url: '/protected', cookies })).statusCode).toBe(200);
   });
 
+  it('destroys an access-token-only session on logout and clears the cookie', async () => {
+    const { cookies, sessionId } = await seedSession({
+      ...accessToken(),
+      id_token: undefined,
+      refresh_token: undefined,
+    });
+    const response = await server.inject({ url: '/api/logout', cookies });
+    expect(response.statusCode).toBe(302);
+    expect(response.headers.location).toBe('/');
+    expect(response.cookies.find((c) => c.name === 'arbeidsflate')?.value).toBe('');
+    expect(await redis.exists(sessionKeyPrefix + sessionId)).toBe(0);
+    expect((await server.inject({ url: '/session', cookies })).json().pid).toBeNull();
+  });
+
+  it('rotates the session ID after login and discards login challenge state', async () => {
+    const login = await beginLogin();
+    const oldSessionId = (await server.inject({ url: '/session', cookies: login.cookies })).json().sessionId;
+    vi.mocked(axios.post).mockResolvedValueOnce(tokenResponse(login.nonce));
+    const response = await server.inject({ url: `/api/cb?code=code&state=${login.state}`, cookies: login.cookies });
+    expect(response.statusCode).toBe(302);
+    expect(response.headers.location).toBe('/');
+    const authenticated = await server.inject({ url: '/session', cookies: cookiesFrom(response) });
+    expect(authenticated.json()).toMatchObject({ pid: 'test-pid', state: null, nonce: null, codeVerifier: null });
+    expect(authenticated.json().sessionId).not.toBe(oldSessionId);
+    expect(await redis.exists(sessionKeyPrefix + oldSessionId)).toBe(0);
+    expect((await server.inject({ url: '/session', cookies: login.cookies })).json().pid).toBeNull();
+  });
+
+  it.each([
+    { nonce: 'wrong-nonce' },
+    { iss: 'https://other.example' },
+    { aud: 'other-client' },
+    { exp: 1 },
+    { sub: '' },
+    { aud: ['test-client', 'other-client'], azp: 'other-client' },
+  ])('rejects an ID token with invalid claims: %j', async (claims) => {
+    const login = await beginLogin();
+    vi.mocked(axios.post).mockResolvedValueOnce(tokenResponse(login.nonce, claims));
+    const response = await server.inject({ url: `/api/cb?code=code&state=${login.state}`, cookies: login.cookies });
+    expect(response.statusCode).toBe(401);
+    expect((await server.inject({ url: '/session', cookies: login.cookies })).json().pid).toBeNull();
+  });
+
+  it('rejects the wrong callback state before exchanging the code', async () => {
+    const login = await beginLogin();
+    await server.inject({ url: '/api/cb?code=code&state=wrong', cookies: login.cookies });
+    expect(axios.post).not.toHaveBeenCalled();
+  });
   it('revokes the session on refresh failure without logging credentials', async () => {
     const { cookies, sessionId } = await seedSession(accessToken(-1));
     vi.mocked(axios.post).mockRejectedValueOnce({

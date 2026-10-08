@@ -149,14 +149,11 @@ const buildAuthorizationUrl = (config: OpenIDConfig, params: Record<string, stri
 
 export const handleLogout = async (request: FastifyRequest, reply: FastifyReply, providerConfig: ProviderConfig) => {
   const token = request.session.get('token') as SessionStorageToken | undefined;
-
-  if (!token?.id_token) {
-    return reply.code(401).send('Unauthorized: No token found');
-  }
-
-  const logoutUrl = `${providerConfig.end_session_endpoint}?${new URLSearchParams({ id_token_hint: token.id_token })}`;
-
   await request.session.destroy();
+  reply.clearCookie('arbeidsflate', { path: '/' });
+  const logoutUrl = token?.id_token
+    ? `${providerConfig.end_session_endpoint}?${new URLSearchParams({ id_token_hint: token.id_token })}`
+    : '/';
   return reply.redirect(logoutUrl);
 };
 
@@ -260,11 +257,11 @@ const plugin: FastifyPluginAsync = async (fastify) => {
       body.append('client_id', client_id);
       body.append('code_verifier', codeVerifier);
       body.append('code', authorizationCode);
-      body.append('storedNonceTruth', storedNonceTruth);
       body.append('redirect_uri', `${hostname}/api/cb`);
 
       const { data: token } = await axios.post(tokenEndpoint, body, {
         timeout: 30000,
+        maxRedirects: 0,
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
           Authorization: authEncoded,
@@ -273,7 +270,28 @@ const plugin: FastifyPluginAsync = async (fastify) => {
 
       const customToken: IdportenToken = token as unknown as IdportenToken;
 
-      const decodedIDToken = jwt.decode(customToken.id_token) as IdTokenPayload;
+      const decodedIDToken = jwt.decode(customToken.id_token) as (IdTokenPayload & jwt.JwtPayload) | null;
+      const audiences = typeof decodedIDToken?.aud === 'string' ? [decodedIDToken.aud] : decodedIDToken?.aud;
+      // The ID token comes directly from the configured token endpoint over TLS (OIDC Core 3.1.3.7).
+      if (
+        !decodedIDToken ||
+        decodedIDToken.iss !== providerConfig.issuer ||
+        !Array.isArray(audiences) ||
+        !audiences.includes(client_id) ||
+        ((audiences.length > 1 || decodedIDToken.azp !== undefined) && decodedIDToken.azp !== client_id) ||
+        typeof decodedIDToken.exp !== 'number' ||
+        !Number.isFinite(decodedIDToken.exp) ||
+        decodedIDToken.exp * 1000 <= Date.now() ||
+        typeof decodedIDToken.iat !== 'number' ||
+        !Number.isFinite(decodedIDToken.iat) ||
+        (decodedIDToken.pid !== undefined && typeof decodedIDToken.pid !== 'string') ||
+        (decodedIDToken.sid !== undefined && typeof decodedIDToken.sid !== 'string') ||
+        typeof decodedIDToken.sub !== 'string' ||
+        !decodedIDToken.sub ||
+        typeof decodedIDToken.nonce !== 'string'
+      ) {
+        return reply.status(401).send('Invalid ID token');
+      }
       const { locale = 'nb', nonce: receivedNonce, sid: idpSid } = decodedIDToken;
       // use sub as fallback for self-identified users
       const pid = decodedIDToken.pid || decodedIDToken.sub;
@@ -283,8 +301,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
       const accessTokenExpiresAt = new Date(now.getTime() + customToken.expires_in * 1000).toISOString();
 
       if (!nonceIsAMatch) {
-        reply.status(401).send('Nonce mismatch');
-        return;
+        return reply.status(401).send('Nonce mismatch');
       }
 
       const sessionStorageToken: SessionStorageToken = {
@@ -297,6 +314,10 @@ const plugin: FastifyPluginAsync = async (fastify) => {
         tokenUpdatedAt: new Date().toISOString(),
       };
 
+      // Fastify's regenerate creates a new session but does not delete the old one.
+      const previousSession = request.session;
+      await previousSession.destroy();
+      await previousSession.regenerate();
       request.session.set('token', sessionStorageToken);
       request.session.set('pid', pid);
       request.session.set('locale', locale);
@@ -314,7 +335,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
       return reply.code(302).redirect('/');
     } catch (e: unknown) {
       if (axios.isAxiosError(e)) {
-        logger.error({ data: e.response?.data }, 'handleAuthRequest error e.data');
+        logger.error({ status: e.response?.status }, 'Token exchange failed');
       } else {
         logger.error(e, 'handleAuthRequest error');
       }

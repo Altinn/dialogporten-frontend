@@ -65,6 +65,7 @@ const startServer = async (): Promise<void> => {
     cookie: {
       secure: true,
       httpOnly: true,
+      sameSite: 'lax',
     },
   };
 
