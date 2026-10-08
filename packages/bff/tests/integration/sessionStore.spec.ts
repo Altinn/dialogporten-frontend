@@ -197,4 +197,37 @@ describe('session store against a real Redis', () => {
     expect(ttl).toBeGreaterThan(0);
     expect(ttl).toBeLessThanOrEqual(revokedSessionTtlSeconds);
   });
+  it('bounds a token-only session by access-token expiry even after rolling writes', async () => {
+    const sessionId = randomUUID();
+    const session = {
+      cookie: {},
+      token: { access_token_expires_at: new Date(Date.now() + 60_000).toISOString() },
+    } as Session;
+    await saveSession(sessionId, session);
+    await saveSession(sessionId, session);
+    expect(await redis.ttl(sessionKeyPrefix + sessionId)).toBeGreaterThan(0);
+    expect(await redis.ttl(sessionKeyPrefix + sessionId)).toBeLessThanOrEqual(60);
+  });
+
+  it('keeps an expired access token refreshable until the refresh token expires', async () => {
+    const sessionId = randomUUID();
+    await saveSession(sessionId, {
+      cookie: {},
+      token: {
+        access_token_expires_at: new Date(Date.now() - 1000).toISOString(),
+        refresh_token_expires_at: new Date(Date.now() + 60_000).toISOString(),
+      },
+    } as Session);
+    expect(await redis.ttl(sessionKeyPrefix + sessionId)).toBeGreaterThan(0);
+    expect(await redis.ttl(sessionKeyPrefix + sessionId)).toBeLessThanOrEqual(60);
+  });
+
+  it('does not persist expired token credentials', async () => {
+    const sessionId = randomUUID();
+    await saveSession(sessionId, {
+      cookie: {},
+      token: { access_token_expires_at: new Date(0).toISOString() },
+    } as Session);
+    expect(await redis.exists(sessionKeyPrefix + sessionId)).toBe(0);
+  });
 });

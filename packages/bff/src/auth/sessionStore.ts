@@ -20,13 +20,22 @@ return redis.call('SET', KEYS[1], ARGV[1], 'EX', ARGV[2], ARGV[3])
 
 const getTtlSeconds = (session: Session) => {
   const expires = session.cookie.expires;
-  return expires ? Math.ceil((new Date(expires).getTime() - Date.now()) / 1000) : defaultTtlSeconds;
+  const now = Date.now();
+  const cookieTtl = expires ? Math.ceil((new Date(expires).getTime() - now) / 1000) : defaultTtlSeconds;
+  if (!Number.isFinite(cookieTtl)) return 0;
+  if (!session.token) return cookieTtl;
+  const tokenExpiry = Math.max(
+    new Date(session.token.access_token_expires_at).getTime() || 0,
+    new Date(session.token.refresh_token_expires_at).getTime() || 0,
+  );
+  return Math.min(cookieTtl, Math.ceil((tokenExpiry - now) / 1000));
 };
 
 const settle = <T>(promise: Promise<T>, callback: (error: unknown, result?: T) => void) => {
   promise.then(
     (result) => callback(null, result),
-    (error) => callback(error),
+    // Redis command errors can include the full token-bearing command arguments.
+    () => callback(new Error('Redis session operation failed')),
   );
 };
 
@@ -79,7 +88,13 @@ export class RevocableRedisStore implements SessionStore {
         .multi()
         .set(revokedSessionKeyPrefix + sessionId, '1', 'EX', revokedSessionTtlSeconds)
         .del(sessionKeyPrefix + sessionId)
-        .exec(),
+        .exec()
+        .then((results) => {
+          if (!results) throw new Error('Session revocation transaction aborted');
+          for (const [error] of results) {
+            if (error) throw error;
+          }
+        }),
       callback,
     );
   }
