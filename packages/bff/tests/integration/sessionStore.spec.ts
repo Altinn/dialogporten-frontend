@@ -1,9 +1,10 @@
+import { randomUUID } from 'node:crypto';
 import cookie from '@fastify/cookie';
 import session from '@fastify/session';
 import { RedisContainer, type StartedRedisContainer } from '@testcontainers/redis';
-import Fastify, { type FastifyInstance } from 'fastify';
+import Fastify, { type FastifyInstance, type Session } from 'fastify';
 import { Redis } from 'ioredis';
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import {
   RevocableRedisStore,
   revokedSessionKeyPrefix,
@@ -51,6 +52,10 @@ beforeAll(async () => {
     return { ok: true };
   });
   server.get('/whoami', async (request) => ({ pid: request.session.get('pid') ?? null }));
+  server.post('/locale', async (request) => {
+    request.session.set('locale', 'nn');
+    return { ok: true };
+  });
 });
 
 afterAll(async () => {
@@ -62,6 +67,16 @@ afterAll(async () => {
 beforeEach(() => {
   slowRequest = { started: Promise.withResolvers(), release: Promise.withResolvers() };
 });
+
+afterEach(() => {
+  slowRequest.release.resolve();
+});
+
+const destroySession = (sessionId: string) =>
+  new Promise<void>((resolve, reject) => store.destroy(sessionId, (err) => (err ? reject(err) : resolve())));
+
+const saveSession = (sessionId: string, session: Session) =>
+  new Promise<void>((resolve, reject) => store.set(sessionId, session, (err) => (err ? reject(err) : resolve())));
 
 const login = async () => {
   const response = await server.inject({ method: 'POST', url: '/login' });
@@ -91,6 +106,16 @@ describe('session store against a real Redis', () => {
     expect(await redis.ttl(`${sessionKeyPrefix}${sessionId}`)).toBeGreaterThan(0);
   });
 
+  it('persists changes to an existing session', async () => {
+    const { sessionId, cookies } = await login();
+
+    const response = await server.inject({ method: 'POST', url: '/locale', cookies });
+
+    expect(response.statusCode).toBe(200);
+    const storedSession = JSON.parse((await redis.get(`${sessionKeyPrefix}${sessionId}`))!);
+    expect(storedSession).toMatchObject({ pid: 'test-pid', locale: 'nn' });
+  });
+
   it('does not let a request that was in flight during logout bring the session back', async () => {
     const { sessionId, cookies } = await login();
     const finishSlowRequest = await startSlowRequest(cookies);
@@ -107,12 +132,60 @@ describe('session store against a real Redis', () => {
     const { sessionId, cookies } = await login();
     const finishSlowRequest = await startSlowRequest(cookies);
 
-    await new Promise<void>((resolve, reject) => store.destroy(sessionId, (err) => (err ? reject(err) : resolve())));
+    await destroySession(sessionId);
     await finishSlowRequest();
 
     const response = await server.inject({ method: 'GET', url: '/whoami', cookies });
     expect(response.json()).toEqual({ pid: null });
     expect(await redis.exists(`${sessionKeyPrefix}${sessionId}`)).toBe(0);
+  });
+
+  it.each(['logout', 'front-channel logout'])(
+    'keeps a legacy session revoked after the marker expires during %s',
+    async (logoutType) => {
+      const { sessionId, cookies } = await login();
+      await redis.set(
+        `${sessionKeyPrefix}${sessionId}`,
+        JSON.stringify({ cookie: { secure: false, httpOnly: true }, pid: 'test-pid' }),
+        'EX',
+        60,
+      );
+      const finishSlowRequest = await startSlowRequest(cookies);
+
+      if (logoutType === 'logout') {
+        await server.inject({ method: 'GET', url: '/logout', cookies });
+      } else {
+        await destroySession(sessionId);
+      }
+      expect(await redis.expire(`${revokedSessionKeyPrefix}${sessionId}`, 0)).toBe(1);
+      expect(await redis.exists(`${revokedSessionKeyPrefix}${sessionId}`)).toBe(0);
+      await finishSlowRequest();
+
+      const response = await server.inject({ method: 'GET', url: '/whoami', cookies });
+      expect(response.json()).toEqual({ pid: null });
+      expect(await redis.exists(`${sessionKeyPrefix}${sessionId}`)).toBe(0);
+    },
+  );
+
+  it('does not recreate a newly saved session on a later save after revocation expires', async () => {
+    const sessionId = randomUUID();
+    const session = { cookie: {}, pid: 'test-pid' } as Session;
+    await saveSession(sessionId, session);
+    await destroySession(sessionId);
+    await redis.expire(`${revokedSessionKeyPrefix}${sessionId}`, 0);
+
+    await saveSession(sessionId, session);
+
+    expect(await redis.exists(`${sessionKeyPrefix}${sessionId}`)).toBe(0);
+  });
+
+  it('rejects a new session that would overwrite an existing session ID', async () => {
+    const { sessionId } = await login();
+    const original = await redis.get(`${sessionKeyPrefix}${sessionId}`);
+
+    await expect(saveSession(sessionId, { cookie: {}, pid: 'another-pid' } as Session)).rejects.toThrow();
+
+    expect(await redis.get(`${sessionKeyPrefix}${sessionId}`)).toBe(original);
   });
 
   it('expires the revocation marker after a short while', async () => {
