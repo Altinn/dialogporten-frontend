@@ -262,4 +262,67 @@ describe('BFF session security', () => {
     expect(await redis.exists(sessionKeyPrefix + sessionId)).toBe(0);
     expect(JSON.stringify(vi.mocked(logger.error).mock.calls)).not.toContain('secret');
   });
+
+  it('revokes every application session for the same identity-provider session', async () => {
+    const sessions = [];
+    for (let i = 0; i < 2; i++) {
+      const login = await beginLogin();
+      vi.mocked(axios.post).mockResolvedValueOnce(tokenResponse(login.nonce));
+      const response = await server.inject({ url: `/api/cb?code=code&state=${login.state}`, cookies: login.cookies });
+      sessions.push(cookiesFrom(response));
+    }
+    const response = await server.inject({
+      url: `/api/frontchannel-logout?iss=${encodeURIComponent(provider.issuer)}&sid=${providerSessionId}`,
+    });
+    expect(response.statusCode).toBe(200);
+    for (const cookies of sessions) {
+      expect((await server.inject({ url: '/protected', cookies })).statusCode).toBe(401);
+    }
+  });
+
+  it('supports legacy front-channel mappings during rollout', async () => {
+    const { sessionId, cookies } = await seedSession(accessToken());
+    await redis.set('idp-sid:legacy-sid', sessionId, 'EX', 60);
+    expect(
+      (
+        await server.inject({
+          url: `/api/frontchannel-logout?iss=${encodeURIComponent(provider.issuer)}&sid=legacy-sid`,
+        })
+      ).statusCode,
+    ).toBe(200);
+    expect((await server.inject({ url: '/protected', cookies })).statusCode).toBe(401);
+  });
+
+  it('does not revoke sessions for another issuer', async () => {
+    const { sessionId, cookies } = await seedSession(accessToken());
+    await redis.set('idp-sid:protected-sid', sessionId, 'EX', 60);
+    expect((await server.inject({ url: '/api/frontchannel-logout?iss=wrong&sid=protected-sid' })).statusCode).toBe(400);
+    expect((await server.inject({ url: '/protected', cookies })).statusCode).toBe(200);
+  });
+
+  it('cannot establish a session when front-channel logout arrives during the code exchange', async () => {
+    const login = await beginLogin();
+    const started = Promise.withResolvers<void>();
+    const response = Promise.withResolvers<ReturnType<typeof tokenResponse>>();
+    vi.mocked(axios.post).mockImplementationOnce(async () => {
+      started.resolve();
+      return response.promise;
+    });
+    const callback = server.inject().get(`/api/cb?code=code&state=${login.state}`).cookies(login.cookies).end();
+    await started.promise;
+    try {
+      expect(
+        (
+          await server.inject({
+            url: `/api/frontchannel-logout?iss=${encodeURIComponent(provider.issuer)}&sid=${providerSessionId}`,
+          })
+        ).statusCode,
+      ).toBe(200);
+    } finally {
+      response.resolve(tokenResponse(login.nonce));
+    }
+    const completed = await callback;
+    const cookies = cookiesFrom(completed);
+    expect((await server.inject({ url: '/protected', cookies })).statusCode).toBe(401);
+  });
 });

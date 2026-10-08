@@ -6,6 +6,8 @@ import Fastify, { type FastifyInstance, type Session } from 'fastify';
 import { Redis } from 'ioredis';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import {
+  destroyIdpSessions,
+  idpSessionKeyPrefix,
   RevocableRedisStore,
   revokedSessionKeyPrefix,
   revokedSessionTtlSeconds,
@@ -228,6 +230,29 @@ describe('session store against a real Redis', () => {
       cookie: {},
       token: { access_token_expires_at: new Date(0).toISOString() },
     } as Session);
+    expect(await redis.exists(sessionKeyPrefix + sessionId)).toBe(0);
+  });
+
+  it('retains the front-channel index for the longest remaining session and blocks stale writes', async () => {
+    const sid = randomUUID();
+    const longId = randomUUID();
+    const shortId = randomUUID();
+    const long = { cookie: { expires: new Date(Date.now() + 120_000) }, idpSid: sid } as Session;
+    await saveSession(longId, long);
+    await saveSession(shortId, { cookie: { expires: new Date(Date.now() + 30_000) }, idpSid: sid } as Session);
+    expect(await redis.ttl(idpSessionKeyPrefix + sid)).toBeGreaterThan(30);
+    await destroyIdpSessions(redis, sid);
+    await redis.expire(revokedSessionKeyPrefix + longId, 0);
+    await saveSession(longId, long);
+    expect(await redis.exists(sessionKeyPrefix + longId, sessionKeyPrefix + shortId, idpSessionKeyPrefix + sid)).toBe(
+      0,
+    );
+  });
+  it('rejects new sessions for an identity-provider session already logged out', async () => {
+    const sid = randomUUID();
+    await destroyIdpSessions(redis, sid);
+    const sessionId = randomUUID();
+    await expect(saveSession(sessionId, { cookie: {}, idpSid: sid } as Session)).rejects.toThrow();
     expect(await redis.exists(sessionKeyPrefix + sessionId)).toBe(0);
   });
 });

@@ -12,7 +12,7 @@ import fp from 'fastify-plugin';
 import jwt from 'jsonwebtoken';
 import config from '../config.js';
 import redisClient from '../redisClient.js';
-import { sessionKeyPrefix } from './sessionStore.ts';
+import { destroyIdpSessions, sessionKeyPrefix } from './sessionStore.ts';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -169,26 +169,13 @@ const plugin: FastifyPluginAsync = async (fastify) => {
       return reply.status(400).send({ error: 'Invalid issuer' });
     }
 
-    if (!sid) {
+    if (typeof sid !== 'string' || !sid) {
       return reply.status(400).send({ error: 'Missing sid' });
     }
 
     try {
-      const appSessionId = await redisClient.get(`idp-sid:${sid}`);
-
-      if (!appSessionId) {
-        request.log.warn(`No session found for idp sid: ${sid}`);
-        return reply.status(200).type('text/html').send('<!DOCTYPE html><html><body>Logged out</body></html>');
-      }
-
-      await new Promise<void>((resolve, reject) => {
-        request.sessionStore.destroy(appSessionId, (err) => {
-          if (err) return reject(err);
-          resolve();
-        });
-      });
-
-      await redisClient.del(`idp-sid:${sid}`);
+      await destroyIdpSessions(redisClient, sid);
+      return reply.status(200).type('text/html').send('<!DOCTYPE html><html><body>Logged out</body></html>');
     } catch (err) {
       request.log.error({ err }, 'Failed to destroy session via idp sid');
       return reply.status(500).send({ error: 'Failed to destroy session' });
@@ -324,12 +311,6 @@ const plugin: FastifyPluginAsync = async (fastify) => {
 
       if (idpSid) {
         request.session.set('idpSid', idpSid);
-
-        const appSessionId = request.session.sessionId;
-        if (!appSessionId) {
-          throw new Error('Session ID not available');
-        }
-        await redisClient.set(`idp-sid:${idpSid}`, appSessionId, 'EX', 3600 * 8);
       }
 
       return reply.code(302).redirect('/');
