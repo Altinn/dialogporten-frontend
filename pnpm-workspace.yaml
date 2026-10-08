@@ -15,7 +15,7 @@ trustPolicyExclude:
   - semver@6.3.1
 
 catalog:
-  "@graphql-tools/stitch": ^9.4.23
+  "@graphql-tools/stitch": ^10.3.1
   "@playwright/test": ^1.52.0
   "@swc-node/register": ^1.10.10
   "@testing-library/react": ^16.3.0
