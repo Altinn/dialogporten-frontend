@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.179.6](https://github.com/Altinn/dialogporten-frontend/compare/v1.179.5...v1.179.6) (2026-10-08)
+
+
+### Bug Fixes
+
+* **auth:** stop in-flight requests from restoring a session after logout ([#4693](https://github.com/Altinn/dialogporten-frontend/issues/4693)) ([5750661](https://github.com/Altinn/dialogporten-frontend/commit/57506618d819acdabdd6c1f010a255366853831f))
+
 ## [1.179.5](https://github.com/Altinn/dialogporten-frontend/compare/v1.179.4...v1.179.5) (2026-10-07)
 
 
