@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto';
+import { generateKeyPairSync, randomUUID } from 'node:crypto';
 import { logger } from '@altinn/dialogporten-node-logger';
 import cookie from '@fastify/cookie';
 import session from '@fastify/session';
@@ -21,7 +21,7 @@ vi.mock('../../src/config.ts', () => ({
     oidc_url: 'idp.example',
     hostname: 'https://app.example',
     secret: 'test-secret-that-is-at-least-32-characters-long',
-    enableInitSessionEndpoint: false,
+    enableInitSessionEndpoint: true,
     environment: 'test',
   },
 }));
@@ -43,6 +43,23 @@ const provider = {
   token_endpoint: 'https://idp.example/token',
   end_session_endpoint: 'https://idp.example/logout',
 };
+const signingKeys = generateKeyPairSync('rsa', { modulusLength: 2048 });
+const jwk = { ...signingKeys.publicKey.export({ format: 'jwk' }), kid: 'test-key', use: 'sig', alg: 'RS256' };
+const signedAccessToken = (overrides: Record<string, unknown> = {}) =>
+  jwt.sign(
+    JSON.parse(
+      JSON.stringify({
+        iss: provider.issuer,
+        pid: '12345678901',
+        scope: 'digdir:dialogporten.noconsent',
+        exp: Math.floor(Date.now() / 1000) + 300,
+        ...overrides,
+      }),
+    ),
+    signingKeys.privateKey,
+    { algorithm: 'RS256', keyid: 'test-key' },
+  );
+
 let providerSessionId = randomUUID();
 let container: StartedRedisContainer | undefined;
 let redis: Redis;
@@ -105,7 +122,9 @@ beforeAll(async () => {
     url = container.getConnectionUrl();
   }
   redis = new Redis(url);
-  vi.mocked(axios.get).mockResolvedValue({ data: provider });
+  vi.mocked(axios.get).mockImplementation(async (url) => ({
+    data: url === provider.jwks_uri ? { keys: [jwk] } : provider,
+  }));
   server = Fastify();
   await server.register(cookie);
   await server.register(session, {
@@ -300,6 +319,53 @@ describe('BFF session security', () => {
     expect((await server.inject({ url: '/protected', cookies })).statusCode).toBe(200);
   });
 
+  it('initializes a session only from a verified access token and preserves the cookie response contract', async () => {
+    const response = await server.inject({
+      method: 'POST',
+      url: '/api/init-session',
+      payload: { token: signedAccessToken() },
+    });
+    expect(response.statusCode).toBe(200);
+    const cookies = { arbeidsflate: response.json().cookie.slice('arbeidsflate='.length) };
+    expect((await server.inject({ url: '/protected', cookies })).statusCode).toBe(200);
+    expect((await server.inject({ url: '/session', cookies })).json().pid).toBe('12345678901');
+  });
+
+  it.each([
+    { iss: 'https://attacker.example' },
+    { exp: 1 },
+    { exp: undefined },
+    { pid: '' },
+    { scope: 'unrelated:scope' },
+  ])('rejects invalid test-session token claims: %j', async (claims) => {
+    const response = await server.inject({
+      method: 'POST',
+      url: '/api/init-session',
+      payload: { token: signedAccessToken(claims) },
+    });
+    expect(response.statusCode).toBe(401);
+    expect(response.json().cookie).toBeUndefined();
+  });
+
+  it('rejects an access token signed by an attacker', async () => {
+    const token = jwt.sign({ pid: '12345678901', exp: Math.floor(Date.now() / 1000) + 3600 }, 'attacker-key');
+    expect((await server.inject({ method: 'POST', url: '/api/init-session', payload: { token } })).statusCode).toBe(
+      401,
+    );
+  });
+
+  it('does not register the test-session endpoint in production', async () => {
+    config.environment = 'prod';
+    const production = Fastify();
+    try {
+      await production.register(oidc);
+      await production.ready();
+      expect(production.hasRoute({ method: 'POST', url: '/api/init-session' })).toBe(false);
+    } finally {
+      config.environment = 'test';
+      await production.close();
+    }
+  });
   it('cannot establish a session when front-channel logout arrives during the code exchange', async () => {
     const login = await beginLogin();
     const started = Promise.withResolvers<void>();
