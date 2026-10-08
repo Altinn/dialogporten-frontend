@@ -12,7 +12,8 @@ import fp from 'fastify-plugin';
 import jwt from 'jsonwebtoken';
 import config from '../config.js';
 import redisClient from '../redisClient.js';
-import { sessionKeyPrefix } from './sessionStore.ts';
+import { createAccessTokenVerifier } from './accessTokenVerifier.ts';
+import { destroyIdpSessions } from './sessionStore.ts';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -149,14 +150,11 @@ const buildAuthorizationUrl = (config: OpenIDConfig, params: Record<string, stri
 
 export const handleLogout = async (request: FastifyRequest, reply: FastifyReply, providerConfig: ProviderConfig) => {
   const token = request.session.get('token') as SessionStorageToken | undefined;
-
-  if (!token?.id_token) {
-    return reply.code(401).send('Unauthorized: No token found');
-  }
-
-  const logoutUrl = `${providerConfig.end_session_endpoint}?${new URLSearchParams({ id_token_hint: token.id_token })}`;
-
   await request.session.destroy();
+  reply.clearCookie('arbeidsflate', { path: '/' });
+  const logoutUrl = token?.id_token
+    ? `${providerConfig.end_session_endpoint}?${new URLSearchParams({ id_token_hint: token.id_token })}`
+    : '/';
   return reply.redirect(logoutUrl);
 };
 
@@ -164,6 +162,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
   const { client_id, oidc_url, hostname, client_secret } = config;
   const issuerURL = `https://${oidc_url}/.well-known/openid-configuration`;
   const providerConfig = await fetchOpenIDConfig(issuerURL);
+  const verifyAccessToken = createAccessTokenVerifier(providerConfig);
 
   const handleFrontChannelLogout = async (request: FastifyRequest, reply: FastifyReply) => {
     const { iss, sid } = request.query as { iss?: string; sid?: string };
@@ -172,75 +171,45 @@ const plugin: FastifyPluginAsync = async (fastify) => {
       return reply.status(400).send({ error: 'Invalid issuer' });
     }
 
-    if (!sid) {
+    if (typeof sid !== 'string' || !sid) {
       return reply.status(400).send({ error: 'Missing sid' });
     }
 
     try {
-      const appSessionId = await redisClient.get(`idp-sid:${sid}`);
-
-      if (!appSessionId) {
-        request.log.warn(`No session found for idp sid: ${sid}`);
-        return reply.status(200).type('text/html').send('<!DOCTYPE html><html><body>Logged out</body></html>');
-      }
-
-      await new Promise<void>((resolve, reject) => {
-        request.sessionStore.destroy(appSessionId, (err) => {
-          if (err) return reject(err);
-          resolve();
-        });
-      });
-
-      await redisClient.del(`idp-sid:${sid}`);
+      await destroyIdpSessions(redisClient, sid);
+      return reply.status(200).type('text/html').send('<!DOCTYPE html><html><body>Logged out</body></html>');
     } catch (err) {
       request.log.error({ err }, 'Failed to destroy session via idp sid');
       return reply.status(500).send({ error: 'Failed to destroy session' });
     }
   };
 
-  /* * Initializes the session with JWT token and (optional) time to live in seconds */
   const handleInitSession = async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const { token } = request.body as { token: string };
-
-      if (!token) {
-        return reply.status(400).send({ error: 'Token is required' });
-      }
-
-      const now = new Date();
-      const decoded = JSON.parse(Buffer.from(token.split('.')[1], 'base64url').toString());
-      const pid = decoded.pid;
-      const exp = decoded.exp;
-      const expiresIn = new Date(exp * 1000).toISOString();
-      const expiresInSeconds = exp - Math.floor(now.getTime() / 1000);
-
-      const session = {
-        token: {
-          access_token: token,
-          access_token_expires_at: expiresIn,
-          tokenUpdatedAt: now.toISOString(),
-        },
-        pid,
-        locale: 'en',
-      };
-
-      const base64PaddingRE = /=/gu;
-      const sessionId = generateSessionId();
-      const signature = crypto
-        .createHmac('sha256', config.secret)
-        .update(sessionId)
-        .digest('base64')
-        .replace(base64PaddingRE, '');
-
-      const cookie = `arbeidsflate=${sessionId}.${signature}`;
-      const key = `${sessionKeyPrefix}${sessionId}`;
-      await redisClient.set(key, JSON.stringify(session), 'EX', expiresInSeconds);
-
-      reply.status(200).send({ cookie, expires: expiresIn });
-    } catch (error) {
-      logger.error(error, 'Error initializing session:');
-      reply.status(500).send({ error: 'Failed to initialize session' });
+    const { token } = (request.body ?? {}) as { token?: unknown };
+    if (typeof token !== 'string' || !token) {
+      return reply.status(400).send({ error: 'Token is required' });
     }
+
+    let claims: Awaited<ReturnType<typeof verifyAccessToken>>;
+    try {
+      claims = await verifyAccessToken(token);
+    } catch {
+      return reply.status(401).send({ error: 'Invalid token' });
+    }
+
+    const expiresIn = new Date(claims.exp! * 1000).toISOString();
+    const previousSession = request.session;
+    await previousSession.destroy();
+    await previousSession.regenerate();
+    request.session.set('token', {
+      access_token: token,
+      access_token_expires_at: expiresIn,
+      tokenUpdatedAt: new Date().toISOString(),
+    } as SessionStorageToken);
+    request.session.set('pid', claims.pid);
+    request.session.set('locale', 'en');
+    await request.session.save();
+    return reply.status(200).send({ cookie: `arbeidsflate=${request.session.encryptedSessionId}`, expires: expiresIn });
   };
 
   const handleAuthRequest = async (request: FastifyRequest, reply: FastifyReply) => {
@@ -260,11 +229,11 @@ const plugin: FastifyPluginAsync = async (fastify) => {
       body.append('client_id', client_id);
       body.append('code_verifier', codeVerifier);
       body.append('code', authorizationCode);
-      body.append('storedNonceTruth', storedNonceTruth);
       body.append('redirect_uri', `${hostname}/api/cb`);
 
       const { data: token } = await axios.post(tokenEndpoint, body, {
         timeout: 30000,
+        maxRedirects: 0,
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
           Authorization: authEncoded,
@@ -273,7 +242,28 @@ const plugin: FastifyPluginAsync = async (fastify) => {
 
       const customToken: IdportenToken = token as unknown as IdportenToken;
 
-      const decodedIDToken = jwt.decode(customToken.id_token) as IdTokenPayload;
+      const decodedIDToken = jwt.decode(customToken.id_token) as (IdTokenPayload & jwt.JwtPayload) | null;
+      const audiences = typeof decodedIDToken?.aud === 'string' ? [decodedIDToken.aud] : decodedIDToken?.aud;
+      // The ID token comes directly from the configured token endpoint over TLS (OIDC Core 3.1.3.7).
+      if (
+        !decodedIDToken ||
+        decodedIDToken.iss !== providerConfig.issuer ||
+        !Array.isArray(audiences) ||
+        !audiences.includes(client_id) ||
+        ((audiences.length > 1 || decodedIDToken.azp !== undefined) && decodedIDToken.azp !== client_id) ||
+        typeof decodedIDToken.exp !== 'number' ||
+        !Number.isFinite(decodedIDToken.exp) ||
+        decodedIDToken.exp * 1000 <= Date.now() ||
+        typeof decodedIDToken.iat !== 'number' ||
+        !Number.isFinite(decodedIDToken.iat) ||
+        (decodedIDToken.pid !== undefined && typeof decodedIDToken.pid !== 'string') ||
+        (decodedIDToken.sid !== undefined && typeof decodedIDToken.sid !== 'string') ||
+        typeof decodedIDToken.sub !== 'string' ||
+        !decodedIDToken.sub ||
+        typeof decodedIDToken.nonce !== 'string'
+      ) {
+        return reply.status(401).send('Invalid ID token');
+      }
       const { locale = 'nb', nonce: receivedNonce, sid: idpSid } = decodedIDToken;
       // use sub as fallback for self-identified users
       const pid = decodedIDToken.pid || decodedIDToken.sub;
@@ -283,8 +273,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
       const accessTokenExpiresAt = new Date(now.getTime() + customToken.expires_in * 1000).toISOString();
 
       if (!nonceIsAMatch) {
-        reply.status(401).send('Nonce mismatch');
-        return;
+        return reply.status(401).send('Nonce mismatch');
       }
 
       const sessionStorageToken: SessionStorageToken = {
@@ -297,24 +286,22 @@ const plugin: FastifyPluginAsync = async (fastify) => {
         tokenUpdatedAt: new Date().toISOString(),
       };
 
+      // Fastify's regenerate creates a new session but does not delete the old one.
+      const previousSession = request.session;
+      await previousSession.destroy();
+      await previousSession.regenerate();
       request.session.set('token', sessionStorageToken);
       request.session.set('pid', pid);
       request.session.set('locale', locale);
 
       if (idpSid) {
         request.session.set('idpSid', idpSid);
-
-        const appSessionId = request.session.sessionId;
-        if (!appSessionId) {
-          throw new Error('Session ID not available');
-        }
-        await redisClient.set(`idp-sid:${idpSid}`, appSessionId, 'EX', 3600 * 8);
       }
 
       return reply.code(302).redirect('/');
     } catch (e: unknown) {
       if (axios.isAxiosError(e)) {
-        logger.error({ data: e.response?.data }, 'handleAuthRequest error e.data');
+        logger.error({ status: e.response?.status }, 'Token exchange failed');
       } else {
         logger.error(e, 'handleAuthRequest error');
       }
@@ -386,12 +373,10 @@ const plugin: FastifyPluginAsync = async (fastify) => {
     }
   });
 
-  fastify.get('/api/logout', { preHandler: fastify.verifyToken(false) }, async (request, reply) =>
-    handleLogout(request, reply, providerConfig),
-  );
+  fastify.get('/api/logout', async (request, reply) => handleLogout(request, reply, providerConfig));
   fastify.get('/api/frontchannel-logout', handleFrontChannelLogout);
 
-  if (config.enableInitSessionEndpoint) {
+  if (config.enableInitSessionEndpoint && config.environment !== 'prod') {
     fastify.post('/api/init-session', handleInitSession);
   }
 };

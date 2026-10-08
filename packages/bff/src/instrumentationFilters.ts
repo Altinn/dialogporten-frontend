@@ -6,6 +6,9 @@ const graphqlSpansExcludedFromExport = new Set([
   'graphql.validateSchema',
 ]);
 
+// EVAL arguments contain the serialized session, including bearer and refresh tokens.
+export const serializeRedisCommand = (command: string, _args: unknown[]): string => command;
+
 export const filterGraphQLSpans = (spanName: string): boolean => {
   return graphqlSpansExcludedFromExport.has(spanName);
 };

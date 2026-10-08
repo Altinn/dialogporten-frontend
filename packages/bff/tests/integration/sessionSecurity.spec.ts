@@ -1,0 +1,377 @@
+import { generateKeyPairSync, randomUUID } from 'node:crypto';
+import { logger } from '@altinn/dialogporten-node-logger';
+import cookie from '@fastify/cookie';
+import session from '@fastify/session';
+import { RedisContainer, type StartedRedisContainer } from '@testcontainers/redis';
+import axios from 'axios';
+import Fastify, { type FastifyInstance } from 'fastify';
+import { Redis } from 'ioredis';
+import jwt from 'jsonwebtoken';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import oidc from '../../src/auth/oidc.ts';
+import { RevocableRedisStore, sessionKeyPrefix } from '../../src/auth/sessionStore.ts';
+import userApi from '../../src/auth/userApi.ts';
+import verifyToken from '../../src/auth/verifyToken.ts';
+import config from '../../src/config.ts';
+
+vi.mock('../../src/config.ts', () => ({
+  default: {
+    client_id: 'test-client',
+    client_secret: 'client-secret',
+    oidc_url: 'idp.example',
+    hostname: 'https://app.example',
+    secret: 'test-secret-that-is-at-least-32-characters-long',
+    enableInitSessionEndpoint: true,
+    environment: 'test',
+  },
+}));
+vi.mock('../../src/redisClient.ts', () => ({
+  default: {
+    eval: (...args: Parameters<Redis['eval']>) => redis.eval(...args),
+    get: (...args: Parameters<Redis['get']>) => redis.get(...args),
+    set: (...args: Parameters<Redis['set']>) => redis.set(...args),
+    del: (...args: Parameters<Redis['del']>) => redis.del(...args),
+  },
+}));
+vi.mock('@altinn/dialogporten-node-logger', () => ({ logger: { error: vi.fn(), warn: vi.fn() } }));
+vi.mock('axios', () => ({ default: { get: vi.fn(), post: vi.fn(), isAxiosError: vi.fn(() => false) } }));
+
+const provider = {
+  issuer: 'https://idp.example',
+  jwks_uri: 'https://idp.example/jwks',
+  authorization_endpoint: 'https://idp.example/authorize',
+  token_endpoint: 'https://idp.example/token',
+  end_session_endpoint: 'https://idp.example/logout',
+};
+const signingKeys = generateKeyPairSync('rsa', { modulusLength: 2048 });
+const jwk = { ...signingKeys.publicKey.export({ format: 'jwk' }), kid: 'test-key', use: 'sig', alg: 'RS256' };
+const signedAccessToken = (overrides: Record<string, unknown> = {}) =>
+  jwt.sign(
+    JSON.parse(
+      JSON.stringify({
+        iss: provider.issuer,
+        pid: '12345678901',
+        scope: 'digdir:dialogporten.noconsent',
+        exp: Math.floor(Date.now() / 1000) + 300,
+        ...overrides,
+      }),
+    ),
+    signingKeys.privateKey,
+    { algorithm: 'RS256', keyid: 'test-key' },
+  );
+
+let providerSessionId = randomUUID();
+let container: StartedRedisContainer | undefined;
+let redis: Redis;
+let server: FastifyInstance;
+const protectedHandler = vi.fn(async () => ({ privateData: true }));
+
+const accessToken = (offset = 300_000) => ({
+  access_token: 'access-token',
+  access_token_expires_at: new Date(Date.now() + offset).toISOString(),
+  refresh_token: 'refresh-token',
+  refresh_token_expires_at: new Date(Date.now() + 3600_000).toISOString(),
+  id_token: 'id-token',
+  scope: 'openid',
+  tokenUpdatedAt: new Date().toISOString(),
+});
+const cookiesFrom = (response: Awaited<ReturnType<FastifyInstance['inject']>>) => ({
+  arbeidsflate: response.cookies.find((c) => c.name === 'arbeidsflate')!.value,
+});
+const seedSession = async (token: unknown) => {
+  const response = await server.inject({ method: 'POST', url: '/seed', payload: { token } });
+  return { cookies: cookiesFrom(response), sessionId: response.json<{ sessionId: string }>().sessionId };
+};
+const beginLogin = async () => {
+  const response = await server.inject({ url: '/api/login' });
+  const url = new URL(response.headers.location!);
+  return {
+    cookies: cookiesFrom(response),
+    state: url.searchParams.get('state')!,
+    nonce: url.searchParams.get('nonce')!,
+  };
+};
+const tokenResponse = (nonce: string, overrides: Record<string, unknown> = {}) => ({
+  data: {
+    access_token: 'access-token',
+    refresh_token: 'refresh-token',
+    expires_in: 300,
+    refresh_token_expires_in: 3600,
+    scope: 'openid',
+    token_type: 'Bearer',
+    id_token: jwt.sign(
+      {
+        pid: 'test-pid',
+        sub: 'test-sub',
+        nonce,
+        sid: providerSessionId,
+        iss: provider.issuer,
+        aud: 'test-client',
+        exp: Math.floor(Date.now() / 1000) + 300,
+        ...overrides,
+      },
+      'test-key',
+    ),
+  },
+});
+
+beforeAll(async () => {
+  let url = process.env.TEST_REDIS_URL;
+  if (!url) {
+    container = await new RedisContainer('redis:6.2-alpine').start();
+    url = container.getConnectionUrl();
+  }
+  redis = new Redis(url);
+  vi.mocked(axios.get).mockImplementation(async (url) => ({
+    data: url === provider.jwks_uri ? { keys: [jwk] } : provider,
+  }));
+  server = Fastify();
+  await server.register(cookie);
+  await server.register(session, {
+    secret: config.secret,
+    cookieName: 'arbeidsflate',
+    saveUninitialized: false,
+    rolling: true,
+    cookie: { secure: false, httpOnly: true, sameSite: 'lax' },
+    store: new RevocableRedisStore(redis),
+  });
+  await server.register(verifyToken);
+  await server.register(oidc);
+  await server.register(userApi);
+  server.post('/seed', async (request) => {
+    request.session.set('pid', 'test-pid');
+    const { token } = request.body as { token: never };
+    if (token) request.session.set('token', token);
+    return { sessionId: request.session.sessionId };
+  });
+  server.get('/protected', { preHandler: server.verifyToken(false) }, protectedHandler);
+  server.get('/session', async (request) => ({
+    pid: request.session.get('pid') ?? null,
+    sessionId: request.session.sessionId,
+    state: request.session.get('state') ?? null,
+    nonce: request.session.get('nonce') ?? null,
+    codeVerifier: request.session.get('codeVerifier') ?? null,
+  }));
+});
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  providerSessionId = randomUUID();
+});
+afterAll(async () => {
+  await server?.close();
+  redis?.disconnect();
+  await container?.stop();
+});
+
+describe('BFF session security', () => {
+  it.each([-1, -60_000])('does not execute a protected handler with an expired access token (%s)', async (offset) => {
+    const { cookies } = await seedSession(accessToken(offset));
+    const response = await server.inject({ url: '/protected', cookies });
+    expect(response.statusCode).toBe(401);
+    expect(protectedHandler).not.toHaveBeenCalled();
+  });
+
+  it('rejects a malformed expiry without executing protected code', async () => {
+    const { cookies } = await seedSession({ ...accessToken(), access_token_expires_at: 'invalid' });
+    expect((await server.inject({ url: '/protected', cookies })).statusCode).toBe(401);
+    expect(protectedHandler).not.toHaveBeenCalled();
+  });
+
+  it('accepts a valid access token', async () => {
+    const { cookies } = await seedSession(accessToken());
+    expect((await server.inject({ url: '/protected', cookies })).statusCode).toBe(200);
+    expect(protectedHandler).toHaveBeenCalledOnce();
+  });
+
+  it('returns 401 for an anonymous API request', async () => {
+    expect((await server.inject({ url: '/protected' })).statusCode).toBe(401);
+    expect(protectedHandler).not.toHaveBeenCalled();
+  });
+
+  it('lets the authentication endpoint refresh an expired access token', async () => {
+    const { cookies } = await seedSession(accessToken(-1));
+    vi.mocked(axios.post).mockResolvedValueOnce({
+      data: {
+        access_token: 'new-access-token',
+        refresh_token: 'new-refresh-token',
+        expires_in: 300,
+        refresh_token_expires_in: 3600,
+      },
+    });
+    const response = await server.inject({ url: '/api/isAuthenticated', cookies });
+    expect(response.statusCode).toBe(200);
+    expect((await server.inject({ url: '/protected', cookies })).statusCode).toBe(200);
+  });
+
+  it('destroys an access-token-only session on logout and clears the cookie', async () => {
+    const { cookies, sessionId } = await seedSession({
+      ...accessToken(),
+      id_token: undefined,
+      refresh_token: undefined,
+    });
+    const response = await server.inject({ url: '/api/logout', cookies });
+    expect(response.statusCode).toBe(302);
+    expect(response.headers.location).toBe('/');
+    expect(response.cookies.find((c) => c.name === 'arbeidsflate')?.value).toBe('');
+    expect(await redis.exists(sessionKeyPrefix + sessionId)).toBe(0);
+    expect((await server.inject({ url: '/session', cookies })).json().pid).toBeNull();
+  });
+
+  it('rotates the session ID after login and discards login challenge state', async () => {
+    const login = await beginLogin();
+    const oldSessionId = (await server.inject({ url: '/session', cookies: login.cookies })).json().sessionId;
+    vi.mocked(axios.post).mockResolvedValueOnce(tokenResponse(login.nonce));
+    const response = await server.inject({ url: `/api/cb?code=code&state=${login.state}`, cookies: login.cookies });
+    expect(response.statusCode).toBe(302);
+    expect(response.headers.location).toBe('/');
+    const authenticated = await server.inject({ url: '/session', cookies: cookiesFrom(response) });
+    expect(authenticated.json()).toMatchObject({ pid: 'test-pid', state: null, nonce: null, codeVerifier: null });
+    expect(authenticated.json().sessionId).not.toBe(oldSessionId);
+    expect(await redis.exists(sessionKeyPrefix + oldSessionId)).toBe(0);
+    expect((await server.inject({ url: '/session', cookies: login.cookies })).json().pid).toBeNull();
+  });
+
+  it.each([
+    { nonce: 'wrong-nonce' },
+    { iss: 'https://other.example' },
+    { aud: 'other-client' },
+    { exp: 1 },
+    { sub: '' },
+    { aud: ['test-client', 'other-client'], azp: 'other-client' },
+  ])('rejects an ID token with invalid claims: %j', async (claims) => {
+    const login = await beginLogin();
+    vi.mocked(axios.post).mockResolvedValueOnce(tokenResponse(login.nonce, claims));
+    const response = await server.inject({ url: `/api/cb?code=code&state=${login.state}`, cookies: login.cookies });
+    expect(response.statusCode).toBe(401);
+    expect((await server.inject({ url: '/session', cookies: login.cookies })).json().pid).toBeNull();
+  });
+
+  it('rejects the wrong callback state before exchanging the code', async () => {
+    const login = await beginLogin();
+    await server.inject({ url: '/api/cb?code=code&state=wrong', cookies: login.cookies });
+    expect(axios.post).not.toHaveBeenCalled();
+  });
+  it('revokes the session on refresh failure without logging credentials', async () => {
+    const { cookies, sessionId } = await seedSession(accessToken(-1));
+    vi.mocked(axios.post).mockRejectedValueOnce({
+      config: {
+        headers: { Authorization: 'Basic secret' },
+        data: 'refresh_token=secret',
+      },
+    });
+    expect((await server.inject({ url: '/api/isAuthenticated', cookies })).statusCode).toBe(401);
+    expect(await redis.exists(sessionKeyPrefix + sessionId)).toBe(0);
+    expect(JSON.stringify(vi.mocked(logger.error).mock.calls)).not.toContain('secret');
+  });
+
+  it('revokes every application session for the same identity-provider session', async () => {
+    const sessions = [];
+    for (let i = 0; i < 2; i++) {
+      const login = await beginLogin();
+      vi.mocked(axios.post).mockResolvedValueOnce(tokenResponse(login.nonce));
+      const response = await server.inject({ url: `/api/cb?code=code&state=${login.state}`, cookies: login.cookies });
+      sessions.push(cookiesFrom(response));
+    }
+    const response = await server.inject({
+      url: `/api/frontchannel-logout?iss=${encodeURIComponent(provider.issuer)}&sid=${providerSessionId}`,
+    });
+    expect(response.statusCode).toBe(200);
+    for (const cookies of sessions) {
+      expect((await server.inject({ url: '/protected', cookies })).statusCode).toBe(401);
+    }
+  });
+
+  it('supports legacy front-channel mappings during rollout', async () => {
+    const { sessionId, cookies } = await seedSession(accessToken());
+    await redis.set('idp-sid:legacy-sid', sessionId, 'EX', 60);
+    expect(
+      (
+        await server.inject({
+          url: `/api/frontchannel-logout?iss=${encodeURIComponent(provider.issuer)}&sid=legacy-sid`,
+        })
+      ).statusCode,
+    ).toBe(200);
+    expect((await server.inject({ url: '/protected', cookies })).statusCode).toBe(401);
+  });
+
+  it('does not revoke sessions for another issuer', async () => {
+    const { sessionId, cookies } = await seedSession(accessToken());
+    await redis.set('idp-sid:protected-sid', sessionId, 'EX', 60);
+    expect((await server.inject({ url: '/api/frontchannel-logout?iss=wrong&sid=protected-sid' })).statusCode).toBe(400);
+    expect((await server.inject({ url: '/protected', cookies })).statusCode).toBe(200);
+  });
+
+  it('initializes a session only from a verified access token and preserves the cookie response contract', async () => {
+    const response = await server.inject({
+      method: 'POST',
+      url: '/api/init-session',
+      payload: { token: signedAccessToken() },
+    });
+    expect(response.statusCode).toBe(200);
+    const cookies = { arbeidsflate: response.json().cookie.slice('arbeidsflate='.length) };
+    expect((await server.inject({ url: '/protected', cookies })).statusCode).toBe(200);
+    expect((await server.inject({ url: '/session', cookies })).json().pid).toBe('12345678901');
+  });
+
+  it.each([
+    { iss: 'https://attacker.example' },
+    { exp: 1 },
+    { exp: undefined },
+    { pid: '' },
+    { scope: 'unrelated:scope' },
+  ])('rejects invalid test-session token claims: %j', async (claims) => {
+    const response = await server.inject({
+      method: 'POST',
+      url: '/api/init-session',
+      payload: { token: signedAccessToken(claims) },
+    });
+    expect(response.statusCode).toBe(401);
+    expect(response.json().cookie).toBeUndefined();
+  });
+
+  it('rejects an access token signed by an attacker', async () => {
+    const token = jwt.sign({ pid: '12345678901', exp: Math.floor(Date.now() / 1000) + 3600 }, 'attacker-key');
+    expect((await server.inject({ method: 'POST', url: '/api/init-session', payload: { token } })).statusCode).toBe(
+      401,
+    );
+  });
+
+  it('does not register the test-session endpoint in production', async () => {
+    config.environment = 'prod';
+    const production = Fastify();
+    try {
+      await production.register(oidc);
+      await production.ready();
+      expect(production.hasRoute({ method: 'POST', url: '/api/init-session' })).toBe(false);
+    } finally {
+      config.environment = 'test';
+      await production.close();
+    }
+  });
+  it('cannot establish a session when front-channel logout arrives during the code exchange', async () => {
+    const login = await beginLogin();
+    const started = Promise.withResolvers<void>();
+    const response = Promise.withResolvers<ReturnType<typeof tokenResponse>>();
+    vi.mocked(axios.post).mockImplementationOnce(async () => {
+      started.resolve();
+      return response.promise;
+    });
+    const callback = server.inject().get(`/api/cb?code=code&state=${login.state}`).cookies(login.cookies).end();
+    await started.promise;
+    try {
+      expect(
+        (
+          await server.inject({
+            url: `/api/frontchannel-logout?iss=${encodeURIComponent(provider.issuer)}&sid=${providerSessionId}`,
+          })
+        ).statusCode,
+      ).toBe(200);
+    } finally {
+      response.resolve(tokenResponse(login.nonce));
+    }
+    const completed = await callback;
+    const cookies = cookiesFrom(completed);
+    expect((await server.inject({ url: '/protected', cookies })).statusCode).toBe(401);
+  });
+});
