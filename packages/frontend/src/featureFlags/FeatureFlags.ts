@@ -20,6 +20,7 @@ export const featureFlagDefinitions = [
   { key: 'dialogDetails.enableNotificationLogs', type: 'boolean', default: false },
   { key: 'dialogDetails.enableLabelAssignmentLogs', type: 'boolean', default: false },
   { key: 'dialogDetails.enableActivityLogFilter', type: 'boolean', default: false },
+  { key: 'dialogDetails.enableForwardByEmail', type: 'boolean', default: false },
 ] as const satisfies readonly FeatureFlagDefinition[];
 
 export type FeatureFlagKey = (typeof featureFlagDefinitions)[number]['key'];
