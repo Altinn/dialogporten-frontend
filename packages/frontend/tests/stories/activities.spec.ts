@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { appUrlWithPlaywrightId } from '../';
+import { appURLArchived, appUrlWithPlaywrightId } from '../';
 
 test.describe('Activity history - transmissions and activities', () => {
   test('basic navigation', async ({ page }) => {
@@ -255,6 +255,71 @@ test.describe('Activity history - transmissions and activities', () => {
     await expect(dialog.getByText('Varsel på SMS til +4799887766 ble levert.')).toBeVisible();
     await expect(dialog.getByText('Fantasifull 2024 Søster flyttet meldingen til arkivet.')).toBeVisible();
     await expect(dialog.getByRole('button', { name: 'Tittel', exact: true })).toBeVisible();
+  });
+
+  test('keeps every entry under its own type when an activity and a transmission share an id', async ({ page }) => {
+    await page.goto(`${appURLArchived}&playwrightId=activity-log-shared-ids`);
+    await page.getByRole('link', { name: 'Testdriverens dialogtittel' }).click();
+    await page.getByRole('button', { name: 'Aktivitetslogg' }).first().click();
+
+    const dialog = page.getByRole('dialog');
+    const submitted = dialog.getByText('Lekker Nitrogen sendte inn skjemaet.');
+    const saved = dialog.getByText('Lekker Nitrogen lagret skjemaet.');
+    const binned = dialog.getByText('Lekker Nitrogen flyttet meldingen til papirkurven.');
+    const archived = dialog.getByText('Lekker Nitrogen flyttet meldingen til arkivet.');
+    const submission = dialog.getByRole('button', { name: 'Innsending #1' });
+
+    await expect(submitted).toHaveCount(1);
+    await expect(submission).toBeVisible();
+
+    await dialog.getByRole('button', { name: 'Alle typer' }).click();
+    await expect(dialog.getByRole('menuitemcheckbox', { name: 'Aktiviteter' })).toContainText('3');
+    await expect(dialog.getByRole('menuitemcheckbox', { name: 'Flytting og merking' })).toContainText('2');
+    await expect(dialog.getByRole('menuitemcheckbox', { name: 'Forsendelser' })).toContainText('1');
+
+    await dialog.getByRole('menuitemcheckbox', { name: 'Aktiviteter' }).click();
+    await expect(submitted).toHaveCount(1);
+    await expect(saved).toBeVisible();
+    await expect(binned).toHaveCount(0);
+    await expect(submission).toHaveCount(0);
+
+    await dialog.getByRole('menuitemcheckbox', { name: 'Aktiviteter' }).click();
+    await dialog.getByRole('menuitemcheckbox', { name: 'Flytting og merking' }).click();
+    await expect(dialog.getByRole('button', { name: 'Flytting og merking' })).toBeVisible();
+    await expect(binned).toBeVisible();
+    await expect(archived).toBeVisible();
+    await expect(submitted).toHaveCount(0);
+    await expect(saved).toHaveCount(0);
+    await expect(submission).toHaveCount(0);
+
+    await dialog.getByRole('menuitemcheckbox', { name: 'Flytting og merking' }).click();
+    await dialog.getByRole('menuitemcheckbox', { name: 'Forsendelser' }).click();
+    await expect(submission).toBeVisible();
+    await expect(submitted).toHaveCount(0);
+    await expect(binned).toHaveCount(0);
+  });
+
+  test('searches transmissions by title only, so every match shows what it matched on', async ({ page }) => {
+    await page.goto(`${appURLArchived}&playwrightId=activity-log-transmission-search`);
+    await page.getByRole('link', { name: 'VassenDialog' }).click();
+    await page.getByRole('button', { name: 'Aktivitetslogg' }).first().click();
+
+    const dialog = page.getByRole('dialog');
+    const search = dialog.getByRole('searchbox');
+    const transmissions = dialog.getByRole('button', { name: /^Forsendelse/ });
+
+    await expect(transmissions).toHaveCount(8);
+
+    await search.fill('a');
+    await expect(dialog.getByText(/Skjema opprettet og forhåndsutfylt/)).toBeVisible();
+    await expect(transmissions).toHaveCount(0);
+
+    await search.fill('oppsummering');
+    await expect(dialog.getByText('Ingen treff')).toBeVisible();
+
+    await search.fill('tittel');
+    await expect(transmissions).toHaveCount(8);
+    await expect(dialog.locator('h2 mark')).toHaveCount(8);
   });
 
   test('shows a message when the activity log is empty', async ({ page }) => {

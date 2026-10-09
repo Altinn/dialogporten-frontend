@@ -176,6 +176,66 @@ export const dialogWithoutActivities = '019241f7-8218-7756-be82-noactivities';
 
 export const dialogWithEmptyActivityLog = '019241f7-8218-7756-be82-emptyactivitylog';
 
+export const dialogWithSharedActivityAndTransmissionId = '019d0152-d7f9-7050-bac9-b8b52cdb4db8';
+
+const sharedActivityAndTransmissionId = '019d0153-2419-772a-a90c-dabeb1e10337';
+
+const testDriverActor = {
+  actorType: ActorType.PartyRepresentative,
+  actorId: 'urn:altinn:person:identifier-ephemeral:9587188c95',
+  actorName: 'NITROGEN LEKKER',
+};
+
+export const dialogWithSearchableTransmissions = '019f02f8-22a0-7492-8fe2-74d92d4e5019';
+
+const searchableTransmission = (
+  id: string,
+  type: TransmissionType,
+  { title = 'Forsendelsesstittel', summary = 'Transmisjon oppsummering', withContentReference = true } = {},
+) => ({
+  id,
+  isAuthorized: true,
+  createdAt: '2026-06-26T08:07:24.063953Z',
+  type,
+  sender: { actorType: ActorType.ServiceOwner, actorId: null, actorName: null },
+  relatedTransmissionId: null,
+  content: {
+    title: {
+      value: [
+        { value: 'Transmission title', languageCode: 'en' },
+        { value: title, languageCode: 'nb' },
+      ],
+      mediaType: 'text/plain',
+    },
+    summary: {
+      value: [
+        { value: 'Transmission summary', languageCode: 'en' },
+        { value: summary, languageCode: 'nb' },
+      ],
+      mediaType: 'text/plain',
+    },
+    contentReference: withContentReference ? getMockedFCEContent(id) : null,
+  },
+  attachments: [
+    {
+      id: `${id}-attachment`,
+      displayName: [
+        { value: 'Transmission attachment display name', languageCode: 'en' },
+        { value: 'Visningsnavn for forsendelsesvedlegg', languageCode: 'nb' },
+      ],
+      expiresAt: null,
+      urls: [
+        {
+          id: `${id}-attachment-url`,
+          url: 'https://info.altinn.no/om-altinn/',
+          consumerType: AttachmentUrlConsumer.Gui,
+          mediaType: null,
+        },
+      ],
+    },
+  ],
+});
+
 const serviceOwnerActor = {
   actorType: ActorType.ServiceOwner,
   actorId: 'actor-01',
@@ -197,6 +257,57 @@ const otherPartyActor = {
 export const getMockedActivities = (id: string): DialogByIdFieldsFragment['activities'] => {
   if (id === dialogWithoutActivities || id === dialogWithEmptyActivityLog) {
     return [];
+  }
+  if (id === dialogWithSearchableTransmissions) {
+    return [
+      {
+        id: '019f02f8-22a0-7492-8fef-fc751b0c7ca3',
+        transmissionId: null,
+        performedBy: { actorType: ActorType.PartyRepresentative, actorId: null, actorName: 'somename' },
+        description: [],
+        type: ActivityType.DialogCreated,
+        createdAt: '2023-11-16T13:35:44.226849Z',
+      },
+      {
+        id: '019f02f8-22a0-7492-8ffc-b435813ae8a2',
+        transmissionId: null,
+        performedBy: { actorType: ActorType.ServiceOwner, actorId: null, actorName: null },
+        description: [
+          { value: 'Form created and pre-filled', languageCode: 'en' },
+          { value: 'Skjema opprettet og forhåndsutfylt', languageCode: 'nb' },
+        ],
+        type: ActivityType.Information,
+        createdAt: '2023-11-16T13:35:44.226849Z',
+      },
+    ];
+  }
+  if (id === dialogWithSharedActivityAndTransmissionId) {
+    return [
+      {
+        id: '019d0152-d7fd-7fab-b832-c7a0c7a765a3',
+        transmissionId: null,
+        performedBy: testDriverActor,
+        description: [],
+        type: ActivityType.DialogCreated,
+        createdAt: '2026-03-18T14:21:39.709364Z',
+      },
+      {
+        id: '019d0152-ec81-79d1-8dc7-9b58a4aa878d',
+        transmissionId: null,
+        performedBy: testDriverActor,
+        description: [],
+        type: ActivityType.FormSaved,
+        createdAt: '2026-03-18T14:21:58.175513Z',
+      },
+      {
+        id: sharedActivityAndTransmissionId,
+        transmissionId: null,
+        performedBy: testDriverActor,
+        description: [],
+        type: ActivityType.FormSubmitted,
+        createdAt: '2026-03-18T14:21:59.19374Z',
+      },
+    ];
   }
   if (id === '019241f7-8218-7756-be82-123qwe456rtA') {
     return [
@@ -484,6 +595,20 @@ const labelAssignmentServiceOwner = (name: string, action: string, createdAt: st
 });
 
 export const getMockedLabelAssignmentLogs = (dialogId: string) => {
+  if (dialogId === dialogWithSharedActivityAndTransmissionId) {
+    const filedBy = {
+      actorType: ActorType.PartyRepresentative,
+      actorId: 'urn:altinn:person:identifier-ephemeral:8c64174ef5',
+      actorName: 'NITROGEN LEKKER',
+    };
+    return [
+      labelAssignmentServiceOwner('systemlabel:Sent', 'set', '2026-03-18T14:22:05.085744Z'),
+      { name: 'systemlabel:Bin', action: 'set', createdAt: '2026-03-18T14:22:12.963361Z', performedBy: filedBy },
+      { name: 'systemlabel:Archive', action: 'set', createdAt: '2026-05-29T08:30:59.312424Z', performedBy: filedBy },
+      { name: 'systemlabel:Bin', action: 'remove', createdAt: '2026-05-29T08:30:59.312424Z', performedBy: filedBy },
+    ];
+  }
+
   if (dialogId !== '019241f7-8218-7756-be82-123qwe456rtA') {
     return [];
   }
@@ -508,6 +633,74 @@ export const getMockedLabelAssignmentLogs = (dialogId: string) => {
 
 export const getMockedTransmissions = (dialogId: string) => {
   const dialogWithTransmissions = '019241f7-8218-7756-be82-123qwe456rtA';
+  if (dialogId === dialogWithSearchableTransmissions) {
+    return [
+      searchableTransmission('019f02f8-229a-7591-97c7-2cb62ba4e5e5', TransmissionType.Information),
+      searchableTransmission('019f02f8-229a-7591-97c9-a34ef82fd57e', TransmissionType.Acceptance, {
+        title: 'Forsendelsetittel',
+        summary: 'Forsendelsesoppsummering',
+        withContentReference: false,
+      }),
+      searchableTransmission('019f02f8-229a-7591-97d2-5d91f2799062', TransmissionType.Rejection),
+      searchableTransmission('019f02f8-229a-7591-97d5-05f86903a0a9', TransmissionType.Request),
+      searchableTransmission('019f02f8-229a-7591-97e2-5345c541a716', TransmissionType.Alert),
+      searchableTransmission('019f02f8-229a-7591-97e9-c6bba0dbaaf7', TransmissionType.Decision),
+      searchableTransmission('019f02f8-229a-7591-97f3-8f3b33700560', TransmissionType.Submission),
+      searchableTransmission('019f02f8-229a-7591-97f5-c01862d82bee', TransmissionType.Correction),
+    ];
+  }
+  if (dialogId === dialogWithSharedActivityAndTransmissionId) {
+    return [
+      {
+        id: sharedActivityAndTransmissionId,
+        isAuthorized: true,
+        createdAt: '2026-03-18T14:21:59.19374Z',
+        type: TransmissionType.Submission,
+        sender: testDriverActor,
+        relatedTransmissionId: null,
+        content: {
+          title: {
+            value: [
+              { value: 'Submission #1', languageCode: 'en' },
+              { value: 'Innsending #1', languageCode: 'nb' },
+              { value: 'Innsending #1', languageCode: 'nn' },
+            ],
+            mediaType: 'text/plain',
+          },
+          summary: null,
+          contentReference: null,
+        },
+        attachments: [
+          {
+            id: '019d0153-2419-74e9-a9fb-a03de5669849',
+            displayName: [{ value: 'Testdriver for Arbeidsflate - English variation.pdf', languageCode: 'nb' }],
+            expiresAt: null,
+            urls: [
+              {
+                id: '019d0153-3b1e-7328-b017-40210770a19c',
+                url: 'https://info.altinn.no/om-altinn/',
+                consumerType: AttachmentUrlConsumer.Gui,
+                mediaType: 'application/pdf',
+              },
+            ],
+          },
+          {
+            id: '019d0153-2419-7563-8d94-f91b1679ebc0',
+            displayName: [{ value: 'model', languageCode: 'nb' }],
+            expiresAt: null,
+            urls: [
+              {
+                id: '019d0153-3b1e-7328-b006-a9d66eaf69cd',
+                url: 'https://info.altinn.no/om-altinn/',
+                consumerType: AttachmentUrlConsumer.Api,
+                mediaType: 'application/xml',
+              },
+            ],
+          },
+        ],
+      },
+    ];
+  }
   if (dialogId === dialogWithoutActivities) {
     return [
       {
