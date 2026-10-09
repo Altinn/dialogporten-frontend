@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.181.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.181.0...v1.181.1) (2026-10-09)
+
+
+### Bug Fixes
+
+* **activitylogs:** search transmissions by title only so every match is visible ([#4714](https://github.com/Altinn/dialogporten-frontend/issues/4714)) ([a46e338](https://github.com/Altinn/dialogporten-frontend/commit/a46e33827a0ef61ff7fdfffc39f37ba9b15d1eee))
+
 ## [1.181.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.180.0...v1.181.0) (2026-10-09)
 
 
