@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.181.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.180.0...v1.181.0) (2026-10-09)
+
+
+### Features
+
+* forward correspondence per email ([#4668](https://github.com/Altinn/dialogporten-frontend/issues/4668)) ([891393d](https://github.com/Altinn/dialogporten-frontend/commit/891393d2457b5da353b4d607239e84ba6769cc59))
+
 ## [1.180.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.179.6...v1.180.0) (2026-10-08)
 
 
