@@ -332,7 +332,8 @@ export const DialogDetails = ({
           kind: dialogHistoryItem.type,
           datetime: dialogHistoryItem.date,
           searchText: dialogHistoryItem.items
-            .map((item) => [item.title, item.summary].filter(Boolean).join(' '))
+            .map((item) => item.title)
+            .filter(Boolean)
             .join(' '),
           children: (highlightWords: string[]) => (
             <TransmissionList

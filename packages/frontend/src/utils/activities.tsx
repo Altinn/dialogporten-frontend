@@ -185,7 +185,7 @@ export const getActivityHistory = ({
     senderName,
     serviceOwnerNbName,
   ).map((activity) => ({
-    id: activity.id ?? '',
+    id: `activity-${activity.id}`,
     type: 'activity',
     items: [activity],
     date: activity.datetime!,
@@ -209,7 +209,7 @@ export const getActivityHistory = ({
     }))
     .filter((group) => group.items.length > 0)
     .map((group) => ({
-      id: group.id ?? '',
+      id: `transmission-${group.id}`,
       type: 'transmission' as const,
       date: group.items[0].createdAt ?? '',
       items: group.items,
@@ -219,7 +219,7 @@ export const getActivityHistory = ({
   const apiOnlyTransmissionActivities: ActivityLogEntry[] = transmissions
     .filter((t) => getTransmissionVisibility(t) === 'filter')
     .map((transmission) => ({
-      id: transmission.id,
+      id: `api-only-transmission-${transmission.id}`,
       date: transmission.createdAt,
       type: 'activity' as const,
       items: [
@@ -237,7 +237,7 @@ export const getActivityHistory = ({
   const disabledTransmissionActivities: ActivityLogEntry[] = transmissions
     .filter((t) => getTransmissionVisibility(t) === 'disabled')
     .map((transmission) => ({
-      id: transmission.id,
+      id: `unauthorized-transmission-${transmission.id}`,
       date: transmission.createdAt,
       type: 'activity' as const,
       items: [
@@ -255,7 +255,7 @@ export const getActivityHistory = ({
   const emptyTransmissionActivities: ActivityLogEntry[] = transmissions
     .filter((t) => getTransmissionVisibility(t) === 'empty')
     .map((transmission) => ({
-      id: transmission.id,
+      id: `empty-transmission-${transmission.id}`,
       date: transmission.createdAt,
       type: 'activity' as const,
       items: [
