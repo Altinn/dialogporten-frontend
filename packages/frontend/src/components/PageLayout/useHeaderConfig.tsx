@@ -1,35 +1,34 @@
-import {
-  type FilterState,
-  type GlobalHeaderProps,
-  QueryLabel,
-  type ToolbarSearchProps,
-  useAccountSelector,
-} from '@altinn/altinn-components';
-import type { ChangeEvent } from 'react';
-import { useCallback, useMemo } from 'react';
+import { type GlobalHeaderProps, useAccountSelector } from '@altinn/altinn-components';
+import type { PartyFieldsFragment } from 'bff-types-generated';
+import { useCallback, useDeferredValue, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps, useLocation, useNavigate } from 'react-router';
 import { Analytics } from '../../analytics/analytics.ts';
 import { ANALYTICS_EVENTS } from '../../analytics/analyticsEvents.ts';
-import { useParties } from '../../api/hooks/useParties.ts';
+import { EMPTY_PARTIES, useParties } from '../../api/hooks/useParties.ts';
 import { updateLanguage } from '../../api/queries.ts';
-import { createFiltersURLQuery, getFrontPageLink } from '../../auth/url.ts';
+import { getFrontPageLink } from '../../auth/url.ts';
 import { useErrorLogger } from '../../hooks/useErrorLogger';
-import { FilterCategory } from '../../pages/Inbox/filters.tsx';
-import { FixedGlobalQueryParams, pruneSearchQueryParams } from '../../pages/Inbox/queryParams.ts';
+import { FixedGlobalQueryParams } from '../../pages/Inbox/queryParams.ts';
 import { useProfile } from '../../pages/Profile/useProfile.tsx';
 import { PageRoutes } from '../../pages/routes.ts';
+import type { PartyGraph } from '../../utils/partyGraph.ts';
 import { useGlobalMenu } from './GlobalMenu/useGlobalMenu.ts';
 import { mapPartiesToAuthorizedParties } from './mapPartyToAuthorizedParty';
-import { getSearchLabels, pruneSearchValue } from './Search/getSearchLabels.ts';
-import { useSearchString } from './Search/useSearchString.ts';
 
 interface UseHeaderConfigOutput {
   headerProps: GlobalHeaderProps;
-  inboxSearch: ToolbarSearchProps;
 }
 
-export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutput => {
+const getCurrentAccountParties = (partyGraph: PartyGraph, currentPartyUuid?: string): PartyFieldsFragment[] => {
+  const currentParty = currentPartyUuid ? partyGraph.partyByUuid.get(currentPartyUuid) : undefined;
+  const parentParty = currentParty ? partyGraph.parentByChildUrn.get(currentParty.party) : undefined;
+  return [...new Set([partyGraph.currentEndUser, parentParty, currentParty])].filter(
+    (party): party is PartyFieldsFragment => party !== undefined,
+  );
+};
+
+export const useHeaderConfig = (): UseHeaderConfigOutput => {
   const { currentEndUser, parties, selectedParties, isLoading, currentPartyUuid, setSelectedPartyIds, partyGraph } =
     useParties();
   const { t, i18n } = useTranslation();
@@ -37,7 +36,6 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
   const location = useLocation();
   const navigate = useNavigate();
   const isProfile = location.pathname.includes(PageRoutes.profile);
-  const { searchValue, setSearchValue, onClear } = useSearchString();
 
   const {
     favoritesGroup,
@@ -124,7 +122,13 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
     [updateShowDeletedEntities, logError],
   );
 
-  const partyListDTO = useMemo(() => mapPartiesToAuthorizedParties(parties), [parties]);
+  const deferredParties = useDeferredValue(parties, EMPTY_PARTIES);
+  const accountListParties = useMemo(
+    () => (deferredParties === parties ? parties : getCurrentAccountParties(partyGraph, currentPartyUuid)),
+    [deferredParties, parties, partyGraph, currentPartyUuid],
+  );
+
+  const partyListDTO = useMemo(() => mapPartiesToAuthorizedParties(accountListParties), [accountListParties]);
 
   /* Must be referentially stable: useAccountSelector's full-list materialization memo depends on this
    * array, so a fresh array per render re-runs that O(n) rebuild on every header render. */
@@ -209,87 +213,7 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
     accountSelector,
   };
 
-  const ignoreCountFor = ['fromDate', 'toDate', 'search'];
-  const activeFilters = Object.keys(filterState ?? {})
-    .filter((key) => !ignoreCountFor.includes(key))
-    .filter((key) => (filterState?.[key]?.length ?? 0) > 0);
-  const searchLabel = getSearchLabels(searchValue);
-
-  const inboxSearch: ToolbarSearchProps = {
-    id: 'inbox-toolbar-search',
-    collapsible: true,
-    value: searchValue,
-    hideLabel: true,
-    label: t('inbox.search.label'),
-    onClear,
-    onChange: (event: ChangeEvent<HTMLInputElement>) => {
-      const value = event.target.value;
-      if (value === '') {
-        onClear();
-      } else {
-        setSearchValue(value);
-      }
-    },
-    name: t('word.search'),
-    placeholder: t('inbox.search.placeholder'),
-    minLength: 3,
-    menu: {
-      groups: {
-        suggestions: {
-          title: '',
-        },
-      },
-      items: [
-        {
-          groupId: 'suggestions',
-          title: searchValue,
-          label: <QueryLabel params={searchLabel} />,
-          'aria-label': t('search.autocomplete.searchInInbox', { query: searchValue }),
-          onClick: () => {
-            const prunedSearchQuery = pruneSearchValue(searchValue);
-            navigate(`${location.pathname}${pruneSearchQueryParams(location.search, { search: prunedSearchQuery })}`);
-          },
-          as: 'button',
-          linkIcon: true,
-        },
-        {
-          groupId: 'suggestions',
-          title: searchValue,
-          'aria-label': t('search.autocomplete.searchInInbox_with_filters', {
-            query: searchValue,
-            count: activeFilters.length,
-          }),
-          hidden: activeFilters.length === 0,
-          label: (
-            <QueryLabel
-              params={[
-                ...searchLabel,
-                {
-                  type: 'filter',
-                  value: 'filters',
-                  label: t('search.autoComplete.activeFilters', { count: activeFilters.length }),
-                },
-              ]}
-            />
-          ),
-          onClick: () => {
-            const currentURL = new URL(window.location.href);
-            const allowedFilters = Object.values(FilterCategory);
-            const updatedURL = createFiltersURLQuery(filterState ?? {}, allowedFilters, currentURL.toString());
-            const searchParams = new URLSearchParams(updatedURL.searchParams);
-            searchParams.set('search', searchValue);
-            navigate(`${location.pathname}?${searchParams.toString()}`);
-          },
-          as: 'button',
-          linkIcon: true,
-        },
-      ],
-      onClose: () => {},
-    },
-  };
-
   return {
     headerProps: globalHeaderProps,
-    inboxSearch,
   };
 };

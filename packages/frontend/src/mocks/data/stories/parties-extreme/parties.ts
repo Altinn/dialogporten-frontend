@@ -1,4 +1,4 @@
-import type { PartyFieldsFragment } from 'bff-types-generated';
+import type { PartyFieldsFragment, SubPartyFieldsFragment } from 'bff-types-generated';
 
 const TOTAL_PARTIES = 15_000;
 const PERSON_COUNT = 300;
@@ -153,9 +153,23 @@ function generateOrganization(index: number, partyId: number): PartyFieldsFragme
   };
 }
 
+function generateSubunit(parent: PartyFieldsFragment, index: number, partyId: number): SubPartyFieldsFragment {
+  return {
+    party: `urn:altinn:organization:identifier-no:${900_000_000 + partyId}`,
+    partyType: 'Organization',
+    name: `${parent.name} AVD ${companyPrefixes[index % companyPrefixes.length]}`,
+    isCurrentEndUser: false,
+    isDeleted: false,
+    partyUuid: `urn:altinn:organization:uuid:sub-${partyId.toString().padStart(6, '0')}`,
+    partyId,
+    dateOfBirth: null,
+  };
+}
+
 export function generateParties(
   total: number = TOTAL_PARTIES,
   personCount: number = PERSON_COUNT,
+  maxSubunitsPerOrg = 0,
 ): PartyFieldsFragment[] {
   const result: PartyFieldsFragment[] = [];
 
@@ -163,8 +177,18 @@ export function generateParties(
     result.push(generatePerson(i));
   }
 
-  for (let i = 0; i < total - personCount; i++) {
-    result.push(generateOrganization(i, personCount + i + 1));
+  let count = result.length;
+  for (let i = 0; count < total; i++) {
+    const org = generateOrganization(i, count + 1);
+    result.push(org);
+    count++;
+    const subunitCount = Math.min(i % (maxSubunitsPerOrg + 1), total - count);
+    const subParties: SubPartyFieldsFragment[] = [];
+    for (let j = 0; j < subunitCount; j++) {
+      subParties.push(generateSubunit(org, j, count + 1));
+      count++;
+    }
+    org.subParties = subParties;
   }
 
   return result;
