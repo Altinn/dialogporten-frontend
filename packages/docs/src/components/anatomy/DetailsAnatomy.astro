@@ -1,0 +1,285 @@
+---
+import AnatomyFrame from './AnatomyFrame.astro';
+import Icon from './AnatomyIcon.astro';
+---
+
+<AnatomyFrame label="DialogDetails">
+  <Fragment slot="mock">
+    <div class="a-page a-tone-person">
+      <div class="a-top" data-zone="A">
+        <span class="a-back"><Icon name="back" size={16} />Tilbake</span>
+        <span class="a-top-r">
+          <span class="a-pin" data-pin="A">A</span>
+          <span class="a-kebab"><Icon name="dots" size={16} /></span>
+        </span>
+      </div>
+
+      <div class="a-head">
+        <div class="a-title" data-zone="1">
+          <span class="a-ht" data-f="content.title">Skattemeldingen for 2025</span>
+          <span class="a-badge a-ghost" data-f="systemLabels has ARCHIVE | BIN">Arkiv</span>
+          <span class="a-pin" data-pin="1">1</span>
+        </div>
+        <div class="a-meta" data-zone="2">
+          <span class="a-st a-strong" data-f="status">Krever handling</span>
+          <span class="a-st" data-f="content.extendedStatus">Dokumentasjon mangler</span>
+          <span class="a-mi" data-f="contentUpdatedAt">Sist oppdatert: 9. oktober 2026 kl. 14.03</span>
+          <span class="a-mi"><Icon name="clip" /><span data-f="attachments (GUI links)">2</span></span>
+          <span class="a-mi"><Icon name="sent" /><span data-f="fromPartyTransmissionsCount">1</span></span>
+          <span class="a-mi"><Icon name="received" /><span data-f="fromServiceOwnerTransmissionsCount">2</span></span>
+          <span class="a-due"><Icon name="due" size={13} /><span data-f="dueAt">Frist: 30. november 2026 kl. 23.59</span></span>
+          <span class="a-pin" data-pin="2">2</span>
+        </div>
+      </div>
+
+      <div class="a-rail">
+        <div class="a-byline" data-zone="3">
+          <span class="a-av a-lg a-logo" data-f="org → logo" data-s="org">SK</span>
+          <strong data-f="content.senderName ?? org → name">Skatteetaten</strong>
+          <span>til</span>
+          <span class="a-av a-pe a-sm" data-f="party → type" data-s="party">KN</span>
+          <span data-f="party → name" data-s="party">Kari Nordmann</span>
+          <span class="a-pin" data-pin="3">3</span>
+        </div>
+        <div class="a-rail-line"></div>
+        <div class="a-rail-body">
+          <p data-zone="4">
+            <span data-f="content.summary">
+              Vi trenger mer dokumentasjon på fradraget for reisekostnader. Last opp innen fristen.
+            </span>
+            <span class="a-pin" data-pin="4">4</span>
+          </p>
+
+          <div class="a-fce" data-zone="5">
+            <div class="a-fce-tag"><span>Embedded from the service owner</span><span class="a-pin" data-pin="5">5</span></div>
+            <div data-f="content.mainContentReference → fetched markdown or HTML">
+              <div class="a-h">Dette må du gjøre</div>
+              <ul>
+                <li>Last opp kvitteringer for reiser over 50 km.</li>
+                <li>Dokumentasjonen må gjelde inntektsåret 2025.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="a-att" data-zone="6">
+            <div class="a-h">2 vedlegg <span class="a-pin" data-pin="6">6</span></div>
+            <div class="a-att-row">
+              <Icon name="file" size={16} />
+              <span class="a-nm" data-f="attachments[].displayName">Brev om dokumentasjon</span>
+              <span class="a-ext" data-f="urls[].mediaType">PDF</span>
+            </div>
+            <div class="a-att-row">
+              <Icon name="file" size={16} />
+              <span class="a-nm" data-f="attachments[].displayName">Oversikt over fradrag</span>
+              <span class="a-ext" data-f="urls[].mediaType">PDF</span>
+              <span class="a-badge" data-f="expiresAt">Utløper om 2 måneder</span>
+            </div>
+          </div>
+
+          <div class="a-acts" data-zone="7">
+            <span class="a-btn a-primary" data-f="guiActions[].title (Primary)">Last opp dokumentasjon</span>
+            <span class="a-btn" data-f="guiActions[].title (Secondary)">Be om utsettelse</span>
+            <span class="a-btn a-tertiary a-ghost" data-f="isDeleteDialogAction">Slett</span>
+            <span class="a-pin" data-pin="7">7</span>
+          </div>
+
+          <div class="a-foot" data-zone="8">
+            <span class="a-mi">
+              <span class="a-avs" data-f="seenSinceLastContentUpdate"><span class="a-av a-pe a-sm">OH</span></span>
+              <span>Sett av 1</span>
+            </span>
+            <span class="a-mi"><Icon name="clock" />Aktivitetslogg</span>
+            <span class="a-mi"><Icon name="info" />Om fullmakt og tjeneste</span>
+            <span class="a-pin" data-pin="8">8</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="a-tl" data-zone="9">
+        <div class="a-seg">
+          <span class="a-knob"></span>
+          <div class="a-tl-items">
+            <div class="a-tr a-unread">
+              <div class="a-tr-top">
+                <span class="a-tt" data-f="type">Forespørsel</span>
+                <span class="a-tr-title" data-f="content.title">Vi trenger mer dokumentasjon</span>
+                <span class="a-udot"></span>
+                <span class="a-pin" data-pin="9">9</span>
+              </div>
+              <div class="a-tr-by" data-f="sender + createdAt">Skatteetaten, 9. oktober 2026 kl. 14.03</div>
+            </div>
+          </div>
+        </div>
+        <div class="a-seg">
+          <span class="a-knob"></span>
+          <div class="a-tl-items">
+            <div class="a-tr">
+              <div class="a-tr-top">
+                <span class="a-tt" data-f="type">Informasjon</span>
+                <span class="a-tr-title" data-f="content.title">Kvittering for levert skattemelding</span>
+              </div>
+              <div class="a-tr-by" data-f="sender + createdAt">Skatteetaten, 2. oktober 2026 kl. 10.12</div>
+            </div>
+            <div class="a-tr">
+              <div class="a-tr-top">
+                <span class="a-tt" data-f="type">Innsending</span>
+                <span class="a-tr-title" data-f="content.title">Skattemelding for 2025</span>
+              </div>
+              <div class="a-tr-by" data-f="sender + createdAt">Kari Nordmann, 2. oktober 2026 kl. 10.11</div>
+            </div>
+          </div>
+        </div>
+        <div><span class="a-btn a-outline a-ghost">Vis mer</span></div>
+      </div>
+
+      <div class="a-dsec" data-zone="10">
+        <div class="a-h">Mer informasjon <span class="a-pin" data-pin="10">10</span></div>
+        <p data-f="content.additionalInfo">Har du spørsmål om fradrag, kan du lese mer på skatteetaten.no.</p>
+      </div>
+
+      <div class="a-dsec" data-zone="11">
+        <div class="a-h">Trenger du hjelp? <span class="a-pin" data-pin="11">11</span></div>
+        <span class="a-lnk">Hjelp meg å forstå meldingen</span>
+      </div>
+    </div>
+  </Fragment>
+
+  <Fragment slot="legend">
+    <li data-pin="A" tabindex="0">
+      <span class="a-pin">A</span>
+      <div>
+        <strong>Top bar and menu</strong>
+        <p>
+          <em>Tilbake</em> returns to the list the user came from and scrolls to the dialog. The page colour follows the
+          recipient's type. The menu holds:
+        </p>
+        <ul>
+          <li>
+            <em>Del og gi fullmakt</em>: when the service supports delegation, built from <code class="a-fld">party</code>
+            and <code class="a-fld">org</code>
+          </li>
+          <li>
+            <em>Videresend på e-post</em>: only when <code class="a-fld">serviceResourceType</code> is CorrespondenceService,
+            behind a feature flag
+          </li>
+          <li>
+            <em>Marker som ulest</em>, <em>Flytt til arkivet</em>, <em>Flytt til papirkurven</em>, <em>Angre</em>:
+            <code class="a-fld">endUserContext.systemLabels</code>
+          </li>
+          <li><em>Sett av …</em>, <em>Aktivitetslogg</em>, <em>Om fullmakt og tjeneste</em></li>
+        </ul>
+      </div>
+    </li>
+    <li data-pin="1" tabindex="0">
+      <span class="a-pin">1</span>
+      <div>
+        <strong>Title</strong>
+        <p>
+          <code class="a-fld">content.title</code>. Gets an <em>Arkiv</em> or <em>Papirkurv</em> badge when the dialog is
+          in that folder.
+        </p>
+      </div>
+    </li>
+    <li data-pin="2" tabindex="0">
+      <span class="a-pin">2</span>
+      <div>
+        <strong>Metadata</strong>
+        <p>
+          Same rules as the list, with one exception: the attachment count is the number of attachment links actually
+          shown (from <code class="a-fld">attachments</code>), not <code class="a-fld">guiAttachmentCount</code>.
+        </p>
+      </div>
+    </li>
+    <li data-pin="3" tabindex="0">
+      <span class="a-pin">3</span>
+      <div>
+        <strong>Sender and recipient</strong>
+        <p>
+          Same rules as the list. The recipient avatar changes when the party is deleted or has sub-units.
+        </p>
+      </div>
+    </li>
+    <li data-pin="4" tabindex="0">
+      <span class="a-pin">4</span>
+      <div>
+        <strong>Summary</strong>
+        <p><code class="a-fld">content.summary</code> as plain text.</p>
+      </div>
+    </li>
+    <li data-pin="5" tabindex="0">
+      <span class="a-pin">5</span>
+      <div>
+        <strong>Main content</strong>
+        <p>
+          <code class="a-fld">content.mainContentReference</code> is a URL. The browser fetches it from the service owner
+          with <code class="a-fld">dialogToken</code> and renders it as markdown or HTML. Other media types are ignored.
+        </p>
+      </div>
+    </li>
+    <li data-pin="6" tabindex="0">
+      <span class="a-pin">6</span>
+      <div>
+        <strong>Attachments</strong>
+        <p>
+          One link per URL in <code class="a-fld">attachments[].urls</code> whose <code class="a-fld">consumerType</code>
+          is GUI. The label comes from <code class="a-fld">displayName</code>, the icon and file type from
+          <code class="a-fld">mediaType</code>, and the expiry badge from <code class="a-fld">expiresAt</code>. The link is
+          disabled when the attachment has expired or the user has no access to it.
+        </p>
+      </div>
+    </li>
+    <li data-pin="7" tabindex="0">
+      <span class="a-pin">7</span>
+      <div>
+        <strong>Actions</strong>
+        <p>From <code class="a-fld">guiActions</code>:</p>
+        <ul>
+          <li>Label from <code class="a-fld">title</code>, style from <code class="a-fld">priority</code></li>
+          <li>
+            <code class="a-fld">httpMethod</code> GET with no <code class="a-fld">prompt</code> is a plain link. Any other
+            method is sent as a request with <code class="a-fld">dialogToken</code>
+          </li>
+          <li><code class="a-fld">prompt</code> asks the user to confirm first</li>
+          <li><code class="a-fld">isAuthorized</code> false disables the button</li>
+          <li><code class="a-fld">isDeleteDialogAction</code> is only shown while the dialog is in the bin</li>
+        </ul>
+      </div>
+    </li>
+    <li data-pin="8" tabindex="0">
+      <span class="a-pin">8</span>
+      <div>
+        <strong>Footer</strong>
+        <p>
+          <em>Sett av</em> from <code class="a-fld">seenSinceLastContentUpdate</code>, plus buttons that open the activity
+          log and the delegation and service information.
+        </p>
+      </div>
+    </li>
+    <li data-pin="9" tabindex="0">
+      <span class="a-pin">9</span>
+      <div>
+        <strong>Transmissions</strong>
+        <p>
+          <code class="a-fld">transmissions</code> as a timeline. The three newest segments are shown before
+          <em>Vis mer</em>. See the table below.
+        </p>
+      </div>
+    </li>
+    <li data-pin="10" tabindex="0">
+      <span class="a-pin">10</span>
+      <div>
+        <strong>More information</strong>
+        <p>
+          <code class="a-fld">content.additionalInfo</code> as plain text, markdown or HTML. Hidden when empty.
+        </p>
+      </div>
+    </li>
+    <li data-pin="11" tabindex="0">
+      <span class="a-pin">11</span>
+      <div>
+        <strong>Help</strong>
+        <p>A fixed link to the help pages. No data from the dialog.</p>
+      </div>
+    </li>
+  </Fragment>
+</AnatomyFrame>
