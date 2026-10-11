@@ -14,10 +14,10 @@
     "run:docker": "docker run -it -p 8080:80 docs"
   },
   "dependencies": {
-    "@astrojs/markdown-remark": "7.3.1",
+    "@astrojs/markdown-remark": "7.3.2",
     "@astrojs/starlight": "0.42.1",
-    "astro": "7.3.2",
-    "mermaid": "11.17.0",
+    "astro": "7.3.7",
+    "mermaid": "11.17.2",
     "rehype-mermaid": "3.0.0"
   },
   "devDependencies": {
