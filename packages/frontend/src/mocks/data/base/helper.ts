@@ -1,6 +1,7 @@
 import {
   ActivityType,
   ActorType,
+  type AttachmentFieldsFragment,
   AttachmentUrlConsumer,
   type DialogByIdFieldsFragment,
   GuiActionPriority,
@@ -13,6 +14,7 @@ import {
 } from 'bff-types-generated';
 import { naiveSearchFilter } from '../../filters';
 import type { InMemoryStore } from '../../handlers.ts';
+import { forwardingScenarios } from '../stories/forward-by-email/forwarding.ts';
 
 export const MAX_PARTY_URIS = 100;
 export const MAX_SERVICE_RESOURCES = 20;
@@ -1317,6 +1319,26 @@ const getMockedGuiActions = (id: string): DialogByIdFieldsFragment['guiActions']
   ];
 };
 
+const getMockedAttachments = (dialogId: string): AttachmentFieldsFragment[] =>
+  Array.from({ length: forwardingScenarios[dialogId]?.attachmentCount ?? 1 }, (_, index) => ({
+    id: index === 0 ? dialogId : `${dialogId}-${index}`,
+    expiresAt: new Date(Date.now() + 60_000 * 1000).toISOString(),
+    displayName: [
+      {
+        value: index === 0 ? 'kvittering.pdf' : `vedlegg-${index + 1}.pdf`,
+        languageCode: 'nb',
+      },
+    ],
+    urls: [
+      {
+        id: index === 0 ? 'hello-attachment-id' : `hello-attachment-id-${index}`,
+        url: 'https://info.altinn.no/om-altinn/',
+        mediaType: 'application/pdf',
+        consumerType: AttachmentUrlConsumer.Gui,
+      },
+    ],
+  }));
+
 export const convertToDialogByIdTemplate = (input: SearchDialogFieldsFragment): DialogByIdFieldsFragment => {
   return {
     id: input.id,
@@ -1326,26 +1348,7 @@ export const convertToDialogByIdTemplate = (input: SearchDialogFieldsFragment): 
     org: input.org,
     progress: input.progress,
     endUserContext: input.endUserContext,
-    attachments: [
-      {
-        id: input.id,
-        expiresAt: new Date(Date.now() + 60_000 * 1000).toISOString(),
-        displayName: [
-          {
-            value: 'kvittering.pdf',
-            languageCode: 'nb',
-          },
-        ],
-        urls: [
-          {
-            id: 'hello-attachment-id',
-            url: 'https://info.altinn.no/om-altinn/',
-            mediaType: 'application/pdf',
-            consumerType: AttachmentUrlConsumer.Gui,
-          },
-        ],
-      },
-    ],
+    attachments: getMockedAttachments(input.id),
     activities: getMockedActivities(input.id),
     transmissions: getMockedTransmissions(input.id),
     fromServiceOwnerTransmissionsCount: 3,

@@ -4,6 +4,7 @@ export interface ForwardCorrespondenceRequest {
   correspondenceId: string;
   forwardTo: string[];
   forwardingText?: string;
+  includeAttachments: boolean;
 }
 
 export type ForwardCorrespondenceResult =
@@ -11,9 +12,8 @@ export type ForwardCorrespondenceResult =
   | { forwardTo: string; ok: false; status?: number; errorCode?: number };
 
 const postForward = async (
-  correspondenceId: string,
+  { correspondenceId, forwardingText, includeAttachments }: Omit<ForwardCorrespondenceRequest, 'forwardTo'>,
   forwardTo: string,
-  forwardingText: string | undefined,
   dialogToken: string,
 ): Promise<ForwardCorrespondenceResult> => {
   try {
@@ -21,6 +21,7 @@ const postForward = async (
       correspondenceId,
       forwardTo,
       forwardingText,
+      includeAttachments,
       dialogToken,
     });
     if (forwardCorrespondence.success) {
@@ -40,18 +41,16 @@ const postForward = async (
 const isUnauthorized = (result: ForwardCorrespondenceResult) => !result.ok && result.status === 401;
 
 export const forwardCorrespondence = async (
-  { correspondenceId, forwardTo, forwardingText }: ForwardCorrespondenceRequest,
+  request: ForwardCorrespondenceRequest,
   dialogToken: string | undefined,
   refreshDialogToken: () => Promise<string | undefined>,
 ): Promise<ForwardCorrespondenceResult[]> => {
   const token = dialogToken ?? (await refreshDialogToken());
   if (!token) {
-    return forwardTo.map((recipient) => ({ forwardTo: recipient, ok: false, status: 401 }));
+    return request.forwardTo.map((recipient) => ({ forwardTo: recipient, ok: false, status: 401 }));
   }
 
-  const results = await Promise.all(
-    forwardTo.map((recipient) => postForward(correspondenceId, recipient, forwardingText, token)),
-  );
+  const results = await Promise.all(request.forwardTo.map((recipient) => postForward(request, recipient, token)));
   if (!results.some(isUnauthorized)) {
     return results;
   }
@@ -62,8 +61,6 @@ export const forwardCorrespondence = async (
   }
 
   return Promise.all(
-    results.map((result) =>
-      isUnauthorized(result) ? postForward(correspondenceId, result.forwardTo, forwardingText, freshToken) : result,
-    ),
+    results.map((result) => (isUnauthorized(result) ? postForward(request, result.forwardTo, freshToken) : result)),
   );
 };

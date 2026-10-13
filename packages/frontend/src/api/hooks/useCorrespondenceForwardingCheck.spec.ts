@@ -48,7 +48,7 @@ describe('useCorrespondenceForwardingCheck', () => {
   it('checks forwarding for the correspondence id resolved from the dialog lookup', async () => {
     dialogAccessInfo.mockResolvedValue(lookup(`urn:altinn:correspondence-id:${CORRESPONDENCE_ID}`));
     correspondenceForwardingCheck.mockResolvedValue({
-      correspondenceForwardingCheck: { allowed: true },
+      correspondenceForwardingCheck: { allowed: true, attachmentsExceedMaxLimit: false },
     });
 
     const { result } = renderHook(() => useCorrespondenceForwardingCheck(DIALOG_ID), {
@@ -56,15 +56,30 @@ describe('useCorrespondenceForwardingCheck', () => {
     });
 
     await waitFor(() => expect(result.current.allowed).toBe(true));
+    expect(result.current.attachmentsExceedMaxLimit).toBe(false);
     expect(result.current.correspondenceId).toBe(CORRESPONDENCE_ID);
     expect(dialogAccessInfo).toHaveBeenCalledWith({ instanceRef: `urn:altinn:dialog-id:${DIALOG_ID}` });
     expect(correspondenceForwardingCheck).toHaveBeenCalledWith({ correspondenceId: CORRESPONDENCE_ID });
   });
 
+  it('reports when the attachments are too large to forward', async () => {
+    dialogAccessInfo.mockResolvedValue(lookup(`urn:altinn:correspondence-id:${CORRESPONDENCE_ID}`));
+    correspondenceForwardingCheck.mockResolvedValue({
+      correspondenceForwardingCheck: { allowed: true, attachmentsExceedMaxLimit: true },
+    });
+
+    const { result } = renderHook(() => useCorrespondenceForwardingCheck(DIALOG_ID), {
+      wrapper: createCustomWrapper(),
+    });
+
+    await waitFor(() => expect(result.current.allowed).toBe(true));
+    expect(result.current.attachmentsExceedMaxLimit).toBe(true);
+  });
+
   it('reports not allowed when the check says so', async () => {
     dialogAccessInfo.mockResolvedValue(lookup(`urn:altinn:correspondence-id:${CORRESPONDENCE_ID}`));
     correspondenceForwardingCheck.mockResolvedValue({
-      correspondenceForwardingCheck: { allowed: false },
+      correspondenceForwardingCheck: { allowed: false, attachmentsExceedMaxLimit: false },
     });
 
     const { result } = renderHook(() => useCorrespondenceForwardingCheck(DIALOG_ID), {
