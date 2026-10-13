@@ -200,7 +200,7 @@ in `instrumentation.ts` are hardcoded to the gRPC variants, so changing it has n
 **Note**: When `OTEL_EXPORTER_OTLP_ENDPOINT` is not set, the BFF runs in local development mode with console output for logs and traces.
 
 ### Frontend Configuration
-The frontend receives its instrumentation key through a global variable. For details on how to add new environment variables, see the [Environment Variables](./environment+variables.md) documentation.
+The frontend receives its instrumentation key through a global variable. For details on how to add new environment variables, see the [Environment Variables](../environmentvariables/) documentation.
 
 ## Monitoring and Debugging
 

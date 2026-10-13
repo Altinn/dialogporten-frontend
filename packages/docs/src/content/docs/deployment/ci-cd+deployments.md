@@ -22,12 +22,13 @@ Naming conventions for GitHub Actions:
 When code is merged to `main`, two parallel workflows are triggered:
 
    a. **CI/CD Main** (`ci-cd-main.yml`)
-   - Automatically deploys to Test environment
+   - Automatically deploys to Test environment (`af.at23.altinn.cloud`)
    - Runs full deployment including:
      - Infrastructure if changed
      - Applications if changed
      - Runs tests
      - Updates dependencies
+   - Updates the image tags for `at23` in the manifests repository (see [Manifests repository](#manifests-repository))
 
    b. **Release Please** (`ci-cd-release-please.yml`)
    - Checks if changes warrant a new release
@@ -87,15 +88,15 @@ Development → Main Branch → Test → [YT01 + Staging] → Production
 ### 5. Manual Control Options
 
 Available manual workflows for all environments:
-- `dispatch-infrastructure.yml`: Infrastructure deployment
-- `dispatch-apps.yml`: Application deployment
+- `dispatch-deploy-infrastructure.yml` (**Deploy Infrastructure (Manual)**): Infrastructure deployment
+- `dispatch-deploy-apps.yml` (**Deploy Apps (Manual)**): Application deployment
 
-#### Using `dispatch-apps.yml`
+#### Using `dispatch-deploy-apps.yml`
 
-The `dispatch-apps.yml` workflow is responsible for deploying applications. To trigger this workflow:
+The `dispatch-deploy-apps.yml` workflow is responsible for deploying applications. To trigger this workflow:
 
 1. Navigate to the Actions tab in the GitHub repository.
-2. Select the `Dispatch Apps` workflow.
+2. Select the `Deploy Apps (Manual)` workflow.
 3. Click on "Run workflow".
 4. Fill in the required inputs:
    - **environment**: Choose the target environment (`test`, `yt01`, `staging`, or `prod`).
@@ -104,18 +105,26 @@ The `dispatch-apps.yml` workflow is responsible for deploying applications. To t
 
 This workflow will handle the deployment of applications based on the specified parameters, ensuring that the correct version is deployed to the chosen environment.
 
-#### Using `dispatch-infrastructure.yml`
+The image comes from `version`, but the Bicep templates come from the branch or tag selected under "Use workflow from". Select the tag `v<version>` there if the templates must match the version you deploy. This workflow does not update the manifests repository.
 
-The `dispatch-infrastructure.yml` workflow is used for deploying infrastructure components. To use this workflow:
+#### Using `dispatch-deploy-infrastructure.yml`
+
+The `dispatch-deploy-infrastructure.yml` workflow is used for deploying infrastructure components. To use this workflow:
 
 1. Go to the Actions tab in the GitHub repository.
-2. Select the `Dispatch Infrastructure` workflow.
+2. Select the `Deploy Infrastructure (Manual)` workflow.
 3. Click on "Run workflow".
 4. Provide the necessary inputs:
    - **environment**: Select the environment you wish to deploy to (`test`, `yt01`, `staging`, or `prod`).
    - **version**: Enter the version to deploy, which should correspond to a git tag. (e.g., `1.23.4`).
 
 This workflow facilitates the deployment of infrastructure to the specified environment, using the version details provided.
+
+#### Manifests repository
+
+Besides deploying to Azure Container Apps, the event-driven pipelines (`ci-cd-main.yml` → `at23`, `ci-cd-staging.yml` → `tt02`, `ci-cd-yt01.yml` → `yt01` and `ci-cd-prod.yml` → `prod`) send an `update_all_image_tags` event to `altinn/dialogporten-frontend-manifests` with the deployed image tag (`workflow-dispatch-update-manifests.yml`). The event is only sent when the pipeline detects application changes. The manual workflows above do not send it.
+
+For rolling back a release, see [Rollback](../rollback/).
 
 
 ### 6. Version Management
@@ -158,7 +167,7 @@ Slack notifications include:
 - Recent commits not yet in production
 - Quick action buttons for viewing differences and deploying
 
-For detailed configuration and customization options, see [Deployment Lag Monitoring Documentation](./deployment-lag-monitoring.md).
+For detailed configuration and customization options, see [Deployment Lag Monitoring Documentation](../deployment-lag-monitoring/).
 
 ### 8. Visual Workflow
 
