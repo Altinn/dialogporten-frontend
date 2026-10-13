@@ -24,6 +24,8 @@ const contextWithToken = (accessToken = 'enduser-token') =>
 
 const contextWithoutToken = () => ({ session: { get: () => undefined } }) as never;
 
+const notAllowed = { allowed: false, attachmentsExceedMaxLimit: false };
+
 const axiosError = (status?: number, data: unknown = {}) =>
   Object.assign(new Error('request failed'), {
     isAxiosError: true,
@@ -51,13 +53,37 @@ describe('checkCorrespondenceForwarding', () => {
   });
 
   it('allows forwarding when the correspondence allows it', async () => {
-    get.mockResolvedValueOnce({ data: { allowForwarding: true } });
+    get.mockResolvedValueOnce({ data: { allowForwarding: true, forwardingConstraints: 'None' } });
     const { checkCorrespondenceForwarding } = await importService();
 
     await expect(checkCorrespondenceForwarding(CORRESPONDENCE_ID, contextWithToken())).resolves.toEqual({
       allowed: true,
+      attachmentsExceedMaxLimit: false,
     });
   });
+
+  it('allows forwarding without attachments when they exceed the size limit', async () => {
+    get.mockResolvedValueOnce({ data: { allowForwarding: true, forwardingConstraints: 'AttachmentsExceedMaxLimit' } });
+    const { checkCorrespondenceForwarding } = await importService();
+
+    await expect(checkCorrespondenceForwarding(CORRESPONDENCE_ID, contextWithToken())).resolves.toEqual({
+      allowed: true,
+      attachmentsExceedMaxLimit: true,
+    });
+  });
+
+  it.each([undefined, 'None', 1, 'attachmentsExceedMaxLimit'])(
+    'does not flag the attachments for the constraint %j',
+    async (forwardingConstraints) => {
+      get.mockResolvedValueOnce({ data: { allowForwarding: true, forwardingConstraints } });
+      const { checkCorrespondenceForwarding } = await importService();
+
+      await expect(checkCorrespondenceForwarding(CORRESPONDENCE_ID, contextWithToken())).resolves.toEqual({
+        allowed: true,
+        attachmentsExceedMaxLimit: false,
+      });
+    },
+  );
 
   it('calls the check endpoint with the session token and without following redirects', async () => {
     get.mockResolvedValueOnce({ data: { allowForwarding: true } });
@@ -71,12 +97,10 @@ describe('checkCorrespondenceForwarding', () => {
   });
 
   it('does not allow forwarding when the correspondence disallows it', async () => {
-    get.mockResolvedValueOnce({ data: { allowForwarding: false } });
+    get.mockResolvedValueOnce({ data: { allowForwarding: false, forwardingConstraints: 'AttachmentsExceedMaxLimit' } });
     const { checkCorrespondenceForwarding } = await importService();
 
-    await expect(checkCorrespondenceForwarding(CORRESPONDENCE_ID, contextWithToken())).resolves.toEqual({
-      allowed: false,
-    });
+    await expect(checkCorrespondenceForwarding(CORRESPONDENCE_ID, contextWithToken())).resolves.toEqual(notAllowed);
   });
 
   it.each([{}, { allowForwarding: 'true' }, 'true', null])(
@@ -85,27 +109,21 @@ describe('checkCorrespondenceForwarding', () => {
       get.mockResolvedValueOnce({ data });
       const { checkCorrespondenceForwarding } = await importService();
 
-      await expect(checkCorrespondenceForwarding(CORRESPONDENCE_ID, contextWithToken())).resolves.toEqual({
-        allowed: false,
-      });
+      await expect(checkCorrespondenceForwarding(CORRESPONDENCE_ID, contextWithToken())).resolves.toEqual(notAllowed);
     },
   );
 
   it.each(invalidCorrespondenceIds)('rejects %j without calling Correspondence', async (correspondenceId) => {
     const { checkCorrespondenceForwarding } = await importService();
 
-    await expect(checkCorrespondenceForwarding(correspondenceId, contextWithToken())).resolves.toEqual({
-      allowed: false,
-    });
+    await expect(checkCorrespondenceForwarding(correspondenceId, contextWithToken())).resolves.toEqual(notAllowed);
     expect(get).not.toHaveBeenCalled();
   });
 
   it('does not call Correspondence without a session token', async () => {
     const { checkCorrespondenceForwarding } = await importService();
 
-    await expect(checkCorrespondenceForwarding(CORRESPONDENCE_ID, contextWithoutToken())).resolves.toEqual({
-      allowed: false,
-    });
+    await expect(checkCorrespondenceForwarding(CORRESPONDENCE_ID, contextWithoutToken())).resolves.toEqual(notAllowed);
     expect(get).not.toHaveBeenCalled();
   });
 
@@ -113,9 +131,7 @@ describe('checkCorrespondenceForwarding', () => {
     get.mockRejectedValueOnce(axiosError(status));
     const { checkCorrespondenceForwarding } = await importService();
 
-    await expect(checkCorrespondenceForwarding(CORRESPONDENCE_ID, contextWithToken())).resolves.toEqual({
-      allowed: false,
-    });
+    await expect(checkCorrespondenceForwarding(CORRESPONDENCE_ID, contextWithToken())).resolves.toEqual(notAllowed);
     expect(logger.warn).toHaveBeenCalledTimes(1);
     expect(logger.warn).toHaveBeenCalledWith({ status, correspondenceId: CORRESPONDENCE_ID }, expect.any(String));
   });
@@ -130,9 +146,7 @@ describe('checkCorrespondenceForwarding', () => {
     get.mockRejectedValueOnce(error);
     const { checkCorrespondenceForwarding } = await importService();
 
-    await expect(checkCorrespondenceForwarding(CORRESPONDENCE_ID, contextWithToken())).resolves.toEqual({
-      allowed: false,
-    });
+    await expect(checkCorrespondenceForwarding(CORRESPONDENCE_ID, contextWithToken())).resolves.toEqual(notAllowed);
     expect(logger.warn).not.toHaveBeenCalled();
     expect(logger.error).not.toHaveBeenCalled();
   });
@@ -149,6 +163,7 @@ describe('forwardCorrespondence', () => {
     dialogToken: 'the-dialog-token',
     forwardTo: FORWARD_TO,
     forwardingText: FORWARDING_TEXT,
+    includeAttachments: true,
     ...overrides,
   });
 
@@ -160,7 +175,7 @@ describe('forwardCorrespondence', () => {
 
     const [url, body, options] = post.mock.calls[0];
     expect(url).toBe(`${CORRESPONDENCE_URL}/forward`);
-    expect(body).toEqual({ forwardTo: FORWARD_TO, forwardingText: FORWARDING_TEXT });
+    expect(body).toEqual({ forwardTo: FORWARD_TO, forwardingText: FORWARDING_TEXT, includeAttachments: true });
     expect(options.headers.Authorization).toBe('Bearer the-dialog-token');
     expect(options.headers['Content-Type']).toBe('application/json');
     expect(options.maxRedirects).toBe(0);
@@ -172,7 +187,20 @@ describe('forwardCorrespondence', () => {
 
     await forwardCorrespondence(args({ forwardingText }));
 
-    expect(post.mock.calls[0][1]).toEqual({ forwardTo: FORWARD_TO });
+    expect(post.mock.calls[0][1]).toEqual({ forwardTo: FORWARD_TO, includeAttachments: true });
+  });
+
+  it('asks Correspondence to leave out the attachments when the user opts out', async () => {
+    post.mockResolvedValueOnce({ data: 'id' });
+    const { forwardCorrespondence } = await importService();
+
+    await forwardCorrespondence(args({ includeAttachments: false }));
+
+    expect(post.mock.calls[0][1]).toEqual({
+      forwardTo: FORWARD_TO,
+      forwardingText: FORWARDING_TEXT,
+      includeAttachments: false,
+    });
   });
 
   it.each(invalidCorrespondenceIds)('rejects the correspondence id %j without calling Correspondence', async (id) => {
@@ -196,6 +224,7 @@ describe('forwardCorrespondence', () => {
   it.each([
     [{ errorCode: 1064 }, 1064],
     [{ errorCode: '1065' }, 1065],
+    [{ errorCode: 1071 }, 1071],
   ])('returns the Correspondence error code from %j without logging', async (problem, errorCode) => {
     post.mockRejectedValueOnce(axiosError(400, problem));
     const { forwardCorrespondence } = await importService();

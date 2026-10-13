@@ -7,6 +7,10 @@ export const CorrespondenceForwardingCheck = objectType({
     t.nonNull.boolean('allowed', {
       description: 'True only when the correspondence allows forwarding; false when it does not or the check failed',
     });
+    t.nonNull.boolean('attachmentsExceedMaxLimit', {
+      description:
+        'True when forwarding is allowed but the attachments are too large to include, so only the message can be forwarded',
+    });
   },
 });
 

@@ -1,4 +1,5 @@
 import {
+  Alert,
   DsSpinner,
   Field,
   Input,
@@ -25,6 +26,7 @@ const FORWARDING_TEXT_MAX_LENGTH = 200;
 interface ForwardDialogModalProps {
   dialogId: string | undefined;
   dialogToken: string | undefined;
+  attachmentCount: number;
   refreshDialogToken: () => Promise<string | undefined>;
   isOpen: boolean;
   onClose: () => void;
@@ -39,6 +41,8 @@ export const getForwardErrorMessageKey = (errorCode?: number): string => {
     case 1066:
     case 1067:
       return 'dialog.forward.error.invalid_message';
+    case 1071:
+      return 'dialog.forward.error.attachments_exceed_max_limit';
     case 3011:
     case 3027:
       return 'dialog.forward.error.invalid_email';
@@ -50,6 +54,7 @@ export const getForwardErrorMessageKey = (errorCode?: number): string => {
 export const ForwardDialogModal = ({
   dialogId,
   dialogToken,
+  attachmentCount,
   refreshDialogToken,
   isOpen,
   onClose,
@@ -57,14 +62,20 @@ export const ForwardDialogModal = ({
   const { t, i18n } = useTranslation();
   const { openSnackbar } = useSnackbar();
   const formId = useId();
-  const { isLoading, allowed, correspondenceId } = useCorrespondenceForwardingCheck(dialogId, { enabled: isOpen });
+  const { isLoading, allowed, attachmentsExceedMaxLimit, correspondenceId } = useCorrespondenceForwardingCheck(
+    dialogId,
+    { enabled: isOpen },
+  );
   const [forwardTo, setForwardTo] = useState('');
   const [forwardingText, setForwardingText] = useState('');
+  const [includeAttachments, setIncludeAttachments] = useState(true);
   const [isEmailTouched, setIsEmailTouched] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const canForward = !isLoading && allowed && !!correspondenceId;
   const isNotAllowed = !isLoading && !canForward;
+  const showIncludeAttachments = attachmentCount > 0 && !attachmentsExceedMaxLimit;
+  const shouldIncludeAttachments = includeAttachments && !attachmentsExceedMaxLimit;
   const recipients = parseRecipients(forwardTo);
   const invalidRecipients = getInvalidRecipients(recipients);
   const formatList = (items: string[]) =>
@@ -84,6 +95,7 @@ export const ForwardDialogModal = ({
   const handleClose = () => {
     setForwardTo('');
     setForwardingText('');
+    setIncludeAttachments(true);
     setIsEmailTouched(false);
     setIsSubmitting(false);
     onClose();
@@ -104,9 +116,15 @@ export const ForwardDialogModal = ({
     Analytics.trackEvent(ANALYTICS_EVENTS.DIALOG_FORWARD_SUBMIT, {
       'dialog.id': dialogId ?? '',
       'forward.recipientCount': recipients.length,
+      'forward.includeAttachments': shouldIncludeAttachments,
     });
     const results = await forwardCorrespondence(
-      { correspondenceId, forwardTo: recipients, forwardingText: forwardingText.trim() || undefined },
+      {
+        correspondenceId,
+        forwardTo: recipients,
+        forwardingText: forwardingText.trim() || undefined,
+        includeAttachments: shouldIncludeAttachments,
+      },
       dialogToken,
       refreshDialogToken,
     );
@@ -184,6 +202,13 @@ export const ForwardDialogModal = ({
       ) : canForward ? (
         <form id={formId} onSubmit={handleSubmit} noValidate>
           <Section spacing={6}>
+            {attachmentsExceedMaxLimit && (
+              <Alert
+                variant="warning"
+                heading={t('dialog.forward.attachments_exceed_max_limit.title')}
+                message={t('dialog.forward.attachments_exceed_max_limit.body')}
+              />
+            )}
             <Field>
               <Label size="sm">{t('dialog.forward.email_label')}</Label>
               <Input
@@ -223,6 +248,17 @@ export const ForwardDialogModal = ({
                 })}
               </ValidationMessage>
             </Field>
+            {showIncludeAttachments && (
+              <Field size="sm">
+                <Input
+                  type="checkbox"
+                  name="includeAttachments"
+                  checked={includeAttachments}
+                  onChange={(e) => setIncludeAttachments(e.target.checked)}
+                />
+                <Label>{t('dialog.forward.include_attachments', { count: attachmentCount })}</Label>
+              </Field>
+            )}
           </Section>
         </form>
       ) : (

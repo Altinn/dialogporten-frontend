@@ -5,6 +5,7 @@ import config from '../../config.ts';
 
 export interface CorrespondenceForwardingCheckResult {
   allowed: boolean;
+  attachmentsExceedMaxLimit: boolean;
 }
 
 export interface ForwardCorrespondenceArgs {
@@ -12,6 +13,7 @@ export interface ForwardCorrespondenceArgs {
   dialogToken: string;
   forwardTo: string;
   forwardingText?: string | null;
+  includeAttachments: boolean;
 }
 
 export interface ForwardCorrespondenceResult {
@@ -22,11 +24,12 @@ export interface ForwardCorrespondenceResult {
 
 interface ForwardingCheckResponse {
   allowForwarding?: unknown;
+  forwardingConstraints?: unknown;
 }
 
 const correspondenceIdPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-const notAllowed: CorrespondenceForwardingCheckResult = { allowed: false };
+const notAllowed: CorrespondenceForwardingCheckResult = { allowed: false, attachmentsExceedMaxLimit: false };
 
 export const isValidCorrespondenceId = (value: string): boolean => correspondenceIdPattern.test(value);
 
@@ -59,7 +62,11 @@ export const checkCorrespondenceForwarding = async (
         },
       },
     );
-    return { allowed: data?.allowForwarding === true };
+    const allowed = data?.allowForwarding === true;
+    return {
+      allowed,
+      attachmentsExceedMaxLimit: allowed && data?.forwardingConstraints === 'AttachmentsExceedMaxLimit',
+    };
   } catch (error) {
     const status = isAxiosError(error) ? error.response?.status : undefined;
     if (status === 401 || status === 403) {
@@ -77,6 +84,7 @@ export const forwardCorrespondence = async ({
   dialogToken,
   forwardTo,
   forwardingText,
+  includeAttachments,
 }: ForwardCorrespondenceArgs): Promise<ForwardCorrespondenceResult> => {
   if (!dialogToken || !isValidCorrespondenceId(correspondenceId)) {
     return { success: false, status: null, errorCode: null };
@@ -85,7 +93,7 @@ export const forwardCorrespondence = async ({
   try {
     await axios.post(
       `${getCorrespondenceUrl(correspondenceId)}/forward`,
-      { forwardTo, ...(forwardingText ? { forwardingText } : {}) },
+      { forwardTo, includeAttachments, ...(forwardingText ? { forwardingText } : {}) },
       {
         timeout: 30000,
         maxRedirects: 0,

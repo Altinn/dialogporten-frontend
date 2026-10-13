@@ -1,4 +1,4 @@
-import { extendType, nonNull, stringArg } from 'nexus';
+import { booleanArg, extendType, nonNull, stringArg } from 'nexus';
 import { forwardCorrespondence } from './service.ts';
 import { ForwardCorrespondenceResult } from './types.ts';
 
@@ -12,6 +12,7 @@ export const CorrespondenceMutation = extendType({
         dialogToken: nonNull(stringArg()),
         forwardTo: nonNull(stringArg()),
         forwardingText: stringArg(),
+        includeAttachments: nonNull(booleanArg({ default: true })),
       },
       resolve: async (_source, args) => forwardCorrespondence(args),
     });

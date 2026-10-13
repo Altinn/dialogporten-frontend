@@ -37,7 +37,12 @@ describe('forwardCorrespondence', () => {
     forwardCorrespondenceMutation.mockResolvedValue(response(true));
 
     const results = await forwardCorrespondence(
-      { correspondenceId: CORRESPONDENCE_ID, forwardTo: [KARI, OLA], forwardingText: 'Se denne' },
+      {
+        correspondenceId: CORRESPONDENCE_ID,
+        forwardTo: [KARI, OLA],
+        forwardingText: 'Se denne',
+        includeAttachments: true,
+      },
       'dialog-token',
       refreshDialogToken,
     );
@@ -51,12 +56,14 @@ describe('forwardCorrespondence', () => {
       correspondenceId: CORRESPONDENCE_ID,
       forwardTo: KARI,
       forwardingText: 'Se denne',
+      includeAttachments: true,
       dialogToken: 'dialog-token',
     });
     expect(forwardCorrespondenceMutation).toHaveBeenCalledWith({
       correspondenceId: CORRESPONDENCE_ID,
       forwardTo: OLA,
       forwardingText: 'Se denne',
+      includeAttachments: true,
       dialogToken: 'dialog-token',
     });
     expect(refreshDialogToken).not.toHaveBeenCalled();
@@ -68,7 +75,7 @@ describe('forwardCorrespondence', () => {
     );
 
     const results = await forwardCorrespondence(
-      { correspondenceId: CORRESPONDENCE_ID, forwardTo: [KARI, OLA] },
+      { correspondenceId: CORRESPONDENCE_ID, forwardTo: [KARI, OLA], includeAttachments: true },
       'token',
       refreshDialogToken,
     );
@@ -85,7 +92,7 @@ describe('forwardCorrespondence', () => {
     );
 
     const results = await forwardCorrespondence(
-      { correspondenceId: CORRESPONDENCE_ID, forwardTo: [KARI, OLA] },
+      { correspondenceId: CORRESPONDENCE_ID, forwardTo: [KARI, OLA], includeAttachments: true },
       'token',
       refreshDialogToken,
     );
@@ -106,7 +113,7 @@ describe('forwardCorrespondence', () => {
     refreshDialogToken.mockResolvedValueOnce('fresh-token');
 
     const results = await forwardCorrespondence(
-      { correspondenceId: CORRESPONDENCE_ID, forwardTo: [KARI, OLA] },
+      { correspondenceId: CORRESPONDENCE_ID, forwardTo: [KARI, OLA], includeAttachments: true },
       'stale-token',
       refreshDialogToken,
     );
@@ -123,12 +130,30 @@ describe('forwardCorrespondence', () => {
     });
   });
 
+  it('passes the attachment choice on to every recipient, including retries', async () => {
+    forwardCorrespondenceMutation.mockImplementation(async ({ forwardTo, dialogToken }) =>
+      dialogToken === 'stale-token' && forwardTo === OLA ? response(false, 401) : response(true),
+    );
+    refreshDialogToken.mockResolvedValueOnce('fresh-token');
+
+    await forwardCorrespondence(
+      { correspondenceId: CORRESPONDENCE_ID, forwardTo: [KARI, OLA], includeAttachments: false },
+      'stale-token',
+      refreshDialogToken,
+    );
+
+    expect(forwardCorrespondenceMutation).toHaveBeenCalledTimes(3);
+    for (const [variables] of forwardCorrespondenceMutation.mock.calls) {
+      expect(variables).toMatchObject({ includeAttachments: false });
+    }
+  });
+
   it('gives up after one retry', async () => {
     forwardCorrespondenceMutation.mockResolvedValue(response(false, 401));
     refreshDialogToken.mockResolvedValue('fresh-token');
 
     const results = await forwardCorrespondence(
-      { correspondenceId: CORRESPONDENCE_ID, forwardTo: [KARI] },
+      { correspondenceId: CORRESPONDENCE_ID, forwardTo: [KARI], includeAttachments: true },
       'stale-token',
       refreshDialogToken,
     );
@@ -142,7 +167,7 @@ describe('forwardCorrespondence', () => {
     refreshDialogToken.mockResolvedValueOnce('fresh-token');
 
     const results = await forwardCorrespondence(
-      { correspondenceId: CORRESPONDENCE_ID, forwardTo: [KARI] },
+      { correspondenceId: CORRESPONDENCE_ID, forwardTo: [KARI], includeAttachments: true },
       undefined,
       refreshDialogToken,
     );
@@ -155,7 +180,7 @@ describe('forwardCorrespondence', () => {
     refreshDialogToken.mockResolvedValueOnce(undefined);
 
     const results = await forwardCorrespondence(
-      { correspondenceId: CORRESPONDENCE_ID, forwardTo: [KARI, OLA] },
+      { correspondenceId: CORRESPONDENCE_ID, forwardTo: [KARI, OLA], includeAttachments: true },
       undefined,
       refreshDialogToken,
     );
