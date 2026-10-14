@@ -35,6 +35,7 @@ export const useCorrespondenceForwardingCheck = (
   return {
     isLoading: isLookupLoading || isCheckFetching,
     allowed: data?.correspondenceForwardingCheck.allowed ?? false,
+    attachmentsExceedMaxLimit: data?.correspondenceForwardingCheck.attachmentsExceedMaxLimit ?? false,
     correspondenceId,
   };
 };

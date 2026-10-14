@@ -3,9 +3,10 @@ import { appURLInbox } from '../';
 
 const FORWARDABLE_DIALOG_TITLE = 'Melding om bortkjøring av snø';
 const NON_FORWARDABLE_DIALOG_TITLE = 'Melding om hull i veien';
+const forwardStoryURL = `${appURLInbox}&playwrightId=forward-by-email`;
 
-const openForwardModal = async (page: Page, dialogTitle: string) => {
-  await page.goto(appURLInbox);
+const openForwardModal = async (page: Page, dialogTitle: string, url = appURLInbox) => {
+  await page.goto(url);
   await page.getByRole('link', { name: dialogTitle }).click();
   await expect(page.getByRole('heading', { name: dialogTitle }).first()).toBeVisible();
   await page.locator('#dialog-context-menu-root').getByRole('button', { name: 'Åpne meny' }).click();
@@ -36,6 +37,50 @@ test.describe('Forward dialog by email', () => {
 
     await expect(page.getByText('Meldingen er videresendt til kari.nordmann@example.com.').first()).toBeVisible();
     await expect(page.getByRole('dialog')).toBeHidden();
+  });
+
+  test('includes the attachments by default and lets the user leave them out', async ({ page }) => {
+    const modal = await openForwardModal(page, FORWARDABLE_DIALOG_TITLE);
+    const includeAttachments = modal.getByRole('checkbox', { name: 'Inkluder 1 vedlegg' });
+
+    await expect(includeAttachments).toBeChecked();
+    await expect(includeAttachments).toBeEnabled();
+    await includeAttachments.uncheck();
+
+    await modal.getByLabel('E-postadresse').fill('kari.nordmann@example.com');
+    await modal.getByRole('button', { name: 'Videresend' }).click();
+    await expect(page.getByText('Meldingen er videresendt til kari.nordmann@example.com.').first()).toBeVisible();
+    await expect(page.getByRole('dialog')).toBeHidden();
+
+    await page.locator('#dialog-context-menu-root').getByRole('button', { name: 'Åpne meny' }).click();
+    await page.getByRole('menuitem', { name: 'Videresend på e-post' }).click();
+    await expect(page.getByRole('dialog').getByRole('checkbox', { name: 'Inkluder 1 vedlegg' })).toBeChecked();
+  });
+
+  test('forwards only the message and warns when the attachments are too large', async ({ page }) => {
+    const modal = await openForwardModal(page, 'Videresending: vedlegg over 10 MB', forwardStoryURL);
+
+    await expect(modal.getByText('Vedleggene blir ikke sendt med')).toBeVisible();
+    await expect(modal.getByText(/større enn 10 MB.*Bare selve meldingen blir videresendt/)).toBeVisible();
+    await expect(modal.getByRole('checkbox')).toHaveCount(0);
+
+    await modal.getByLabel('E-postadresse').fill('kari.nordmann@example.com');
+    await modal.getByRole('button', { name: 'Videresend' }).click();
+    await expect(page.getByText('Meldingen er videresendt til kari.nordmann@example.com.').first()).toBeVisible();
+    await expect(page.getByRole('dialog')).toBeHidden();
+  });
+
+  test('shows how many attachments will be included', async ({ page }) => {
+    const modal = await openForwardModal(page, 'Videresending: 3 vedlegg', forwardStoryURL);
+
+    await expect(modal.getByRole('checkbox', { name: 'Inkluder 3 vedlegg' })).toBeChecked();
+  });
+
+  test('leaves out the attachment choice when the message has no attachments', async ({ page }) => {
+    const modal = await openForwardModal(page, 'Videresending: uten vedlegg', forwardStoryURL);
+
+    await expect(modal.getByLabel('E-postadresse')).toBeVisible();
+    await expect(modal.getByRole('checkbox')).toHaveCount(0);
   });
 
   test('keeps the form open and explains when Correspondence rejects the forward', async ({ page }) => {
@@ -107,7 +152,7 @@ test.describe('Forward dialog by email', () => {
     const modal = await openForwardModal(page, NON_FORWARDABLE_DIALOG_TITLE);
 
     await expect(modal.getByRole('heading', { name: 'Videresending er ikke mulig' })).toBeVisible();
-    await expect(modal.getByText(/taushetsbelagte.*10 MB.*«Del og gi fullmakt»/)).toBeVisible();
+    await expect(modal.getByText(/taushetsbelagte.*«Del og gi fullmakt»/)).toBeVisible();
     await expect(modal.getByLabel('E-postadresse')).toHaveCount(0);
     await expect(modal.getByRole('button', { name: 'Videresend' })).toHaveCount(0);
 
