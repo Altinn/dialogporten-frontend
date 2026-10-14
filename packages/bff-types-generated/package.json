@@ -6,7 +6,7 @@
     "dev": "pnpm build:watch",
     "build": "pnpm generate:types-gql",
     "build:watch": "nodemon --watch 'src/**' --watch 'queries' --ext 'ts,graphql' --exec 'pnpm build'",
-    "generate:types-gql": "NODE_OPTIONS='--import @swc-node/register/esm-register' graphql-codegen-esm --config codegen.ts",
+    "generate:types-gql": "graphql-codegen-esm --require ./register-ts.mjs --config codegen.ts",
     "test": "vitest run"
   },
   "dependencies": {
