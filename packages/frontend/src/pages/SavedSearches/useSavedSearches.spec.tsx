@@ -2,6 +2,8 @@ import { act, renderHook } from '@testing-library/react';
 import type { SavedSearchesFieldsFragment } from 'bff-types-generated';
 import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
 import { createCustomWrapper } from '../../../tests/test-utils.tsx';
+import { Analytics } from '../../analytics/analytics.ts';
+import { ANALYTICS_EVENTS } from '../../analytics/analyticsEvents.ts';
 import {
   convertFilterStateToFilters,
   convertFiltersToFilterState,
@@ -477,7 +479,7 @@ describe('useSavedSearches', () => {
 
   it('onDeleteSavedSearch calls deleteSavedSearch and shows success snackbar', async () => {
     setupAuthQuery();
-    mockDeleteSavedSearch.mockResolvedValue({});
+    mockDeleteSavedSearch.mockResolvedValue({ deleteSavedSearch: { success: true, message: '' } });
 
     const { result } = renderHook(() => useSavedSearches(['urn:altinn:person:identifier-no:1']), {
       wrapper: createCustomWrapper(),
@@ -491,7 +493,33 @@ describe('useSavedSearches', () => {
     expect(mockOpenSnackbar).toHaveBeenCalledWith(
       expect.objectContaining({ message: 'savedSearches.deleted_success', color: 'company' }),
     );
+    expect(Analytics.trackEvent).toHaveBeenCalledWith(ANALYTICS_EVENTS.SAVED_SEARCH_DELETE_SUCCESS, {
+      'search.id': 7,
+    });
   });
+
+  it.each([{ success: false, message: '' }, null, undefined])(
+    'onDeleteSavedSearch shows failure when the mutation result is %j',
+    async (mutationResult) => {
+      setupAuthQuery();
+      mockDeleteSavedSearch.mockResolvedValue({ deleteSavedSearch: mutationResult });
+
+      const { result } = renderHook(() => useSavedSearches(['urn:altinn:person:identifier-no:1']), {
+        wrapper: createCustomWrapper(),
+      });
+
+      await act(async () => {
+        await result.current.onDeleteSavedSearch('7');
+      });
+
+      expect(mockOpenSnackbar).toHaveBeenCalledExactlyOnceWith({
+        message: 'savedSearches.delete_failed',
+        color: 'danger',
+      });
+      expect(Analytics.trackEvent).not.toHaveBeenCalled();
+      expect(result.current.isCTALoading).toBe(false);
+    },
+  );
 
   it('onDeleteSavedSearch shows error snackbar on failure', async () => {
     setupAuthQuery();
@@ -512,7 +540,7 @@ describe('useSavedSearches', () => {
 
   it('onSaveSearch calls updateSavedSearch and shows success snackbar', async () => {
     setupAuthQuery();
-    mockUpdateSavedSearch.mockResolvedValue({});
+    mockUpdateSavedSearch.mockResolvedValue({ updateSavedSearch: { success: true, message: '' } });
 
     const { result } = renderHook(() => useSavedSearches(['urn:altinn:person:identifier-no:1']), {
       wrapper: createCustomWrapper(),
@@ -522,14 +550,40 @@ describe('useSavedSearches', () => {
     expect(result.current.onSaveSearch).toBeDefined();
 
     await act(async () => {
-      result.current.onSaveSearch!('2', 'New title');
+      await result.current.onSaveSearch!('2', 'New title');
     });
 
     expect(mockUpdateSavedSearch).toHaveBeenCalledWith(2, 'New title');
     expect(mockOpenSnackbar).toHaveBeenCalledWith(
       expect.objectContaining({ message: 'savedSearches.update_success', color: 'company' }),
     );
+    expect(Analytics.trackEvent).toHaveBeenCalledWith(ANALYTICS_EVENTS.SAVED_SEARCH_TITLE_UPDATE_SUCCESS, {
+      'search.id': '2',
+      'search.newTitleLength': 9,
+    });
   });
+
+  it.each([{ success: false, message: '' }, null, undefined])(
+    'onSaveSearch shows failure when the mutation result is %j',
+    async (mutationResult) => {
+      setupAuthQuery();
+      mockUpdateSavedSearch.mockResolvedValue({ updateSavedSearch: mutationResult });
+
+      const { result } = renderHook(() => useSavedSearches(['urn:altinn:person:identifier-no:1']), {
+        wrapper: createCustomWrapper(),
+      });
+
+      await act(async () => {
+        await result.current.onSaveSearch!('2', 'New title');
+      });
+
+      expect(mockOpenSnackbar).toHaveBeenCalledExactlyOnceWith({
+        message: 'savedSearches.update_failed',
+        color: 'danger',
+      });
+      expect(Analytics.trackEvent).not.toHaveBeenCalled();
+    },
+  );
 
   it('manages openedSavedSearch state via onCloseSavedSearch', () => {
     setupAuthQuery();
