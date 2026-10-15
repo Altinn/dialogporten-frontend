@@ -26,10 +26,12 @@ export const createSavedSearch = async ({ name, data, pid }: CreateSavedSearch) 
   return await SavedSearchRepository!.save(newSavedSearch);
 };
 
-export const deleteSavedSearch = async (id: number) => {
-  return await SavedSearchRepository!.delete({ id });
+export const deleteSavedSearch = async (id: number, pid: string) => {
+  if (!pid) throw new Error('Missing session identity');
+  return await SavedSearchRepository!.delete({ id, profile: { pid } });
 };
 
-export const updateSavedSearch = async (id: number, name: string) => {
-  return await SavedSearchRepository!.update(id, { name });
+export const updateSavedSearch = async (id: number, name: string, pid: string) => {
+  if (!pid) throw new Error('Missing session identity');
+  return await SavedSearchRepository!.update({ id, profile: { pid } }, { name });
 };
