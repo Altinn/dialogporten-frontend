@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { filterAppConfigSpans, filterGraphQLSpans } from '../src/instrumentationFilters.ts';
+import { filterAppConfigSpans, filterGraphQLSpans, serializeRedisCommand } from '../src/instrumentationFilters.ts';
 
 describe('filterGraphQLSpans', () => {
   it('returns true for internal GraphQL parse and validation spans', () => {
@@ -38,4 +38,23 @@ describe('filterAppConfigSpans', () => {
       }),
     ).toBe(false);
   });
+});
+
+describe('Redis telemetry', () => {
+  it.each(['eval', 'evalsha', 'get', 'set', 'multi', 'del'])(
+    'excludes session IDs and credentials from %s spans',
+    (command) => {
+      const statement = serializeRedisCommand(command, [
+        'session-script',
+        2,
+        'sess:private-session-id',
+        JSON.stringify({
+          pid: 'private-pid',
+          token: { access_token: 'private-access-token', refresh_token: 'private-refresh-token' },
+        }),
+      ]);
+      expect(statement).toBe(command);
+      expect(statement).not.toContain('private-');
+    },
+  );
 });

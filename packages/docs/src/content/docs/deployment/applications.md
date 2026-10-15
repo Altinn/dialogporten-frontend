@@ -13,7 +13,7 @@ Refer to the existing applications like `bff` and `frontend` as templates.
 
 ## Deploying applications in a new infrastructure environment
 
-Ensure you have followed the steps in [Deploying a new infrastructure environment](./infrastructure.md) to have the resources required for the applications.
+Ensure you have followed the steps in [Deploying a new infrastructure environment](../infrastructure/#deploying-a-new-infrastructure-environment) to have the resources required for the applications.
 
 Use the following steps:
 

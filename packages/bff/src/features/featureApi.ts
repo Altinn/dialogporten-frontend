@@ -18,6 +18,7 @@ const defaultFeatureFlags: Record<string, boolean> = {
   'dialogDetails.enableNotificationLogs': false,
   'dialogDetails.enableLabelAssignmentLogs': false,
   'dialogDetails.enableActivityLogFilter': false,
+  'dialogDetails.enableForwardByEmail': false,
 };
 
 const defaultAppConfigValues: Record<string, string[]> = {

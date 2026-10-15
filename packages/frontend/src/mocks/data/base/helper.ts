@@ -1,6 +1,7 @@
 import {
   ActivityType,
   ActorType,
+  type AttachmentFieldsFragment,
   AttachmentUrlConsumer,
   type DialogByIdFieldsFragment,
   GuiActionPriority,
@@ -13,6 +14,7 @@ import {
 } from 'bff-types-generated';
 import { naiveSearchFilter } from '../../filters';
 import type { InMemoryStore } from '../../handlers.ts';
+import { forwardingScenarios } from '../stories/forward-by-email/forwarding.ts';
 
 export const MAX_PARTY_URIS = 100;
 export const MAX_SERVICE_RESOURCES = 20;
@@ -176,6 +178,66 @@ export const dialogWithoutActivities = '019241f7-8218-7756-be82-noactivities';
 
 export const dialogWithEmptyActivityLog = '019241f7-8218-7756-be82-emptyactivitylog';
 
+export const dialogWithSharedActivityAndTransmissionId = '019d0152-d7f9-7050-bac9-b8b52cdb4db8';
+
+const sharedActivityAndTransmissionId = '019d0153-2419-772a-a90c-dabeb1e10337';
+
+const testDriverActor = {
+  actorType: ActorType.PartyRepresentative,
+  actorId: 'urn:altinn:person:identifier-ephemeral:9587188c95',
+  actorName: 'NITROGEN LEKKER',
+};
+
+export const dialogWithSearchableTransmissions = '019f02f8-22a0-7492-8fe2-74d92d4e5019';
+
+const searchableTransmission = (
+  id: string,
+  type: TransmissionType,
+  { title = 'Forsendelsesstittel', summary = 'Transmisjon oppsummering', withContentReference = true } = {},
+) => ({
+  id,
+  isAuthorized: true,
+  createdAt: '2026-06-26T08:07:24.063953Z',
+  type,
+  sender: { actorType: ActorType.ServiceOwner, actorId: null, actorName: null },
+  relatedTransmissionId: null,
+  content: {
+    title: {
+      value: [
+        { value: 'Transmission title', languageCode: 'en' },
+        { value: title, languageCode: 'nb' },
+      ],
+      mediaType: 'text/plain',
+    },
+    summary: {
+      value: [
+        { value: 'Transmission summary', languageCode: 'en' },
+        { value: summary, languageCode: 'nb' },
+      ],
+      mediaType: 'text/plain',
+    },
+    contentReference: withContentReference ? getMockedFCEContent(id) : null,
+  },
+  attachments: [
+    {
+      id: `${id}-attachment`,
+      displayName: [
+        { value: 'Transmission attachment display name', languageCode: 'en' },
+        { value: 'Visningsnavn for forsendelsesvedlegg', languageCode: 'nb' },
+      ],
+      expiresAt: null,
+      urls: [
+        {
+          id: `${id}-attachment-url`,
+          url: 'https://info.altinn.no/om-altinn/',
+          consumerType: AttachmentUrlConsumer.Gui,
+          mediaType: null,
+        },
+      ],
+    },
+  ],
+});
+
 const serviceOwnerActor = {
   actorType: ActorType.ServiceOwner,
   actorId: 'actor-01',
@@ -197,6 +259,57 @@ const otherPartyActor = {
 export const getMockedActivities = (id: string): DialogByIdFieldsFragment['activities'] => {
   if (id === dialogWithoutActivities || id === dialogWithEmptyActivityLog) {
     return [];
+  }
+  if (id === dialogWithSearchableTransmissions) {
+    return [
+      {
+        id: '019f02f8-22a0-7492-8fef-fc751b0c7ca3',
+        transmissionId: null,
+        performedBy: { actorType: ActorType.PartyRepresentative, actorId: null, actorName: 'somename' },
+        description: [],
+        type: ActivityType.DialogCreated,
+        createdAt: '2023-11-16T13:35:44.226849Z',
+      },
+      {
+        id: '019f02f8-22a0-7492-8ffc-b435813ae8a2',
+        transmissionId: null,
+        performedBy: { actorType: ActorType.ServiceOwner, actorId: null, actorName: null },
+        description: [
+          { value: 'Form created and pre-filled', languageCode: 'en' },
+          { value: 'Skjema opprettet og forhåndsutfylt', languageCode: 'nb' },
+        ],
+        type: ActivityType.Information,
+        createdAt: '2023-11-16T13:35:44.226849Z',
+      },
+    ];
+  }
+  if (id === dialogWithSharedActivityAndTransmissionId) {
+    return [
+      {
+        id: '019d0152-d7fd-7fab-b832-c7a0c7a765a3',
+        transmissionId: null,
+        performedBy: testDriverActor,
+        description: [],
+        type: ActivityType.DialogCreated,
+        createdAt: '2026-03-18T14:21:39.709364Z',
+      },
+      {
+        id: '019d0152-ec81-79d1-8dc7-9b58a4aa878d',
+        transmissionId: null,
+        performedBy: testDriverActor,
+        description: [],
+        type: ActivityType.FormSaved,
+        createdAt: '2026-03-18T14:21:58.175513Z',
+      },
+      {
+        id: sharedActivityAndTransmissionId,
+        transmissionId: null,
+        performedBy: testDriverActor,
+        description: [],
+        type: ActivityType.FormSubmitted,
+        createdAt: '2026-03-18T14:21:59.19374Z',
+      },
+    ];
   }
   if (id === '019241f7-8218-7756-be82-123qwe456rtA') {
     return [
@@ -484,6 +597,20 @@ const labelAssignmentServiceOwner = (name: string, action: string, createdAt: st
 });
 
 export const getMockedLabelAssignmentLogs = (dialogId: string) => {
+  if (dialogId === dialogWithSharedActivityAndTransmissionId) {
+    const filedBy = {
+      actorType: ActorType.PartyRepresentative,
+      actorId: 'urn:altinn:person:identifier-ephemeral:8c64174ef5',
+      actorName: 'NITROGEN LEKKER',
+    };
+    return [
+      labelAssignmentServiceOwner('systemlabel:Sent', 'set', '2026-03-18T14:22:05.085744Z'),
+      { name: 'systemlabel:Bin', action: 'set', createdAt: '2026-03-18T14:22:12.963361Z', performedBy: filedBy },
+      { name: 'systemlabel:Archive', action: 'set', createdAt: '2026-05-29T08:30:59.312424Z', performedBy: filedBy },
+      { name: 'systemlabel:Bin', action: 'remove', createdAt: '2026-05-29T08:30:59.312424Z', performedBy: filedBy },
+    ];
+  }
+
   if (dialogId !== '019241f7-8218-7756-be82-123qwe456rtA') {
     return [];
   }
@@ -508,6 +635,74 @@ export const getMockedLabelAssignmentLogs = (dialogId: string) => {
 
 export const getMockedTransmissions = (dialogId: string) => {
   const dialogWithTransmissions = '019241f7-8218-7756-be82-123qwe456rtA';
+  if (dialogId === dialogWithSearchableTransmissions) {
+    return [
+      searchableTransmission('019f02f8-229a-7591-97c7-2cb62ba4e5e5', TransmissionType.Information),
+      searchableTransmission('019f02f8-229a-7591-97c9-a34ef82fd57e', TransmissionType.Acceptance, {
+        title: 'Forsendelsetittel',
+        summary: 'Forsendelsesoppsummering',
+        withContentReference: false,
+      }),
+      searchableTransmission('019f02f8-229a-7591-97d2-5d91f2799062', TransmissionType.Rejection),
+      searchableTransmission('019f02f8-229a-7591-97d5-05f86903a0a9', TransmissionType.Request),
+      searchableTransmission('019f02f8-229a-7591-97e2-5345c541a716', TransmissionType.Alert),
+      searchableTransmission('019f02f8-229a-7591-97e9-c6bba0dbaaf7', TransmissionType.Decision),
+      searchableTransmission('019f02f8-229a-7591-97f3-8f3b33700560', TransmissionType.Submission),
+      searchableTransmission('019f02f8-229a-7591-97f5-c01862d82bee', TransmissionType.Correction),
+    ];
+  }
+  if (dialogId === dialogWithSharedActivityAndTransmissionId) {
+    return [
+      {
+        id: sharedActivityAndTransmissionId,
+        isAuthorized: true,
+        createdAt: '2026-03-18T14:21:59.19374Z',
+        type: TransmissionType.Submission,
+        sender: testDriverActor,
+        relatedTransmissionId: null,
+        content: {
+          title: {
+            value: [
+              { value: 'Submission #1', languageCode: 'en' },
+              { value: 'Innsending #1', languageCode: 'nb' },
+              { value: 'Innsending #1', languageCode: 'nn' },
+            ],
+            mediaType: 'text/plain',
+          },
+          summary: null,
+          contentReference: null,
+        },
+        attachments: [
+          {
+            id: '019d0153-2419-74e9-a9fb-a03de5669849',
+            displayName: [{ value: 'Testdriver for Arbeidsflate - English variation.pdf', languageCode: 'nb' }],
+            expiresAt: null,
+            urls: [
+              {
+                id: '019d0153-3b1e-7328-b017-40210770a19c',
+                url: 'https://info.altinn.no/om-altinn/',
+                consumerType: AttachmentUrlConsumer.Gui,
+                mediaType: 'application/pdf',
+              },
+            ],
+          },
+          {
+            id: '019d0153-2419-7563-8d94-f91b1679ebc0',
+            displayName: [{ value: 'model', languageCode: 'nb' }],
+            expiresAt: null,
+            urls: [
+              {
+                id: '019d0153-3b1e-7328-b006-a9d66eaf69cd',
+                url: 'https://info.altinn.no/om-altinn/',
+                consumerType: AttachmentUrlConsumer.Api,
+                mediaType: 'application/xml',
+              },
+            ],
+          },
+        ],
+      },
+    ];
+  }
   if (dialogId === dialogWithoutActivities) {
     return [
       {
@@ -1010,7 +1205,73 @@ export const getMockedTransmissions = (dialogId: string) => {
    unauthorized, and so renders disabled and cannot exercise that flow. */
 export const dialogWithPromptAction = '019241f7-8218-7756-be82-promptaction';
 
+export const dialogWithMultipleActions = '019241f7-8218-7756-be82-multiactions';
+
 const getMockedGuiActions = (id: string): DialogByIdFieldsFragment['guiActions'] => {
+  if (id === dialogWithMultipleActions) {
+    return [
+      {
+        id: 'read-guidance',
+        url: 'https://info.altinn.no/om-altinn/',
+        isAuthorized: true,
+        isDeleteDialogAction: false,
+        action: 'read',
+        authorizationAttribute: null,
+        priority: GuiActionPriority.Tertiary,
+        httpMethod: HttpVerb.Get,
+        title: [{ languageCode: 'nb', value: 'Les veiledning' }],
+        prompt: [],
+      },
+      {
+        id: 'request-extension',
+        url: 'https://dialogporten-serviceprovider.net/mutate/extension',
+        isAuthorized: true,
+        isDeleteDialogAction: false,
+        action: 'write',
+        authorizationAttribute: null,
+        priority: GuiActionPriority.Secondary,
+        httpMethod: HttpVerb.Post,
+        title: [{ languageCode: 'nb', value: 'Be om utsettelse' }],
+        prompt: [{ languageCode: 'nb', value: 'Vil du be om utsettelse?' }],
+      },
+      {
+        id: 'open-form',
+        url: 'https://info.altinn.no/skjemaoversikt/',
+        isAuthorized: true,
+        isDeleteDialogAction: false,
+        action: 'submit',
+        authorizationAttribute: null,
+        priority: GuiActionPriority.Primary,
+        httpMethod: HttpVerb.Get,
+        title: [{ languageCode: 'nb', value: 'Gå til skjema' }],
+        prompt: [],
+      },
+      {
+        id: 'delete-dialog',
+        url: 'https://dialogporten-serviceprovider.net/mutate/delete',
+        isAuthorized: true,
+        isDeleteDialogAction: true,
+        action: 'delete',
+        authorizationAttribute: null,
+        priority: GuiActionPriority.Tertiary,
+        httpMethod: HttpVerb.Delete,
+        title: [{ languageCode: 'nb', value: 'Slett dialogen' }],
+        prompt: [],
+      },
+      {
+        id: 'withdraw',
+        url: 'urn:dialogporten:unauthorized',
+        isAuthorized: false,
+        isDeleteDialogAction: false,
+        action: 'withdraw',
+        authorizationAttribute: null,
+        priority: GuiActionPriority.Secondary,
+        httpMethod: HttpVerb.Post,
+        title: [{ languageCode: 'nb', value: 'Trekk tilbake' }],
+        prompt: [],
+      },
+    ];
+  }
   if (id === dialogWithPromptAction) {
     return [
       {
@@ -1058,6 +1319,26 @@ const getMockedGuiActions = (id: string): DialogByIdFieldsFragment['guiActions']
   ];
 };
 
+const getMockedAttachments = (dialogId: string): AttachmentFieldsFragment[] =>
+  Array.from({ length: forwardingScenarios[dialogId]?.attachmentCount ?? 1 }, (_, index) => ({
+    id: index === 0 ? dialogId : `${dialogId}-${index}`,
+    expiresAt: new Date(Date.now() + 60_000 * 1000).toISOString(),
+    displayName: [
+      {
+        value: index === 0 ? 'kvittering.pdf' : `vedlegg-${index + 1}.pdf`,
+        languageCode: 'nb',
+      },
+    ],
+    urls: [
+      {
+        id: index === 0 ? 'hello-attachment-id' : `hello-attachment-id-${index}`,
+        url: 'https://info.altinn.no/om-altinn/',
+        mediaType: 'application/pdf',
+        consumerType: AttachmentUrlConsumer.Gui,
+      },
+    ],
+  }));
+
 export const convertToDialogByIdTemplate = (input: SearchDialogFieldsFragment): DialogByIdFieldsFragment => {
   return {
     id: input.id,
@@ -1067,26 +1348,7 @@ export const convertToDialogByIdTemplate = (input: SearchDialogFieldsFragment): 
     org: input.org,
     progress: input.progress,
     endUserContext: input.endUserContext,
-    attachments: [
-      {
-        id: input.id,
-        expiresAt: new Date(Date.now() + 60_000 * 1000).toISOString(),
-        displayName: [
-          {
-            value: 'kvittering.pdf',
-            languageCode: 'nb',
-          },
-        ],
-        urls: [
-          {
-            id: 'hello-attachment-id',
-            url: 'https://info.altinn.no/om-altinn/',
-            mediaType: 'application/pdf',
-            consumerType: AttachmentUrlConsumer.Gui,
-          },
-        ],
-      },
-    ],
+    attachments: getMockedAttachments(input.id),
     activities: getMockedActivities(input.id),
     transmissions: getMockedTransmissions(input.id),
     fromServiceOwnerTransmissionsCount: 3,

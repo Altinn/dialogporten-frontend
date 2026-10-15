@@ -1,0 +1,174 @@
+---
+import AnatomyFrame from './AnatomyFrame.astro';
+import Icon from './AnatomyIcon.astro';
+---
+
+<AnatomyFrame label="DialogListItem">
+  <Fragment slot="mock">
+    <div class="a-grp" data-zone="G">
+      <span data-f="contentUpdatedAt → month" data-s="fe">Oktober</span>
+      <span class="a-pin" data-pin="G">G</span>
+    </div>
+    <div class="a-list">
+      <article class="a-dli a-unread a-tone-person">
+        <div class="a-dli-main">
+          <div class="a-dli-title">
+            <span class="a-t" data-zone="1"><span data-f="content.title">Skattemeldingen for 2025</span></span>
+            <span class="a-pin" data-pin="1">1</span>
+            <span class="a-badge a-tinted" data-zone="2" data-f="isContentSeen = false">Ulest</span>
+            <span class="a-pin" data-pin="2">2</span>
+          </div>
+          <div class="a-byline" data-zone="3">
+            <span class="a-av a-logo" data-f="org → logo" data-s="org">SK</span>
+            <strong data-f="content.senderName ?? org → name">Skatteetaten</strong>
+            <span>til</span>
+            <span data-f="party → name" data-s="party">Kari Nordmann</span>
+            <span class="a-pin" data-pin="3">3</span>
+          </div>
+          <p class="a-sum" data-zone="4">
+            <span data-f="content.summary">Vi trenger mer dokumentasjon på fradraget for reisekostnader.</span>
+            <span class="a-pin" data-pin="4">4</span>
+          </p>
+          <div class="a-dli-foot">
+            <div class="a-meta" data-zone="5">
+              <span class="a-st a-strong" data-f="status">Krever handling</span>
+              <span class="a-st" data-f="content.extendedStatus">Dokumentasjon mangler</span>
+              <span class="a-mi" data-f="contentUpdatedAt">9. oktober 2026 kl. 14.03</span>
+              <span class="a-mi"><Icon name="clip" /><span data-f="guiAttachmentCount">2</span></span>
+              <span class="a-mi"><Icon name="sent" /><span data-f="fromPartyTransmissionsCount">1</span></span>
+              <span class="a-mi"><Icon name="received" /><span data-f="fromServiceOwnerTransmissionsCount">2</span></span>
+              <span class="a-due"><Icon name="due" size={13} /><span data-f="dueAt">Frist: 30. november 2026 kl. 23.59</span></span>
+              <span class="a-badge a-ghost" data-f="systemLabels has ARCHIVE | BIN">Arkiv</span>
+              <span class="a-pin" data-pin="5">5</span>
+            </div>
+            <div class="a-meta" data-zone="6">
+              <span class="a-avs" data-f="seenSinceLastContentUpdate"><span class="a-av a-pe a-sm">OH</span></span>
+              <span class="a-pin" data-pin="6">6</span>
+            </div>
+          </div>
+        </div>
+        <div class="a-dli-ctl" data-zone="7">
+          <span class="a-kebab"><Icon name="dots" size={16} /></span>
+          <span class="a-pin" data-pin="7">7</span>
+        </div>
+      </article>
+
+      <article class="a-dli a-tone-company">
+        <div class="a-dli-main">
+          <div class="a-dli-title">
+            <span class="a-t" data-f="content.title">Årsregnskapet for 2025 er registrert</span>
+          </div>
+          <div class="a-byline">
+            <span class="a-av a-logo" data-f="org → logo" data-s="org">BR</span>
+            <strong data-f="content.senderName ?? org → name">Brønnøysundregistrene</strong>
+            <span>til</span>
+            <span data-f="party → name" data-s="party">Nordmann Bygg AS</span>
+          </div>
+          <p class="a-sum"><span data-f="content.summary">Regnskapet er kontrollert og offentliggjort.</span></p>
+          <div class="a-dli-foot">
+            <div class="a-meta">
+              <span class="a-st" data-f="status">Avsluttet</span>
+              <span class="a-mi" data-f="contentUpdatedAt">2. oktober 2026 kl. 09.15</span>
+            </div>
+            <div class="a-meta">
+              <span class="a-avs" data-f="seenSinceLastContentUpdate"><span class="a-av a-pe a-sm">KN</span></span>
+            </div>
+          </div>
+        </div>
+        <div class="a-dli-ctl">
+          <span class="a-kebab"><Icon name="dots" size={16} /></span>
+        </div>
+      </article>
+    </div>
+    <p class="a-cap">Top: unread, a person as recipient. Bottom: read, an organisation as recipient, completed.</p>
+  </Fragment>
+
+  <Fragment slot="legend">
+    <li data-pin="1" tabindex="0">
+      <span class="a-pin">1</span>
+      <div>
+        <strong>Title</strong>
+        <p>
+          <code class="a-fld">content.title</code>. Bold while unread, two lines at most. Search terms are highlighted.
+        </p>
+      </div>
+    </li>
+    <li data-pin="2" tabindex="0">
+      <span class="a-pin">2</span>
+      <div>
+        <strong>Unread badge</strong>
+        <p>
+          <em>Ulest</em> when <code class="a-fld">isContentSeen</code> is false. Otherwise <em>Ulest innhold</em> when
+          <code class="a-fld">hasUnopenedContent</code> is true, for example a new transmission nobody has opened.
+        </p>
+      </div>
+    </li>
+    <li data-pin="3" tabindex="0">
+      <span class="a-pin">3</span>
+      <div>
+        <strong>Sender and recipient</strong>
+        <p>
+          The sender is <code class="a-fld">content.senderName</code>, falling back to the name of the service owner in
+          <code class="a-fld">org</code>. The logo comes from <code class="a-fld a-s-org">organizations</code> and is only
+          shown when the service owner is the sender. The recipient is the name of <code class="a-fld">party</code>, looked
+          up in <code class="a-fld a-s-party">parties</code>. Sub-units get an outlined avatar.
+        </p>
+        <p>When the user has several parties selected, both the recipient's and the sender's avatar are shown.</p>
+      </div>
+    </li>
+    <li data-pin="4" tabindex="0">
+      <span class="a-pin">4</span>
+      <div>
+        <strong>Summary</strong>
+        <p><code class="a-fld">content.summary</code>, two lines at most.</p>
+      </div>
+    </li>
+    <li data-pin="5" tabindex="0">
+      <span class="a-pin">5</span>
+      <div>
+        <strong>Metadata</strong>
+        <p>
+          Status, extended status, last updated, attachments, sent and received, due date and folder. The rules are in the
+          table below.
+        </p>
+      </div>
+    </li>
+    <li data-pin="6" tabindex="0">
+      <span class="a-pin">6</span>
+      <div>
+        <strong>Seen by</strong>
+        <p>
+          Everyone who has opened the dialog since it last changed: <code class="a-fld">seenSinceLastContentUpdate</code>.
+          The user appears as <em>deg</em>.
+        </p>
+      </div>
+    </li>
+    <li data-pin="7" tabindex="0">
+      <span class="a-pin">7</span>
+      <div>
+        <strong>Menu</strong>
+        <p>Built in the frontend. In bulk mode it is replaced by a checkbox.</p>
+        <ul>
+          <li><em>Velg flere …</em></li>
+          <li>
+            <em>Marker som ulest</em>, <em>Flytt til arkivet</em>, <em>Flytt til papirkurven</em>, <em>Angre</em>: from
+            <code class="a-fld">endUserContext.systemLabels</code> and <code class="a-fld">isContentSeen</code>
+          </li>
+          <li><em>Sett av …</em>: <code class="a-fld">seenSinceLastContentUpdate</code></li>
+          <li><em>Om fullmakt og tjeneste</em></li>
+        </ul>
+      </div>
+    </li>
+    <li data-pin="G" tabindex="0">
+      <span class="a-pin">G</span>
+      <div>
+        <strong>Group</strong>
+        <p>
+          The month of <code class="a-fld">contentUpdatedAt</code> when every dialog is from this year, otherwise the
+          year. Bankruptcy-estate dialogs (<code class="a-fld">serviceResource</code> is
+          <code class="a-fld a-s-fe">app_brg_konkursbehandling</code>) always come first. Search results are one group.
+        </p>
+      </div>
+    </li>
+  </Fragment>
+</AnatomyFrame>

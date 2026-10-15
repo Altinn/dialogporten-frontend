@@ -19,6 +19,7 @@ import {
   getMockedLabelAssignmentLogs,
   getMockedNotificationLogs,
 } from './data/base/helper.ts';
+import { type ForwardingMock, forwardingScenarios } from './data/stories/forward-by-email/forwarding.ts';
 import { getMockedData } from './data.ts';
 
 const data = await getMockedData(window.location.href);
@@ -782,7 +783,10 @@ const dialogAccessInfoMock = graphql.query('dialogAccessInfo', ({ variables }) =
     data: {
       dialogLookup: {
         lookup: {
-          instanceRef,
+          instanceRef:
+            dialog.serviceResourceType?.toLowerCase() === 'correspondenceservice'
+              ? `urn:altinn:correspondence-id:${dialog.id}`
+              : instanceRef,
           dialogId: dialog.id,
           serviceResource: {
             id: dialog.serviceResource,
@@ -818,6 +822,54 @@ const dialogAccessInfoMock = graphql.query('dialogAccessInfo', ({ variables }) =
         },
         errors: [],
       },
+    },
+  });
+});
+
+const forwardingByCorrespondenceId: Record<string, ForwardingMock> = {
+  '019241f7-67dc-7562-a56f-1634796039e5': 'notAllowed',
+  ...Object.fromEntries(Object.entries(forwardingScenarios).map(([id, { forwarding }]) => [id, forwarding])),
+};
+
+const correspondenceForwardingCheckMock = graphql.query('correspondenceForwardingCheck', ({ variables }) => {
+  const { correspondenceId } = variables as { correspondenceId: string };
+  const forwarding = forwardingByCorrespondenceId[correspondenceId] ?? 'allowed';
+  const allowed = forwarding !== 'notAllowed' && !!inMemoryStore.dialogs?.some((d) => d.id === correspondenceId);
+
+  return HttpResponse.json({
+    data: {
+      correspondenceForwardingCheck: {
+        allowed,
+        attachmentsExceedMaxLimit: allowed && forwarding === 'attachmentsExceedMaxLimit',
+      },
+    },
+  });
+});
+
+const forwardFailuresByLocalPart: Record<string, { status: number; errorCode: number | null }> = {
+  'allerede.videresendt': { status: 400, errorCode: 1064 },
+  'ikke.lest': { status: 400, errorCode: 1065 },
+  'ugyldig.melding': { status: 400, errorCode: 1066 },
+  'ugyldig.adresse': { status: 400, errorCode: 3011 },
+  feil: { status: 500, errorCode: null },
+};
+
+const forwardCorrespondenceMock = graphql.mutation('forwardCorrespondence', ({ variables }) => {
+  const { correspondenceId, forwardTo, includeAttachments } = variables as {
+    correspondenceId: string;
+    forwardTo?: string;
+    includeAttachments?: boolean;
+  };
+  const failure =
+    includeAttachments && forwardingByCorrespondenceId[correspondenceId] === 'attachmentsExceedMaxLimit'
+      ? { status: 400, errorCode: 1071 }
+      : forwardFailuresByLocalPart[forwardTo?.toLowerCase().split('@')[0] ?? ''];
+
+  return HttpResponse.json({
+    data: {
+      forwardCorrespondence: failure
+        ? { success: false, ...failure }
+        : { success: true, status: null, errorCode: null },
     },
   });
 });
@@ -919,6 +971,8 @@ export const handlers = [
   getServiceResourcesMock,
   getFilterServiceResourcesMock,
   dialogAccessInfoMock,
+  correspondenceForwardingCheckMock,
+  forwardCorrespondenceMock,
   labelAssignmentLogMock,
   mockNotificationsettingsForCurrentUser,
   mockUpdateNotificationSetting,

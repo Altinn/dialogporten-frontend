@@ -94,8 +94,6 @@ export interface DialogActionProps {
   hidden?: boolean;
 }
 
-const dialogActionsMaxItems = 2;
-
 const isNavigationAction = ({ httpMethod, prompt, disabled }: DialogActionProps): boolean =>
   httpMethod === 'GET' && !prompt && !disabled;
 
@@ -334,7 +332,8 @@ export const DialogDetails = ({
           kind: dialogHistoryItem.type,
           datetime: dialogHistoryItem.date,
           searchText: dialogHistoryItem.items
-            .map((item) => [item.title, item.summary].filter(Boolean).join(' '))
+            .map((item) => item.title)
+            .filter(Boolean)
             .join(' '),
           children: (highlightWords: string[]) => (
             <TransmissionList
@@ -417,8 +416,6 @@ export const DialogDetails = ({
   const clockPrefix = t('word.clock_prefix');
   const formatString = clockPrefix ? `do MMMM yyyy '${clockPrefix}' HH.mm` : `do MMMM yyyy HH.mm`;
   const numberOfTransmissionGroups = 3;
-  const visibleActionCount = dialog.guiActions.filter((action) => !action.hidden).length;
-  const rendersAsComboButton = visibleActionCount > dialogActionsMaxItems;
   const dialogActions: DialogActionButtonProps[] = dialog.guiActions.map((action) => {
     const isBusy = actionIdLoading === action.id || actionIdUpdating === action.id;
     const commonProps = {
@@ -428,7 +425,7 @@ export const DialogDetails = ({
       hidden: action.hidden,
     };
 
-    if (!rendersAsComboButton && isNavigationAction(action)) {
+    if (isNavigationAction(action)) {
       return {
         ...commonProps,
         as: 'a',
@@ -516,7 +513,7 @@ export const DialogDetails = ({
             items={dialog.attachments}
           />
         )}
-        <DialogActions items={dialogActions} maxItems={dialogActionsMaxItems} id="gui-actions" />
+        <DialogActions items={dialogActions} />
       </DialogBody>
       {transmissions?.length > 0 && (
         <Timeline>

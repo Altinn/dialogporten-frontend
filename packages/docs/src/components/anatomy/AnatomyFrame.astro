@@ -1,0 +1,38 @@
+---
+import './anatomy.css';
+
+interface Props {
+  label: string;
+}
+
+const { label } = Astro.props;
+---
+
+<figure class="anatomy not-content" data-anatomy>
+  <div class="a-canvas">
+    <div class="a-bar">
+      <span class="a-label">{label}</span>
+      <div class="a-toggle" role="group" aria-label="Show rendered content or the fields behind it">
+        <button type="button" data-anatomy-mode="content" aria-pressed="true">Content</button>
+        <button type="button" data-anatomy-mode="fields" aria-pressed="false">Fields</button>
+      </div>
+    </div>
+    <div class="a-mock">
+      <slot name="mock" />
+    </div>
+    <div class="a-key">
+      <span><i class="a-sw a-s-dp"></i>Dialogporten</span>
+      <span><i class="a-sw a-s-org"></i>Organisation registry</span>
+      <span><i class="a-sw a-s-party"></i>Parties</span>
+      <span><i class="a-sw a-s-fe"></i>Derived in the frontend</span>
+      <span><i class="a-ghostkey"></i>Dashed: only shown when a condition is met</span>
+    </div>
+  </div>
+  <ol class="a-legend">
+    <slot name="legend" />
+  </ol>
+</figure>
+
+<script>
+  import './anatomy.ts';
+</script>

@@ -18,6 +18,7 @@ They are defined in the frontend, but their values are fetched from the BFF (`/a
   - Valid types are:
     - `boolean` → simple on/off toggle
     - `number` or `string` → variant flags (e.g., `"theme.variant" = "dark"`)
+    - `string-array` → list of values (e.g., `auth.orgsNotReadyToDealWithDelegations`), see [Value settings](#value-settings)
     -  Keys use **dot notation** to indicate scope or grouping, e.g.:
      ```
      profile.enableRoutes
@@ -29,7 +30,9 @@ They are defined in the frontend, but their values are fetched from the BFF (`/a
    Add the same key (with a matching default value) to  
    `defaultFeatureFlags` in  
    `./bff/src/features/featureApi.ts`.  
-   This ensures the BFF always has a fallback if Azure App Config is unreachable.
+   This ensures the BFF always has a fallback if Azure App Config is unreachable.  
+   The BFF only loads keys listed here. If you forget this step, the flag is never read from Azure
+   and the frontend silently uses its default value.
 
 3. **Configure it in Azure**  
    Add the key in [Azure App Configuration’s Feature Manager](https://learn.microsoft.com/en-us/azure/azure-app-configuration/manage-feature-flags?tabs=azure-portal) for each environment.
@@ -40,6 +43,18 @@ They are defined in the frontend, but their values are fetched from the BFF (`/a
     ```
     .appconfig.featureflag/profile.enableRoutes
     ```
+
+---
+
+### Value settings
+
+Flags that are not on/off toggles (currently only `auth.orgsNotReadyToDealWithDelegations`, a `string-array`)
+are not Feature Manager flags. They are ordinary key-values in App Configuration. This applies to any
+non-`boolean` type, since the BFF only resolves `boolean` keys through the Feature Manager:
+
+- Register the key in `defaultAppConfigValues` (not `defaultFeatureFlags`) in `./bff/src/features/featureApi.ts`.
+- In Azure, add it under **Configuration explorer** as a key-value with the same key (no `.appconfig.featureflag/` prefix).
+- The BFF runs `JSON.parse` on the value, so it must be valid JSON, e.g. `["digdir","skd"]`. A value that does not parse is logged as a warning and the default is used.
 
 ---
 

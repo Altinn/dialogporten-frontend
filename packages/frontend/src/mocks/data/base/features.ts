@@ -7,6 +7,7 @@ export const features = {
   'dialogDetails.enableNotificationLogs': true,
   'dialogDetails.enableLabelAssignmentLogs': true,
   'dialogDetails.enableActivityLogFilter': true,
+  'dialogDetails.enableForwardByEmail': true,
   'global.enableSkyra': false,
   'global.enableCookieBanner': false,
 };

@@ -5,7 +5,7 @@ Infrastructure definitions for the project are located in the `.azure/infrastruc
 
 For example, to add a new storage account, you would:
 - Create or update a Bicep file within the `.azure/infrastructure` folder to include the storage account resource definition.
-- Ensure that the Bicep file is referenced correctly in `.azure/infrastructure/infrastructure.bicep` to be included in the deployment process.
+- Ensure that the Bicep file is referenced correctly in `.azure/infrastructure/main.bicep` to be included in the deployment process.
 
 Refer to the existing infrastructure definitions as templates for creating new components.
 
@@ -27,9 +27,9 @@ Use the following steps:
 
 - Add a new file for the environment `.azure/infrastructure/<env>.bicepparam`. `<env>` must match the environment created in GitHub. Set `applicationGatewayConfiguration.sslCertificateKeyVaultName` in this file; all environments currently use `dis-tls-cert`.
 
-- Add the new environment in the `dispatch-infrastructure.yml` list of environments. 
+- Add the new environment in the `dispatch-deploy-infrastructure.yml` list of environments. 
 
-- Run the GitHub action `Dispatch infrastructure` with the `version` you want to deploy and `environment`. All the resources in `.azure/infrastructure/main.bicep` should now be created. 
+- Run the GitHub action `Deploy Infrastructure (Manual)` with the `version` you want to deploy and `environment`. All the resources in `.azure/infrastructure/main.bicep` should now be created. 
 
 - (The GitHub action might need to restart because of a timeout when creating Redis).
 

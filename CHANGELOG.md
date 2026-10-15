@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.181.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.181.0...v1.181.1) (2026-10-09)
+
+
+### Bug Fixes
+
+* **activitylogs:** search transmissions by title only so every match is visible ([#4714](https://github.com/Altinn/dialogporten-frontend/issues/4714)) ([a46e338](https://github.com/Altinn/dialogporten-frontend/commit/a46e33827a0ef61ff7fdfffc39f37ba9b15d1eee))
+
+## [1.181.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.180.0...v1.181.0) (2026-10-09)
+
+
+### Features
+
+* forward correspondence per email ([#4668](https://github.com/Altinn/dialogporten-frontend/issues/4668)) ([891393d](https://github.com/Altinn/dialogporten-frontend/commit/891393d2457b5da353b4d607239e84ba6769cc59))
+
+## [1.180.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.179.6...v1.180.0) (2026-10-08)
+
+
+### Features
+
+* **dialogs:** show all gui actions as buttons even they exceed 2 &lt;= ([#4710](https://github.com/Altinn/dialogporten-frontend/issues/4710)) ([20f8ef8](https://github.com/Altinn/dialogporten-frontend/commit/20f8ef8eed740543301952f8116b30de9805f015))
+
+
+### Bug Fixes
+
+* **auth:** omit session credentials from Redis telemetry ([#4702](https://github.com/Altinn/dialogporten-frontend/issues/4702)) ([d561e88](https://github.com/Altinn/dialogporten-frontend/commit/d561e88f3d3a2b7c50dfd0010e0b1dd00dd847d9))
+
 ## [1.179.6](https://github.com/Altinn/dialogporten-frontend/compare/v1.179.5...v1.179.6) (2026-10-08)
 
 

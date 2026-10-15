@@ -43,3 +43,8 @@ The build pipeline goes as follow:
 
 It does **not** watch the `bff` schema — `schema.ts` lives at the package root, outside the watched `src/**`. If you change the schema definitions in `bff`, the `bff` itself hot-reloads but the generated types do not; rebuild `bff-types-generated` manually.
 
+`generated/` is not checked in. After switching branches or rebasing, rebuild it with `pnpm --filter bff-types-generated build`.
+Otherwise `sdk.ts` can lack operations that the frontend calls, and the hooks fail silently without sending a request.
+
+If a new query returns party or person data, check that person URNs are encrypted in the response (see [Person URN encryption](../../notes/person-urn-encryption/person-urn-encryption/)).
+

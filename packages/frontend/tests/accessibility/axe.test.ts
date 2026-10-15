@@ -172,6 +172,26 @@ test.describe('Axe test', () => {
     await expectWithFilterViolations(accessibilityScanResultsFilterDropdown.violations);
   });
 
+  test('should not have any automatically detectable accessibility issues for the forward by email modal', async ({
+    page,
+  }) => {
+    await page.goto(appURLInbox);
+    await expect(page.locator('h2').filter({ hasText: /^Skatten din for 2022$/ })).toBeVisible();
+    await page.getByRole('link', { name: 'Skatten din for 2022' }).click();
+    await page.locator('#dialog-context-menu-root').getByRole('button', { name: 'Åpne meny' }).click();
+    await page.getByRole('menuitem', { name: 'Videresend på e-post' }).click();
+    const modal = page.getByRole('dialog');
+    await expect(modal.getByLabel('E-postadresse')).toBeVisible();
+
+    const accessibilityScanResultsForm = await new AxeBuilder({ page }).withTags(WCAG_TAGS_CONFIG).analyze();
+    await expectWithFilterViolations(accessibilityScanResultsForm.violations, KNOWN_ALTINN_COMPONENTS_A11Y_ISSUES);
+
+    await modal.getByRole('button', { name: 'Videresend' }).click();
+    await expect(modal.getByText('Skriv inn minst én e-postadresse.')).toBeVisible();
+    const accessibilityScanResultsInvalid = await new AxeBuilder({ page }).withTags(WCAG_TAGS_CONFIG).analyze();
+    await expectWithFilterViolations(accessibilityScanResultsInvalid.violations, KNOWN_ALTINN_COMPONENTS_A11Y_ISSUES);
+  });
+
   test('should not have any automatically detectable accessibility issues for the profile settings modal', async ({
     page,
   }) => {
