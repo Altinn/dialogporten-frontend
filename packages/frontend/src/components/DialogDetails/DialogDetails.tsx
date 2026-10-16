@@ -155,6 +155,7 @@ const performDialogAction = async ({
 
   if (httpMethod === 'GET') {
     trackNavigationSuccess(action);
+    Analytics.flush();
     onRequestSettled();
     window.location.href = url;
     return;
@@ -434,6 +435,7 @@ export const DialogDetails = ({
         onClick: () => {
           trackGuiActionClick(action);
           trackNavigationSuccess(action);
+          Analytics.flush();
         },
       };
     }
