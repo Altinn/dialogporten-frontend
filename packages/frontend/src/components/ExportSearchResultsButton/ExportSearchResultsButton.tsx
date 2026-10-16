@@ -2,6 +2,8 @@ import { Button } from '@altinn/altinn-components';
 import { DownloadIcon } from '@navikt/aksel-icons';
 import type { ButtonHTMLAttributes, RefAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Analytics } from '../../analytics/analytics.ts';
+import { ANALYTICS_EVENTS } from '../../analytics/analyticsEvents.ts';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { buildDialogCsvRows, downloadCsv, serializeCsv, toCsvFileName } from '../../pages/Inbox/exportDialogsCsv.ts';
 import type { InboxItemInput } from '../../pages/Inbox/InboxItemInput.ts';
@@ -34,6 +36,7 @@ export const ExportSearchResultsButton = ({
       formatDate: (date) => format(date, 'P'),
     });
     downloadCsv(toCsvFileName(fileNameBase, format(new Date(), 'yyyy-MM-dd')), serializeCsv(rows));
+    Analytics.trackEvent(ANALYTICS_EVENTS.INBOX_EXPORT_DOWNLOAD);
   };
 
   return (
