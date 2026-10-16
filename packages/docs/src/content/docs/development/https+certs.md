@@ -13,33 +13,27 @@ Ensure you have `brew` installed (for macOS users).
 
 ## 🔹 Step 1: Install mkcert and NSS
 ```sh
-brew install mkcert nss // needed for cross-platform compatibility (e.g. Firefox)
+brew install mkcert nss # needed for cross-platform compatibility (e.g. Firefox)
+mkcert -install
+```
+
+On Windows (PowerShell), restart the terminal after installing and accept the security prompt from `mkcert -install`:
+```powershell
+winget install FiloSottile.mkcert
 mkcert -install
 ```
 
 ## 🔹 Step 2: Generate SSL Certificates
 ```sh
-mkcert -cert-file certs/cert.crt -key-file certs/key.pem app.localhost localhost docs.localhost dashboard.localhost pgadmin4.localhost redisinsight.localhost
+mkcert -cert-file certs/cert.pem -key-file certs/key.pem app.localhost localhost docs.localhost dashboard.localhost pgadmin4.localhost redisinsight.localhost
 ```
 
 This creates a certificate valid for every localhost subdomain Traefik routes: app.localhost, localhost, docs.localhost, dashboard.localhost, pgadmin4.localhost, and redisinsight.localhost.
-
-## 🔹 Step 3: Convert to PEM Format 
-```sh
-openssl x509 -in certs/cert.crt -out certs/cert.pem -outform PEM
-```
-
-## 🔹 Add Certificate to System Trust Store 
-
-```sh
-sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain certs/cert.pem
-```
 
 ## 🚀 Final Step: Restart Docker & Services 
 
 ```sh
 make compose-down
-docker stop $(docker ps -a -q)  # Stop all running containers
 make dev
 ```
 
@@ -57,10 +51,13 @@ make dev
 ```
 ### 3. Verify that the certificate contains the expected domains:
 ```sh
-openssl x509 -in certs/cert.crt -text -noout | grep -A 2 "Subject Alternative Name"
+openssl x509 -in certs/cert.pem -text -noout | grep -A 2 "Subject Alternative Name"
 ```
 should output:
 ```sh
 X509v3 Subject Alternative Name:
-    DNS:app.localhost, DNS:localhost, DNS:docs.localhost
+    DNS:app.localhost, DNS:localhost, DNS:docs.localhost, DNS:dashboard.localhost, DNS:pgadmin4.localhost, DNS:redisinsight.localhost
 ```
+
+### 4. Firefox on Windows does not trust the certificate?
+Open `about:config` and set `security.enterprise_roots.enabled` to `true`, so Firefox trusts the Windows certificate store.
