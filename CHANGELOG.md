@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.182.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.181.1...v1.182.0) (2026-10-16)
+
+
+### Features
+
+* **forward:** let users choose whether to include attachments when forwarding ([#4727](https://github.com/Altinn/dialogporten-frontend/issues/4727)) ([bde26f8](https://github.com/Altinn/dialogporten-frontend/commit/bde26f8fda5e17ab58c916fea92220b770d853ab))
+
+
+### Bug Fixes
+
+* **analytics:** send analytics events before full-page navigation ([#4738](https://github.com/Altinn/dialogporten-frontend/issues/4738)) ([7fcf7cd](https://github.com/Altinn/dialogporten-frontend/commit/7fcf7cd6ca3cb346bd6a94cb0f69c457cf8efe09))
+* **auth:** enforce session ownership for saved-search mutations ([#4708](https://github.com/Altinn/dialogporten-frontend/issues/4708)) ([627d8e0](https://github.com/Altinn/dialogporten-frontend/commit/627d8e09a9eadf3ea587913b5b9c6a41081154b7))
+* **footer:** bump to 0.76.1 to altinn-components to fix incorrect focus on footer links ([#4724](https://github.com/Altinn/dialogporten-frontend/issues/4724)) ([0635ead](https://github.com/Altinn/dialogporten-frontend/commit/0635eadb24f094263955ec1f76c3499ddd960e12))
+* **frontend:** respect saved-search mutation results ([#4737](https://github.com/Altinn/dialogporten-frontend/issues/4737)) ([77d0636](https://github.com/Altinn/dialogporten-frontend/commit/77d06362c358b24a14606fae28e412e58335fc47))
+* **skyra:** update to latest version to fix language bug in survey ([#4740](https://github.com/Altinn/dialogporten-frontend/issues/4740)) ([66a1ea4](https://github.com/Altinn/dialogporten-frontend/commit/66a1ea4da255d0a42251a023a386ae1ff09e38be))
+
 ## [1.181.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.181.0...v1.181.1) (2026-10-09)
 
 
