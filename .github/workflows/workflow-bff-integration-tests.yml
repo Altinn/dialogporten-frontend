@@ -17,7 +17,7 @@ jobs:
     timeout-minutes: 15
     services:
       redis:
-        image: redis:6.2-alpine
+        image: redis:6.2-alpine@sha256:b362b5dff9d14d961dc3352db4776aba6a8c53ca2661d7c74ad2c121f82cdaea
         ports:
           - 6379/tcp
         options: >-
@@ -26,7 +26,7 @@ jobs:
           --health-timeout 5s
           --health-retries 10
       postgres:
-        image: postgres:16
+        image: postgres:16@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: integration-test
