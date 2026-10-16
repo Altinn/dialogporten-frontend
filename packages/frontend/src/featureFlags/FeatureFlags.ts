@@ -1,34 +1,14 @@
-export type FeatureFlagType = 'boolean' | 'number' | 'string' | 'string-array';
+import { type FeatureFlagType, type FeatureFlagValue, featureFlagDefinitions } from 'bff-types-generated';
 
-export interface FeatureFlagDefinition {
-  key: string; // dot-notation key
-  type: FeatureFlagType; // type of value
-  default: boolean | number | string | string[]; // fallback value
-}
+export {
+  type FeatureFlagDefinition,
+  type FeatureFlagKey,
+  type FeatureFlagType,
+  type FeatureFlagValue,
+  featureFlagDefinitions,
+} from 'bff-types-generated';
 
-export const featureFlagDefinitions = [
-  { key: 'dialogporten.disableFlipNamesPatch', type: 'boolean', default: false },
-  { key: 'inbox.enableAlertBanner', type: 'boolean', default: false },
-  { key: 'inbox.enableExportSearchResults', type: 'boolean', default: false },
-  { key: 'dialogporten.disableSubscriptions', type: 'boolean', default: false },
-  { key: 'auth.orgsNotReadyToDealWithDelegations', type: 'string-array', default: [] },
-  { key: 'profil.enableSIPhoneEdit', type: 'boolean', default: false },
-  { key: 'profile.enableSetUserName', type: 'boolean', default: false },
-  { key: 'fce.enablePreferHeader', type: 'boolean', default: false },
-  { key: 'global.enableSkyra', type: 'boolean', default: false },
-  { key: 'global.enableCookieBanner', type: 'boolean', default: false },
-  { key: 'dialogDetails.enableNotificationLogs', type: 'boolean', default: false },
-  { key: 'dialogDetails.enableLabelAssignmentLogs', type: 'boolean', default: false },
-  { key: 'dialogDetails.enableActivityLogFilter', type: 'boolean', default: false },
-  { key: 'dialogDetails.enableForwardByEmail', type: 'boolean', default: false },
-] as const satisfies readonly FeatureFlagDefinition[];
-
-export type FeatureFlagKey = (typeof featureFlagDefinitions)[number]['key'];
-
-export function getFeatureFlag(
-  key: string,
-  overrides: Record<string, unknown> = {},
-): boolean | number | string | string[] | undefined {
+export function getFeatureFlag(key: string, overrides: Record<string, unknown> = {}): FeatureFlagValue | undefined {
   const def = featureFlagDefinitions.find((f) => f.key === key);
   if (!def) return undefined;
 

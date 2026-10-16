@@ -4,29 +4,19 @@ import { load } from '@azure/app-configuration-provider';
 import { ConfigurationMapFeatureFlagProvider, FeatureManager } from '@microsoft/feature-management';
 import type { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
+import { type FeatureFlagDefinition, type FeatureFlagValue, featureFlagDefinitions } from './featureFlagDefinitions.ts';
 
-const defaultFeatureFlags: Record<string, boolean> = {
-  'dialogporten.disableFlipNamesPatch': false,
-  'inbox.enableAlertBanner': false,
-  'inbox.enableExportSearchResults': false,
-  'dialogporten.disableSubscriptions': false,
-  'profil.enableSIPhoneEdit': false,
-  'profile.enableSetUserName': false,
-  'fce.enablePreferHeader': false,
-  'global.enableSkyra': false,
-  'global.enableCookieBanner': false,
-  'dialogDetails.enableNotificationLogs': false,
-  'dialogDetails.enableLabelAssignmentLogs': false,
-  'dialogDetails.enableActivityLogFilter': false,
-  'dialogDetails.enableForwardByEmail': false,
-};
-
-const defaultAppConfigValues: Record<string, string[]> = {
-  'auth.orgsNotReadyToDealWithDelegations': [],
-};
+const definitions: readonly FeatureFlagDefinition[] = featureFlagDefinitions;
+const featureFlagKeys = definitions.filter((def) => def.type === 'boolean').map((def) => def.key);
+const appConfigDefinitions = definitions.filter((def) => def.type !== 'boolean');
+const appConfigKeys = appConfigDefinitions.map((def) => def.key);
+const defaultValues: Record<string, FeatureFlagValue> = Object.fromEntries(
+  definitions.map((def) => [def.key, def.default]),
+);
 
 /* Fore more details, cf. https://learn.microsoft.com/en-us/azure/azure-app-configuration/quickstart-feature-flag-javascript?tabs=entra-id */
 const plugin: FastifyPluginAsync<{ appConfigConnectionString: string }> = async (fastify, opts) => {
+  let featureProvider: ConfigurationMapFeatureFlagProvider | undefined;
   let featureManager: FeatureManager | undefined;
   let appConfig: Awaited<ReturnType<typeof load>> | undefined;
 
@@ -39,13 +29,13 @@ const plugin: FastifyPluginAsync<{ appConfigConnectionString: string }> = async 
             enabled: true,
             refreshIntervalInMs: 10_000,
           },
-          selectors: Object.keys(defaultFeatureFlags).map((key) => ({ keyFilter: key })),
+          selectors: featureFlagKeys.map((key) => ({ keyFilter: key })),
         },
-        selectors: Object.keys(defaultAppConfigValues).map((key) => ({ keyFilter: key })),
+        selectors: appConfigKeys.map((key) => ({ keyFilter: key })),
         refreshOptions: {
           enabled: true,
           refreshIntervalInMs: 10_000,
-          watchedSettings: Object.keys(defaultAppConfigValues).map((key) => ({ key })),
+          watchedSettings: appConfigKeys.map((key) => ({ key })),
         },
       });
 
@@ -54,7 +44,7 @@ const plugin: FastifyPluginAsync<{ appConfigConnectionString: string }> = async 
         appConfig?.refresh();
       }, 10_000);
 
-      const featureProvider = new ConfigurationMapFeatureFlagProvider(appConfig);
+      featureProvider = new ConfigurationMapFeatureFlagProvider(appConfig);
       featureManager = new FeatureManager(featureProvider);
     }
   } catch (err) {
@@ -62,7 +52,7 @@ const plugin: FastifyPluginAsync<{ appConfigConnectionString: string }> = async 
   }
 
   fastify.get('/api/features', async (_request, reply) => {
-    const result: Record<string, boolean | string[]> = { ...defaultFeatureFlags, ...defaultAppConfigValues };
+    const result: Record<string, FeatureFlagValue> = { ...defaultValues };
 
     try {
       if (!featureManager && !appConfig) {
@@ -70,9 +60,9 @@ const plugin: FastifyPluginAsync<{ appConfigConnectionString: string }> = async 
         return reply.status(200).send(result);
       }
 
-      for (const key of Object.keys(defaultFeatureFlags)) {
+      for (const key of featureFlagKeys) {
         try {
-          if (featureManager) {
+          if (featureManager && (await featureProvider?.getFeatureFlag(key))) {
             result[key] = await featureManager.isEnabled(key);
           }
         } catch (err) {
@@ -80,14 +70,14 @@ const plugin: FastifyPluginAsync<{ appConfigConnectionString: string }> = async 
         }
       }
 
-      for (const key of Object.keys(defaultAppConfigValues)) {
+      for (const def of appConfigDefinitions) {
         try {
-          const raw = appConfig?.get(key);
-          if (typeof raw === 'string') {
-            result[key] = JSON.parse(raw);
+          const raw = appConfig?.get(def.key);
+          if (typeof raw === 'string' && raw.trim() !== '') {
+            result[def.key] = def.type === 'string' ? raw : JSON.parse(raw);
           }
         } catch (err) {
-          logger.warn({ key, err }, 'Failed to resolve app config value, using default');
+          logger.warn({ key: def.key, err }, 'Failed to resolve app config value, using default');
         }
       }
 
