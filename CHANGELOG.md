@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.182.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.182.0...v1.182.1) (2026-10-16)
+
+
+### Bug Fixes
+
+* **analytics:** track 'download to file' usage ([#4741](https://github.com/Altinn/dialogporten-frontend/issues/4741)) ([1b68d41](https://github.com/Altinn/dialogporten-frontend/commit/1b68d419871a37ba20ce7dab299286db85583378))
+
 ## [1.182.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.181.1...v1.182.0) (2026-10-16)
 
 
