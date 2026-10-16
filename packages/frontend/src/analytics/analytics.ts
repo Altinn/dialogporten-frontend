@@ -157,6 +157,7 @@ const initApplicationInsights = () => {
         samplingPercentage: 100,
         appId: 'arbeidsflate-frontend',
         maxAjaxCallsPerView: 2000,
+        onunloadDisableFetch: true,
       },
     });
 
@@ -360,4 +361,5 @@ export const Analytics = {
     applicationInsights?.trackDependencyData(...args),
   trackFetchDependency,
   isValidTrackablePage,
+  flush: () => applicationInsights?.onunloadFlush(false),
 };

@@ -201,6 +201,7 @@ export const useHeaderConfig = (filterState?: FilterState): UseHeaderConfigOutpu
           Analytics.trackEvent(ANALYTICS_EVENTS.USER_LOGOUT, {
             'logout.source': 'header',
           });
+          Analytics.flush();
           (window as Window).location = `/api/logout`;
         },
       },

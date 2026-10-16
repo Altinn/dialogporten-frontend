@@ -3,13 +3,19 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 const mockLoadAppInsights = vi.fn();
 const mockUnload = vi.fn();
 const mockTrackException = vi.fn();
+const mockOnunloadFlush = vi.fn();
+const mockConstructor = vi.fn();
 
 vi.mock('@microsoft/applicationinsights-web', () => ({
   ApplicationInsights: class {
+    constructor(...args: unknown[]) {
+      mockConstructor(...args);
+    }
     addTelemetryInitializer = vi.fn();
     loadAppInsights = () => mockLoadAppInsights();
     unload = (...args: unknown[]) => mockUnload(...args);
     trackException = (...args: unknown[]) => mockTrackException(...args);
+    onunloadFlush = (...args: unknown[]) => mockOnunloadFlush(...args);
   },
 }));
 
@@ -97,5 +103,42 @@ describe('setAnalyticsEnabled', () => {
     setAnalyticsEnabled(true);
 
     expect(mockLoadAppInsights).not.toHaveBeenCalled();
+  });
+});
+
+describe('Analytics.flush', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.stubEnv('PROD', true);
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it('sends pending telemetry with the unload sender', async () => {
+    const { Analytics, setAnalyticsEnabled } = await importAnalytics();
+    setAnalyticsEnabled(true);
+
+    Analytics.flush();
+
+    expect(mockOnunloadFlush).toHaveBeenCalledWith(false);
+  });
+
+  it('does nothing before analytics is enabled', async () => {
+    const { Analytics } = await importAnalytics();
+
+    expect(() => Analytics.flush()).not.toThrow();
+    expect(mockOnunloadFlush).not.toHaveBeenCalled();
+  });
+
+  it('makes the unload sender use sendBeacon instead of fetch keepalive', async () => {
+    const { setAnalyticsEnabled } = await importAnalytics();
+
+    setAnalyticsEnabled(true);
+
+    expect(mockConstructor).toHaveBeenCalledWith({
+      config: expect.objectContaining({ onunloadDisableFetch: true }),
+    });
   });
 });

@@ -220,7 +220,10 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
     setIsCTALoading(true);
     try {
       const savedSearchId = Number.parseInt(id);
-      await deleteSavedSearch(savedSearchId);
+      const result = await deleteSavedSearch(savedSearchId);
+      if (!result.deleteSavedSearch?.success) {
+        throw new Error('Failed to delete saved search');
+      }
 
       Analytics.trackEvent(ANALYTICS_EVENTS.SAVED_SEARCH_DELETE_SUCCESS, {
         'search.id': savedSearchId,
@@ -252,7 +255,10 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
   const handleSaveTitle = async (id: string, name: string) => {
     try {
       const savedSearchId = Number.parseInt(id);
-      await updateSavedSearch(savedSearchId, name ?? '');
+      const result = await updateSavedSearch(savedSearchId, name ?? '');
+      if (!result.updateSavedSearch?.success) {
+        throw new Error('Failed to update saved search');
+      }
 
       if (name) {
         Analytics.trackEvent(ANALYTICS_EVENTS.SAVED_SEARCH_TITLE_UPDATE_SUCCESS, {

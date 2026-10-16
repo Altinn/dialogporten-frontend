@@ -1,6 +1,8 @@
 import { formatDisplayName } from '@altinn/altinn-components';
 import {
   ActorType,
+  type DeleteSavedSearchMutation,
+  type DeleteSavedSearchMutationVariables,
   type DialogByIdFieldsFragment,
   type NotificationLogsResponse,
   type NotificationSettingsResponse,
@@ -460,15 +462,18 @@ export const getOrganizationsMock = graphql.query('organizations', () => {
   });
 });
 
-export const deleteSavedSearchMock = graphql.mutation('DeleteSavedSearch', (req) => {
-  const { id } = req.variables;
-  inMemoryStore.savedSearches = inMemoryStore.savedSearches?.filter((savedSearch) => savedSearch.id !== id);
-  return HttpResponse.json({
-    data: {
-      savedSearches: inMemoryStore.savedSearches,
-    },
-  });
-});
+export const deleteSavedSearchMock = graphql.mutation<DeleteSavedSearchMutation, DeleteSavedSearchMutationVariables>(
+  'DeleteSavedSearch',
+  (req) => {
+    const { id } = req.variables;
+    inMemoryStore.savedSearches = inMemoryStore.savedSearches?.filter((savedSearch) => savedSearch.id !== id);
+    return HttpResponse.json({
+      data: {
+        deleteSavedSearch: { success: true, message: '' },
+      },
+    });
+  },
+);
 
 const getProfileMock = graphql.query('profile', async () => {
   return HttpResponse.json({
