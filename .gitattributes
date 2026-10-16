@@ -1,0 +1,4 @@
+# Normalize line endings to LF on commit and checkout, regardless of each developer's core.autocrlf.
+# Biome (lineEnding: lf) and .editorconfig (end_of_line = lf) expect LF; without this, Windows checkouts
+# get CRLF and every save shows up as a whitespace-only change.
+* text=auto eol=lf
