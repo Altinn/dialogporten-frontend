@@ -386,9 +386,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
     }
   });
 
-  fastify.get('/api/logout', { preHandler: fastify.verifyToken(false) }, async (request, reply) =>
-    handleLogout(request, reply, providerConfig),
-  );
+  fastify.get('/api/logout', async (request, reply) => handleLogout(request, reply, providerConfig));
   fastify.get('/api/frontchannel-logout', handleFrontChannelLogout);
 
   if (config.enableInitSessionEndpoint) {
