@@ -17,7 +17,7 @@ import {
   Typography,
 } from '@altinn/altinn-components';
 import { XMarkIcon } from '@navikt/aksel-icons';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useSearchParams } from 'react-router';
 import { MAX_COUNT_BULK_DIALOGS, useBulkActions } from '../../api/hooks/useBulkActions.ts';
@@ -28,7 +28,7 @@ import {
   MAX_SERVICE_RESOURCE_SIZE,
   useDialogs,
 } from '../../api/hooks/useDialogs.tsx';
-import { useParties } from '../../api/hooks/useParties.ts';
+import { EMPTY_PARTIES, useParties } from '../../api/hooks/useParties.ts';
 import { createFiltersURLQuery } from '../../auth';
 import { DialogAccessInfoModal } from '../../components/DialogAccessInfoModal/DialogAccessInfoModal.tsx';
 import { ExportSearchResultsButton } from '../../components/ExportSearchResultsButton/ExportSearchResultsButton.tsx';
@@ -36,8 +36,8 @@ import { Notice } from '../../components/Notice/Notice.tsx';
 import { useAccounts } from '../../components/PageLayout/Accounts/useAccounts.tsx';
 import { getPageRouteTitle } from '../../components/PageLayout/pageRouteToTitle.ts';
 import { getSearchWords } from '../../components/PageLayout/Search/getSearchLabels.ts';
+import { useInboxSearch } from '../../components/PageLayout/Search/useInboxSearch.tsx';
 import { useSearchString } from '../../components/PageLayout/Search/useSearchString.ts';
-import { useHeaderConfig } from '../../components/PageLayout/useHeaderConfig.tsx';
 import { PartyLimitInfoModal } from '../../components/PartyLimitInfoModal/PartyLimitInfoModal.tsx';
 import { usePartyLimitInfoModal } from '../../components/PartyLimitInfoModal/usePartyLimitInfoModal.ts';
 import { SaveSearchButton } from '../../components/SavedSearchButton/SaveSearchButton.tsx';
@@ -107,7 +107,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     setFilterState(readFiltersFromURLQuery(searchParams.toString()));
   }, [searchParams]);
 
-  const { inboxSearch } = useHeaderConfig(filterState);
+  const inboxSearch = useInboxSearch(filterState);
 
   const isAlertBannerEnabled = useFeatureFlag<boolean>('inbox.enableAlertBanner');
   const isExportSearchResultsEnabled = useFeatureFlag<boolean>('inbox.enableExportSearchResults');
@@ -141,6 +141,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
   const selectedServiceOwners = (filterState.org ?? []) as string[];
   const serviceOwnerLimitReached = selectedServiceOwners.length > MAX_SERVICE_OWNER_SIZE;
 
+  const deferredParties = useDeferredValue(parties, EMPTY_PARTIES);
   const {
     accounts,
     accountSearch,
@@ -149,7 +150,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
     currentAccountName,
     searchable: accountsSearchable,
   } = useAccounts({
-    parties,
+    parties: deferredParties,
     selectedParties,
     selectedGroup,
     partyGraph,
@@ -158,6 +159,13 @@ export const Inbox = ({ viewType }: InboxProps) => {
       showGroups: true,
     },
   });
+
+  const onSelectAccountRef = useRef(onSelectAccount);
+  onSelectAccountRef.current = onSelectAccount;
+  const handleSelectAccount = useCallback(
+    (id: string) => onSelectAccountRef.current(id, PageRoutes[viewType]),
+    [viewType],
+  );
 
   const {
     subAccounts,
@@ -387,9 +395,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
               search={accountSearch}
               groups={accountGroups}
               label={currentAccountName}
-              onSelectId={(id: string) => {
-                onSelectAccount(id, PageRoutes[viewType]);
-              }}
+              onSelectId={handleSelectAccount}
               title={t('parties.change_label')}
               searchable={accountsSearchable}
               virtualized={accounts.length > 20}
