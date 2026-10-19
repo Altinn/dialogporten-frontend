@@ -1,5 +1,6 @@
+import { clearInterval, setInterval } from 'node:timers';
 import { logger } from '@altinn/dialogporten-node-logger';
-import { AppConfigurationClient } from '@azure/app-configuration';
+import { load } from '@azure/app-configuration-provider';
 import type { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 
@@ -31,13 +32,13 @@ const languageMap: Record<AlertBannerKey, 'nb' | 'nn' | 'en'> = {
   'alertBanner.content.en': 'en',
 };
 
-function parseAlertBannerContent(jsonString: string | undefined): AlertBannerContent | null {
-  if (!jsonString) {
+function parseAlertBannerContent(value: unknown): AlertBannerContent | null {
+  if (!value) {
     return null;
   }
 
   try {
-    const parsed = JSON.parse(jsonString) as unknown;
+    const parsed = typeof value === 'string' ? (JSON.parse(value) as unknown) : value;
 
     if (typeof parsed !== 'object' || parsed === null) {
       return null;
@@ -85,51 +86,54 @@ function parseAlertBannerContent(jsonString: string | undefined): AlertBannerCon
   }
 }
 
+function readAlertBannerContent(appConfig: Awaited<ReturnType<typeof load>>): AlertBannerResponse {
+  const result: AlertBannerResponse = { ...defaultAlertBannerContent };
+  for (const key of alertBannerKeys) {
+    const content = parseAlertBannerContent(appConfig.get<unknown>(key));
+    if (content) {
+      result[languageMap[key]] = content;
+    }
+  }
+  return result;
+}
+
 const plugin: FastifyPluginAsync<{ appConfigConnectionString: string }> = async (fastify, opts) => {
-  let appConfigClient: AppConfigurationClient | undefined;
+  let alertBannerContent: AlertBannerResponse | undefined;
 
   try {
     if (opts.appConfigConnectionString) {
-      appConfigClient = new AppConfigurationClient(opts.appConfigConnectionString);
+      const appConfig = await load(opts.appConfigConnectionString, {
+        selectors: [{ keyFilter: 'alertBanner.content.*' }],
+        refreshOptions: {
+          enabled: true,
+          refreshIntervalInMs: 10_000,
+        },
+      });
+
+      alertBannerContent = readAlertBannerContent(appConfig);
+      appConfig.onRefresh(() => {
+        alertBannerContent = readAlertBannerContent(appConfig);
+      });
+
+      const refreshTimer = setInterval(() => {
+        appConfig.refresh().catch((err) => {
+          logger.warn({ err }, 'Failed to refresh alert banner content from Azure App Configuration');
+        });
+      }, 10_000);
+      fastify.addHook('onClose', async () => {
+        clearInterval(refreshTimer);
+      });
     }
   } catch (err) {
-    logger.error(err, 'Failed to initialize Azure App Configuration client for alert banner');
+    logger.error(err, 'Failed to load alert banner content from Azure App Configuration');
   }
 
   fastify.get('/api/alert-banner', async (_request, reply) => {
-    const result: AlertBannerResponse = { ...defaultAlertBannerContent };
-
-    try {
-      if (!appConfigClient) {
-        logger.warn('App Configuration client not initialized, returning empty result');
-        return reply.status(200).send(result);
-      }
-
-      for (const key of alertBannerKeys) {
-        try {
-          const setting = await appConfigClient.getConfigurationSetting({ key });
-          const language = languageMap[key];
-          const content = parseAlertBannerContent(setting.value);
-
-          if (content) {
-            result[language] = content;
-          }
-        } catch (err) {
-          // Check if it's a 404 (key doesn't exist) vs other error
-          const error = err as { statusCode?: number; message?: string };
-          if (error.statusCode !== 404) {
-            logger.warn(
-              { key, err, statusCode: error.statusCode, message: error.message },
-              'Failed to get alert banner content from Azure App Configuration',
-            );
-          }
-        }
-      }
-      return reply.status(200).send(result);
-    } catch (err) {
-      logger.error({ err }, 'Unexpected error while fetching alert banner content');
-      return reply.status(500).send({ error: 'Failed to fetch alert banner content' });
+    if (!alertBannerContent) {
+      logger.warn('Alert banner content not loaded from App Configuration, returning empty result');
+      return reply.status(200).send({ ...defaultAlertBannerContent });
     }
+    return reply.status(200).send(alertBannerContent);
   });
 };
 
