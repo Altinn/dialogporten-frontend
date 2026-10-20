@@ -1,4 +1,6 @@
 ﻿# Deploys the specified version to production
+# Production only moves forward. Roll back with Deploy Apps (Manual),
+# see packages/docs/src/content/docs/deployment/rollback.md
 name: CI/CD Production
 run-name: CI/CD Production ${{ inputs.version && format('({0})', inputs.version) || '' }}
 
@@ -9,8 +11,6 @@ on:
         required: true
         type: string
 
-# One group for all refs, so runs dispatched from main and from tags never overlap.
-# The version check below relies on this to see the version stored by the previous run.
 concurrency:
   group: ${{ github.workflow }}
 
@@ -43,8 +43,6 @@ jobs:
     secrets:
       GH_TOKEN: ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}
 
-  # Production only moves forward. Roll back with Deploy Apps (Manual),
-  # see packages/docs/src/content/docs/deployment/rollback.md
   check-version-is-not-older:
     name: Check that version is not older than prod
     needs: [get-versions-from-github]
