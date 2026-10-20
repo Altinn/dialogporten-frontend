@@ -20,6 +20,7 @@ import {
   filterDialogs,
   getMockedLabelAssignmentLogs,
   getMockedNotificationLogs,
+  STORY_MARKDOWN_URL,
 } from './data/base/helper.ts';
 import { type ForwardingMock, forwardingScenarios } from './data/stories/forward-by-email/forwarding.ts';
 import { getMockedData } from './data.ts';
@@ -326,7 +327,7 @@ const getDialogByIdMock = graphql.query('getDialogById', (options) => {
   }
 
   const dialogDetails: DialogByIdFieldsFragment | null = dialog
-    ? (convertToDialogByIdTemplate(dialog) as DialogByIdFieldsFragment)
+    ? (convertToDialogByIdTemplate(dialog, data.dialogDetails[dialog.id]) as DialogByIdFieldsFragment)
     : null;
 
   return HttpResponse.json({
@@ -390,6 +391,12 @@ const getMainContentMarkdownMock = http.get('https://dialogporten-serviceprovide
   return HttpResponse.text(
     `${mainContentMarkdownByLanguage[resolveFceLanguage(request)]}\n\nPrefer timezone: ${resolveFceTimeZone(request)}\n`,
   );
+});
+
+const getStoryMarkdownMock = http.get(STORY_MARKDOWN_URL, ({ request }) => {
+  const id = new URL(request.url).searchParams.get('id') ?? '';
+  const markdown = data.dialogDetails[id]?.mainContentMarkdown;
+  return markdown ? HttpResponse.text(markdown) : new HttpResponse(null, { status: 404 });
 });
 
 const localizedMainContentMarkdownByLanguage: Record<FceLanguage, string> = {
@@ -953,6 +960,7 @@ export const handlers = [
   getDialogByIdMock,
   getMainContentMarkdownMock,
   getLocalizedMainContentMarkdownMock,
+  getStoryMarkdownMock,
   getMainContentHtmlMock,
   getSavedSearchesMock,
   getProfileMock,
