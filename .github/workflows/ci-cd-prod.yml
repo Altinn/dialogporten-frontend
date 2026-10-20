@@ -9,8 +9,10 @@ on:
         required: true
         type: string
 
+# One group for all refs, so runs dispatched from main and from tags never overlap.
+# The version check below relies on this to see the version stored by the previous run.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref_name }}
+  group: ${{ github.workflow }}
 
 permissions:
   contents: read
