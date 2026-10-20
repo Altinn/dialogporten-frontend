@@ -71,7 +71,7 @@ async function fetchDpServiceResources(context: Context, langs: string[]): Promi
   const token = getSessionToken(context);
   if (!token) {
     logger.error('No token found in session');
-    return [];
+    throw new Error('No token found in session');
   }
   const response = await axios({
     method: 'POST',
@@ -88,7 +88,7 @@ async function fetchDpServiceResources(context: Context, langs: string[]): Promi
   const body = response.data as DpServiceResourcesResponse;
   if (body.errors) {
     logger.error(body.errors, 'Dialogporten serviceResources query returned errors');
-    return [];
+    throw new Error('Dialogporten serviceResources query returned errors');
   }
 
   return body.data?.serviceResources?.items ?? [];
@@ -118,6 +118,6 @@ export async function getDpServiceResources(langs: string[], context: Context): 
     );
   } catch (error) {
     logger.error(error, 'Error retrieving Dialogporten service resources:');
-    return [];
+    throw error;
   }
 }

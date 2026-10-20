@@ -21,6 +21,7 @@ interface UseServiceResourceOutput {
 const useServiceResourcesQuery = (
   queryKeyPrefix: string,
   queryFn: (variables: { lang: string }) => Promise<ServiceResourcesResult>,
+  retry = 3,
 ): UseServiceResourceOutput => {
   const { selectedParties } = useParties();
   const enabled = selectedParties.length > 0;
@@ -37,7 +38,7 @@ const useServiceResourcesQuery = (
   const { data, isLoading, isSuccess } = useAuthenticatedQuery<ServiceResourcesResult>({
     queryKey: [queryKeyPrefix, i18n.language],
     queryFn: () => queryFn({ lang: i18n.language }),
-    retry: 3,
+    retry,
     staleTime: Number.POSITIVE_INFINITY,
     gcTime: Number.POSITIVE_INFINITY,
     refetchOnWindowFocus: false,
@@ -75,7 +76,7 @@ const useServiceResourcesQuery = (
  * filter on dialogs by service.
  */
 export const useFilterServiceResources = (): UseServiceResourceOutput =>
-  useServiceResourcesQuery(QUERY_KEYS.FILTER_SERVICE_RESOURCES, fetchConsumerServiceResources);
+  useServiceResourcesQuery(QUERY_KEYS.FILTER_SERVICE_RESOURCES, fetchConsumerServiceResources, 1);
 
 /**
  * Service resources used by notification settings, sourced from the Altinn Resource Registry
