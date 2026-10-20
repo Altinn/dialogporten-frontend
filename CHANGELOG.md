@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.182.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.182.1...v1.182.2) (2026-10-19)
+
+
+### Bug Fixes
+
+* **alert-banner:** serve banner content from cached App Configuration ([#4744](https://github.com/Altinn/dialogporten-frontend/issues/4744)) ([b699705](https://github.com/Altinn/dialogporten-frontend/commit/b699705b633cad569ac2c769ecd7f7958d278555))
+* **skyra:** update to latest version of Skyra for new language fix ([#4745](https://github.com/Altinn/dialogporten-frontend/issues/4745)) ([60d551c](https://github.com/Altinn/dialogporten-frontend/commit/60d551c1d62e2689a888241fc05641d9220a7e5d))
+
+## [1.182.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.182.0...v1.182.1) (2026-10-16)
+
+
+### Bug Fixes
+
+* **analytics:** track 'download to file' usage ([#4741](https://github.com/Altinn/dialogporten-frontend/issues/4741)) ([1b68d41](https://github.com/Altinn/dialogporten-frontend/commit/1b68d419871a37ba20ce7dab299286db85583378))
+
 ## [1.182.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.181.1...v1.182.0) (2026-10-16)
 
 

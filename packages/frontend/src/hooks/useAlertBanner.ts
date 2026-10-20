@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useAuthenticatedQuery } from '../auth/useAuthenticatedQuery.ts';
 import { QUERY_KEYS } from '../constants/queryKeys.ts';
+import { useFeatureFlag } from '../featureFlags';
 import type { AlertBannerContent, AlertBannerResponse } from './alertBanner.ts';
 
 async function fetchAlertBannerContent(): Promise<AlertBannerResponse> {
@@ -65,12 +66,14 @@ async function fetchAlertBannerContent(): Promise<AlertBannerResponse> {
 
 export function useAlertBanner(): AlertBannerContent | null {
   const { i18n } = useTranslation();
+  const isAlertBannerEnabled = useFeatureFlag<boolean>('inbox.enableAlertBanner');
 
   const { data } = useAuthenticatedQuery<AlertBannerResponse>({
     queryKey: [QUERY_KEYS.ALERT_BANNER],
     queryFn: fetchAlertBannerContent,
     refetchInterval: 1_200_000,
     staleTime: 10 * 60 * 1000,
+    enabled: isAlertBannerEnabled,
   });
 
   if (!data) {
