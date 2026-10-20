@@ -1,2 +1,2 @@
 schema: 'generated/schema.graphql'
-documents: '**/*.{gql,js,ts}'
+documents: 'queries/**/*.graphql'

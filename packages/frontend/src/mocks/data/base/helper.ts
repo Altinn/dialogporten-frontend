@@ -1339,21 +1339,33 @@ const getMockedAttachments = (dialogId: string): AttachmentFieldsFragment[] =>
     ],
   }));
 
-export const convertToDialogByIdTemplate = (input: SearchDialogFieldsFragment): DialogByIdFieldsFragment => {
+export type MockDialogDetails = Partial<
+  Pick<DialogByIdFieldsFragment, 'attachments' | 'activities' | 'transmissions' | 'guiActions'>
+> & {
+  additionalInfo?: string;
+  mainContentMarkdown?: string;
+};
+
+export const STORY_MARKDOWN_URL = 'https://dialogporten-serviceprovider.net/fce-markdown-story';
+
+export const convertToDialogByIdTemplate = (
+  input: SearchDialogFieldsFragment,
+  details?: MockDialogDetails,
+): DialogByIdFieldsFragment => {
   return {
     id: input.id,
-    serviceResourceType: 'correspondenceservice',
+    serviceResourceType: details ? input.serviceResourceType : 'correspondenceservice',
     dialogToken: 'MOCKED_DIALOG_TOKEN',
     party: input.party,
     org: input.org,
     progress: input.progress,
     endUserContext: input.endUserContext,
-    attachments: getMockedAttachments(input.id),
-    activities: getMockedActivities(input.id),
-    transmissions: getMockedTransmissions(input.id),
-    fromServiceOwnerTransmissionsCount: 3,
-    fromPartyTransmissionsCount: 4,
-    guiActions: getMockedGuiActions(input.id),
+    attachments: details?.attachments ?? getMockedAttachments(input.id),
+    activities: details?.activities ?? getMockedActivities(input.id),
+    transmissions: details?.transmissions ?? getMockedTransmissions(input.id),
+    fromServiceOwnerTransmissionsCount: details ? input.fromServiceOwnerTransmissionsCount : 3,
+    fromPartyTransmissionsCount: details ? input.fromPartyTransmissionsCount : 4,
+    guiActions: details?.guiActions ?? getMockedGuiActions(input.id),
     seenSinceLastContentUpdate: input.seenSinceLastContentUpdate,
     status: input.status,
     createdAt: input.createdAt,
@@ -1370,13 +1382,18 @@ export const convertToDialogByIdTemplate = (input: SearchDialogFieldsFragment): 
         mediaType: 'text/plain',
         value: [
           {
-            value: 'Denne setningen inneholder tilleggsinformasjon for dialogen.',
+            value: details?.additionalInfo ?? 'Denne setningen inneholder tilleggsinformasjon for dialogen.',
             languageCode: 'nb',
           },
         ],
       },
       extendedStatus: input.content.extendedStatus,
-      mainContentReference: getMockedMainContent(input.id),
+      mainContentReference: details?.mainContentMarkdown
+        ? {
+            mediaType: 'application/vnd.dialogporten.frontchannelembed-url;type=text/markdown',
+            value: [{ value: `${STORY_MARKDOWN_URL}?id=${input.id}`, languageCode: 'nb' }],
+          }
+        : getMockedMainContent(input.id),
     },
   };
 };

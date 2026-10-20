@@ -8,13 +8,14 @@ import type {
 } from 'bff-types-generated';
 import { dialogs as mockedDialogs } from './data/base/dialogs.ts';
 import { features as mockedFeatures } from './data/base/features.ts';
+import type { MockDialogDetails } from './data/base/helper.ts';
 import { parties as mockedParties } from './data/base/parties.ts';
 import { profile as mockedProfile } from './data/base/profile.ts';
 import { services as mockedServices } from './data/base/services.ts';
 
 const findDataById = async <T>(
   url: string,
-  type: 'profile' | 'parties' | 'dialogs' | 'features' | 'searches' | 'services',
+  type: 'profile' | 'parties' | 'dialogs' | 'features' | 'searches' | 'services' | 'details',
   defaultData: T,
 ): Promise<T> => {
   const urlParams = new URLSearchParams(url);
@@ -33,6 +34,7 @@ const findPartiesById = (url: string) => findDataById<PartyFieldsFragment[]>(url
 const findDialogsById = (url: string) => findDataById<SearchDialogFieldsFragment[]>(url, 'dialogs', mockedDialogs);
 const findSavedSearchesById = (url: string) => findDataById<SavedSearchesFieldsFragment[]>(url, 'searches', []);
 const findServicesById = (url: string) => findDataById<ServiceResource[]>(url, 'services', mockedServices);
+const findDialogDetailsById = (url: string) => findDataById<Record<string, MockDialogDetails>>(url, 'details', {});
 
 export const getMockedData = async (
   url: string,
@@ -44,6 +46,7 @@ export const getMockedData = async (
   organizations: OrganizationFieldsFragment[];
   features: Record<string, boolean>;
   services: ServiceResource[];
+  dialogDetails: Record<string, MockDialogDetails>;
 }> => {
   const profile = await findProfileById(url);
   const features = await findFeaturesById(url);
@@ -51,7 +54,8 @@ export const getMockedData = async (
   const dialogs = await findDialogsById(url);
   const savedSearches = await findSavedSearchesById(url);
   const services = await findServicesById(url);
+  const dialogDetails = await findDialogDetailsById(url);
   const { organizations } = await import('./data/base/organizations.ts');
 
-  return { profile, dialogs, parties, savedSearches, organizations, features, services };
+  return { profile, dialogs, parties, savedSearches, organizations, features, services, dialogDetails };
 };
