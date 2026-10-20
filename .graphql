@@ -1,5 +1,0 @@
-{
-    "schemas": [
-        "packages/bff-types-generated/generated/schema.graphql"
-    ],
-}
