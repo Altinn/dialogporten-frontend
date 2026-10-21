@@ -5,7 +5,7 @@
     "prepare": "pnpm generate:types-gql",
     "dev": "pnpm build:watch",
     "build": "pnpm generate:types-gql",
-    "build:watch": "nodemon --watch 'src/**' --watch 'queries' --ext 'ts,graphql' --exec 'pnpm build'",
+    "build:watch": "pnpm generate:types-gql --watch",
     "generate:types-gql": "graphql-codegen-esm --require ./register-ts.mjs --config codegen.ts",
     "test": "vitest run"
   },
@@ -14,12 +14,11 @@
     "@graphql-codegen/typescript-operations": "^6.1.2",
     "@graphql-tools/stitch": "catalog:",
     "@graphql-typed-document-node/core": "^3.2.0",
-    "@tsconfig/node22": "catalog:",
+    "@tsconfig/node24": "catalog:",
     "bff": "workspace:*",
     "graphql": "catalog:",
     "graphql-request": "catalog:",
-    "graphql-tag": "^2.12.6",
-    "nodemon": "catalog:"
+    "graphql-tag": "^2.12.6"
   },
   "devDependencies": {
     "@graphql-codegen/typescript": "^6.1.0",
