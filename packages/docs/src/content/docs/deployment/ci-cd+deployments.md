@@ -63,6 +63,7 @@ Three parallel workflows are triggered:
 #### Production Deployment
 - **Manual Trigger Required** (`ci-cd-prod.yml`)
 - Requires specific version input
+- Only moves forward: fails if the version is older than the one in production. Use **Deploy Apps (Manual)** to roll back, see [Rollback](../rollback/)
 - Full deployment process:
   - Version verification
   - Infrastructure deployment
