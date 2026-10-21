@@ -114,12 +114,51 @@ describe('Html', () => {
   });
 
   /* Unsupported / sanitized tags */
-  test('should not render image', async () => {
-    const html = '<img src="./example.png" /><em>something else</em>';
+  test('should render image', async () => {
+    const html = '<img src="https://example.com/example.png" alt="example" /><em>something else</em>';
     const { container } = render(<Html onError={() => {}}>{html}</Html>);
     await waitFor(() => {
       expect(container.querySelector('em')).toBeInTheDocument();
-      expect(container.querySelector('img')).not.toBeInTheDocument();
+      expect(container.querySelector('img')).toHaveAttribute('src', 'https://example.com/example.png');
+    });
+  });
+
+  test('should render image with an inline data: source', async () => {
+    const src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciLz4K';
+    const html = `<img alt="logo" width="48" height="48" src="${src}">`;
+    const { container } = render(<Html onError={() => {}}>{html}</Html>);
+    await waitFor(() => {
+      const img = container.querySelector('img');
+      expect(img).toHaveAttribute('src', src);
+      expect(img).toHaveAttribute('width', '48');
+      expect(img).toHaveAttribute('alt', 'logo');
+    });
+  });
+
+  test('should keep a full table structure so rows stay inside a section', async () => {
+    // caption/tfoot used to be dropped, which hoisted the tfoot row to a direct child
+    // of <table> and tripped React's DOM nesting validation.
+    const html = `<table>
+      <caption>Order lines</caption>
+      <thead><tr><th scope="col">Article</th><th scope="col">Qty</th></tr></thead>
+      <tbody><tr><td>Pump</td><td>2</td></tr></tbody>
+      <tfoot><tr><td colspan="2">Total</td></tr></tfoot>
+    </table>`;
+    const { container } = render(<Html onError={() => {}}>{html}</Html>);
+    await waitFor(() => {
+      const table = container.querySelector('table');
+      expect(table).toBeInTheDocument();
+      expect(Array.from(table!.children).map((child) => child.tagName)).toEqual(['CAPTION', 'THEAD', 'TBODY', 'TFOOT']);
+      expect(container.querySelector('tfoot td')).toHaveAttribute('colspan', '2');
+    });
+  });
+
+  test('should keep div wrappers and their inline styles', async () => {
+    const html = '<div style="padding: 8px"><div>inner</div></div>';
+    const { container } = render(<Html onError={() => {}}>{html}</Html>);
+    await waitFor(() => {
+      expect(container.querySelectorAll('div').length).toBe(2);
+      expect(container.querySelector('div')).toHaveStyle({ padding: '8px' });
     });
   });
 
