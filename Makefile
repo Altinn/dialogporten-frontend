@@ -28,7 +28,7 @@ compose-deep-clean: ## Full cleanup: stops containers, removes volumes and all u
 	docker system prune -af --volumes
 
 pull: ## Pulls and stores images locally and builds project
-	docker compose pull && docker pull node:22-slim && docker compose build
+	docker compose pull && docker compose build --pull
 
 # ---------------------
 # - Helper functions  -
