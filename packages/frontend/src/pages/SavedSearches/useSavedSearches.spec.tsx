@@ -73,6 +73,7 @@ vi.mock('../../auth/useAuthenticatedQuery.ts', () => ({
 }));
 
 import { useParties } from '../../api/hooks/useParties.ts';
+import { useFilterServiceResources } from '../../api/hooks/useServiceResource.ts';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.ts';
 
 const ORG_URN = 'urn:altinn:organization:identifier-no:1';
@@ -649,5 +650,45 @@ describe('useSavedSearches', () => {
     });
 
     expect(result.current.isCTALoading).toBe(false);
+  });
+
+  describe('service resources', () => {
+    const serviceSavedSearch = makeSavedSearch({
+      id: 4,
+      data: {
+        urn: ['urn:altinn:person:identifier-no:1'],
+        filters: [{ id: 'service', value: 'urn:altinn:resource:a' }],
+        searchString: '',
+        fromView: '/',
+      },
+    });
+
+    it('does not fetch service resources unless asked to resolve service titles', () => {
+      setupAuthQuery({ data: { savedSearches: [...savedSearches, serviceSavedSearch] } });
+
+      renderHook(() => useSavedSearches(['urn:altinn:person:identifier-no:1']), { wrapper: createCustomWrapper() });
+
+      expect(useFilterServiceResources).toHaveBeenLastCalledWith({ enabled: false });
+    });
+
+    it('does not fetch service resources when no saved search filters on a service', () => {
+      setupAuthQuery();
+
+      renderHook(() => useSavedSearches(['urn:altinn:person:identifier-no:1'], { resolveServiceTitles: true }), {
+        wrapper: createCustomWrapper(),
+      });
+
+      expect(useFilterServiceResources).toHaveBeenLastCalledWith({ enabled: false });
+    });
+
+    it('fetches service resources when a rendered saved search filters on a service', () => {
+      setupAuthQuery({ data: { savedSearches: [...savedSearches, serviceSavedSearch] } });
+
+      renderHook(() => useSavedSearches(['urn:altinn:person:identifier-no:1'], { resolveServiceTitles: true }), {
+        wrapper: createCustomWrapper(),
+      });
+
+      expect(useFilterServiceResources).toHaveBeenLastCalledWith({ enabled: true });
+    });
   });
 });
