@@ -1,5 +1,5 @@
 import type { FilterProps, FilterState } from '@altinn/altinn-components';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
@@ -28,8 +28,17 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
   const dialogsForRecommendations = useDialogsForRecommendations();
   const { locale } = useDateFnsLocale();
   const { organizations } = useOrganizations();
-  const { serviceResources } = useFilterServiceResources();
+  const [hasOpenedServiceFilter, setHasOpenedServiceFilter] = useState(false);
+  const { serviceResources, isLoading: isLoadingServiceResources } = useFilterServiceResources({
+    enabled: hasOpenedServiceFilter,
+  });
   const [params] = useSearchParams();
+
+  const onServiceFilterOpenChange = useCallback((open: boolean) => {
+    if (open) {
+      setHasOpenedServiceFilter(true);
+    }
+  }, []);
 
   const currentFilters = useMemo(() => {
     const filters = readFiltersFromURLQuery(params.toString());
@@ -55,8 +64,10 @@ export const useFilters = ({ viewType }: UseFiltersProps): UseFiltersOutput => {
         serviceResources,
         currentFilters: { service: serviceFilterValues },
         allOrganizations: organizations,
+        loading: isLoadingServiceResources,
+        onOpenChange: onServiceFilterOpenChange,
       }),
-    [serviceResources, serviceFilterValues, organizations],
+    [serviceResources, serviceFilterValues, organizations, isLoadingServiceResources, onServiceFilterOpenChange],
   );
 
   const filters: FilterProps[] = useMemo(

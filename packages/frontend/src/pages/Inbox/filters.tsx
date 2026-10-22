@@ -43,6 +43,8 @@ interface ServiceFilterProps {
   serviceResources: ServiceResource[];
   currentFilters?: FilterState;
   allOrganizations: OrganizationLookup;
+  loading?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export enum DateFilterOption {
@@ -396,6 +398,8 @@ export const createServiceFilter = ({
   serviceResources,
   currentFilters = {},
   allOrganizations,
+  loading = false,
+  onOpenChange,
 }: ServiceFilterProps): FilterProps => {
   const serviceFilters: FilterProps[] = serviceResources.map((s) => ({
     id: s.id!,
@@ -415,6 +419,10 @@ export const createServiceFilter = ({
     removable: true,
     virtualized: true,
     searchable: true,
+    loading,
+    loadingTitle: t('filter_bar.group.choose_service'),
+    loadingLabel: t('filter_bar.loading_services'),
+    onOpenChange,
     groups: {
       selected: {},
       services: {
