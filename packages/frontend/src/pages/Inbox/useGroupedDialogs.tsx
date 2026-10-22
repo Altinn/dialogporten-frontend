@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, type LinkProps, useSearchParams } from 'react-router';
 import { MAX_COUNT_BULK_DIALOGS } from '../../api/hooks/useBulkActions.ts';
 import type { InboxViewType } from '../../api/hooks/useDialogs.tsx';
+import { withRelationsCount } from '../../components/RelatedDialogs/RelationsCount.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { useGlobalState } from '../../useGlobalState.ts';
@@ -154,6 +155,9 @@ const getSearchTitle = (
 const DialogListItemLink = ({ href = '', ...props }: Omit<LinkProps, 'to'> & { href?: string }) => (
   <Link state={{ fromView: location.pathname }} {...props} to={`${href}${location.search}`} />
 );
+
+/* For dialogs with relations: also shows the number of child dialogs, fetched once the item scrolls into view */
+const RelationsAwareListItemLink = withRelationsCount(DialogListItemLink);
 
 const stripTitlelessSingleGroup = (
   groups: Record<string, DialogListGroupPropsSort>,
@@ -336,7 +340,7 @@ const useGroupedDialogs = ({
         ariaLabel: item.title,
         ...(bulkMode ? { onClick: () => onToggleBulkId(item.id) } : { href: `/inbox/${item.id}/` }),
         disabled: disabledBulkItem,
-        as: bulkMode ? 'button' : DialogListItemLink,
+        as: bulkMode ? 'button' : item.hasRelations ? RelationsAwareListItemLink : DialogListItemLink,
       };
     },
     [

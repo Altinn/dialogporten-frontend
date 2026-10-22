@@ -37,6 +37,8 @@ import type { TimelineSegmentWithTransmissions } from '../../utils/transmissions
 import { ActivityLogModal } from '../ActivityLog/ActivityLogModal.tsx';
 import { AdditionalInfoContent } from '../AdditionalInfoContent/AdditionalInfoContent.tsx';
 import { MainContentReference } from '../MainContentReference/MainContentReference.tsx';
+import { ParentDialogLink } from '../RelatedDialogs/ParentDialogLink.tsx';
+import { RelatedDialogs } from '../RelatedDialogs/RelatedDialogs.tsx';
 import { SeenByModal } from '../SeenByModal/SeenByModal.tsx';
 import { DialogHelp } from './DialogHelp.tsx';
 import styles from './dialogDetails.module.css';
@@ -486,6 +488,7 @@ export const DialogDetails = ({
         attachmentsCount={dialog.attachments?.length}
         extendedStatusLabel={dialog.extendedStatusLabel}
       />
+      {dialog.hasRelations && <ParentDialogLink key={`parent-${dialog.id}`} dialogId={dialog.id} />}
       <DialogBody
         sender={dialog.sender}
         recipient={dialog.receiver}
@@ -560,6 +563,7 @@ export const DialogDetails = ({
           {t('dialog.transmission.collapseLabel')}
         </Button>
       )}
+      {dialog.hasRelations && <RelatedDialogs key={`related-${dialog.id}`} dialogId={dialog.id} />}
       {dialog.additionalInfo?.value && (
         <AdditionalInfoContent mediaType={dialog.additionalInfo.mediaType} value={dialog.additionalInfo.value} />
       )}

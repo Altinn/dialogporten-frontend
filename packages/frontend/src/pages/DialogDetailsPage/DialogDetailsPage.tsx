@@ -18,6 +18,7 @@ import { useParties } from '../../api/hooks/useParties.ts';
 import { DialogAccessInfoModal } from '../../components/DialogAccessInfoModal/DialogAccessInfoModal.tsx';
 import { DialogDetails } from '../../components/DialogDetails/DialogDetails.tsx';
 import { ForwardDialogModal } from '../../components/ForwardDialogModal/ForwardDialogModal.tsx';
+import type { RelatedDialogLocationState } from '../../components/RelatedDialogs/partySwitch.tsx';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { useFeatureFlag } from '../../featureFlags/useFeatureFlag.ts';
 import { usePageTitle } from '../../hooks/usePageTitle.ts';
@@ -31,7 +32,7 @@ export const DialogDetailsPage = () => {
   const [isSeenByLogOpen, setIsSeenByLogOpen] = useState<boolean>(false);
   const [isForwardOpen, setIsForwardOpen] = useState<boolean>(false);
   const enableForwardByEmail = useFeatureFlag<boolean>('dialogDetails.enableForwardByEmail');
-  const { parties } = useParties();
+  const { parties, setSelectedPartyIds } = useParties();
   const { t } = useTranslation();
   const location = useLocation();
   const qc = useQueryClient();
@@ -142,7 +143,10 @@ export const DialogDetailsPage = () => {
 
   const dialogTokenIsFreshAfterMount = dataUpdatedAt > mountAtRef.current ? dialog?.dialogToken : undefined;
   const { onMessageEvent } = useDialogByIdSubscription(dialog?.id, dialogTokenIsFreshAfterMount, refreshDialogToken);
-  const previousPath = (location?.state?.fromView ?? '/') + location.search;
+  /* Coming from a related dialog link, return to that dialog with its own party selection */
+  const returnTo = (location.state as RelatedDialogLocationState | null)?.returnTo;
+  const previousPath = returnTo?.href ?? (location?.state?.fromView ?? '/') + location.search;
+  const onBack = returnTo?.personParty ? () => setSelectedPartyIds([returnTo.personParty!], null) : undefined;
   const labelActions = dialogId && dialog ? createLabelUpdateActions(dialogId, dialog.label, dialog.unread) : [];
 
   return (
@@ -150,7 +154,17 @@ export const DialogDetailsPage = () => {
       color={dialog?.receiver?.type as Color}
       backButton={{
         label: t('word.back'),
-        as: (props: LinkProps) => <Link {...props} to={previousPath} state={{ scrollToId: dialogId }} />,
+        as: (props: LinkProps) => (
+          <Link
+            {...props}
+            to={previousPath}
+            state={returnTo ? returnTo.state : { scrollToId: dialogId }}
+            onClick={(event) => {
+              props.onClick?.(event);
+              onBack?.();
+            }}
+          />
+        ),
       }}
       pageMenu={
         { items: displayDialogActions ? [...delegationLink, ...labelActions] : delegationLink } as PageMenuProps

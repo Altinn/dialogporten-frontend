@@ -1,0 +1,40 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.section:empty {
+  display: none;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.showMore {
+  align-self: flex-start;
+}
+
+.parentLink {
+  margin-bottom: 1rem;
+}
+
+/* Rendered inside a DialogListItem link, below the item's bordered content. Indented to line up with that content. */
+.relationsCount {
+  display: flex;
+  align-items: center;
+  column-gap: 0.25em;
+  margin-top: 0.5rem;
+  padding-left: calc(1rem + 3px);
+  font-size: 0.875rem;
+  color: var(--ds-color-text-subtle);
+}
+
+.relationsCountIcon {
+  font-size: 1.25em;
+  flex-shrink: 0;
+}
