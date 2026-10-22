@@ -2,9 +2,9 @@ import { useQuery } from '@tanstack/react-query';
 import type React from 'react';
 import { createContext, type ReactNode } from 'react';
 import { Analytics } from '../analytics/analytics.ts';
-import { featureFlagDefinitions, getFeatureFlag } from './FeatureFlags';
+import { type FeatureFlagValue, featureFlagDefinitions, getFeatureFlag } from './FeatureFlags';
 
-export type FeatureFlagValues = Record<string, boolean | number | string | string[] | undefined>;
+export type FeatureFlagValues = Record<string, FeatureFlagValue | undefined>;
 
 export const FeatureFlagContext = createContext<FeatureFlagValues | undefined>(undefined);
 
