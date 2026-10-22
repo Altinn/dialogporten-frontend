@@ -18,6 +18,12 @@ const fieldTransformers: Record<string, (value: unknown) => void> = {
       for (const item of items) encryptField(item, 'party');
     }
   },
+  dialogRelations: (value) => {
+    const items = (value as { items?: unknown[] | null } | null | undefined)?.items;
+    if (Array.isArray(items)) {
+      for (const item of items) encryptField((item as { dialog?: unknown } | null | undefined)?.dialog, 'party');
+    }
+  },
   parties: (value) => {
     if (Array.isArray(value)) {
       for (const party of value) encryptField(party, 'party');

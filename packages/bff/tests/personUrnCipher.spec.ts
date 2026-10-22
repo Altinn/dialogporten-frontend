@@ -166,6 +166,27 @@ describe('encryptPersonUrnsInResponse (outbound, field-targeted)', () => {
     expect(result.data.searchDialogs.items[2].party).toMatch(/^urn:altinn:person:identifier-no:enc:/);
   });
 
+  it('encrypts every dialogRelations.items[*].dialog.party', async () => {
+    const { encryptPersonUrnsInResponse } = await importTransformers(KEY_A);
+    const response = {
+      data: {
+        dialogRelations: {
+          items: [
+            { relationType: 'CHILD', dialog: { id: '1', party: PERSON_URN } },
+            { relationType: 'CHILD', dialog: { id: '2', party: ORG_URN } },
+            { relationType: 'PARENT', dialog: { id: '3', party: PERSON_URN } },
+          ],
+          hasNextPage: false,
+          errors: [],
+        },
+      },
+    };
+    const result = encryptPersonUrnsInResponse(undefined, response);
+    expect(result.data.dialogRelations.items[0].dialog.party).toMatch(/^urn:altinn:person:identifier-no:enc:/);
+    expect(result.data.dialogRelations.items[1].dialog.party).toBe(ORG_URN);
+    expect(result.data.dialogRelations.items[2].dialog.party).toMatch(/^urn:altinn:person:identifier-no:enc:/);
+  });
+
   it('encrypts parties[*].party', async () => {
     const { encryptPersonUrnsInResponse } = await importTransformers(KEY_A);
     const response = {
@@ -196,5 +217,8 @@ describe('encryptPersonUrnsInResponse (outbound, field-targeted)', () => {
       data: { dialogById: { dialog: null } },
     });
     expect(encryptPersonUrnsInResponse(undefined, { data: { parties: null } })).toEqual({ data: { parties: null } });
+    expect(encryptPersonUrnsInResponse(undefined, { data: { dialogRelations: { items: null, errors: [] } } })).toEqual({
+      data: { dialogRelations: { items: null, errors: [] } },
+    });
   });
 });
