@@ -64,7 +64,7 @@ export const SavedSearchesPage = () => {
   const selectedPartyIds = useSelectedPartyIds();
   const [searchQuery, setSearchQuery] = useState('');
   const { items, groups, description, isLoading, onCloseSavedSearch, onSaveSearch, openedSavedSearch } =
-    useSavedSearches(selectedPartyIds);
+    useSavedSearches(selectedPartyIds, { resolveServiceTitles: true });
   const currentSearch = useMemo(() => items?.find((item) => item.id === openedSavedSearch), [items, openedSavedSearch]);
   const filteredItems = filterBookmarksBySearch(items ?? [], searchQuery);
 

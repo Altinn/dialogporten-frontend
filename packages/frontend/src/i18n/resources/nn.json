@@ -170,6 +170,7 @@
   "filter_bar.label.choose_service": "Teneste",
   "filter_bar.label.choose_status": "Status",
   "filter_bar.label.updated": "Dato",
+  "filter_bar.loading_services": "Hentar tenester …",
   "filter_bar.remove_filter": "Fjern filter",
   "filter_bar.reset_filters": "Nullstill",
   "filter_bar.save_search": "Lagre søk",

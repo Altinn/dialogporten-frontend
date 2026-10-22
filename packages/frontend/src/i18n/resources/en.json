@@ -170,6 +170,7 @@
   "filter_bar.label.choose_service": "Service",
   "filter_bar.label.choose_status": "Status",
   "filter_bar.label.updated": "Date",
+  "filter_bar.loading_services": "Loading services …",
   "filter_bar.remove_filter": "Remove filter",
   "filter_bar.reset_filters": "Reset",
   "filter_bar.save_search": "Save search",

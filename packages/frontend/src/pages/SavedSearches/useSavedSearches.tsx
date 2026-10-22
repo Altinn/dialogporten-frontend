@@ -31,6 +31,7 @@ import {
   createSelectionFilters,
   fromPathToViewType,
   getSavedSearchSelection,
+  hasServiceFilter,
 } from './searchUtils.ts';
 
 interface UseSavedSearchesOutput {
@@ -142,12 +143,18 @@ export const useSavedSearchesCount = (selectedPartyIds?: string[], enabled = tru
   return data?.savedSearches?.length ?? 0;
 };
 
-export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesOutput => {
+interface UseSavedSearchesOptions {
+  resolveServiceTitles?: boolean;
+}
+
+export const useSavedSearches = (
+  selectedPartyIds?: string[],
+  { resolveServiceTitles = false }: UseSavedSearchesOptions = {},
+): UseSavedSearchesOutput => {
   const [isCTALoading, setIsCTALoading] = useState<boolean>(false);
   const [openedSavedSearch, setOpenedSavedSearch] = useState<string | null>(null);
   const { organizations } = useOrganizations();
   const orgMap = useMemo(() => buildOrganizationMap(organizations), [organizations]);
-  const { serviceResourceById } = useFilterServiceResources();
   const { currentEndUser, setSelectedPartyIds, setSelectedParties, partyGraph, selectedGroup } = useParties();
   const { locale } = useDateFnsLocale();
   const navigate = useNavigate();
@@ -162,6 +169,9 @@ export const useSavedSearches = (selectedPartyIds?: string[]): UseSavedSearchesO
   );
 
   const endUsersSavedSearches = (data?.savedSearches ?? []) as SavedSearchesFieldsFragment[];
+  const { serviceResourceById } = useFilterServiceResources({
+    enabled: resolveServiceTitles && endUsersSavedSearches.some(hasServiceFilter),
+  });
   const currentPartySavedSearches = filterSavedSearches(endUsersSavedSearches, selectedPartyIds || [], selectedGroup);
 
   const saveSearch = async ({
