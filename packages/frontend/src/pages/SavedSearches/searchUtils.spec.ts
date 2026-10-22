@@ -3,7 +3,7 @@ import type { Locale } from 'date-fns';
 import type { TFunction } from 'i18next';
 import { describe, expect, it } from 'vitest';
 import type { OrganizationLookup } from '../../utils/organizations.ts';
-import { buildFilterParams } from './searchUtils.ts';
+import { buildFilterParams, hasServiceFilter } from './searchUtils.ts';
 
 const makeSavedSearch = (data: Partial<SavedSearchesFieldsFragment['data']>): SavedSearchesFieldsFragment => ({
   id: 1,
@@ -56,5 +56,21 @@ describe('buildFilterParams', () => {
       deps,
     );
     expect(params).toEqual([]);
+  });
+});
+
+describe('hasServiceFilter', () => {
+  it('is true when the saved search filters on a service', () => {
+    expect(hasServiceFilter(makeSavedSearch({ filters: [{ id: 'service', value: 'urn:altinn:resource:a' }] }))).toBe(
+      true,
+    );
+  });
+
+  it('is false when the saved search has no service filter', () => {
+    expect(hasServiceFilter(makeSavedSearch({ filters: [{ id: 'org', value: 'skd' }] }))).toBe(false);
+  });
+
+  it('ignores a service filter without a value', () => {
+    expect(hasServiceFilter(makeSavedSearch({ filters: [{ id: 'service', value: '' }, null] }))).toBe(false);
   });
 });

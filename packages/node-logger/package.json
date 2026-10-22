@@ -6,7 +6,7 @@
   "scripts": {
     "prepare": "tsc",
     "build": "tsc",
-    "test": "npm run build && TEST_LOGGING=true node dist/index.js"
+    "test": "pnpm build && node test.js"
   },
   "keywords": [
     "logging"

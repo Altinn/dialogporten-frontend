@@ -50,7 +50,6 @@ export type AnalyticsEventName = (typeof ANALYTICS_EVENTS)[keyof typeof ANALYTIC
 /**
  * Helper function to get the appropriate dialog move event based on target label and outcome
  * @param toLabel - The SystemLabel the dialog is being moved to
- * @param success - Whether the move operation was successful
  * @returns The appropriate analytics event name
  */
 export const getDialogMoveEvent = (toLabel: SystemLabel): AnalyticsEventName => {

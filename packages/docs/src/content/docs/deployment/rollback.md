@@ -13,15 +13,19 @@ See [Feature Flags](../../featureflags/featureflags/).
 
 ### Production
 
-Run **CI/CD Production** (`ci-cd-prod.yml`) with the previous version number, without the `v` (e.g. `1.181.0`).
+**CI/CD Production** (`ci-cd-prod.yml`) only moves forward. It fails if the version is older than the apps or infrastructure version stored for production (`LATEST_DEPLOYED_APPS_VERSION` and `LATEST_DEPLOYED_INFRA_VERSION`). Redeploying the same version is allowed.
 
-- It checks that the tag `v<version>` exists.
-- It deploys infrastructure and apps from that tag (Bicep templates and images), uploads source maps, updates the manifests repository and stores the deployed version.
-- Infrastructure and apps are only deployed when change detection finds changes. Change detection compares the version currently in production with the branch the workflow is started from, not with the version you deploy.
-  If `main` has no application changes since the version in production, the apps are skipped. **Check in the run that "Deploy apps to prod" actually ran.**
+To roll back, run **Deploy Apps (Manual)** (`dispatch-deploy-apps.yml`):
 
-If the apps were skipped, run **Deploy Apps (Manual)** (`dispatch-deploy-apps.yml`) with environment `prod` and the version, and select the tag `v<version>` under "Use workflow from" so the Bicep templates match the image.
-This workflow does not update the manifests repository or the stored deployed version, so the next production deploy compares against the wrong base. Prefer CI/CD Production when it works.
+- Set environment to `prod` and version to the previous version number, without the `v` (e.g. `1.181.0`).
+- Select the tag `v<version>` under "Use workflow from" so the Bicep templates match the image.
+- If the release you roll back from changed infrastructure, also run **Deploy Infrastructure (Manual)** (`dispatch-deploy-infrastructure.yml`) with the same version. It deploys from the tag `v<version>`.
+
+The manual workflows do not update the manifests repository or the stored deployed version. After a rollback:
+
+- The stored version is still the release you rolled back from, so the next CI/CD Production deploy must use that version or a newer one.
+- Change detection in that deploy compares `main` against the release you rolled back from, not the version running in production.
+  If nothing relevant changed since then, the apps or infrastructure are skipped and production stays on the rolled-back version. **Check in the run that "Deploy apps to prod" actually ran.**
 
 ### Other environments
 
