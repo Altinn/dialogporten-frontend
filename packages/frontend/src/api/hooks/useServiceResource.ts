@@ -18,12 +18,16 @@ interface UseServiceResourceOutput {
   isLoading: boolean;
 }
 
+interface UseFilterServiceResourcesOptions {
+  enabled?: boolean;
+}
+
 const useServiceResourcesQuery = (
   queryKeyPrefix: string,
   queryFn: (variables: { lang: string }) => Promise<ServiceResourcesResult>,
+  enabled = true,
 ): UseServiceResourceOutput => {
   const { selectedParties } = useParties();
-  const enabled = selectedParties.length > 0;
   const { i18n } = useTranslation();
   const queryClient = useQueryClient();
 
@@ -43,7 +47,7 @@ const useServiceResourcesQuery = (
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     refetchOnReconnect: false,
-    enabled,
+    enabled: enabled && selectedParties.length > 0,
   });
 
   const serviceResources = useMemo(
@@ -74,8 +78,10 @@ const useServiceResourcesQuery = (
  * (DPServiceResourcesList). Use this when the resource id is passed to Dialogporten as a
  * filter on dialogs by service.
  */
-export const useFilterServiceResources = (): UseServiceResourceOutput =>
-  useServiceResourcesQuery(QUERY_KEYS.FILTER_SERVICE_RESOURCES, fetchConsumerServiceResources);
+export const useFilterServiceResources = ({
+  enabled = true,
+}: UseFilterServiceResourcesOptions = {}): UseServiceResourceOutput =>
+  useServiceResourcesQuery(QUERY_KEYS.FILTER_SERVICE_RESOURCES, fetchConsumerServiceResources, enabled);
 
 /**
  * Service resources used by notification settings, sourced from the Altinn Resource Registry

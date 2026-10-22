@@ -63,6 +63,9 @@ export const isPlaceholderValue = (value: string | undefined | null): boolean =>
   return false;
 };
 
+export const hasServiceFilter = (savedSearch: SavedSearchesFieldsFragment): boolean =>
+  (savedSearch.data?.filters ?? []).some((filter) => filter?.id === 'service' && !!filter.value);
+
 export const buildFilterParams = (
   savedSearch: SavedSearchesFieldsFragment,
   deps: {

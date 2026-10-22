@@ -7,7 +7,7 @@ import { useFilterServiceResources } from '../../api/hooks/useServiceResource.ts
 import { useDateFnsLocale } from '../../i18n/useDateFnsLocale.tsx';
 import { buildOrganizationMap } from '../../utils/organizations.ts';
 import { PageRoutes } from '../routes.ts';
-import { buildFilterParams } from '../SavedSearches/searchUtils.ts';
+import { buildFilterParams, hasServiceFilter } from '../SavedSearches/searchUtils.ts';
 import { convertFilterStateToFilters } from '../SavedSearches/useSavedSearches.tsx';
 import { useOrganizations } from './useOrganizations.ts';
 
@@ -43,7 +43,6 @@ export const useBookmarkModal = ({
   const { t } = useTranslation();
   const { organizations } = useOrganizations();
   const orgMap = useMemo(() => buildOrganizationMap(organizations), [organizations]);
-  const { serviceResourceById } = useFilterServiceResources();
   const { locale } = useDateFnsLocale();
 
   const [state, setState] = useState<ModalState>({ kind: 'closed' });
@@ -54,12 +53,11 @@ export const useBookmarkModal = ({
     setInputValue('');
   };
 
-  const params = useMemo(() => {
-    const deps = { organizations: orgMap, serviceResourceById, locale, t };
+  const savedSearch = useMemo<SavedSearchesFieldsFragment>(() => {
     if (state.kind === 'edit') {
-      return buildFilterParams(state.search, deps);
+      return state.search;
     }
-    const draftSavedSearch: SavedSearchesFieldsFragment = {
+    return {
       id: 0,
       name: '',
       createdAt: '',
@@ -71,8 +69,16 @@ export const useBookmarkModal = ({
         fromView: PageRoutes[viewType],
       },
     };
-    return buildFilterParams(draftSavedSearch, deps);
-  }, [state, filterState, partyURIs, enteredSearchValue, viewType, orgMap, serviceResourceById, locale, t]);
+  }, [state, filterState, partyURIs, enteredSearchValue, viewType]);
+
+  const { serviceResourceById } = useFilterServiceResources({
+    enabled: state.kind !== 'closed' && hasServiceFilter(savedSearch),
+  });
+
+  const params = useMemo(
+    () => buildFilterParams(savedSearch, { organizations: orgMap, serviceResourceById, locale, t }),
+    [savedSearch, orgMap, serviceResourceById, locale, t],
+  );
 
   const isEdit = state.kind === 'edit';
 
