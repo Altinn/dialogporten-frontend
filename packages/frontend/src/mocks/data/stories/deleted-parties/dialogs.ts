@@ -1,7 +1,7 @@
-import type { SearchDialogFieldsFragment } from 'bff-types-generated';
 import { DialogStatus, SystemLabel } from 'bff-types-generated';
+import type { MockDialog } from '../../base/helper.ts';
 
-export const dialogs: SearchDialogFieldsFragment[] = [
+export const dialogs: MockDialog[] = [
   // Dialogs for current end user
   {
     hasUnopenedContent: false,

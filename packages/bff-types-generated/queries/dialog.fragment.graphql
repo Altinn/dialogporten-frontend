@@ -17,6 +17,7 @@ fragment SearchDialogFields on SearchDialog {
   }
   fromServiceOwnerTransmissionsCount
   fromPartyTransmissionsCount
+  hasRelations
   content {
     title {
       ...DialogContentFields
@@ -46,6 +47,7 @@ fragment DialogByIdFields on Dialog {
   fromServiceOwnerTransmissionsCount
   fromPartyTransmissionsCount
   isContentSeen
+  hasRelations
   attachments {
     ...AttachmentFields
   }

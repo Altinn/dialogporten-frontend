@@ -1,7 +1,8 @@
-import { DialogStatus, type SearchDialogFieldsFragment, SystemLabel } from 'bff-types-generated';
+import { DialogStatus, SystemLabel } from 'bff-types-generated';
 import { dialogs as baseDialogs } from '../../base/dialogs';
+import type { MockDialog } from '../../base/helper.ts';
 
-const dialogsWithStatusAwaiting: SearchDialogFieldsFragment[] = [
+const dialogsWithStatusAwaiting: MockDialog[] = [
   {
     hasUnopenedContent: false,
     serviceResource: 'default',
@@ -95,4 +96,4 @@ const dialogsWithStatusAwaiting: SearchDialogFieldsFragment[] = [
   },
 ];
 
-export const dialogs: SearchDialogFieldsFragment[] = [...dialogsWithStatusAwaiting, ...baseDialogs];
+export const dialogs: MockDialog[] = [...dialogsWithStatusAwaiting, ...baseDialogs];

@@ -1,11 +1,12 @@
-import { DialogStatus, type SearchDialogFieldsFragment, SystemLabel } from 'bff-types-generated';
+import { DialogStatus, SystemLabel } from 'bff-types-generated';
+import type { MockDialog } from '../../base/helper.ts';
 
 /**
  * One dialog per person in the all-persons portfolio. Selecting "Alle personer" sends every person
  * URN as a party filter, so all of these should appear together; selecting a single person should
  * narrow to just that person's dialog.
  */
-const makePersonDialog = (id: string, party: string, title: string): SearchDialogFieldsFragment => ({
+const makePersonDialog = (id: string, party: string, title: string): MockDialog => ({
   hasUnopenedContent: false,
   serviceResource: 'default',
   serviceResourceType: 'correspondenceservice',
@@ -39,7 +40,7 @@ const makePersonDialog = (id: string, party: string, title: string): SearchDialo
   },
 });
 
-export const dialogs: SearchDialogFieldsFragment[] = [
+export const dialogs: MockDialog[] = [
   makePersonDialog(
     '01923000-0000-0000-0000-000000000001',
     'urn:altinn:person:identifier-no:1',

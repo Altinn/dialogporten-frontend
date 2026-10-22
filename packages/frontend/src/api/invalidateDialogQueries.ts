@@ -13,6 +13,7 @@ const dialogQueryKeys = [
   QUERY_KEYS.DIALOG_BY_ID,
   QUERY_KEYS.NOTIFICATION_LOGS,
   QUERY_KEYS.LABEL_ASSIGNMENT_LOG,
+  QUERY_KEYS.DIALOG_RELATIONS,
 ];
 
 export const invalidateDialogQueries = async (queryClient: QueryClient): Promise<void> => {

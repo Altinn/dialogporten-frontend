@@ -40,4 +40,5 @@ export const QUERY_KEYS = {
   NOTIFICATION_ADDRESS_BY_ORG_NUMBER: 'notificationAddressByOrgNumber',
   LABEL_ASSIGNMENT_LOG: 'labelAssignmentLog',
   NOTIFICATION_LOGS: 'notificationLogs',
+  DIALOG_RELATIONS: 'dialogRelations',
 };

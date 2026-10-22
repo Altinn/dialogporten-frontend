@@ -1,4 +1,5 @@
-import { DialogStatus, type SearchDialogFieldsFragment, SystemLabel } from 'bff-types-generated';
+import { DialogStatus, SystemLabel } from 'bff-types-generated';
+import type { MockDialog } from '../../base/helper.ts';
 import {
   BAKERY_PARTY,
   DIALOG_IDS,
@@ -11,7 +12,7 @@ import {
   TIMELINE,
 } from './shared.ts';
 
-type SeenBy = SearchDialogFieldsFragment['seenSinceLastContentUpdate'][number];
+type SeenBy = MockDialog['seenSinceLastContentUpdate'][number];
 
 const seenBy = (id: string, actor: typeof kari, seenAt: string, isCurrentEndUser: boolean): SeenBy => ({
   id,
@@ -50,7 +51,7 @@ const dialog = ({
   received: number;
   sent: number;
   attachments?: number;
-}): SearchDialogFieldsFragment => ({
+}): MockDialog => ({
   id,
   org,
   party: BAKERY_PARTY,
@@ -79,7 +80,7 @@ const dialog = ({
 const aMeldingPeriod = previousMonth(TIMELINE.aMelding.submitted);
 const statisticsPeriod = previousQuarter();
 
-export const dialogs: SearchDialogFieldsFragment[] = [
+export const dialogs: MockDialog[] = [
   dialog({
     id: DIALOG_IDS.sickPay,
     org: 'nav',

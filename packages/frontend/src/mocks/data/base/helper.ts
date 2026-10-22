@@ -4,6 +4,7 @@ import {
   type AttachmentFieldsFragment,
   AttachmentUrlConsumer,
   type DialogByIdFieldsFragment,
+  type DialogRelationType,
   GuiActionPriority,
   HttpVerb,
   type NotificationLogsResponse,
@@ -15,6 +16,35 @@ import {
 import { naiveSearchFilter } from '../../filters';
 import type { InMemoryStore } from '../../handlers.ts';
 import { forwardingScenarios } from '../stories/forward-by-email/forwarding.ts';
+
+/**
+ * A relation from a mocked dialog to another dialog, typed as seen from the mocked dialog (dialogporten#4474). The
+ * related dialog id may be missing from the story's dialogs, which the dialogRelations mock treats as a dialog the end
+ * user cannot access.
+ */
+export interface MockDialogRelation {
+  type: DialogRelationType;
+  id: string;
+}
+
+/**
+ * A mocked dialog: a search dialog whose `hasRelations` is derived from its `relations` (or set explicitly), so that
+ * stories without relations need not mention them. Content is always present, as API-only dialogs are not mocked.
+ */
+export type MockDialog = Omit<SearchDialogFieldsFragment, 'hasRelations' | 'content'> & {
+  content: NonNullable<SearchDialogFieldsFragment['content']>;
+  hasRelations?: boolean;
+  relations?: MockDialogRelation[];
+};
+
+export const mockDialogHasRelations = (dialog: MockDialog): boolean =>
+  dialog.hasRelations ?? (dialog.relations ?? []).length > 0;
+
+/* The search dialog as the API returns it, without the mock-only relations */
+export const toSearchDialog = (dialog: MockDialog): SearchDialogFieldsFragment => {
+  const { relations: _relations, ...searchDialog } = dialog;
+  return { ...searchDialog, hasRelations: mockDialogHasRelations(dialog) };
+};
 
 export const MAX_PARTY_URIS = 100;
 export const MAX_SERVICE_RESOURCES = 20;
@@ -1349,13 +1379,14 @@ export type MockDialogDetails = Partial<
 export const STORY_MARKDOWN_URL = 'https://dialogporten-serviceprovider.net/fce-markdown-story';
 
 export const convertToDialogByIdTemplate = (
-  input: SearchDialogFieldsFragment,
+  input: MockDialog,
   details?: MockDialogDetails,
 ): DialogByIdFieldsFragment => {
   return {
     id: input.id,
     serviceResourceType: details ? input.serviceResourceType : 'correspondenceservice',
     dialogToken: 'MOCKED_DIALOG_TOKEN',
+    hasRelations: mockDialogHasRelations(input),
     party: input.party,
     org: input.org,
     progress: input.progress,

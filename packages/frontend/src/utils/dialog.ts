@@ -1,3 +1,4 @@
+import type { AvatarProps } from '@altinn/altinn-components';
 import type { PartyFieldsFragment, SearchDialogFieldsFragment } from 'bff-types-generated';
 import { type TFunction, t } from 'i18next';
 import { getActorProps } from '../api/hooks/useDialogById.tsx';
@@ -50,6 +51,55 @@ export const getSeenByLabel = (seenBy: SeenByItem[], t: TFunction<'translation',
   return seenByLabel;
 };
 
+/**
+ * Resolves the sender (service owner, or overridden sender name) and recipient (party) avatars of a dialog.
+ * Shared by the inbox list and lists of related dialogs.
+ */
+export const getDialogSenderAndRecipient = ({
+  party,
+  org,
+  senderName,
+  partyGraph,
+  organizations,
+}: {
+  party: string;
+  org: string;
+  senderName: LocalizationObject[] | null | undefined;
+  partyGraph: PartyGraph;
+  organizations: OrganizationLookup;
+}): {
+  sender: AvatarProps;
+  recipient: AvatarProps;
+  serviceOwner: OrganizationOutput | undefined;
+  serviceOwnerNbName: string | undefined;
+} => {
+  const receiverParty = partyGraph.partyByUrn.get(party);
+  const isSubParty = partyGraph.parentByChildUrn.has(party);
+  const actualReceiverParty = receiverParty ?? partyGraph.currentEndUser;
+  const serviceOwner = getOrganization(organizations, org);
+  const serviceOwnerNbName = getOrganizationByLocale(organizations, org, 'nb')?.name;
+  const preferredSenderName = getPreferredPropertyByLocale(senderName ?? undefined)?.value;
+
+  return {
+    serviceOwner,
+    serviceOwnerNbName,
+    sender: {
+      name: preferredSenderName || serviceOwner?.name || '',
+      // At dialog level there is no actorType/actorId to determine the sender type.
+      // senderName can refer to a person (e.g. an employee name on a sick leave notice),
+      // but we default to 'company' as a pragmatic choice since the sender is always an org.
+      type: 'company',
+      imageUrl: getServiceOwnerLogo(senderName ?? undefined, serviceOwner, serviceOwnerNbName),
+      imageUrlAlt: t('dialog.imageAltURL', { companyName: preferredSenderName }),
+    },
+    recipient: {
+      name: actualReceiverParty?.name ?? '',
+      type: actualReceiverParty?.partyType === 'Organization' ? 'company' : 'person',
+      variant: receiverParty && isSubParty && actualReceiverParty?.partyType === 'Organization' ? 'outline' : 'solid',
+    },
+  };
+};
+
 export function mapDialogToInboxItems(
   input: SearchDialogFieldsFragment[],
   partyGraph: PartyGraph,
@@ -57,20 +107,19 @@ export function mapDialogToInboxItems(
   format: FormatFunction,
   stopReversingPersonNameOrder: boolean,
 ): InboxItemInput[] {
-  const endUserParty = partyGraph.currentEndUser;
-
   return input.map((item) => {
-    const titleObj = item.content.title.value;
-    const summaryObj = item.content.summary?.value;
-    const senderName = item.content.senderName?.value;
-    const extendedStatusObj = item.content.extendedStatus?.value;
+    const titleObj = item.content?.title.value;
+    const summaryObj = item.content?.summary?.value;
+    const senderName = item.content?.senderName?.value;
+    const extendedStatusObj = item.content?.extendedStatus?.value;
 
-    const receiverParty = partyGraph.partyByUrn.get(item.party);
-    const isSubParty = partyGraph.parentByChildUrn.has(item.party);
-    const actualReceiverParty = receiverParty ?? endUserParty;
-
-    const serviceOwner = getOrganization(organizations, item.org);
-    const serviceOwnerNbName = getOrganizationByLocale(organizations, item.org, 'nb')?.name;
+    const { sender, recipient, serviceOwner, serviceOwnerNbName } = getDialogSenderAndRecipient({
+      party: item.party,
+      org: item.org,
+      senderName,
+      partyGraph,
+      organizations,
+    });
     const seenByLabel = getSeenByLabel(item.seenSinceLastContentUpdate, t);
     const viewTypes = getViewTypes({ status: item.status, systemLabel: item.endUserContext?.systemLabels });
 
@@ -80,22 +129,10 @@ export function mapDialogToInboxItems(
       title: getPreferredPropertyByLocale(titleObj)?.value ?? '',
       dueAt: item.dueAt,
       summary: getPreferredPropertyByLocale(summaryObj)?.value ?? '',
-      sender: {
-        name: getPreferredPropertyByLocale(senderName)?.value || serviceOwner?.name || '',
-        // At dialog level there is no actorType/actorId to determine the sender type.
-        // senderName can refer to a person (e.g. an employee name on a sick leave notice),
-        // but we default to 'company' as a pragmatic choice since the sender is always an org.
-        type: 'company',
-        imageUrl: getServiceOwnerLogo(senderName, serviceOwner, serviceOwnerNbName),
-        imageUrlAlt: t('dialog.imageAltURL', { companyName: getPreferredPropertyByLocale(senderName)?.value }),
-      },
+      sender,
       serviceOwnerName: serviceOwner?.name ?? item.org,
       senderName: getPreferredPropertyByLocale(senderName)?.value || undefined,
-      recipient: {
-        name: actualReceiverParty?.name ?? '',
-        type: actualReceiverParty?.partyType === 'Organization' ? 'company' : 'person',
-        variant: receiverParty && isSubParty && actualReceiverParty?.partyType === 'Organization' ? 'outline' : 'solid',
-      },
+      recipient,
       contentUpdatedAt: item.contentUpdatedAt,
       guiAttachmentCount: item.guiAttachmentCount ?? 0,
       unreadItems: item.hasUnopenedContent,
@@ -128,6 +165,7 @@ export function mapDialogToInboxItems(
       viewTypes: viewTypes,
       fromServiceOwnerTransmissionsCount: item.fromServiceOwnerTransmissionsCount ?? 0,
       fromPartyTransmissionsCount: item.fromPartyTransmissionsCount ?? 0,
+      hasRelations: item.hasRelations ?? false,
       serviceResource: item.serviceResource,
       unread: !item.isContentSeen,
     };

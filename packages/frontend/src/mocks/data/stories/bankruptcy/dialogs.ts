@@ -1,7 +1,8 @@
-import { DialogStatus, type SearchDialogFieldsFragment, SystemLabel } from 'bff-types-generated';
+import { DialogStatus, SystemLabel } from 'bff-types-generated';
 import { dialogs as baseDialogs } from '../../base/dialogs';
+import type { MockDialog } from '../../base/helper.ts';
 
-const dialogsWithServiceResourceBankruptcy: SearchDialogFieldsFragment[] = [
+const dialogsWithServiceResourceBankruptcy: MockDialog[] = [
   {
     hasUnopenedContent: false,
     serviceResource: 'urn:altinn:resource:app_brg_konkursbehandling',
@@ -94,4 +95,4 @@ const dialogsWithServiceResourceBankruptcy: SearchDialogFieldsFragment[] = [
   },
 ];
 
-export const dialogs: SearchDialogFieldsFragment[] = [...dialogsWithServiceResourceBankruptcy, ...baseDialogs];
+export const dialogs: MockDialog[] = [...dialogsWithServiceResourceBankruptcy, ...baseDialogs];

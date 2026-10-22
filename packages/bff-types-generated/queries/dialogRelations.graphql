@@ -1,0 +1,46 @@
+query dialogRelations($dialogId: UUID!, $input: DialogRelationsInput) {
+  dialogRelations(dialogId: $dialogId, input: $input) {
+    items {
+      relationType
+      dialog {
+        ...RelatedDialogFields
+      }
+    }
+    hasNextPage
+    continuationToken
+    errors {
+      __typename
+      message
+    }
+  }
+}
+
+fragment RelatedDialogFields on RelatedDialog {
+  id
+  org
+  serviceResource
+  serviceResourceType
+  party
+  status
+  extendedStatus
+  createdAt
+  updatedAt
+  contentUpdatedAt
+  dueAt
+  isApiOnly
+  hasRelations
+  content {
+    title {
+      ...DialogContentFields
+    }
+    summary {
+      ...DialogContentFields
+    }
+    senderName {
+      ...DialogContentFields
+    }
+    extendedStatus {
+      ...DialogContentFields
+    }
+  }
+}

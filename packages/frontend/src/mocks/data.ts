@@ -3,12 +3,11 @@ import type {
   PartyFieldsFragment,
   Profile,
   SavedSearchesFieldsFragment,
-  SearchDialogFieldsFragment,
   ServiceResource,
 } from 'bff-types-generated';
 import { dialogs as mockedDialogs } from './data/base/dialogs.ts';
 import { features as mockedFeatures } from './data/base/features.ts';
-import type { MockDialogDetails } from './data/base/helper.ts';
+import type { MockDialog, MockDialogDetails } from './data/base/helper.ts';
 import { parties as mockedParties } from './data/base/parties.ts';
 import { profile as mockedProfile } from './data/base/profile.ts';
 import { services as mockedServices } from './data/base/services.ts';
@@ -31,7 +30,7 @@ const findDataById = async <T>(
 const findProfileById = (url: string) => findDataById<Profile>(url, 'profile', mockedProfile);
 const findFeaturesById = (url: string) => findDataById<Record<string, boolean>>(url, 'features', mockedFeatures);
 const findPartiesById = (url: string) => findDataById<PartyFieldsFragment[]>(url, 'parties', mockedParties);
-const findDialogsById = (url: string) => findDataById<SearchDialogFieldsFragment[]>(url, 'dialogs', mockedDialogs);
+const findDialogsById = (url: string) => findDataById<MockDialog[]>(url, 'dialogs', mockedDialogs);
 const findSavedSearchesById = (url: string) => findDataById<SavedSearchesFieldsFragment[]>(url, 'searches', []);
 const findServicesById = (url: string) => findDataById<ServiceResource[]>(url, 'services', mockedServices);
 const findDialogDetailsById = (url: string) => findDataById<Record<string, MockDialogDetails>>(url, 'details', {});
@@ -40,7 +39,7 @@ export const getMockedData = async (
   url: string,
 ): Promise<{
   profile: Profile;
-  dialogs: SearchDialogFieldsFragment[];
+  dialogs: MockDialog[];
   parties: PartyFieldsFragment[];
   savedSearches: SavedSearchesFieldsFragment[];
   organizations: OrganizationFieldsFragment[];

@@ -1,4 +1,5 @@
-import { DialogStatus, type SearchDialogFieldsFragment, SystemLabel } from 'bff-types-generated';
+import { DialogStatus, SystemLabel } from 'bff-types-generated';
+import type { MockDialog } from '../../base/helper.ts';
 
 const TOTAL_DIALOGS = 145;
 
@@ -71,7 +72,7 @@ function generateUUID(index: number): string {
   return `019241f7-bulk-0000-0000-${hex}`;
 }
 
-function generateDialog(index: number): SearchDialogFieldsFragment {
+function generateDialog(index: number): MockDialog {
   const titleIndex = index % titles.length;
   const dialogNumber = index + 1;
   const org = orgs[index % orgs.length];
@@ -142,12 +143,12 @@ function generateDialog(index: number): SearchDialogFieldsFragment {
   };
 }
 
-function generateDialogs(total: number = TOTAL_DIALOGS): SearchDialogFieldsFragment[] {
-  const result: SearchDialogFieldsFragment[] = [];
+function generateDialogs(total: number = TOTAL_DIALOGS): MockDialog[] {
+  const result: MockDialog[] = [];
   for (let i = 0; i < total; i++) {
     result.push(generateDialog(i));
   }
   return result;
 }
 
-export const dialogs: SearchDialogFieldsFragment[] = generateDialogs();
+export const dialogs: MockDialog[] = generateDialogs();

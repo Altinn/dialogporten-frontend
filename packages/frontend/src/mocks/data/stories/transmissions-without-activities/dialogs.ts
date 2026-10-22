@@ -1,9 +1,10 @@
-import { DialogStatus, type SearchDialogFieldsFragment, SystemLabel } from 'bff-types-generated';
+import { DialogStatus, SystemLabel } from 'bff-types-generated';
+import type { MockDialog } from '../../base/helper.ts';
 
 // Preview at: ?mock=true&playwrightId=transmissions-without-activities
 // The dialog id is the one `getMockedActivities` returns an empty list for, so this story covers
 // a dialog that carries transmissions but no activity history at all.
-export const dialogs: SearchDialogFieldsFragment[] = [
+export const dialogs: MockDialog[] = [
   {
     hasUnopenedContent: false,
     serviceResource: 'default',

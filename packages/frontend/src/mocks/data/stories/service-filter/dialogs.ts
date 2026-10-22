@@ -1,4 +1,5 @@
-import { DialogStatus, type SearchDialogFieldsFragment, SystemLabel } from 'bff-types-generated';
+import { DialogStatus, SystemLabel } from 'bff-types-generated';
+import type { MockDialog } from '../../base/helper.ts';
 import { MOCK_SERVICE_JOURNEY_ID } from './services.ts';
 
 const DIALOG_COUNT = 120;
@@ -14,7 +15,7 @@ const STATUSES = [
 
 const pad = (n: number) => n.toString().padStart(3, '0');
 
-const generateMockServiceJourneyDialogs = (): SearchDialogFieldsFragment[] =>
+const generateMockServiceJourneyDialogs = (): MockDialog[] =>
   Array.from({ length: DIALOG_COUNT }, (_, i) => {
     const num = i + 1;
     const orgIndex = (i % ORG_COUNT) + 1;
@@ -62,4 +63,4 @@ const generateMockServiceJourneyDialogs = (): SearchDialogFieldsFragment[] =>
     };
   });
 
-export const dialogs: SearchDialogFieldsFragment[] = generateMockServiceJourneyDialogs();
+export const dialogs: MockDialog[] = generateMockServiceJourneyDialogs();

@@ -10,7 +10,6 @@ import {
   type PartyFieldsFragment,
   type Profile,
   type SavedSearchesFieldsFragment,
-  type SearchDialogFieldsFragment,
   type ServiceResource,
   SystemLabel,
 } from 'bff-types-generated';
@@ -20,7 +19,10 @@ import {
   filterDialogs,
   getMockedLabelAssignmentLogs,
   getMockedNotificationLogs,
+  type MockDialog,
+  mockDialogHasRelations,
   STORY_MARKDOWN_URL,
+  toSearchDialog,
 } from './data/base/helper.ts';
 import { type ForwardingMock, forwardingScenarios } from './data/stories/forward-by-email/forwarding.ts';
 import { getMockedData } from './data.ts';
@@ -29,7 +31,7 @@ const data = await getMockedData(window.location.href);
 export type InMemoryStore = {
   savedSearches?: SavedSearchesFieldsFragment[];
   profile?: Profile;
-  dialogs?: SearchDialogFieldsFragment[] | null;
+  dialogs?: MockDialog[] | null;
   parties?: PartyFieldsFragment[];
   organizations?: OrganizationFieldsFragment[];
   features?: Record<string, boolean>;
@@ -278,7 +280,7 @@ const getAllDialogsForPartiesMock = graphql.query('getAllDialogsForParties', ({ 
     return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
   })();
 
-  const pagedItems = sortedItems ? sortedItems.slice(offset, offset + limit) : null;
+  const pagedItems = sortedItems ? sortedItems.slice(offset, offset + limit).map(toSearchDialog) : null;
   const hasNextPage = sortedItems ? offset + limit < sortedItems.length : false;
   const continuationToken = hasNextPage ? String(offset + limit) : null;
 
@@ -334,6 +336,79 @@ const getDialogByIdMock = graphql.query('getDialogById', (options) => {
     data: {
       dialogById: {
         dialog: dialogDetails,
+      },
+    },
+  });
+});
+
+const toRelatedDialog = (dialog: MockDialog) => ({
+  id: dialog.id,
+  org: dialog.org,
+  serviceResource: dialog.serviceResource,
+  serviceResourceType: dialog.serviceResourceType,
+  party: dialog.party,
+  status: dialog.status,
+  extendedStatus: null,
+  createdAt: dialog.createdAt,
+  updatedAt: dialog.contentUpdatedAt,
+  contentUpdatedAt: dialog.contentUpdatedAt,
+  dueAt: dialog.dueAt,
+  isApiOnly: false,
+  hasRelations: mockDialogHasRelations(dialog),
+  content: {
+    title: dialog.content.title,
+    summary: dialog.content.summary,
+    senderName: dialog.content.senderName,
+    extendedStatus: dialog.content.extendedStatus,
+  },
+});
+
+/**
+ * Mirrors Dialogporten's dialogRelations (dialogporten#4474): the relations of a dialog ordered by related dialog id,
+ * optionally filtered by type, paginated with an offset as the continuation token. Relations to dialogs that are not in
+ * the story stand in for dialogs the end user cannot access, and are left out silently after paging, so a page may
+ * hold fewer items than the limit.
+ */
+const dialogRelationsMock = graphql.query('dialogRelations', ({ variables }) => {
+  const { dialogId, input } = variables as {
+    dialogId: string;
+    input?: { type?: string | null; limit?: number | null; continuationToken?: string | null } | null;
+  };
+  const dialog = inMemoryStore.dialogs?.find((d) => d.id === dialogId);
+  if (!dialog) {
+    return HttpResponse.json({
+      data: {
+        dialogRelations: {
+          items: null,
+          hasNextPage: false,
+          continuationToken: null,
+          errors: [{ __typename: 'DialogRelationsNotFound', message: `Dialog ${dialogId} not found` }],
+        },
+      },
+    });
+  }
+
+  const relations = (dialog.relations ?? [])
+    .filter((relation) => !input?.type || relation.type === input.type)
+    .slice()
+    .sort((a, b) => a.id.localeCompare(b.id));
+  const limit = typeof input?.limit === 'number' && input.limit > 0 ? input.limit : 100;
+  const parsedOffset = Number.parseInt(input?.continuationToken ?? '', 10);
+  const offset = Number.isFinite(parsedOffset) && parsedOffset >= 0 ? parsedOffset : 0;
+  const hasNextPage = offset + limit < relations.length;
+
+  const items = relations.slice(offset, offset + limit).flatMap((relation) => {
+    const related = inMemoryStore.dialogs?.find((d) => d.id === relation.id);
+    return related ? [{ relationType: relation.type, dialog: toRelatedDialog(related) }] : [];
+  });
+
+  return HttpResponse.json({
+    data: {
+      dialogRelations: {
+        items,
+        hasNextPage,
+        continuationToken: hasNextPage ? String(offset + limit) : null,
+        errors: [],
       },
     },
   });
@@ -958,6 +1033,7 @@ export const handlers = [
   getAllDialogsForPartiesMock,
   getAllPartiesMock,
   getDialogByIdMock,
+  dialogRelationsMock,
   getMainContentMarkdownMock,
   getLocalizedMainContentMarkdownMock,
   getStoryMarkdownMock,

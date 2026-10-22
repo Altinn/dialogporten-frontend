@@ -1,10 +1,11 @@
-import { DialogStatus, type SearchDialogFieldsFragment, SystemLabel } from 'bff-types-generated';
+import { DialogStatus, SystemLabel } from 'bff-types-generated';
 import { dialogs as baseDialogs } from '../../base/dialogs';
+import type { MockDialog } from '../../base/helper.ts';
 
 export const MOCKED_SYS_DATE = new Date('2024-12-31T11:11:00Z');
 export const MOCKED_SYS_DATE_STRING = '2024-12-31T11:11:00.000Z';
 
-const dialogsWithMockedSystemDate: SearchDialogFieldsFragment[] = [
+const dialogsWithMockedSystemDate: MockDialog[] = [
   {
     hasUnopenedContent: false,
     serviceResource: 'default',
@@ -141,4 +142,4 @@ const dialogsWithMockedSystemDate: SearchDialogFieldsFragment[] = [
   },
 ];
 
-export const dialogs: SearchDialogFieldsFragment[] = [...dialogsWithMockedSystemDate, ...baseDialogs];
+export const dialogs: MockDialog[] = [...dialogsWithMockedSystemDate, ...baseDialogs];

@@ -5,6 +5,8 @@ import {
   type CreateSavedSearchMutation,
   type DeleteFavoritePartyMutation,
   type DeleteSavedSearchMutation,
+  type DialogRelationsQuery,
+  type DialogRelationsQueryVariables,
   type GetAllDialogsForPartiesQuery,
   type GetFilterServiceResourcesQuery,
   type GetFilterServiceResourcesQueryVariables,
@@ -277,6 +279,9 @@ export const setShowClientUnits = (shouldShowClientUnits: boolean): Promise<SetS
   graphQLSDK.setShowClientUnits({ shouldShowClientUnits });
 
 export const getVerifiedAddresses = (): Promise<VerifiedAddressesQuery> => graphQLSDK.verifiedAddresses();
+
+export const getDialogRelations = (variables: DialogRelationsQueryVariables): Promise<DialogRelationsQuery> =>
+  graphQLSDK.dialogRelations(variables);
 
 export const getNotificationLogs = (dialogId: string): Promise<NotificationLogsQuery> =>
   graphQLSDK.notificationLogs({ dialogId });

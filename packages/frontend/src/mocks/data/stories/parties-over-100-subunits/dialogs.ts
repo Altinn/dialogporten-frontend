@@ -1,6 +1,7 @@
-import { DialogStatus, type SearchDialogFieldsFragment, SystemLabel } from 'bff-types-generated';
+import { DialogStatus, SystemLabel } from 'bff-types-generated';
+import type { MockDialog } from '../../base/helper.ts';
 
-const makeDialog = (id: string, party: string, title: string): SearchDialogFieldsFragment => ({
+const makeDialog = (id: string, party: string, title: string): MockDialog => ({
   hasUnopenedContent: false,
   serviceResource: 'default',
   serviceResourceType: 'correspondenceservice',
@@ -32,7 +33,7 @@ const makeDialog = (id: string, party: string, title: string): SearchDialogField
   },
 });
 
-export const dialogs: SearchDialogFieldsFragment[] = [
+export const dialogs: MockDialog[] = [
   makeDialog(
     '019241f7-5b00-7000-0000-000000000001',
     'urn:altinn:person:identifier-no:1',

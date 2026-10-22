@@ -107,6 +107,8 @@ export interface DialogByIdDetails {
   unread: boolean;
   /* contact buttons derived from contactInfo and sender name */
   contactButtons: ContactButtonProps[];
+  /* Has parent, child or related dialogs (regardless of the end user's access to them), see useDialogRelations */
+  hasRelations: boolean;
 }
 
 interface UseDialogByIdOutput {
@@ -392,6 +394,7 @@ export function mapDialogToInboxItem({
       serviceOwner?.contact,
       getPreferredPropertyByLocale(senderName)?.value || serviceOwner?.name || '',
     ),
+    hasRelations: item.hasRelations ?? false,
   };
 }
 

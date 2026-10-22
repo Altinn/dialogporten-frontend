@@ -28,4 +28,6 @@ export interface InboxItemInput {
   seenByLog: SeenByLogProps;
   dueAt?: string | null;
   serviceResource?: string;
+  /* Has parent, child or related dialogs (regardless of the end user's access to them) */
+  hasRelations?: boolean;
 }

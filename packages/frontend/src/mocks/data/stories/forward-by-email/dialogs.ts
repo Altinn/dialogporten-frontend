@@ -1,7 +1,8 @@
-import { DialogStatus, type SearchDialogFieldsFragment, SystemLabel } from 'bff-types-generated';
+import { DialogStatus, SystemLabel } from 'bff-types-generated';
+import type { MockDialog } from '../../base/helper.ts';
 import { forwardingScenarios } from './forwarding.ts';
 
-export const dialogs: SearchDialogFieldsFragment[] = Object.entries(forwardingScenarios).map(
+export const dialogs: MockDialog[] = Object.entries(forwardingScenarios).map(
   ([id, { title, summary, attachmentCount }], index) => {
     const updatedAt = new Date(Date.UTC(2024, 10, 30 - index, 10)).toISOString();
     return {
