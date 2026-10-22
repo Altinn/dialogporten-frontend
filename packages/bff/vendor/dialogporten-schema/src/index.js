@@ -1,0 +1,1078 @@
+export const schema_verified_graphql = `schema {
+  query: Queries
+  mutation: Mutations
+  subscription: Subscriptions
+}
+
+type Queries @authorize(policy: "enduser") {
+  dialogLookup(instanceRef: String!): DialogLookupPayload!
+  dialogById(dialogId: UUID!): DialogByIdPayload!
+  searchDialogs(input: SearchDialogInput!): SearchDialogsPayload!
+  """
+  Gets the dialogs related to a dialog (its parent, children and related dialogs), as a subset of the search
+  list items. Related dialogs the user cannot access are left out silently. Ordered by the related dialog's id,
+  which follows creation order.
+  """
+  dialogRelations(dialogId: UUID!, input: DialogRelationsInput): DialogRelationsPayload!
+  labelAssignmentLog(dialogId: UUID!): LabelAssignmentLogPayload!
+  limits: Limits!
+  parties: [AuthorizedParty!]!
+  serviceResources(parties: [String!], includeUnauthorized: Boolean! = false): ServiceResourceMetadata!
+}
+
+type Mutations @authorize(policy: "enduser") {
+  setSystemLabel(input: SetSystemLabelInput!): SetSystemLabelPayload!
+  bulkSetSystemLabels(input: BulkSetSystemLabelInput!): BulkSetSystemLabelPayload!
+}
+
+type Subscriptions {
+  "Requires a dialog token in the 'Authorization' header."
+  dialogEvents(dialogId: UUID!): DialogEventPayload!
+    @authorize(policy: "enduserSubscription", apply: VALIDATION)
+}
+
+type Activity {
+  id: UUID!
+  createdAt: DateTime
+  extendedType: URL
+  type: ActivityType!
+  transmissionId: UUID
+  performedBy: Actor!
+  description: [Localization!]!
+}
+
+type Actor {
+  actorType: ActorType
+  actorId: String
+  actorName: String
+}
+
+type ApiAction {
+  "The unique identifier for the action in UUIDv7 format."
+  id: UUID!
+  "String identifier for the action, corresponding to the 'action' attributeId used in the XACML service policy, which by default is the policy belonging to the service referred to by 'serviceResource' in the dialog."
+  action: String!
+  "Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service policy, which by default is the policy belonging to the service referred to by 'serviceResource' in the dialog. Can also be used to refer to other service policies."
+  authorizationAttribute: String
+    @deprecated(
+      reason: "Use of 'authorizationContext' on the service owner API is preferred; this field only reflects the legacy authorization attribute."
+    )
+  "True if the authenticated user is authorized for this action. If not, the action will not be available and all endpoints will be replaced with a fixed placeholder."
+  isAuthorized: Boolean!
+  "The logical name of the operation the API action refers to."
+  name: String
+  "The endpoints associated with the action."
+  endpoints: [ApiActionEndpoint!]!
+}
+
+type ApiActionEndpoint {
+  "The unique identifier for the endpoint in UUIDv7 format."
+  id: UUID!
+  "Arbitrary string indicating the version of the endpoint. Consult the service-specific documentation provided by the service owner for details (if in use)."
+  version: String
+  "The fully qualified URL of the API endpoint. Will be set to 'urn:dialogporten:unauthorized' if the user is not authorized to perform the action."
+  url: URL!
+  "The HTTP method that the endpoint expects for this action."
+  httpMethod: HttpVerb!
+  "Link to service provider documentation for the endpoint. Used for service owners to provide documentation for integrators. Should be a URL to a human-readable page."
+  documentationUrl: URL
+  "Link to the request schema for the endpoint. Used by service owners to provide documentation for integrators. Dialogporten will not validate information on this endpoint."
+  requestSchema: URL
+  "Link to the response schema for the endpoint. Used for service owners to provide documentation for integrators. Dialogporten will not validate information on this endpoint."
+  responseSchema: URL
+  "Boolean indicating if the endpoint is deprecated. Integrators should migrate to endpoints with a higher version."
+  deprecated: Boolean!
+  "Date and time when the service owner has indicated that endpoint will no longer function. Only set if the endpoint is deprecated. Dialogporten will not enforce this date."
+  sunsetAt: DateTime
+}
+
+type Attachment {
+  "The unique identifier for the attachment in UUIDv7 format."
+  id: UUID!
+  "The display name of the attachment that should be used in GUIs."
+  displayName: [Localization!]!
+  "The logical name of the attachment."
+  name: String
+  "The URLs associated with the attachment, each referring to a different representation of the attachment."
+  urls: [AttachmentUrl!]!
+  "The UTC timestamp when the attachment expires and is no longer available."
+  expiresAt: DateTime
+  "Indicates whether the authenticated user is authorized for this attachment. If not, the URLs will be replaced with 'urn:dialogporten:unauthorized'."
+  isAuthorized: Boolean!
+}
+
+type AttachmentUrl {
+  "The unique identifier for the attachment URL in UUIDv7 format."
+  id: UUID!
+  "The fully qualified URL of the attachment."
+  url: URL!
+  "The media type of the attachment."
+  mediaType: String
+  "What type of consumer the URL is intended for."
+  consumerType: AttachmentUrlConsumer!
+}
+
+type AuthorizedParty {
+  hasOnlyAccessToSubParties: Boolean!
+  subParties: [AuthorizedSubParty!]
+  party: String!
+  partyUuid: UUID!
+  partyId: Int!
+  name: String!
+  dateOfBirth: String
+  partyType: String!
+  isDeleted: Boolean!
+  hasKeyRole: Boolean!
+  isCurrentEndUser: Boolean!
+  isMainAdministrator: Boolean!
+  isAccessManager: Boolean!
+}
+
+type AuthorizedSubParty {
+  party: String!
+  partyUuid: UUID!
+  partyId: Int!
+  name: String!
+  dateOfBirth: String
+  partyType: String!
+  isDeleted: Boolean!
+  hasKeyRole: Boolean!
+  isCurrentEndUser: Boolean!
+  isMainAdministrator: Boolean!
+  isAccessManager: Boolean!
+}
+
+type BulkSetSystemLabelConcurrencyError implements BulkSetSystemLabelError {
+  message: String!
+}
+
+type BulkSetSystemLabelConflictError implements BulkSetSystemLabelError {
+  message: String!
+}
+
+type BulkSetSystemLabelDomainError implements BulkSetSystemLabelError {
+  message: String!
+}
+
+type BulkSetSystemLabelNotFound implements BulkSetSystemLabelError {
+  message: String!
+}
+
+type BulkSetSystemLabelPayload {
+  success: Boolean!
+  errors: [BulkSetSystemLabelError!]!
+}
+
+type BulkSetSystemLabelValidationError implements BulkSetSystemLabelError {
+  message: String!
+}
+
+type Content {
+  "The title of the dialog."
+  title: ContentValue!
+  "A short summary of the dialog and its current state."
+  summary: ContentValue
+  "Overridden sender name. If not supplied, assume 'org' as the sender name."
+  senderName: ContentValue
+  "Additional information about the dialog, this may contain Markdown."
+  additionalInfo: ContentValue
+  "Used as the human-readable label used to describe the 'ExtendedStatus' field."
+  extendedStatus: ContentValue
+  "Front-channel embedded content. Used to dynamically embed content in the frontend from an external URL."
+  mainContentReference: ContentValue
+}
+
+type ContentValue {
+  value: [Localization!]!
+  mediaType: String!
+  isAuthorized: Boolean
+}
+
+type Dialog {
+  "The unique identifier for the dialog in UUIDv7 format. Example: 01913cd5-784f-7d3b-abef-4c77b1f0972d"
+  id: UUID!
+  "The unique identifier for the revision in UUIDv4 format. Example: a312cb9c-7632-43c2-aa38-69b06aed56ca"
+  revision: UUID!
+  "The service owner code representing the organization (service owner) related to this dialog. Example: ske"
+  org: String!
+  "The service identifier for the service that the dialog is related to in URN-format. This corresponds to a service resource in the Altinn Resource Registry. Example: urn:altinn:resource:some-service-identifier"
+  serviceResource: String!
+  "The ServiceResource type, as defined in Altinn Resource Registry (see ResourceType)."
+  serviceResourceType: String!
+  "The party code representing the organization or person that the dialog belongs to in URN format. Example: urn:altinn:person:identifier-no:01125512345, urn:altinn:organization:identifier-no:912345678"
+  party: String!
+  "Advisory indicator of progress, represented as 1-100 percentage value. 100% representing a dialog that has come to a natural completion (successful or not)."
+  progress: Int
+  "Optional process identifier used to indicate a business process this dialog belongs to."
+  process: String
+  "Optional preceding process identifier to indicate the business process that preceded the process indicated in the 'Process' field. Cannot be set without also 'Process' being set."
+  precedingProcess: String
+  "Arbitrary string with a service-specific indicator of status, typically used to indicate a fine-grained state of the dialog to further specify the 'status' enum. Refer to the service-specific documentation provided by the service owner for details on the possible values (if in use)."
+  extendedStatus: String
+  "Arbitrary string with a service-specific reference to an external system or service. Refer to the service-specific documentation provided by the service owner for details (if in use)."
+  externalReference: String
+  "The due date for the dialog. Dialogs past due date might be marked as such in frontends but will still be available. Example: 2022-12-31T23:59:59Z"
+  dueAt: DateTime
+  "The expiration date for the dialog. This is the last date when the dialog is available for the end user. After this date is passed, the dialog will be considered expired and no longer available for the end user in any API. If not supplied, the dialog will be considered to never expire. This field can be changed by the service owner after the dialog has been created. Example: 2022-12-31T23:59:59Z"
+  expiresAt: DateTime
+  "The date and time when the dialog was created. Example: 2022-12-31T23:59:59Z"
+  createdAt: DateTime!
+  "The date and time when the dialog was last updated. Example: 2022-12-31T23:59:59Z"
+  updatedAt: DateTime!
+  "The date and time when the dialog content was last updated. Example: 2022-12-31T23:59:59Z"
+  contentUpdatedAt: DateTime!
+  "The dialog token. May be used (if supported) against external URLs referred to in this dialog's apiActions, transmissions or attachments. It should also be used for front-channel embeds. The token's authorized entities ('e') claim lists, for every entity carrying an authorization context that the end user is authorized for, the entity's id or the 'tokenRef' the service owner supplied on the context. A tokenRef shared by multiple entities represents an OR-group: authorization for any group member adds the shared value. Recipients must validate the dialog id ('i') together with an entity reference."
+  dialogToken: String
+  "The aggregated status of the dialog."
+  status: DialogStatus!
+  """
+  Whether the service owner has not yet reported all dialog Transmissions they sent as seen by the end user.
+   A Transmission is considered "sent from the service owner" if the DialogTransmissionType is not one of Submission or Correction.
+   The value of this field is:
+   - true when there are any new unopened Transmissions sent from the service owner.
+   - false when the service owner has created an Activity of type TransmissionOpened for all Transmissions sent from the service owner. The Activities must each contain the relevant Id for all relevant Transmissions.
+   Note that the value is
+   - determined by the service owner and not to be confused with IsContentSeen
+   - not affected by SystemLabels
+   For correspondence: HasUnopenedContent is still true until the service owner also adds a Dialog level Activity (no transmission id) of type CorrespondenceOpened
+  """
+  hasUnopenedContent: Boolean!
+  "The number of transmissions sent by the service owner"
+  fromServiceOwnerTransmissionsCount: Int!
+  "The number of transmissions sent by a party representative"
+  fromPartyTransmissionsCount: Int!
+  "Indicates if this dialog is intended for API consumption only and should not be shown in frontends aimed at humans"
+  isApiOnly: Boolean!
+  "Indicates whether the dialog has relations to other dialogs (parent, children or related dialogs). When true, the relations can be fetched with dialogRelations. The flag does not depend on the caller's access, so the caller may not be able to see any of the related dialogs."
+  hasRelations: Boolean!
+  "The dialog unstructured text content."
+  content: Content!
+  "The attachments associated with the dialog (on an aggregate level)."
+  attachments: [Attachment!]!
+  "Dialog-level attachments that exist but are withheld from the authenticated user, listed by id and creation time only. An attachment is excluded rather than shown with masked URLs when its authorization context sets unauthorizedPresentation to 'excluded'. Exclusions are reported per collection: the full set for a dialog is 'excludedAttachments', 'excludedTransmissions', 'excludedGuiActions' and 'excludedApiActions' on the dialog, plus 'excludedAttachments' and 'excludedNavigationalActions' on each transmission. Merge all six when answering 'what changed that I am not allowed to see?'; reading only one under-reports silently."
+  excludedAttachments: [ExcludedElement!]
+  "The GUI actions associated with the dialog. Should be used in browser-based interactive frontends."
+  guiActions: [GuiAction!]!
+  "GUI actions that exist but are withheld from the authenticated user, listed by id and creation time only. A GUI action is excluded rather than returned with isAuthorized=false when its authorization context sets unauthorizedPresentation to 'excluded'. Exclusions are reported per collection: the full set for a dialog is 'excludedAttachments', 'excludedTransmissions', 'excludedGuiActions' and 'excludedApiActions' on the dialog, plus 'excludedAttachments' and 'excludedNavigationalActions' on each transmission. Merge all six when answering 'what changed that I am not allowed to see?'; reading only one under-reports silently."
+  excludedGuiActions: [ExcludedElement!]
+  "The API actions associated with the dialog. Should be used in specialized, non-browser-based integrations."
+  apiActions: [ApiAction!]!
+  "API actions that exist but are withheld from the authenticated user, listed by id and creation time only. An API action is excluded rather than returned with isAuthorized=false when its authorization context sets unauthorizedPresentation to 'excluded'. Exclusions are reported per collection: the full set for a dialog is 'excludedAttachments', 'excludedTransmissions', 'excludedGuiActions' and 'excludedApiActions' on the dialog, plus 'excludedAttachments' and 'excludedNavigationalActions' on each transmission. Merge all six when answering 'what changed that I am not allowed to see?'; reading only one under-reports silently."
+  excludedApiActions: [ExcludedElement!]
+  "An immutable list of activities associated with the dialog."
+  activities: [Activity!]!
+  "The list of seen log entries for the dialog newer than the dialog UpdatedAt date."
+  seenSinceLastUpdate: [SeenLog!]!
+  "The list of seen log entries for the dialog newer than the dialog ContentUpdatedAt date."
+  seenSinceLastContentUpdate: [SeenLog!]!
+  """
+  Indicates whether a dialog has been seen since its last content update.
+  The value of this field is
+   - true if the dialog has been retrieved since its last content update by either GET /enduser/dialogs/{dialogId} or GET /serviceowner/dialogs/{dialogId}?EndUserId={userId} and there is no SystemLabel MarkedAsUnopened
+   - false if there is a SystemLabel MarkedAsUnopened, even if the dialog has been seen since its last content update
+   - false after the dialog receives a content update.
+  Note that the value is determined by Dialogporten and not to be confused with HasUnopenedContent
+  """
+  isContentSeen: Boolean!
+  "The immutable list of transmissions associated with the dialog."
+  transmissions: [Transmission!]!
+  "Transmissions that exist but are withheld from the authenticated user, listed by id and creation time only. A transmission is excluded rather than returned with isAuthorized=false when its authorization context sets unauthorizedPresentation to 'excluded'; its children go with it. Exclusions are reported per collection: the full set for a dialog is 'excludedAttachments', 'excludedTransmissions', 'excludedGuiActions' and 'excludedApiActions' on the dialog, plus 'excludedAttachments' and 'excludedNavigationalActions' on each transmission. Merge all six when answering 'what changed that I am not allowed to see?'; reading only one under-reports silently."
+  excludedTransmissions: [ExcludedElement!]
+  "Metadata about the dialog owned by end-users."
+  endUserContext: EndUserContext!
+}
+
+type DialogByIdDeleted implements DialogByIdError {
+  message: String!
+}
+
+type DialogByIdExpired implements DialogByIdError {
+  message: String!
+  expiredAt: DateTime!
+}
+
+type DialogByIdForbidden implements DialogByIdError {
+  message: String!
+}
+
+type DialogByIdForbiddenAuthLevelTooLow implements DialogByIdError {
+  message: String!
+}
+
+type DialogByIdNotFound implements DialogByIdError {
+  message: String!
+}
+
+type DialogByIdNotVisible implements DialogByIdError {
+  message: String!
+  visibleFrom: DateTime!
+}
+
+type DialogByIdPayload {
+  dialog: Dialog
+  errors: [DialogByIdError!]!
+}
+
+type DialogEventPayload {
+  id: UUID!
+  type: DialogEventType!
+}
+
+type DialogLookup {
+  dialogId: UUID!
+  instanceRef: String!
+  party: String!
+  title: [Localization!]!
+  serviceResource: DialogLookupServiceResource!
+  serviceOwner: DialogLookupServiceOwner!
+  authorizationEvidence: DialogLookupAuthorizationEvidence!
+}
+
+type DialogLookupAuthorizationEvidence {
+  currentAuthenticationLevel: Int!
+  viaRole: Boolean!
+  viaAccessPackage: Boolean!
+  viaResourceDelegation: Boolean!
+  viaInstanceDelegation: Boolean!
+  evidence: [DialogLookupAuthorizationEvidenceItem!]!
+}
+
+type DialogLookupAuthorizationEvidenceItem {
+  grantType: DialogLookupGrantType!
+  subject: String!
+  name: [Localization!]!
+  links: DialogLookupLinks
+}
+
+type DialogLookupForbidden implements DialogLookupError {
+  message: String!
+}
+
+type DialogLookupLinks {
+  metadata: String!
+}
+
+type DialogLookupNotFound implements DialogLookupError {
+  message: String!
+}
+
+type DialogLookupPayload {
+  lookup: DialogLookup
+  errors: [DialogLookupError!]!
+}
+
+type DialogLookupServiceOwner {
+  orgNumber: String!
+  code: String!
+  name: [Localization!]!
+}
+
+type DialogLookupServiceResource {
+  id: String!
+  isDelegable: Boolean!
+  minimumAuthenticationLevel: Int!
+  name: [Localization!]!
+}
+
+type DialogLookupValidationError implements DialogLookupError {
+  message: String!
+}
+
+type DialogRelation {
+  "The type of the relation, as seen from the dialog the relations were fetched for."
+  relationType: DialogRelationType!
+  "The related dialog."
+  dialog: RelatedDialog!
+}
+
+type DialogRelationsNotFound implements DialogRelationsError {
+  message: String!
+}
+
+type DialogRelationsPayload {
+  "The related dialogs the user may see. Relations to dialogs the user cannot access are left out silently."
+  items: [DialogRelation!]
+  "Whether there are more items available that can be fetched by supplying the continuation token."
+  hasNextPage: Boolean!
+  "The continuation token to be used to fetch the next page of items."
+  continuationToken: String
+  errors: [DialogRelationsError!]!
+}
+
+type DialogRelationsValidationError implements DialogRelationsError {
+  message: String!
+}
+
+type EndUserContext {
+  revision: UUID!
+  systemLabels: [SystemLabel!]!
+}
+
+type EndUserSearchLimits {
+  maxPartyFilterValues: Int!
+  maxServiceResourceFilterValues: Int!
+  maxOrgFilterValues: Int!
+  maxExtendedStatusFilterValues: Int!
+}
+
+type ExcludedElement {
+  "The identifier of the excluded element, matching the id it would have had in its own collection."
+  id: UUID!
+  "The date and time when the excluded element was created. Lets a client order exclusions against the elements it can see, e.g. to tell where in a transmission thread something is missing."
+  createdAt: DateTime!
+}
+
+type GuiAction {
+  "The unique identifier for the action in UUIDv7 format."
+  id: UUID!
+  "The action identifier for the action, corresponding to the 'action' attributeId used in the XACML service policy."
+  action: String!
+  "The fully qualified URL of the action, to which the user will be redirected when the action is triggered. Will be set to 'urn:dialogporten:unauthorized' if the user is not authorized to perform the action."
+  url: URL!
+  "Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service policy, which by default is the policy belonging to the service referred to by 'serviceResource' in the dialog. Can also be used to refer to other service policies."
+  authorizationAttribute: String
+    @deprecated(
+      reason: "Use of 'authorizationContext' on the service owner API is preferred; this field only reflects the legacy authorization attribute."
+    )
+  "Whether the user is authorized to perform the action."
+  isAuthorized: Boolean!
+  "Indicates whether the action results in the dialog being deleted. Used by frontends to implement custom UX for delete actions."
+  isDeleteDialogAction: Boolean!
+  "Indicates a priority for the action, making it possible for frontends to adapt GUI elements based on action priority."
+  priority: GuiActionPriority!
+  "The HTTP method that the frontend should use when redirecting the user."
+  httpMethod: HttpVerb!
+  "The title of the action, this should be short and in verb form."
+  title: [Localization!]!
+  "If there should be a prompt asking the user for confirmation before the action is executed, this field should contain the prompt text."
+  prompt: [Localization!]
+}
+
+type LabelAssignmentLog {
+  "The date and time when the label assignment log entry was created."
+  createdAt: DateTime!
+  "The name of the system label that was changed."
+  name: String!
+  "The action that was performed on the label, e.g. 'set' or 'removed'."
+  action: String!
+  "The actor that performed the label assignment."
+  performedBy: Actor!
+}
+
+type LabelAssignmentLogDeleted implements LabelAssignmentLogError {
+  message: String!
+}
+
+type LabelAssignmentLogForbidden implements LabelAssignmentLogError {
+  message: String!
+}
+
+type LabelAssignmentLogNotFound implements LabelAssignmentLogError {
+  message: String!
+}
+
+type LabelAssignmentLogPayload {
+  "The immutable list of label assignment log entries for the dialog's end-user context."
+  labelAssignmentLog: [LabelAssignmentLog!]!
+  errors: [LabelAssignmentLogError!]!
+}
+
+type Limits {
+  endUserSearch: EndUserSearchLimits!
+  serviceOwnerSearch: ServiceOwnerSearchLimits!
+}
+
+type Localization {
+  value: String!
+  languageCode: String!
+}
+
+"A related dialog. A subset of the dialog search list item."
+type RelatedDialog {
+  "The unique identifier for the dialog in UUIDv7 format."
+  id: UUID!
+  "The service owner code representing the organization (service owner) related to this dialog."
+  org: String!
+  "The service identifier for the service that the dialog is related to in URN-format."
+  serviceResource: String!
+  "The ServiceResource type, as defined in Altinn Resource Registry (see ResourceType)."
+  serviceResourceType: String!
+  "The party code representing the organization or person that the dialog belongs to in URN format."
+  party: String!
+  "The aggregated status of the dialog."
+  status: DialogStatus!
+  "Arbitrary string with a service-specific indicator of status."
+  extendedStatus: String
+  "The date and time when the dialog was created."
+  createdAt: DateTime!
+  "The date and time when the dialog was last updated."
+  updatedAt: DateTime!
+  "The date and time when the dialog content was last updated."
+  contentUpdatedAt: DateTime!
+  "The due date for the dialog. This is the last date when the dialog is expected to be completed."
+  dueAt: DateTime
+  "Indicates if this dialog is intended for API consumption only and should not be shown in frontends aimed at humans."
+  isApiOnly: Boolean!
+  "Indicates whether the related dialog has relations of its own."
+  hasRelations: Boolean!
+  "The content of the dialog, as in search results."
+  content: SearchContent!
+}
+
+type SearchContent {
+  "The title of the dialog."
+  title: ContentValue!
+  "A short summary of the dialog and its current state."
+  summary: ContentValue
+  "Overridden sender name. If not supplied, assume 'org' as the sender name."
+  senderName: ContentValue
+  "Used as the human-readable label used to describe the 'ExtendedStatus' field."
+  extendedStatus: ContentValue
+}
+
+type SearchDialog {
+  "The unique identifier for the dialog in UUIDv7 format. Example: 01913cd5-784f-7d3b-abef-4c77b1f0972d"
+  id: UUID!
+  "The service owner code representing the organization (service owner) related to this dialog. Example: ske"
+  org: String!
+  "The service identifier for the service that the dialog is related to in URN-format. This corresponds to a service resource in the Altinn Resource Registry. Example: urn:altinn:resource:some-service-identifier"
+  serviceResource: String!
+  "The ServiceResource type, as defined in Altinn Resource Registry (see ResourceType)."
+  serviceResourceType: String!
+  "The party code representing the organization or person that the dialog belongs to in URN format. Example: urn:altinn:person:identifier-no:01125512345, urn:altinn:organization:identifier-no:912345678"
+  party: String!
+  "Advisory indicator of progress, represented as 1-100 percentage value. 100% representing a dialog that has come to a natural completion (successful or not)."
+  progress: Int
+  "Optional process identifier used to indicate a business process this dialog belongs to."
+  process: String
+  "Optional preceding process identifier to indicate the business process that preceded the process indicated in the 'Process' field. Cannot be set without also 'Process' being set."
+  precedingProcess: String
+  "The number of attachments in the dialog made available for browser-based frontends."
+  guiAttachmentCount: Int
+  "Arbitrary string with a service-specific indicator of status, typically used to indicate a fine-grained state of the dialog to further specify the 'status' enum. Refer to the service-specific documentation provided by the service owner for details on the possible values (if in use)."
+  extendedStatus: String
+  "Arbitrary string with a service-specific reference to an external system or service. Refer to the service-specific documentation provided by the service owner for details (if in use)."
+  externalReference: String
+  "The date and time when the dialog was created. Example: 2022-12-31T23:59:59Z"
+  createdAt: DateTime!
+  "The date and time when the dialog was last updated. Example: 2022-12-31T23:59:59Z"
+  updatedAt: DateTime!
+  "The date and time when the dialog content was last updated. Example: 2022-12-31T23:59:59Z"
+  contentUpdatedAt: DateTime!
+  "The due date for the dialog. This is the last date when the dialog is expected to be completed. Example: 2022-12-31T23:59:59Z"
+  dueAt: DateTime
+  "The aggregated status of the dialog."
+  status: DialogStatus!
+  """
+  Whether the service owner has not yet reported all dialog Transmissions they sent as seen by the end user.
+   A Transmission is considered "sent from the service owner" if the DialogTransmissionType is not one of Submission or Correction.
+   The value of this field is:
+   - true when there are any new unopened Transmissions sent from the service owner.
+   - false when the service owner has created an Activity of type TransmissionOpened for all Transmissions sent from the service owner. The Activities must each contain the relevant Id for all relevant Transmissions.
+   Note that the value is
+   - determined by the service owner and not to be confused with IsContentSeen
+   - not affected by SystemLabels
+   For correspondence: HasUnopenedContent is still true until the service owner also adds a Dialog level Activity (no transmission id) of type CorrespondenceOpened
+  """
+  hasUnopenedContent: Boolean!
+  "Indicates if this dialog is intended for API consumption only and should not be shown in frontends aimed at humans."
+  isApiOnly: Boolean!
+  "Indicates whether the dialog has relations to other dialogs (parent, children or related dialogs). When true, the relations can be fetched with dialogRelations. The flag does not depend on the caller's access, so the caller may not be able to see any of the related dialogs."
+  hasRelations: Boolean!
+  "The number of transmissions sent by the service owner"
+  fromServiceOwnerTransmissionsCount: Int!
+  "The number of transmissions sent by a party representative"
+  fromPartyTransmissionsCount: Int!
+  "The latest entry in the dialog's activity log."
+  latestActivity: Activity
+  "The content of the dialog in search results. May be null for API-only dialogs."
+  content: SearchContent
+  "The list of seen log entries for the dialog newer than the dialog UpdatedAt date."
+  seenSinceLastUpdate: [SeenLog!]!
+  "The list of seen log entries for the dialog newer than the dialog ContentUpdatedAt date."
+  seenSinceLastContentUpdate: [SeenLog!]!
+  """
+  Indicates whether a dialog has been seen since its last content update.
+  The value of this field is
+   - true if the dialog has been retrieved since its last content update by either GET /enduser/dialogs/{dialogId} or GET /serviceowner/dialogs/{dialogId}?EndUserId={userId} and there is no SystemLabel MarkedAsUnopened
+   - false if there is a SystemLabel MarkedAsUnopened, even if the dialog has been seen since its last content update
+   - false after the dialog receives a content update.
+  Note that the value is determined by Dialogporten and not to be confused with HasUnopenedContent
+  """
+  isContentSeen: Boolean!
+  "Metadata about the dialog owned by end-users."
+  endUserContext: EndUserContext!
+}
+
+type SearchDialogContinuationTokenParsingError implements SearchDialogError {
+  message: String!
+}
+
+type SearchDialogDomainError implements SearchDialogError {
+  message: String!
+}
+
+type SearchDialogForbidden implements SearchDialogError {
+  message: String!
+}
+
+type SearchDialogOrderByParsingError implements SearchDialogError {
+  message: String!
+}
+
+"Set only one property per object."
+type SearchDialogSortType {
+  createdAt: OrderDirection
+  updatedAt: OrderDirection
+  dueAt: OrderDirection
+  contentUpdatedAt: OrderDirection
+}
+
+type SearchDialogsPayload {
+  items: [SearchDialog!]
+  hasNextPage: Boolean!
+  "Use this token to fetch the next page of dialogs, must be used in combination with OrderBy from the previous response"
+  continuationToken: String
+  orderBy: [SearchDialogSortType!]!
+  errors: [SearchDialogError!]!
+}
+
+type SearchDialogValidationError implements SearchDialogError {
+  message: String!
+}
+
+type SeenLog {
+  id: UUID!
+  seenAt: DateTime!
+  seenBy: Actor!
+  isViaServiceOwner: Boolean
+  isCurrentEndUser: Boolean!
+}
+
+type ServiceOwnerSearchLimits {
+  maxPartyFilterValues: Int!
+  maxServiceResourceFilterValues: Int!
+  maxExtendedStatusFilterValues: Int!
+}
+
+type ServiceResourceMetadata {
+  isFullCatalogueFallback: Boolean
+  items: [ServiceResourceMetadataItem!]!
+}
+
+type ServiceResourceMetadataAccessPackage {
+  urn: String!
+  name: [Localization!]!
+  links: ServiceResourceMetadataLinks!
+}
+
+type ServiceResourceMetadataItem {
+  serviceResource: ServiceResourceMetadataServiceResource!
+  roles: [ServiceResourceMetadataRole!]!
+  accessPackages: [ServiceResourceMetadataAccessPackage!]!
+  serviceOwner: ServiceResourceMetadataServiceOwner!
+}
+
+type ServiceResourceMetadataLinks {
+  metadata: String!
+}
+
+type ServiceResourceMetadataRole {
+  urn: String!
+  name: [Localization!]!
+  links: ServiceResourceMetadataLinks!
+}
+
+type ServiceResourceMetadataServiceOwner {
+  orgNumber: String!
+  code: String!
+  name: [Localization!]!
+}
+
+type ServiceResourceMetadataServiceResource {
+  id: String!
+  resourceType: String!
+  status: String!
+  isDelegable: Boolean!
+  minimumAuthenticationLevel: Int!
+  name: [Localization!]!
+  links: ServiceResourceMetadataLinks!
+}
+
+type SetSystemLabelConcurrencyError implements SetSystemLabelError {
+  message: String!
+}
+
+type SetSystemLabelConflictError implements SetSystemLabelError {
+  message: String!
+}
+
+type SetSystemLabelDomainError implements SetSystemLabelError {
+  message: String!
+}
+
+type SetSystemLabelEntityDeleted implements SetSystemLabelError {
+  message: String!
+}
+
+type SetSystemLabelEntityNotFound implements SetSystemLabelError {
+  message: String!
+}
+
+type SetSystemLabelForbidden implements SetSystemLabelError {
+  message: String!
+}
+
+type SetSystemLabelPayload {
+  success: Boolean!
+  errors: [SetSystemLabelError!]!
+}
+
+type SetSystemLabelValidationError implements SetSystemLabelError {
+  message: String!
+}
+
+type Transmission {
+  "The unique identifier for the transmission in UUIDv7 format."
+  id: UUID!
+  "The date and time when the transmission was created."
+  createdAt: DateTime!
+  "Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service policy, which by default is the policy belonging to the service referred to by 'serviceResource' in the dialog. Can also be used to refer to other service policies. Example: mycustomresource, urn:altinn:subresource:mycustomresource, urn:altinn:task:Task_1, urn:altinn:resource:some-other-service-identifier"
+  authorizationAttribute: String
+    @deprecated(
+      reason: "Use of 'authorizationContext' on the service owner API is preferred; this field only reflects the legacy authorization attribute."
+    )
+  "Flag indicating if the authenticated user is authorized for this transmission. If not, embedded content and the attachments will not be available."
+  isAuthorized: Boolean!
+  "Arbitrary URI/URN describing a service-specific transmission type. Refer to the service-specific documentation provided by the service owner for details (if in use)."
+  extendedType: URL
+  "Arbitrary string with a service-specific reference to an external system or service."
+  externalReference: String
+  "Reference to any other transmission that this transmission is related to."
+  relatedTransmissionId: UUID
+  "The type of transmission."
+  type: TransmissionType!
+  "The actor that sent the transmission."
+  sender: Actor!
+  "Indicates whether the dialog transmission has been opened."
+  isOpened: Boolean!
+  "The transmission unstructured text content."
+  content: TransmissionContent!
+  "The transmission-level attachments."
+  attachments: [Attachment!]!
+  "Attachments on this transmission that exist but are withheld from the authenticated user, listed by id and creation time only. An attachment is excluded rather than shown with masked URLs when its authorization context sets unauthorizedPresentation to 'excluded'. Exclusions are reported per collection: the full set for a dialog is 'excludedAttachments', 'excludedTransmissions', 'excludedGuiActions' and 'excludedApiActions' on the dialog, plus 'excludedAttachments' and 'excludedNavigationalActions' on each transmission. Merge all six when answering 'what changed that I am not allowed to see?'; reading only one under-reports silently."
+  excludedAttachments: [ExcludedElement!]
+  "The transmission-level navigational actions."
+  navigationalActions: [TransmissionNavigationalAction!]!
+  "Navigational actions on this transmission that exist but are withheld from the authenticated user, listed by id and creation time only. A navigational action is excluded rather than returned with isAuthorized=false when its authorization context sets unauthorizedPresentation to 'excluded'. Exclusions are reported per collection: the full set for a dialog is 'excludedAttachments', 'excludedTransmissions', 'excludedGuiActions' and 'excludedApiActions' on the dialog, plus 'excludedAttachments' and 'excludedNavigationalActions' on each transmission. Merge all six when answering 'what changed that I am not allowed to see?'; reading only one under-reports silently."
+  excludedNavigationalActions: [ExcludedElement!]
+}
+
+type TransmissionContent {
+  "The transmission title."
+  title: ContentValue!
+  "The transmission summary."
+  summary: ContentValue
+  "Front-channel embedded content. Used to dynamically embed content in the frontend from an external URL."
+  contentReference: ContentValue
+}
+
+type TransmissionNavigationalAction {
+  "The unique identifier for the navigational action in UUIDv7 format."
+  id: UUID!
+  "The title of the navigational action."
+  title: [Localization!]!
+  "The fully qualified URL of the navigational action. Will be set to 'urn:dialogporten:unauthorized' if the user is not authorized to access the transmission, or 'urn:dialogporten:expired' if the action has expired."
+  url: URL!
+  "The UTC timestamp when the navigational action expires and is no longer available."
+  expiresAt: DateTime
+  "Indicates whether the authenticated user is authorized for this navigational action. If not, the URL will be replaced with 'urn:dialogporten:unauthorized'."
+  isAuthorized: Boolean!
+}
+
+interface BulkSetSystemLabelError {
+  message: String!
+}
+
+interface DialogByIdError {
+  message: String!
+}
+
+interface DialogLookupError {
+  message: String!
+}
+
+interface DialogRelationsError {
+  message: String!
+}
+
+interface LabelAssignmentLogError {
+  message: String!
+}
+
+interface SearchDialogError {
+  message: String!
+}
+
+interface SetSystemLabelError {
+  message: String!
+}
+
+input BulkSetSystemLabelInput {
+  dialogs: [DialogRevisionInput!]!
+  "List of system labels to add to the target dialogs. If multiple instances of 'bin', 'archive', or 'default' are provided, the last one will be used."
+  addLabels: [SystemLabel!]!
+  "List of system labels to remove from the target dialogs. If 'bin' or 'archive' is removed, the 'default' label will be added automatically unless 'bin' or 'archive' is also in the AddLabels list."
+  removeLabels: [SystemLabel!]!
+}
+
+input DialogRelationsInput {
+  "Only return relations of this type, as seen from the dialog."
+  type: DialogRelationType
+  "Filter by one or more parties owning the related dialogs."
+  party: [String!]
+  "Filter by one or more service resources of the related dialogs."
+  serviceResource: [String!]
+  "Filter by one or more statuses of the related dialogs."
+  status: [DialogStatus!]
+  "Whether to exclude API-only dialogs from the results. Defaults to false."
+  excludeApiOnly: Boolean
+  "Limit the number of results returned. Defaults to 100, maximum 1000."
+  limit: Int
+  "Continuation token for pagination."
+  continuationToken: String
+}
+
+input DialogRevisionInput {
+  dialogId: UUID!
+  enduserContextRevision: UUID
+}
+
+input SearchDialogInput {
+  "Filter by one or more service owner codes"
+  org: [String!]
+  "Filter by one or more service resources"
+  serviceResource: [String!]
+  "Filter by one or more owning parties"
+  party: [String!]
+  "Filter by one or more extended statuses"
+  extendedStatus: [String!]
+  "Filter by external reference"
+  externalReference: String
+  "Filter by status"
+  status: [DialogStatus!]
+  "Filter by process"
+  process: String
+  "Filter by system label"
+  systemLabel: [SystemLabel!]
+  "Whether to exclude API-only dialogs from the results. Defaults to false."
+  excludeApiOnly: Boolean
+  "Only return dialogs created after this date. For free text search this does not limit how much the search has to scan; use contentUpdatedAfter to narrow a broad search and avoid a 422 timeout."
+  createdAfter: DateTime
+  "Only return dialogs created before this date. For free text search this does not limit how much the search has to scan; use contentUpdatedAfter to narrow a broad search and avoid a 422 timeout."
+  createdBefore: DateTime
+  "Only return dialogs with content updated after this date. Recommended for free text search: this is the only date filter that limits how much a broad search has to scan. A broad search term without a contentUpdatedAfter bound may exceed the server-side time limit and return 422 - narrow it with this filter (and/or fewer parties or a service resource)."
+  contentUpdatedAfter: DateTime
+  "Only return dialogs with content updated before this date. Unlike contentUpdatedAfter, this upper bound does not by itself limit how much a free text search has to scan."
+  contentUpdatedBefore: DateTime
+  "Only return dialogs that have content that has/hasn't been seen by the user. A dialog is considered seen if it has been retrieved by a user, since it's last content update, and there is no SystemLabel MarkedAsUnopened."
+  isContentSeen: Boolean
+  "Only return dialogs updated after this date. For free text search this does not limit how much the search has to scan; use contentUpdatedAfter to narrow a broad search and avoid a 422 timeout."
+  updatedAfter: DateTime
+  "Only return dialogs updated before this date. For free text search this does not limit how much the search has to scan; use contentUpdatedAfter to narrow a broad search and avoid a 422 timeout."
+  updatedBefore: DateTime
+  "Only return dialogs with due date after this date"
+  dueAfter: DateTime
+  "Only return dialogs with due date before this date"
+  dueBefore: DateTime
+  "Search string for free text search. Will attempt to fuzzily match in all free text fields in the aggregate"
+  search: String
+  "Limit free text search to texts with this language code, e.g. 'nb', 'en'. Culture codes will be normalized to neutral language codes (ISO 639). Default: search all culture codes"
+  searchLanguageCode: String
+  "Limit the number of results returned, defaults to 100, max 1000"
+  limit: Int
+  "Continuation token for pagination"
+  continuationToken: String
+  "Sort the results by one or more fields. Defaults to contentUpdatedAt descending. For free text search, keeping the default contentUpdatedAt ordering together with contentUpdatedAfter gives the fastest results."
+  orderBy: [SearchDialogSortTypeInput!]
+}
+
+"Set only one property per object."
+input SearchDialogSortTypeInput {
+  createdAt: OrderDirection
+  updatedAt: OrderDirection
+  dueAt: OrderDirection
+  contentUpdatedAt: OrderDirection
+}
+
+input SetSystemLabelInput {
+  dialogId: UUID!
+  "List of system labels to add to the target dialog. If multiple instances of 'bin', 'archive', or 'default' are provided, the last one will be used."
+  addLabels: [SystemLabel!]!
+  "List of system labels to remove from the target dialog. If 'bin' or 'archive' is removed, the 'default' label will be added automatically unless 'bin' or 'archive' is also in the AddLabels list."
+  removeLabels: [SystemLabel!]!
+}
+
+enum ActivityType {
+  "Indicates that a dialog has been created."
+  DIALOG_CREATED
+  "Indicates that a dialog has been closed."
+  DIALOG_CLOSED
+  "Information from the service provider, not (directly) related to any transmission."
+  INFORMATION
+  "Indicates that a transmission has been opened."
+  TRANSMISSION_OPENED
+  "Indicates that payment has been made."
+  PAYMENT_MADE
+  "Indicates that a signature has been provided."
+  SIGNATURE_PROVIDED
+  "Indicates that a dialog has been opened."
+  DIALOG_OPENED
+  "Indicates that a dialog has been deleted."
+  DIALOG_DELETED
+  "Indicates that a dialog has been restored."
+  DIALOG_RESTORED
+  "Indicates that a dialog has been sent to signing."
+  SENT_TO_SIGNING
+  "Indicates that a dialog has been sent to form fill."
+  SENT_TO_FORM_FILL
+  "Indicates that a dialog has been sent to send in."
+  SENT_TO_SEND_IN
+  "Indicates that a dialog has been sent to payment."
+  SENT_TO_PAYMENT
+  "Indicates that a form associated with the dialog has been submitted."
+  FORM_SUBMITTED
+  "Indicates that a form associated with the dialog has been saved."
+  FORM_SAVED
+  "Indicates that a correspondence has been opened."
+  CORRESPONDENCE_OPENED
+  "Indicates that a correspondence has been confirmed."
+  CORRESPONDENCE_CONFIRMED
+}
+
+enum ActorType {
+  PARTY_REPRESENTATIVE
+  SERVICE_OWNER
+}
+
+"Defines when a policy shall be executed."
+enum ApplyPolicy {
+  "Before the resolver was executed."
+  BEFORE_RESOLVER
+  "After the resolver was executed."
+  AFTER_RESOLVER
+  "The policy is applied in the validation step before the execution."
+  VALIDATION
+}
+
+enum AttachmentUrlConsumer {
+  GUI
+  API
+}
+
+enum DialogEventType {
+  DIALOG_UPDATED
+  DIALOG_DELETED
+}
+
+enum DialogLookupGrantType {
+  ROLE
+  ACCESS_PACKAGE
+  RESOURCE_DELEGATION
+  INSTANCE_DELEGATION
+}
+
+enum DialogRelationType {
+  "The related dialog is the parent of the dialog."
+  PARENT
+  "The related dialog is a child of the dialog."
+  CHILD
+  "The dialogs are related, without a hierarchy."
+  RELATED
+}
+
+enum DialogStatus {
+  "Started. In a serial process, this is used to indicate that, for example, a form filling is ongoing."
+  IN_PROGRESS
+  "Used to indicate user-initiated dialogs not yet sent."
+  DRAFT
+  "Awaiting action by the service owner. Indicates that the dialog is in a state where the party representative has no further tasks, and the responsibility lies with the service owner."
+  AWAITING
+  "Used to indicate that the dialogue is in progress/under work, but is in a state where the user must do something - for example, correct an error, or other conditions that hinder further processing."
+  REQUIRES_ATTENTION
+  "The dialogue was completed. This typically means that the dialogue is moved to a GUI archive or similar."
+  COMPLETED
+  "No explicit status. This is the default."
+  NOT_APPLICABLE
+}
+
+enum GuiActionPriority {
+  PRIMARY
+  SECONDARY
+  TERTIARY
+}
+
+enum HttpVerb {
+  GET
+  POST
+  PUT
+  PATCH
+  DELETE
+  HEAD
+  OPTIONS
+  TRACE
+  CONNECT
+}
+
+enum OrderDirection {
+  ASC
+  DESC
+}
+
+enum SystemLabel {
+  DEFAULT
+  BIN
+  ARCHIVE
+  MARKED_AS_UNOPENED
+  SENT
+}
+
+enum TransmissionType {
+  "For general information, not related to any submissions"
+  INFORMATION
+  "Feedback/receipt accepting a previous submission"
+  ACCEPTANCE
+  "Feedback/error message rejecting a previous submission"
+  REJECTION
+  "Question/request for more information"
+  REQUEST
+  "Critical information about the process"
+  ALERT
+  "Information about a formal decision ('resolution')"
+  DECISION
+  "A normal submission of some information/form"
+  SUBMISSION
+  "A submission correcting/overriding some previously submitted information"
+  CORRECTION
+}
+
+"The 'DateTime' scalar type represents a date and time with time zone offset information."
+scalar DateTime
+  @specifiedBy(url: "https://scalars.graphql.org/chillicream/date-time.html")
+
+"The 'URL' scalar type represents a Uniform Resource Locator (URL) as defined by RFC 3986."
+scalar URL @specifiedBy(url: "https://scalars.graphql.org/chillicream/url.html")
+
+"The 'UUID' scalar type represents a Universally Unique Identifier (UUID) as defined by RFC 9562."
+scalar UUID
+  @specifiedBy(url: "https://scalars.graphql.org/chillicream/uuid.html")
+
+"The authorize directive."
+directive @authorize(
+  "The name of the authorization policy that determines access to the annotated resource."
+  policy: String
+  "Roles that are allowed to access the annotated resource."
+  roles: [String!]
+  "Defines when the authorize directive shall be applied. By default the authorize directive is applied before the resolver is executed."
+  apply: ApplyPolicy! = BEFORE_RESOLVER
+) repeatable on OBJECT | FIELD_DEFINITION`

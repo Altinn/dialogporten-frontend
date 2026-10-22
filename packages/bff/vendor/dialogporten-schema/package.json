@@ -1,0 +1,9 @@
+{
+  "name": "@digdir/dialogporten-schema",
+  "version": "1.120.0-dialog-relations-poc",
+  "description": "PoC-only vendored copy of the Dialogporten GraphQL schema with dialogRelations and hasRelations",
+  "private": true,
+  "main": "src/index.js",
+  "license": "ISC",
+  "type": "module"
+}

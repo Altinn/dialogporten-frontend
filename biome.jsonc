@@ -86,6 +86,7 @@
       "!**/.github",
       "!**/node_modules",
       "!**/generated",
+      "!packages/bff/vendor",
       "!**/dist",
       "!**/build",
       "!**/test-results",
