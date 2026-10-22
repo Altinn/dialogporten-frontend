@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.182.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.182.2...v1.182.3) (2026-10-22)
+
+
+### Bug Fixes
+
+* **service-filter:** lazy-load the service list ([#4762](https://github.com/Altinn/dialogporten-frontend/issues/4762)) ([a52f29a](https://github.com/Altinn/dialogporten-frontend/commit/a52f29a8dda80a165d480ae884bf90562552b725))
+
 ## [1.182.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.182.1...v1.182.2) (2026-10-19)
 
 
