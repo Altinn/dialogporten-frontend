@@ -1,5 +1,4 @@
 import { extendType, list, nonNull, stringArg } from 'nexus';
-import { assertDialogAccess } from '../shared/dialogAccess.ts';
 import {
   getNotificationAddressByOrgNumber,
   getNotificationLogs,
@@ -31,8 +30,7 @@ export const NotificationsQuery = extendType({
         dialogId: nonNull(stringArg()),
       },
       resolve: async (_source, { dialogId }, ctx) => {
-        await assertDialogAccess(dialogId, ctx);
-        return (await getNotificationLogs(dialogId)) ?? [];
+        return (await getNotificationLogs(dialogId, ctx)) ?? [];
       },
     });
 
