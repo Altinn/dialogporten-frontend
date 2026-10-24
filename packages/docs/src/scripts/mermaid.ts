@@ -21,6 +21,8 @@ const render = async () => {
   mermaid.initialize({
     startOnLoad: false,
     theme: currentTheme(),
+    layout: 'dagre',
+    look: 'classic',
     securityLevel: 'strict',
   });
 

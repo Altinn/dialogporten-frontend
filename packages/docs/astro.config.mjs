@@ -2,7 +2,7 @@ import { fileURLToPath } from 'node:url';
 import { unified } from '@astrojs/markdown-remark';
 import starlight from '@astrojs/starlight';
 import { defineConfig, passthroughImageService } from 'astro/config';
-import rehypeMermaid from 'rehype-mermaid';
+import rehypePreMermaid from './src/plugins/rehypePreMermaid.mjs';
 
 const mermaidClient = fileURLToPath(new URL('./src/scripts/mermaid.ts', import.meta.url));
 
@@ -14,7 +14,7 @@ export default defineConfig({
   },
   markdown: {
     processor: unified({
-      rehypePlugins: [[rehypeMermaid, { strategy: 'pre-mermaid' }]],
+      rehypePlugins: [rehypePreMermaid],
     }),
   },
   integrations: [
