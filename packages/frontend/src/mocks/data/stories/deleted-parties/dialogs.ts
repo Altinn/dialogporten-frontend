@@ -1,9 +1,9 @@
-import type { SearchDialogFieldsFragment } from 'bff-types-generated';
 import { DialogStatus, SystemLabel } from 'bff-types-generated';
+import { type MockDialog, mockDialog } from '../../base/mockDialog.ts';
 
-export const dialogs: SearchDialogFieldsFragment[] = [
+export const dialogs: MockDialog[] = [
   // Dialogs for current end user
-  {
+  mockDialog({
     hasUnopenedContent: false,
     id: '01939be3-f112-75fe-a039-458acc1612bd',
     party: 'urn:altinn:person:identifier-no:12907499179',
@@ -38,12 +38,9 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     seenSinceLastContentUpdate: [],
     progress: null,
     isContentSeen: false,
-    fromServiceOwnerTransmissionsCount: 1,
-    fromPartyTransmissionsCount: 0,
-    guiAttachmentCount: 0,
-  },
+  }),
   // Dialogs for active organizations
-  {
+  mockDialog({
     hasUnopenedContent: false,
     id: '01939be3-7990-73a5-9d74-2c73da20944d',
     party: 'urn:altinn:organization:identifier-no:213294342',
@@ -78,11 +75,8 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     seenSinceLastContentUpdate: [],
     progress: 50,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 2,
-    fromPartyTransmissionsCount: 1,
-    guiAttachmentCount: 1,
-  },
-  {
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     id: '01939be3-131e-739d-ad97-119614c6d3c6',
     party: 'urn:altinn:organization:identifier-no:313549461',
@@ -117,11 +111,8 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     seenSinceLastContentUpdate: [],
     progress: null,
     isContentSeen: false,
-    fromServiceOwnerTransmissionsCount: 1,
-    fromPartyTransmissionsCount: 0,
-    guiAttachmentCount: 2,
-  },
-  {
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     id: '01939be2-817c-7426-9ad7-1d598c6caf16',
     party: 'urn:altinn:organization:identifier-no:313776816',
@@ -156,11 +147,8 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     seenSinceLastContentUpdate: [],
     progress: 100,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 1,
-    fromPartyTransmissionsCount: 0,
-    guiAttachmentCount: 1,
-  },
-  {
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     id: '01939be2-1b72-744e-a972-978f88f7829a',
     party: 'urn:altinn:organization:identifier-no:312409216',
@@ -195,11 +183,8 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     seenSinceLastContentUpdate: [],
     progress: null,
     isContentSeen: false,
-    fromServiceOwnerTransmissionsCount: 1,
-    fromPartyTransmissionsCount: 0,
-    guiAttachmentCount: 3,
-  },
-  {
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     id: '01939be1-abaa-70e7-9301-2c96e773145c',
     party: 'urn:altinn:organization:identifier-no:315073693',
@@ -234,11 +219,8 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     seenSinceLastContentUpdate: [],
     progress: 30,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 1,
-    fromPartyTransmissionsCount: 1,
-    guiAttachmentCount: 0,
-  },
-  {
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     id: '01939be1-3fc5-775e-8b7f-7710b348d210',
     party: 'urn:altinn:organization:identifier-no:314518748',
@@ -273,11 +255,8 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     seenSinceLastContentUpdate: [],
     progress: null,
     isContentSeen: false,
-    fromServiceOwnerTransmissionsCount: 1,
-    fromPartyTransmissionsCount: 0,
-    guiAttachmentCount: 1,
-  },
-  {
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     id: '01939be0-a01f-71bb-8f01-9a3bbeaf3324',
     party: 'urn:altinn:organization:identifier-no:316892451',
@@ -312,11 +291,8 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     seenSinceLastContentUpdate: [],
     progress: 100,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 2,
-    fromPartyTransmissionsCount: 0,
-    guiAttachmentCount: 2,
-  },
-  {
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     id: '01939be0-15e1-72ab-8261-2798d078b57c',
     party: 'urn:altinn:organization:identifier-no:317654823',
@@ -351,11 +327,8 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     seenSinceLastContentUpdate: [],
     progress: null,
     isContentSeen: false,
-    fromServiceOwnerTransmissionsCount: 1,
-    fromPartyTransmissionsCount: 0,
-    guiAttachmentCount: 1,
-  },
-  {
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     id: '01939b61-8b48-778b-8132-b94bc5f05484',
     party: 'urn:altinn:organization:identifier-no:318945672',
@@ -390,11 +363,8 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     seenSinceLastContentUpdate: [],
     progress: 60,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 1,
-    fromPartyTransmissionsCount: 1,
-    guiAttachmentCount: 0,
-  },
-  {
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     id: '01939b61-1234-778b-8132-b94bc5f05485',
     party: 'urn:altinn:organization:identifier-no:319823456',
@@ -429,11 +399,8 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     seenSinceLastContentUpdate: [],
     progress: null,
     isContentSeen: false,
-    fromServiceOwnerTransmissionsCount: 1,
-    fromPartyTransmissionsCount: 0,
-    guiAttachmentCount: 1,
-  },
-  {
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     id: '01939b61-5678-778b-8132-b94bc5f05486',
     party: 'urn:altinn:organization:identifier-no:311615688',
@@ -468,12 +435,9 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     seenSinceLastContentUpdate: [],
     progress: 40,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 1,
-    fromPartyTransmissionsCount: 1,
-    guiAttachmentCount: 1,
-  },
+  }),
   // Dialogs for deleted organizations
-  {
+  mockDialog({
     hasUnopenedContent: false,
     id: '01939b60-9abc-778b-8132-b94bc5f05487',
     party: 'urn:altinn:organization:identifier-no:215421902',
@@ -508,11 +472,8 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     seenSinceLastContentUpdate: [],
     progress: null,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 1,
-    fromPartyTransmissionsCount: 0,
-    guiAttachmentCount: 1,
-  },
-  {
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     id: '01939b60-def0-778b-8132-b94bc5f05488',
     party: 'urn:altinn:organization:identifier-no:311615696',
@@ -547,11 +508,8 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     seenSinceLastContentUpdate: [],
     progress: null,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 1,
-    fromPartyTransmissionsCount: 0,
-    guiAttachmentCount: 2,
-  },
-  {
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     id: '01939b60-1234-778b-8132-b94bc5f05489',
     party: 'urn:altinn:organization:identifier-no:311615697',
@@ -586,11 +544,8 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     seenSinceLastContentUpdate: [],
     progress: null,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 1,
-    fromPartyTransmissionsCount: 0,
-    guiAttachmentCount: 0,
-  },
-  {
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     id: '01939b60-5678-778b-8132-b94bc5f05490',
     party: 'urn:altinn:organization:identifier-no:412567893',
@@ -625,11 +580,8 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     seenSinceLastContentUpdate: [],
     progress: null,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 1,
-    fromPartyTransmissionsCount: 0,
-    guiAttachmentCount: 1,
-  },
-  {
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     id: '01939b60-9abc-778b-8132-b94bc5f05491',
     party: 'urn:altinn:organization:identifier-no:413892765',
@@ -664,11 +616,8 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     seenSinceLastContentUpdate: [],
     progress: null,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 1,
-    fromPartyTransmissionsCount: 0,
-    guiAttachmentCount: 0,
-  },
-  {
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     id: '01939b60-def0-778b-8132-b94bc5f05492',
     party: 'urn:altinn:organization:identifier-no:414678923',
@@ -703,8 +652,5 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     seenSinceLastContentUpdate: [],
     progress: null,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 1,
-    fromPartyTransmissionsCount: 0,
-    guiAttachmentCount: 1,
-  },
+  }),
 ];

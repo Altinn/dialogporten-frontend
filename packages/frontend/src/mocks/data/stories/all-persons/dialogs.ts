@@ -1,45 +1,44 @@
-import { DialogStatus, type SearchDialogFieldsFragment, SystemLabel } from 'bff-types-generated';
+import { DialogStatus, SystemLabel } from 'bff-types-generated';
+import { type MockDialog, mockDialog } from '../../base/mockDialog.ts';
 
 /**
  * One dialog per person in the all-persons portfolio. Selecting "Alle personer" sends every person
  * URN as a party filter, so all of these should appear together; selecting a single person should
  * narrow to just that person's dialog.
  */
-const makePersonDialog = (id: string, party: string, title: string): SearchDialogFieldsFragment => ({
-  hasUnopenedContent: false,
-  serviceResource: 'default',
-  serviceResourceType: 'correspondenceservice',
-  id,
-  endUserContext: {
-    systemLabels: [SystemLabel.Default],
-  },
-  party,
-  org: 'ok',
-  progress: null,
-  isContentSeen: false,
-  fromServiceOwnerTransmissionsCount: 0,
-  fromPartyTransmissionsCount: 0,
-  contentUpdatedAt: '2024-03-10T09:00:00.000Z',
-  guiAttachmentCount: 0,
-  status: DialogStatus.RequiresAttention,
-  createdAt: '2024-03-01T09:00:00.000Z',
-  dueAt: null,
-  seenSinceLastContentUpdate: [],
-  content: {
-    title: {
-      mediaType: 'text/plain',
-      value: [{ value: title, languageCode: 'nb' }],
+const makePersonDialog = (id: string, party: string, title: string): MockDialog =>
+  mockDialog({
+    hasUnopenedContent: false,
+    serviceResource: 'default',
+    serviceResourceType: 'correspondenceservice',
+    id,
+    endUserContext: {
+      systemLabels: [SystemLabel.Default],
     },
-    summary: {
-      mediaType: 'text/plain',
-      value: [{ value: `${title} – sammendrag`, languageCode: 'nb' }],
+    party,
+    org: 'ok',
+    progress: null,
+    isContentSeen: false,
+    contentUpdatedAt: '2024-03-10T09:00:00.000Z',
+    status: DialogStatus.RequiresAttention,
+    createdAt: '2024-03-01T09:00:00.000Z',
+    dueAt: null,
+    seenSinceLastContentUpdate: [],
+    content: {
+      title: {
+        mediaType: 'text/plain',
+        value: [{ value: title, languageCode: 'nb' }],
+      },
+      summary: {
+        mediaType: 'text/plain',
+        value: [{ value: `${title} – sammendrag`, languageCode: 'nb' }],
+      },
+      senderName: null,
+      extendedStatus: null,
     },
-    senderName: null,
-    extendedStatus: null,
-  },
-});
+  });
 
-export const dialogs: SearchDialogFieldsFragment[] = [
+export const dialogs: MockDialog[] = [
   makePersonDialog(
     '01923000-0000-0000-0000-000000000001',
     'urn:altinn:person:identifier-no:1',

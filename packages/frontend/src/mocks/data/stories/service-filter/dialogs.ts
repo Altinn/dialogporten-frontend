@@ -1,4 +1,5 @@
-import { DialogStatus, type SearchDialogFieldsFragment, SystemLabel } from 'bff-types-generated';
+import { DialogStatus, SystemLabel } from 'bff-types-generated';
+import { type MockDialog, mockDialog } from '../../base/mockDialog.ts';
 import { MOCK_SERVICE_JOURNEY_ID } from './services.ts';
 
 const DIALOG_COUNT = 120;
@@ -14,14 +15,14 @@ const STATUSES = [
 
 const pad = (n: number) => n.toString().padStart(3, '0');
 
-const generateMockServiceJourneyDialogs = (): SearchDialogFieldsFragment[] =>
+const generateMockServiceJourneyDialogs = (): MockDialog[] =>
   Array.from({ length: DIALOG_COUNT }, (_, i) => {
     const num = i + 1;
     const orgIndex = (i % ORG_COUNT) + 1;
     const party = `urn:altinn:organization:identifier-no:sf-${orgIndex}`;
     const contentUpdatedAt = new Date(Date.UTC(2025, 0, 1) - i * 86400000).toISOString();
     const createdAt = new Date(Date.UTC(2024, 0, 1) - i * 86400000).toISOString();
-    return {
+    return mockDialog({
       hasUnopenedContent: false,
       serviceResource: MOCK_SERVICE_JOURNEY_ID,
       serviceResourceType: 'correspondenceservice',
@@ -31,10 +32,7 @@ const generateMockServiceJourneyDialogs = (): SearchDialogFieldsFragment[] =>
       org: 'digdir',
       progress: null,
       isContentSeen: true,
-      fromServiceOwnerTransmissionsCount: 0,
-      fromPartyTransmissionsCount: 0,
       contentUpdatedAt,
-      guiAttachmentCount: 0,
       status: STATUSES[i % STATUSES.length],
       createdAt,
       dueAt: null,
@@ -59,7 +57,7 @@ const generateMockServiceJourneyDialogs = (): SearchDialogFieldsFragment[] =>
         senderName: null,
         extendedStatus: null,
       },
-    };
+    });
   });
 
-export const dialogs: SearchDialogFieldsFragment[] = generateMockServiceJourneyDialogs();
+export const dialogs: MockDialog[] = generateMockServiceJourneyDialogs();

@@ -1,10 +1,9 @@
-import { DialogStatus, type SearchDialogFieldsFragment, SystemLabel } from 'bff-types-generated';
+import { ActorType, DialogStatus, SystemLabel, TransmissionType } from 'bff-types-generated';
+import { type MockDialog, mockDialog } from '../../base/mockDialog.ts';
 
 // Preview at: ?mock=true&playwrightId=transmissions-without-activities
-// The dialog id is the one `getMockedActivities` returns an empty list for, so this story covers
-// a dialog that carries transmissions but no activity history at all.
-export const dialogs: SearchDialogFieldsFragment[] = [
-  {
+export const dialogs: MockDialog[] = [
+  mockDialog({
     hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
@@ -17,10 +16,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     org: 'nav',
     progress: null,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 1,
-    fromPartyTransmissionsCount: 1,
     contentUpdatedAt: '2024-11-27T15:36:52.131Z',
-    guiAttachmentCount: 0,
     status: DialogStatus.RequiresAttention,
     createdAt: '2024-05-23T23:00:00.000Z',
     dueAt: null,
@@ -46,5 +42,56 @@ export const dialogs: SearchDialogFieldsFragment[] = [
       senderName: null,
       extendedStatus: null,
     },
-  },
+    activities: [],
+    transmissions: [
+      {
+        id: 'transmission-from-agency',
+        relatedTransmissionId: null,
+        isAuthorized: true,
+        createdAt: '2024-07-30T18:12:54.233Z',
+        type: TransmissionType.Information,
+        sender: {
+          actorType: ActorType.ServiceOwner,
+          actorId: null,
+          actorName: null,
+        },
+        content: {
+          title: {
+            value: [{ value: 'Melding fra etaten', languageCode: 'nb' }],
+            mediaType: 'text/plain',
+          },
+          summary: {
+            value: [{ value: 'Vi trenger noen opplysninger fra deg.', languageCode: 'nb' }],
+            mediaType: 'text/plain',
+          },
+          contentReference: null,
+        },
+        attachments: [],
+      },
+      {
+        id: 'transmission-own-reply',
+        relatedTransmissionId: 'transmission-from-agency',
+        isAuthorized: true,
+        createdAt: '2024-07-31T18:12:54.233Z',
+        type: TransmissionType.Submission,
+        sender: {
+          actorType: ActorType.PartyRepresentative,
+          actorId: null,
+          actorName: 'NORDMANN KARI',
+        },
+        content: {
+          title: {
+            value: [{ value: 'Mitt svar til etaten', languageCode: 'nb' }],
+            mediaType: 'text/plain',
+          },
+          summary: {
+            value: [{ value: 'Opplysningene stemmer.', languageCode: 'nb' }],
+            mediaType: 'text/plain',
+          },
+          contentReference: null,
+        },
+        attachments: [],
+      },
+    ],
+  }),
 ];

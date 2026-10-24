@@ -40,6 +40,10 @@ We use [React Testing Library](https://testing-library.com/docs/react-testing-li
 `pnpm --filter bff test:integration` runs regression tests against real Redis and PostgreSQL. It starts them in Docker,
 or uses `TEST_REDIS_URL` / `TEST_DATABASE_URL` when set.
 
+### Mock data for Playwright
+
+Playwright runs against mock data in `packages/frontend/src/mocks`, one story per scenario. [Mock data](../mock-data/) explains the intent, how the pieces fit together, and how to add a scenario.
+
 ### Playwright pitfalls
 
 - **Mock data needs the Vite dev server.** `?mock=true` and `playwrightId` only work under `pnpm dev` (`webServer` in `playwright.config.ts`).
