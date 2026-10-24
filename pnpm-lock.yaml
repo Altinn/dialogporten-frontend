@@ -7,22 +7,22 @@ settings:
 catalogs:
   default:
     '@graphql-tools/stitch':
-      specifier: ^10.3.1
+      specifier: 10.3.1
       version: 10.3.1
     '@playwright/test':
-      specifier: ^1.52.0
+      specifier: 1.58.1
       version: 1.58.1
     '@swc-node/register':
-      specifier: ^1.10.10
+      specifier: 1.11.1
       version: 1.11.1
     '@testing-library/react':
-      specifier: ^16.3.0
+      specifier: 16.3.2
       version: 16.3.2
     '@tsconfig/node24':
-      specifier: ^24.0.5
+      specifier: 24.0.5
       version: 24.0.5
     '@types/node':
-      specifier: ^24.19.0
+      specifier: 24.19.2
       version: 24.19.2
     '@types/react':
       specifier: 19.2.7
@@ -31,22 +31,22 @@ catalogs:
       specifier: 19.2.3
       version: 19.2.3
     '@vitejs/plugin-react':
-      specifier: ^6.0.1
+      specifier: 6.0.1
       version: 6.0.1
     dotenv:
-      specifier: ^16.5.0
+      specifier: 16.6.1
       version: 16.6.1
     fastify:
       specifier: 5.12.7
       version: 5.12.7
     fastify-plugin:
-      specifier: ^5.0.1
+      specifier: 5.1.0
       version: 5.1.0
     graphql:
-      specifier: ^16.11.0
+      specifier: 16.12.0
       version: 16.12.0
     graphql-request:
-      specifier: ^7.2.0
+      specifier: 7.4.0
       version: 7.4.0
     react:
       specifier: 19.2.8
@@ -55,13 +55,13 @@ catalogs:
       specifier: 19.2.8
       version: 19.2.8
     typescript:
-      specifier: ^5.8.3
+      specifier: 5.9.3
       version: 5.9.3
     vite:
       specifier: 8.1.6
       version: 8.1.6
     vitest:
-      specifier: ^4.1.12
+      specifier: 4.1.12
       version: 4.1.12
     zod:
       specifier: 4.6.7
@@ -70,18 +70,18 @@ catalogs:
 overrides:
   '@types/hast': 3.0.5
   mdast-util-gfm-autolink-literal: 2.0.0
-  protobufjs: '>=8.0.1'
-  shell-quote: '>=1.9.0'
-  websocket-driver: '>=0.7.5'
+  protobufjs: 8.8.1
+  shell-quote: 1.12.0
+  websocket-driver: 0.7.5
   brace-expansion@1: 1.1.16
   brace-expansion@2: 5.0.12
-  brace-expansion@5: '>=5.0.9 <6'
-  postcss@8: '>=8.5.23 <9'
-  fast-uri@3: '>=3.1.5 <4'
-  fast-uri@4: '>=4.1.2 <5'
-  find-my-way@9: '>=9.7.0 <10'
+  brace-expansion@5: 5.0.12
+  postcss@8: 8.5.31
+  fast-uri@3: 3.1.9
+  fast-uri@4: 4.2.3
+  find-my-way@9: 9.10.0
   js-yaml@3: 3.15.1
-  js-yaml@4: '>=4.3.1 <5'
+  js-yaml@4: 4.3.2
 
 importers:
 
@@ -94,7 +94,7 @@ importers:
         specifier: 17.0.8
         version: 17.0.8
       mprocs:
-        specifier: ^0.9.2
+        specifier: 0.9.2
         version: 0.9.2
       turbo:
         specifier: 2.9.14
@@ -112,25 +112,25 @@ importers:
         specifier: 2.2.0
         version: 2.2.0(@azure/core-client@1.10.1)
       '@azure/identity':
-        specifier: ^4.13.1
+        specifier: 4.13.1
         version: 4.13.1
       '@azure/postgresql-auth':
-        specifier: ^1.0.0-beta.1
+        specifier: 1.0.0-beta.1
         version: 1.0.0-beta.1(pg@8.18.0)
       '@digdir/dialogporten-schema':
         specifier: 1.120.0
         version: 1.120.0
       '@fastify/compress':
-        specifier: ^9.0.0
+        specifier: 9.0.0
         version: 9.0.0
       '@fastify/cookie':
-        specifier: ^11.0.2
+        specifier: 11.0.2
         version: 11.0.2
       '@fastify/cors':
-        specifier: ^10.1.0
+        specifier: 10.1.0
         version: 10.1.0
       '@fastify/formbody':
-        specifier: ^8.0.2
+        specifier: 8.0.2
         version: 8.0.2
       '@fastify/helmet':
         specifier: 13.0.1
@@ -139,28 +139,28 @@ importers:
         specifier: 0.20.1
         version: 0.20.1(@opentelemetry/api@1.9.1)
       '@fastify/session':
-        specifier: ^11.1.0
+        specifier: 11.1.1
         version: 11.1.1
       '@graphql-tools/executor-http':
-        specifier: ^3.4.1
+        specifier: 3.4.1
         version: 3.4.1(@types/node@24.19.2)(graphql@16.12.0)
       '@graphql-tools/schema':
-        specifier: ^10.1.3
+        specifier: 10.1.3
         version: 10.1.3(graphql@16.12.0)
       '@graphql-tools/stitch':
         specifier: 'catalog:'
         version: 10.3.1(graphql@16.12.0)
       '@graphql-tools/utils':
-        specifier: ^12.0.3
+        specifier: 12.0.3
         version: 12.0.3(graphql@16.12.0)
       '@graphql-tools/wrap':
-        specifier: ^11.2.0
+        specifier: 11.2.0
         version: 11.2.0(graphql@16.12.0)
       '@microsoft/feature-management':
-        specifier: ^2.2.0
+        specifier: 2.2.0
         version: 2.2.0
       '@noble/ciphers':
-        specifier: ^2.2.0
+        specifier: 2.2.0
         version: 2.2.0
       '@opentelemetry/api':
         specifier: 1.9.1
@@ -211,10 +211,10 @@ importers:
         specifier: 1.20.0
         version: 1.20.0
       cookie-parser:
-        specifier: ^1.4.7
+        specifier: 1.4.7
         version: 1.4.7
       cors:
-        specifier: ^2.8.5
+        specifier: 2.8.6
         version: 2.8.6
       dotenv:
         specifier: 'catalog:'
@@ -232,34 +232,34 @@ importers:
         specifier: 'catalog:'
         version: 16.12.0
       graphql-depth-limit:
-        specifier: ^1.1.0
+        specifier: 1.1.0
         version: 1.1.0(graphql@16.12.0)
       graphql-http:
-        specifier: ^1.22.4
+        specifier: 1.22.4
         version: 1.22.4(graphql@16.12.0)
       graphql-tools:
         specifier: 9.0.37
         version: 9.0.37(graphql-ws@6.0.7(crossws@0.3.5)(graphql@16.12.0)(ws@8.22.0))(graphql@16.12.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(rxjs@7.8.2)
       ioredis:
-        specifier: ^5.6.1
+        specifier: 5.9.2
         version: 5.9.2
       jsonwebtoken:
-        specifier: ^9.0.2
+        specifier: 9.0.3
         version: 9.0.3
       nexus:
-        specifier: ^1.3.0
+        specifier: 1.3.0
         version: 1.3.0(graphql@16.12.0)
       pg:
-        specifier: ^8.16.0
+        specifier: 8.18.0
         version: 8.18.0
       reflect-metadata:
-        specifier: ^0.2.2
+        specifier: 0.2.2
         version: 0.2.2
       typeorm:
         specifier: 0.3.31
         version: 0.3.31(ioredis@5.9.2)(pg@8.18.0)(ts-node@10.9.2(@swc/core@1.15.43)(@types/node@24.19.2)(typescript@5.9.3))
       util:
-        specifier: ^0.12.5
+        specifier: 0.12.5
         version: 0.12.5
       zod:
         specifier: 'catalog:'
@@ -269,28 +269,28 @@ importers:
         specifier: 'catalog:'
         version: 1.11.1(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@swc/core@1.15.43)(@swc/types@0.1.27)(typescript@5.9.3)
       '@swc/core':
-        specifier: ^1.15.43
+        specifier: 1.15.43
         version: 1.15.43
       '@testcontainers/postgresql':
-        specifier: ^12.1.0
+        specifier: 12.1.0
         version: 12.1.0
       '@testcontainers/redis':
-        specifier: ^12.1.0
+        specifier: 12.2.0
         version: 12.2.0
       '@tsconfig/node24':
         specifier: 'catalog:'
         version: 24.0.5
       '@types/cookie-parser':
-        specifier: ^1.4.8
+        specifier: 1.4.10
         version: 1.4.10(@types/express@4.17.25)
       '@types/cors':
-        specifier: ^2.8.18
+        specifier: 2.8.19
         version: 2.8.19
       '@types/graphql-depth-limit':
         specifier: 1.1.6
         version: 1.1.6
       '@types/jsonwebtoken':
-        specifier: ^9.0.9
+        specifier: 9.0.10
         version: 9.0.10
       '@types/node':
         specifier: 'catalog:'
@@ -299,19 +299,19 @@ importers:
         specifier: 10.0.4
         version: 10.0.4
       mprocs:
-        specifier: ^0.9.2
+        specifier: 0.9.2
         version: 0.9.2
       tsconfig-paths:
-        specifier: ^4.2.0
+        specifier: 4.2.0
         version: 4.2.0
       tslib:
-        specifier: ^2.8.1
+        specifier: 2.8.1
         version: 2.8.1
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
       unplugin-swc:
-        specifier: ^1.5.9
+        specifier: 1.5.9
         version: 1.5.9(@swc/core@1.15.43)
       vitest:
         specifier: 'catalog:'
@@ -320,16 +320,16 @@ importers:
   packages/bff-types-generated:
     dependencies:
       '@graphql-codegen/cli':
-        specifier: ^7.2.0
+        specifier: 7.2.0
         version: 7.2.0(@parcel/watcher@2.5.6)(@types/node@26.1.2)(crossws@0.3.5)(graphql@16.12.0)(typescript@5.9.3)
       '@graphql-codegen/typescript-operations':
-        specifier: ^6.1.2
+        specifier: 6.1.2
         version: 6.1.2(graphql@16.12.0)
       '@graphql-tools/stitch':
         specifier: 'catalog:'
         version: 10.3.1(graphql@16.12.0)
       '@graphql-typed-document-node/core':
-        specifier: ^3.2.0
+        specifier: 3.2.0
         version: 3.2.0(graphql@16.12.0)
       '@tsconfig/node24':
         specifier: 'catalog:'
@@ -348,13 +348,13 @@ importers:
         version: 2.12.6(graphql@16.12.0)
     devDependencies:
       '@graphql-codegen/typescript':
-        specifier: ^6.1.0
+        specifier: 6.1.0
         version: 6.1.0(graphql@16.12.0)
       '@graphql-codegen/typescript-graphql-request':
         specifier: 7.1.0
         version: 7.1.0(graphql-request@7.4.0(graphql@16.12.0))(graphql-tag@2.12.6(graphql@16.12.0))(graphql@16.12.0)
       '@graphql-codegen/typescript-resolvers':
-        specifier: ^6.1.0
+        specifier: 6.1.0
         version: 6.1.0(graphql@16.12.0)
       '@parcel/watcher':
         specifier: 2.5.6
@@ -403,7 +403,7 @@ importers:
   packages/embeddable-markdown-html:
     dependencies:
       mdast-util-to-hast:
-        specifier: ^13.2.1
+        specifier: 13.2.1
         version: 13.2.1
       react:
         specifier: 'catalog:'
@@ -412,16 +412,16 @@ importers:
         specifier: 'catalog:'
         version: 19.2.8(react@19.2.8)
       rehype-class-names:
-        specifier: ^2.0.0
+        specifier: 2.0.0
         version: 2.0.0
       rehype-parse:
-        specifier: ^9.0.1
+        specifier: 9.0.1
         version: 9.0.1
       rehype-react:
-        specifier: ^8.0.0
+        specifier: 8.0.0
         version: 8.0.0
       rehype-sanitize:
-        specifier: ^6.0.0
+        specifier: 6.0.0
         version: 6.0.0
       remark-gfm:
         specifier: 4.0.1
@@ -433,11 +433,11 @@ importers:
         specifier: 11.1.2
         version: 11.1.2
       unified:
-        specifier: ^11.0.5
+        specifier: 11.0.5
         version: 11.0.5
     devDependencies:
       '@testing-library/jest-dom':
-        specifier: ^6.9.1
+        specifier: 6.9.1
         version: 6.9.1
       '@testing-library/react':
         specifier: 'catalog:'
@@ -452,7 +452,7 @@ importers:
         specifier: 'catalog:'
         version: 6.0.1(vite@8.1.6(@types/node@26.1.2)(esbuild@0.28.1)(jiti@2.6.1)(terser@5.46.0)(tsx@4.23.7)(yaml@2.9.0))
       hast-util-sanitize:
-        specifier: ^5.0.2
+        specifier: 5.0.2
         version: 5.0.2
       typescript:
         specifier: 'catalog:'
@@ -489,19 +489,19 @@ importers:
         specifier: 3.4.3
         version: 3.4.3(tslib@2.8.1)
       '@navikt/aksel-icons':
-        specifier: ^7.37.0
+        specifier: 7.40.0
         version: 7.40.0
       '@tanstack/react-query':
-        specifier: ^5.85.9
+        specifier: 5.90.20
         version: 5.90.20(react@19.2.8)
       '@tanstack/react-virtual':
-        specifier: ^3.14.2
+        specifier: 3.14.2
         version: 3.14.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       bff-types-generated:
         specifier: workspace:*
         version: link:../bff-types-generated
       date-fns:
-        specifier: ^3.6.0
+        specifier: 3.6.0
         version: 3.6.0
       embeddable-markdown-html:
         specifier: workspace:*
@@ -513,16 +513,16 @@ importers:
         specifier: 'catalog:'
         version: 7.4.0(graphql@16.12.0)
       i18next:
-        specifier: ^26.3.6
+        specifier: 26.3.6
         version: 26.3.6(typescript@5.9.3)
       i18next-icu:
-        specifier: ^2.4.4
+        specifier: 2.4.4
         version: 2.4.4(intl-messageformat@11.1.2)
       libphonenumber-js:
-        specifier: ^1.12.42
+        specifier: 1.12.42
         version: 1.12.42
       lz-string:
-        specifier: ^1.5.0
+        specifier: 1.5.0
         version: 1.5.0
       react:
         specifier: 'catalog:'
@@ -531,17 +531,17 @@ importers:
         specifier: 'catalog:'
         version: 19.2.8(react@19.2.8)
       react-i18next:
-        specifier: ^17.0.10
+        specifier: 17.0.10
         version: 17.0.10(i18next@26.3.6(typescript@5.9.3))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@5.9.3)
       react-router:
         specifier: 8.3.0
         version: 8.3.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       sse.js:
-        specifier: ^2.6.0
+        specifier: 2.7.2
         version: 2.7.2
     devDependencies:
       '@axe-core/playwright':
-        specifier: ^4.10.1
+        specifier: 4.11.1
         version: 4.11.1(playwright-core@1.58.1)
       '@playwright/test':
         specifier: 'catalog:'
@@ -562,19 +562,19 @@ importers:
         specifier: 'catalog:'
         version: 6.0.1(vite@8.1.6(@types/node@24.19.2)(esbuild@0.28.1)(jiti@2.6.1)(terser@5.46.0)(tsx@4.23.7)(yaml@2.9.0))
       axe-html-reporter:
-        specifier: ^2.2.11
+        specifier: 2.2.11
         version: 2.2.11(axe-core@4.11.1)
       dotenv:
         specifier: 'catalog:'
         version: 16.6.1
       jsdom:
-        specifier: ^26.1.0
+        specifier: 26.1.0
         version: 26.1.0
       msw:
-        specifier: ^2.11.1
+        specifier: 2.12.8
         version: 2.12.8(@types/node@24.19.2)(typescript@5.9.3)
       tsx:
-        specifier: ^4.23.7
+        specifier: 4.23.7
         version: 4.23.7
       typescript:
         specifier: 'catalog:'
@@ -586,7 +586,7 @@ importers:
         specifier: 'catalog:'
         version: 4.1.12(@opentelemetry/api@1.9.1)(@types/node@24.19.2)(jsdom@26.1.0)(msw@2.12.8(@types/node@24.19.2)(typescript@5.9.3))(vite@8.1.6(@types/node@24.19.2)(esbuild@0.28.1)(jiti@2.6.1)(terser@5.46.0)(tsx@4.23.7)(yaml@2.9.0))
       web-streams-polyfill:
-        specifier: ^3.3.3
+        specifier: 3.3.3
         version: 3.3.3
 
   packages/node-logger:
@@ -922,10 +922,6 @@ packages:
     engines: {node: '>=6.9.0'}
     peerDependencies:
       '@babel/core': ^7.0.0-0
-
-  '@babel/runtime@7.29.2':
-    resolution: {integrity: sha512-JiDShH45zKHWyGe4ZNVRrCjBz8Nh9TMmZG1kh4QTK8hCBTWBi8Da+i7s1fJw7/lYpM4ccepSNfqzZ/QvABBi5g==}
-    engines: {node: '>=6.9.0'}
 
   '@babel/runtime@7.29.7':
     resolution: {integrity: sha512-Nq8OhGWiZIZGV6hLHoyAKLLcJihP/xFeBMGJoUrxTX2psI8dCifzLhZISFb+VWS3wFMRDmCGw5R+dOySCqPLhw==}
@@ -1565,12 +1561,6 @@ packages:
     peerDependencies:
       graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
 
-  '@graphql-tools/executor-common@1.0.6':
-    resolution: {integrity: sha512-23/K5C+LSlHDI0mj2SwCJ33RcELCcyDUgABm1Z8St7u/4Z5+95i925H/NAjUyggRjiaY8vYtNiMOPE49aPX1sg==}
-    engines: {node: '>=20.0.0'}
-    peerDependencies:
-      graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-
   '@graphql-tools/executor-common@1.1.0':
     resolution: {integrity: sha512-It8E6ZqeLTZnkdMP4GciWQB8l04Rl0OzDHUo9QYNyxClrgAEqaPbsPuvo2avfkIE5ngE0S1dkA7dtF/7DD/BdA==}
     engines: {node: '>=20.0.0'}
@@ -1645,12 +1635,6 @@ packages:
 
   '@graphql-tools/load@8.1.8':
     resolution: {integrity: sha512-gxO662b64qZSToK3N6XUxWG5E6HOUjlg5jEnmGvD4bMtGJ0HwEe/BaVZbBQemCfLkxYjwRIBiVfOY9o0JyjZJg==}
-    engines: {node: '>=16.0.0'}
-    peerDependencies:
-      graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-
-  '@graphql-tools/merge@9.2.0':
-    resolution: {integrity: sha512-kChDH/sOxm3TCICup5NgTiz/aJBk+5GAuC0lfJS8FcRfsqZvlCkNwpsYTGAATBCJMrgZ9+csRugCjS97jPcNMw==}
     engines: {node: '>=16.0.0'}
     peerDependencies:
       graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
@@ -2161,12 +2145,6 @@ packages:
   '@mswjs/interceptors@0.41.0':
     resolution: {integrity: sha512-edAo9bW53BLYeSK+UPRr2Iz1Fj9DeGMjytvVM0HXRoo750ElWUgPsZPAOTQa12EUiwgDErH2PsFNTLvk1jBxjQ==}
     engines: {node: '>=18'}
-
-  '@napi-rs/wasm-runtime@1.1.2':
-    resolution: {integrity: sha512-sNXv5oLJ7ob93xkZ1XnxisYhGYXfaG9f65/ZgYuAu3qt7b3NadcOEhLvx28hv31PgX8SZJRYrAIPQilQmFpLVw==}
-    peerDependencies:
-      '@emnapi/core': ^1.7.1
-      '@emnapi/runtime': ^1.7.1
 
   '@napi-rs/wasm-runtime@1.2.4':
     resolution: {integrity: sha512-AJxoUD2/15ESHbvpcyjU274nsAPLuOtPHCk0vKJM5pj//Fg/B1FXNWjPnXTT9PymCYYiHo4zPj0ZomXBKhoy7g==}
@@ -2773,9 +2751,6 @@ packages:
       '@types/react':
         optional: true
 
-  '@repeaterjs/repeater@3.0.6':
-    resolution: {integrity: sha512-Javneu5lsuhwNCryN+pXH93VPQ8g0dBX7wItHFgYiwQmzE1sVdg5tWHiOgHywzL2W21XQopa7IwIEnNbmeUJYA==}
-
   '@repeaterjs/repeater@3.1.0':
     resolution: {integrity: sha512-TaoVksZRSx2KWYYpyLQtMQXXeS98VsgZImzW65xmiVgbYhXLk+aEsmzPLirqVuE4/XuUapH2iMtxUzaBNDzdSQ==}
 
@@ -3125,9 +3100,6 @@ packages:
     resolution: {integrity: sha512-fVdCsnmYoKICsycbWuuGp6Jvi51/3G/UluFWuAUCvR8PIW5IJkAk5BM9UF8PSm0Q2IphWHFZjYEgjHsh3B9y/g==}
     cpu: [arm64]
     os: [win32]
-
-  '@tybys/wasm-util@0.10.1':
-    resolution: {integrity: sha512-9tTaPJLSiejZKx+Bmog4uSubteqTvFrVrURwkmHixBo0G4seD0zUxp98E1DzUBJxLQ3NPwXrGKDiVjwx/DpPsg==}
 
   '@tybys/wasm-util@0.10.3':
     resolution: {integrity: sha512-F3fo1MYrRJYL3zER0OUOmkutjr1Vp23m7OsSgp7nq4SP6OqX6C/56XFIPAl5bt3zaBRjmW7SGz3u/6LwFpYcOg==}
@@ -4351,10 +4323,6 @@ packages:
     resolution: {integrity: sha512-9S6m9Sukh1cZNknO1CWAr2QAWsbKLafQiyM5gZ7VgXHeuaoUwffKN4q6NC4A/Mf9iiPlOXQEKW/Mv/mh9/3YFA==}
     hasBin: true
 
-  docker-compose@1.4.2:
-    resolution: {integrity: sha512-rPHigTKGaEHpkUmfd69QgaOp+Os5vGJwG/Ry8lcr8W/382AmI+z/D7qoa9BybKIkqNppaIbs8RYeHSevdQjWww==}
-    engines: {node: '>= 6.0.0'}
-
   docker-compose@1.5.0:
     resolution: {integrity: sha512-O+eD6c63+BJORUWddXA7uAlI6H1KLDPd/aS14k73nXYpFliM48C3xrrKB3sXsR1Fp/rHUZQe7+fJ+QA7+jepyw==}
     engines: {node: '>= 6.0.0'}
@@ -4608,8 +4576,8 @@ packages:
     resolution: {integrity: sha512-YsGpe3WHLK8ZYi4tWDg2Jy3ebRz2rXowDxnld4bkQB00cc/1Zw9AWnC0i9ztDJitivtQvaI9KaLyKrc+hBW0yg==}
     engines: {node: '>=8'}
 
-  find-my-way@9.7.0:
-    resolution: {integrity: sha512-f2JHn75x2JlwUwLenZypgczR7YWMb/uO9BvUXtus+JMgkbIkLADd38cI4EiV+OQqrGo1Zlq6V8wnqMJ8e62wUQ==}
+  find-my-way@9.10.0:
+    resolution: {integrity: sha512-eru+uCPQ2g+nLBkf84MHP/KyNNMar0BDy0j+i8Fb72GF9/YHBZ58q7FODUtfVV7XU9nfRUHXSmaM8NmZcIbZ4Q==}
     engines: {node: '>=20'}
 
   find-proc@0.2.0:
@@ -5708,8 +5676,8 @@ packages:
   nan@2.28.0:
     resolution: {integrity: sha512-fTsDz99OTq2sVePhGdp4qQhggZFtKr64ZNVyVajRKtMOkJxYekplBh577PiJB12v/D3s2E5cGtOI45LWp6rnLQ==}
 
-  nanoid@3.3.19:
-    resolution: {integrity: sha512-Y2tUNy4ouw6tq5oDSKeQYGOyhkUBhNOcGV/02KC+6kd9eDGqdZd++mjMiIDilrBYvjEnCYvVtsuHCuP+okSfug==}
+  nanoid@3.3.20:
+    resolution: {integrity: sha512-uKdg2G3GNCKQn9byYOpxbGqrT2fGO5KRt5J/8b3pok8rT6qxGWF6hxMyJiEYtAf+FVyYuD9hRaDqX5uPFYJ4ZQ==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
@@ -5996,14 +5964,14 @@ packages:
     resolution: {integrity: sha512-5osppouFc0VR9/VYzYxO03VaDa3e8F23Kfd6/9qcZTUI8P58GIYlArOET2Wq0ywSl2o2PjELhYOFI4W7l5QHKw==}
     engines: {node: '>=18.0'}
     peerDependencies:
-      postcss: '>=8.5.23 <9'
+      postcss: 8.5.31
 
   postcss-selector-parser@7.1.7:
     resolution: {integrity: sha512-wWBro/7hJ40ye6TPiXkUQoXKCw23xSsjriUvqd7Uls9Sso3oLiON1flc18cCdnjgCRXw4fBVqUJJeOdDTh3P3g==}
     engines: {node: '>=4'}
 
-  postcss@8.5.25:
-    resolution: {integrity: sha512-DTPx3RWSSnWyzLxQnlH0rJP+EW5ekl16ZU4/psbIhA0e53kJfdgaN5vKM+xP7yJtXVu+nfdVFmlgFDEKAe4Pyw==}
+  postcss@8.5.31:
+    resolution: {integrity: sha512-YUbWYCgErwnMAVkjUnYa+KlMBzGpHwiIt/DE7f0G33AuX2LH9UcTk6KgWxd3zRU+pN3u/C+Xl3EnMLM4Hea7Sg==}
     engines: {node: ^10 || ^12 || >=14}
 
   postgres-array@2.0.0:
@@ -6060,8 +6028,8 @@ packages:
   property-information@7.1.0:
     resolution: {integrity: sha512-TwEZ+X+yCJmYfL7TPUOcvBZ4QfoT5YenQiJuX//0th53DE6w0xxLEtfK3iyryQFddXuvkIk51EEgrJQ0WJkOmQ==}
 
-  protobufjs@8.7.1:
-    resolution: {integrity: sha512-agdGHrXNTv0IrYscJPDou/PlEJk1c/hBZ9o/B5NH2i/nSPtPqacNxzgwf1CebXxFMjMrZH5sqv9uQuw96aGt/A==}
+  protobufjs@8.8.1:
+    resolution: {integrity: sha512-d9e9179bjXSJdpJ3+R9fP8hzXsnKLyxTjHLG1dUzje8a27pPyXCe6PrcRtgx2rjoM3IZzHd2vAs+6J/BsO1k7Q==}
     engines: {node: '>=12.0.0'}
 
   proxy-from-env@2.1.0:
@@ -6369,11 +6337,6 @@ packages:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
     hasBin: true
 
-  semver@7.7.4:
-    resolution: {integrity: sha512-vFKC2IEtQnVhpT78h1Yp8wzwrf8CM+MzKMHGJZfBtzhZNycRFnXsHk6E5TxIkkMsgNS7mdX3AGB7x2QM2di4lA==}
-    engines: {node: '>=10'}
-    hasBin: true
-
   semver@7.8.5:
     resolution: {integrity: sha512-Y7/KDsb8LjooZpwaqGyulO6DQlksgCncchHGk+sZIY4SBvUocMBEFH5Ur1fI4dV+Jvl0w6cjvucaIi40puRioA==}
     engines: {node: '>=10'}
@@ -6411,8 +6374,8 @@ packages:
     resolution: {integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==}
     engines: {node: '>=8'}
 
-  shell-quote@1.11.0:
-    resolution: {integrity: sha512-JdxDPD0DBTyu08pq0kPC0xSNet/qsU07qT6IsX1AS8oO2ICNRY4ldNa8OAI6PuwAH8tG3lxEhbqmyp4Dw4036g==}
+  shell-quote@1.12.0:
+    resolution: {integrity: sha512-PcByqNyT/38F2kDNi006HAMRJaULuBzq/FOsw3qdZvX/GA9W/jamDaRskgHjubHiftXK5sIFxLNkvrXUwcof6Q==}
     engines: {node: '>= 0.4'}
 
   shiki@4.4.1:
@@ -6639,10 +6602,6 @@ packages:
     resolution: {integrity: sha512-jTwoImyr/QbOWFFso3YoU3ik0jBBDJ6JTOQiy/J2YxVJdZCc+5u7skhNwiOR3FQIygFqVUPHl7qbbxtjW2K3Qg==}
     engines: {node: '>=10'}
     hasBin: true
-
-  testcontainers@12.1.0:
-    resolution: {integrity: sha512-YjDLqIITuhGLMnM10yhg3oV6lIG5IMpz1R1DPBZoOOks83q7i7IVpeSWRTiyl7roozjiyLmwIoLK/KY8OnZmIA==}
-    engines: {node: '>= 22.22'}
 
   testcontainers@12.2.0:
     resolution: {integrity: sha512-Pd0c2eU0DdIuK+Pb3c+vmBUdKjDLgxZmPecQGESFAKyn5LTqSaSw8l7htfMlLwabb/QsUILe6XkxMJw8Ly/ThA==}
@@ -7215,18 +7174,6 @@ packages:
   wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
 
-  ws@8.21.0:
-    resolution: {integrity: sha512-Vsp28b7DRcimFQvrqu2Wek3z1iYxDCWqHYB8Qsnk/S4RfaCQzPGPyBNuVjJV3cd6UiKtUtp6sNM77gWvzcCH+g==}
-    engines: {node: '>=10.0.0'}
-    peerDependencies:
-      bufferutil: ^4.0.1
-      utf-8-validate: '>=5.0.2'
-    peerDependenciesMeta:
-      bufferutil:
-        optional: true
-      utf-8-validate:
-        optional: true
-
   ws@8.22.0:
     resolution: {integrity: sha512-Ydggc987+RO0AnWtZ/7Wq9FtNvcrL1b/RO0ud9mWjUPgDrsAAwQSF51sm2hm1XofbU/4jkpGEsLFsZZxU+1DOg==}
     engines: {node: '>=10.0.0'}
@@ -7276,10 +7223,6 @@ packages:
   yargs-parser@22.0.0:
     resolution: {integrity: sha512-rwu/ClNdSMpkSrUb+d6BRsSkLUq1fmfsY6TOpYzTwvwkg1/NRG85KBy3kq++A8LKQwX6lsu+aWad+2khvuXrqw==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=23}
-
-  yargs@17.7.2:
-    resolution: {integrity: sha512-7dSzzRQ++CKnNI/krKnYRV7JKKPUXMEh61soaHKg9mrWEhzFWhFnxPxGl+69cD1Ou63C13NUPCnmIcrvqCuM6w==}
-    engines: {node: '>=12'}
 
   yargs@17.7.3:
     resolution: {integrity: sha512-GZtjxm/J/4TSxuL3FNYjCmLktBTnIw/rVmKSIyKeYAZpmJB2ig9VauCC5xsa82GNKVKDAqpOn3KVzNt0zmrU0g==}
@@ -7807,8 +7750,6 @@ snapshots:
       '@babel/core': 7.29.7
       '@babel/helper-plugin-utils': 7.29.7
 
-  '@babel/runtime@7.29.2': {}
-
   '@babel/runtime@7.29.7': {}
 
   '@babel/template@7.29.7':
@@ -8120,8 +8061,8 @@ snapshots:
       hast-util-to-html: 9.0.5
       hast-util-to-text: 4.0.2
       hastscript: 9.0.1
-      postcss: 8.5.25
-      postcss-nested: 7.0.2(postcss@8.5.25)
+      postcss: 8.5.31
+      postcss-nested: 7.0.2(postcss@8.5.31)
       unist-util-visit: 5.1.0
       unist-util-visit-parents: 6.0.2
 
@@ -8282,7 +8223,7 @@ snapshots:
       '@graphql-tools/graphql-file-loader': 8.1.16(graphql@16.12.0)
       '@graphql-tools/json-file-loader': 8.0.26(graphql@16.12.0)
       '@graphql-tools/load': 8.1.8(graphql@16.12.0)
-      '@graphql-tools/merge': 9.2.0(graphql@16.12.0)
+      '@graphql-tools/merge': 9.2.6(graphql@16.12.0)
       '@graphql-tools/url-loader': 9.1.4(@types/node@26.1.2)(crossws@0.3.5)(graphql@16.12.0)
       '@graphql-tools/utils': 11.2.2(graphql@16.12.0)
       '@inquirer/prompts': 8.5.2(@types/node@26.1.2)
@@ -8299,7 +8240,7 @@ snapshots:
       listr2: 10.2.2
       log-symbols: 7.0.1
       micromatch: 4.0.8
-      shell-quote: 1.11.0
+      shell-quote: 1.12.0
       string-env-interpolation: 1.0.1
       ts-log: 3.0.2
       tslib: 2.8.1
@@ -8496,7 +8437,7 @@ snapshots:
       '@graphql-tools/executor': 2.0.3(graphql@16.12.0)
       '@graphql-tools/schema': 10.1.3(graphql@16.12.0)
       '@graphql-tools/utils': 12.0.3(graphql@16.12.0)
-      '@repeaterjs/repeater': 3.0.6
+      '@repeaterjs/repeater': 3.1.0
       '@whatwg-node/promise-helpers': 1.3.2
       dataloader: 2.2.3
       graphql: 16.12.0
@@ -8508,12 +8449,6 @@ snapshots:
       lodash.sortby: 4.7.0
       tslib: 2.8.1
 
-  '@graphql-tools/executor-common@1.0.6(graphql@16.12.0)':
-    dependencies:
-      '@envelop/core': 5.5.0
-      '@graphql-tools/utils': 11.2.2(graphql@16.12.0)
-      graphql: 16.12.0
-
   '@graphql-tools/executor-common@1.1.0(graphql@16.12.0)':
     dependencies:
       '@envelop/core': 5.5.0
@@ -8522,14 +8457,14 @@ snapshots:
 
   '@graphql-tools/executor-graphql-ws@3.1.5(crossws@0.3.5)(graphql@16.12.0)':
     dependencies:
-      '@graphql-tools/executor-common': 1.0.6(graphql@16.12.0)
+      '@graphql-tools/executor-common': 1.1.0(graphql@16.12.0)
       '@graphql-tools/utils': 11.2.2(graphql@16.12.0)
       '@whatwg-node/disposablestack': 0.0.6
       graphql: 16.12.0
-      graphql-ws: 6.0.7(crossws@0.3.5)(graphql@16.12.0)(ws@8.21.0)
-      isows: 1.0.7(ws@8.21.0)
+      graphql-ws: 6.0.7(crossws@0.3.5)(graphql@16.12.0)(ws@8.22.0)
+      isows: 1.0.7(ws@8.22.0)
       tslib: 2.8.1
-      ws: 8.21.0
+      ws: 8.22.0
     transitivePeerDependencies:
       - '@fastify/websocket'
       - bufferutil
@@ -8541,7 +8476,7 @@ snapshots:
       '@graphql-hive/signal': 2.0.0
       '@graphql-tools/executor-common': 1.1.0(graphql@16.12.0)
       '@graphql-tools/utils': 12.0.3(graphql@16.12.0)
-      '@repeaterjs/repeater': 3.0.6
+      '@repeaterjs/repeater': 3.1.0
       '@whatwg-node/disposablestack': 0.0.6
       '@whatwg-node/fetch': 0.10.13
       '@whatwg-node/promise-helpers': 1.3.2
@@ -8556,7 +8491,7 @@ snapshots:
       '@graphql-hive/signal': 2.0.0
       '@graphql-tools/executor-common': 1.1.0(graphql@16.12.0)
       '@graphql-tools/utils': 12.0.3(graphql@16.12.0)
-      '@repeaterjs/repeater': 3.0.6
+      '@repeaterjs/repeater': 3.1.0
       '@whatwg-node/disposablestack': 0.0.6
       '@whatwg-node/fetch': 0.10.13
       '@whatwg-node/promise-helpers': 1.3.2
@@ -8672,12 +8607,6 @@ snapshots:
       p-limit: 3.1.0
       tslib: 2.8.1
 
-  '@graphql-tools/merge@9.2.0(graphql@16.12.0)':
-    dependencies:
-      '@graphql-tools/utils': 11.2.2(graphql@16.12.0)
-      graphql: 16.12.0
-      tslib: 2.8.1
-
   '@graphql-tools/merge@9.2.6(graphql@16.12.0)':
     dependencies:
       '@graphql-tools/utils': 12.0.3(graphql@16.12.0)
@@ -8727,10 +8656,10 @@ snapshots:
       '@whatwg-node/fetch': 0.10.13
       '@whatwg-node/promise-helpers': 1.3.2
       graphql: 16.12.0
-      isomorphic-ws: 5.0.0(ws@8.21.0)
+      isomorphic-ws: 5.0.0(ws@8.22.0)
       sync-fetch: 0.6.0
       tslib: 2.8.1
-      ws: 8.21.0
+      ws: 8.22.0
     transitivePeerDependencies:
       - '@fastify/websocket'
       - '@types/node'
@@ -8776,14 +8705,14 @@ snapshots:
     dependencies:
       lodash.camelcase: 4.3.0
       long: 5.3.2
-      protobufjs: 8.7.1
+      protobufjs: 8.8.1
       yargs: 17.7.3
 
   '@grpc/proto-loader@0.8.1':
     dependencies:
       lodash.camelcase: 4.3.0
       long: 5.3.2
-      protobufjs: 8.7.1
+      protobufjs: 8.8.1
       yargs: 17.7.3
 
   '@iconify/types@2.0.0': {}
@@ -9252,13 +9181,6 @@ snapshots:
       is-node-process: 1.2.0
       outvariant: 1.4.3
       strict-event-emitter: 0.5.1
-
-  '@napi-rs/wasm-runtime@1.1.2(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)':
-    dependencies:
-      '@emnapi/core': 1.11.1
-      '@emnapi/runtime': 1.11.3
-      '@tybys/wasm-util': 0.10.1
-    optional: true
 
   '@napi-rs/wasm-runtime@1.2.4(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)':
     dependencies:
@@ -9729,7 +9651,7 @@ snapshots:
 
   '@oxc-resolver/binding-wasm32-wasi@11.19.1(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)':
     dependencies:
-      '@napi-rs/wasm-runtime': 1.1.2(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)
+      '@napi-rs/wasm-runtime': 1.2.4(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)
     transitivePeerDependencies:
       - '@emnapi/core'
       - '@emnapi/runtime'
@@ -9848,8 +9770,6 @@ snapshots:
       react: 19.2.8
     optionalDependencies:
       '@types/react': 19.2.7
-
-  '@repeaterjs/repeater@3.0.6': {}
 
   '@repeaterjs/repeater@3.1.0': {}
 
@@ -10060,7 +9980,7 @@ snapshots:
 
   '@testcontainers/postgresql@12.1.0':
     dependencies:
-      testcontainers: 12.1.0
+      testcontainers: 12.2.0
     transitivePeerDependencies:
       - bare-abort-controller
       - bare-buffer
@@ -10098,7 +10018,7 @@ snapshots:
 
   '@testing-library/react@16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.7))(@types/react@19.2.7)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.29.7
       '@testing-library/dom': 10.4.1
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
@@ -10138,11 +10058,6 @@ snapshots:
   '@turbo/windows-arm64@2.9.14':
     optional: true
 
-  '@tybys/wasm-util@0.10.1':
-    dependencies:
-      tslib: 2.8.1
-    optional: true
-
   '@tybys/wasm-util@0.10.3':
     dependencies:
       tslib: 2.8.1
@@ -10170,7 +10085,7 @@ snapshots:
 
   '@types/cors@2.8.19':
     dependencies:
-      '@types/node': 24.19.2
+      '@types/node': 26.1.2
 
   '@types/d3-array@3.2.2': {}
 
@@ -10297,13 +10212,13 @@ snapshots:
 
   '@types/docker-modem@3.0.6':
     dependencies:
-      '@types/node': 24.19.2
+      '@types/node': 26.1.2
       '@types/ssh2': 1.15.5
 
   '@types/dockerode@4.0.1':
     dependencies:
       '@types/docker-modem': 3.0.6
-      '@types/node': 24.19.2
+      '@types/node': 26.1.2
       '@types/ssh2': 1.15.5
 
   '@types/estree-jsx@1.0.5':
@@ -10343,7 +10258,7 @@ snapshots:
   '@types/jsonwebtoken@9.0.10':
     dependencies:
       '@types/ms': 2.1.0
-      '@types/node': 24.19.2
+      '@types/node': 26.1.2
 
   '@types/mdast@4.0.4':
     dependencies:
@@ -10377,7 +10292,7 @@ snapshots:
 
   '@types/pg@8.15.6':
     dependencies:
-      '@types/node': 24.19.2
+      '@types/node': 26.1.2
       pg-protocol: 1.11.0
       pg-types: 2.2.0
 
@@ -10395,7 +10310,7 @@ snapshots:
 
   '@types/sax@1.2.7':
     dependencies:
-      '@types/node': 24.19.2
+      '@types/node': 26.1.2
 
   '@types/send@0.17.6':
     dependencies:
@@ -10414,11 +10329,11 @@ snapshots:
 
   '@types/ssh2-streams@0.1.13':
     dependencies:
-      '@types/node': 24.19.2
+      '@types/node': 26.1.2
 
   '@types/ssh2@0.5.52':
     dependencies:
-      '@types/node': 24.19.2
+      '@types/node': 26.1.2
       '@types/ssh2-streams': 0.1.13
 
   '@types/ssh2@1.15.5':
@@ -11105,7 +11020,7 @@ snapshots:
     dependencies:
       chalk: 5.6.2
       rxjs: 7.8.2
-      shell-quote: 1.11.0
+      shell-quote: 1.12.0
       supports-color: 10.2.2
       tree-kill: 1.2.2
       yargs: 18.0.0
@@ -11502,10 +11417,6 @@ snapshots:
 
   direction@2.0.1: {}
 
-  docker-compose@1.4.2:
-    dependencies:
-      yaml: 2.9.0
-
   docker-compose@1.5.0:
     dependencies:
       yaml: 2.9.0
@@ -11525,7 +11436,7 @@ snapshots:
       '@grpc/grpc-js': 1.14.5
       '@grpc/proto-loader': 0.7.15
       docker-modem: 5.0.7
-      protobufjs: 8.7.1
+      protobufjs: 8.8.1
       tar-fs: 2.1.5
     transitivePeerDependencies:
       - supports-color
@@ -11799,7 +11710,7 @@ snapshots:
       abstract-logging: 2.0.1
       avvio: 9.2.0
       fast-json-stringify: 7.0.1
-      find-my-way: 9.7.0
+      find-my-way: 9.10.0
       light-my-request: 6.6.0
       pino: 10.3.1
       process-warning: 5.1.0
@@ -11825,7 +11736,7 @@ snapshots:
     dependencies:
       to-regex-range: 5.0.1
 
-  find-my-way@9.7.0:
+  find-my-way@9.10.0:
     dependencies:
       fast-deep-equal: 3.1.3
       fast-querystring: 1.1.2
@@ -11943,7 +11854,7 @@ snapshots:
       '@graphql-tools/graphql-file-loader': 8.1.16(graphql@16.12.0)
       '@graphql-tools/json-file-loader': 8.0.26(graphql@16.12.0)
       '@graphql-tools/load': 8.1.8(graphql@16.12.0)
-      '@graphql-tools/merge': 9.2.0(graphql@16.12.0)
+      '@graphql-tools/merge': 9.2.6(graphql@16.12.0)
       '@graphql-tools/url-loader': 9.1.4(@types/node@26.1.2)(crossws@0.3.5)(graphql@16.12.0)
       '@graphql-tools/utils': 11.2.2(graphql@16.12.0)
       cosmiconfig: 8.3.6(typescript@5.9.3)
@@ -11993,20 +11904,12 @@ snapshots:
       - rxjs
       - subscriptions-transport-ws
 
-  graphql-ws@6.0.7(crossws@0.3.5)(graphql@16.12.0)(ws@8.21.0):
-    dependencies:
-      graphql: 16.12.0
-    optionalDependencies:
-      crossws: 0.3.5
-      ws: 8.21.0
-
   graphql-ws@6.0.7(crossws@0.3.5)(graphql@16.12.0)(ws@8.22.0):
     dependencies:
       graphql: 16.12.0
     optionalDependencies:
       crossws: 0.3.5
       ws: 8.22.0
-    optional: true
 
   graphql@14.7.0:
     dependencies:
@@ -12478,17 +12381,13 @@ snapshots:
 
   isexe@2.0.0: {}
 
-  isomorphic-ws@5.0.0(ws@8.21.0):
-    dependencies:
-      ws: 8.21.0
-
   isomorphic-ws@5.0.0(ws@8.22.0):
     dependencies:
       ws: 8.22.0
 
-  isows@1.0.7(ws@8.21.0):
+  isows@1.0.7(ws@8.22.0):
     dependencies:
-      ws: 8.21.0
+      ws: 8.22.0
 
   iterall@1.3.0: {}
 
@@ -12528,7 +12427,7 @@ snapshots:
       whatwg-encoding: 3.1.1
       whatwg-mimetype: 4.0.0
       whatwg-url: 14.2.0
-      ws: 8.21.0
+      ws: 8.22.0
       xml-name-validator: 5.0.0
     transitivePeerDependencies:
       - bufferutil
@@ -12565,7 +12464,7 @@ snapshots:
       lodash.isstring: 4.0.1
       lodash.once: 4.1.1
       ms: 2.1.3
-      semver: 7.7.4
+      semver: 7.8.5
 
   jwa@2.0.1:
     dependencies:
@@ -13336,7 +13235,7 @@ snapshots:
       tough-cookie: 6.0.0
       type-fest: 5.4.3
       until-async: 3.0.2
-      yargs: 17.7.2
+      yargs: 17.7.3
     optionalDependencies:
       typescript: 5.9.3
     transitivePeerDependencies:
@@ -13361,7 +13260,7 @@ snapshots:
       tough-cookie: 6.0.0
       type-fest: 5.4.3
       until-async: 3.0.2
-      yargs: 17.7.2
+      yargs: 17.7.3
     optionalDependencies:
       typescript: 5.9.3
     transitivePeerDependencies:
@@ -13377,7 +13276,7 @@ snapshots:
   nan@2.28.0:
     optional: true
 
-  nanoid@3.3.19: {}
+  nanoid@3.3.20: {}
 
   neotraverse@1.0.1: {}
 
@@ -13728,9 +13627,9 @@ snapshots:
 
   possible-typed-array-names@1.1.0: {}
 
-  postcss-nested@7.0.2(postcss@8.5.25):
+  postcss-nested@7.0.2(postcss@8.5.31):
     dependencies:
-      postcss: 8.5.25
+      postcss: 8.5.31
       postcss-selector-parser: 7.1.7
 
   postcss-selector-parser@7.1.7:
@@ -13738,9 +13637,9 @@ snapshots:
       cssesc: 3.0.0
       util-deprecate: 1.0.2
 
-  postcss@8.5.25:
+  postcss@8.5.31:
     dependencies:
-      nanoid: 3.3.19
+      nanoid: 3.3.20
       picocolors: 1.1.1
       source-map-js: 1.2.2
 
@@ -13789,7 +13688,7 @@ snapshots:
 
   property-information@7.1.0: {}
 
-  protobufjs@8.7.1:
+  protobufjs@8.8.1:
     dependencies:
       long: 5.3.2
 
@@ -14187,8 +14086,6 @@ snapshots:
 
   semver@6.3.1: {}
 
-  semver@7.7.4: {}
-
   semver@7.8.5: {}
 
   sentence-case@3.0.4:
@@ -14254,7 +14151,7 @@ snapshots:
 
   shebang-regex@3.0.0: {}
 
-  shell-quote@1.11.0: {}
+  shell-quote@1.12.0: {}
 
   shiki@4.4.1:
     dependencies:
@@ -14516,29 +14413,6 @@ snapshots:
       commander: 2.20.3
       source-map-support: 0.5.21
     optional: true
-
-  testcontainers@12.1.0:
-    dependencies:
-      '@balena/dockerignore': 1.0.2
-      '@types/dockerode': 4.0.1
-      archiver: 7.0.1
-      async-lock: 1.4.1
-      byline: 5.0.0
-      debug: 4.4.3
-      docker-compose: 1.4.2
-      dockerode: 5.0.1
-      get-port: 5.1.1
-      proper-lockfile: 4.1.2
-      properties-reader: 3.0.1
-      ssh-remote-port-forward: 1.0.4
-      tar-fs: 3.1.3
-      tmp: 0.2.7
-      undici: 8.12.3
-    transitivePeerDependencies:
-      - bare-abort-controller
-      - bare-buffer
-      - react-native-b4a
-      - supports-color
 
   testcontainers@12.2.0:
     dependencies:
@@ -14828,7 +14702,7 @@ snapshots:
   unplugin@2.3.11:
     dependencies:
       '@jridgewell/remapping': 2.3.5
-      acorn: 8.17.0
+      acorn: 8.18.0
       picomatch: 4.0.5
       webpack-virtual-modules: 0.6.2
 
@@ -14912,7 +14786,7 @@ snapshots:
     dependencies:
       lightningcss: 1.32.0
       picomatch: 4.0.5
-      postcss: 8.5.25
+      postcss: 8.5.31
       rolldown: 1.1.5
       tinyglobby: 0.2.17
     optionalDependencies:
@@ -14928,7 +14802,7 @@ snapshots:
     dependencies:
       lightningcss: 1.32.0
       picomatch: 4.0.5
-      postcss: 8.5.25
+      postcss: 8.5.31
       rolldown: 1.1.5
       tinyglobby: 0.2.17
     optionalDependencies:
@@ -15078,8 +14952,6 @@ snapshots:
 
   wrappy@1.0.2: {}
 
-  ws@8.21.0: {}
-
   ws@8.22.0: {}
 
   wsl-utils@0.1.0:
@@ -15103,16 +14975,6 @@ snapshots:
   yargs-parser@21.1.1: {}
 
   yargs-parser@22.0.0: {}
-
-  yargs@17.7.2:
-    dependencies:
-      cliui: 8.0.1
-      escalade: 3.2.0
-      get-caller-file: 2.0.5
-      require-directory: 2.1.1
-      string-width: 4.2.3
-      y18n: 5.0.8
-      yargs-parser: 21.1.1
 
   yargs@17.7.3:
     dependencies:
