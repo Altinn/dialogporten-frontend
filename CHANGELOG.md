@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.182.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.182.3...v1.182.4) (2026-10-24)
+
+
+### Bug Fixes
+
+* **deps:** patch vulnerable dependencies [security] ([#4770](https://github.com/Altinn/dialogporten-frontend/issues/4770)) ([6975616](https://github.com/Altinn/dialogporten-frontend/commit/6975616ef56747436125908670ef42e8ba2fa4d2))
+* **deps:** update dependency astro to v7.3.3 [security] ([#4765](https://github.com/Altinn/dialogporten-frontend/issues/4765)) ([ca0f4c2](https://github.com/Altinn/dialogporten-frontend/commit/ca0f4c266d0a1ede65a67ba3d06ae5075081800d))
+
 ## [1.182.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.182.2...v1.182.3) (2026-10-22)
 
 
