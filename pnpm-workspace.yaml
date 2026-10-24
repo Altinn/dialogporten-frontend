@@ -18,22 +18,22 @@ trustPolicyExclude:
 
 catalog:
   "@graphql-tools/stitch": ^10.3.1
-  "@playwright/test": ^1.52.0
-  "@swc-node/register": ^1.10.10
-  "@testing-library/react": ^16.3.0
+  "@playwright/test": ^1.58.1
+  "@swc-node/register": ^1.11.1
+  "@testing-library/react": ^16.3.2
   "@tsconfig/node24": ^24.0.5
   "@types/node": ^24.19.0
-  "@types/react": 19.2.7
-  "@types/react-dom": 19.2.3
+  "@types/react": 19.3.0
+  "@types/react-dom": 19.3.0
   "@vitejs/plugin-react": ^6.0.1
   dotenv: ^16.5.0
   fastify: 5.12.7
   fastify-plugin: ^5.0.1
-  graphql: ^16.11.0
+  graphql: ^16.12.0
   graphql-request: ^7.2.0
-  react: 19.2.8
-  react-dom: 19.2.8
+  react: 19.3.1
+  react-dom: 19.3.1
   typescript: ^5.8.3
-  vite: 8.1.6
+  vite: 8.3.5
   vitest: ^4.1.12
   zod: 4.6.7
