@@ -1,7 +1,8 @@
-import { DialogStatus, type SearchDialogFieldsFragment, SystemLabel } from 'bff-types-generated';
+import { DialogStatus, SystemLabel } from 'bff-types-generated';
+import { type MockDialog, mockDialog } from '../../base/mockDialog.ts';
 
-export const dialogs: SearchDialogFieldsFragment[] = [
-  {
+export const dialogs: MockDialog[] = [
+  mockDialog({
     hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
@@ -11,10 +12,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     seenSinceLastContentUpdate: [],
     progress: 10,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 0,
-    fromPartyTransmissionsCount: 0,
     contentUpdatedAt: '2024-11-27T15:36:52.131Z',
-    guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2024-12-06T12:13:47.153Z',
     dueAt: null,
@@ -51,8 +49,8 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     endUserContext: {
       systemLabels: [SystemLabel.Default],
     },
-  },
-  {
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
@@ -62,10 +60,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     seenSinceLastContentUpdate: [],
     progress: 10,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 0,
-    fromPartyTransmissionsCount: 0,
     contentUpdatedAt: '2024-11-27T15:36:52.131Z',
-    guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2024-12-06T12:13:16.560Z',
     dueAt: null,
@@ -102,8 +97,8 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     endUserContext: {
       systemLabels: [SystemLabel.Default],
     },
-  },
-  {
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
@@ -113,10 +108,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     seenSinceLastContentUpdate: [],
     progress: 10,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 0,
-    fromPartyTransmissionsCount: 0,
     contentUpdatedAt: '2024-11-27T15:36:52.131Z',
-    guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2024-12-06T12:12:50.334Z',
     dueAt: null,
@@ -153,8 +145,8 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     endUserContext: {
       systemLabels: [SystemLabel.Default],
     },
-  },
-  {
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
@@ -164,10 +156,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     seenSinceLastContentUpdate: [],
     progress: 10,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 0,
-    fromPartyTransmissionsCount: 0,
     contentUpdatedAt: '2024-11-27T15:36:52.131Z',
-    guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2024-12-06T12:12:13.052Z',
     dueAt: null,
@@ -204,8 +193,8 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     endUserContext: {
       systemLabels: [SystemLabel.Default],
     },
-  },
-  {
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
@@ -215,10 +204,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     seenSinceLastContentUpdate: [],
     progress: 10,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 0,
-    fromPartyTransmissionsCount: 0,
     contentUpdatedAt: '2024-11-27T15:36:52.131Z',
-    guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2024-12-06T12:11:46.929Z',
     dueAt: null,
@@ -256,8 +242,8 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     endUserContext: {
       systemLabels: [SystemLabel.Default],
     },
-  },
-  {
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
@@ -267,10 +253,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     seenSinceLastContentUpdate: [],
     progress: 10,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 0,
-    fromPartyTransmissionsCount: 0,
     contentUpdatedAt: '2024-11-27T15:36:52.131Z',
-    guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2024-12-06T12:11:18.314Z',
     dueAt: null,
@@ -307,8 +290,8 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     endUserContext: {
       systemLabels: [SystemLabel.Default],
     },
-  },
-  {
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
@@ -318,10 +301,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     seenSinceLastContentUpdate: [],
     progress: 10,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 0,
-    fromPartyTransmissionsCount: 0,
     contentUpdatedAt: '2024-11-27T15:36:52.131Z',
-    guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2024-12-06T12:10:50.693Z',
     dueAt: null,
@@ -358,8 +338,8 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     endUserContext: {
       systemLabels: [SystemLabel.Default],
     },
-  },
-  {
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
@@ -369,10 +349,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     seenSinceLastContentUpdate: [],
     progress: 10,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 0,
-    fromPartyTransmissionsCount: 0,
     contentUpdatedAt: '2024-11-27T15:36:52.131Z',
-    guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2024-12-06T12:10:09.823Z',
     dueAt: null,
@@ -409,8 +386,8 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     endUserContext: {
       systemLabels: [SystemLabel.Default],
     },
-  },
-  {
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
@@ -420,10 +397,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     seenSinceLastContentUpdate: [],
     progress: 10,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 0,
-    fromPartyTransmissionsCount: 0,
     contentUpdatedAt: '2024-11-27T15:36:52.131Z',
-    guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2024-12-06T12:09:34.433Z',
     dueAt: null,
@@ -460,8 +434,8 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     endUserContext: {
       systemLabels: [SystemLabel.Default],
     },
-  },
-  {
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
@@ -471,10 +445,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     seenSinceLastContentUpdate: [],
     progress: 10,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 0,
-    fromPartyTransmissionsCount: 0,
     contentUpdatedAt: '2024-11-27T15:36:52.131Z',
-    guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2024-12-06T09:51:21.416Z',
     dueAt: null,
@@ -511,5 +482,5 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     endUserContext: {
       systemLabels: [SystemLabel.Default],
     },
-  },
+  }),
 ];
