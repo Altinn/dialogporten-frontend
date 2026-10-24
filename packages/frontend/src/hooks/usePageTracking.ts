@@ -24,12 +24,36 @@ export const usePageTracking = (isAnalyticsAllowed: boolean) => {
       state: location.state ? JSON.stringify(location.state) : '',
     };
 
+    let stopped = false;
+    const stop = () => {
+      if (stopped) {
+        return;
+      }
+      stopped = true;
+      Analytics.stopPageTracking(pageInfo);
+    };
+
+    const onPageHide = () => {
+      stop();
+      Analytics.flush();
+    };
+
+    const onPageShow = (event: PageTransitionEvent) => {
+      if (!event.persisted) return;
+      stopped = false;
+      Analytics.startPageTracking(pageInfo);
+    };
+
     // Start tracking when the route component mounts
     Analytics.startPageTracking(pageInfo);
+    window.addEventListener('pagehide', onPageHide);
+    window.addEventListener('pageshow', onPageShow);
 
     // Stop tracking when the route component unmounts or changes
     return () => {
-      Analytics.stopPageTracking(pageInfo);
+      window.removeEventListener('pagehide', onPageHide);
+      window.removeEventListener('pageshow', onPageShow);
+      stop();
     };
   }, [location.pathname, isAnalyticsAllowed]);
 };
