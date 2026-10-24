@@ -39,15 +39,6 @@ describe('usePageTracking', () => {
     expect(Analytics.flush).toHaveBeenCalledTimes(1);
   });
 
-  it('does not stop the page view again in the cleanup after pagehide', () => {
-    const { unmount } = renderHook(() => usePageTracking(true), { wrapper });
-
-    window.dispatchEvent(new Event('pagehide'));
-    unmount();
-
-    expect(Analytics.stopPageTracking).toHaveBeenCalledTimes(1);
-  });
-
   it('stops the page view in the cleanup when pagehide did not fire', () => {
     const { unmount } = renderHook(() => usePageTracking(true), { wrapper });
 

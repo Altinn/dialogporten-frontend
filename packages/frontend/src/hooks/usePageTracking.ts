@@ -24,24 +24,17 @@ export const usePageTracking = (isAnalyticsAllowed: boolean) => {
       state: location.state ? JSON.stringify(location.state) : '',
     };
 
-    let stopped = false;
-    const stop = () => {
-      if (stopped) {
-        return;
-      }
-      stopped = true;
-      Analytics.stopPageTracking(pageInfo);
-    };
-
+    // Leaving the app never unmounts the route, so end and send the page view on pagehide
     const onPageHide = () => {
-      stop();
+      Analytics.stopPageTracking(pageInfo);
       Analytics.flush();
     };
 
+    // A page restored from the back/forward cache is not remounted, so start a new page view
     const onPageShow = (event: PageTransitionEvent) => {
-      if (!event.persisted) return;
-      stopped = false;
-      Analytics.startPageTracking(pageInfo);
+      if (event.persisted) {
+        Analytics.startPageTracking(pageInfo);
+      }
     };
 
     // Start tracking when the route component mounts
@@ -53,7 +46,7 @@ export const usePageTracking = (isAnalyticsAllowed: boolean) => {
     return () => {
       window.removeEventListener('pagehide', onPageHide);
       window.removeEventListener('pageshow', onPageShow);
-      stop();
+      Analytics.stopPageTracking(pageInfo);
     };
   }, [location.pathname, isAnalyticsAllowed]);
 };
