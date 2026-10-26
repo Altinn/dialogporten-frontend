@@ -516,6 +516,8 @@
   "transmission.type.request": "Forespørsel",
   "transmission.type.submission": "Innsending",
   "transmission.empty": "Denne forsendelsen har ikke synlig innhold.",
+  "transmission.navigational_action.unauthorized": "Du har ikke tilgang",
+  "transmission.navigational_action.expired": "Fristen er utløpt",
   "word.back": "Tilbake",
   "word.beta": "Beta",
   "word.cancel": "Avbryt",

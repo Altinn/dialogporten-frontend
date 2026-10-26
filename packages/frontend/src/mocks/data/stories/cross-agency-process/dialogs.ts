@@ -127,6 +127,7 @@ const transmission = ({
   relatedTransmissionId: relatedTo,
   content: { title: plainText(title), summary: plainText(summary), contentReference: null },
   attachments,
+  navigationalActions: [],
 });
 
 const activity = (

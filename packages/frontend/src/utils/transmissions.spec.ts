@@ -3,12 +3,18 @@ import {
   ActorType,
   AttachmentUrlConsumer,
   type DialogActivityFragment,
+  type NavigationalActionFieldsFragment,
   type TransmissionFieldsFragment,
   TransmissionType,
 } from 'bff-types-generated';
 import { describe, expect, it } from 'vitest';
 import type { Locale } from '../i18n/useDateFnsLocale.tsx';
-import { getTransmissions, getTransmissionVisibility, groupTransmissions } from './transmissions.ts';
+import {
+  getNavigationalActions,
+  getTransmissions,
+  getTransmissionVisibility,
+  groupTransmissions,
+} from './transmissions.ts';
 
 describe('groupTransmissions', () => {
   const transmissions: TransmissionFieldsFragment[] = [
@@ -139,6 +145,8 @@ describe('groupTransmissions', () => {
   });
 });
 
+const url = 'https://example.com/kvittering';
+
 const makeTransmission = (overrides: Partial<TransmissionFieldsFragment> = {}): TransmissionFieldsFragment =>
   ({
     id: 'test-id',
@@ -152,6 +160,7 @@ const makeTransmission = (overrides: Partial<TransmissionFieldsFragment> = {}): 
       contentReference: null,
     },
     attachments: [],
+    navigationalActions: [],
     ...overrides,
   }) as unknown as TransmissionFieldsFragment;
 
@@ -308,6 +317,102 @@ describe('getTransmissionVisibility', () => {
     });
     expect(getTransmissionVisibility(t)).toBe('visible');
   });
+
+  it('isAuthorized=true, navigational actions only → shown, not empty', () => {
+    const t = makeTransmission({
+      navigationalActions: [{ title: [{ value: 'Gå til kvittering', languageCode: 'nb' }], url, expiresAt: null }],
+    });
+    expect(getTransmissionVisibility(t)).toBe('visible');
+  });
+
+  it('isAuthorized=true, only navigational actions without a url → empty', () => {
+    const t = makeTransmission({
+      navigationalActions: [{ title: [{ value: 'Gå til kvittering', languageCode: 'nb' }], url: '', expiresAt: null }],
+    });
+    expect(getTransmissionVisibility(t)).toBe('empty');
+  });
+
+  it('isAuthorized=true, API-only attachment and navigational action → shown, not filtered', () => {
+    const t = makeTransmission({
+      attachments: [
+        {
+          id: 'a1',
+          displayName: [],
+          expiresAt: null,
+          urls: [
+            { id: 'u1', url: 'https://api.example.com', consumerType: AttachmentUrlConsumer.Api, mediaType: null },
+          ],
+        },
+      ],
+      navigationalActions: [{ title: [{ value: 'Gå til kvittering', languageCode: 'nb' }], url, expiresAt: null }],
+    });
+    expect(getTransmissionVisibility(t)).toBe('visible');
+  });
+
+  it('isAuthorized=false, navigational action only → disabled', () => {
+    const t = makeTransmission({
+      isAuthorized: false,
+      navigationalActions: [
+        {
+          title: [{ value: 'Gå til kvittering', languageCode: 'nb' }],
+          url: 'urn:dialogporten:unauthorized',
+          expiresAt: null,
+        },
+      ],
+    });
+    expect(getTransmissionVisibility(t)).toBe('disabled');
+  });
+});
+
+describe('getNavigationalActions', () => {
+  const now = new Date('2026-10-26T12:00:00Z');
+  const action = (overrides: Partial<NavigationalActionFieldsFragment> = {}): NavigationalActionFieldsFragment => ({
+    title: [
+      { value: 'Gå til kvittering', languageCode: 'nb' },
+      { value: 'Go to receipt', languageCode: 'en' },
+    ],
+    url,
+    expiresAt: null,
+    ...overrides,
+  });
+  const actionsOf = (overrides: Partial<TransmissionFieldsFragment> = {}) =>
+    getNavigationalActions(makeTransmission({ id: 't1', ...overrides }), now);
+
+  it('maps an available action to a link with a localized label', () => {
+    expect(actionsOf({ navigationalActions: [action()] })).toEqual([
+      { id: 't1-navigational-action-0', label: 'Gå til kvittering', href: url, disabledReason: undefined },
+    ]);
+  });
+
+  it('disables an action as unauthorized when its url is the unauthorized sentinel', () => {
+    const [mapped] = actionsOf({ navigationalActions: [action({ url: 'urn:dialogporten:unauthorized' })] });
+    expect(mapped.disabledReason).toBe('unauthorized');
+  });
+
+  it('disables every action as unauthorized when the transmission is not authorized', () => {
+    const [mapped] = actionsOf({ isAuthorized: false, navigationalActions: [action()] });
+    expect(mapped.disabledReason).toBe('unauthorized');
+  });
+
+  it('disables an action as expired when its url is the expired sentinel', () => {
+    const [mapped] = actionsOf({ navigationalActions: [action({ url: 'urn:dialogporten:expired' })] });
+    expect(mapped.disabledReason).toBe('expired');
+  });
+
+  it('disables an action as expired when expiresAt has passed, even if the url is still set', () => {
+    const [mapped] = actionsOf({ navigationalActions: [action({ expiresAt: '2026-10-26T11:59:59Z' })] });
+    expect(mapped.disabledReason).toBe('expired');
+  });
+
+  it('keeps an action available until it expires', () => {
+    const [mapped] = actionsOf({ navigationalActions: [action({ expiresAt: '2026-10-27T00:00:00Z' })] });
+    expect(mapped.disabledReason).toBeUndefined();
+  });
+
+  it('leaves out an action without a url', () => {
+    const mapped = actionsOf({ navigationalActions: [action({ url: '' }), action()] });
+    expect(mapped).toEqual([expect.objectContaining({ id: 't1-navigational-action-0', href: url })]);
+  });
 });
 
 describe('unread state', () => {
@@ -324,6 +429,7 @@ describe('unread state', () => {
         summary: { value: [{ value: 'Svar', languageCode: 'nb' }] },
       },
       attachments: [],
+      navigationalActions: [],
     }) as unknown as TransmissionFieldsFragment;
 
   const anActivity = {

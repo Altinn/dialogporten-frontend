@@ -19,6 +19,7 @@ export const ANALYTICS_EVENTS = {
   // Dialog Transmissions
   DIALOG_TRANSMISSIONS_EXPAND: 'Dialog.Transmissions.Expand',
   DIALOG_TRANSMISSIONS_COLLAPSE: 'Dialog.Transmissions.Collapse',
+  DIALOG_TRANSMISSION_NAVIGATIONAL_ACTION_CLICK: 'Dialog.Transmission.NavigationalAction.Click',
 
   // User Actions
   USER_LOGOUT: 'User.Logout',
