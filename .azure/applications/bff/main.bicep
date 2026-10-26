@@ -30,8 +30,8 @@ param altinn2BaseUrl string = 'https://at23.altinn.cloud'
 @description('Maskinporten issuer base URL (token endpoint is "<issuer>token")')
 param maskinportenIssuer string = 'https://test.maskinporten.no/'
 
-@description('Space-separated Maskinporten scopes requested by the BFF (register party lookup, notification logs)')
-param maskinportenScope string = 'altinn:register/partylookup.admin altinn:serviceowner/notifications.create'
+@description('Space-separated Maskinporten scopes requested by the BFF (register party lookup)')
+param maskinportenScope string = 'altinn:register/partylookup.admin'
 
 @description('Controls whether GraphiQL interface is enabled. Should be disabled in production.')
 @allowed([

@@ -1,6 +1,5 @@
 import { logger } from '@altinn/dialogporten-node-logger';
 import axios, { isAxiosError } from 'axios';
-import { getAltinnToken } from '../../auth/maskinporten.js';
 import { type Context, getSessionToken } from '../../auth/oidc.js';
 import config from '../../config.ts';
 import { filterNotificationLogs } from './notificationLogs.ts';
@@ -254,22 +253,20 @@ export const getVerifiedAddresses = async (context: Context) => {
   }
 };
 
-export const getNotificationLogs = async (dialogId: string) => {
-  let token: string;
-  try {
-    token = await getAltinnToken();
-  } catch (error) {
-    logger.error(error, 'Failed to obtain Altinn token for notification logs');
+export const getNotificationLogs = async (dialogId: string, context: Context) => {
+  const token = getSessionToken(context);
+  if (!token) {
+    logger.error('No token found in session');
     return [];
   }
 
   try {
     const response = await axios.get(
-      `${platformNotificationsAPIUrl}future/log?dialogId=${encodeURIComponent(dialogId)}`,
+      `${platformNotificationsAPIUrl}future/enduser/log?dialogId=${encodeURIComponent(dialogId)}`,
       {
         timeout: 30000,
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token.access_token}`,
           'Content-Type': 'application/json',
           Accept: 'application/json',
         },

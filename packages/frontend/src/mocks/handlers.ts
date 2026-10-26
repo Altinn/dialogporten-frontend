@@ -3,33 +3,25 @@ import {
   ActorType,
   type DeleteSavedSearchMutation,
   type DeleteSavedSearchMutationVariables,
-  type DialogByIdFieldsFragment,
   type NotificationLogsResponse,
   type NotificationSettingsResponse,
   type OrganizationFieldsFragment,
   type PartyFieldsFragment,
   type Profile,
   type SavedSearchesFieldsFragment,
-  type SearchDialogFieldsFragment,
   type ServiceResource,
   SystemLabel,
 } from 'bff-types-generated';
 import { graphql, HttpResponse, http } from 'msw';
-import {
-  convertToDialogByIdTemplate,
-  filterDialogs,
-  getMockedLabelAssignmentLogs,
-  getMockedNotificationLogs,
-  STORY_MARKDOWN_URL,
-} from './data/base/helper.ts';
-import { type ForwardingMock, forwardingScenarios } from './data/stories/forward-by-email/forwarding.ts';
+import { filterDialogs, STORY_MARKDOWN_URL, toDialogById, toSearchDialog } from './data/base/helper.ts';
+import type { MockDialog } from './data/base/mockDialog.ts';
 import { getMockedData } from './data.ts';
 
 const data = await getMockedData(window.location.href);
 export type InMemoryStore = {
   savedSearches?: SavedSearchesFieldsFragment[];
   profile?: Profile;
-  dialogs?: SearchDialogFieldsFragment[] | null;
+  dialogs?: MockDialog[] | null;
   parties?: PartyFieldsFragment[];
   organizations?: OrganizationFieldsFragment[];
   features?: Record<string, boolean>;
@@ -174,9 +166,11 @@ const mockVerifiedAddresses = graphql.query('verifiedAddresses', () => {
 const mockNotificationLogs = graphql.query('notificationLogs', ({ variables }) => {
   const { dialogId } = variables as { dialogId: string };
   const stored = (inMemoryStore.notificationLogs ?? []).filter((log) => log.dialogId === dialogId);
+  const dialog = inMemoryStore.dialogs?.find((d) => d.id === dialogId);
   return HttpResponse.json({
     data: {
-      notificationLogs: stored.length > 0 ? stored : getMockedNotificationLogs(dialogId),
+      notificationLogs:
+        stored.length > 0 ? stored : (dialog?.notificationLogs ?? []).map((log) => ({ dialogId, ...log })),
     },
   });
 });
@@ -278,7 +272,7 @@ const getAllDialogsForPartiesMock = graphql.query('getAllDialogsForParties', ({ 
     return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
   })();
 
-  const pagedItems = sortedItems ? sortedItems.slice(offset, offset + limit) : null;
+  const pagedItems = sortedItems ? sortedItems.slice(offset, offset + limit).map(toSearchDialog) : null;
   const hasNextPage = sortedItems ? offset + limit < sortedItems.length : false;
   const continuationToken = hasNextPage ? String(offset + limit) : null;
 
@@ -326,14 +320,10 @@ const getDialogByIdMock = graphql.query('getDialogById', (options) => {
     ];
   }
 
-  const dialogDetails: DialogByIdFieldsFragment | null = dialog
-    ? (convertToDialogByIdTemplate(dialog, data.dialogDetails[dialog.id]) as DialogByIdFieldsFragment)
-    : null;
-
   return HttpResponse.json({
     data: {
       dialogById: {
-        dialog: dialogDetails,
+        dialog: dialog ? toDialogById(dialog) : null,
       },
     },
   });
@@ -395,7 +385,7 @@ const getMainContentMarkdownMock = http.get('https://dialogporten-serviceprovide
 
 const getStoryMarkdownMock = http.get(STORY_MARKDOWN_URL, ({ request }) => {
   const id = new URL(request.url).searchParams.get('id') ?? '';
-  const markdown = data.dialogDetails[id]?.mainContentMarkdown;
+  const markdown = inMemoryStore.dialogs?.find((d) => d.id === id)?.mainContentMarkdown;
   return markdown ? HttpResponse.text(markdown) : new HttpResponse(null, { status: 404 });
 });
 
@@ -838,15 +828,13 @@ const dialogAccessInfoMock = graphql.query('dialogAccessInfo', ({ variables }) =
   });
 });
 
-const forwardingByCorrespondenceId: Record<string, ForwardingMock> = {
-  '019241f7-67dc-7562-a56f-1634796039e5': 'notAllowed',
-  ...Object.fromEntries(Object.entries(forwardingScenarios).map(([id, { forwarding }]) => [id, forwarding])),
-};
+const findForwarding = (correspondenceId: string) =>
+  inMemoryStore.dialogs?.find((d) => d.id === correspondenceId)?.forwarding;
 
 const correspondenceForwardingCheckMock = graphql.query('correspondenceForwardingCheck', ({ variables }) => {
   const { correspondenceId } = variables as { correspondenceId: string };
-  const forwarding = forwardingByCorrespondenceId[correspondenceId] ?? 'allowed';
-  const allowed = forwarding !== 'notAllowed' && !!inMemoryStore.dialogs?.some((d) => d.id === correspondenceId);
+  const forwarding = findForwarding(correspondenceId);
+  const allowed = !!forwarding && forwarding !== 'notAllowed';
 
   return HttpResponse.json({
     data: {
@@ -873,7 +861,7 @@ const forwardCorrespondenceMock = graphql.mutation('forwardCorrespondence', ({ v
     includeAttachments?: boolean;
   };
   const failure =
-    includeAttachments && forwardingByCorrespondenceId[correspondenceId] === 'attachmentsExceedMaxLimit'
+    includeAttachments && findForwarding(correspondenceId) === 'attachmentsExceedMaxLimit'
       ? { status: 400, errorCode: 1071 }
       : forwardFailuresByLocalPart[forwardTo?.toLowerCase().split('@')[0] ?? ''];
 
@@ -908,11 +896,10 @@ const labelAssignmentLogMock = graphql.query('labelAssignmentLog', ({ variables 
     actorName: party?.name ?? null,
   };
 
-  const mocked = getMockedLabelAssignmentLogs(dialogId);
-  if (mocked.length > 0) {
+  if (dialog.labelAssignmentLog) {
     return HttpResponse.json({
       data: {
-        labelAssignmentLog: { labelAssignmentLog: mocked, errors: [] },
+        labelAssignmentLog: { labelAssignmentLog: dialog.labelAssignmentLog, errors: [] },
       },
     });
   }

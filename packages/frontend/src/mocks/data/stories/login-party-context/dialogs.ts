@@ -1,8 +1,9 @@
-import { DialogStatus, type SearchDialogFieldsFragment, SystemLabel } from 'bff-types-generated';
+import { DialogStatus, SystemLabel } from 'bff-types-generated';
 import { dialogs as baseDialogs } from '../../base/dialogs';
+import { type MockDialog, mockDialog } from '../../base/mockDialog.ts';
 
-const organizationsDialogs: SearchDialogFieldsFragment[] = [
-  {
+const organizationsDialogs: MockDialog[] = [
+  mockDialog({
     hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
@@ -15,10 +16,7 @@ const organizationsDialogs: SearchDialogFieldsFragment[] = [
     org: 'ok',
     progress: null,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 0,
-    fromPartyTransmissionsCount: 0,
     contentUpdatedAt: '2024-11-27T15:36:52.131Z',
-    guiAttachmentCount: 1,
     status: DialogStatus.RequiresAttention,
     createdAt: '2024-05-23T23:00:00.000Z',
     dueAt: null,
@@ -44,8 +42,8 @@ const organizationsDialogs: SearchDialogFieldsFragment[] = [
       senderName: null,
       extendedStatus: null,
     },
-  },
-  {
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
@@ -58,10 +56,7 @@ const organizationsDialogs: SearchDialogFieldsFragment[] = [
     org: 'ok',
     progress: null,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 0,
-    fromPartyTransmissionsCount: 0,
     contentUpdatedAt: '2024-11-27T15:36:52.131Z',
-    guiAttachmentCount: 1,
     status: DialogStatus.RequiresAttention,
     createdAt: '2024-05-23T23:00:00.000Z',
     dueAt: null,
@@ -87,8 +82,8 @@ const organizationsDialogs: SearchDialogFieldsFragment[] = [
       senderName: null,
       extendedStatus: null,
     },
-  },
-  {
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
@@ -101,10 +96,7 @@ const organizationsDialogs: SearchDialogFieldsFragment[] = [
     org: 'ok',
     progress: null,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 0,
-    fromPartyTransmissionsCount: 0,
     contentUpdatedAt: '2024-11-27T15:36:52.131Z',
-    guiAttachmentCount: 1,
     status: DialogStatus.RequiresAttention,
     createdAt: '2024-05-23T23:00:00.000Z',
     dueAt: null,
@@ -130,8 +122,8 @@ const organizationsDialogs: SearchDialogFieldsFragment[] = [
       senderName: null,
       extendedStatus: null,
     },
-  },
-  {
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
@@ -144,10 +136,7 @@ const organizationsDialogs: SearchDialogFieldsFragment[] = [
     org: 'ok',
     progress: null,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 0,
-    fromPartyTransmissionsCount: 0,
     contentUpdatedAt: '2024-11-27T15:36:52.131Z',
-    guiAttachmentCount: 1,
     status: DialogStatus.RequiresAttention,
     createdAt: '2024-05-23T23:00:00.000Z',
     dueAt: null,
@@ -173,7 +162,7 @@ const organizationsDialogs: SearchDialogFieldsFragment[] = [
       senderName: null,
       extendedStatus: null,
     },
-  },
+  }),
 ];
 
-export const dialogs: SearchDialogFieldsFragment[] = [...organizationsDialogs, ...baseDialogs];
+export const dialogs: MockDialog[] = [...organizationsDialogs, ...baseDialogs];

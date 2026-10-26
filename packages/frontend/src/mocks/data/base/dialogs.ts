@@ -1,7 +1,9 @@
-import { DialogStatus, type SearchDialogFieldsFragment, SystemLabel } from 'bff-types-generated';
+import { DialogStatus, SystemLabel } from 'bff-types-generated';
+import { getMockedHTMLFCEContent, getMockedLocalizedMarkdownFCEContent } from './helper.ts';
+import { type MockDialog, mockDialog, mockNotificationLog } from './mockDialog.ts';
 
-export const dialogs: SearchDialogFieldsFragment[] = [
-  {
+export const dialogs: MockDialog[] = [
+  mockDialog({
     hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
@@ -13,10 +15,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     org: 'ok',
     progress: null,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 0,
-    fromPartyTransmissionsCount: 0,
     contentUpdatedAt: '2024-01-15T11:34:00.000Z',
-    guiAttachmentCount: 1,
     status: DialogStatus.RequiresAttention,
     createdAt: '2023-12-23T23:00:00.000Z',
     dueAt: null,
@@ -101,8 +100,9 @@ export const dialogs: SearchDialogFieldsFragment[] = [
         ],
       },
     },
-  },
-  {
+    mainContentReference: getMockedHTMLFCEContent(),
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
@@ -114,10 +114,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     org: 'ok',
     progress: null,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 0,
-    fromPartyTransmissionsCount: 0,
     contentUpdatedAt: '2024-02-20T06:33:00.000Z',
-    guiAttachmentCount: 1,
     status: DialogStatus.Awaiting,
     createdAt: '2023-12-15T06:33:00.000Z',
     dueAt: null,
@@ -144,8 +141,9 @@ export const dialogs: SearchDialogFieldsFragment[] = [
       senderName: null,
       extendedStatus: null,
     },
-  },
-  {
+    forwarding: 'notAllowed',
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
@@ -157,10 +155,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     org: 'fors',
     progress: null,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 0,
-    fromPartyTransmissionsCount: 0,
     contentUpdatedAt: '2024-03-12T09:15:00.000Z',
-    guiAttachmentCount: 1,
     status: DialogStatus.NotApplicable,
     createdAt: '2023-12-12T09:15:00.000Z',
     dueAt: null,
@@ -198,8 +193,8 @@ export const dialogs: SearchDialogFieldsFragment[] = [
       senderName: null,
       extendedStatus: null,
     },
-  },
-  {
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
@@ -211,10 +206,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     org: 'nav',
     progress: null,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 0,
-    fromPartyTransmissionsCount: 0,
     contentUpdatedAt: '2024-04-04T11:45:00.000Z',
-    guiAttachmentCount: 0,
     status: DialogStatus.RequiresAttention,
     createdAt: '2023-12-04T11:45:00.000Z',
     dueAt: null,
@@ -241,8 +233,9 @@ export const dialogs: SearchDialogFieldsFragment[] = [
       senderName: null,
       extendedStatus: null,
     },
-  },
-  {
+    mainContentReference: getMockedLocalizedMarkdownFCEContent(),
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
@@ -254,10 +247,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     org: 'ssb',
     progress: null,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 0,
-    fromPartyTransmissionsCount: 0,
     contentUpdatedAt: '2024-05-17T09:30:00.000Z',
-    guiAttachmentCount: 0,
     status: DialogStatus.RequiresAttention,
     createdAt: '2023-05-17T09:30:00.000Z',
     dueAt: null,
@@ -296,8 +286,8 @@ export const dialogs: SearchDialogFieldsFragment[] = [
       senderName: null,
       extendedStatus: null,
     },
-  },
-  {
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
@@ -309,10 +299,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     org: 'dibk',
     progress: null,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 0,
-    fromPartyTransmissionsCount: 0,
     contentUpdatedAt: '2024-06-18T10:55:00.000Z',
-    guiAttachmentCount: 8,
     status: DialogStatus.NotApplicable,
     createdAt: '2023-04-18T10:55:00.000Z',
     dueAt: '2028-05-04T11:45:00.000Z',
@@ -350,8 +337,8 @@ export const dialogs: SearchDialogFieldsFragment[] = [
       senderName: null,
       extendedStatus: null,
     },
-  },
-  {
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
@@ -363,10 +350,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     org: 'skd',
     progress: null,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 0,
-    fromPartyTransmissionsCount: 0,
     contentUpdatedAt: '2024-07-15T08:45:00.000Z',
-    guiAttachmentCount: 1,
     status: DialogStatus.Completed,
     createdAt: '2023-03-11T07:00:00.000Z',
     seenSinceLastContentUpdate: [],
@@ -393,8 +377,25 @@ export const dialogs: SearchDialogFieldsFragment[] = [
       senderName: null,
       extendedStatus: null,
     },
-  },
-  {
+    notificationLogs: [
+      mockNotificationLog('5f8c1a20-9d44-4f0e-8b21-7c3e6a9d1f02', {
+        requestedSendTime: '2023-03-11T07:05:00.000Z',
+        lastUpdateTime: '2023-03-11T07:06:12.310Z',
+      }),
+      mockNotificationLog('6a9d2b31-0e55-4a1f-9c32-8d4f7b0e2a13', {
+        channel: 'Sms',
+        destination: '+4799887766',
+        requestedSendTime: '2023-03-11T07:05:00.000Z',
+        lastUpdateTime: '2023-03-11T07:05:41.128Z',
+      }),
+      mockNotificationLog('7b0e3c42-1f66-4b20-8d43-9e5a8c1f3b24', {
+        type: 'Reminder',
+        requestedSendTime: '2024-07-15T08:45:00.000Z',
+        lastUpdateTime: '2024-07-15T08:47:55.902Z',
+      }),
+    ],
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
@@ -406,10 +407,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     org: 'dibk',
     progress: null,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 0,
-    fromPartyTransmissionsCount: 0,
     contentUpdatedAt: '2023-08-13T09:25:00.000Z',
-    guiAttachmentCount: 9,
     status: DialogStatus.NotApplicable,
     createdAt: '2022-04-13T09:25:00.000Z',
     dueAt: null,
@@ -447,8 +445,8 @@ export const dialogs: SearchDialogFieldsFragment[] = [
       senderName: null,
       extendedStatus: null,
     },
-  },
-  {
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
@@ -460,10 +458,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     org: 'svv',
     progress: null,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 0,
-    fromPartyTransmissionsCount: 0,
     contentUpdatedAt: '2022-02-20T08:35:00.000Z',
-    guiAttachmentCount: 1,
     status: DialogStatus.Completed,
     createdAt: '2022-01-05T07:00:00.000Z',
     dueAt: null,
@@ -498,8 +493,8 @@ export const dialogs: SearchDialogFieldsFragment[] = [
       },
       extendedStatus: null,
     },
-  },
-  {
+  }),
+  mockDialog({
     hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
@@ -511,10 +506,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     org: 'svv',
     progress: null,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 0,
-    fromPartyTransmissionsCount: 0,
     contentUpdatedAt: '2001-04-05T22:00:00.000Z',
-    guiAttachmentCount: 0,
     status: DialogStatus.Draft,
     createdAt: '2001-04-05T22:00:00.000Z',
     dueAt: null,
@@ -541,5 +533,5 @@ export const dialogs: SearchDialogFieldsFragment[] = [
       senderName: null,
       extendedStatus: null,
     },
-  },
+  }),
 ];

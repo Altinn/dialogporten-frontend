@@ -1,7 +1,8 @@
-import { DialogStatus, type SearchDialogFieldsFragment, SystemLabel } from 'bff-types-generated';
+import { DialogStatus, GuiActionPriority, HttpVerb, SystemLabel } from 'bff-types-generated';
+import { type MockDialog, mockDialog } from '../../base/mockDialog.ts';
 
-export const dialogs: SearchDialogFieldsFragment[] = [
-  {
+export const dialogs: MockDialog[] = [
+  mockDialog({
     hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
@@ -14,10 +15,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     org: 'nav',
     progress: null,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 0,
-    fromPartyTransmissionsCount: 0,
     contentUpdatedAt: '2024-11-27T15:36:52.131Z',
-    guiAttachmentCount: 0,
     status: DialogStatus.RequiresAttention,
     createdAt: '2024-05-23T23:00:00.000Z',
     dueAt: null,
@@ -43,5 +41,67 @@ export const dialogs: SearchDialogFieldsFragment[] = [
       senderName: null,
       extendedStatus: null,
     },
-  },
+    guiActions: [
+      {
+        id: 'read-guidance',
+        url: 'https://info.altinn.no/om-altinn/',
+        isAuthorized: true,
+        isDeleteDialogAction: false,
+        action: 'read',
+        authorizationAttribute: null,
+        priority: GuiActionPriority.Tertiary,
+        httpMethod: HttpVerb.Get,
+        title: [{ languageCode: 'nb', value: 'Les veiledning' }],
+        prompt: [],
+      },
+      {
+        id: 'request-extension',
+        url: 'https://dialogporten-serviceprovider.net/mutate/extension',
+        isAuthorized: true,
+        isDeleteDialogAction: false,
+        action: 'write',
+        authorizationAttribute: null,
+        priority: GuiActionPriority.Secondary,
+        httpMethod: HttpVerb.Post,
+        title: [{ languageCode: 'nb', value: 'Be om utsettelse' }],
+        prompt: [{ languageCode: 'nb', value: 'Vil du be om utsettelse?' }],
+      },
+      {
+        id: 'open-form',
+        url: 'https://info.altinn.no/skjemaoversikt/',
+        isAuthorized: true,
+        isDeleteDialogAction: false,
+        action: 'submit',
+        authorizationAttribute: null,
+        priority: GuiActionPriority.Primary,
+        httpMethod: HttpVerb.Get,
+        title: [{ languageCode: 'nb', value: 'Gå til skjema' }],
+        prompt: [],
+      },
+      {
+        id: 'delete-dialog',
+        url: 'https://dialogporten-serviceprovider.net/mutate/delete',
+        isAuthorized: true,
+        isDeleteDialogAction: true,
+        action: 'delete',
+        authorizationAttribute: null,
+        priority: GuiActionPriority.Tertiary,
+        httpMethod: HttpVerb.Delete,
+        title: [{ languageCode: 'nb', value: 'Slett dialogen' }],
+        prompt: [],
+      },
+      {
+        id: 'withdraw',
+        url: 'urn:dialogporten:unauthorized',
+        isAuthorized: false,
+        isDeleteDialogAction: false,
+        action: 'withdraw',
+        authorizationAttribute: null,
+        priority: GuiActionPriority.Secondary,
+        httpMethod: HttpVerb.Post,
+        title: [{ languageCode: 'nb', value: 'Trekk tilbake' }],
+        prompt: [],
+      },
+    ],
+  }),
 ];

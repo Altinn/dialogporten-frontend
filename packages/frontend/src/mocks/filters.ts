@@ -1,6 +1,6 @@
 import type { SearchDialogFieldsFragment } from 'bff-types-generated';
 
-export const naiveSearchFilter = (dialog: SearchDialogFieldsFragment, search?: string) => {
+export const naiveSearchFilter = (dialog: Pick<SearchDialogFieldsFragment, 'content'>, search?: string) => {
   if (!search) {
     return true;
   }

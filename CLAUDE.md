@@ -127,6 +127,8 @@ With specific dataset: `https://app.localhost/?mock=true&playwrightId=<folder-na
 
 Mock data location: `packages/frontend/src/mocks/data`
 
+Each dialog is a complete `MockDialog` built with `mockDialog()` (`base/mockDialog.ts`). Put detail data (attachments, activities, transmissions, logs) on the dialog itself, never in id branches in `helper.ts`/`handlers.ts`. See `packages/docs/src/content/docs/development/mock-data.md`.
+
 ## Environment Setup
 
 Requires Node 22+, pnpm, and Docker. Create `.env` in root with:

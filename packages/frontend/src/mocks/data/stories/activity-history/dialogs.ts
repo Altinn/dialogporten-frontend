@@ -1,7 +1,10 @@
-import { DialogStatus, type SearchDialogFieldsFragment, SystemLabel } from 'bff-types-generated';
+import { DialogStatus, SystemLabel } from 'bff-types-generated';
+import { type MockDialog, mockDialog } from '../../base/mockDialog.ts';
+import { dialogWithTransmissions } from '../transmissions/dialogs.ts';
 
-export const dialogs: SearchDialogFieldsFragment[] = [
-  {
+export const dialogs: MockDialog[] = [
+  mockDialog({
+    ...dialogWithTransmissions,
     hasUnopenedContent: false,
     serviceResource: 'default',
     serviceResourceType: 'correspondenceservice',
@@ -13,10 +16,7 @@ export const dialogs: SearchDialogFieldsFragment[] = [
     org: 'ok',
     progress: null,
     isContentSeen: true,
-    fromServiceOwnerTransmissionsCount: 0,
-    fromPartyTransmissionsCount: 0,
     contentUpdatedAt: '2024-11-27T15:36:52.131Z',
-    guiAttachmentCount: 1,
     status: DialogStatus.RequiresAttention,
     createdAt: '2024-05-23T23:00:00.000Z',
     dueAt: null,
@@ -66,5 +66,5 @@ export const dialogs: SearchDialogFieldsFragment[] = [
       },
       extendedStatus: null,
     },
-  },
+  }),
 ];
