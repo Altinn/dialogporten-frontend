@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.183.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.182.3...v1.183.0) (2026-10-27)
+
+
+### Features
+
+* **transmissions:** support navigationalActions on transmissions ([#4774](https://github.com/Altinn/dialogporten-frontend/issues/4774)) ([9501d76](https://github.com/Altinn/dialogporten-frontend/commit/9501d76e1c66b06fd181771c527f95e779e40ea6))
+
+
+### Bug Fixes
+
+* **analytics:** send page view when the user leaves the page ([#4769](https://github.com/Altinn/dialogporten-frontend/issues/4769)) ([f0f97b2](https://github.com/Altinn/dialogporten-frontend/commit/f0f97b2c98b51d6e06a8282f09ba6aae10c6c886))
+* **deps:** patch vulnerable dependencies [security] ([#4770](https://github.com/Altinn/dialogporten-frontend/issues/4770)) ([6975616](https://github.com/Altinn/dialogporten-frontend/commit/6975616ef56747436125908670ef42e8ba2fa4d2))
+* **deps:** update dependency astro to v7.3.3 [security] ([#4765](https://github.com/Altinn/dialogporten-frontend/issues/4765)) ([ca0f4c2](https://github.com/Altinn/dialogporten-frontend/commit/ca0f4c266d0a1ede65a67ba3d06ae5075081800d))
+
 ## [1.182.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.182.2...v1.182.3) (2026-10-22)
 
 
