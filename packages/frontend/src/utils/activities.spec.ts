@@ -23,6 +23,7 @@ const makeTransmission = (overrides: Partial<TransmissionFieldsFragment> = {}): 
       contentReference: null,
     },
     attachments: [],
+    navigationalActions: [],
     ...overrides,
   }) as unknown as TransmissionFieldsFragment;
 

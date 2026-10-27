@@ -10,6 +10,7 @@ import {
   GuiActionPriority,
   HttpVerb,
   type LabelAssignmentLogFieldsFragment,
+  type NavigationalActionFieldsFragment,
   type NotificationLogsResponse,
   type SearchDialogFieldsFragment,
   SystemLabel,
@@ -35,7 +36,12 @@ export type MockDialog = Omit<
   forwarding: ForwardingMock;
 };
 
-export type MockDialogInput = Pick<MockDialog, 'id' | 'content'> & Partial<Omit<MockDialog, 'id' | 'content'>>;
+type MockTransmissionInput = Omit<TransmissionFieldsFragment, 'navigationalActions'> & {
+  navigationalActions?: NavigationalActionFieldsFragment[];
+};
+
+export type MockDialogInput = Pick<MockDialog, 'id' | 'content'> &
+  Partial<Omit<MockDialog, 'id' | 'content' | 'transmissions'>> & { transmissions?: MockTransmissionInput[] };
 
 export const mockAttachment = (dialogId: string, index = 0): AttachmentFieldsFragment => ({
   id: index === 0 ? dialogId : `${dialogId}-${index}`,
@@ -121,7 +127,7 @@ const defaultGuiActions = (dialogId: string): GuiActionFieldsFragment[] => [
   },
 ];
 
-export const mockDialog = ({ id, content, ...overrides }: MockDialogInput): MockDialog => ({
+export const mockDialog = ({ id, content, transmissions = [], ...overrides }: MockDialogInput): MockDialog => ({
   id,
   content,
   party: 'urn:altinn:person:identifier-no:1',
@@ -139,7 +145,7 @@ export const mockDialog = ({ id, content, ...overrides }: MockDialogInput): Mock
   endUserContext: { systemLabels: [SystemLabel.Default] },
   attachments: [mockAttachment(id)],
   activities: defaultActivities(id),
-  transmissions: [],
+  transmissions: transmissions.map((transmission) => ({ navigationalActions: [], ...transmission })),
   guiActions: defaultGuiActions(id),
   additionalInfo: 'Denne setningen inneholder tilleggsinformasjon for dialogen.',
   mainContentReference: getMockedMarkdownFCEContent(),
