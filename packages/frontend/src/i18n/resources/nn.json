@@ -516,6 +516,8 @@
   "transmission.type.request": "Førespurnad",
   "transmission.type.submission": "Innsending",
   "transmission.empty": "Denne forsendinga har ikkje synleg innhald.",
+  "transmission.navigational_action.unauthorized": "Du har ikkje tilgang",
+  "transmission.navigational_action.expired": "Fristen har gått ut",
   "word.back": "Tilbake",
   "word.beta": "Beta",
   "word.cancel": "Avbryt",

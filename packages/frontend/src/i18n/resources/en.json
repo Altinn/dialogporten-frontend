@@ -516,6 +516,8 @@
   "transmission.type.request": "Request",
   "transmission.type.submission": "Submission",
   "transmission.empty": "This transmission has no visible content.",
+  "transmission.navigational_action.unauthorized": "You do not have access",
+  "transmission.navigational_action.expired": "The deadline has passed",
   "word.back": "Back",
   "word.beta": "Beta",
   "word.cancel": "Cancel",

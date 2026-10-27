@@ -127,6 +127,18 @@ fragment TransmissionFields on Transmission {
   attachments {
     ...AttachmentFields
   }
+  navigationalActions {
+    ...NavigationalActionFields
+  }
+}
+
+fragment NavigationalActionFields on TransmissionNavigationalAction {
+  title {
+    value
+    languageCode
+  }
+  url
+  expiresAt
 }
 
 fragment GuiActionFields on GuiAction {
