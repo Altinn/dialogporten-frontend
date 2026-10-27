@@ -36,6 +36,7 @@
   "altinn_shutdown_banner.title": "June 19: the old Altinn will be shut down.",
   "attachment.expired": "Expired",
   "attachment.expires_in": "Expires {relativeTime}",
+  "attachment.unauthorized": "No access",
   "badge.deleted": "Deleted",
   "badge.you": "You",
   "breadcrumbs.aria_label": "Du er her:",
