@@ -36,6 +36,7 @@
   "altinn_shutdown_banner.title": "19. juni blir gamle Altinn skrudd av.",
   "attachment.expired": "Utløpt",
   "attachment.expires_in": "Utløper {relativeTime}",
+  "attachment.unauthorized": "Ikkje tilgang",
   "badge.deleted": "Slettet",
   "badge.you": "Deg",
   "breadcrumbs.aria_label": "Du er her:",

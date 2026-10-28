@@ -104,7 +104,7 @@ Some values are derived, so the inbox and the dialog page always agree:
 
 ## Where things go
 
-- **Attachment:** `attachments`. `mockAttachment(dialogId, index)` gives the standard `kvittering.pdf` / `vedlegg-N.pdf` files.
+- **Attachment:** `attachments`. `mockAttachment(dialogId, index)` gives the standard `kvittering.pdf` / `vedlegg-N.pdf` files. An `expiresAt` in the past gives an expired attachment, and a `url` of `urn:dialogporten:unauthorized` gives one without access. See the `attachment-states` story.
 - **Transmission:** `transmissions`. The received and sent counts follow automatically.
 - **Transmission button:** `navigationalActions` on the transmission. A `url` of `urn:dialogporten:unauthorized` or `urn:dialogporten:expired` gives a disabled button. See the `transmission-navigational-actions` story.
 - **Activity:** `activities`. `activities: []` gives an empty activity log.

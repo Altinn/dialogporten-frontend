@@ -64,6 +64,16 @@ The details page also makes calls of its own:
 
 <DetailsAnatomy />
 
+### Attachments
+
+Each attachment with a GUI URL is a row in an `AttachmentList`.
+
+| State | When | Shown as |
+|---|---|---|
+| Available | Otherwise | A link with the media type icon. *Utløper om …* in yellow when `expiresAt` is set. |
+| Expired | `expiresAt` is in the past | Disabled, with a crossed-out file icon and a neutral *Utløpt* badge. |
+| No access | The URL is `urn:dialogporten:unauthorized` | Disabled, with a padlock and a neutral *Ikke tilgang* badge. Wins over expired. |
+
 ### Transmissions
 
 A transmission is a message inside the dialog, from the service owner or from the user. Each one is a row in a `TransmissionList` inside a `TimelineSegment`.

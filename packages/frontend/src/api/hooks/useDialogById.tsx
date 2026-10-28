@@ -24,7 +24,13 @@ import type { FormatFunction } from '../../i18n/useDateFnsLocale.tsx';
 import { type Locale, useDateFnsLocale, useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { useOrganizations } from '../../pages/Inbox/useOrganizations.ts';
 import { type ActivityLogEntry, getActivityHistory } from '../../utils/activities.tsx';
-import { createExpiryBadge, mediaTypeToExt, mediaTypeToIcon } from '../../utils/attachments.ts';
+import {
+  AttachmentState,
+  getAttachmentBadge,
+  getAttachmentIcon,
+  getAttachmentState,
+  mediaTypeToExt,
+} from '../../utils/attachments.ts';
 import { getSeenByLabel, getServiceOwnerLogo } from '../../utils/dialog.ts';
 import type { LabelAssignmentLog } from '../../utils/labelAssignmentLogs.tsx';
 import type { NotificationLog } from '../../utils/notificationLogs.tsx';
@@ -134,14 +140,14 @@ export const getAttachmentLinks = (
       attachment.urls
         .filter((url) => url.consumerType === AttachmentUrlConsumer.Gui)
         .map((url) => {
-          const isUnauthorized = url.url === 'urn:dialogporten:unauthorized';
+          const state = getAttachmentState(url.url, attachment.expiresAt);
           return {
-            disabled: isUnauthorized || (attachment.expiresAt ? new Date(attachment.expiresAt) <= new Date() : false),
+            disabled: state !== AttachmentState.Available,
             label: getPreferredPropertyByLocale(attachment.displayName)?.value || url.url,
-            href: isUnauthorized ? '' : url.url,
+            href: state === AttachmentState.Unauthorized ? '' : url.url,
             metadata: mediaTypeToExt(url.mediaType),
-            badge: createExpiryBadge(attachment.expiresAt, locale, t),
-            icon: mediaTypeToIcon(url.mediaType),
+            badge: getAttachmentBadge(state, attachment.expiresAt, locale, t),
+            icon: getAttachmentIcon(url.mediaType, state),
             target: url.mediaType === 'text/html' ? '_self' : '_blank',
           };
         }),
