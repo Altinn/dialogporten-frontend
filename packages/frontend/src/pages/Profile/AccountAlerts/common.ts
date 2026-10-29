@@ -48,6 +48,7 @@ export const useVerificationFlow = (channel: Channel) => {
   const [isConfirming, setIsConfirming] = useState(false);
 
   const handleSendCode = async (value: string) => {
+    if (isSending) return;
     setIsSending(true);
     setCodeInput('');
     setCodeError('');
@@ -68,6 +69,7 @@ export const useVerificationFlow = (channel: Channel) => {
   };
 
   const handleConfirmCode = async (value: string) => {
+    if (isConfirming) return;
     setIsConfirming(true);
     setCodeError('');
     try {

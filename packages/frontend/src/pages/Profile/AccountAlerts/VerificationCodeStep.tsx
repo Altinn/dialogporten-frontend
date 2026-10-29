@@ -101,14 +101,15 @@ export const VerificationCodeStep = ({
           <p>{isEmail ? t('profile.verification.code_hint_email') : t('profile.verification.code_hint_sms')}</p>
         </Typography>
         <ButtonGroup>
-          <Button type="submit" variant="tinted" disabled={isConfirming}>
+          <Button type="submit" variant="tinted" loading={isConfirming}>
             {t('profile.verification.confirm_button')}
           </Button>
           <Button
             type="button"
             variant="outline"
             onClick={onResend}
-            disabled={isSending || resendCooldown > 0}
+            loading={isSending}
+            disabled={resendCooldown > 0}
             style={{ fontVariantNumeric: 'tabular-nums' }}
           >
             {resendCooldown > 0
