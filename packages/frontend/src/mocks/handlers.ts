@@ -762,20 +762,54 @@ const getFilterServiceResourcesMock = graphql.query('getFilterServiceResources',
   });
 });
 
-const dialogAccessInfoMock = graphql.query('dialogAccessInfo', ({ variables }) => {
-  const { instanceRef } = variables as { instanceRef: string };
+// The dialogLookup and dialogAccessInfo operations both query the dialogLookup field, with different selections
+const findDialogByInstanceRef = (instanceRef: string) => {
   const dialogId = instanceRef?.replace('urn:altinn:dialog-id:', '');
-  const dialog = inMemoryStore.dialogs?.find((d) => d.id === dialogId);
+  return inMemoryStore.dialogs?.find((d) => d.id === dialogId);
+};
+
+const dialogLookupNotFoundBody = {
+  data: {
+    dialogLookup: {
+      lookup: null,
+      errors: [{ __typename: 'DialogLookupNotFound', message: 'Dialog not found' }],
+    },
+  },
+};
+
+const getLookupInstanceRef = (dialog: MockDialog, instanceRef: string) =>
+  dialog.serviceResourceType?.toLowerCase() === 'correspondenceservice'
+    ? `urn:altinn:correspondence-id:${dialog.id}`
+    : instanceRef;
+
+const dialogLookupMock = graphql.query('dialogLookup', ({ variables }) => {
+  const { instanceRef } = variables as { instanceRef: string };
+  const dialog = findDialogByInstanceRef(instanceRef);
 
   if (!dialog) {
-    return HttpResponse.json({
-      data: {
-        dialogLookup: {
-          lookup: null,
-          errors: [{ __typename: 'DialogLookupNotFound', message: 'Dialog not found' }],
+    return HttpResponse.json(dialogLookupNotFoundBody);
+  }
+
+  return HttpResponse.json({
+    data: {
+      dialogLookup: {
+        lookup: {
+          instanceRef: getLookupInstanceRef(dialog, instanceRef),
+          dialogId: dialog.id,
+          serviceResource: { id: dialog.serviceResource, isDelegable: false },
         },
+        errors: [],
       },
-    });
+    },
+  });
+});
+
+const dialogAccessInfoMock = graphql.query('dialogAccessInfo', ({ variables }) => {
+  const { instanceRef } = variables as { instanceRef: string };
+  const dialog = findDialogByInstanceRef(instanceRef);
+
+  if (!dialog) {
+    return HttpResponse.json(dialogLookupNotFoundBody);
   }
 
   const service = inMemoryStore.services?.find((s) => s.id === dialog.serviceResource);
@@ -785,10 +819,7 @@ const dialogAccessInfoMock = graphql.query('dialogAccessInfo', ({ variables }) =
     data: {
       dialogLookup: {
         lookup: {
-          instanceRef:
-            dialog.serviceResourceType?.toLowerCase() === 'correspondenceservice'
-              ? `urn:altinn:correspondence-id:${dialog.id}`
-              : instanceRef,
+          instanceRef: getLookupInstanceRef(dialog, instanceRef),
           dialogId: dialog.id,
           serviceResource: {
             id: dialog.serviceResource,
@@ -970,6 +1001,7 @@ export const handlers = [
   mutateSetUsernameMock,
   getServiceResourcesMock,
   getFilterServiceResourcesMock,
+  dialogLookupMock,
   dialogAccessInfoMock,
   correspondenceForwardingCheckMock,
   forwardCorrespondenceMock,
