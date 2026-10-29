@@ -4,6 +4,7 @@ import { formatDistance } from 'date-fns';
 import type { Locale } from 'date-fns/locale';
 import { type TFunction, t } from 'i18next';
 import { logError } from '../analytics/errorLogger.ts';
+import { UNAUTHORIZED_URL } from '../constants/sentinelUrls.ts';
 
 const MEDIA_TYPE_TO_EXT: Record<string, string> = {
   'application/octet-stream': '',
@@ -31,8 +32,6 @@ const MEDIA_TYPE_TO_EXT: Record<string, string> = {
   'application/vnd.ms-excel': 'XLS',
 };
 
-export const UNAUTHORIZED_ATTACHMENT_URL = 'urn:dialogporten:unauthorized';
-
 export enum AttachmentState {
   Available = 'available',
   Expired = 'expired',
@@ -51,7 +50,7 @@ export function getAttachmentState(
   expiresAt: string | null | undefined,
   now: Date = new Date(),
 ): AttachmentState {
-  if (url === UNAUTHORIZED_ATTACHMENT_URL) return AttachmentState.Unauthorized;
+  if (url === UNAUTHORIZED_URL) return AttachmentState.Unauthorized;
   if (expiresAt && new Date(expiresAt) <= now) return AttachmentState.Expired;
   return AttachmentState.Available;
 }
