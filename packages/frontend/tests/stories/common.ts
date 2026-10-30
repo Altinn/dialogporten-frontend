@@ -1,4 +1,5 @@
 import { expect, type Locator, type Page } from '@playwright/test';
+import type { TelemetryEnvelope } from '../../vite/telemetryMock';
 import { baseURL } from '../';
 
 /**
@@ -98,4 +99,21 @@ export async function openContextMenuForDialog(page: Page, title: string) {
   await expect(menuRoot).toBeVisible();
 
   return { dialogItem, menuRoot };
+}
+
+/**
+ * Telemetry the app has sent to the local Application Insights mock (vite/telemetryMock.ts) from this page's
+ * browser context. Every context gets its own ai_user cookie, which keeps parallel tests apart.
+ */
+export async function getTelemetry(
+  page: Page,
+  filter: { baseType?: string; name?: string } = {},
+): Promise<TelemetryEnvelope[]> {
+  const aiUserCookie = (await page.context().cookies()).find((cookie) => cookie.name === 'ai_user');
+  if (!aiUserCookie) {
+    return [];
+  }
+  const userId = decodeURIComponent(aiUserCookie.value).split('|')[0];
+  const response = await page.request.get(`${baseURL}/__telemetry?${new URLSearchParams({ ...filter, userId })}`);
+  return response.json();
 }

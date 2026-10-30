@@ -1,5 +1,6 @@
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
+import { telemetryMock } from './vite/telemetryMock';
 
 // https://vitejs.dev/config/
 export default () => {
@@ -9,7 +10,7 @@ export default () => {
   const buildVersion = process.env.BUILD_VERSION;
 
   return defineConfig({
-    plugins: [react()],
+    plugins: [react(), telemetryMock()],
     ...(process.env.PORT && {
       server: {
         port: Number.parseInt(process.env.PORT),

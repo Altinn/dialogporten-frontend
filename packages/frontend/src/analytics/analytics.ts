@@ -7,7 +7,11 @@ import type { AnalyticsEventName } from './analyticsEvents.ts';
 
 let applicationInsights: ApplicationInsights | null = null;
 
-const applicationInsightsConfigured = config.applicationInsightsInstrumentationKey && import.meta.env.PROD;
+// Defined by the telemetry mock plugin (vite/telemetryMock.ts) when served by the Vite dev server
+const telemetryMockEndpoint = import.meta.env.VITE_TELEMETRY_MOCK_ENDPOINT;
+
+const applicationInsightsConfigured =
+  telemetryMockEndpoint || (config.applicationInsightsInstrumentationKey && import.meta.env.PROD);
 
 const pageMapping: Record<string, string> = {
   [PageRoutes.inbox]: 'Inbox',
@@ -158,6 +162,12 @@ const initApplicationInsights = () => {
         appId: 'arbeidsflate-frontend',
         maxAjaxCallsPerView: 2000,
         onunloadDisableFetch: true,
+        ...(telemetryMockEndpoint && {
+          instrumentationKey: '00000000-0000-0000-0000-000000000000',
+          endpointUrl: telemetryMockEndpoint,
+          // Send batches every second instead of every 15 seconds, so telemetry shows up while you work
+          maxBatchInterval: 1000,
+        }),
       },
     });
 

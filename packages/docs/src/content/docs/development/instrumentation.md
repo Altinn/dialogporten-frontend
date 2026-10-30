@@ -160,6 +160,22 @@ The frontend implements intelligent error filtering to reduce noise:
 - **Cross-Origin Errors**: Excludes generic "Script error" messages
 - **Stack Trace Analysis**: Examines parsed stack traces for extension URLs
 
+### Local Telemetry Mock
+
+The Vite dev server stands in for the Application Insights ingestion endpoint, so you can see and test what the frontend sends without access to a real Application Insights resource. The `telemetryMock` plugin (`packages/frontend/vite/telemetryMock.ts`) only runs with the dev server, and it is the only thing that switches the app to the mock. Production builds and Vitest are unaffected.
+
+While served by `pnpm dev` (or `make dev`), `analytics.ts` uses a dummy instrumentation key, sends to the mock and batches every second instead of every 15. Consent still applies: telemetry only flows with `global.enableCookieBanner` on and statistics cookies accepted. With mock data, use `?mock=true&playwrightId=telemetry`, which turns the cookie banner on.
+
+| Request | Purpose |
+| --- | --- |
+| `POST /__telemetry/v2/track` | Receives envelopes like the real endpoint, including `sendBeacon` on page leave. Each item is logged in the dev server terminal |
+| `GET /__telemetry` | Lists received envelopes. Filter with `?baseType=PageviewData`, `?name=Dialog Details` or `?userId=<ai.user.id>` |
+| `DELETE /__telemetry` | Clears the list |
+
+Envelopes are stored after the telemetry initializers have run, so the list shows exactly what would reach Application Insights. Use it to check your filters. They are kept in memory and lost when the dev server restarts.
+
+In Playwright, `getTelemetry(page, { baseType, name })` from `tests/stories/common.ts` returns the telemetry sent from the test's own browser context. See `tests/stories/telemetry.spec.ts` for examples.
+
 ## End-to-End Correlation Flow
 
 ```mermaid
