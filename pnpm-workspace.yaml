@@ -17,23 +17,23 @@ trustPolicyExclude:
   - semver@6.3.1
 
 catalog:
-  "@graphql-tools/stitch": 10.3.1
-  "@playwright/test": 1.58.1
-  "@swc-node/register": 1.11.1
-  "@testing-library/react": 16.3.2
+  "@graphql-tools/stitch": 10.4.0
+  "@playwright/test": 1.64.1
+  "@swc-node/register": 1.12.1
+  "@testing-library/react": 16.3.3
   "@tsconfig/node24": 24.0.5
   "@types/node": 24.19.2
-  "@types/react": 19.2.7
-  "@types/react-dom": 19.2.3
-  "@vitejs/plugin-react": 6.0.1
+  "@types/react": 19.3.0
+  "@types/react-dom": 19.3.0
+  "@vitejs/plugin-react": 6.1.2
   dotenv: 16.6.1
   fastify: 5.12.7
   fastify-plugin: 5.1.0
-  graphql: 16.12.0
+  graphql: 16.14.2
   graphql-request: 7.4.0
-  react: 19.2.8
-  react-dom: 19.2.8
+  react: 19.3.1
+  react-dom: 19.3.1
   typescript: 5.9.3
-  vite: 8.1.6
+  vite: 8.3.5
   vitest: 4.1.12
   zod: 4.6.7
