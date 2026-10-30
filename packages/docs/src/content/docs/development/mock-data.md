@@ -111,7 +111,7 @@ Some values are derived, so the inbox and the dialog page always agree:
 - **Notification:** `notificationLogs`, built with `mockNotificationLog(notificationId, overrides)`.
 - **Label history:** `labelAssignmentLog`.
 - **Action:** `guiActions`.
-- **Main content:** `mainContentReference`, with the content helpers in `base/helper.ts`, or `mainContentMarkdown` for text written in the story.
+- **Main content:** `mainContentReference`, with the content helpers in `base/helper.ts`, or `mainContentMarkdown` for text written in the story. `getMockedUnauthorizedFCEContent()` gives content without access, here or as a transmission's `contentReference`. See the `fce-unauthorized` story.
 - **Forwarding by email:** `forwarding`. The attachments decide what the forward dialog offers.
 - **The same dialog in two stories:** export it from one story and spread it in the other with `mockDialog({ ...otherDialog, ... })`. `activity-history` does this with the dialog from `transmissions`.
 

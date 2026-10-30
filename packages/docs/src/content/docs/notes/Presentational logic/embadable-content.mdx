@@ -35,6 +35,15 @@ Notes for service owners:
 - The time zone comes from the end user's device and can be any IANA name (for example `America/New_York` for a user abroad), not only `Europe/Oslo`. Fall back to `Europe/Oslo` if the value is missing or unknown to you.
 - Arbeidsflate caches the fetched content per dialog and language for the duration of the visit, so expect one request per language the user switches to.
 
+## When the content cannot be shown
+
+| Case | Shown as |
+| --- | --- |
+| The URL is `urn:dialogporten:unauthorized` | A blue *Ingen tilgang* alert. Nothing is fetched. |
+| The endpoint answers `403` | A blue *Ingen tilgang* alert. |
+| The endpoint answers `404` | A red *Ops! Noe gikk galt med innlastingen* alert with an *Oppdater* button. |
+| Any other error, `401` included | The same red alert, after two retries one second apart. |
+
 ## Restrictions
 
 For security reasons, the content is sanitized and only certain tags are allowed.

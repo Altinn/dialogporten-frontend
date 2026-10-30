@@ -2,13 +2,8 @@ import { FileIcon, FileXMarkIcon, PadlockLockedIcon } from '@navikt/aksel-icons'
 import { nb } from 'date-fns/locale';
 import type { TFunction } from 'i18next';
 import { describe, expect, it } from 'vitest';
-import {
-  AttachmentState,
-  getAttachmentBadge,
-  getAttachmentIcon,
-  getAttachmentState,
-  UNAUTHORIZED_ATTACHMENT_URL,
-} from './attachments.ts';
+import { UNAUTHORIZED_URL } from '../constants/sentinelUrls.ts';
+import { AttachmentState, getAttachmentBadge, getAttachmentIcon, getAttachmentState } from './attachments.ts';
 
 const t = ((key: string) => key) as unknown as TFunction<'translation', undefined>;
 
@@ -33,13 +28,11 @@ describe('getAttachmentState', () => {
   });
 
   it('is unauthorized when the url is the unauthorized sentinel', () => {
-    expect(getAttachmentState(UNAUTHORIZED_ATTACHMENT_URL, null, now)).toBe(AttachmentState.Unauthorized);
+    expect(getAttachmentState(UNAUTHORIZED_URL, null, now)).toBe(AttachmentState.Unauthorized);
   });
 
   it('is unauthorized when the attachment is both unauthorized and expired', () => {
-    expect(getAttachmentState(UNAUTHORIZED_ATTACHMENT_URL, '2026-10-26T12:00:00.000Z', now)).toBe(
-      AttachmentState.Unauthorized,
-    );
+    expect(getAttachmentState(UNAUTHORIZED_URL, '2026-10-26T12:00:00.000Z', now)).toBe(AttachmentState.Unauthorized);
   });
 
   it('is available when the expiry is not a valid date', () => {

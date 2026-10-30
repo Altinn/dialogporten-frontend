@@ -85,7 +85,7 @@ A transmission is a message inside the dialog, from the service owner or from th
 | Title and summary | `content.title`, `content.summary` | Same language rules as the dialog. |
 | Byline | `sender`, `createdAt` | *Skatteetaten, 9. oktober 2026 kl. 14.03*. See [Sender Name and Service Owner Logo](../sender-name-and-logo/). |
 | Unread | `activities` | Unread until a `TransmissionOpened` activity exists for it. The user's own `SUBMISSION` and `CORRECTION` are never unread. |
-| Content | `content.contentReference` | Fetched from the service owner when the transmission is expanded. |
+| Content | `content.contentReference` | Fetched from the service owner when the transmission is expanded. See [Embeddable content](../embadable-content/#when-the-content-cannot-be-shown) for no access and errors. |
 | Attachments | `attachments` | Same rules as the dialog's attachments. |
 | Visibility | `isAuthorized`, content | Hidden, disabled or shown with an empty state. See [the visibility table](../activity-log-sources/#2-transmissions). |
 

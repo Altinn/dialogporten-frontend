@@ -10,6 +10,7 @@ import {
 import { t } from 'i18next';
 import { getActorProps, getAttachmentLinks } from '../api/hooks/useDialogById.tsx';
 import type { ProfileType } from '../api/hooks/useParties.ts';
+import { EXPIRED_URL, UNAUTHORIZED_URL } from '../constants/sentinelUrls.ts';
 import { getPreferredPropertyByLocale, type LocalizationObject } from '../i18n/property.ts';
 import type { FormatFunction, Locale } from '../i18n/useDateFnsLocale.tsx';
 import type { OrganizationOutput } from './organizations.ts';
@@ -70,8 +71,8 @@ const toNavigationalAction = (
   isAuthorized: boolean,
   now: Date,
 ): TransmissionNavigationalActionProps => {
-  const unauthorized = !isAuthorized || url === 'urn:dialogporten:unauthorized';
-  const expired = url === 'urn:dialogporten:expired' || (!!expiresAt && new Date(expiresAt) <= now);
+  const unauthorized = !isAuthorized || url === UNAUTHORIZED_URL;
+  const expired = url === EXPIRED_URL || (!!expiresAt && new Date(expiresAt) <= now);
   return {
     id,
     label: getPreferredPropertyByLocale(title)?.value ?? '',
