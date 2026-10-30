@@ -21,7 +21,7 @@ export const ConfirmSetPreselectedActorModal = ({
   if (!showActor) return null;
 
   const handleConfirm = async () => {
-    if (!showActor?.party?.uuid) return;
+    if (isSubmitting || !showActor?.party?.uuid) return;
     setIsSubmitting(true);
     try {
       await onConfirm(showActor.party.uuid, showActor.operation);
@@ -46,7 +46,7 @@ export const ConfirmSetPreselectedActorModal = ({
         </p>
       </Typography>
       <div className={styles.buttonGroupContainer}>
-        <Button onClick={handleConfirm} disabled={isSubmitting} type="button">
+        <Button onClick={handleConfirm} loading={isSubmitting} type="button">
           {showActor.operation === 'set'
             ? t('profile.parties.confirm_set_preselected_actor_button')
             : t('profile.parties.confirm_unset_preselected_actor_button')}

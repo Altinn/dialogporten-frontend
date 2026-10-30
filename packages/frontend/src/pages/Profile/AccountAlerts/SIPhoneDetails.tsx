@@ -45,6 +45,8 @@ export const SIPhoneDetails = ({ phoneNumber }: { phoneNumber?: string }) => {
   const [countryCode, setCountryCode] = useState<string>(initialPhone.countryCode);
   const [phoneNumberPart, setPhoneNumberPart] = useState<string>(initialPhone.phoneNumber);
   const [phoneTouched, setPhoneTouched] = useState<boolean>(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const isBusy = isSaving || isSending;
 
   const handleClose = (event: React.SyntheticEvent) => {
     const target = event.target as Element | null;
@@ -65,6 +67,7 @@ export const SIPhoneDetails = ({ phoneNumber }: { phoneNumber?: string }) => {
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (isBusy) return;
     const form = e.currentTarget;
 
     if (!isValueDirty && !needsVerification) {
@@ -81,6 +84,7 @@ export const SIPhoneDetails = ({ phoneNumber }: { phoneNumber?: string }) => {
       return;
     }
 
+    setIsSaving(true);
     try {
       const result = await updateSIPrivatePhoneNumber(siPhoneValue || null);
       if (result?.updateSIPrivatePhoneNumber?.success) {
@@ -92,6 +96,8 @@ export const SIPhoneDetails = ({ phoneNumber }: { phoneNumber?: string }) => {
       }
     } catch {
       openSnackbar({ message: t('profile.account_alerts.snackbar.error'), color: 'danger' });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -176,7 +182,7 @@ export const SIPhoneDetails = ({ phoneNumber }: { phoneNumber?: string }) => {
           </Typography>
         )}
         <ButtonGroup>
-          <Button type="submit" variant={needsVerification ? 'tinted' : 'solid'}>
+          <Button type="submit" variant={needsVerification ? 'tinted' : 'solid'} loading={isBusy}>
             {needsVerification ? t('profile.account_alerts.verify_sms') : t('profile.account_alerts.save')}
           </Button>
           <Button type="button" variant="outline" onClick={handleClose}>

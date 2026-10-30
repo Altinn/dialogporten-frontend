@@ -184,15 +184,16 @@ const getMainContentReference = (
  *
  * Name resolution:
  * - Prefer `actor.actorName` if present.
- * - If missing and the actor is a `ServiceOwner`, fall back to `serviceOwner?.name`.
+ * - If missing and the actor is a `ServiceOwner`, fall back to `contentSenderName`, then `serviceOwner?.name`.
  * - Otherwise empty string.
  *
  * Logo resolution:
  * - Only provided for `ServiceOwner` actors (from `serviceOwner?.logo`).
  *
  * Notes:
- * - `actorName` may be `null` in edge cases if Dialogporten lookup fails,
- *   but is generally expected to be set for transmissions.
+ * - `actorName` is always `null` for `ServiceOwner` actors.
+ * - For other actor types Dialogporten looks the name up from `actorId` when the actor is stored and
+ *   rejects the write if the lookup fails, so `null` only occurs on data stored before March 2025.
  *
  * @param actor        The actor object describing who performed or sent the action.
  * @param stopReversingPersonNameOrder
