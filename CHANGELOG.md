@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.184.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.184.0...v1.184.1) (2026-10-30)
+
+
+### Bug Fixes
+
+* **fce:** show no access alert when the content url is urn:dialogporten:unauthorized ([#4785](https://github.com/Altinn/dialogporten-frontend/issues/4785)) ([41c5378](https://github.com/Altinn/dialogporten-frontend/commit/41c5378bddc0cb527b7659881cdc0b0d57d71148))
+* **profile:** prevent repeated saves while a request is in flight ([#4783](https://github.com/Altinn/dialogporten-frontend/issues/4783)) ([bf09c14](https://github.com/Altinn/dialogporten-frontend/commit/bf09c14b7e6c216b041a42a2c168632559ebb8f1))
+
 ## [1.184.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.183.0...v1.184.0) (2026-10-28)
 
 
