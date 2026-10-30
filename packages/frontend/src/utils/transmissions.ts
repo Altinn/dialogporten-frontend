@@ -3,18 +3,28 @@ import {
   ActivityType,
   AttachmentUrlConsumer,
   type DialogActivityFragment,
+  type NavigationalActionFieldsFragment,
   type TransmissionFieldsFragment,
   TransmissionType,
 } from 'bff-types-generated';
 import { t } from 'i18next';
 import { getActorProps, getAttachmentLinks } from '../api/hooks/useDialogById.tsx';
 import type { ProfileType } from '../api/hooks/useParties.ts';
+import { EXPIRED_URL, UNAUTHORIZED_URL } from '../constants/sentinelUrls.ts';
 import { getPreferredPropertyByLocale, type LocalizationObject } from '../i18n/property.ts';
 import type { FormatFunction, Locale } from '../i18n/useDateFnsLocale.tsx';
 import type { OrganizationOutput } from './organizations.ts';
 
+export interface TransmissionNavigationalActionProps {
+  id: string;
+  label: string;
+  href: string;
+  disabledReason?: 'unauthorized' | 'expired';
+}
+
 export interface TransmissionItemWithMeta extends TransmissionProps {
   isEmpty?: boolean;
+  navigationalActions?: TransmissionNavigationalActionProps[];
 }
 
 export interface TimelineSegmentWithTransmissions extends TimelineSegmentProps {
@@ -33,19 +43,55 @@ export const getTransmissionVisibility = (transmission: TransmissionFieldsFragme
   const hasContentReference =
     !!transmission.content.contentReference &&
     !!getPreferredPropertyByLocale(transmission.content.contentReference.value)?.value;
+  const hasNavigationalActions = transmission.navigationalActions.some(({ url }) => !!url);
 
   // A: has attachments but none are GUI-consumable, and no other visible content — irrelevant for GUI users, remove from all lists
-  if (transmission.attachments.length > 0 && !hasGuiAttachment && !hasSummary && !hasContentReference) return 'filter';
+  if (
+    transmission.attachments.length > 0 &&
+    !hasGuiAttachment &&
+    !hasSummary &&
+    !hasContentReference &&
+    !hasNavigationalActions
+  )
+    return 'filter';
 
   // B: unauthorized at top level — show transmission but disable expansion
   if (!transmission.isAuthorized) return 'disabled';
 
   // C: authorized but nothing visible — expand with empty-state explanation
   // hasGuiAttachment covers case 6 too: unauthorized GUI links are shown as disabled links, which counts as visible content
-  if (!hasSummary && !hasContentReference && !hasGuiAttachment) return 'empty';
+  if (!hasSummary && !hasContentReference && !hasGuiAttachment && !hasNavigationalActions) return 'empty';
 
   return 'visible';
 };
+
+const toNavigationalAction = (
+  { title, url, expiresAt }: NavigationalActionFieldsFragment,
+  id: string,
+  isAuthorized: boolean,
+  now: Date,
+): TransmissionNavigationalActionProps => {
+  const unauthorized = !isAuthorized || url === UNAUTHORIZED_URL;
+  const expired = url === EXPIRED_URL || (!!expiresAt && new Date(expiresAt) <= now);
+  return {
+    id,
+    label: getPreferredPropertyByLocale(title)?.value ?? '',
+    href: url,
+    disabledReason: unauthorized ? 'unauthorized' : expired ? 'expired' : undefined,
+  };
+};
+
+export const getNavigationalActions = (
+  {
+    id,
+    isAuthorized,
+    navigationalActions,
+  }: Pick<TransmissionFieldsFragment, 'id' | 'isAuthorized' | 'navigationalActions'>,
+  now: Date = new Date(),
+): TransmissionNavigationalActionProps[] =>
+  navigationalActions
+    .filter(({ url }) => !!url)
+    .map((action, index) => toNavigationalAction(action, `${id}-navigational-action-${index}`, isAuthorized, now));
 
 export const groupTransmissions = (transmissions: TransmissionFieldsFragment[]): TransmissionFieldsFragment[][] => {
   const relatedMap = new Map<string, Set<string>>();
@@ -181,6 +227,7 @@ const createTransmissionItem = ({
     attachments: {
       items: getAttachmentLinks(transmission.attachments, locale, t),
     },
+    navigationalActions: getNavigationalActions(transmission),
     isEmpty: visibility === 'empty',
   };
 };

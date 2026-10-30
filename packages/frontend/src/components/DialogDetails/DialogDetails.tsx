@@ -1,5 +1,6 @@
 import {
   type ActivityLogSegmentProps,
+  AttachmentList,
   type BadgeColor,
   type BadgeSize,
   type BadgeVariant,
@@ -18,6 +19,7 @@ import {
   Timeline,
   TimelineSegment,
   TransmissionList,
+  type TransmissionProps,
   Typography,
   useSnackbar,
 } from '@altinn/altinn-components';
@@ -33,13 +35,14 @@ import { useErrorLogger } from '../../hooks/useErrorLogger';
 import { useFormat } from '../../i18n/useDateFnsLocale.tsx';
 import { getDueAtProps } from '../../pages/Inbox/dueAt.ts';
 import { getDialogStatus } from '../../pages/Inbox/status.ts';
-import type { TimelineSegmentWithTransmissions } from '../../utils/transmissions.ts';
+import type { TimelineSegmentWithTransmissions, TransmissionItemWithMeta } from '../../utils/transmissions.ts';
 import { ActivityLogModal } from '../ActivityLog/ActivityLogModal.tsx';
 import { AdditionalInfoContent } from '../AdditionalInfoContent/AdditionalInfoContent.tsx';
 import { MainContentReference } from '../MainContentReference/MainContentReference.tsx';
 import { SeenByModal } from '../SeenByModal/SeenByModal.tsx';
 import { DialogHelp } from './DialogHelp.tsx';
 import styles from './dialogDetails.module.css';
+import { TransmissionNavigationalActions } from './TransmissionNavigationalActions.tsx';
 
 interface DialogDetailsProps {
   dialog: DialogByIdDetails | undefined | null;
@@ -261,6 +264,40 @@ const performDialogAction = async ({
   }
 };
 
+const toTransmissionListItem = (
+  { isEmpty, attachments, navigationalActions, ...item }: TransmissionItemWithMeta,
+  dialog: DialogByIdDetails,
+  dialogToken: string | undefined,
+  t: TFunction<'translation', undefined>,
+): TransmissionProps => {
+  const contentReference = dialog.contentReferenceForTransmissions[item.id];
+  return {
+    ...item,
+    children: (
+      <>
+        {/* C: empty-state message | B (contentRef): lazy-load embedded content */}
+        {isEmpty ? (
+          <Typography>
+            <em>{t('transmission.empty')}</em>
+          </Typography>
+        ) : (
+          contentReference &&
+          dialogToken && (
+            <MainContentReference
+              id={item.id}
+              content={contentReference}
+              dialogToken={dialogToken}
+              dialogId={dialog.id}
+            />
+          )
+        )}
+        {attachments && <AttachmentList {...attachments} />}
+        <TransmissionNavigationalActions items={navigationalActions} />
+      </>
+    ),
+  };
+};
+
 export const DialogDetails = ({
   dialog,
   isLoading,
@@ -297,26 +334,7 @@ export const DialogDetails = ({
     /* Add content reference to each item in the transmission - ensure they are not eagerly loaded, will only render on expand */
     return dialog.transmissions.map((transmission) => ({
       ...transmission,
-      items: transmission.items?.map((item) => {
-        return {
-          ...item,
-          // C: empty-state message | B (contentRef): lazy-load embedded content
-          children: item.isEmpty ? (
-            <Typography>
-              <em>{t('transmission.empty')}</em>
-            </Typography>
-          ) : dialog.contentReferenceForTransmissions[item.id as string] ? (
-            dialogToken && (
-              <MainContentReference
-                id={item.id}
-                content={dialog.contentReferenceForTransmissions[item.id as string]}
-                dialogToken={dialogToken}
-                dialogId={dialog?.id ?? ''}
-              />
-            )
-          ) : null,
-        };
-      }),
+      items: transmission.items?.map((item) => toTransmissionListItem(item, dialog, dialogToken, t)),
     }));
   }, [dialog, dialogToken]);
 
@@ -338,27 +356,10 @@ export const DialogDetails = ({
             .join(' '),
           children: (highlightWords: string[]) => (
             <TransmissionList
-              items={dialogHistoryItem.items.map((item) => {
-                return {
-                  ...item,
-                  highlightWords,
-                  // C: empty-state message | B (contentRef): lazy-load embedded content
-                  children: item.isEmpty ? (
-                    <Typography>
-                      <em>{t('transmission.empty')}</em>
-                    </Typography>
-                  ) : dialog.contentReferenceForTransmissions[item.id as string] ? (
-                    dialogToken && (
-                      <MainContentReference
-                        id={item.id}
-                        content={dialog.contentReferenceForTransmissions[item.id as string]}
-                        dialogToken={dialogToken}
-                        dialogId={dialog?.id}
-                      />
-                    )
-                  ) : null,
-                };
-              })}
+              items={dialogHistoryItem.items.map((item) => ({
+                ...toTransmissionListItem(item, dialog, dialogToken, t),
+                highlightWords,
+              }))}
             />
           ),
         };

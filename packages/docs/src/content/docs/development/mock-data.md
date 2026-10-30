@@ -43,7 +43,7 @@ A dialog is a `MockDialog`, built with `mockDialog()` from `src/mocks/data/base/
 | Search fields (`party`, `org`, `status`, dates, `endUserContext` …) | Person party `urn:altinn:person:identifier-no:1`, `org: 'ok'`, `RequiresAttention`, `Default` label, seen, `correspondenceservice` |
 | `attachments` | One `kvittering.pdf` (`mockAttachment(id)`) |
 | `activities` | Dialog created, and one information activity |
-| `transmissions` | None |
+| `transmissions` | None. A transmission without `navigationalActions` gets an empty list |
 | `guiActions` | An unauthorized "Til skjema" action |
 | `additionalInfo` | A standard sentence |
 | `mainContentReference` | Markdown main content. Use `mainContentMarkdown` to serve story-specific markdown instead |
@@ -104,13 +104,14 @@ Some values are derived, so the inbox and the dialog page always agree:
 
 ## Where things go
 
-- **Attachment:** `attachments`. `mockAttachment(dialogId, index)` gives the standard `kvittering.pdf` / `vedlegg-N.pdf` files.
+- **Attachment:** `attachments`. `mockAttachment(dialogId, index)` gives the standard `kvittering.pdf` / `vedlegg-N.pdf` files. An `expiresAt` in the past gives an expired attachment, and a `url` of `urn:dialogporten:unauthorized` gives one without access. See the `attachment-states` story.
 - **Transmission:** `transmissions`. The received and sent counts follow automatically.
+- **Transmission button:** `navigationalActions` on the transmission. A `url` of `urn:dialogporten:unauthorized` or `urn:dialogporten:expired` gives a disabled button. See the `transmission-navigational-actions` story.
 - **Activity:** `activities`. `activities: []` gives an empty activity log.
 - **Notification:** `notificationLogs`, built with `mockNotificationLog(notificationId, overrides)`.
 - **Label history:** `labelAssignmentLog`.
 - **Action:** `guiActions`.
-- **Main content:** `mainContentReference`, with the content helpers in `base/helper.ts`, or `mainContentMarkdown` for text written in the story.
+- **Main content:** `mainContentReference`, with the content helpers in `base/helper.ts`, or `mainContentMarkdown` for text written in the story. `getMockedUnauthorizedFCEContent()` gives content without access, here or as a transmission's `contentReference`. See the `fce-unauthorized` story.
 - **Forwarding by email:** `forwarding`. The attachments decide what the forward dialog offers.
 - **The same dialog in two stories:** export it from one story and spread it in the other with `mockDialog({ ...otherDialog, ... })`. `activity-history` does this with the dialog from `transmissions`.
 

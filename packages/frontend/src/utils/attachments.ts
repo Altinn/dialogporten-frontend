@@ -1,9 +1,10 @@
 import type { BadgeProps } from '@altinn/altinn-components';
-import { ExternalLinkIcon, FileIcon, FilesIcon } from '@navikt/aksel-icons';
+import { ExternalLinkIcon, FileIcon, FilesIcon, FileXMarkIcon, PadlockLockedIcon } from '@navikt/aksel-icons';
 import { formatDistance } from 'date-fns';
 import type { Locale } from 'date-fns/locale';
 import { type TFunction, t } from 'i18next';
 import { logError } from '../analytics/errorLogger.ts';
+import { UNAUTHORIZED_URL } from '../constants/sentinelUrls.ts';
 
 const MEDIA_TYPE_TO_EXT: Record<string, string> = {
   'application/octet-stream': '',
@@ -30,6 +31,38 @@ const MEDIA_TYPE_TO_EXT: Record<string, string> = {
   'application/ods': 'ODS',
   'application/vnd.ms-excel': 'XLS',
 };
+
+export enum AttachmentState {
+  Available = 'available',
+  Expired = 'expired',
+  Unauthorized = 'unauthorized',
+}
+
+/**
+ * Resolves the state of an attachment URL. Unauthorized wins over expired,
+ * since the user could not open the attachment even if it had not expired.
+ * @param url - The attachment URL; Dialogporten replaces it with a sentinel URN when the user lacks access
+ * @param expiresAt - Optional ISO date string for when the attachment expires
+ * @param now - Reference time, defaults to the current time
+ */
+export function getAttachmentState(
+  url: string,
+  expiresAt: string | null | undefined,
+  now: Date = new Date(),
+): AttachmentState {
+  if (url === UNAUTHORIZED_URL) return AttachmentState.Unauthorized;
+  if (expiresAt && new Date(expiresAt) <= now) return AttachmentState.Expired;
+  return AttachmentState.Available;
+}
+
+export function getAttachmentIcon(
+  mediaType: string | null | undefined,
+  state: AttachmentState,
+): React.ComponentType<React.SVGProps<SVGSVGElement>> {
+  if (state === AttachmentState.Unauthorized) return PadlockLockedIcon;
+  if (state === AttachmentState.Expired) return FileXMarkIcon;
+  return mediaTypeToIcon(mediaType);
+}
 
 export function mediaTypeToIcon(value: string | null | undefined): React.ComponentType<React.SVGProps<SVGSVGElement>> {
   switch (value) {
@@ -63,17 +96,27 @@ export function mediaTypeToExt(value: string | null | undefined): string {
 }
 
 /**
- * Creates a badge object for attachment expiry status
+ * Creates a badge object for the attachment state
+ * @param state - The attachment state from getAttachmentState
  * @param expiryDate - Optional ISO date string for when the attachment expires
  * @param locale - date-fns locale for formatting relative time
  * @param t - Translation function for i18n
- * @returns Badge object with expiry information, or undefined if no expiry date
+ * @returns Badge for unauthorized, expired or expiring attachments, or undefined if there is nothing to show
  */
-export function createExpiryBadge(
+export function getAttachmentBadge(
+  state: AttachmentState,
   expiryDate: string | null | undefined,
   locale: Locale,
   t: TFunction<'translation', undefined>,
 ): BadgeProps | undefined {
+  if (state === AttachmentState.Unauthorized || state === AttachmentState.Expired) {
+    return {
+      variant: 'outline',
+      label: t(state === AttachmentState.Unauthorized ? 'attachment.unauthorized' : 'attachment.expired'),
+      color: 'neutral',
+    };
+  }
+
   try {
     if (!expiryDate) return undefined;
 
@@ -84,29 +127,21 @@ export function createExpiryBadge(
       return undefined;
     }
 
-    if (expiry <= now) {
-      return {
-        variant: 'tinted',
-        label: t('attachment.expired'),
-        color: 'neutral',
-      };
-    }
-
     const relativeTime = formatDistance(expiry, now, {
       addSuffix: true,
       locale,
     });
 
     return {
-      variant: 'outline',
+      variant: 'subtle',
       label: t('attachment.expires_in', { relativeTime }),
-      color: 'neutral',
+      color: 'warning',
     };
   } catch (error) {
     logError(
       error as Error,
       {
-        context: 'attachments.createExpiryBadge',
+        context: 'attachments.getAttachmentBadge',
         expiryDate,
       },
       'Error creating expiry badge',

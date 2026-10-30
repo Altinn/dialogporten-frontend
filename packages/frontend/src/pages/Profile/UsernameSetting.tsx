@@ -81,6 +81,7 @@ export const UsernameSetting = ({ partyUuid }: UsernameSettingProps) => {
 
   const handleSave = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (isSaving) return;
     setTouched(true);
     if (!canSave) {
       event.currentTarget.querySelector<HTMLInputElement>('input[name="username"]')?.focus();
@@ -123,11 +124,11 @@ export const UsernameSetting = ({ partyUuid }: UsernameSettingProps) => {
           </ValidationMessage>
         </Field>
         <ButtonGroup>
-          <Button type="submit" variant="primary">
+          <Button type="submit" variant="primary" loading={isSaving}>
             {t('word.save')}
           </Button>
           {username && (
-            <Button type="button" variant="secondary" color="danger" onClick={handleRemove} disabled={isSaving}>
+            <Button type="button" variant="secondary" color="danger" onClick={handleRemove} loading={isSaving}>
               {t('profile.username.remove')}
             </Button>
           )}

@@ -7,6 +7,7 @@ import { type DialogByIdDetails, EmbeddableMediaType } from '../../api/hooks/use
 import { isValidURL } from '../../auth/url.ts';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.ts';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
+import { UNAUTHORIZED_URL } from '../../constants/sentinelUrls.ts';
 import { useFeatureFlag } from '../../featureFlags/useFeatureFlag.ts';
 import { getAcceptLanguageHeader } from '../../i18n/acceptLanguage.ts';
 import { getPreferTimeZoneHeader } from '../../i18n/timeZone.ts';
@@ -110,7 +111,7 @@ export const MainContentReference = memo(({ content, dialogToken, id, dialogId }
     retryDelay: 1000,
   });
 
-  const isForbidden = isError && error?.status === 403;
+  const isForbidden = content?.url === UNAUTHORIZED_URL || (isError && error?.status === 403);
 
   if (!content) {
     return null;

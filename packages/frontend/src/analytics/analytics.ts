@@ -361,5 +361,11 @@ export const Analytics = {
     applicationInsights?.trackDependencyData(...args),
   trackFetchDependency,
   isValidTrackablePage,
-  flush: () => applicationInsights?.onunloadFlush(false),
+  flush: () => {
+    try {
+      applicationInsights?.onunloadFlush(false);
+    } catch (error) {
+      console.error('Failed to flush Application Insights:', error);
+    }
+  },
 };

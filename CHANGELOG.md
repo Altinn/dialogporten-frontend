@@ -1,5 +1,34 @@
 # Changelog
 
+## [1.184.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.184.0...v1.184.1) (2026-10-30)
+
+
+### Bug Fixes
+
+* **fce:** show no access alert when the content url is urn:dialogporten:unauthorized ([#4785](https://github.com/Altinn/dialogporten-frontend/issues/4785)) ([41c5378](https://github.com/Altinn/dialogporten-frontend/commit/41c5378bddc0cb527b7659881cdc0b0d57d71148))
+* **profile:** prevent repeated saves while a request is in flight ([#4783](https://github.com/Altinn/dialogporten-frontend/issues/4783)) ([bf09c14](https://github.com/Altinn/dialogporten-frontend/commit/bf09c14b7e6c216b041a42a2c168632559ebb8f1))
+
+## [1.184.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.183.0...v1.184.0) (2026-10-28)
+
+
+### Features
+
+* **attachments:** distinguish unauthorized from expired attachments ([#4776](https://github.com/Altinn/dialogporten-frontend/issues/4776)) ([89dce1d](https://github.com/Altinn/dialogporten-frontend/commit/89dce1da51a117435504932509274c9dafd40c4e))
+
+## [1.183.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.182.3...v1.183.0) (2026-10-27)
+
+
+### Features
+
+* **transmissions:** support navigationalActions on transmissions ([#4774](https://github.com/Altinn/dialogporten-frontend/issues/4774)) ([9501d76](https://github.com/Altinn/dialogporten-frontend/commit/9501d76e1c66b06fd181771c527f95e779e40ea6))
+
+
+### Bug Fixes
+
+* **analytics:** send page view when the user leaves the page ([#4769](https://github.com/Altinn/dialogporten-frontend/issues/4769)) ([f0f97b2](https://github.com/Altinn/dialogporten-frontend/commit/f0f97b2c98b51d6e06a8282f09ba6aae10c6c886))
+* **deps:** patch vulnerable dependencies [security] ([#4770](https://github.com/Altinn/dialogporten-frontend/issues/4770)) ([6975616](https://github.com/Altinn/dialogporten-frontend/commit/6975616ef56747436125908670ef42e8ba2fa4d2))
+* **deps:** update dependency astro to v7.3.3 [security] ([#4765](https://github.com/Altinn/dialogporten-frontend/issues/4765)) ([ca0f4c2](https://github.com/Altinn/dialogporten-frontend/commit/ca0f4c266d0a1ede65a67ba3d06ae5075081800d))
+
 ## [1.182.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.182.2...v1.182.3) (2026-10-22)
 
 
