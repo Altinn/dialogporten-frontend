@@ -75,6 +75,8 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
   const [phoneNumberPart, setPhoneNumberPart] = useState<string>(initialPhone.phoneNumber);
   const [emailTouched, setEmailTouched] = useState<boolean>(false);
   const [phoneTouched, setPhoneTouched] = useState<boolean>(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const isBusy = isSaving || isSending;
   const value = isEmail ? emailValue : joinPhone(countryCode, phoneNumberPart);
 
   const emailValidation =
@@ -114,6 +116,7 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (isBusy) return;
     const form = e.currentTarget;
 
     if (!isDirty && !needsVerification) {
@@ -136,6 +139,7 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
       return;
     }
 
+    setIsSaving(true);
     try {
       const result = await updateNotificationsetting(buildPatch(enabled ? value : null));
       if (result?.updateNotificationSetting?.success) {
@@ -152,6 +156,8 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
         'Error updating notification setting',
       );
       openSnackbar({ message: t('profile.account_alerts.snackbar.error'), color: 'danger' });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -304,7 +310,7 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
           </Typography>
         )}
         <ButtonGroup>
-          <Button type="submit" variant={needsVerification ? 'tinted' : 'solid'}>
+          <Button type="submit" variant={needsVerification ? 'tinted' : 'solid'} loading={isBusy}>
             {needsVerification
               ? isEmail
                 ? t('profile.account_alerts.verify_email')

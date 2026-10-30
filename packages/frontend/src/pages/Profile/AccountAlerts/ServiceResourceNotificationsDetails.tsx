@@ -243,6 +243,7 @@ export const ServiceResourceNotificationsDetails = ({
   };
 
   const handleSave = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (isSaving) return;
     const partyUuid = notificationSetting?.partyUuid || notificationParty?.partyUuid || '';
     setIsSaving(true);
     try {
@@ -378,7 +379,7 @@ export const ServiceResourceNotificationsDetails = ({
 
       <div ref={footerRef}>
         <ButtonGroup>
-          <Button variant="solid" onClick={handleSave} disabled={isSaving}>
+          <Button variant="solid" onClick={handleSave} loading={isSaving}>
             {t('profile.service_notifications.save')}
           </Button>
           <Button variant="outline" onClick={handleClose}>
