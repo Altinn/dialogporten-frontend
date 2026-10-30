@@ -156,6 +156,16 @@ describe('mapDialogToToInboxItems', () => {
     expect(result[0].serviceOwnerName).toBe('Skatteetaten');
   });
 
+  it('should fall back to the service owner when dialog content is null', () => {
+    const result = mapDialogToInboxItems([createDialog({ content: null })], partyGraph, orgMap, mockFormat, false);
+
+    expect(result[0].title).toBe('');
+    expect(result[0].summary).toBe('');
+    expect(result[0].sender.name).toBe('Skatteetaten');
+    expect(result[0].senderName).toBeUndefined();
+    expect(result[0].extendedStatus).toBeUndefined();
+  });
+
   it('should handle empty input array', () => {
     const result = mapDialogToInboxItems([], partyGraph, orgMap, mockFormat, false);
     expect(result).toHaveLength(0);
