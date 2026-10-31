@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.184.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.184.1...v1.184.2) (2026-10-31)
+
+
+### Bug Fixes
+
+* **deps:** pin dependencies ([#4730](https://github.com/Altinn/dialogporten-frontend/issues/4730)) ([35108ae](https://github.com/Altinn/dialogporten-frontend/commit/35108ae86fd3d62cce2b43a7167f682b5974610c))
+* **inbox:** handle nullable dialog content from dialogporten-schema 1.125.0 ([#4791](https://github.com/Altinn/dialogporten-frontend/issues/4791)) ([c293b09](https://github.com/Altinn/dialogporten-frontend/commit/c293b095c8b2c191f09bd4a54aa35a9b544c62f4))
+
 ## [1.184.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.184.0...v1.184.1) (2026-10-30)
 
 
