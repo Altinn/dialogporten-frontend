@@ -60,10 +60,10 @@ export function mapDialogToInboxItems(
   const endUserParty = partyGraph.currentEndUser;
 
   return input.map((item) => {
-    const titleObj = item.content.title.value;
-    const summaryObj = item.content.summary?.value;
-    const senderName = item.content.senderName?.value;
-    const extendedStatusObj = item.content.extendedStatus?.value;
+    const titleObj = item.content?.title.value;
+    const summaryObj = item.content?.summary?.value;
+    const senderName = item.content?.senderName?.value;
+    const extendedStatusObj = item.content?.extendedStatus?.value;
 
     const receiverParty = partyGraph.partyByUrn.get(item.party);
     const isSubParty = partyGraph.parentByChildUrn.has(item.party);
