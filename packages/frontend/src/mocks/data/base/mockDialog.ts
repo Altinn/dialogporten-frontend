@@ -22,8 +22,9 @@ export type ForwardingMock = 'allowed' | 'notAllowed' | 'attachmentsExceedMaxLim
 
 export type MockDialog = Omit<
   SearchDialogFieldsFragment,
-  'guiAttachmentCount' | 'fromServiceOwnerTransmissionsCount' | 'fromPartyTransmissionsCount'
+  'content' | 'guiAttachmentCount' | 'fromServiceOwnerTransmissionsCount' | 'fromPartyTransmissionsCount'
 > & {
+  content: NonNullable<SearchDialogFieldsFragment['content']>;
   attachments: AttachmentFieldsFragment[];
   activities: DialogActivityFragment[];
   transmissions: TransmissionFieldsFragment[];
