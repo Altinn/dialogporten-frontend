@@ -1,6 +1,12 @@
 import { Navigate, Route, Routes } from 'react-router';
 import { ErrorResetHandler, withErrorBoundary } from './components/ErrorBoundary/ErrorBoundary.tsx';
 import { ProtectedPageLayout } from './components/PageLayout/PageLayout.tsx';
+import {
+  DIALOG_BUILDER_ROUTE,
+  DIALOG_PREVIEW_ROUTE,
+  isDialogPreviewAvailable,
+} from './pages/DialogBuilder/availability.ts';
+import { DialogBuilderRoute, DialogPreviewRoute } from './pages/DialogBuilder/routes.tsx';
 import { DialogDetailsPage } from './pages/DialogDetailsPage/DialogDetailsPage.tsx';
 import { ErrorPage } from './pages/Error/Error.tsx';
 import { Inbox } from './pages/Inbox/Inbox.tsx';
@@ -45,11 +51,17 @@ function App() {
           />
           <Route path={PageRoutes.bin} element={withErrorBoundary(<Inbox key="bin" viewType={'bin'} />, 'Bin')} />
           <Route path={PageRoutes.inboxItem} element={withErrorBoundary(<DialogDetailsPage />, 'Inbox Item')} />
+          {isDialogPreviewAvailable() && (
+            <Route path={DIALOG_PREVIEW_ROUTE} element={withErrorBoundary(<DialogPreviewRoute />, 'Dialog Preview')} />
+          )}
           <Route path={PageRoutes.savedSearches} element={withErrorBoundary(<SavedSearchesPage />, 'Saved Searches')} />
           <Route path={PageRoutes.redirect} element={<RedirectPage />} />
           <Route path={PageRoutes.error} element={<ErrorPage />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Route>
+        {isDialogPreviewAvailable() && (
+          <Route path={DIALOG_BUILDER_ROUTE} element={withErrorBoundary(<DialogBuilderRoute />, 'Dialog Builder')} />
+        )}
         <Route path="/logout" element={<FrontChannelLogout />} />
       </Routes>
       <ErrorResetHandler />
