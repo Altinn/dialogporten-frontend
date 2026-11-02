@@ -168,7 +168,7 @@ While served by `pnpm dev` (or `make dev`), `analytics.ts` uses a dummy instrume
 
 | Request | Purpose |
 | --- | --- |
-| `POST /__telemetry/v2/track` | Receives envelopes like the real endpoint, including `sendBeacon` on page leave. Each item is logged in the dev server terminal |
+| `POST /__telemetry/v2/track` | Receives envelopes like the real endpoint, including `sendBeacon` on page leave. Each item is logged in the dev server terminal, exceptions with their message and first stack frame |
 | `GET /__telemetry` | Lists received envelopes. Filter with `?baseType=PageviewData`, `?name=Dialog Details` or `?userId=<ai.user.id>` |
 | `DELETE /__telemetry` | Clears the list |
 

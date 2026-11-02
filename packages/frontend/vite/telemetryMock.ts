@@ -12,8 +12,19 @@ export interface TelemetryEnvelope {
   tags?: Record<string, string>;
   data?: {
     baseType?: string;
-    baseData?: { name?: string; properties?: Record<string, string>; [key: string]: unknown };
+    baseData?: {
+      name?: string;
+      properties?: Record<string, string>;
+      exceptions?: ExceptionDetails[];
+      [key: string]: unknown;
+    };
   };
+}
+
+interface ExceptionDetails {
+  typeName?: string;
+  message?: string;
+  parsedStack?: { method?: string; fileName?: string; line?: number }[];
 }
 
 const readBody = (req: IncomingMessage): Promise<string> =>
@@ -35,6 +46,20 @@ const parseEnvelopes = (body: string): TelemetryEnvelope[] => {
       .filter((line) => line.trim())
       .map((line) => JSON.parse(line));
   }
+};
+
+// Exceptions have no name, so show the error and where it was thrown, or that the stack is missing
+const describe = (envelope: TelemetryEnvelope) => {
+  const baseData = envelope.data?.baseData;
+  const exception = baseData?.exceptions?.[0];
+  if (exception) {
+    const { typeName = 'Error', message = '' } = exception;
+    const error = message.startsWith(typeName) ? message : `${typeName}: ${message}`;
+    const frame = exception.parsedStack?.[0];
+    const location = frame ? `${frame.method} (${frame.fileName}:${frame.line})` : 'no stack';
+    return ` ${error} at ${location}`;
+  }
+  return baseData?.name ? ` "${baseData.name}"` : '';
 };
 
 const sendJson = (res: ServerResponse, status: number, body: unknown) => {
@@ -84,8 +109,9 @@ export const telemetryMock = (): Plugin => {
             const received = parseEnvelopes(await readBody(req));
             envelopes = [...envelopes, ...received].slice(-MAX_ITEMS);
             for (const envelope of received) {
-              const label = envelope.data?.baseData?.name ? ` "${envelope.data.baseData.name}"` : '';
-              logger.info(`[telemetry] ${envelope.data?.baseType ?? envelope.name}${label}`, { timestamp: true });
+              logger.info(`[telemetry] ${envelope.data?.baseType ?? envelope.name}${describe(envelope)}`, {
+                timestamp: true,
+              });
             }
             sendJson(res, 200, { itemsReceived: received.length, itemsAccepted: received.length, errors: [] });
           } catch (error) {
