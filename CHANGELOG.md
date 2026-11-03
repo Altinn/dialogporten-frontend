@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.185.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.184.1...v1.185.0) (2026-11-03)
+
+
+### Features
+
+* **dialog-builder:** add dialog builder and preview for test environments ([#4792](https://github.com/Altinn/dialogporten-frontend/issues/4792)) ([bbb7b8e](https://github.com/Altinn/dialogporten-frontend/commit/bbb7b8e514906dfc75d5777cf88e35a86590965f))
+
+
+### Bug Fixes
+
+* **deps:** pin dependencies ([#4730](https://github.com/Altinn/dialogporten-frontend/issues/4730)) ([35108ae](https://github.com/Altinn/dialogporten-frontend/commit/35108ae86fd3d62cce2b43a7167f682b5974610c))
+* **frontend:** stop browser page translation from crashing React (Android, Chrome) ([#4795](https://github.com/Altinn/dialogporten-frontend/issues/4795)) ([b7782db](https://github.com/Altinn/dialogporten-frontend/commit/b7782dbd9e402cfcceafff6c03baf88a8cb514d2))
+* **inbox:** handle nullable dialog content from dialogporten-schema 1.125.0 ([#4791](https://github.com/Altinn/dialogporten-frontend/issues/4791)) ([c293b09](https://github.com/Altinn/dialogporten-frontend/commit/c293b095c8b2c191f09bd4a54aa35a9b544c62f4))
+* **toolbar:** change icons for radio and checkbox for toolbar by bumping to latest version of altinn-components ([#4790](https://github.com/Altinn/dialogporten-frontend/issues/4790)) ([771b15f](https://github.com/Altinn/dialogporten-frontend/commit/771b15fd28b81f5f04d44e66dca836ee361bbc8a))
+* **toolbar:** keep filter dropdown attached to its button by bumping altinn-components to 0.79.2 ([#4796](https://github.com/Altinn/dialogporten-frontend/issues/4796)) ([a97ff93](https://github.com/Altinn/dialogporten-frontend/commit/a97ff93271727129bb60496463626b5e1ae53bde))
+
 ## [1.184.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.184.0...v1.184.1) (2026-10-30)
 
 
