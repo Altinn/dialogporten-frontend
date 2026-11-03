@@ -43,6 +43,9 @@ export const ANALYTICS_EVENTS = {
 
   // Inbox Export Actions
   INBOX_EXPORT_DOWNLOAD: 'Inbox.Export.Download',
+
+  // Page
+  PAGE_DOM_MISMATCH_RECOVERED: 'Page.DomMismatch.Recovered',
 } as const;
 
 // Type for event names (for TypeScript safety)

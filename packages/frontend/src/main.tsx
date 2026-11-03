@@ -4,16 +4,30 @@ import { BrowserRouter } from 'react-router';
 import './i18n/config.ts';
 import { RootProvider as AltinnRootProvider, type LanguageCode } from '@altinn/altinn-components';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import i18n from 'i18next';
 import { useTranslation } from 'react-i18next';
 import App from './App.tsx';
+import { Analytics } from './analytics/analytics.ts';
+import { ANALYTICS_EVENTS } from './analytics/analyticsEvents.ts';
 import { AuthProvider } from './components/Login/AuthContext.tsx';
 import { QUERY_KEYS } from './constants/queryKeys.ts';
 import { LoggerContextProvider } from './contexts/LoggerContext.tsx';
 import { getPartyFromCookie } from './cookie.ts';
 import { FeatureFlagProvider, loadFeatureFlags } from './featureFlags/FeatureFlagsProvider.tsx';
+import { installDomMutationGuard } from './utils/domMutationGuard.ts';
 
 declare const __APP_VERSION__: string;
 console.info('App Version:', __APP_VERSION__);
+
+let hasReportedDomRepair = false;
+installDomMutationGuard({
+  pageLanguage: () => i18n.language,
+  onRepair: (trigger) => {
+    if (hasReportedDomRepair) return;
+    hasReportedDomRepair = true;
+    Analytics.trackEvent(ANALYTICS_EVENTS.PAGE_DOM_MISMATCH_RECOVERED, { trigger });
+  },
+});
 
 const urlParams = new URLSearchParams(window.location.search);
 const isEnableMocking = urlParams.get('mock') === 'true';
