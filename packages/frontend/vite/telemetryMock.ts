@@ -95,7 +95,7 @@ export const telemetryMock = (): Plugin => {
     apply: 'serve',
     config: () => ({
       define: {
-        'import.meta.env.VITE_TELEMETRY_MOCK_ENDPOINT': JSON.stringify(TRACK_PATH),
+        'import.meta.env.TELEMETRY_MOCK_ENDPOINT': JSON.stringify(TRACK_PATH),
       },
     }),
     configureServer(server) {

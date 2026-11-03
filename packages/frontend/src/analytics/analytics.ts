@@ -8,7 +8,7 @@ import type { AnalyticsEventName } from './analyticsEvents.ts';
 let applicationInsights: ApplicationInsights | null = null;
 
 // Defined by the telemetry mock plugin (vite/telemetryMock.ts) when served by the Vite dev server
-const telemetryMockEndpoint = import.meta.env.VITE_TELEMETRY_MOCK_ENDPOINT;
+const telemetryMockEndpoint = import.meta.env.TELEMETRY_MOCK_ENDPOINT;
 
 const applicationInsightsConfigured =
   telemetryMockEndpoint || (config.applicationInsightsInstrumentationKey && import.meta.env.PROD);
