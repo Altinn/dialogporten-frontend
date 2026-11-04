@@ -151,8 +151,8 @@ describe('toDialogFragment embeds', () => {
       ],
     });
 
-    expect(fragment.content.mainContentReference).toBeNull();
-    expect(fragment.transmissions[0].content.contentReference).toBeNull();
+    expect(fragment.content?.mainContentReference).toBeNull();
+    expect(fragment.transmissions[0].content?.contentReference).toBeNull();
     expect(JSON.stringify(fragment)).not.toContain('evil.example');
   });
 });

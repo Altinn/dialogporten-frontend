@@ -39,9 +39,9 @@ export const getTransmissionVisibility = (transmission: TransmissionFieldsFragme
   const hasGuiAttachment = transmission.attachments.some((a) =>
     a.urls.some((url) => url.consumerType === AttachmentUrlConsumer.Gui),
   );
-  const hasSummary = !!getPreferredPropertyByLocale(transmission.content.summary?.value)?.value;
+  const hasSummary = !!getPreferredPropertyByLocale(transmission.content?.summary?.value)?.value;
   const hasContentReference =
-    !!transmission.content.contentReference &&
+    !!transmission.content?.contentReference &&
     !!getPreferredPropertyByLocale(transmission.content.contentReference.value)?.value;
   const hasNavigationalActions = transmission.navigationalActions.some(({ url }) => !!url);
 
@@ -211,8 +211,8 @@ const createTransmissionItem = ({
     id: transmission.id,
     disabled: visibility === 'disabled',
     byline: transmission?.createdAt ? `${sender.name}, ${format(transmission.createdAt, getClockFormatString())}` : '',
-    title: getPreferredPropertyByLocale(transmission.content.title.value)?.value ?? '',
-    summary: getPreferredPropertyByLocale(transmission.content.summary?.value)?.value ?? '',
+    title: getPreferredPropertyByLocale(transmission.content?.title.value)?.value ?? '',
+    summary: getPreferredPropertyByLocale(transmission.content?.summary?.value)?.value ?? '',
     createdAt: transmission.createdAt,
     createdAtLabel: format(transmission.createdAt, formatString),
     type: {

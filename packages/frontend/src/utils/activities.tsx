@@ -172,7 +172,7 @@ export const getActivityHistory = ({
 
   const transmissionTitles: Record<string, string> = {};
   for (const transmission of transmissions) {
-    const title = getPreferredPropertyByLocale(transmission.content.title.value)?.value;
+    const title = getPreferredPropertyByLocale(transmission.content?.title.value)?.value;
     if (title) transmissionTitles[transmission.id] = title;
   }
 
@@ -261,7 +261,7 @@ export const getActivityHistory = ({
       items: [
         {
           id: transmission.id,
-          summary: <>{getPreferredPropertyByLocale(transmission.content.title.value)?.value}</>,
+          summary: <>{getPreferredPropertyByLocale(transmission.content?.title.value)?.value}</>,
           byline: format(transmission.createdAt, formatString),
           datetime: transmission.createdAt,
           type: 'activity' as const,

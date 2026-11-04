@@ -288,8 +288,8 @@ export function mapDialogToInboxItem({
   const actualRecipientParty = dialogRecipientParty ?? endUserParty;
   const serviceOwner = getOrganization(organizations || [], item.org);
   const serviceOwnerNbName = getOrganizationByLocale(organizations || [], item.org, 'nb')?.name;
-  const senderName = item.content.senderName?.value;
-  const extendedStatusObj = item.content.extendedStatus?.value;
+  const senderName = item.content?.senderName?.value;
+  const extendedStatusObj = item.content?.extendedStatus?.value;
   const seenByLabel = getSeenByLabel(item.seenSinceLastContentUpdate, t);
   const transmissions = getTransmissions({
     transmissions: item.transmissions,
