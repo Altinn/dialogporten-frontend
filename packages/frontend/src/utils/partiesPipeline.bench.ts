@@ -3,6 +3,7 @@ import { bench, describe } from 'vitest';
 import {
   buildOrgSkeleton,
   buildPersonSkeleton,
+  getAccountLabels,
   mapOrgItemToAccount,
 } from '../components/PageLayout/Accounts/accountComputations.ts';
 import { generateParties } from '../mocks/data/stories/parties-extreme/parties.ts';
@@ -20,7 +21,7 @@ import { buildPartyGraph } from './partyGraph.ts';
 const PARTY_COUNT = Number(process.env.BENCH_PARTY_COUNT ?? 100_000);
 const PERSON_COUNT = 300;
 
-const t = (key: string) => key;
+const labels = getAccountLabels((key: string) => key);
 
 const rawParties = generateParties(PARTY_COUNT, PERSON_COUNT);
 const payload = JSON.stringify({ parties: rawParties });
@@ -88,7 +89,7 @@ describe(`parties pipeline @ ${PARTY_COUNT} parties (${(payload.length / 1024 / 
     'materialize org PartyItemProps',
     () => {
       for (const item of orgSkeleton) {
-        mapOrgItemToAccount(item, { showDescription: true, t });
+        mapOrgItemToAccount(item, { showDescription: true, labels });
       }
     },
     { time: 0, iterations: 5, warmupIterations: 1, throws: true },

@@ -393,20 +393,19 @@ export const PartiesOverviewPage = () => {
     }
   }, [currentPage, totalPages]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: re-map only when the page contents or expansion changes
-  const pagedItems = useMemo((): SettingsListProps['items'] => {
-    const isCompaniesFilter = filterState?.partyScope?.[0] === 'COMPANIES';
-    const search = deferredSearchValue.trim().toLowerCase();
-    const endUserMatchesSearch = (a: PartyItemProp) =>
-      !search || a.name.toLowerCase().includes(search) || a.id.toLowerCase().includes(search);
-    const visibleAccounts = accounts.filter((a) => {
-      if (!a.isCurrentEndUser) return true;
-      if (isCompaniesFilter) return false;
-      return endUserMatchesSearch(a);
-    });
-    const mapped = visibleAccounts.map(mapAccountToPartyListItem);
-    return isSearching ? mapped.map((a) => ({ ...a, groupId: 'search' })) : mapped;
-  }, [accounts, isSearching, expandedItem, searchValue, filterState, deferredSearchValue]);
+  const isCompaniesFilter = filterState?.partyScope?.[0] === 'COMPANIES';
+  const search = deferredSearchValue.trim().toLowerCase();
+  const endUserMatchesSearch = (a: PartyItemProp) =>
+    !search || a.name.toLowerCase().includes(search) || a.id.toLowerCase().includes(search);
+  const visibleAccounts = accounts.filter((a) => {
+    if (!a.isCurrentEndUser) return true;
+    if (isCompaniesFilter) return false;
+    return endUserMatchesSearch(a);
+  });
+  const mappedItems = visibleAccounts.map(mapAccountToPartyListItem);
+  const pagedItems: SettingsListProps['items'] = isSearching
+    ? mappedItems.map((a) => ({ ...a, groupId: 'search' }))
+    : mappedItems;
 
   const searchGroup = useMemo(
     () => ({ search: { title: t('search.hits', { count: pagedItems.length }) } }),

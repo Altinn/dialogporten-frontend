@@ -299,15 +299,12 @@ export const useSubAccounts = ({
     showPageLabel,
   ]);
 
-  const groups = {
-    all: {
-      title: isGroupSelected
-        ? selectedSubAccountIds.length > 0 && selectedSubAccountIds.length !== filteredSubAccounts.length
-          ? groupPartialCountLabel(selectedSubAccountIds.length, filteredSubAccounts.length)
-          : groupCountLabel(filteredSubAccounts.length)
-        : parentAccount?.name,
-    },
-  };
+  const allGroupTitle = isGroupSelected
+    ? selectedSubAccountIds.length > 0 && selectedSubAccountIds.length !== filteredSubAccounts.length
+      ? groupPartialCountLabel(selectedSubAccountIds.length, filteredSubAccounts.length)
+      : groupCountLabel(filteredSubAccounts.length)
+    : parentAccount?.name;
+  const groups = useMemo(() => ({ all: { title: allGroupTitle } }), [allGroupTitle]);
 
   return {
     subAccounts,

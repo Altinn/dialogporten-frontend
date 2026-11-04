@@ -26,6 +26,7 @@ import type { PartyGraph } from '../../../utils/partyGraph.ts';
 import {
   buildOrgSkeleton,
   buildPersonSkeleton,
+  getAccountLabels,
   mapOrgItemToAccount,
   mapPersonToAccount,
   type OrgSkeletonItem,
@@ -115,18 +116,21 @@ export const useAccounts = ({
 
   const organizations = useMemo(() => parties.filter((party) => party.partyType === 'Organization'), [parties]);
 
-  const defaultGroups = {
-    primary: {
-      title: t('profile.accounts.me_and_favorites'),
-    },
-    groups: { title: '' },
-    persons: {
-      title: t('profile.accounts.persons'),
-    },
-    companies: {
-      title: t('profile.accounts.companies'),
-    },
-  };
+  const defaultGroups = useMemo(
+    () => ({
+      primary: {
+        title: t('profile.accounts.me_and_favorites'),
+      },
+      groups: { title: '' },
+      persons: {
+        title: t('profile.accounts.persons'),
+      },
+      companies: {
+        title: t('profile.accounts.companies'),
+      },
+    }),
+    [t],
+  );
 
   const defaultOptions: UseAccountOptions = {
     showDescription: true,
@@ -149,17 +153,19 @@ export const useAccounts = ({
     [organizations, partyGraph],
   );
 
+  const labels = useMemo(() => getAccountLabels(t), [t]);
+
   // Pure mappers. No favorite/preselect deps here — applied as a cheap overlay after.
   const mapPerson = useCallback(
     (person: PartyFieldsFragment): PartyItemProp =>
-      mapPersonToAccount(person, { showDescription: options.showDescription, t }),
-    [options.showDescription, t],
+      mapPersonToAccount(person, { showDescription: options.showDescription, labels }),
+    [options.showDescription, labels],
   );
 
   const mapOrgItem = useCallback(
     (item: OrgSkeletonItem): PartyItemProp =>
-      mapOrgItemToAccount(item, { showDescription: options.showDescription, t }),
-    [options.showDescription, t],
+      mapOrgItemToAccount(item, { showDescription: options.showDescription, labels }),
+    [options.showDescription, labels],
   );
 
   const applyFlags = useCallback(
