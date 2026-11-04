@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.185.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.185.0...v1.185.1) (2026-11-04)
+
+
+### Bug Fixes
+
+* **analytics:** stop tracking uncaught errors twice ([#4799](https://github.com/Altinn/dialogporten-frontend/issues/4799)) ([277dc29](https://github.com/Altinn/dialogporten-frontend/commit/277dc29f8df8db7247d6d2ded3cf6ffee3e62b88))
+* **frontend:** handle nullable dialog and transmission content from dialogporten-schema 1.126.0 ([#4797](https://github.com/Altinn/dialogporten-frontend/issues/4797)) ([d7b5429](https://github.com/Altinn/dialogporten-frontend/commit/d7b54290a0b4c7ab7c98dabb926128f9bf373661))
+
 ## [1.185.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.184.1...v1.185.0) (2026-11-03)
 
 
