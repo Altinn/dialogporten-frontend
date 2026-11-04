@@ -30,7 +30,7 @@ export type MockDialog = Omit<
   transmissions: TransmissionFieldsFragment[];
   guiActions: GuiActionFieldsFragment[];
   additionalInfo: string;
-  mainContentReference: DialogByIdFieldsFragment['content']['mainContentReference'];
+  mainContentReference: NonNullable<DialogByIdFieldsFragment['content']>['mainContentReference'];
   mainContentMarkdown?: string;
   notificationLogs: Omit<NotificationLogsResponse, 'dialogId'>[];
   labelAssignmentLog?: LabelAssignmentLogFieldsFragment[];
