@@ -29,6 +29,36 @@ test.describe('Telemetry', () => {
     expect(dialogDetails.data?.baseData?.properties?.refUri).toBe('');
   });
 
+  test('tracks an uncaught error once, also when the browser gives no error object', async ({ page }) => {
+    await page.goto(appUrlWithPlaywrightId('telemetry'));
+    await getCookieBanner(page).getByRole('button', { name: 'Ja' }).click();
+    // Application Insights sets ai_user when it starts, so errors thrown after that are tracked
+    await expect
+      .poll(async () => (await page.context().cookies()).some((cookie) => cookie.name === 'ai_user'))
+      .toBe(true);
+
+    await page.evaluate(() => {
+      setTimeout(() => {
+        throw new RangeError('Uncaught test error');
+      });
+      // Some browser internals fire error events without an error object. ("Script error." is one, but it is filtered out)
+      window.dispatchEvent(new ErrorEvent('error', { message: 'Error event without error object' }));
+    });
+
+    const getExceptions = async () =>
+      (await getTelemetry(page, { baseType: 'ExceptionData' })).map(
+        (item) => item.data?.baseData?.exceptions?.[0] ?? {},
+      );
+
+    // The SDK puts the type name in front of the message
+    await expect
+      .poll(async () => (await getExceptions()).map(({ message }) => message).sort())
+      .toEqual(['ErrorEvent: Error event without error object', 'RangeError: Uncaught test error']);
+    // Give a duplicate time to arrive in the next batch before checking that none did
+    await page.waitForTimeout(2000);
+    expect(await getExceptions()).toHaveLength(2);
+  });
+
   test('sends nothing when the user rejects statistics cookies', async ({ page }) => {
     const telemetryRequests: string[] = [];
     page.on('request', (request) => {

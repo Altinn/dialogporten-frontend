@@ -148,6 +148,7 @@ const initApplicationInsights = () => {
         autoTrackPageVisitTime: false,
         enableCorsCorrelation: true,
         enableUnhandledPromiseRejectionTracking: false,
+        disableExceptionTracking: true, // Uncaught errors are tracked by LoggerContext
         enableAjaxErrorStatusText: true,
         disableAjaxTracking: true,
         disableFetchTracking: true,
