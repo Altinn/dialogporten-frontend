@@ -195,6 +195,7 @@ const createServiceOwnerFilter = (
     title: t('filter_bar.label.choose_sender'),
     name: FilterCategory.ORG,
     searchable: true,
+    virtualized: true,
     removable: true,
     groups: {
       'service-owners': {
