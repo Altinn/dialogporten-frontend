@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.185.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.185.1...v1.185.2) (2026-11-05)
+
+
+### Bug Fixes
+
+* **toolbar:** stop the service owner filter jumping when it opens ([#4803](https://github.com/Altinn/dialogporten-frontend/issues/4803)) ([3f9af02](https://github.com/Altinn/dialogporten-frontend/commit/3f9af026fab0ad15d0ca1c0132db96bce32e7e67))
+
 ## [1.185.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.185.0...v1.185.1) (2026-11-04)
 
 
