@@ -29,7 +29,9 @@ test.describe('Telemetry', () => {
     expect(dialogDetails.data?.baseData?.properties?.refUri).toBe('');
   });
 
-  test('tracks an uncaught error once, also when the browser gives no error object', async ({ page }) => {
+  test('tracks an uncaught error once, also without an error object, and drops injected-script errors', async ({
+    page,
+  }) => {
     await page.goto(appUrlWithPlaywrightId('telemetry'));
     await getCookieBanner(page).getByRole('button', { name: 'Ja' }).click();
     // Application Insights sets ai_user when it starts, so errors thrown after that are tracked
@@ -39,11 +41,12 @@ test.describe('Telemetry', () => {
 
     await page.evaluate(() => {
       setTimeout(() => {
-        throw new RangeError('Uncaught test error');
+        throw new TypeError('Error from injected code');
       });
       // Some browser internals fire error events without an error object. ("Script error." is one, but it is filtered out)
       window.dispatchEvent(new ErrorEvent('error', { message: 'Error event without error object' }));
     });
+    await page.addScriptTag({ url: '/tests/stories/fixtures/throwUncaughtError.ts', type: 'module' });
 
     const getExceptions = async () =>
       (await getTelemetry(page, { baseType: 'ExceptionData' })).map(

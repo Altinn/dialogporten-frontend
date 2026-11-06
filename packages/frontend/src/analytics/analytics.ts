@@ -137,6 +137,18 @@ const trackEvent = (eventName: AnalyticsEventName, properties?: Record<string, s
   });
 };
 
+const scriptFilePattern = /\.(?:[cm]?js|jsx|tsx?)$/i;
+
+const isOwnScriptFile = (fileName?: string) => {
+  if (!fileName) return false;
+  try {
+    const url = new URL(fileName);
+    return url.origin === window.location.origin && scriptFilePattern.test(url.pathname);
+  } catch {
+    return false;
+  }
+};
+
 const initApplicationInsights = () => {
   const reactPlugin = new ReactPlugin();
   try {
@@ -248,12 +260,12 @@ const initApplicationInsights = () => {
             }
           }
 
-          // Errors from browser-injected scripts (e.g. __gCrWeb in Chrome iOS) have no file URL on any frame
+          // Errors from browser-injected scripts (e.g. Chrome and the Google app on iOS) have no frame in our script files
           const parsedFrames: { fileName?: string }[] = exceptions.flatMap(
             (exception: { parsedStack?: { fileName?: string }[] }) =>
               Array.isArray(exception.parsedStack) ? exception.parsedStack : [],
           );
-          if (parsedFrames.length > 0 && !parsedFrames.some((frame) => frame.fileName)) {
+          if (parsedFrames.length > 0 && !parsedFrames.some((frame) => isOwnScriptFile(frame.fileName))) {
             return false;
           }
           break;
