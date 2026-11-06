@@ -5,13 +5,14 @@ const mockUnload = vi.fn();
 const mockTrackException = vi.fn();
 const mockOnunloadFlush = vi.fn();
 const mockConstructor = vi.fn();
+const mockAddTelemetryInitializer = vi.fn();
 
 vi.mock('@microsoft/applicationinsights-web', () => ({
   ApplicationInsights: class {
     constructor(...args: unknown[]) {
       mockConstructor(...args);
     }
-    addTelemetryInitializer = vi.fn();
+    addTelemetryInitializer = (...args: unknown[]) => mockAddTelemetryInitializer(...args);
     loadAppInsights = () => mockLoadAppInsights();
     unload = (...args: unknown[]) => mockUnload(...args);
     trackException = (...args: unknown[]) => mockTrackException(...args);
@@ -140,5 +141,64 @@ describe('Analytics.flush', () => {
     expect(mockConstructor).toHaveBeenCalledWith({
       config: expect.objectContaining({ onunloadDisableFetch: true }),
     });
+  });
+});
+
+describe('exception telemetry filter', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.stubEnv('PROD', true);
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  const getInitializer = async () => {
+    const { setAnalyticsEnabled } = await importAnalytics();
+    setAnalyticsEnabled(true);
+    return mockAddTelemetryInitializer.mock.calls[0][0] as (envelope: unknown) => boolean;
+  };
+
+  const stackOverflow = (fileNames: string[]) => ({
+    baseType: 'ExceptionData',
+    baseData: {
+      exceptions: [
+        {
+          typeName: 'RangeError',
+          message: 'Maximum call stack size exceeded.',
+          parsedStack: fileNames.map((fileName, level) => ({ level, fileName })),
+        },
+      ],
+    },
+  });
+
+  it.each([
+    ['the production bundle', [`${window.location.origin}/assets/index.1.185.2.js`]],
+    ['dev server modules', [`${window.location.origin}/src/pages/Inbox/Inbox.tsx?t=1`]],
+    [
+      'our bundle further down the stack',
+      ['', `${window.location.origin}/inbox`, `${window.location.origin}/assets/usePageTitle.1.185.2.js`],
+    ],
+  ])('keeps errors with a frame in %s', async (_, fileNames) => {
+    const initializer = await getInitializer();
+
+    expect(initializer(stackOverflow(fileNames))).toBe(true);
+  });
+
+  it.each([
+    ['the page URL', [`${window.location.origin}/inbox?view=all`, `${window.location.origin}/inbox`]],
+    ['a script on another host', ['https://www.gstatic.com/injected.js']],
+    ['user scripts and native code', ['code@user-script:5', '']],
+  ])('drops errors whose frames only point at %s', async (_, fileNames) => {
+    const initializer = await getInitializer();
+
+    expect(initializer(stackOverflow(fileNames))).toBe(false);
+  });
+
+  it('keeps errors without a parsed stack', async () => {
+    const initializer = await getInitializer();
+
+    expect(initializer(stackOverflow([]))).toBe(true);
   });
 });
