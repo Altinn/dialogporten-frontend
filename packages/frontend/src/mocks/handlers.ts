@@ -1,6 +1,7 @@
 import { formatDisplayName } from '@altinn/altinn-components';
 import {
   ActorType,
+  CorrespondenceForwardingConstraint,
   type DeleteSavedSearchMutation,
   type DeleteSavedSearchMutationVariables,
   type NotificationLogsResponse,
@@ -14,7 +15,7 @@ import {
 } from 'bff-types-generated';
 import { graphql, HttpResponse, http } from 'msw';
 import { filterDialogs, STORY_MARKDOWN_URL, toDialogById, toSearchDialog } from './data/base/helper.ts';
-import type { MockDialog } from './data/base/mockDialog.ts';
+import type { ForwardingMock, MockDialog } from './data/base/mockDialog.ts';
 import { getMockedData } from './data.ts';
 
 const data = await getMockedData(window.location.href);
@@ -862,6 +863,14 @@ const dialogAccessInfoMock = graphql.query('dialogAccessInfo', ({ variables }) =
 const findForwarding = (correspondenceId: string) =>
   inMemoryStore.dialogs?.find((d) => d.id === correspondenceId)?.forwarding;
 
+const forwardingConstraintByMock: Record<ForwardingMock, CorrespondenceForwardingConstraint> = {
+  allowed: CorrespondenceForwardingConstraint.None,
+  notAllowed: CorrespondenceForwardingConstraint.None,
+  attachmentsExceedMaxLimit: CorrespondenceForwardingConstraint.AttachmentsExceedMaxLimit,
+  notAccessToAllAttachments: CorrespondenceForwardingConstraint.NotAccessToAllAttachments,
+  expiringAttachments: CorrespondenceForwardingConstraint.ExpiringAttachments,
+};
+
 const correspondenceForwardingCheckMock = graphql.query('correspondenceForwardingCheck', ({ variables }) => {
   const { correspondenceId } = variables as { correspondenceId: string };
   const forwarding = findForwarding(correspondenceId);
@@ -871,7 +880,9 @@ const correspondenceForwardingCheckMock = graphql.query('correspondenceForwardin
     data: {
       correspondenceForwardingCheck: {
         allowed,
-        attachmentsExceedMaxLimit: allowed && forwarding === 'attachmentsExceedMaxLimit',
+        forwardingConstraint: allowed
+          ? forwardingConstraintByMock[forwarding]
+          : CorrespondenceForwardingConstraint.None,
       },
     },
   });
@@ -886,15 +897,8 @@ const forwardFailuresByLocalPart: Record<string, { status: number; errorCode: nu
 };
 
 const forwardCorrespondenceMock = graphql.mutation('forwardCorrespondence', ({ variables }) => {
-  const { correspondenceId, forwardTo, includeAttachments } = variables as {
-    correspondenceId: string;
-    forwardTo?: string;
-    includeAttachments?: boolean;
-  };
-  const failure =
-    includeAttachments && findForwarding(correspondenceId) === 'attachmentsExceedMaxLimit'
-      ? { status: 400, errorCode: 1071 }
-      : forwardFailuresByLocalPart[forwardTo?.toLowerCase().split('@')[0] ?? ''];
+  const { forwardTo } = variables as { forwardTo?: string };
+  const failure = forwardFailuresByLocalPart[forwardTo?.toLowerCase().split('@')[0] ?? ''];
 
   return HttpResponse.json({
     data: {

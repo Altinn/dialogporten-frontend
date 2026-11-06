@@ -49,7 +49,7 @@ A dialog is a `MockDialog`, built with `mockDialog()` from `src/mocks/data/base/
 | `mainContentReference` | Markdown main content. Use `mainContentMarkdown` to serve story-specific markdown instead |
 | `notificationLogs` | None (`mockNotificationLog()` builds one) |
 | `labelAssignmentLog` | Left out: derived from the dialog's system labels |
-| `forwarding` | `'allowed'`. Also `'notAllowed'` and `'attachmentsExceedMaxLimit'` |
+| `forwarding` | `'allowed'`. Also `'notAllowed'`, `'attachmentsExceedMaxLimit'`, `'notAccessToAllAttachments'` and `'expiringAttachments'` |
 
 Some values are derived, so the inbox and the dialog page always agree:
 

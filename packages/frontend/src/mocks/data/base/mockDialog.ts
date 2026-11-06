@@ -18,7 +18,12 @@ import {
 } from 'bff-types-generated';
 import { getMockedMarkdownFCEContent } from './helper.ts';
 
-export type ForwardingMock = 'allowed' | 'notAllowed' | 'attachmentsExceedMaxLimit';
+export type ForwardingMock =
+  | 'allowed'
+  | 'notAllowed'
+  | 'attachmentsExceedMaxLimit'
+  | 'notAccessToAllAttachments'
+  | 'expiringAttachments';
 
 export type MockDialog = Omit<
   SearchDialogFieldsFragment,
