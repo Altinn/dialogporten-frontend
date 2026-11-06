@@ -118,6 +118,7 @@ module virtualMachine '../../modules/virtualMachine/main.bicep' = {
   params: {
     name: name
     sshPublicKey: sshPublicKey
+    postProvisionScript: loadTextContent('./harden.sh')
     location: location
     tags: tags
     adminLoginGroupObjectId: adminLoginGroupObjectId
