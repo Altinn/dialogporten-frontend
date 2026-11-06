@@ -49,6 +49,7 @@ test.describe('Front channel embed language', () => {
 
     await selectLanguage(page, 'Meny', 'English');
 
-    await expect(page.getByRole('heading', { name: 'Grunnleggende konsepter fra markdown' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Basic markdown concepts' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Grunnleggende konsepter fra markdown' })).toBeHidden();
   });
 });
