@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.186.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.185.2...v1.186.0) (2026-11-06)
+
+
+### Features
+
+* forward attachment constraints ([#4811](https://github.com/Altinn/dialogporten-frontend/issues/4811)) ([8e1f69d](https://github.com/Altinn/dialogporten-frontend/commit/8e1f69d344dd2ea44c0fd897bc01b19da475fccd))
+
+
+### Bug Fixes
+
+* **analytics:** drop exceptions from browser-injected scripts ([#4810](https://github.com/Altinn/dialogporten-frontend/issues/4810)) ([c57abd7](https://github.com/Altinn/dialogporten-frontend/commit/c57abd78587b6a8458b088d776520d5c67449978))
+* **ci:** upgrade Playwright to 1.64.1 for Ubuntu 26.04 runners ([#4812](https://github.com/Altinn/dialogporten-frontend/issues/4812)) ([7b9d8a8](https://github.com/Altinn/dialogporten-frontend/commit/7b9d8a895d66b89c215625be2e2d17cbeac42080))
+
 ## [1.185.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.185.1...v1.185.2) (2026-11-05)
 
 
