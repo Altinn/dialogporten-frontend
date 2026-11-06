@@ -1,4 +1,5 @@
 import { renderHook, waitFor } from '@testing-library/react';
+import { CorrespondenceForwardingConstraint } from 'bff-types-generated';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createCustomWrapper } from '../../../tests/test-utils.tsx';
 import {
@@ -48,7 +49,7 @@ describe('useCorrespondenceForwardingCheck', () => {
   it('checks forwarding for the correspondence id resolved from the dialog lookup', async () => {
     dialogAccessInfo.mockResolvedValue(lookup(`urn:altinn:correspondence-id:${CORRESPONDENCE_ID}`));
     correspondenceForwardingCheck.mockResolvedValue({
-      correspondenceForwardingCheck: { allowed: true, attachmentsExceedMaxLimit: false },
+      correspondenceForwardingCheck: { allowed: true, forwardingConstraint: CorrespondenceForwardingConstraint.None },
     });
 
     const { result } = renderHook(() => useCorrespondenceForwardingCheck(DIALOG_ID), {
@@ -56,16 +57,19 @@ describe('useCorrespondenceForwardingCheck', () => {
     });
 
     await waitFor(() => expect(result.current.allowed).toBe(true));
-    expect(result.current.attachmentsExceedMaxLimit).toBe(false);
+    expect(result.current.forwardingConstraint).toBe(CorrespondenceForwardingConstraint.None);
     expect(result.current.correspondenceId).toBe(CORRESPONDENCE_ID);
     expect(dialogAccessInfo).toHaveBeenCalledWith({ instanceRef: `urn:altinn:dialog-id:${DIALOG_ID}` });
     expect(correspondenceForwardingCheck).toHaveBeenCalledWith({ correspondenceId: CORRESPONDENCE_ID });
   });
 
-  it('reports when the attachments are too large to forward', async () => {
+  it('reports why the attachments cannot be forwarded', async () => {
     dialogAccessInfo.mockResolvedValue(lookup(`urn:altinn:correspondence-id:${CORRESPONDENCE_ID}`));
     correspondenceForwardingCheck.mockResolvedValue({
-      correspondenceForwardingCheck: { allowed: true, attachmentsExceedMaxLimit: true },
+      correspondenceForwardingCheck: {
+        allowed: true,
+        forwardingConstraint: CorrespondenceForwardingConstraint.ExpiringAttachments,
+      },
     });
 
     const { result } = renderHook(() => useCorrespondenceForwardingCheck(DIALOG_ID), {
@@ -73,13 +77,13 @@ describe('useCorrespondenceForwardingCheck', () => {
     });
 
     await waitFor(() => expect(result.current.allowed).toBe(true));
-    expect(result.current.attachmentsExceedMaxLimit).toBe(true);
+    expect(result.current.forwardingConstraint).toBe(CorrespondenceForwardingConstraint.ExpiringAttachments);
   });
 
   it('reports not allowed when the check says so', async () => {
     dialogAccessInfo.mockResolvedValue(lookup(`urn:altinn:correspondence-id:${CORRESPONDENCE_ID}`));
     correspondenceForwardingCheck.mockResolvedValue({
-      correspondenceForwardingCheck: { allowed: false, attachmentsExceedMaxLimit: false },
+      correspondenceForwardingCheck: { allowed: false, forwardingConstraint: CorrespondenceForwardingConstraint.None },
     });
 
     const { result } = renderHook(() => useCorrespondenceForwardingCheck(DIALOG_ID), {

@@ -3,9 +3,16 @@ import axios, { isAxiosError } from 'axios';
 import { type Context, getSessionToken } from '../../auth/oidc.js';
 import config from '../../config.ts';
 
+export type CorrespondenceForwardingConstraint =
+  | 'NONE'
+  | 'ATTACHMENTS_EXCEED_MAX_LIMIT'
+  | 'NOT_ACCESS_TO_ALL_ATTACHMENTS'
+  | 'EXPIRING_ATTACHMENTS'
+  | 'UNKNOWN';
+
 export interface CorrespondenceForwardingCheckResult {
   allowed: boolean;
-  attachmentsExceedMaxLimit: boolean;
+  forwardingConstraint: CorrespondenceForwardingConstraint;
 }
 
 export interface ForwardCorrespondenceArgs {
@@ -29,7 +36,14 @@ interface ForwardingCheckResponse {
 
 const correspondenceIdPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-const notAllowed: CorrespondenceForwardingCheckResult = { allowed: false, attachmentsExceedMaxLimit: false };
+const notAllowed: CorrespondenceForwardingCheckResult = { allowed: false, forwardingConstraint: 'NONE' };
+
+const forwardingConstraintsByName = new Map<unknown, CorrespondenceForwardingConstraint>([
+  ['None', 'NONE'],
+  ['AttachmentsExceedMaxLimit', 'ATTACHMENTS_EXCEED_MAX_LIMIT'],
+  ['NotAccessToAllAttachments', 'NOT_ACCESS_TO_ALL_ATTACHMENTS'],
+  ['ExpiringAttachments', 'EXPIRING_ATTACHMENTS'],
+]);
 
 export const isValidCorrespondenceId = (value: string): boolean => correspondenceIdPattern.test(value);
 
@@ -62,10 +76,12 @@ export const checkCorrespondenceForwarding = async (
         },
       },
     );
-    const allowed = data?.allowForwarding === true;
+    if (data?.allowForwarding !== true) {
+      return notAllowed;
+    }
     return {
-      allowed,
-      attachmentsExceedMaxLimit: allowed && data?.forwardingConstraints === 'AttachmentsExceedMaxLimit',
+      allowed: true,
+      forwardingConstraint: forwardingConstraintsByName.get(data.forwardingConstraints) ?? 'UNKNOWN',
     };
   } catch (error) {
     const status = isAxiosError(error) ? error.response?.status : undefined;

@@ -24,7 +24,7 @@ const contextWithToken = (accessToken = 'enduser-token') =>
 
 const contextWithoutToken = () => ({ session: { get: () => undefined } }) as never;
 
-const notAllowed = { allowed: false, attachmentsExceedMaxLimit: false };
+const notAllowed = { allowed: false, forwardingConstraint: 'NONE' };
 
 const axiosError = (status?: number, data: unknown = {}) =>
   Object.assign(new Error('request failed'), {
@@ -52,35 +52,30 @@ describe('checkCorrespondenceForwarding', () => {
     vi.clearAllMocks();
   });
 
-  it('allows forwarding when the correspondence allows it', async () => {
-    get.mockResolvedValueOnce({ data: { allowForwarding: true, forwardingConstraints: 'None' } });
+  it.each([
+    ['None', 'NONE'],
+    ['AttachmentsExceedMaxLimit', 'ATTACHMENTS_EXCEED_MAX_LIMIT'],
+    ['NotAccessToAllAttachments', 'NOT_ACCESS_TO_ALL_ATTACHMENTS'],
+    ['ExpiringAttachments', 'EXPIRING_ATTACHMENTS'],
+  ])('allows forwarding and maps the constraint %s to %s', async (forwardingConstraints, forwardingConstraint) => {
+    get.mockResolvedValueOnce({ data: { allowForwarding: true, forwardingConstraints } });
     const { checkCorrespondenceForwarding } = await importService();
 
     await expect(checkCorrespondenceForwarding(CORRESPONDENCE_ID, contextWithToken())).resolves.toEqual({
       allowed: true,
-      attachmentsExceedMaxLimit: false,
+      forwardingConstraint,
     });
   });
 
-  it('allows forwarding without attachments when they exceed the size limit', async () => {
-    get.mockResolvedValueOnce({ data: { allowForwarding: true, forwardingConstraints: 'AttachmentsExceedMaxLimit' } });
-    const { checkCorrespondenceForwarding } = await importService();
-
-    await expect(checkCorrespondenceForwarding(CORRESPONDENCE_ID, contextWithToken())).resolves.toEqual({
-      allowed: true,
-      attachmentsExceedMaxLimit: true,
-    });
-  });
-
-  it.each([undefined, 'None', 1, 'attachmentsExceedMaxLimit'])(
-    'does not flag the attachments for the constraint %j',
+  it.each([undefined, null, 1, 'attachmentsExceedMaxLimit', 'SomeFutureConstraint', 'toString'])(
+    'treats the unrecognised constraint %j as unknown so the attachments are left out',
     async (forwardingConstraints) => {
       get.mockResolvedValueOnce({ data: { allowForwarding: true, forwardingConstraints } });
       const { checkCorrespondenceForwarding } = await importService();
 
       await expect(checkCorrespondenceForwarding(CORRESPONDENCE_ID, contextWithToken())).resolves.toEqual({
         allowed: true,
-        attachmentsExceedMaxLimit: false,
+        forwardingConstraint: 'UNKNOWN',
       });
     },
   );

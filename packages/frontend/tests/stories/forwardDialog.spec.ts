@@ -70,6 +70,19 @@ test.describe('Forward dialog by email', () => {
     await expect(page.getByRole('dialog')).toBeHidden();
   });
 
+  for (const [dialogTitle, explanation] of [
+    ['Videresending: vedlegg uten tilgang', /ikke tilgang til alle vedleggene.*Bare selve meldingen blir videresendt/],
+    ['Videresending: vedlegg med utløpsdato', /vedlegg med utløpsdato.*Bare selve meldingen blir videresendt/],
+  ] as const) {
+    test(`explains why the attachments are left out for "${dialogTitle}"`, async ({ page }) => {
+      const modal = await openForwardModal(page, dialogTitle, forwardStoryURL);
+
+      await expect(modal.getByText('Vedleggene blir ikke sendt med')).toBeVisible();
+      await expect(modal.getByText(explanation)).toBeVisible();
+      await expect(modal.getByRole('checkbox')).toHaveCount(0);
+    });
+  }
+
   test('shows how many attachments will be included', async ({ page }) => {
     const modal = await openForwardModal(page, 'Videresending: 3 vedlegg', forwardStoryURL);
 

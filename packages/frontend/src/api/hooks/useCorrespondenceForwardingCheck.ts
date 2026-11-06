@@ -1,4 +1,4 @@
-import type { CorrespondenceForwardingCheckQuery } from 'bff-types-generated';
+import { type CorrespondenceForwardingCheckQuery, CorrespondenceForwardingConstraint } from 'bff-types-generated';
 import { useAuthenticatedQuery } from '../../auth/useAuthenticatedQuery.ts';
 import { QUERY_KEYS } from '../../constants/queryKeys.ts';
 import { graphQLSDK } from '../queries.ts';
@@ -35,7 +35,8 @@ export const useCorrespondenceForwardingCheck = (
   return {
     isLoading: isLookupLoading || isCheckFetching,
     allowed: data?.correspondenceForwardingCheck.allowed ?? false,
-    attachmentsExceedMaxLimit: data?.correspondenceForwardingCheck.attachmentsExceedMaxLimit ?? false,
+    forwardingConstraint:
+      data?.correspondenceForwardingCheck.forwardingConstraint ?? CorrespondenceForwardingConstraint.None,
     correspondenceId,
   };
 };

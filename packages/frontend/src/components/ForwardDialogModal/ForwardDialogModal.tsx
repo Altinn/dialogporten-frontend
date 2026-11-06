@@ -19,6 +19,7 @@ import { Analytics } from '../../analytics/analytics.ts';
 import { ANALYTICS_EVENTS } from '../../analytics/analyticsEvents.ts';
 import { forwardCorrespondence } from '../../api/forwardCorrespondence.ts';
 import { useCorrespondenceForwardingCheck } from '../../api/hooks/useCorrespondenceForwardingCheck.ts';
+import { getAttachmentForwarding } from './attachmentForwarding.ts';
 import { getInvalidRecipients, parseRecipients } from './recipients.ts';
 
 const FORWARDING_TEXT_MAX_LENGTH = 200;
@@ -41,8 +42,6 @@ export const getForwardErrorMessageKey = (errorCode?: number): string => {
     case 1066:
     case 1067:
       return 'dialog.forward.error.invalid_message';
-    case 1071:
-      return 'dialog.forward.error.attachments_exceed_max_limit';
     case 3011:
     case 3027:
       return 'dialog.forward.error.invalid_email';
@@ -62,10 +61,9 @@ export const ForwardDialogModal = ({
   const { t, i18n } = useTranslation();
   const { openSnackbar } = useSnackbar();
   const formId = useId();
-  const { isLoading, allowed, attachmentsExceedMaxLimit, correspondenceId } = useCorrespondenceForwardingCheck(
-    dialogId,
-    { enabled: isOpen },
-  );
+  const { isLoading, allowed, forwardingConstraint, correspondenceId } = useCorrespondenceForwardingCheck(dialogId, {
+    enabled: isOpen,
+  });
   const [forwardTo, setForwardTo] = useState('');
   const [forwardingText, setForwardingText] = useState('');
   const [includeAttachments, setIncludeAttachments] = useState(true);
@@ -74,8 +72,7 @@ export const ForwardDialogModal = ({
 
   const canForward = !isLoading && allowed && !!correspondenceId;
   const isNotAllowed = !isLoading && !canForward;
-  const showIncludeAttachments = attachmentCount > 0 && !attachmentsExceedMaxLimit;
-  const shouldIncludeAttachments = includeAttachments && !attachmentsExceedMaxLimit;
+  const attachmentForwarding = getAttachmentForwarding({ forwardingConstraint, attachmentCount, includeAttachments });
   const recipients = parseRecipients(forwardTo);
   const invalidRecipients = getInvalidRecipients(recipients);
   const formatList = (items: string[]) =>
@@ -116,14 +113,14 @@ export const ForwardDialogModal = ({
     Analytics.trackEvent(ANALYTICS_EVENTS.DIALOG_FORWARD_SUBMIT, {
       'dialog.id': dialogId ?? '',
       'forward.recipientCount': recipients.length,
-      'forward.includeAttachments': shouldIncludeAttachments,
+      'forward.includeAttachments': attachmentForwarding.includeAttachments,
     });
     const results = await forwardCorrespondence(
       {
         correspondenceId,
         forwardTo: recipients,
         forwardingText: forwardingText.trim() || undefined,
-        includeAttachments: shouldIncludeAttachments,
+        includeAttachments: attachmentForwarding.includeAttachments,
       },
       dialogToken,
       refreshDialogToken,
@@ -202,11 +199,11 @@ export const ForwardDialogModal = ({
       ) : canForward ? (
         <form id={formId} onSubmit={handleSubmit} noValidate>
           <Section spacing={6}>
-            {attachmentsExceedMaxLimit && (
+            {attachmentForwarding.constraintMessageKey && (
               <Alert
                 variant="warning"
-                heading={t('dialog.forward.attachments_exceed_max_limit.title')}
-                message={t('dialog.forward.attachments_exceed_max_limit.body')}
+                heading={t('dialog.forward.attachments_not_included.title')}
+                message={t(attachmentForwarding.constraintMessageKey)}
               />
             )}
             <Field>
@@ -248,7 +245,7 @@ export const ForwardDialogModal = ({
                 })}
               </ValidationMessage>
             </Field>
-            {showIncludeAttachments && (
+            {attachmentForwarding.showIncludeAttachments && (
               <Field size="sm">
                 <Input
                   type="checkbox"

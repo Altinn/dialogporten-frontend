@@ -33,6 +33,22 @@ const forwardingScenarios: ForwardingScenario[] = [
     attachmentCount: 2,
   },
   {
+    id: '019241f7-f0a0-7000-8000-000000000007',
+    title: 'Videresending: vedlegg uten tilgang',
+    summary:
+      'Brukeren har ikke tilgang til alle vedleggene. Ingen avkrysningsboks, men en advarsel om at bare meldingen blir videresendt.',
+    forwarding: 'notAccessToAllAttachments',
+    attachmentCount: 2,
+  },
+  {
+    id: '019241f7-f0a0-7000-8000-000000000008',
+    title: 'Videresending: vedlegg med utløpsdato',
+    summary:
+      'Meldingen har vedlegg med utløpsdato. Ingen avkrysningsboks, men en advarsel om at bare meldingen blir videresendt.',
+    forwarding: 'expiringAttachments',
+    attachmentCount: 1,
+  },
+  {
     id: '019241f7-f0a0-7000-8000-000000000004',
     title: 'Videresending: uten vedlegg',
     summary: 'Kan videresendes. Avkrysningsboksen for vedlegg vises ikke.',
