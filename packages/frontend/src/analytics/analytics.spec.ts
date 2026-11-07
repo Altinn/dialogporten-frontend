@@ -202,3 +202,43 @@ describe('exception telemetry filter', () => {
     expect(initializer(stackOverflow([]))).toBe(true);
   });
 });
+
+describe('application version tag', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.stubEnv('PROD', true);
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
+  });
+
+  const tagsFor = async (baseType: string) => {
+    const { setAnalyticsEnabled } = await importAnalytics();
+    setAnalyticsEnabled(true);
+    const initializer = mockAddTelemetryInitializer.mock.calls[0][0] as (envelope: unknown) => boolean;
+    const envelope: { baseType: string; baseData: object; tags?: Record<string, string> } = { baseType, baseData: {} };
+    initializer(envelope);
+    return envelope.tags;
+  };
+
+  it.each(['PageviewData', 'EventData', 'ExceptionData'])('tags %s with the build version', async (baseType) => {
+    vi.stubGlobal('__APP_VERSION__', '1.185.2');
+
+    expect(await tagsFor(baseType)).toMatchObject({ 'ai.application.ver': '1.185.2' });
+  });
+
+  it.each([
+    ['empty', ''],
+    ['undefined', undefined],
+  ])('leaves the version out when it is %s', async (_, version) => {
+    vi.stubGlobal('__APP_VERSION__', version);
+
+    expect(await tagsFor('PageviewData')).not.toHaveProperty(['ai.application.ver']);
+  });
+
+  it('leaves the version out when it is not defined at all', async () => {
+    expect(await tagsFor('PageviewData')).not.toHaveProperty(['ai.application.ver']);
+  });
+});

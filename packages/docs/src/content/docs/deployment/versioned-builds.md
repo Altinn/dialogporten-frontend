@@ -61,6 +61,7 @@ The build will use Vite's built-in hash-based naming for cache busting during de
 The version is automatically set in CI/CD workflows:
 - `BUILD_VERSION` is set to `{package-version}-{git-short-sha}`
 - Source maps are uploaded to blob storage with the same version prefix
+- Frontend telemetry carries the same version as `application_Version`, so you can tell which source maps apply to an exception even when none of its stack frames are in our bundle
 - Application Insights can now correctly map source maps to deployed files
 
 ## Configuration
