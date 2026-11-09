@@ -79,7 +79,7 @@ const startServer = async (): Promise<void> => {
   }
 
   server.setErrorHandler<FastifyError>((error, request, reply) => {
-    logger.error(error, `Error handling request ${request.method} ${request.url}`);
+    logger.error(error, `Error handling request ${request.method} ${request.url.split('?')[0]}`);
 
     //csp nonce for inline styles
     const nonce = crypto.randomBytes(16).toString('base64');

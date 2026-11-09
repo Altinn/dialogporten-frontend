@@ -82,7 +82,7 @@ export const sendVerificationCode = async (data: SendVerificationCodeInputData, 
     }
 
     logger.error(
-      `Failed to send verification code for ${data.value} with type ${data.type}: ${
+      `Failed to send verification code with type ${data.type}: ${
         isAxiosError(error) ? `${error.response?.status ?? ''} ${error.message}` : String(error)
       }`,
     );
@@ -214,10 +214,7 @@ export const verifyAddress = async (data: VerifyAddressInputData, context: Conte
     if (isAxiosError(error)) {
       const status = error.response?.status;
       const upstreamBody = error.response?.data;
-      logger.error(
-        { status, upstreamBody, value: data.value, type: data.type },
-        'Failed to verify address — upstream error',
-      );
+      logger.error({ status, upstreamBody, type: data.type }, 'Failed to verify address — upstream error');
       if (status === 422 || status === 400) {
         return { success: false, message: 'invalid_code' };
       }
