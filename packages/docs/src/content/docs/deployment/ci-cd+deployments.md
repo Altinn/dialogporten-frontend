@@ -121,6 +121,10 @@ The `dispatch-deploy-infrastructure.yml` workflow is used for deploying infrastr
 
 This workflow facilitates the deployment of infrastructure to the specified environment, using the version details provided.
 
+#### Application deploy order
+
+All pipelines that deploy applications to Azure Container Apps, including **Deploy Apps (Manual)**, use `workflow-deploy-apps.yml`. It runs the migration job (when enabled), then deploys the BFF, then the frontend. The frontend deploy starts only after the new BFF revision is healthy. If the BFF deploy fails or times out, the frontend is not deployed, so a new frontend never runs against an old BFF.
+
 #### Manifests repository
 
 Besides deploying to Azure Container Apps, the event-driven pipelines (`ci-cd-main.yml` → `at23`, `ci-cd-staging.yml` → `tt02`, `ci-cd-yt01.yml` → `yt01` and `ci-cd-prod.yml` → `prod`) send an `update_all_image_tags` event to `altinn/dialogporten-frontend-manifests` with the deployed image tag (`workflow-dispatch-update-manifests.yml`). The event is only sent when the pipeline detects application changes. The manual workflows above do not send it.

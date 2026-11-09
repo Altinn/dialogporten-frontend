@@ -4,7 +4,7 @@ on:
     outputs:
       deployment_executed:
         description: "Indicates if the deployment was actually executed"
-        value: ${{ jobs.deploy-apps.result == 'success' && !inputs.dryRun }}
+        value: ${{ jobs.deploy-bff.result == 'success' && jobs.deploy-frontend.result == 'success' && !inputs.dryRun }}
     secrets:
       AZURE_CLIENT_ID:
         required: true
@@ -141,8 +141,11 @@ jobs:
         continue-on-error: true
         run: az logout
 
-  deploy-apps:
-    name: Deploy ${{ matrix.name }} to ${{ inputs.environment }}
+  # The BFF is deployed and verified before the frontend, so a new frontend never
+  # runs against an old BFF. If the BFF deploy fails or times out, the frontend
+  # is not deployed.
+  deploy-bff:
+    name: Deploy bff to ${{ inputs.environment }}
     # Self-hosted: repo-scoped ephemeral runner (Azure Container App Job).
     # See Altinn/altinn-platform infrastructure/gh-runners/dialogporten-frontend.tf
     runs-on: self-hosted
@@ -150,17 +153,14 @@ jobs:
     if: ${{ always() && !cancelled() && !failure() }}
     needs: deploy-migration-job
     timeout-minutes: 6
-    strategy:
-      fail-fast: true
-      matrix:
-        include:
-          - name: bff
-          - name: frontend
     environment: ${{ inputs.environment }}
     permissions:
       id-token: write
       contents: read
-    steps:
+    env:
+      APP_NAME: bff
+    # deploy-frontend reuses these steps through the YAML alias *deploy-app-steps
+    steps: &deploy-app-steps
       - name: "Checkout GitHub Action"
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -173,7 +173,7 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Dryrun Deploy app ${{ matrix.name }}(${{ inputs.environment }})
+      - name: Dryrun Deploy app ${{ env.APP_NAME }}(${{ inputs.environment }})
         uses: azure/bicep-deploy@66910e9c5c7733c33a1cd605030d02234b3bc4ed # v2.3.0
         if: ${{inputs.dryRun}}
         id: deploy-dryrun
@@ -188,13 +188,13 @@ jobs:
           scope: resourceGroup
           type: deployment
           operation: whatIf
-          template-file: ./.azure/applications/${{ matrix.name }}/main.bicep
+          template-file: ./.azure/applications/${{ env.APP_NAME }}/main.bicep
           resource-group-name: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
-          name: dp-fe-${{ inputs.environment }}-${{ matrix.name }}-${{ inputs.version }}
-          parameters-file: ./.azure/applications/${{ matrix.name }}/${{ inputs.environment }}.bicepparam
+          name: dp-fe-${{ inputs.environment }}-${{ env.APP_NAME }}-${{ inputs.version }}
+          parameters-file: ./.azure/applications/${{ env.APP_NAME }}/${{ inputs.environment }}.bicepparam
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Deploy app ${{ matrix.name }}(${{ inputs.environment }})
+      - name: Deploy app ${{ env.APP_NAME }}(${{ inputs.environment }})
         uses: azure/bicep-deploy@66910e9c5c7733c33a1cd605030d02234b3bc4ed # v2.3.0
         if: ${{!inputs.dryRun}}
         id: deploy
@@ -209,13 +209,13 @@ jobs:
           scope: resourceGroup
           type: deployment
           operation: create
-          template-file: ./.azure/applications/${{ matrix.name }}/main.bicep
+          template-file: ./.azure/applications/${{ env.APP_NAME }}/main.bicep
           resource-group-name: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
-          name: dp-fe-${{ inputs.environment }}-${{ matrix.name }}-${{ inputs.version }}
-          parameters-file: ./.azure/applications/${{ matrix.name }}/${{ inputs.environment }}.bicepparam
+          name: dp-fe-${{ inputs.environment }}-${{ env.APP_NAME }}-${{ inputs.version }}
+          parameters-file: ./.azure/applications/${{ env.APP_NAME }}/${{ inputs.environment }}.bicepparam
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Verify deployment (${{ matrix.name }})
+      - name: Verify deployment (${{ env.APP_NAME }})
         if: ${{!inputs.dryRun}}
         id: verify-deployment
         timeout-minutes: 6
@@ -228,3 +228,20 @@ jobs:
         if: ${{failure() || success()}}
         continue-on-error: true
         run: az logout
+
+  deploy-frontend:
+    name: Deploy frontend to ${{ inputs.environment }}
+    # Self-hosted: repo-scoped ephemeral runner (Azure Container App Job).
+    # See Altinn/altinn-platform infrastructure/gh-runners/dialogporten-frontend.tf
+    runs-on: self-hosted
+    # Only deploy the frontend after the BFF deploy succeeded
+    if: ${{ !cancelled() && needs.deploy-bff.result == 'success' }}
+    needs: deploy-bff
+    timeout-minutes: 6
+    environment: ${{ inputs.environment }}
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      APP_NAME: frontend
+    steps: *deploy-app-steps
