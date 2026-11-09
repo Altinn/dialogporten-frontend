@@ -1,5 +1,6 @@
 import pino from 'pino';
 import z from 'zod';
+import { sanitizeOptions, sanitizeRecord } from './sanitize.js';
 
 const envVariables = z.object({
   LOGGER_FORMAT: z.enum(['json', 'pretty']).default('pretty'),
@@ -137,10 +138,10 @@ if (env.OTEL_EXPORTER_OTLP_ENDPOINT) {
   transports = pino.transport(consoleTransport);
 }
 
-const pinoLogger = pino({ level: env.LOG_LEVEL }, transports);
+const pinoLogger = pino({ level: env.LOG_LEVEL, ...sanitizeOptions }, transports);
 
 export const createContextLogger = (context: Record<string | number | symbol, unknown>) => {
-  const child = pinoLogger.child(context);
+  const child = pinoLogger.child(sanitizeRecord(context));
 
   return {
     trace: child.trace.bind(child),
