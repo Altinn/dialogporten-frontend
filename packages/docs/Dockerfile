@@ -1,4 +1,4 @@
-FROM node:24.15.0-slim@sha256:4e6b70dd6cbfc88c8157ba19aa3d9f9cce6ba4703576d55459e45efcbc9c5f5d AS build
+FROM node:24.22.2-slim@sha256:01d566e8d94d8c619591d78652babfccd3c6992a3dffa9ed5ab39e11cf6c70e9 AS build
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 ENV ASTRO_TELEMETRY_DISABLED=1
@@ -17,7 +17,7 @@ CMD ["pnpm", "--filter", "docs", "run", "dev", "--port", "80", "--host", "0.0.0.
 
 # ---
 
-FROM nginx:1.25-alpine@sha256:516475cc129da42866742567714ddc681e5eed7b9ee0b9e9c015e464b4221a00
+FROM nginx:1.31-alpine@sha256:713fc2ebfd92e8217db451477182ee91944b123d2b1ee9fd5a8c6e91ca6c3a11
 COPY --from=build /app/packages/docs/dist/ /usr/share/nginx/html/
 
 EXPOSE 80
