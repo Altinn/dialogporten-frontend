@@ -152,7 +152,7 @@ jobs:
     # Should run even though the migration job was skipped
     if: ${{ always() && !cancelled() && !failure() }}
     needs: deploy-migration-job
-    timeout-minutes: 6
+    timeout-minutes: 10
     environment: ${{ inputs.environment }}
     permissions:
       id-token: write
@@ -218,7 +218,8 @@ jobs:
       - name: Verify deployment (${{ env.APP_NAME }})
         if: ${{!inputs.dryRun}}
         id: verify-deployment
-        timeout-minutes: 6
+        # Keep below the job timeout: a step timeout fails the job, a job timeout only cancels it
+        timeout-minutes: 8
         env:
           REVISION_NAME: ${{ steps.deploy.outputs.revisionName }}
           RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
@@ -237,7 +238,7 @@ jobs:
     # Only deploy the frontend after the BFF deploy succeeded
     if: ${{ !cancelled() && needs.deploy-bff.result == 'success' }}
     needs: deploy-bff
-    timeout-minutes: 6
+    timeout-minutes: 10
     environment: ${{ inputs.environment }}
     permissions:
       id-token: write
