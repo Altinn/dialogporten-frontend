@@ -24,6 +24,7 @@ On macOS using [Homebrew](https://brew.sh/) you can install dependencies by runn
 ```bash
 brew install fnm pnpm fzf
 brew install --cask OrbStack
+npm install -g corepack
 corepack enable
 corepack prepare -activate
 ```

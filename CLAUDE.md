@@ -131,7 +131,7 @@ Each dialog is a complete `MockDialog` built with `mockDialog()` (`base/mockDial
 
 ## Environment Setup
 
-Requires Node 22+, pnpm, and Docker. Create `.env` in root with:
+Requires Node 26+, pnpm, and Docker. Create `.env` in root with:
 ```
 OIDC_CLIENT_ID=<value>
 OIDC_CLIENT_SECRET=<value>
