@@ -1,5 +1,12 @@
 # Dialogporten-frontend / Arbeidsflate
 
+[![CI/CD Main](https://raw.githubusercontent.com/Altinn/dialogporten-frontend/badges/test.svg)](https://github.com/Altinn/dialogporten-frontend/actions/workflows/ci-cd-main.yml)
+[![CI/CD Staging](https://raw.githubusercontent.com/Altinn/dialogporten-frontend/badges/staging.svg)](https://github.com/Altinn/dialogporten-frontend/actions/workflows/ci-cd-staging.yml)
+[![CI/CD YT01](https://raw.githubusercontent.com/Altinn/dialogporten-frontend/badges/yt01.svg)](https://github.com/Altinn/dialogporten-frontend/actions/workflows/ci-cd-yt01.yml)  
+
+[![CI/CD Production Dry Run](https://raw.githubusercontent.com/Altinn/dialogporten-frontend/badges/prod-dry-run.svg)](https://github.com/Altinn/dialogporten-frontend/actions/workflows/ci-cd-prod-dry-run.yml)
+[![CI/CD Production](https://raw.githubusercontent.com/Altinn/dialogporten-frontend/badges/prod.svg)](https://github.com/Altinn/dialogporten-frontend/actions/workflows/ci-cd-prod.yml)  
+
 ## Developer setup
 
 Tool | Description
