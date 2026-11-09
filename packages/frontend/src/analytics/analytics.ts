@@ -13,6 +13,8 @@ const telemetryMockEndpoint = import.meta.env.TELEMETRY_MOCK_ENDPOINT;
 const applicationInsightsConfigured =
   telemetryMockEndpoint || (config.applicationInsightsInstrumentationKey && import.meta.env.PROD);
 
+const appVersion = typeof __APP_VERSION__ === 'string' ? __APP_VERSION__ : '';
+
 const pageMapping: Record<string, string> = {
   [PageRoutes.inbox]: 'Inbox',
   [PageRoutes.sent]: 'Sent Items',
@@ -188,6 +190,9 @@ const initApplicationInsights = () => {
       envelope.tags = envelope.tags || {};
       envelope.tags['ai.cloud.role'] = 'frontend';
       envelope.tags['ai.cloud.roleInstance'] = 'frontend';
+      if (appVersion) {
+        envelope.tags['ai.application.ver'] = appVersion;
+      }
 
       switch (envelope.baseType) {
         case 'PageviewData':

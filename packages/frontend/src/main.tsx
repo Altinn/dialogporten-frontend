@@ -16,7 +16,6 @@ import { getPartyFromCookie } from './cookie.ts';
 import { FeatureFlagProvider, loadFeatureFlags } from './featureFlags/FeatureFlagsProvider.tsx';
 import { installDomMutationGuard } from './utils/domMutationGuard.ts';
 
-declare const __APP_VERSION__: string;
 console.info('App Version:', __APP_VERSION__);
 
 let hasReportedDomRepair = false;

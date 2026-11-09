@@ -106,6 +106,7 @@ import { ReactPlugin } from '@microsoft/applicationinsights-react-js';
 - **Enhanced Correlation**: `enableCorsCorrelation: true`
 - **Debug Mode**: Not enabled. Do not set `enableDebug` — it makes `_throwInternal` throw before `clearSent`, which wedges failed telemetry in sessionStorage until it trips the 48h limit
 - **Sampling**: `samplingPercentage: 100` — no client-side sampling
+- **Release Version**: The telemetry initializer sets the `ai.application.ver` tag to `BUILD_VERSION`, which `vite.config.ts` compiles in as `__APP_VERSION__`. It shows up as `application_Version` in Application Insights, so you can group frontend exceptions, page views and events by release. Local builds have no version, so the tag is left out
 
 ### Consent
 
