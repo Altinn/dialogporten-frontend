@@ -169,3 +169,30 @@ jobs:
     with:
       environment-label: yt01
       version: ${{ github.event.client_payload.version }}
+
+  update-deploy-badge:
+    name: Update deploy badge
+    needs:
+      [
+        get-versions-from-github,
+        check-for-changes,
+        deploy-infrastructure,
+        store-infra-version,
+        upload-source-maps,
+        deploy-apps,
+        store-apps-version,
+        update-manifests,
+        send-slack-message-on-failure,
+        send-deployment-to-swarmia,
+        send-deployment-success-slack-message,
+        tag-issues-with-environment,
+      ]
+    if: ${{ always() && !cancelled() }}
+    permissions:
+      contents: write
+    uses: ./.github/workflows/workflow-update-deploy-badge.yml
+    with:
+      name: yt01
+      label: CI/CD YT01
+      status: ${{ (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')) && 'failure' || 'success' }}
+      version: ${{ needs.deploy-apps.outputs.deployment_executed == 'true' && github.event.client_payload.version || '' }}

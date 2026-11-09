@@ -228,3 +228,33 @@ jobs:
       environment: test
     secrets:
       GH_TOKEN: ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}
+
+  update-deploy-badge:
+    name: Update deploy badge
+    needs:
+      [
+        generate-git-short-sha,
+        get-current-version,
+        check-for-changes,
+        build-and-test,
+        docker-build-and-push,
+        update-manifests,
+        deploy-documentation,
+        deploy-infrastructure,
+        upload-source-maps,
+        deploy-apps,
+        send-slack-message-on-failure,
+        send-deployment-to-swarmia,
+        get-previous-deployed-sha,
+        tag-issues-with-environment,
+        store-latest-deployed-sha,
+      ]
+    if: ${{ always() && !cancelled() }}
+    permissions:
+      contents: write
+    uses: ./.github/workflows/workflow-update-deploy-badge.yml
+    with:
+      name: test
+      label: CI/CD Main
+      status: ${{ (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')) && 'failure' || 'success' }}
+      version: ${{ needs.deploy-apps.outputs.deployment_executed == 'true' && format('{0}-{1}', needs.get-current-version.outputs.version, needs.generate-git-short-sha.outputs.gitShortSha) || '' }}

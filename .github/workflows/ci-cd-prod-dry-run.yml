@@ -79,3 +79,23 @@ jobs:
     secrets:
       SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
       SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_CI_CD_STATUS }}
+
+  update-deploy-badge:
+    name: Update deploy badge
+    needs:
+      [
+        get-versions-from-github,
+        check-for-changes,
+        dry-run-deploy-infrastructure,
+        dry-run-deploy-apps,
+        send-slack-message-on-failure,
+      ]
+    if: ${{ always() && !cancelled() }}
+    permissions:
+      contents: write
+    uses: ./.github/workflows/workflow-update-deploy-badge.yml
+    with:
+      name: prod-dry-run
+      label: CI/CD Production Dry Run
+      status: ${{ (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')) && 'failure' || 'success' }}
+      version: ${{ github.event.client_payload.version }}

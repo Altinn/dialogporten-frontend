@@ -137,6 +137,7 @@ For rolling back a release, see [Rollback](../rollback/).
 - Release-please manages versioning based on conventional commits
 - Versions are tracked in GitHub environment variables
 - Separate tracking for infrastructure and applications
+- The README shows the app version deployed to test, staging, YT01 and production as badges, green when the latest run succeeded and red when it failed. Each event-triggered pipeline ends with `workflow-update-deploy-badge.yml`, which draws the badge with shields.io and stores it on the `badges` branch
 - Docker images tagged with release versions
 - SDK and schema packages versioned with releases
 
