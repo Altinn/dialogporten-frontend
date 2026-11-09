@@ -1,8 +1,9 @@
-FROM node:24.15.0-slim@sha256:4e6b70dd6cbfc88c8157ba19aa3d9f9cce6ba4703576d55459e45efcbc9c5f5d AS build
+# Node.js 26.13.0-slim
+FROM node@sha256:5adad64f9a1fca2d51972caa65983634c8a774eb300d72b20f7f2a0f60368072 AS build
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 ENV ASTRO_TELEMETRY_DISABLED=1
-RUN corepack enable
+RUN npm install -g corepack@0.36.0 --ignore-scripts && corepack enable
 
 WORKDIR /app
 COPY . .
@@ -17,7 +18,7 @@ CMD ["pnpm", "--filter", "docs", "run", "dev", "--port", "80", "--host", "0.0.0.
 
 # ---
 
-FROM nginx:1.25-alpine@sha256:516475cc129da42866742567714ddc681e5eed7b9ee0b9e9c015e464b4221a00
+FROM node@sha256:5adad64f9a1fca2d51972caa65983634c8a774eb300d72b20f7f2a0f60368072 AS build
 COPY --from=build /app/packages/docs/dist/ /usr/share/nginx/html/
 
 EXPOSE 80

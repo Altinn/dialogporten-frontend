@@ -13,6 +13,7 @@ export default defineConfig({
     exclude: ['node_modules', 'tests'], // tests for Playwright
     environment: 'jsdom',
     pool: 'threads',
+    execArgv: ['--no-experimental-webstorage'],
     sequence: {
       setupFiles: 'list',
     },
