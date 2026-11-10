@@ -10,6 +10,9 @@ RUN pnpm install --frozen-lockfile
 
 RUN pnpm turbo build
 
+ARG BUILD_VERSION
+ENV BUILD_VERSION=${BUILD_VERSION}
+
 ENV PORT=80
 
 EXPOSE $PORT

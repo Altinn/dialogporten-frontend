@@ -60,7 +60,7 @@ To add a variable, add it to the zod schema and the `config` object in `config.t
 | --- | --- |
 | `PORT`, `HOST` | Listen address (`3000`, `0.0.0.0`) |
 | `HOSTNAME` | Public base URL of the app. Used for the OIDC redirect URI `<HOSTNAME>/api/cb` |
-| `GIT_SHA` | Version shown in logs and health endpoints. Not set in `main.bicep`, so deployed environments show the default |
+| `BUILD_VERSION` | BFF version (`{package-version}-{git-short-sha}`), shown in logs and as `version` in `/api/health`. Baked into the image from the CI build argument, not set in `main.bicep`. Defaults to `dev` when unset or empty |
 | `ENVIRONMENT` | `dev`, `test`, `staging`, `yt01` or `prod` (default `test`). Only used to hide some organizations in prod (`graphql/organizations/service.ts`). Not set in `main.bicep` |
 | `CONTAINER_APP_REPLICA_NAME` | Set by Azure Container Apps. Used as the instance id in telemetry |
 | `MIGRATION_RUN` | `true` runs the database migrations and exits instead of starting the server. Used by the migration job |
