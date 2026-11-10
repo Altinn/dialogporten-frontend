@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.187.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.186.0...v1.187.0) (2026-11-10)
+
+
+### Features
+
+* **bff:** include the deployed version in /api/health ([df0fa60](https://github.com/Altinn/dialogporten-frontend/commit/df0fa609e43ea9a1eda87a731be12a6add425b00))
+* **bff:** tag telemetry with the release version ([70d7b23](https://github.com/Altinn/dialogporten-frontend/commit/70d7b2324fcb622eee48d539f2919337ec5b2ab1))
+
+
+### Bug Fixes
+
+* **bff:** return the reply from async route handlers ([04cc504](https://github.com/Altinn/dialogporten-frontend/commit/04cc504b399d79db7ca78fe98d2f789b84172287))
+* don't cache an empty service filter when Dialogporten fails ([#4832](https://github.com/Altinn/dialogporten-frontend/issues/4832)) ([95a93bd](https://github.com/Altinn/dialogporten-frontend/commit/95a93bdf63402d4f87d2c499bfbda54ff61e8e57))
+* **logger:** sanitize errors and secrets before they are logged ([5fb8990](https://github.com/Altinn/dialogporten-frontend/commit/5fb8990af9177d76fdda9201bf5a7fc7f104af9e))
+
 ## [1.186.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.185.2...v1.186.0) (2026-11-09)
 
 
