@@ -21,7 +21,11 @@ import {
   type SpanProcessor,
   TraceIdRatioBasedSampler,
 } from '@opentelemetry/sdk-trace-base';
-import { ATTR_SERVICE_NAME, SEMRESATTRS_SERVICE_INSTANCE_ID } from '@opentelemetry/semantic-conventions';
+import {
+  ATTR_SERVICE_NAME,
+  ATTR_SERVICE_VERSION,
+  SEMRESATTRS_SERVICE_INSTANCE_ID,
+} from '@opentelemetry/semantic-conventions';
 import config from './config.ts';
 import { filterAppConfigSpans, filterGraphQLSpans, serializeRedisCommand } from './instrumentationFilters.ts';
 
@@ -63,6 +67,7 @@ const instrumentations = [
 // Create custom resource with service information
 const resource = resourceFromAttributes({
   [ATTR_SERVICE_NAME]: config.info.name,
+  [ATTR_SERVICE_VERSION]: config.version,
   [SEMRESATTRS_SERVICE_INSTANCE_ID]: config.info.instanceId || 'local-dev',
 });
 

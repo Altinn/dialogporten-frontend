@@ -31,7 +31,7 @@ import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-grpc';
 
 #### Key Features:
 1. **OTLP Integration**: Exports to Azure Container Apps OTEL Collector which forwards to Application Insights
-2. **Resource Attribution**: Custom service name and instance ID
+2. **Resource Attribution**: Custom service name, instance ID and `service.version` (`BUILD_VERSION`). The log transport in `node-logger` sets `service.version` too, so traces, metrics, logs and exceptions all carry the release version
 3. **Multi-Library Support**: HTTP, GraphQL, Redis, PostgreSQL, and Fastify instrumentation
 4. **Trace ID Propagation**: Adds `X-Trace-Id` header to all responses
 5. **Automatic Log Instrumentation**: All logs and exceptions are sent through OpenTelemetry
