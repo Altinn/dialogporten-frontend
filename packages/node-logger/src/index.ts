@@ -10,6 +10,7 @@ const envVariables = z.object({
     .transform((val) => val === 'true')
     .default(false),
   OTEL_EXPORTER_OTLP_ENDPOINT: z.string().optional(),
+  BUILD_VERSION: z.string().min(1).catch('dev'),
 });
 
 const env = envVariables.parse(process.env);
@@ -102,8 +103,11 @@ const createFatalLogger = (baseLogger: pino.Logger) => {
   };
 };
 
-const openTelemetryTransport = {
+const openTelemetryTransport: pino.TransportTargetOptions = {
   target: 'pino-opentelemetry-transport',
+  options: {
+    resourceAttributes: { 'service.version': env.BUILD_VERSION },
+  },
 };
 
 const pinoPrettyTransport = {
