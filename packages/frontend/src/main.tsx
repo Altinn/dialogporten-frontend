@@ -15,6 +15,9 @@ import { LoggerContextProvider } from './contexts/LoggerContext.tsx';
 import { getPartyFromCookie } from './cookie.ts';
 import { FeatureFlagProvider, loadFeatureFlags } from './featureFlags/FeatureFlagsProvider.tsx';
 import { installDomMutationGuard } from './utils/domMutationGuard.ts';
+import { normalizePathSlashes } from './utils/normalizePathSlashes.ts';
+
+normalizePathSlashes();
 
 console.info('App Version:', __APP_VERSION__);
 
