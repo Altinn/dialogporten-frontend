@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "label": "CI/CD Production Dry Run",
-  "message": "v1.186.0",
+  "message": "v1.187.0",
   "color": "#2ea44f",
   "labelColor": "#24292e",
   "namedLogo": "github"
