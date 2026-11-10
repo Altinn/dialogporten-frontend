@@ -70,8 +70,7 @@ function toAcceptLanguageHeader(langs: string[]): string {
 async function fetchDpServiceResources(context: Context, langs: string[]): Promise<DpServiceResourceItem[]> {
   const token = getSessionToken(context);
   if (!token) {
-    logger.error('No token found in session');
-    return [];
+    throw new Error('No token found in session');
   }
   const response = await axios({
     method: 'POST',
@@ -87,8 +86,7 @@ async function fetchDpServiceResources(context: Context, langs: string[]): Promi
 
   const body = response.data as DpServiceResourcesResponse;
   if (body.errors) {
-    logger.error(body.errors, 'Dialogporten serviceResources query returned errors');
-    return [];
+    throw new Error('Dialogporten serviceResources query returned errors', { cause: body.errors });
   }
 
   return body.data?.serviceResources?.items ?? [];
@@ -98,6 +96,10 @@ async function fetchDpServiceResources(context: Context, langs: string[]): Promi
  * Fetches service resources from Dialogporten on demand and reshapes the response
  * body into the same flat shape as RRServiceResourcesList ({ id, title, org }). Used for the
  * toolbar/saved-search filters.
+ *
+ * Throws on failure instead of returning an empty list, so the frontend doesn't cache an empty service
+ * filter as a successful result. The thrown message reaches the client, so it stays generic; the details
+ * are logged here.
  */
 export async function getDpServiceResources(langs: string[], context: Context): Promise<ServiceResourceResponseDTO[]> {
   try {
@@ -117,7 +119,7 @@ export async function getDpServiceResources(langs: string[], context: Context): 
       langs[0],
     );
   } catch (error) {
-    logger.error(error, 'Error retrieving Dialogporten service resources:');
-    return [];
+    logger.error({ err: error, cause: (error as Error).cause }, 'Error retrieving Dialogporten service resources:');
+    throw new Error('Failed to retrieve service resources from Dialogporten');
   }
 }

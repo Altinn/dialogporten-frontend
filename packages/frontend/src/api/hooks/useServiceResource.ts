@@ -22,10 +22,15 @@ interface UseFilterServiceResourcesOptions {
   enabled?: boolean;
 }
 
+interface UseServiceResourcesQueryOptions {
+  enabled?: boolean;
+  retry?: number;
+}
+
 const useServiceResourcesQuery = (
   queryKeyPrefix: string,
   queryFn: (variables: { lang: string }) => Promise<ServiceResourcesResult>,
-  enabled = true,
+  { enabled = true, retry = 3 }: UseServiceResourcesQueryOptions = {},
 ): UseServiceResourceOutput => {
   const { selectedParties } = useParties();
   const { i18n } = useTranslation();
@@ -41,7 +46,7 @@ const useServiceResourcesQuery = (
   const { data, isLoading, isSuccess } = useAuthenticatedQuery<ServiceResourcesResult>({
     queryKey: [queryKeyPrefix, i18n.language],
     queryFn: () => queryFn({ lang: i18n.language }),
-    retry: 3,
+    retry,
     staleTime: Number.POSITIVE_INFINITY,
     gcTime: Number.POSITIVE_INFINITY,
     refetchOnWindowFocus: false,
@@ -76,12 +81,12 @@ const useServiceResourcesQuery = (
 /**
  * Service resources used by the toolbar/saved-search filters, sourced from Dialogporten
  * (DPServiceResourcesList). Use this when the resource id is passed to Dialogporten as a
- * filter on dialogs by service.
+ * filter on dialogs by service. Retries only once, since each attempt can take up to 30 s.
  */
 export const useFilterServiceResources = ({
   enabled = true,
 }: UseFilterServiceResourcesOptions = {}): UseServiceResourceOutput =>
-  useServiceResourcesQuery(QUERY_KEYS.FILTER_SERVICE_RESOURCES, fetchConsumerServiceResources, enabled);
+  useServiceResourcesQuery(QUERY_KEYS.FILTER_SERVICE_RESOURCES, fetchConsumerServiceResources, { enabled, retry: 1 });
 
 /**
  * Service resources used by notification settings, sourced from the Altinn Resource Registry
