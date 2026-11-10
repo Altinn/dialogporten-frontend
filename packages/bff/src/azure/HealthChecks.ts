@@ -147,11 +147,11 @@ const plugin: FastifyPluginAsync<Props> = async (fastify, { version }) => {
       const latency = Date.now() - overallStart;
 
       const response: HealthChecksResponse = { status: overallStatus, version, healthChecks, latency };
-      reply.status(200).send(response);
+      return reply.status(200).send(response);
     } catch (error) {
       const errorMsg = 'Health check endpoint failed';
       logger.error(error, errorMsg);
-      reply.status(503).send({ error: errorMsg, version });
+      return reply.status(503).send({ error: errorMsg, version });
     }
   });
 };

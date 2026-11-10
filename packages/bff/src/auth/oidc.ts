@@ -236,10 +236,10 @@ const plugin: FastifyPluginAsync = async (fastify) => {
       const key = `${sessionKeyPrefix}${sessionId}`;
       await redisClient.set(key, JSON.stringify(session), 'EX', expiresInSeconds);
 
-      reply.status(200).send({ cookie, expires: expiresIn });
+      return reply.status(200).send({ cookie, expires: expiresIn });
     } catch (error) {
       logger.error(error, 'Error initializing session:');
-      reply.status(500).send({ error: 'Failed to initialize session' });
+      return reply.status(500).send({ error: 'Failed to initialize session' });
     }
   };
 
@@ -283,8 +283,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
       const accessTokenExpiresAt = new Date(now.getTime() + customToken.expires_in * 1000).toISOString();
 
       if (!nonceIsAMatch) {
-        reply.status(401).send('Nonce mismatch');
-        return;
+        return reply.status(401).send('Nonce mismatch');
       }
 
       const sessionStorageToken: SessionStorageToken = {
