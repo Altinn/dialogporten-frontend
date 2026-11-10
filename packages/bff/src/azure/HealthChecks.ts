@@ -14,7 +14,7 @@ import redisClient from '../redisClient.ts';
  *   1. Runs all health checks concurrently with timeouts
  *   2. Calculates overall status ('ok', 'error', 'degraded')
  *   3. Measures total latency
- *   4. Returns JSON with overall status, individual check results, and latency
+ *   4. Returns JSON with overall status, BFF version, individual check results, and latency
  * - Handles errors and returns 503 status if checks fail
  */
 
@@ -30,6 +30,7 @@ interface HealthCheckResult {
 
 interface HealthChecksResponse {
   status: 'ok' | 'error' | 'degraded';
+  version: string;
   healthChecks: Record<string, HealthCheckResult>;
   latency: number;
 }
@@ -123,7 +124,7 @@ const performCheck = async (
   ]);
 };
 
-const plugin: FastifyPluginAsync<Props> = async (fastify) => {
+const plugin: FastifyPluginAsync<Props> = async (fastify, { version }) => {
   fastify.get('/api/health', async (_req, reply) => {
     const overallStart = Date.now();
 
@@ -145,11 +146,12 @@ const plugin: FastifyPluginAsync<Props> = async (fastify) => {
 
       const latency = Date.now() - overallStart;
 
-      reply.status(200).send({ status: overallStatus, healthChecks, latency });
+      const response: HealthChecksResponse = { status: overallStatus, version, healthChecks, latency };
+      reply.status(200).send(response);
     } catch (error) {
       const errorMsg = 'Health check endpoint failed';
       logger.error(error, errorMsg);
-      reply.status(503).send({ error: errorMsg });
+      reply.status(503).send({ error: errorMsg, version });
     }
   });
 };

@@ -10,8 +10,7 @@ const stringToBoolean = (val: unknown): boolean | unknown => {
 };
 
 const envVariables = z.object({
-  // todo: rather use version here instead of git_sha
-  GIT_SHA: z.string().default('v6.1.5'),
+  BUILD_VERSION: z.string().min(1).catch('dev'),
   HOST: z.string().default('0.0.0.0'),
   DB_CONNECTION_STRING: z.string().default('postgres://postgres:mysecretpassword@localhost:5432/dialogporten'),
   DB_USE_AAD_AUTH: z.preprocess(stringToBoolean, z.boolean().default(false)),
@@ -61,7 +60,7 @@ const config = {
     name: 'bff',
     instanceId: env.CONTAINER_APP_REPLICA_NAME, // provided by container app environment variable
   },
-  version: env.GIT_SHA,
+  version: env.BUILD_VERSION,
   port: env.PORT,
   host: env.HOST,
   hostname: env.HOSTNAME,
