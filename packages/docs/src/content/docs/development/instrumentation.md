@@ -47,6 +47,7 @@ import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-grpc';
 - **Health Check Filtering**: Excludes `/api/liveness` and `/api/readiness` endpoints
 - **OPTIONS Request Filtering**: Ignores CORS preflight requests
 - **GraphQL Optimization**: Ignores trivial resolver spans and merges related spans
+- **Query Redaction**: Incoming `url.query` goes through the logger's `scrubString` (OIDC `code`/`state`/`session_state`, token parameters, JWTs, 11-digit numbers). Outgoing `url.full` redacts the parameter names in `redactedQueryParams` (`instrumentationFilters.ts`)
 
 ### Logging Integration
 
@@ -62,6 +63,10 @@ The BFF uses Pino logger with OpenTelemetry transport for automatic log instrume
 - No telemetry is sent to remote collectors
 
 The logger automatically detects the presence of `OTEL_EXPORTER_OTLP_ENDPOINT` environment variable to determine which mode to use.
+
+#### Crash Handling
+
+`app.ts` registers `uncaughtException` and `unhandledRejection` handlers (`crashHandlers.ts`). They write one sanitized JSON line to stderr, log the error through `logger.fatal` and exit with code 1, the same exit code Node uses. Without them Node prints the raw error object, which for an `AxiosError` includes the request's `Authorization` header and body.
 
 ### Trace ID Propagation
 

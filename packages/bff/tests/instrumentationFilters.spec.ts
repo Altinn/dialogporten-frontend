@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { filterAppConfigSpans, filterGraphQLSpans, serializeRedisCommand } from '../src/instrumentationFilters.ts';
+import {
+  filterAppConfigSpans,
+  filterGraphQLSpans,
+  redactedQueryParams,
+  redactIncomingQuery,
+  serializeRedisCommand,
+} from '../src/instrumentationFilters.ts';
 
 describe('filterGraphQLSpans', () => {
   it('returns true for internal GraphQL parse and validation spans', () => {
@@ -57,4 +63,38 @@ describe('Redis telemetry', () => {
       expect(statement).not.toContain('private-');
     },
   );
+});
+
+describe('redactIncomingQuery', () => {
+  it('returns no attributes when the url has no query', () => {
+    expect(redactIncomingQuery('/api/graphql')).toEqual({});
+    expect(redactIncomingQuery('/api/graphql?')).toEqual({});
+    expect(redactIncomingQuery(undefined)).toEqual({});
+  });
+
+  it('redacts the OIDC callback parameters', () => {
+    expect(redactIncomingQuery('/api/cb?code=abc123&state=xyz&session_state=s1')).toEqual({
+      'url.query': 'code=[REDACTED]&state=[REDACTED]&session_state=[REDACTED]',
+    });
+  });
+
+  it('redacts tokens and person identifiers in any parameter', () => {
+    expect(
+      redactIncomingQuery('/api/x?access_token=opaque&foo=eyJhbGciOiJub25lIn0.eyJzdWIiOiJ4In0.sig&pid=12345678901'),
+    ).toEqual({ 'url.query': 'access_token=[REDACTED]&foo=[REDACTED]&pid=[REDACTED]' });
+  });
+
+  it('keeps harmless parameters unchanged', () => {
+    expect(redactIncomingQuery('/api/graphql?operation=getDialogs&page=2')).toEqual({
+      'url.query': 'operation=getDialogs&page=2',
+    });
+  });
+});
+
+describe('redactedQueryParams', () => {
+  it('keeps the OpenTelemetry defaults and adds OIDC parameters', () => {
+    expect(redactedQueryParams).toEqual(
+      expect.arrayContaining(['sig', 'Signature', 'AWSAccessKeyId', 'X-Goog-Signature', 'code', 'state']),
+    );
+  });
 });
