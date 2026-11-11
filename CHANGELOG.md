@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.187.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.187.1...v1.187.2) (2026-11-11)
+
+
+### Bug Fixes
+
+* **frontend:** normalize path slashes ([5eee515](https://github.com/Altinn/dialogporten-frontend/commit/5eee515314a7648fe257fc7c965b6174697d30c9))
+
 ## [1.187.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.187.0...v1.187.1) (2026-11-11)
 
 
