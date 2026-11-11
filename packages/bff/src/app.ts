@@ -2,7 +2,10 @@
 import 'reflect-metadata';
 import { logger } from '@altinn/dialogporten-node-logger';
 import config from './config.ts';
+import { registerCrashHandlers } from './crashHandlers.ts';
 import './instrumentation.ts';
+
+registerCrashHandlers();
 
 try {
   // There is a race-condition where fastify, redis and postgres is booted before the instrumentation is ready.

@@ -27,7 +27,13 @@ import {
   SEMRESATTRS_SERVICE_INSTANCE_ID,
 } from '@opentelemetry/semantic-conventions';
 import config from './config.ts';
-import { filterAppConfigSpans, filterGraphQLSpans, serializeRedisCommand } from './instrumentationFilters.ts';
+import {
+  filterAppConfigSpans,
+  filterGraphQLSpans,
+  redactedQueryParams,
+  redactIncomingQuery,
+  serializeRedisCommand,
+} from './instrumentationFilters.ts';
 
 const { openTelemetry } = config;
 
@@ -38,6 +44,8 @@ const shouldDropSpan = (span: ReadableSpan): boolean => {
 // Configure HTTP instrumentation with filtering
 const httpInstrumentationConfig: HttpInstrumentationConfig = {
   enabled: true,
+  redactedQueryParams,
+  startIncomingSpanHook: (request: IncomingMessage) => redactIncomingQuery(request.url),
   ignoreIncomingRequestHook: (request: IncomingMessage) => {
     // Ignore OPTIONS incoming requests
     if (request.method === 'OPTIONS') {

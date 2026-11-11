@@ -2,6 +2,8 @@ import pino from 'pino';
 import z from 'zod';
 import { sanitizeOptions, sanitizeRecord } from './sanitize.js';
 
+export { sanitize, scrubString } from './sanitize.js';
+
 const envVariables = z.object({
   LOGGER_FORMAT: z.enum(['json', 'pretty']).default('pretty'),
   LOG_LEVEL: z.enum(Object.values(pino.levels.labels)).default('info'),
