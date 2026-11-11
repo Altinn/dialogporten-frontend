@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.187.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.187.0...v1.187.1) (2026-11-11)
+
+
+### Bug Fixes
+
+* **bff:** redact secrets in span URLs and crash output ([463f144](https://github.com/Altinn/dialogporten-frontend/commit/463f14402e38d9e2a3589860b46b185daabdb298))
+
 ## [1.187.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.186.0...v1.187.0) (2026-11-10)
 
 
