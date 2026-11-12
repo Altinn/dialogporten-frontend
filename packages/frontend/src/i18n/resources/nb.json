@@ -111,7 +111,7 @@
   "dialog.forward.menu_item": "Videresend på e-post",
   "dialog.forward.message_hint": "{count} tegn igjen",
   "dialog.forward.message_label": "Personlig melding (valgfritt)",
-  "dialog.forward.not_allowed.body": "Denne meldingen kan dessverre ikke videresendes på e-post. Det gjelder meldinger som er taushetsbelagte. Du kan prøve funksjonen «{menuItem}» som du finner i samme meny i meldingen.",
+  "dialog.forward.not_allowed.body": "Denne meldingen kan dessverre ikke videresendes på e-post. Du kan prøve funksjonen «{menuItem}» som du finner i samme meny i meldingen.",
   "dialog.forward.not_allowed.title": "Videresending er ikke mulig",
   "dialog.forward.submit": "Videresend",
   "dialog.forward.success": "{count, plural, one {Meldingen er videresendt til {recipient}.} other {Meldingen er videresendt til # mottakere.}}",

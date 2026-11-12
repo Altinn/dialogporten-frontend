@@ -111,7 +111,7 @@
   "dialog.forward.menu_item": "Forward by email",
   "dialog.forward.message_hint": "{count, plural, one {# character} other {# characters}} left",
   "dialog.forward.message_label": "Personal message (optional)",
-  "dialog.forward.not_allowed.body": "Unfortunately, this message cannot be forwarded by email. This applies to confidential messages. You can try the \"{menuItem}\" feature, which you will find in the same menu in the message.",
+  "dialog.forward.not_allowed.body": "Unfortunately, this message cannot be forwarded by email. You can try the \"{menuItem}\" feature, which you will find in the same menu in the message.",
   "dialog.forward.not_allowed.title": "Forwarding is not possible",
   "dialog.forward.submit": "Forward",
   "dialog.forward.success": "{count, plural, one {The message has been forwarded to {recipient}.} other {The message has been forwarded to # recipients.}}",
