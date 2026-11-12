@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.187.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.187.3...v1.187.4) (2026-11-12)
+
+
+### Bug Fixes
+
+* **nginx:** missing from build ([ad4d89f](https://github.com/Altinn/dialogporten-frontend/commit/ad4d89f64fccfe93c4adde8b39eb387b4ec51ec3))
+
 ## [1.187.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.187.2...v1.187.3) (2026-11-12)
 
 
