@@ -75,7 +75,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Dryrun Deploy migration job (${{ inputs.environment }})
-        uses: azure/bicep-deploy@66910e9c5c7733c33a1cd605030d02234b3bc4ed # v2.3.0
+        uses: azure/bicep-deploy@c66bb161da87636b24a64aa8e0a427645d846c57 # v2.5.0
         if: ${{inputs.dryRun}}
         id: deploy-dryrun
         env:
@@ -95,7 +95,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Deploy migration job (${{ inputs.environment }})
-        uses: azure/bicep-deploy@66910e9c5c7733c33a1cd605030d02234b3bc4ed # v2.3.0
+        uses: azure/bicep-deploy@c66bb161da87636b24a64aa8e0a427645d846c57 # v2.5.0
         if: ${{!inputs.dryRun}}
         id: deploy
         env:
@@ -174,7 +174,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Dryrun Deploy app ${{ env.APP_NAME }}(${{ inputs.environment }})
-        uses: azure/bicep-deploy@66910e9c5c7733c33a1cd605030d02234b3bc4ed # v2.3.0
+        uses: azure/bicep-deploy@c66bb161da87636b24a64aa8e0a427645d846c57 # v2.5.0
         if: ${{inputs.dryRun}}
         id: deploy-dryrun
         env:
@@ -195,7 +195,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Deploy app ${{ env.APP_NAME }}(${{ inputs.environment }})
-        uses: azure/bicep-deploy@66910e9c5c7733c33a1cd605030d02234b3bc4ed # v2.3.0
+        uses: azure/bicep-deploy@c66bb161da87636b24a64aa8e0a427645d846c57 # v2.5.0
         if: ${{!inputs.dryRun}}
         id: deploy
         env:
