@@ -1,7 +1,21 @@
+import { mkdirSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { defineConfig, devices } from '@playwright/test';
 import { config } from 'dotenv';
 
 config();
+
+const firefoxEnv = (() => {
+  if (process.platform !== 'darwin') {
+    return undefined;
+  }
+  const home = join(tmpdir(), 'playwright-firefox-home');
+  mkdirSync(home, { recursive: true });
+  return { ...process.env, CFFIXED_USER_HOME: home };
+})();
+
+const desktopFirefox = { ...devices['Desktop Firefox'], launchOptions: { env: firefoxEnv } };
 
 const PERF_SPECS = ['**/partiesExtreme.spec.ts'];
 
@@ -38,24 +52,24 @@ export default defineConfig({
     {
       name: 'playwright',
       testIgnore: [...HEAVY_SPECS, ...PERF_SPECS],
-      use: { ...devices['Desktop Firefox'] },
+      use: desktopFirefox,
     },
     {
       name: 'playwright-heavy',
       testMatch: HEAVY_SPECS,
       fullyParallel: false,
-      use: { ...devices['Desktop Firefox'] },
+      use: desktopFirefox,
     },
     {
       name: 'playwright-perf',
       testMatch: PERF_SPECS,
       fullyParallel: false,
-      use: { ...devices['Desktop Firefox'] },
+      use: desktopFirefox,
     },
     {
       name: 'accessibility',
       testDir: './tests/accessibility',
-      use: { ...devices['Desktop Firefox'] },
+      use: desktopFirefox,
     },
   ],
   webServer: {

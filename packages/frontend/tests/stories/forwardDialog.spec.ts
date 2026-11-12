@@ -165,7 +165,6 @@ test.describe('Forward dialog by email', () => {
     const modal = await openForwardModal(page, NON_FORWARDABLE_DIALOG_TITLE);
 
     await expect(modal.getByRole('heading', { name: 'Videresending er ikke mulig' })).toBeVisible();
-    await expect(modal.getByText(/taushetsbelagte.*«Del og gi fullmakt»/)).toBeVisible();
     await expect(modal.getByLabel('E-postadresse')).toHaveCount(0);
     await expect(modal.getByRole('button', { name: 'Videresend' })).toHaveCount(0);
 

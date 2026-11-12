@@ -111,7 +111,7 @@
   "dialog.forward.menu_item": "Vidaresend på e-post",
   "dialog.forward.message_hint": "{count} teikn att",
   "dialog.forward.message_label": "Personleg melding (valfritt)",
-  "dialog.forward.not_allowed.body": "Denne meldinga kan dessverre ikkje vidaresendast på e-post. Det gjeld meldingar som er teiebelagde. Du kan prøve funksjonen «{menuItem}» som du finn i same meny i meldinga.",
+  "dialog.forward.not_allowed.body": "Denne meldinga kan dessverre ikkje vidaresendast på e-post. Du kan prøve funksjonen «{menuItem}» som du finn i same meny i meldinga.",
   "dialog.forward.not_allowed.title": "Vidaresending er ikkje mogleg",
   "dialog.forward.submit": "Vidaresend",
   "dialog.forward.success": "{count, plural, one {Meldinga er vidaresend til {recipient}.} other {Meldinga er vidaresend til # mottakarar.}}",
