@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.187.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.187.2...v1.187.3) (2026-11-12)
+
+
+### Bug Fixes
+
+* **frontend:** update text in modal when message not is allowed to forward ([6795bc1](https://github.com/Altinn/dialogporten-frontend/commit/6795bc140c2a9d650734d526aa3c474b760b22cf))
+
 ## [1.187.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.187.1...v1.187.2) (2026-11-11)
 
 
