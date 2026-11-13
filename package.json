@@ -16,7 +16,7 @@
     "turbo": "2.9.14"
   },
   "engines": {
-    "node": ">=26.13.0"
+    "node": "v26.13.1"
   },
   "lint-staged": {
     "**/*.*": "biome check --staged --no-errors-on-unmatched --write"
@@ -46,9 +46,9 @@
       "@graphql-tools/utils@<=12.0.0": "12.0.4",
       "@graphql-tools/utils@>=10.10.1 <=12.0.1": "12.0.4",
       "@azure/msal-node@>=5.0.0-beta.0 <7.1.0": "7.1.2",
-      "follow-redirects@>=1.16.0 <=1.16.1": ">=1.16.2",
-      "glob@>=9.0.0 <=14.0.1": ">=14.0.2",
-      "minimatch@>=7.0.0 <11.0.1": ">=11.0.1"
+      "follow-redirects@>=1.16.0 <=1.16.1": "1.16.3",
+      "glob@>=9.0.0 <=14.0.1": "14.0.6",
+      "minimatch@>=7.0.0 <11.0.1": "11.0.8"
     }
   }
 }
