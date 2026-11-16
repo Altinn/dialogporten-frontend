@@ -4,6 +4,7 @@ import * as prod from 'react/jsx-runtime';
 import addClasses from 'rehype-class-names';
 import rehypeReact from 'rehype-react';
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
+import { defListHastHandlers, remarkDefinitionList } from 'remark-definition-list';
 import remarkGfm from 'remark-gfm';
 import remarkParse, { type Options as RemarkParseOptions } from 'remark-parse';
 import remarkToRehype from 'remark-rehype';
@@ -51,7 +52,8 @@ export const Markdown: ({
     unified()
       .use(remarkParse, {} as RemarkParseOptions)
       .use(remarkGfm)
-      .use(remarkToRehype, {} as RemarkRehypeOptions)
+      .use(remarkDefinitionList)
+      .use(remarkToRehype, { handlers: defListHastHandlers } as RemarkRehypeOptions)
       .use(rehypeSanitize, customSchema)
       .use(addClasses, defaultClassMap)
       .use(rehypeReact, production)

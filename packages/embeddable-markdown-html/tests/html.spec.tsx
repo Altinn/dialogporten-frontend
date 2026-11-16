@@ -114,6 +114,16 @@ describe('Html', () => {
   });
 
   /* Unsupported / sanitized tags */
+  test('should render description list', async () => {
+    const html = '<dl onclick="alert(1)"><dt>Date sent</dt><dd>06.10.2026 / 14:09</dd></dl>';
+    const { container } = render(<Html onError={() => {}}>{html}</Html>);
+    await waitFor(() => {
+      expect(container.innerHTML).toEqual(
+        '<dl class="__fce-description-list"><dt class="__fce-description-term">Date sent</dt><dd class="__fce-description-details">06.10.2026 / 14:09</dd></dl>',
+      );
+    });
+  });
+
   test('should not render image', async () => {
     const html = '<img src="./example.png" /><em>something else</em>';
     const { container } = render(<Html onError={() => {}}>{html}</Html>);

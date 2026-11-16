@@ -10,4 +10,7 @@ export const defaultClassMap: ClassMap = {
   h5: '__fce-header-5',
   h6: '__fce-header-6',
   strong: '__fce-strong',
+  dl: '__fce-description-list',
+  dt: '__fce-description-term',
+  dd: '__fce-description-details',
 };
