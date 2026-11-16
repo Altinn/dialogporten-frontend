@@ -369,6 +369,7 @@ export const Inbox = ({ viewType }: InboxProps) => {
         )}
         options={headerActions}
         dismissable={true}
+        dismissLabel={t('word.cancel')}
         onDismiss={onCloseBulkMode}
         color={bulkedIds.length >= MAX_COUNT_BULK_DIALOGS ? 'warning' : 'company'}
       />
