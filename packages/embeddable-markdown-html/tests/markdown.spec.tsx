@@ -167,3 +167,78 @@ describe('Markdown: common mark + table support', () => {
     });
   });
 });
+
+describe('Markdown: definition lists', () => {
+  const renderMarkdown = async (markdownString: string) => {
+    const result = render(<Markdown onError={() => {}}>{markdownString}</Markdown>);
+    await waitFor(() => {
+      expect(result.container.firstChild).toBeInTheDocument();
+    });
+    return result.container;
+  };
+
+  const describeChildren = (element: Element) =>
+    Array.from(element.children, (child) => [child.tagName, child.textContent?.trim()]);
+
+  test('should render label/value pairs as dt/dd pairs in a dl', async () => {
+    const container = await renderMarkdown('Date sent\n: 06.10.2026 / 14:09\n\nSender\n: 029147*****-Ola Nordmann');
+    const dl = container.querySelector('dl');
+    expect(dl).toHaveClass('__fce-description-list');
+    expect(describeChildren(dl!)).toEqual([
+      ['DT', 'Date sent'],
+      ['DD', '06.10.2026 / 14:09'],
+      ['DT', 'Sender'],
+      ['DD', '029147*****-Ola Nordmann'],
+    ]);
+    expect(container.querySelectorAll('dt.__fce-description-term').length).toBe(2);
+    expect(container.querySelectorAll('dd.__fce-description-details').length).toBe(2);
+    expect(container.querySelector('table')).not.toBeInTheDocument();
+    expect(container.querySelector('dd > p')).not.toBeInTheDocument();
+  });
+
+  test('should render inline markdown inside terms and details', async () => {
+    const container = await renderMarkdown('*Status*\n: **Sent** to [Altinn](https://altinn.no)');
+    expect(container.querySelector('dt > em')).toHaveTextContent('Status');
+    expect(container.querySelector('dd > strong')).toHaveTextContent('Sent');
+    expect(container.querySelector('dd > a')).toHaveAttribute('href', 'https://altinn.no');
+  });
+
+  test('should render several details for one term', async () => {
+    const container = await renderMarkdown('Attachments\n: receipt.pdf\n: form.pdf');
+    expect(describeChildren(container.querySelector('dl')!)).toEqual([
+      ['DT', 'Attachments'],
+      ['DD', 'receipt.pdf'],
+      ['DD', 'form.pdf'],
+    ]);
+  });
+
+  test('should wrap details in paragraphs when a blank line precedes the colon', async () => {
+    const container = await renderMarkdown('Comment\n\n: First paragraph.\n\n  Second paragraph.');
+    const paragraphs = container.querySelectorAll('dd > p.__fce-paragraph');
+    expect(paragraphs.length).toBe(2);
+    expect(paragraphs[0]).toHaveTextContent('First paragraph.');
+    expect(paragraphs[1]).toHaveTextContent('Second paragraph.');
+  });
+
+  test('should keep colons that do not start a definition as text', async () => {
+    const container = await renderMarkdown('Note: something here\n\nTime\n:10:00');
+    expect(container.querySelector('dl')).not.toBeInTheDocument();
+    expect(container.innerHTML).toEqual(
+      '<p class="__fce-paragraph">Note: something here</p>\n<p class="__fce-paragraph">Time\n:10:00</p>',
+    );
+  });
+
+  test('should render surrounding content as before', async () => {
+    const container = await renderMarkdown(
+      'Intro paragraph.\n\nLabel\n: Value\n\n| Syntax | Description |\n| - | - |\n| Header | Title |\n\n- Item',
+    );
+    expect(describeChildren(container)).toEqual([
+      ['P', 'Intro paragraph.'],
+      ['DL', 'Label\nValue'],
+      ['TABLE', 'SyntaxDescriptionHeaderTitle'],
+      ['UL', 'Item'],
+    ]);
+    expect(container.querySelectorAll('thead th').length).toBe(2);
+    expect(container.querySelectorAll('tbody td').length).toBe(2);
+  });
+});

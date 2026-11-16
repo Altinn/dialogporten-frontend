@@ -25,4 +25,7 @@ export const allowedTags = [
   'tr',
   'td',
   'th',
+  'dl',
+  'dt',
+  'dd',
 ];
