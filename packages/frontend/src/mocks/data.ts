@@ -10,6 +10,7 @@ import { features as mockedFeatures } from './data/base/features.ts';
 import type { MockDialog } from './data/base/mockDialog.ts';
 import { parties as mockedParties } from './data/base/parties.ts';
 import { profile as mockedProfile } from './data/base/profile.ts';
+import { searches as mockedSearches } from './data/base/searches.ts';
 import { services as mockedServices } from './data/base/services.ts';
 
 const findDataById = async <T>(
@@ -31,7 +32,8 @@ const findProfileById = (url: string) => findDataById<Profile>(url, 'profile', m
 const findFeaturesById = (url: string) => findDataById<Record<string, boolean>>(url, 'features', mockedFeatures);
 const findPartiesById = (url: string) => findDataById<PartyFieldsFragment[]>(url, 'parties', mockedParties);
 const findDialogsById = (url: string) => findDataById<MockDialog[]>(url, 'dialogs', mockedDialogs);
-const findSavedSearchesById = (url: string) => findDataById<SavedSearchesFieldsFragment[]>(url, 'searches', []);
+const findSavedSearchesById = (url: string) =>
+  findDataById<SavedSearchesFieldsFragment[]>(url, 'searches', mockedSearches);
 const findServicesById = (url: string) => findDataById<ServiceResource[]>(url, 'services', mockedServices);
 
 export const getMockedData = async (

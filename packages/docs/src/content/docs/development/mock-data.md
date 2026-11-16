@@ -26,7 +26,7 @@ flowchart LR
 ```
 
 1. `src/main.tsx` starts the MSW worker from `src/mocks/browser.ts` when the app runs in dev and the URL has `mock=true`.
-2. `src/mocks/data.ts` loads each data type (`profile`, `parties`, `dialogs`, `features`, `searches`, `services`) from `data/stories/<playwrightId>/<type>.ts`. If the story has no such file, it uses `data/base/<type>.ts`. Saved searches default to an empty list, and organizations always come from base.
+2. `src/mocks/data.ts` loads each data type (`profile`, `parties`, `dialogs`, `features`, `searches`, `services`) from `data/stories/<playwrightId>/<type>.ts`. If the story has no such file, it uses `data/base/<type>.ts`. The base saved searches are an empty list, and organizations always come from base.
 3. `src/mocks/handlers.ts` puts the data in an in-memory store and answers every request from it:
    - The inbox queries filter the dialogs with `filterDialogs` and return each one through `toSearchDialog`.
    - `getDialogById` returns `toDialogById(dialog)`.
