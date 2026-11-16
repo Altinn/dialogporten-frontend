@@ -1,0 +1,16 @@
+FROM ghcr.io/altinn/altinn-platform/gh-runner:v0.11.1
+
+ARG PLAYWRIGHT_VERSION
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+
+USER root
+RUN test -n "${PLAYWRIGHT_VERSION}" && \
+    npx --yes "playwright@${PLAYWRIGHT_VERSION}" install-deps chromium-headless-shell && \
+    install -d -o runner -g runner "${PLAYWRIGHT_BROWSERS_PATH}" && \
+    rm -rf /root/.npm && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+USER runner
+RUN npx --yes "playwright@${PLAYWRIGHT_VERSION}" install --only-shell chromium && \
+    rm -rf /home/runner/.npm

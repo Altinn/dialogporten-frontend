@@ -1,0 +1,155 @@
+name: Runner image
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - Dockerfile.runner
+      - pnpm-workspace.yaml
+      - .github/workflows/ci-cd-runner-image.yml
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Rebuild even if the tag already exists"
+        type: boolean
+        default: false
+      rollback_to:
+        description: "Point latest at this existing tag instead of building (e.g. 1.64.1-v0.11.1)"
+        type: string
+        default: ""
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  IMAGE: ghcr.io/altinn/dialogporten-frontend-gh-runner
+
+jobs:
+  build:
+    name: Build, test and publish
+    if: github.event_name != 'workflow_dispatch' || inputs.rollback_to == ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: |
+            Dockerfile.runner
+            pnpm-workspace.yaml
+          sparse-checkout-cone-mode: false
+
+      - name: Resolve versions
+        id: versions
+        run: |
+          playwright=$(yq -r '.catalog."@playwright/test"' pnpm-workspace.yaml)
+          if [[ ! "$playwright" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error file=pnpm-workspace.yaml::@playwright/test must be pinned to an exact version in the catalog, got '$playwright'"
+            exit 1
+          fi
+          base=$(sed -nE 's|^FROM ghcr\.io/altinn/altinn-platform/gh-runner:(v[0-9]+\.[0-9]+\.[0-9]+).*|\1|p' Dockerfile.runner)
+          if [ -z "$base" ]; then
+            echo "::error file=Dockerfile.runner::Could not read the gh-runner base tag from the FROM line"
+            exit 1
+          fi
+          echo "playwright=$playwright" >> "$GITHUB_OUTPUT"
+          echo "tag=$playwright-$base" >> "$GITHUB_OUTPUT"
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check for an existing image
+        id: existing
+        env:
+          TAG: ${{ steps.versions.outputs.tag }}
+          FORCE: ${{ inputs.force }}
+        run: |
+          if [ "$FORCE" != "true" ] && docker buildx imagetools inspect "$IMAGE:$TAG" > /dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "\`$IMAGE:$TAG\` already exists, nothing to build." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Extract metadata (labels)
+        if: steps.existing.outputs.exists == 'false'
+        id: meta
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
+        with:
+          images: ${{ env.IMAGE }}
+
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+        if: steps.existing.outputs.exists == 'false'
+
+      - name: Build and push
+        if: steps.existing.outputs.exists == 'false'
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
+        with:
+          context: .
+          file: Dockerfile.runner
+          platforms: linux/amd64
+          pull: true
+          push: true
+          tags: ${{ env.IMAGE }}:${{ steps.versions.outputs.tag }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            PLAYWRIGHT_VERSION=${{ steps.versions.outputs.playwright }}
+
+      - name: Smoke test as the runner user
+        if: steps.existing.outputs.exists == 'false'
+        env:
+          TAG: ${{ steps.versions.outputs.tag }}
+          PLAYWRIGHT_VERSION: ${{ steps.versions.outputs.playwright }}
+        run: |
+          docker run --rm --pull always --platform linux/amd64 -e PLAYWRIGHT_VERSION --entrypoint bash "$IMAGE:$TAG" -euo pipefail -c '
+            test "$(id -un)" = runner
+            test "$PLAYWRIGHT_BROWSERS_PATH" = /ms-playwright
+            test -w "$PLAYWRIGHT_BROWSERS_PATH"
+            /usr/sbin/ldconfig -p | grep libatomic.so.1 > /dev/null
+            cd "$(mktemp -d)"
+            npm install --no-save --no-audit --no-fund --loglevel=error "playwright-core@$PLAYWRIGHT_VERSION"
+            node -e "require(\"playwright-core\").chromium.launch().then(async (browser) => { console.log(\"chromium\", browser.version()); await browser.close(); })"
+          '
+
+      - name: Point latest at the new image
+        if: steps.existing.outputs.exists == 'false'
+        env:
+          TAG: ${{ steps.versions.outputs.tag }}
+        run: |
+          docker buildx imagetools create --tag "$IMAGE:latest" "$IMAGE:$TAG"
+          echo "Published \`$IMAGE:$TAG\` and moved \`latest\` to it." >> "$GITHUB_STEP_SUMMARY"
+
+  rollback:
+    name: Roll latest back
+    if: github.event_name == 'workflow_dispatch' && inputs.rollback_to != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Point latest at the requested tag
+        env:
+          TAG: ${{ inputs.rollback_to }}
+        run: |
+          docker buildx imagetools inspect "$IMAGE:$TAG" > /dev/null
+          docker buildx imagetools create --tag "$IMAGE:latest" "$IMAGE:$TAG"
+          echo "Moved \`latest\` to \`$IMAGE:$TAG\`." >> "$GITHUB_STEP_SUMMARY"

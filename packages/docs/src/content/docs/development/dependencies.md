@@ -15,6 +15,22 @@ and each package references them as `"<dep>": "catalog:"`.
 `renovate.json` extends Altinn's shared config (`local>Altinn/renovate-config`) with `rangeStrategy: pin`.
 Renovate opens PRs for version updates and security fixes.
 
+## Self-hosted runner image
+
+The `self-hosted` CI jobs run in `ghcr.io/altinn/dialogporten-frontend-gh-runner`, built from `Dockerfile.runner`
+on top of Altinn's gh-runner image. It adds Playwright's headless Chromium in `/ms-playwright` for the E2E suite
+(`packages/e2e`), so the image is tied to the `@playwright/test` version in the catalog.
+
+- `@playwright/test` must be an exact version in the catalog. The image build fails otherwise.
+- `.github/workflows/ci-cd-runner-image.yml` runs when `Dockerfile.runner` or `pnpm-workspace.yaml` changes on `main`.
+  If the tag `<playwright>-<base>` (e.g. `1.64.1-v0.11.1`) does not exist yet, it builds it, smoke-tests it as the
+  `runner` user and moves `latest` to it.
+- The runner definition in `Altinn/altinn-platform` (`infrastructure/gh-runners/dialogporten-frontend.tf`) uses `latest`.
+  Every `self-hosted` job runs in this image, so a broken image breaks all of CI. To roll back, run the workflow
+  manually with `rollback_to` set to an earlier tag.
+- Renovate bumps the gh-runner base in `Dockerfile.runner`. The runner no longer follows the platform's default image,
+  so those bumps are ours to merge.
+
 ## Supply-chain guards
 
 `pnpm-workspace.yaml` has two settings that make `pnpm install` reject some ordinary upgrades:
