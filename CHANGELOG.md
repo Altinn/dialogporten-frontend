@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.188.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.187.4...v1.188.0) (2026-11-16)
+
+
+### Features
+
+* **fce:** support definition lists in embedded markdown ([066a0d2](https://github.com/Altinn/dialogporten-frontend/commit/066a0d2f130e8e1f4e083de52862648ffc86ffb6))
+
+
+### Bug Fixes
+
+* **deps:** update dependency astro to v7.4.7 [security] ([493b2a5](https://github.com/Altinn/dialogporten-frontend/commit/493b2a5441a849f93955256e933aab8606f2e6a4))
+
 ## [1.187.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.187.3...v1.187.4) (2026-11-12)
 
 
