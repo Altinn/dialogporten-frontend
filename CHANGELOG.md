@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.188.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.188.1...v1.188.2) (2026-11-17)
+
+
+### Bug Fixes
+
+* **deps:** update @altinn/altinn-components to 0.80.0 ([#4856](https://github.com/Altinn/dialogporten-frontend/issues/4856)) ([0676be7](https://github.com/Altinn/dialogporten-frontend/commit/0676be7961786f40650d8a1e93f580db3e92e7e3))
+* **deps:** update opentelemetry to 0.223.2 / 2.12.1 [security] ([1f84637](https://github.com/Altinn/dialogporten-frontend/commit/1f84637a87b50c0c2bc1e8000bf324224008cb94))
+
 ## [1.188.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.188.0...v1.188.1) (2026-11-17)
 
 
