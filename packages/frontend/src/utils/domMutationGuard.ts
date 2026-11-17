@@ -23,6 +23,66 @@ const closestChildOf = (parent: Node, node: Node): Node | null => {
   return current;
 };
 
+interface RecordScan {
+  added: Set<Node>;
+  removed: Set<Node>;
+  claimed: Set<Node>;
+  merged: Map<Text, Text[]>;
+}
+
+const scanRecords = (records: MutationRecord[]): RecordScan => {
+  const added = new Set<Node>();
+  const removed = new Set<Node>();
+  for (const record of records) {
+    for (const node of record.addedNodes) added.add(node);
+    for (const node of record.removedNodes) removed.add(node);
+  }
+  return { added, removed, claimed: new Set<Node>(), merged: new Map<Text, Text[]>() };
+};
+
+const isWrapper = ({ added, removed, claimed }: RecordScan, node: Node | null, parent: Node): node is Node =>
+  !!node && added.has(node) && !removed.has(node) && !claimed.has(node) && node.parentNode === parent;
+
+const collectWrappers = (scan: RecordScan, record: MutationRecord): Node[] => {
+  const { previousSibling, nextSibling, target: parent } = record;
+  const wrappers: Node[] = [];
+  for (let sibling = previousSibling; isWrapper(scan, sibling, parent); sibling = sibling.previousSibling) {
+    wrappers.unshift(sibling);
+  }
+  for (const addedNode of record.addedNodes) {
+    if (isWrapper(scan, addedNode, parent) && !wrappers.includes(addedNode)) wrappers.push(addedNode);
+  }
+  for (let sibling = nextSibling; isWrapper(scan, sibling, parent); sibling = sibling.nextSibling) {
+    wrappers.push(sibling);
+  }
+  return wrappers;
+};
+
+const rememberPageValue = (pageValues: WeakMap<Text, string>, { target, oldValue }: MutationRecord) => {
+  if (isText(target) && !pageValues.has(target)) {
+    pageValues.set(target, oldValue ?? '');
+  }
+};
+
+const trackRemovedText = (
+  scan: RecordScan,
+  displaced: WeakMap<Text, Displacement>,
+  record: MutationRecord,
+  node: Node,
+) => {
+  if (!isText(node) || node.parentNode) return;
+  const { previousSibling } = record;
+  if (isText(previousSibling) && !previousSibling.parentNode) {
+    scan.merged.set(previousSibling, [...(scan.merged.get(previousSibling) ?? []), node]);
+    return;
+  }
+  const wrappers = collectWrappers(scan, record);
+  if (!wrappers.some((wrapper) => wrapper.nodeName === 'FONT')) return;
+  const displacement = { parent: record.target, originals: [node, ...(scan.merged.get(node) ?? [])], wrappers };
+  for (const wrapper of wrappers) scan.claimed.add(wrapper);
+  for (const original of displacement.originals) displaced.set(original, displacement);
+};
+
 export const installDomMutationGuard = ({ pageLanguage, onRepair }: DomMutationGuardOptions = {}): (() => void) => {
   const { insertBefore, removeChild } = Node.prototype;
   const nodeValue = Object.getOwnPropertyDescriptor(Node.prototype, 'nodeValue')!;
@@ -40,46 +100,13 @@ export const installDomMutationGuard = ({ pageLanguage, onRepair }: DomMutationG
   const isPageTranslated = () => hasTranslationSignal() || document.querySelector(translatorMarkup) !== null;
 
   const trackDisplacements = (records: MutationRecord[]) => {
-    const added = new Set<Node>();
-    const removed = new Set<Node>();
-    const claimed = new Set<Node>();
-    const merged = new Map<Text, Text[]>();
-    for (const record of records) {
-      for (const node of record.addedNodes) added.add(node);
-      for (const node of record.removedNodes) removed.add(node);
-    }
-    const isWrapper = (node: Node | null, parent: Node): node is Node =>
-      !!node && added.has(node) && !removed.has(node) && !claimed.has(node) && node.parentNode === parent;
-
+    const scan = scanRecords(records);
     for (const record of records) {
       if (record.type === 'characterData') {
-        if (isText(record.target) && !pageValues.has(record.target)) {
-          pageValues.set(record.target, record.oldValue ?? '');
-        }
+        rememberPageValue(pageValues, record);
         continue;
       }
-      for (const node of record.removedNodes) {
-        if (!isText(node) || node.parentNode) continue;
-        const { previousSibling, nextSibling, target: parent } = record;
-        if (isText(previousSibling) && !previousSibling.parentNode) {
-          merged.set(previousSibling, [...(merged.get(previousSibling) ?? []), node]);
-          continue;
-        }
-        const wrappers: Node[] = [];
-        for (let sibling = previousSibling; isWrapper(sibling, parent); sibling = sibling.previousSibling) {
-          wrappers.unshift(sibling);
-        }
-        for (const addedNode of record.addedNodes) {
-          if (isWrapper(addedNode, parent) && !wrappers.includes(addedNode)) wrappers.push(addedNode);
-        }
-        for (let sibling = nextSibling; isWrapper(sibling, parent); sibling = sibling.nextSibling) {
-          wrappers.push(sibling);
-        }
-        if (!wrappers.some((wrapper) => wrapper.nodeName === 'FONT')) continue;
-        const displacement = { parent, originals: [node, ...(merged.get(node) ?? [])], wrappers };
-        for (const wrapper of wrappers) claimed.add(wrapper);
-        for (const original of displacement.originals) displaced.set(original, displacement);
-      }
+      for (const node of record.removedNodes) trackRemovedText(scan, displaced, record, node);
     }
   };
 
