@@ -3,6 +3,7 @@ import { extendType, intArg, nonNull, stringArg } from 'nexus';
 import { decryptPersonUrn } from '../../party/personUrnCipher.ts';
 import { ensureProfile } from '../profile/service.ts';
 import { Response } from '../shared/types.ts';
+import { encryptSavedSearchUrns } from './personUrns.ts';
 import { createSavedSearch, deleteSavedSearch, updateSavedSearch } from './service.ts';
 import { SavedSearches, SavedSearchInput } from './types.ts';
 
@@ -70,7 +71,7 @@ export const CreateSavedSearch = extendType({
             ...data,
             urn: Array.isArray(data.urn) ? data.urn.map((u: string) => decryptPersonUrn(u) as string) : data.urn,
           };
-          return await createSavedSearch({ name, data: resolvedData, pid });
+          return encryptSavedSearchUrns(await createSavedSearch({ name, data: resolvedData, pid }));
         } catch (error) {
           logger.error(error, 'Failed to create saved search:');
           return error;
