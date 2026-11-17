@@ -1,5 +1,5 @@
 import { extendType, list } from 'nexus';
-import { encryptPersonUrn } from '../../party/personUrnCipher.ts';
+import { encryptSavedSearchUrns } from './personUrns.ts';
 import { listSavedSearches } from './service.ts';
 
 export const SavedSearchesQuery = extendType({
@@ -10,14 +10,7 @@ export const SavedSearchesQuery = extendType({
       resolve: async (_source, _args, ctx) => {
         const pid = ctx.session.get('pid');
         const searches = await listSavedSearches(pid);
-
-        for (const search of searches) {
-          const urn = search.data?.urn;
-          if (Array.isArray(urn)) {
-            search.data.urn = urn.map((u) => encryptPersonUrn(u) as string);
-          }
-        }
-        return searches;
+        return searches.map(encryptSavedSearchUrns);
       },
     });
   },

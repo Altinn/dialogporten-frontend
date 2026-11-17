@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.188.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.188.0...v1.188.1) (2026-11-17)
+
+
+### Bug Fixes
+
+* **bff:** use the same URN format in createSavedSearch as in savedSearches ([2c72c26](https://github.com/Altinn/dialogporten-frontend/commit/2c72c263dbe5b919d3d8ce0d0167e94ddd5d39fd))
+* **e2e:** select the sender filter option explicitly in the staging saved-search test ([6a604e3](https://github.com/Altinn/dialogporten-frontend/commit/6a604e3fbe2f3a0c1ab81fcf49ff3536f20e55de))
+
+## [1.188.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.187.4...v1.188.0) (2026-11-16)
+
+
+### Features
+
+* **fce:** support definition lists in embedded markdown ([066a0d2](https://github.com/Altinn/dialogporten-frontend/commit/066a0d2f130e8e1f4e083de52862648ffc86ffb6))
+
+
+### Bug Fixes
+
+* **deps:** update dependency astro to v7.4.7 [security] ([493b2a5](https://github.com/Altinn/dialogporten-frontend/commit/493b2a5441a849f93955256e933aab8606f2e6a4))
+
 ## [1.187.4](https://github.com/Altinn/dialogporten-frontend/compare/v1.187.3...v1.187.4) (2026-11-12)
 
 
