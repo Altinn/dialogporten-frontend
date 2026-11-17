@@ -65,6 +65,15 @@ export const getTransmissionVisibility = (transmission: TransmissionFieldsFragme
   return 'visible';
 };
 
+const getDisabledReason = (
+  unauthorized: boolean,
+  expired: boolean,
+): TransmissionNavigationalActionProps['disabledReason'] => {
+  if (unauthorized) return 'unauthorized';
+  if (expired) return 'expired';
+  return undefined;
+};
+
 const toNavigationalAction = (
   { title, url, expiresAt }: NavigationalActionFieldsFragment,
   id: string,
@@ -77,7 +86,7 @@ const toNavigationalAction = (
     id,
     label: getPreferredPropertyByLocale(title)?.value ?? '',
     href: url,
-    disabledReason: unauthorized ? 'unauthorized' : expired ? 'expired' : undefined,
+    disabledReason: getDisabledReason(unauthorized, expired),
   };
 };
 

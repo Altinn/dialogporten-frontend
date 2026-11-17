@@ -57,8 +57,10 @@ const getNbValue = (values: Localization[] | null | undefined) => getPreferredPr
 
 const withDetail = (title: string | undefined, detail: string) => (title ? `${title} (${detail})` : detail);
 
-const formatCount = (count: number | null | undefined, singular: string, plural: string) =>
-  count ? `${count} ${count === 1 ? singular : plural}` : undefined;
+const formatCount = (count: number | null | undefined, singular: string, plural: string) => {
+  if (!count) return undefined;
+  return `${count} ${count === 1 ? singular : plural}`;
+};
 
 interface SectionProps {
   title: string;

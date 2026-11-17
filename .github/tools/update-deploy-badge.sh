@@ -27,8 +27,9 @@ current_badge() {
 }
 
 is_svg() {
-  [[ "$1" == "<svg "* ]] \
-    && python3 -I -c 'import sys, xml.etree.ElementTree as ET; ET.fromstring(sys.stdin.read())' <<<"$1" 2>/dev/null
+  local svg=$1
+  [[ "$svg" == "<svg "* ]] \
+    && python3 -I -c 'import sys, xml.etree.ElementTree as ET; ET.fromstring(sys.stdin.read())' <<<"$svg" 2>/dev/null
 }
 
 render_svg() {

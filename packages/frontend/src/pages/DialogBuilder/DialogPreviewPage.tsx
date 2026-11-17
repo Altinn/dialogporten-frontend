@@ -24,16 +24,20 @@ interface PreviewLayoutProps {
   children: ReactNode;
 }
 
+const BackToBuilderLink = (props: LinkProps) => {
+  const { search } = useLocation();
+  return <Link {...props} to={`${DIALOG_BUILDER_ROUTE}${search}`} />;
+};
+
 const PreviewLayout = ({ color, children }: PreviewLayoutProps) => {
   const { t } = useTranslation();
-  const { search } = useLocation();
 
   return (
     <DialogLayout
       color={color}
       backButton={{
         label: t('word.back'),
-        as: (props: LinkProps) => <Link {...props} to={`${DIALOG_BUILDER_ROUTE}${search}`} />,
+        as: BackToBuilderLink,
       }}
     >
       {children}
