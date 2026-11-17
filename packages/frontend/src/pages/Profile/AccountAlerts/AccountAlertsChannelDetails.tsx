@@ -35,6 +35,31 @@ export interface AccountAlertsChannelDetailsProps {
   notificationParty?: NotificationAccountsType | null;
 }
 
+type ValidationState = 'hint' | 'valid' | 'invalid';
+
+const VALIDATION_COLORS: Record<ValidationState, ValidationMessageProps['color']> = {
+  hint: 'info',
+  valid: 'success',
+  invalid: 'danger',
+};
+
+const EMAIL_VALIDATION_MESSAGES: Record<ValidationState, string> = {
+  hint: 'profile.account_alerts.email_hint',
+  valid: 'profile.account_alerts.email_valid',
+  invalid: 'profile.account_alerts.email_invalid',
+};
+
+const PHONE_VALIDATION_MESSAGES: Record<ValidationState, string> = {
+  hint: 'profile.account_alerts.phone_hint',
+  valid: 'profile.account_alerts.phone_valid',
+  invalid: 'profile.account_alerts.phone_invalid',
+};
+
+const getValidationState = (value: string, touched: boolean, isValid: boolean): ValidationState => {
+  if (!value || !touched) return 'hint';
+  return isValid ? 'valid' : 'invalid';
+};
+
 export const AccountAlertsChannelDetails = ({ channel, notificationParty }: AccountAlertsChannelDetailsProps) => {
   const { user } = useProfile();
   const queryClient = useQueryClient();
@@ -79,19 +104,17 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
   const isBusy = isSaving || isSending;
   const value = isEmail ? emailValue : joinPhone(countryCode, phoneNumberPart);
 
-  const emailValidation =
-    !emailValue || !emailTouched
-      ? { color: 'info' as ValidationMessageProps['color'], message: t('profile.account_alerts.email_hint') }
-      : isValidEmail(emailValue)
-        ? { color: 'success' as ValidationMessageProps['color'], message: t('profile.account_alerts.email_valid') }
-        : { color: 'danger' as ValidationMessageProps['color'], message: t('profile.account_alerts.email_invalid') };
+  const emailState = getValidationState(emailValue, emailTouched, isValidEmail(emailValue));
+  const emailValidation = { color: VALIDATION_COLORS[emailState], message: t(EMAIL_VALIDATION_MESSAGES[emailState]) };
 
-  const phoneValidation =
-    !phoneNumberPart || !phoneTouched
-      ? { color: 'info' as ValidationMessageProps['color'], message: t('profile.account_alerts.phone_hint') }
-      : isValidPhoneNumber(countryCode, phoneNumberPart)
-        ? { color: 'success' as ValidationMessageProps['color'], message: t('profile.account_alerts.phone_valid') }
-        : { color: 'danger' as ValidationMessageProps['color'], message: t('profile.account_alerts.phone_invalid') };
+  const phoneState = getValidationState(
+    phoneNumberPart,
+    phoneTouched,
+    isValidPhoneNumber(countryCode, phoneNumberPart),
+  );
+  const phoneValidation = { color: VALIDATION_COLORS[phoneState], message: t(PHONE_VALIDATION_MESSAGES[phoneState]) };
+
+  const verifyLabel = isEmail ? t('profile.account_alerts.verify_email') : t('profile.account_alerts.verify_sms');
 
   const handleClose = () => {
     document.activeElement?.closest('dialog')?.close();
@@ -311,11 +334,7 @@ export const AccountAlertsChannelDetails = ({ channel, notificationParty }: Acco
         )}
         <ButtonGroup>
           <Button type="submit" variant={needsVerification ? 'tinted' : 'solid'} loading={isBusy}>
-            {needsVerification
-              ? isEmail
-                ? t('profile.account_alerts.verify_email')
-                : t('profile.account_alerts.verify_sms')
-              : t('profile.account_alerts.save')}
+            {needsVerification ? verifyLabel : t('profile.account_alerts.save')}
           </Button>
           <Button type="button" variant="outline" onClick={handleClose}>
             {t('word.cancel')}
