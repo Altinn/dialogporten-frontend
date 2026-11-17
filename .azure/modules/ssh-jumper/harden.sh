@@ -52,10 +52,10 @@ chmod 0644 /etc/opt/microsoft/mdatp/managed/mdatp_managed.json
 # fatal: a jumper hardening step must not block an infrastructure deployment.
 if command -v mdatp >/dev/null 2>&1; then
   for _ in $(seq 1 18); do
-    [ "$(mdatp health --field real_time_protection_enabled 2>/dev/null)" = "true" ] && break
+    [[ "$(mdatp health --field real_time_protection_enabled 2>/dev/null)" = "true" ]] && break
     sleep 5
   done
-  if [ "$(mdatp health --field real_time_protection_enabled 2>/dev/null)" = "true" ]; then
+  if [[ "$(mdatp health --field real_time_protection_enabled 2>/dev/null)" = "true" ]]; then
     echo "defender: managed configuration applied (version $(mdatp health --field app_version 2>/dev/null))"
   else
     echo "warning: defender is installed but real-time protection is not enabled after 90s (version $(mdatp health --field app_version 2>/dev/null))" >&2
@@ -155,14 +155,14 @@ chmod 0644 /etc/modprobe.d/10-jumper-blacklist.conf
 # not fatal.
 still_loaded=""
 for module in cramfs freevxfs hfs hfsplus jffs2 dccp sctp rds tipc usb_storage; do
-  if [ -e "/sys/module/${module}/initstate" ]; then
+  if [[ -e "/sys/module/${module}/initstate" ]]; then
     modprobe -r "$module" 2>/dev/null || true
-    if [ -e "/sys/module/${module}/initstate" ]; then
+    if [[ -e "/sys/module/${module}/initstate" ]]; then
       still_loaded="${still_loaded} ${module}"
     fi
   fi
 done
-if [ -n "$still_loaded" ]; then
+if [[ -n "$still_loaded" ]]; then
   echo "warning: blocked from loading, but still loaded until the next reboot:${still_loaded}" >&2
 else
   echo "modprobe: unused filesystem and protocol modules disabled"
@@ -183,7 +183,7 @@ chmod 0644 /etc/security/limits.d/10-jumper-core.conf
 # Ubuntu's crash reporter sets fs.suid_dumpable = 2 when it starts at boot. The
 # jumper has no use for crash reports, so keep it disabled; stopping it resets
 # suid_dumpable and core_pattern.
-if [ -f /etc/default/apport ]; then
+if [[ -f /etc/default/apport ]]; then
   sed -i 's/^enabled=1$/enabled=0/' /etc/default/apport
   systemctl stop apport
 fi
@@ -228,7 +228,7 @@ chmod 0755 /etc/cron.daily/jumper-key-only-accounts
 # Installed only when missing, waiting for the package lock if the patch window
 # or another installer holds it. A failure is reported, not fatal.
 export DEBIAN_FRONTEND=noninteractive
-if [ "$(dpkg-query -W -f='${db:Status-Abbrev}' libpam-pwquality auditd 2>/dev/null)" != "ii ii " ]; then
+if [[ "$(dpkg-query -W -f='${db:Status-Abbrev}' libpam-pwquality auditd 2>/dev/null)" != "ii ii " ]]; then
   apt-get -qq -o DPkg::Lock::Timeout=300 install -y libpam-pwquality auditd >/dev/null \
     || echo "warning: installing libpam-pwquality and auditd failed; password quality and audit logging not configured" >&2
 fi
@@ -236,7 +236,7 @@ sed -i -E '/pam_pwquality\.so/ { /minlen=/! s/$/ minlen=14 dcredit=-1 ucredit=-1
 sed -i -E '/pam_unix\.so/ { /remember=/! s/$/ remember=5/ }' /etc/pam.d/common-password
 
 # Kernel audit log, required by the baseline. Default ruleset, logs under /var/log/audit.
-if [ -e /lib/systemd/system/auditd.service ]; then
+if [[ -e /lib/systemd/system/auditd.service ]]; then
   systemctl enable -q --now auditd
 fi
 
