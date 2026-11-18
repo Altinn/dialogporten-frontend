@@ -74,8 +74,8 @@ const toServiceResourceType = (value: unknown): ServiceResourceType | undefined 
 
 const toSystemLabel = ({ systemLabel, endUserContext }: Record<string, unknown>) => {
   const { systemLabels = [] } = (endUserContext ?? {}) as { systemLabels?: string[] };
-  const labels = [systemLabel, ...systemLabels].map((label) => toPascalCase(String(label)));
-  return SYSTEM_LABELS.find((label) => labels.includes(label));
+  const labels = new Set([systemLabel, ...systemLabels].map((label) => toPascalCase(String(label))));
+  return SYSTEM_LABELS.find((label) => labels.has(label));
 };
 
 export const normalizePastedDialog = (input: unknown): NormalizedDialog => {

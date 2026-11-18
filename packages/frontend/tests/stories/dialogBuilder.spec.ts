@@ -499,7 +499,7 @@ test.describe('Dialog preview', () => {
     for (const url of [previewURL(encoded), `${builderURL}&dialog=${encoded}`]) {
       await page.goto(url);
       await expect(page.getByRole('main')).toContainText('<script>window.xss = 1</script>');
-      await page.waitForTimeout(500);
+      await page.waitForLoadState('networkidle');
 
       expect(await page.evaluate(() => (window as Window & { xss?: number }).xss)).toBeUndefined();
       await expect(page.locator('main script, main iframe, main svg[onload], main img[src="x"]')).toHaveCount(0);
@@ -540,7 +540,7 @@ test.describe('Dialog preview', () => {
     await page.goto(previewURL(encoded));
     await expect(page.getByRole('heading', { name: 'Med FCE' })).toBeVisible();
     await page.getByRole('heading', { name: 'Forsendelse' }).click();
-    await page.waitForTimeout(500);
+    await expect(page.getByText('Denne forsendelsen har ikke synlig innhold.')).toBeVisible();
 
     expect(requests.filter((url) => url.includes('evil.example'))).toEqual([]);
   });
