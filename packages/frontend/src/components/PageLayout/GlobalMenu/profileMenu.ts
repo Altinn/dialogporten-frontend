@@ -4,7 +4,6 @@ import {
   BellIcon,
   Buildings2Icon,
   ChatExclamationmarkIcon,
-  ExternalLinkIcon,
   HeartIcon,
   InboxFillIcon,
   InboxIcon,
@@ -172,11 +171,10 @@ export function buildProfileMenu({
         id: 'help-pages',
         'data-testid': 'sidebar-help-pages',
         groupId: 'help',
-        icon: ExternalLinkIcon,
+        icon: ChatExclamationmarkIcon,
         title: t('floating_dropdown.help_pages'),
         as: createMenuItemComponent({
           to: getProfileHelpLink(i18n.language),
-          isExternal: true,
         }),
       },
     ],
@@ -248,17 +246,6 @@ export function buildProfileMenu({
     items: [
       ...globalMenuItems,
       ...helpItems,
-      {
-        id: 'help-pages',
-        'data-testid': 'sidebar-help-pages',
-        groupId: 'help',
-        icon: ExternalLinkIcon,
-        title: t('floating_dropdown.help_pages'),
-        as: createMenuItemComponent({
-          to: getProfileHelpLink(i18n.language),
-          isExternal: true,
-        }),
-      },
       {
         ...profileMenuItem,
         selected: isRouteSelected(pathname, PageRoutes.profile, fromView),

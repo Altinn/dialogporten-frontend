@@ -5,7 +5,6 @@ import {
   Buildings2Icon,
   ChatExclamationmarkIcon,
   DocPencilIcon,
-  ExternalLinkIcon,
   FileCheckmarkIcon,
   HeartIcon,
   InboxFillIcon,
@@ -203,11 +202,10 @@ export function buildInboxMenu({
         id: 'help-pages',
         'data-testid': 'help-pages',
         groupId: 'help',
-        icon: ExternalLinkIcon,
+        icon: ChatExclamationmarkIcon,
         title: t('floating_dropdown.help_pages'),
         as: createMenuItemComponent({
           to: getInboxHelpLink(i18n.language),
-          isExternal: true,
         }),
       },
     ],
@@ -297,17 +295,6 @@ export function buildInboxMenu({
         selected: false,
       },
       ...helpItems,
-      {
-        id: 'help-pages',
-        'data-testid': 'help-pages',
-        groupId: 'help',
-        icon: ExternalLinkIcon,
-        title: t('floating_dropdown.help_pages'),
-        as: createMenuItemComponent({
-          to: getInboxHelpLink(i18n.language),
-          isExternal: true,
-        }),
-      },
       {
         groupId: 'profile-shortcut',
         id: 'profile',
