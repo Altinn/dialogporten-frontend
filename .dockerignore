@@ -4,3 +4,5 @@ build
 .gitignore
 *.md
 dist
+**/.env*
+certs

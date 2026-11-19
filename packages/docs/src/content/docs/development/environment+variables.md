@@ -40,8 +40,8 @@ To add a new environment variable to the frontend, follow these steps:
 
 3. **Modify the `start.sh` Script to Substitute the New Variable:**
    ```shell:packages/frontend/start.sh
-   # Replace the placeholders in index.html and create a temporary file
-   envsubst '$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY $DIALOGPORTEN_STREAM_URL $NEW_ENV_VARIABLE' < /usr/share/nginx/html/index.html > /usr/share/nginx/html/index_temp.html
+   # Render index.html from the template, replacing the placeholders
+   envsubst '$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY $DIALOGPORTEN_STREAM_URL $NEW_ENV_VARIABLE' < /usr/share/nginx/index.html.template > /usr/share/nginx/html/index.html
    ```
 
 4. **Restart the Application:**

@@ -19,7 +19,7 @@
     "install:browsers": "playwright install",
     "test:watch": "vitest watch",
     "build:docker": "docker build -f ./Dockerfile -t frontend ../..",
-    "run:docker": "docker run -it -p 80:80 frontend",
+    "run:docker": "docker run -it -p 80:8080 frontend",
     "i18n:check": "tsx ./src/i18n/check.ts",
     "i18n:sort": "tsx ./src/i18n/check.ts --sort",
     "doctor": "npx react-doctor@latest"

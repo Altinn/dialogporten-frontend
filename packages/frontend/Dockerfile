@@ -20,11 +20,8 @@ CMD ["pnpm", "--filter", "frontend", "run", "dev", "--host", "0.0.0.0"]
 
 # ---
 
-# nginx 1.25.5-alpine
-FROM nginx@sha256:516475cc129da42866742567714ddc681e5eed7b9ee0b9e9c015e464b4221a00 AS nginx
-
-# Install envsubst for environment variable substitution
-RUN apk add --no-cache gettext
+# nginx 1.31.9-alpine
+FROM nginx@sha256:90b6bd2aec278b16b98221d64deb1d6d35d164567f507ab0716e6053878315aa AS nginx
 
 # Copy the generated frontend build
 COPY --from=build /app/packages/frontend/dist/ /usr/share/nginx/html/
@@ -33,11 +30,17 @@ COPY --from=build /app/packages/frontend/dist/ /usr/share/nginx/html/
 COPY ./packages/frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Add the startup script
-COPY ./packages/frontend/start.sh /start.sh
-RUN chmod +x /start.sh
+COPY --chmod=755 ./packages/frontend/start.sh /start.sh
 
-# Expose port 80
-EXPOSE 80
+RUN sed -i -e '/^user /d' -e 's#^pid .*#pid /tmp/nginx.pid;#' /etc/nginx/nginx.conf \
+  && mv /usr/share/nginx/html/index.html /usr/share/nginx/index.html.template \
+  && install -o nginx -g nginx -m 644 /dev/null /usr/share/nginx/html/index.html \
+  && chown -R nginx:nginx /var/cache/nginx
+
+USER 101
+
+# Expose port 8080
+EXPOSE 8080
 
 # Use the custom entrypoint script
 CMD ["/start.sh"]

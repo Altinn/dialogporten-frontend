@@ -9,9 +9,7 @@
     "build": "astro build",
     "serve": "astro preview",
     "astro": "astro",
-    "typecheck": "astro sync && tsc --noEmit",
-    "build:docker": "docker build -f ./Dockerfile -t docs ../..",
-    "run:docker": "docker run -it -p 8080:80 docs"
+    "typecheck": "astro sync && tsc --noEmit"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "7.3.1",
