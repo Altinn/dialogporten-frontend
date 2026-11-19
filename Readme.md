@@ -185,17 +185,11 @@ packages/docs/src/content/docs/
 ### Running Documentation Locally
 
 ```bash
-# Using pnpm
 pnpm --filter docs run dev
-
-# Using Docker
-pnpm --filter docs run build:docker
-pnpm --filter docs run run:docker
 ```
 
 The documentation will be available at:
 - Local development: http://localhost:4321
-- Docker: http://localhost:8080
 - Full docker-compose setup (`make dev`): https://docs.localhost
 
 ### Documentation Guidelines

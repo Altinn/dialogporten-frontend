@@ -7,7 +7,7 @@ param imageTag string
 param environment string
 @minLength(3)
 param location string
-param port int = 80
+param port int = 8080
 param minReplicas int
 param maxReplicas int
 
