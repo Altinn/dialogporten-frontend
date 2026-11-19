@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.188.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.188.2...v1.188.3) (2026-11-19)
+
+
+### Bug Fixes
+
+* **a11y:** open help pages in same tab ([#4865](https://github.com/Altinn/dialogporten-frontend/issues/4865)) ([ff16b6d](https://github.com/Altinn/dialogporten-frontend/commit/ff16b6d16c399129aeefbe8579709c2775cd10a5))
+* **frontend:** bump nginx to 1.31.9, fix security headers and run as non-root ([b06a504](https://github.com/Altinn/dialogporten-frontend/commit/b06a50420ae63042e374e3d74d191b01f0188a70))
+
 ## [1.188.2](https://github.com/Altinn/dialogporten-frontend/compare/v1.188.1...v1.188.2) (2026-11-17)
 
 
