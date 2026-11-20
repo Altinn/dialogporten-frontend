@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import en from '../i18n/resources/en.json';
 import nb from '../i18n/resources/nb.json';
 import nn from '../i18n/resources/nn.json';
-import { groupNotificationLogs, type NotificationLog } from './notificationLogs.tsx';
+import { groupNotificationLogs, type NotificationLog, outcomeFor } from './notificationLogs.tsx';
 
 const log = (overrides: Partial<NotificationLog>): NotificationLog => ({
   notificationId: 'notification-1',
@@ -38,6 +38,15 @@ describe('the vocabulary the BFF passes on has a label in every language', () =>
       expect(resource).toHaveProperty(`notification_log.channel.${channel.toLowerCase()}`);
     }
   });
+
+  it.each(resources)(
+    '%s has a sentence for a delivered, an unconfirmed and a failed notification',
+    (_lang, resource) => {
+      expect(resource).toHaveProperty('notification_log.summary.delivered');
+      expect(resource).toHaveProperty('notification_log.summary.unconfirmed');
+      expect(resource).toHaveProperty('notification_log.summary.failed');
+    },
+  );
 
   it.each(resources)('%s has a fallback for an unrecognised type and channel', (_lang, resource) => {
     for (const namespace of ['type', 'channel']) {
@@ -78,6 +87,37 @@ describe('groupNotificationLogs', () => {
     ]);
 
     expect(result).toHaveLength(4);
+  });
+
+  it('keeps recipients of one dispatch apart by outcome', () => {
+    const result = groupNotificationLogs([
+      log({ notificationId: '1' }),
+      log({ notificationId: '2', destination: 'per@example.com', status: 'Failed_Bounced' }),
+      log({ notificationId: '3', destination: 'ola@example.com', status: 'Failed_TTL' }),
+      log({ notificationId: '4', destination: 'nils@example.com', status: 'Failed_RecipientReserved' }),
+    ]);
+
+    expect(result).toHaveLength(3);
+    expect(result.find((group) => group.outcome === 'delivered')?.destinations).toEqual(['kari@example.com']);
+    expect(result.find((group) => group.outcome === 'unconfirmed')?.destinations).toEqual(['ola@example.com']);
+    expect(result.find((group) => group.outcome === 'failed')?.destinations).toEqual([
+      'per@example.com',
+      'nils@example.com',
+    ]);
+  });
+
+  it.each([
+    ['Delivered', 'delivered'],
+    ['DELIVERED', 'delivered'],
+    ['Failed_TTL', 'unconfirmed'],
+    ['FAILED_TTL', 'unconfirmed'],
+    ['Failed', 'failed'],
+    ['Failed_Bounced', 'failed'],
+    ['Failed_RecipientReserved', 'failed'],
+    ['SomethingNew', 'unconfirmed'],
+    [null, 'unconfirmed'],
+  ])('reads the status %s as %s', (status, outcome) => {
+    expect(outcomeFor(status)).toBe(outcome);
   });
 
   it('keeps entries of an unrecognised type instead of dropping a notification the user received', () => {

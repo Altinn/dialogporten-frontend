@@ -5,10 +5,13 @@ import type { FormatFunction, Locale } from '../i18n/useDateFnsLocale.tsx';
 
 export type NotificationLog = NonNullable<NonNullable<NotificationLogsQuery['notificationLogs']>[number]>;
 
+export type NotificationLogOutcome = 'delivered' | 'unconfirmed' | 'failed';
+
 export interface NotificationLogGroup {
   id: string;
   type: string;
   channel: string;
+  outcome: NotificationLogOutcome;
   transmissionId?: string | null;
   date: string;
   destinations: string[];
@@ -22,6 +25,20 @@ export interface NotificationLogEntry {
 }
 
 const normalize = (value?: string | null): string => (value ?? '').trim().toLowerCase();
+
+export const outcomeFor = (status?: string | null): NotificationLogOutcome => {
+  const value = normalize(status);
+  if (value === 'delivered') return 'delivered';
+  if (value === 'failed_ttl') return 'unconfirmed';
+  if (value === 'failed' || value.startsWith('failed_')) return 'failed';
+  return 'unconfirmed';
+};
+
+const summaryKeys: Record<NotificationLogOutcome, string> = {
+  delivered: 'notification_log.summary.delivered',
+  unconfirmed: 'notification_log.summary.unconfirmed',
+  failed: 'notification_log.summary.failed',
+};
 
 export const labelFor = (namespace: 'type' | 'channel', value: string): string => {
   const key = `notification_log.${namespace}.${value}`;
@@ -59,7 +76,8 @@ export const groupNotificationLogs = (notificationLogs: NotificationLog[]): Noti
     const deliveredAt = log.lastUpdateTime ?? sentAt;
     const type = normalize(log.type);
     const channel = normalize(log.channel);
-    const key = [type, channel, log.transmissionId ?? '', sentAt].join('|');
+    const outcome = outcomeFor(log.status);
+    const key = [type, channel, outcome, log.transmissionId ?? '', sentAt].join('|');
     const existing = groups.get(key);
 
     if (existing) {
@@ -75,6 +93,7 @@ export const groupNotificationLogs = (notificationLogs: NotificationLog[]): Noti
       id: `notification-log-${log.notificationId ?? key}`,
       type,
       channel,
+      outcome,
       transmissionId: log.transmissionId,
       date: deliveredAt,
       destinations: log.destination ? [log.destination] : [],
@@ -100,7 +119,7 @@ export const getNotificationLogEntries = ({
   return groupNotificationLogs(notificationLogs).map((group) => {
     const summary = (
       <>
-        {t('notification_log.summary', {
+        {t(summaryKeys[group.outcome], {
           type: labelFor('type', group.type),
           channel: labelFor('channel', group.channel),
           recipients: <strong key={group.id}>{formatRecipients(group.destinations, locale)}</strong>,
