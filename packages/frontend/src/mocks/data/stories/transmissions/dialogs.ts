@@ -681,10 +681,24 @@ export const dialogWithTransmissions = mockDialog({
       requestedSendTime: '2024-07-30T18:15:00.000Z',
       lastUpdateTime: '2024-07-30T18:15:22.512Z',
     }),
+    mockNotificationLog('c29d1e42-6c82-4d0a-9b56-7a1a5d2d5b21', {
+      channel: 'Sms',
+      destination: '+4791122334',
+      status: 'Failed_TTL',
+      requestedSendTime: '2024-07-30T18:15:00.000Z',
+      lastUpdateTime: '2024-08-01T18:15:00.000Z',
+    }),
     mockNotificationLog('d0706926-2c76-4eb1-b723-885268c442be', {
       type: 'Reminder',
       requestedSendTime: '2024-08-07T09:00:00.000Z',
       lastUpdateTime: '2024-08-07T09:02:28.962Z',
+    }),
+    mockNotificationLog('e1817a37-3d87-4fc2-a834-996379d553cf', {
+      type: 'Reminder',
+      destination: 'post@firma-as.no',
+      status: 'Failed_Bounced',
+      requestedSendTime: '2024-08-07T09:00:00.000Z',
+      lastUpdateTime: '2024-08-07T09:03:40.118Z',
     }),
     mockNotificationLog('f2a5b8c4-1d33-4e77-9a02-3b7e5c9d0a11', {
       transmissionId: 'transmission-2',

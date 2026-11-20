@@ -24,7 +24,16 @@ describe('filterNotificationLogs', () => {
     expect(filterNotificationLogs([log(type, 'Delivered')])).toEqual([]);
   });
 
-  it.each(['New', 'Sending', 'Succeeded', 'Accepted', 'Failed', 'Failed_Bounced', 'Failed_TTL', ''])(
+  it.each(['Failed', 'Failed_Bounced', 'Failed_TTL', 'Failed_RecipientReserved', 'FAILED_TTL'])(
+    'keeps a notification with status %s',
+    (status) => {
+      const logs = [log('Notification', status)];
+
+      expect(filterNotificationLogs(logs)).toEqual(logs);
+    },
+  );
+
+  it.each(['New', 'Sending', 'Succeeded', 'Accepted', 'Failed_RecipientNotIdentified', 'FailedSomehow', ''])(
     'drops a notification with status %s',
     (status) => {
       expect(filterNotificationLogs([log('Notification', status)])).toEqual([]);

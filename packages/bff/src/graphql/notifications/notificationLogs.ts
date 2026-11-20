@@ -14,11 +14,17 @@ const excludedTypes: ReadonlySet<string> = new Set(['composed', 'instant']);
 
 const normalize = (value?: string | null): string => (value ?? '').trim().toLowerCase();
 
-const isDelivered = (status?: string | null): boolean => normalize(status) === 'delivered';
+const excludedStatuses: ReadonlySet<string> = new Set(['failed_recipientnotidentified']);
+
+const isShownStatus = (status?: string | null): boolean => {
+  const value = normalize(status);
+  if (excludedStatuses.has(value)) return false;
+  return value === 'delivered' || value === 'failed' || value.startsWith('failed_');
+};
 
 export const filterNotificationLogs = (logs: unknown): NotificationLogEntry[] => {
   if (!Array.isArray(logs)) return [];
   return logs.filter(
-    (log): log is NotificationLogEntry => !!log && !excludedTypes.has(normalize(log.type)) && isDelivered(log.status),
+    (log): log is NotificationLogEntry => !!log && !excludedTypes.has(normalize(log.type)) && isShownStatus(log.status),
   );
 };

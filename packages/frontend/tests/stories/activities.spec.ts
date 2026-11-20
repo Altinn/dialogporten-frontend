@@ -39,6 +39,10 @@ test.describe('Activity history - transmissions and activities', () => {
     // The same dispatch on another channel stays a separate entry
     await expect(dialog.getByText('Varsel på SMS til +4799887766 ble levert.')).toBeVisible();
     await expect(dialog.getByText('Påminnelse på e-post til kari.nordmann@example.com ble levert.')).toBeVisible();
+    // A recipient whose delivery failed is not folded into the delivered ones
+    await expect(dialog.getByText('Påminnelse på e-post til post@firma-as.no kunne ikke leveres.')).toBeVisible();
+    // An expired delivery is unconfirmed rather than failed
+    await expect(dialog.getByText('Varsel på SMS til +4791122334 kunne ikke bekreftes som levert.')).toBeVisible();
     // Long recipient lists are capped so one dispatch cannot flood the log
     await expect(
       dialog.getByText(
