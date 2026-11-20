@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.189.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.188.3...v1.189.0) (2026-11-20)
+
+
+### Features
+
+* **notifications:** show failed and unconfirmed notifications in the activity log ([cf1cef8](https://github.com/Altinn/dialogporten-frontend/commit/cf1cef873da138b963be26a68a73d489b136844e))
+
 ## [1.188.3](https://github.com/Altinn/dialogporten-frontend/compare/v1.188.2...v1.188.3) (2026-11-19)
 
 
