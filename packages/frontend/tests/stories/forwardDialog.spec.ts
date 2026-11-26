@@ -165,10 +165,30 @@ test.describe('Forward dialog by email', () => {
     const modal = await openForwardModal(page, NON_FORWARDABLE_DIALOG_TITLE);
 
     await expect(modal.getByRole('heading', { name: 'Videresending er ikke mulig' })).toBeVisible();
+    await expect(
+      modal.getByText('Denne meldingen kan dessverre ikke videresendes på e-post.', { exact: true }),
+    ).toBeVisible();
+    await expect(modal.getByText(/Del og gi fullmakt/)).toHaveCount(0);
     await expect(modal.getByLabel('E-postadresse')).toHaveCount(0);
     await expect(modal.getByRole('button', { name: 'Videresend' })).toHaveCount(0);
 
     await modal.getByRole('button', { name: 'Lukk' }).last().click();
     await expect(page.getByRole('dialog')).toBeHidden();
+  });
+
+  test('suggests sharing when the message cannot be forwarded but can be delegated', async ({ page }) => {
+    const modal = await openForwardModal(page, 'Videresending: forslag om deling', forwardStoryURL);
+
+    await expect(modal.getByRole('heading', { name: 'Videresending er ikke mulig' })).toBeVisible();
+    await expect(
+      modal.getByText(
+        'Denne meldingen kan dessverre ikke videresendes på e-post. Du kan prøve funksjonen «Del og gi fullmakt» som du finner i samme meny i meldingen.',
+      ),
+    ).toBeVisible();
+
+    await modal.getByRole('button', { name: 'Lukk' }).last().click();
+    await expect(page.getByRole('dialog')).toBeHidden();
+    await page.locator('#dialog-context-menu-root').getByRole('button', { name: 'Åpne meny' }).click();
+    await expect(page.getByRole('menuitem', { name: 'Del og gi fullmakt' })).toBeVisible();
   });
 });

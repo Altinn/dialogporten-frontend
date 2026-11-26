@@ -184,6 +184,7 @@ export const DialogDetailsPage = () => {
         dialogToken={dialog?.dialogToken}
         attachmentCount={dialog?.attachments.length ?? 0}
         refreshDialogToken={refreshDialogToken}
+        canDelegate={!!delegationHref}
         isOpen={isForwardOpen}
         onClose={() => setIsForwardOpen(false)}
       />

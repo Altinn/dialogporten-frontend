@@ -30,7 +30,7 @@ flowchart LR
 3. `src/mocks/handlers.ts` puts the data in an in-memory store and answers every request from it:
    - The inbox queries filter the dialogs with `filterDialogs` and return each one through `toSearchDialog`.
    - `getDialogById` returns `toDialogById(dialog)`.
-   - Notification logs, the label assignment log, forwarding and story markdown are read from the same dialog.
+   - Notification logs, the label assignment log, forwarding, delegability and story markdown are read from the same dialog.
    - Mutations (system labels, saved searches, profile settings and so on) change the store. The change lasts until the page is loaded again.
 4. Embedded content (main content and transmission content) points to `https://dialogporten-serviceprovider.net/fce-*` URLs, and the same handlers answer them.
 
@@ -50,6 +50,7 @@ A dialog is a `MockDialog`, built with `mockDialog()` from `src/mocks/data/base/
 | `notificationLogs` | None (`mockNotificationLog()` builds one) |
 | `labelAssignmentLog` | Left out: derived from the dialog's system labels |
 | `forwarding` | `'allowed'`. Also `'notAllowed'`, `'attachmentsExceedMaxLimit'`, `'notAccessToAllAttachments'` and `'expiringAttachments'` |
+| `isDelegable` | `false`. `true` gives the dialog the «Del og gi fullmakt» menu item |
 
 Some values are derived, so the inbox and the dialog page always agree:
 
@@ -112,7 +113,7 @@ Some values are derived, so the inbox and the dialog page always agree:
 - **Label history:** `labelAssignmentLog`.
 - **Action:** `guiActions`.
 - **Main content:** `mainContentReference`, with the content helpers in `base/helper.ts`, or `mainContentMarkdown` for text written in the story (the `fce-definition-list` story writes a receipt as a definition list). `getMockedUnauthorizedFCEContent()` gives content without access, here or as a transmission's `contentReference`. See the `fce-unauthorized` story.
-- **Forwarding by email:** `forwarding`. The attachments decide what the forward dialog offers.
+- **Forwarding by email:** `forwarding`. The attachments decide what the forward dialog offers, and `isDelegable` decides whether «Videresending er ikke mulig» suggests «Del og gi fullmakt».
 - **The same dialog in two stories:** export it from one story and spread it in the other with `mockDialog({ ...otherDialog, ... })`. `activity-history` does this with the dialog from `transmissions`.
 
 See also [Playwright pitfalls](../automatedtests/#playwright-pitfalls), for example why mock pages need the Vite dev server and why `page.reload()` leaves them blank.
