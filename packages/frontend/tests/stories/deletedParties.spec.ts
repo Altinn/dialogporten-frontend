@@ -32,7 +32,7 @@ test.describe('deleted parties', () => {
     await header
       .getByText('AAvviklet Forretning Tiger')
       .locator('..')
-      .getByLabel(/legg til i favorittar/i)
+      .getByLabel(/legg til i favoritter/i)
       .click();
 
     await header.getByRole('switch', { name: 'Vis slettede' }).click();
