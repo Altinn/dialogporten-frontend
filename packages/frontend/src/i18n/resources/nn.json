@@ -554,6 +554,7 @@
   "word.unread_content": "Ulest innhald",
   "word.you": "deg",
   "inbox.export.column.title": "Tittel",
+  "inbox.export.column.summary": "Samandrag",
   "inbox.export.column.updated_at": "Sist oppdatert",
   "inbox.export.column.service_owner": "Tenesteeigar",
   "inbox.export.column.sender_name": "Oppgitt avsendarnamn",
