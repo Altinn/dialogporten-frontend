@@ -555,6 +555,7 @@
   "word.unread_content": "Ulest innhold",
   "word.you": "deg",
   "inbox.export.column.title": "Tittel",
+  "inbox.export.column.summary": "Sammendrag",
   "inbox.export.column.updated_at": "Sist oppdatert",
   "inbox.export.column.service_owner": "Tjenesteeier",
   "inbox.export.column.sender_name": "Oppgitt avsendernavn",
