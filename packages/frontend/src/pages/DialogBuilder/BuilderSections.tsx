@@ -21,6 +21,7 @@ import {
   type Actor,
   ADDITIONAL_INFO_MEDIA_TYPES,
   type Attachment,
+  type AuthorizationContext,
   DIALOG_STATUSES,
   EMBED_MEDIA_TYPES,
   GUI_ACTION_PRIORITIES,
@@ -34,6 +35,7 @@ import {
   SYSTEM_LABELS,
   TRANSMISSION_TYPES,
   type Transmission,
+  UNAUTHORIZED_PRESENTATIONS,
   type ValidationIssue,
 } from './dialogSchema.ts';
 import { LocalizedField } from './LocalizedField.tsx';
@@ -142,6 +144,35 @@ const DateTimeField = ({ label, path, value, onChange }: DateTimeFieldProps) => 
       onChange(event.target.value ? new Date(event.target.value).toISOString() : undefined)
     }
   />
+);
+
+interface AuthorizationFieldsProps {
+  path: string;
+  context: AuthorizationContext | null | undefined;
+  onChange: (context: AuthorizationContext | undefined) => void;
+}
+
+const AuthorizationFields = ({ path, context, onChange }: AuthorizationFieldsProps) => (
+  <>
+    <Switch
+      label="Brukeren har ikke tilgang"
+      data-path={path}
+      size="sm"
+      checked={!!context}
+      onChange={(event: ChangeEvent<HTMLInputElement>) =>
+        onChange(event.target.checked ? { unauthorizedPresentation: 'Disabled' } : undefined)
+      }
+    />
+    {context && (
+      <OptionsField
+        label="Visning uten tilgang"
+        path={`${path}.unauthorizedPresentation`}
+        value={context.unauthorizedPresentation}
+        options={UNAUTHORIZED_PRESENTATIONS}
+        onChange={(unauthorizedPresentation) => onChange({ ...context, unauthorizedPresentation })}
+      />
+    )}
+  </>
 );
 
 interface ServiceSectionProps {
@@ -383,6 +414,11 @@ const AttachmentsEditor = ({ path, attachments, languages, onChange }: Attachmen
             value={attachment.expiresAt}
             onChange={(expiresAt) => update({ expiresAt })}
           />
+          <AuthorizationFields
+            path={`${itemPath}.authorizationContext`}
+            context={attachment.authorizationContext}
+            onChange={(authorizationContext) => update({ authorizationContext })}
+          />
         </>
       );
     }}
@@ -422,64 +458,75 @@ export const GuiActionsSection = ({ dialog, languages, errors, onChange }: Dialo
         getTitle={({ title, priority }) => withDetail(getNbValue(title), priority)}
         onChange={(items) => onChange({ ...dialog, guiActions: items })}
       >
-        {(action, update, itemPath) => (
-          <>
-            <LocalizedField
-              label="Knappetekst"
-              path={`${itemPath}.title`}
-              required
-              values={action.title}
-              languages={languages}
-              onChange={(title) => update({ title })}
-            />
-            <TextField
-              label="URL"
-              data-path={`${itemPath}.url`}
-              type="url"
-              required
-              size="sm"
-              value={action.url}
-              onChange={(event: ChangeEvent<HTMLInputElement>) => update({ url: event.target.value })}
-            />
-            <TextField
-              label="Handling i tilgangspolicyen"
-              data-path={`${itemPath}.action`}
-              required
-              size="sm"
-              value={action.action}
-              onChange={(event: ChangeEvent<HTMLInputElement>) => update({ action: event.target.value })}
-            />
-            <OptionsField
-              label="Prioritet"
-              path={`${itemPath}.priority`}
-              value={action.priority}
-              options={GUI_ACTION_PRIORITIES}
-              onChange={(priority) => update({ priority })}
-            />
-            <OptionsField
-              label="HTTP-metode"
-              path={`${itemPath}.httpMethod`}
-              value={action.httpMethod ?? 'GET'}
-              options={HTTP_METHODS}
-              onChange={(httpMethod) => update({ httpMethod })}
-            />
-            <LocalizedField
-              label="Bekreftelsestekst"
-              path={`${itemPath}.prompt`}
-              values={action.prompt}
-              languages={languages}
-              onChange={(prompt) => update({ prompt })}
-            />
-            <Switch
-              label="Sletter dialogen"
-              size="sm"
-              checked={action.isDeleteDialogAction ?? false}
-              onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                update({ isDeleteDialogAction: event.target.checked })
-              }
-            />
-          </>
-        )}
+        {(action, update, itemPath) => {
+          const context = action.authorizationContext;
+          const setPolicyAction = (value: string) =>
+            context ? update({ authorizationContext: { ...context, action: value } }) : update({ action: value });
+          const setContext = (next: AuthorizationContext | undefined) =>
+            next
+              ? update({ action: undefined, authorizationContext: { action: action.action, ...next } })
+              : update({ action: context?.action || 'read', authorizationContext: undefined });
+
+          return (
+            <>
+              <LocalizedField
+                label="Knappetekst"
+                path={`${itemPath}.title`}
+                required
+                values={action.title}
+                languages={languages}
+                onChange={(title) => update({ title })}
+              />
+              <TextField
+                label="URL"
+                data-path={`${itemPath}.url`}
+                type="url"
+                required
+                size="sm"
+                value={action.url}
+                onChange={(event: ChangeEvent<HTMLInputElement>) => update({ url: event.target.value })}
+              />
+              <TextField
+                label="Handling i tilgangspolicyen"
+                data-path={context ? `${itemPath}.authorizationContext.action` : `${itemPath}.action`}
+                required
+                size="sm"
+                value={(context ? context.action : action.action) ?? ''}
+                onChange={(event: ChangeEvent<HTMLInputElement>) => setPolicyAction(event.target.value)}
+              />
+              <OptionsField
+                label="Prioritet"
+                path={`${itemPath}.priority`}
+                value={action.priority}
+                options={GUI_ACTION_PRIORITIES}
+                onChange={(priority) => update({ priority })}
+              />
+              <OptionsField
+                label="HTTP-metode"
+                path={`${itemPath}.httpMethod`}
+                value={action.httpMethod ?? 'GET'}
+                options={HTTP_METHODS}
+                onChange={(httpMethod) => update({ httpMethod })}
+              />
+              <LocalizedField
+                label="Bekreftelsestekst"
+                path={`${itemPath}.prompt`}
+                values={action.prompt}
+                languages={languages}
+                onChange={(prompt) => update({ prompt })}
+              />
+              <Switch
+                label="Sletter dialogen"
+                size="sm"
+                checked={action.isDeleteDialogAction ?? false}
+                onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                  update({ isDeleteDialogAction: event.target.checked })
+                }
+              />
+              <AuthorizationFields path={`${itemPath}.authorizationContext`} context={context} onChange={setContext} />
+            </>
+          );
+        }}
       </RepeatableItems>
     </Section>
   );
@@ -606,6 +653,11 @@ const NavigationalActionsEditor = ({ path, actions, languages, onChange }: Navig
           value={action.expiresAt}
           onChange={(expiresAt) => update({ expiresAt })}
         />
+        <AuthorizationFields
+          path={`${itemPath}.authorizationContext`}
+          context={action.authorizationContext}
+          onChange={(authorizationContext) => update({ authorizationContext })}
+        />
       </>
     )}
   </RepeatableItems>
@@ -688,6 +740,11 @@ export const TransmissionsSection = ({ dialog, languages, errors, onChange }: Di
                   contentReference: { value, mediaType: content.contentReference?.mediaType ?? EMBED_MEDIA_TYPES[0] },
                 })
               }
+            />
+            <AuthorizationFields
+              path={`${itemPath}.authorizationContext`}
+              context={transmission.authorizationContext}
+              onChange={(authorizationContext) => update({ authorizationContext })}
             />
             <Heading as="h3" size="xs">
               {`Vedlegg (${transmission.attachments?.length ?? 0})`}

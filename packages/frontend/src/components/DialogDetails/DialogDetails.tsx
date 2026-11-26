@@ -14,6 +14,7 @@ import {
   DsAlert,
   DsParagraph,
   Heading,
+  Section,
   type SnackbarColor,
   SnackbarDuration,
   Timeline,
@@ -265,11 +266,14 @@ const performDialogAction = async ({
 };
 
 const toTransmissionListItem = (
-  { isEmpty, attachments, navigationalActions, ...item }: TransmissionItemWithMeta,
+  { isEmpty, attachments, navigationalActions, excludedNavigationalActions, ...item }: TransmissionItemWithMeta,
   dialog: DialogByIdDetails,
   dialogToken: string | undefined,
   t: TFunction<'translation', undefined>,
 ): TransmissionProps => {
+  if (item.hiddenLabel) {
+    return item;
+  }
   const contentReference = dialog.contentReferenceForTransmissions[item.id];
   return {
     ...item,
@@ -291,8 +295,15 @@ const toTransmissionListItem = (
             />
           )
         )}
-        {attachments && <AttachmentList {...attachments} />}
-        <TransmissionNavigationalActions items={navigationalActions} />
+        {attachments && (attachments.items.length > 0 || attachments.hiddenItemsLabel) && (
+          <Section spacing={1} className={styles.transmissionAttachments}>
+            <Heading as="h3" size="xs" weight="normal" variant="subtle" className={styles.transmissionAttachmentsTitle}>
+              {attachments.title}
+            </Heading>
+            <AttachmentList {...attachments} />
+          </Section>
+        )}
+        <TransmissionNavigationalActions items={navigationalActions} {...excludedNavigationalActions} />
       </>
     ),
   };
@@ -484,7 +495,7 @@ export const DialogDetails = ({
         title={dialog.title}
         sentCount={dialog.sentCount}
         receivedCount={dialog.receivedCount}
-        attachmentsCount={dialog.attachments?.length}
+        attachmentsCount={dialog.attachments.items.length}
         extendedStatusLabel={dialog.extendedStatusLabel}
       />
       <DialogBody
@@ -510,13 +521,8 @@ export const DialogDetails = ({
             dialogId={dialog.id}
           />
         )}
-        {dialog.attachments.length > 0 && (
-          <DialogAttachments
-            title={t('inbox.heading.attachments', { count: dialog.attachments.length })}
-            items={dialog.attachments}
-          />
-        )}
-        <DialogActions items={dialogActions} />
+        <DialogAttachments {...dialog.attachments} />
+        <DialogActions items={dialogActions} {...dialog.excludedGuiActions} />
       </DialogBody>
       {transmissions?.length > 0 && (
         <Timeline>

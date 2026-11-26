@@ -1,5 +1,10 @@
 import type { ActivityLogItemProps, AvatarProps } from '@altinn/altinn-components';
-import { ActivityType, type DialogActivityFragment, type TransmissionFieldsFragment } from 'bff-types-generated';
+import {
+  ActivityType,
+  type DialogActivityFragment,
+  type ExcludedElementFieldsFragment,
+  type TransmissionFieldsFragment,
+} from 'bff-types-generated';
 import { t } from 'i18next';
 import { getActorProps } from '../api/hooks/useDialogById.tsx';
 import type { ProfileType } from '../api/hooks/useParties.ts';
@@ -145,6 +150,7 @@ export type ActivityLogEntryType = ActivityLogEntry['type'];
 export const getActivityHistory = ({
   activities,
   transmissions,
+  excludedTransmissions,
   notificationLogs = [],
   labelAssignmentLogs = [],
   format,
@@ -157,6 +163,7 @@ export const getActivityHistory = ({
 }: {
   activities: DialogActivityFragment[];
   transmissions: TransmissionFieldsFragment[];
+  excludedTransmissions?: ExcludedElementFieldsFragment[] | null;
   notificationLogs?: NotificationLog[];
   labelAssignmentLogs?: LabelAssignmentLog[];
   format: FormatFunction;
@@ -194,6 +201,7 @@ export const getActivityHistory = ({
   // D: only visible transmissions appear as expandable cards in the activity log modal
   const dialogHistoryTransmissions: ActivityLogEntry[] = getTransmissions({
     transmissions,
+    excludedTransmissions,
     format,
     activities,
     stopReversingPersonNameOrder,

@@ -118,6 +118,31 @@ describe('toDialogFragment', () => {
     expect(fragment.fromPartyTransmissionsCount).toBe(1);
   });
 
+  it('counts transmissions the user cannot see, like Dialogporten', () => {
+    const transmission = (
+      actorType: 'ServiceOwner' | 'PartyRepresentative',
+      unauthorizedPresentation: 'Disabled' | 'Excluded',
+    ) => ({
+      type: 'Information' as const,
+      sender: { actorType },
+      content: { title: { value: nb('Melding') } },
+      authorizationContext: { unauthorizedPresentation },
+    });
+
+    const fragment = convert({
+      ...baseDialog,
+      transmissions: [
+        transmission('ServiceOwner', 'Excluded'),
+        transmission('ServiceOwner', 'Disabled'),
+        transmission('PartyRepresentative', 'Excluded'),
+      ],
+    });
+
+    expect(fragment.transmissions).toHaveLength(1);
+    expect(fragment.fromServiceOwnerTransmissionsCount).toBe(2);
+    expect(fragment.fromPartyTransmissionsCount).toBe(1);
+  });
+
   it('gives transmissions without timestamps a stable newest-first order', () => {
     const transmission = { type: 'Information' as const, sender: { actorType: 'ServiceOwner' as const } };
     const fragment = convert({
@@ -166,6 +191,96 @@ describe('toDialogFragment access', () => {
     });
 
     expect(fragment.guiActions.map(({ isAuthorized }) => isAuthorized)).toEqual([true, false]);
+  });
+
+  const disabled = { unauthorizedPresentation: 'Disabled' as const };
+  const excluded = { unauthorizedPresentation: 'Excluded' as const };
+  const attachment = (name: string, authorizationContext?: typeof disabled | typeof excluded) => ({
+    displayName: nb(name),
+    urls: [{ url: `https://example.com/${name}.pdf`, consumerType: 'Gui' as const }],
+    authorizationContext,
+  });
+  const navigationalAction = (title: string, authorizationContext?: typeof disabled | typeof excluded) => ({
+    title: nb(title),
+    url: 'https://example.com/svar',
+    authorizationContext,
+  });
+  const transmission = (
+    title: string,
+    overrides: Partial<NonNullable<PreviewDialog['transmissions']>[number]> = {},
+  ): NonNullable<PreviewDialog['transmissions']>[number] => ({
+    type: 'Information',
+    sender: { actorType: 'ServiceOwner' },
+    content: { title: { value: nb(title) } },
+    ...overrides,
+  });
+
+  it('shows elements the user has no access to as disabled', () => {
+    const fragment = convert({
+      ...baseDialog,
+      attachments: [attachment('Vedtak', disabled)],
+      guiActions: [
+        {
+          url: 'https://example.com/skjema',
+          priority: 'Primary',
+          title: nb('Til skjema'),
+          authorizationContext: { ...disabled, action: 'write' },
+        },
+      ],
+      transmissions: [
+        transmission('Svar', { navigationalActions: [navigationalAction('Svar på vedtaket', disabled)] }),
+        transmission('Uten tilgang', { authorizationContext: disabled, attachments: [attachment('Vedlegg')] }),
+      ],
+    });
+
+    expect(fragment.attachments[0].urls[0].url).toBe('urn:dialogporten:unauthorized');
+    expect(fragment.guiActions[0]).toMatchObject({
+      isAuthorized: false,
+      url: 'urn:dialogporten:unauthorized',
+      action: 'write',
+    });
+    expect(fragment.transmissions[0].navigationalActions[0].url).toBe('urn:dialogporten:unauthorized');
+    expect(fragment.transmissions[1].isAuthorized).toBe(false);
+    expect(fragment.transmissions[1].attachments[0].urls[0].url).toBe('urn:dialogporten:unauthorized');
+    expect(fragment.excludedAttachments).toEqual([]);
+  });
+
+  it('leaves out excluded elements and lists only their id and time, like Dialogporten', () => {
+    const fragment = convert({
+      ...baseDialog,
+      attachments: [attachment('Synlig'), attachment('Skjult', excluded)],
+      guiActions: [
+        {
+          id: 'skjult-handling',
+          url: 'https://example.com/skjema',
+          priority: 'Primary',
+          title: nb('Til skjema'),
+          authorizationContext: excluded,
+        },
+      ],
+      transmissions: [
+        transmission('Synlig', {
+          attachments: [attachment('Skjult', excluded)],
+          navigationalActions: [navigationalAction('Synlig'), navigationalAction('Skjult', excluded)],
+        }),
+        transmission('Skjult', { authorizationContext: excluded }),
+      ],
+    });
+    const created = now.toISOString();
+    const minuteBefore = new Date(now.getTime() - 60_000).toISOString();
+
+    expect(fragment.attachments.map(({ id }) => id)).toEqual(['attachment-0']);
+    expect(fragment.excludedAttachments).toEqual([{ id: 'attachment-1', createdAt: created }]);
+    expect(fragment.guiActions).toEqual([]);
+    expect(fragment.excludedGuiActions).toEqual([{ id: 'skjult-handling', createdAt: created }]);
+    expect(fragment.transmissions.map(({ id }) => id)).toEqual(['transmission-0']);
+    expect(fragment.excludedTransmissions).toEqual([{ id: 'transmission-1', createdAt: minuteBefore }]);
+    expect(fragment.transmissions[0]).toMatchObject({
+      attachments: [],
+      excludedAttachments: [{ id: 'transmission-0-attachment-0', createdAt: created }],
+      navigationalActions: [expect.objectContaining({ url: 'https://example.com/svar' })],
+      excludedNavigationalActions: [{ id: 'transmission-0-navigational-action-1', createdAt: created }],
+    });
   });
 });
 

@@ -3,12 +3,13 @@ import {
   ActivityType,
   AttachmentUrlConsumer,
   type DialogActivityFragment,
+  type ExcludedElementFieldsFragment,
   type NavigationalActionFieldsFragment,
   type TransmissionFieldsFragment,
   TransmissionType,
 } from 'bff-types-generated';
 import { t } from 'i18next';
-import { getActorProps, getAttachmentLinks } from '../api/hooks/useDialogById.tsx';
+import { getActorProps, getAttachmentList, getHiddenItems, type HiddenItems } from '../api/hooks/useDialogById.tsx';
 import type { ProfileType } from '../api/hooks/useParties.ts';
 import { EXPIRED_URL, UNAUTHORIZED_URL } from '../constants/sentinelUrls.ts';
 import { getPreferredPropertyByLocale, type LocalizationObject } from '../i18n/property.ts';
@@ -25,6 +26,7 @@ export interface TransmissionNavigationalActionProps {
 export interface TransmissionItemWithMeta extends TransmissionProps {
   isEmpty?: boolean;
   navigationalActions?: TransmissionNavigationalActionProps[];
+  excludedNavigationalActions?: HiddenItems;
 }
 
 export interface TimelineSegmentWithTransmissions extends TimelineSegmentProps {
@@ -44,6 +46,8 @@ export const getTransmissionVisibility = (transmission: TransmissionFieldsFragme
     !!transmission.content?.contentReference &&
     !!getPreferredPropertyByLocale(transmission.content.contentReference.value)?.value;
   const hasNavigationalActions = transmission.navigationalActions.some(({ url }) => !!url);
+  const hasExcludedContent =
+    !!transmission.excludedAttachments?.length || !!transmission.excludedNavigationalActions?.length;
 
   // A: has attachments but none are GUI-consumable, and no other visible content — irrelevant for GUI users, remove from all lists
   if (
@@ -51,7 +55,8 @@ export const getTransmissionVisibility = (transmission: TransmissionFieldsFragme
     !hasGuiAttachment &&
     !hasSummary &&
     !hasContentReference &&
-    !hasNavigationalActions
+    !hasNavigationalActions &&
+    !hasExcludedContent
   )
     return 'filter';
 
@@ -60,7 +65,8 @@ export const getTransmissionVisibility = (transmission: TransmissionFieldsFragme
 
   // C: authorized but nothing visible — expand with empty-state explanation
   // hasGuiAttachment covers case 6 too: unauthorized GUI links are shown as disabled links, which counts as visible content
-  if (!hasSummary && !hasContentReference && !hasGuiAttachment && !hasNavigationalActions) return 'empty';
+  if (!hasSummary && !hasContentReference && !hasGuiAttachment && !hasNavigationalActions && !hasExcludedContent)
+    return 'empty';
 
   return 'visible';
 };
@@ -215,6 +221,7 @@ const createTransmissionItem = ({
   );
   const unread = isTransmissionUnread(transmission.id, transmission.type, activities);
   const visibility = getTransmissionVisibility(transmission);
+  const navigationalActions = getNavigationalActions(transmission);
 
   return {
     id: transmission.id,
@@ -233,16 +240,39 @@ const createTransmissionItem = ({
       badge: { color: selectedProfile === 'person' ? 'person' : 'company' },
     }),
     sender,
-    attachments: {
-      items: getAttachmentLinks(transmission.attachments, locale, t),
-    },
-    navigationalActions: getNavigationalActions(transmission),
+    attachments: getAttachmentList(transmission.attachments, transmission.excludedAttachments, locale, t),
+    navigationalActions,
+    excludedNavigationalActions: getHiddenItems(
+      transmission.excludedNavigationalActions,
+      'transmission.navigational_action.hidden',
+      navigationalActions.length,
+      t,
+    ),
     isEmpty: visibility === 'empty',
   };
 };
 
+const toHiddenTransmissionSegment = (
+  { id, createdAt }: ExcludedElementFieldsFragment,
+  format: FormatFunction,
+): TimelineSegmentWithTransmissions => ({
+  id,
+  items: [
+    {
+      id,
+      createdAt,
+      createdAtLabel: format(createdAt, getClockFormatString()),
+      hiddenLabel: t('transmission.hidden'),
+    },
+  ],
+});
+
+const getLatestCreatedAt = ({ items }: TimelineSegmentWithTransmissions): number =>
+  Math.max(...items.map(({ createdAt }) => new Date(createdAt ?? 0).getTime()));
+
 export const getTransmissions = ({
   transmissions,
+  excludedTransmissions,
   format,
   activities,
   serviceOwner,
@@ -253,6 +283,7 @@ export const getTransmissions = ({
   serviceOwnerNbName,
 }: {
   transmissions: TransmissionFieldsFragment[];
+  excludedTransmissions?: ExcludedElementFieldsFragment[] | null;
   format: FormatFunction;
   stopReversingPersonNameOrder: boolean;
   activities?: DialogActivityFragment[];
@@ -262,7 +293,8 @@ export const getTransmissions = ({
   senderName?: LocalizationObject[];
   serviceOwnerNbName?: string;
 }): TimelineSegmentWithTransmissions[] => {
-  return groupTransmissions(transmissions.filter((t) => getTransmissionVisibility(t) !== 'filter')).map((group) => {
+  const visibleTransmissions = transmissions.filter((t) => getTransmissionVisibility(t) !== 'filter');
+  const segments = groupTransmissions(visibleTransmissions).map((group): TimelineSegmentWithTransmissions => {
     const sortedGroup = [...group].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     const [lastTransmission] = sortedGroup;
     const items: TransmissionItemWithMeta[] = sortedGroup.map((transmission) =>
@@ -284,4 +316,7 @@ export const getTransmissions = ({
       items,
     };
   });
+
+  const hiddenSegments = (excludedTransmissions ?? []).map((excluded) => toHiddenTransmissionSegment(excluded, format));
+  return [...segments, ...hiddenSegments].sort((a, b) => getLatestCreatedAt(b) - getLatestCreatedAt(a));
 };

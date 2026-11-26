@@ -74,6 +74,12 @@ Each attachment with a GUI URL is a row in an `AttachmentList`.
 | Expired | `expiresAt` is in the past | Disabled, with a crossed-out file icon and a neutral *Utløpt* badge. |
 | No access | The URL is `urn:dialogporten:unauthorized` | Disabled, with a padlock and a neutral *Ikke tilgang* badge. Wins over expired. |
 
+Attachments in `excludedAttachments` are not listed, because Dialogporten only gives their `id` and `createdAt`. The heading counts the visible attachments, and *+ 2 vedlegg du ikke har tilgang til å se.* follows the list. The section is shown even when every attachment is excluded, and the text then drops the plus: *2 vedlegg du ikke har tilgang til å se.* The text has the tooltip *Avsender har skjult disse fordi du ikke har tilgang.*, for organisations and private persons alike. The same text and tooltip, built by `getHiddenItems` and shown with `HiddenItems` from altinn-components, are used for every kind of excluded item below.
+
+### Actions
+
+Each GUI action is a button, sorted by priority. An action with `isAuthorized` false is a disabled button. Actions in `excludedGuiActions` have no title or priority, so *+ 2 handlinger du ikke har tilgang til.* follows the buttons instead, with the same tooltip as attachments. It is shown even when every action is excluded, without the plus. A delete action hidden outside the bin does not count as visible. An excluded delete action cannot be told apart from the others, so it is counted outside the bin too.
+
 ### Transmissions
 
 A transmission is a message inside the dialog, from the service owner or from the user. Each one is a row in a `TransmissionList` inside a `TimelineSegment`.
@@ -86,8 +92,10 @@ A transmission is a message inside the dialog, from the service owner or from th
 | Byline | `sender`, `createdAt` | *Skatteetaten, 9. oktober 2026 kl. 14.03*. See [Sender Name and Service Owner Logo](../sender-name-and-logo/). |
 | Unread | `activities` | Unread until a `TransmissionOpened` activity exists for it. The user's own `SUBMISSION` and `CORRECTION` are never unread. |
 | Content | `content.contentReference` | Fetched from the service owner when the transmission is expanded. See [Embeddable content](../embadable-content/#when-the-content-cannot-be-shown) for no access and errors. |
-| Attachments | `attachments` | Same rules as the dialog's attachments. |
+| Attachments | `attachments`, `excludedAttachments` | Same rules as the dialog's attachments, under a heading with the number of visible attachments. |
+| Buttons | `navigationalActions`, `excludedNavigationalActions` | Shown when the transmission is expanded, after the attachments. Unauthorized and expired actions are disabled. Excluded ones are counted below the buttons, like the dialog's actions. |
 | Visibility | `isAuthorized`, content | Hidden, disabled or shown with an empty state. See [the visibility table](../activity-log-sources/#2-transmissions). |
+| Excluded | `excludedTransmissions` | A row with the date and *Forsendelse du ikke har tilgang til å se.*, in a segment of its own. It cannot expand. |
 
 ## Field map
 
@@ -115,8 +123,12 @@ Every field we ask Dialogporten for, and where it ends up. ● means the view us
 | `fromServiceOwnerTransmissionsCount` | ● | ● | Received count |
 | `guiAttachmentCount` | ● | – | Attachment count in the list |
 | `attachments` | – | ● | Attachment list, and the attachment count on the details page |
+| `excludedAttachments`, `transmissions[].excludedAttachments` | – | ● | *+ N vedlegg du ikke har tilgang til å se.* under the attachment list |
+| `transmissions[].excludedNavigationalActions` | – | ● | *+ N handlinger du ikke har tilgang til.* under the transmission's buttons |
 | `guiActions` | – | ● | Action buttons |
+| `excludedGuiActions` | – | ● | *+ N handlinger du ikke har tilgang til.* under the action buttons |
 | `transmissions` | – | ● | Transmissions and the activity log |
+| `excludedTransmissions` | – | ● | *Forsendelse du ikke har tilgang til å se.* in the timeline and the activity log |
 | `activities` | – | ● | Activity log, and unread state of transmissions |
 | `dialogToken` | – | ● | Authorises main content, transmission content, actions and live updates |
 | `serviceResource` | ● | – | Bankruptcy-estate group at the top of the list |

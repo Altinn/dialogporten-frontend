@@ -43,7 +43,8 @@ A dialog is a `MockDialog`, built with `mockDialog()` from `src/mocks/data/base/
 | Search fields (`party`, `org`, `status`, dates, `endUserContext` …) | Person party `urn:altinn:person:identifier-no:1`, `org: 'ok'`, `RequiresAttention`, `Default` label, seen, `correspondenceservice` |
 | `attachments` | One `kvittering.pdf` (`mockAttachment(id)`) |
 | `activities` | Dialog created, and one information activity |
-| `transmissions` | None. A transmission without `navigationalActions` gets an empty list |
+| `transmissions` | None. A transmission without `navigationalActions`, `excludedAttachments` or `excludedNavigationalActions` gets an empty list |
+| `excludedAttachments`, `excludedTransmissions`, `excludedGuiActions` | None. Stubs (`id`, `createdAt`) for content the user may not see, see [authorization contexts](https://docs.altinn.studio/nb/dialogporten/reference/authorization/authorization-contexts/) |
 | `guiActions` | An unauthorized "Til skjema" action |
 | `additionalInfo` | A standard sentence |
 | `mainContentReference` | Markdown main content. Use `mainContentMarkdown` to serve story-specific markdown instead |
@@ -107,6 +108,7 @@ Some values are derived, so the inbox and the dialog page always agree:
 
 - **Attachment:** `attachments`. `mockAttachment(dialogId, index)` gives the standard `kvittering.pdf` / `vedlegg-N.pdf` files. An `expiresAt` in the past gives an expired attachment, and a `url` of `urn:dialogporten:unauthorized` gives one without access. See the `attachment-states` story.
 - **Transmission:** `transmissions`. The received and sent counts follow automatically.
+- **Content the user may not see:** `excludedAttachments` on the dialog or a transmission, `excludedTransmissions` and `excludedGuiActions` on the dialog, and `excludedNavigationalActions` on a transmission. See the `excluded-content` story.
 - **Transmission button:** `navigationalActions` on the transmission. A `url` of `urn:dialogporten:unauthorized` or `urn:dialogporten:expired` gives a disabled button. See the `transmission-navigational-actions` story.
 - **Activity:** `activities`. `activities: []` gives an empty activity log.
 - **Notification:** `notificationLogs`, built with `mockNotificationLog(notificationId, overrides)`.

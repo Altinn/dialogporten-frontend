@@ -44,6 +44,8 @@ export const TRANSMISSION_TYPES = [
   'Submission',
   'Correction',
 ] as const;
+export const UNAUTHORIZED_PRESENTATIONS = ['Disabled', 'Excluded'] as const;
+export const ACCESS_RESTRICTIONS = ['None', 'DirectAndHierarchy', 'ClientDelegation'] as const;
 export const ADDITIONAL_INFO_MEDIA_TYPES = ['text/plain', 'text/markdown'] as const;
 export const EMBED_MEDIA_TYPES = [
   'application/vnd.dialogporten.frontchannelembed-url;type=text/markdown',
@@ -70,7 +72,24 @@ const httpsUrl = z
   .refine((value) => isHttpsUrl(value) || value === UNAUTHORIZED_URL, { error: 'Må være en gyldig https-URL.' });
 const dateTime = z.string().refine((value) => !Number.isNaN(Date.parse(value)), { error: 'Må være en gyldig dato.' });
 const id = z.string().nullish();
-const authorizationContext = z.unknown().optional();
+
+const dialogPartyCheck = z.strictObject({
+  accessRestriction: z.enum(ACCESS_RESTRICTIONS),
+  viaParty: z.string().nullish(),
+  serviceResource: z.string().nullish(),
+  action: z.string().nullish(),
+});
+
+const authorizationContextSchema = z.strictObject({
+  serviceResource: z.string().nullish(),
+  additionalResourceAttribute: z.string().nullish(),
+  parties: z.array(z.string()).nullish(),
+  dialogPartyChecks: z.array(dialogPartyCheck).nullish(),
+  action: z.string().nullish(),
+  tokenRef: z.string().nullish(),
+  unauthorizedPresentation: z.enum(UNAUTHORIZED_PRESENTATIONS),
+});
+const authorizationContext = authorizationContextSchema.nullish();
 
 const localization = z.strictObject({ languageCode: z.string().min(2), value: z.string().min(1) });
 const localizations = z.array(localization).min(1);
@@ -112,7 +131,7 @@ const attachment = z.strictObject({
 
 const guiAction = z.strictObject({
   id,
-  action: z.string().min(1),
+  action: z.string().nullish(),
   url: httpsUrl,
   authorizationAttribute: z.string().nullish(),
   authorizationContext,
@@ -131,7 +150,6 @@ const activity = z.strictObject({
   performedBy: actor,
   description: localizations.nullish(),
   transmissionId: z.string().nullish(),
-  authorizationContext,
 });
 
 const navigationalAction = z.strictObject({
@@ -221,6 +239,8 @@ export type Activity = z.infer<typeof activity>;
 export type Transmission = z.infer<typeof transmission>;
 export type NavigationalAction = z.infer<typeof navigationalAction>;
 export type Actor = z.infer<typeof actor>;
+export type AuthorizationContext = z.infer<typeof authorizationContextSchema>;
+export type UnauthorizedPresentation = (typeof UNAUTHORIZED_PRESENTATIONS)[number];
 
 export interface ValidationIssue {
   path: string;
@@ -240,8 +260,37 @@ const formatPath = (path: PropertyKey[]): string => path.map(String).join('.');
 const toErrorMessage: z.core.$ZodErrorMap = (issue) =>
   issue.input === undefined ? REQUIRED_MESSAGE : z.locales.no().localeError(issue);
 
-const checkDialogRules = (dialog: PreviewDialog): ValidationIssue[] => {
+const CONTEXT_CONFLICT_MESSAGE = 'Kan ikke settes sammen med authorizationContext.';
+
+const checkAuthorizationRules = (dialog: PreviewDialog): ValidationIssue[] => {
   const issues: ValidationIssue[] = [];
+
+  dialog.guiActions?.forEach(({ action, authorizationAttribute, authorizationContext }, index) => {
+    if (!authorizationContext && !action) {
+      issues.push({ path: `guiActions.${index}.action`, message: REQUIRED_MESSAGE });
+    }
+    if (authorizationContext && action) {
+      issues.push({
+        path: `guiActions.${index}.action`,
+        message: `${CONTEXT_CONFLICT_MESSAGE} Bruk authorizationContext.action.`,
+      });
+    }
+    if (authorizationContext && authorizationAttribute) {
+      issues.push({ path: `guiActions.${index}.authorizationAttribute`, message: CONTEXT_CONFLICT_MESSAGE });
+    }
+  });
+
+  dialog.transmissions?.forEach(({ authorizationAttribute, authorizationContext }, index) => {
+    if (authorizationContext && authorizationAttribute) {
+      issues.push({ path: `transmissions.${index}.authorizationAttribute`, message: CONTEXT_CONFLICT_MESSAGE });
+    }
+  });
+
+  return issues;
+};
+
+const checkDialogRules = (dialog: PreviewDialog): ValidationIssue[] => {
+  const issues: ValidationIssue[] = checkAuthorizationRules(dialog);
 
   for (const priority of GUI_ACTION_PRIORITIES) {
     const count = dialog.guiActions?.filter((action) => action.priority === priority).length ?? 0;

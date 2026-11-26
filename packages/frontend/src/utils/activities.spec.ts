@@ -83,4 +83,22 @@ describe('getActivityHistory', () => {
     expect(history.map((entry) => entry.type).sort()).toEqual(['activity', 'transmission']);
     expectUniqueIds(history);
   });
+
+  it('shows an excluded transmission as a transmission entry of its own, by date', () => {
+    const history = getActivityHistory({
+      activities: [],
+      transmissions: [makeTransmission({ id: 'visible', createdAt: '2026-08-01T10:00:00Z' })],
+      excludedTransmissions: [{ id: 'hidden', createdAt: '2026-08-02T10:00:00Z' }],
+      format: (date) => String(date),
+      stopReversingPersonNameOrder: true,
+      locale: {} as Locale,
+    });
+
+    expect(history.map(({ id, type }) => [id, type])).toEqual([
+      ['transmission-hidden', 'transmission'],
+      ['transmission-visible', 'transmission'],
+    ]);
+    expect(history[0].date).toBe('2026-08-02T10:00:00Z');
+    expect(history[0].items).toEqual([expect.objectContaining({ id: 'hidden', hiddenLabel: expect.any(String) })]);
+  });
 });

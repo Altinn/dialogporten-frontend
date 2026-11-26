@@ -25,6 +25,7 @@ Open `/dialog-builder`. There is no menu entry.
 ## Differences from a real dialog
 
 - **Actions:** GET actions work as links. All other actions turn into links that do nothing, so nothing is ever sent.
+- **Access:** the builder cannot evaluate access, so every element with an [`authorizationContext`](https://docs.altinn.studio/nb/dialogporten/reference/authorization/authorization-contexts/) is shown the way a user without access sees it. `unauthorizedPresentation: Disabled` shows it disabled, and `Excluded` leaves it out and counts it in a line such as *+ 1 vedlegg du ikke har tilgang til å se.* Attachments, GUI actions, transmissions, and the attachments and navigational actions of a transmission all have the switch **Brukeren har ikke tilgang**. It adds a context with only `unauthorizedPresentation`, so add `parties` or `dialogPartyChecks` in the JSON before sending it to Dialogporten. On a GUI action the policy action moves into `authorizationContext.action`, because the API does not accept both.
 - **Front channel embeds:** never fetched. The URLs are kept in the JSON, but the preview shows no embedded content.
 - **Access info and context menu:** not available, since the dialog does not exist.
 - **Party:** a dialog is always shown for the selected party. `party` is not part of the link.

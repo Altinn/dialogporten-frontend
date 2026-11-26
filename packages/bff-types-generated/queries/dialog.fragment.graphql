@@ -49,17 +49,26 @@ fragment DialogByIdFields on Dialog {
   attachments {
     ...AttachmentFields
   }
+  excludedAttachments {
+    ...ExcludedElementFields
+  }
   activities {
     ...DialogActivity
   }
   guiActions {
     ...GuiActionFields
   }
+  excludedGuiActions {
+    ...ExcludedElementFields
+  }
   seenSinceLastContentUpdate {
     ...SeenLogFields
   }
   transmissions {
     ...TransmissionFields
+  }
+  excludedTransmissions {
+    ...ExcludedElementFields
   }
   status
   dueAt
@@ -127,9 +136,20 @@ fragment TransmissionFields on Transmission {
   attachments {
     ...AttachmentFields
   }
+  excludedAttachments {
+    ...ExcludedElementFields
+  }
   navigationalActions {
     ...NavigationalActionFields
   }
+  excludedNavigationalActions {
+    ...ExcludedElementFields
+  }
+}
+
+fragment ExcludedElementFields on ExcludedElement {
+  id
+  createdAt
 }
 
 fragment NavigationalActionFields on TransmissionNavigationalAction {

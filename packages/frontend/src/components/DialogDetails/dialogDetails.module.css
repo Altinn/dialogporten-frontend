@@ -11,3 +11,11 @@
 .transmissionNavigationalActions {
   margin-top: 1.25rem;
 }
+
+.transmissionAttachments .transmissionAttachmentsTitle {
+  margin: 0;
+}
+
+.transmissionHiddenNavigationalActions:not(:first-child) {
+  margin-top: 0.5rem;
+}

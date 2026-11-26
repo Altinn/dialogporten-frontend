@@ -1,4 +1,11 @@
-import type { AttachmentLinkProps, AvatarProps, ContactButtonProps, SeenByLogProps } from '@altinn/altinn-components';
+import type {
+  AttachmentLinkProps,
+  AttachmentListProps,
+  AvatarProps,
+  ContactButtonProps,
+  DialogActionsProps,
+  SeenByLogProps,
+} from '@altinn/altinn-components';
 import { formatDisplayName } from '@altinn/altinn-components';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -8,6 +15,7 @@ import {
   AttachmentUrlConsumer,
   type DialogByIdFieldsFragment,
   type DialogStatus,
+  type ExcludedElementFieldsFragment,
   type GetDialogByIdQuery,
   type OrganizationFieldsFragment,
   type PartyFieldsFragment,
@@ -56,6 +64,9 @@ export interface EmbeddedContent {
   mediaType: EmbeddableMediaType;
 }
 
+export type AttachmentListWithTitle = AttachmentListProps & { title: string };
+export type HiddenItems = Pick<DialogActionsProps, 'hiddenItemsLabel' | 'hiddenItemsTooltip'>;
+
 export interface DialogByIdDetails {
   /* id of dialog */
   id: string;
@@ -75,10 +86,11 @@ export interface DialogByIdDetails {
   title: string;
   /* actions available for dialog  */
   guiActions: DialogActionProps[];
+  excludedGuiActions: HiddenItems;
   /* additional info of dialog by locale, sorted by preference - can be markdown / HTML */
   additionalInfo: { value: string; mediaType: string } | undefined;
   /* attachments for dialog, same of each attachment can be represented differently through list of URLs  */
-  attachments: AttachmentLinkProps[];
+  attachments: AttachmentListWithTitle;
   /* Used for guiActions and front channel embeds */
   dialogToken: string;
   /* main content reference for dialog, used to dynamically embed content in the frontend from an external URL. */
@@ -152,6 +164,36 @@ export const getAttachmentLinks = (
           };
         }),
     );
+};
+
+export const getHiddenItems = (
+  excluded: ExcludedElementFieldsFragment[] | null | undefined,
+  labelKey: string,
+  visibleCount: number,
+  t: TFunction<'translation', undefined>,
+): HiddenItems => {
+  const count = excluded?.length ?? 0;
+  if (!count) {
+    return {};
+  }
+  return {
+    hiddenItemsLabel: t(labelKey, { count, visible: visibleCount }),
+    hiddenItemsTooltip: t('hidden_items.tooltip'),
+  };
+};
+
+export const getAttachmentList = (
+  attachments: AttachmentFieldsFragment[],
+  excludedAttachments: ExcludedElementFieldsFragment[] | null | undefined,
+  locale: Locale,
+  t: TFunction<'translation', undefined>,
+): AttachmentListWithTitle => {
+  const items = getAttachmentLinks(attachments, locale, t);
+  return {
+    title: t('inbox.heading.attachments', { count: items.length }),
+    items,
+    ...getHiddenItems(excludedAttachments, 'attachments.hidden', items.length, t),
+  };
 };
 
 const getMainContentReference = (
@@ -293,6 +335,7 @@ export function mapDialogToInboxItem({
   const seenByLabel = getSeenByLabel(item.seenSinceLastContentUpdate, t);
   const transmissions = getTransmissions({
     transmissions: item.transmissions,
+    excludedTransmissions: item.excludedTransmissions,
     format,
     activities: item.activities,
     stopReversingPersonNameOrder,
@@ -302,6 +345,17 @@ export function mapDialogToInboxItem({
     senderName,
     serviceOwnerNbName,
   });
+  const guiActions: DialogByIdDetails['guiActions'] = item.guiActions.map((guiAction) => ({
+    id: guiAction.id,
+    url: guiAction.url,
+    hidden: guiAction.isDeleteDialogAction && !item.endUserContext?.systemLabels.includes(SystemLabel.Bin),
+    priority: guiAction.priority,
+    httpMethod: guiAction.httpMethod,
+    title: getPreferredPropertyByLocale(guiAction.title)?.value ?? '',
+    prompt: getPreferredPropertyByLocale(guiAction.prompt)?.value,
+    isDeleteAction: guiAction.isDeleteDialogAction,
+    disabled: !guiAction.isAuthorized,
+  }));
 
   return {
     id: item.id,
@@ -330,18 +384,14 @@ export function mapDialogToInboxItem({
       value: getPreferredPropertyByLocale(additionalInfoObj)?.value ?? '',
       mediaType: item.content?.additionalInfo?.mediaType ?? '',
     },
-    guiActions: item.guiActions.map((guiAction) => ({
-      id: guiAction.id,
-      url: guiAction.url,
-      hidden: guiAction.isDeleteDialogAction && !item.endUserContext?.systemLabels.includes(SystemLabel.Bin),
-      priority: guiAction.priority,
-      httpMethod: guiAction.httpMethod,
-      title: getPreferredPropertyByLocale(guiAction.title)?.value ?? '',
-      prompt: getPreferredPropertyByLocale(guiAction.prompt)?.value,
-      isDeleteAction: guiAction.isDeleteDialogAction,
-      disabled: !guiAction.isAuthorized,
-    })),
-    attachments: getAttachmentLinks(item.attachments, locale, t),
+    guiActions,
+    excludedGuiActions: getHiddenItems(
+      item.excludedGuiActions,
+      'dialog.gui_action.hidden',
+      guiActions.filter(({ hidden }) => !hidden).length,
+      t,
+    ),
+    attachments: getAttachmentList(item.attachments, item.excludedAttachments, locale, t),
     mainContentReference: getMainContentReference(mainContentReference, true),
     contentReferenceForTransmissions: item.transmissions.reduce(
       (acc, transmission) => {
@@ -380,6 +430,7 @@ export function mapDialogToInboxItem({
       stopReversingPersonNameOrder,
       activities: item.activities,
       transmissions: item.transmissions,
+      excludedTransmissions: item.excludedTransmissions,
       notificationLogs,
       labelAssignmentLogs,
       format,
