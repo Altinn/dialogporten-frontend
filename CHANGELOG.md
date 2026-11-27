@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.190.1](https://github.com/Altinn/dialogporten-frontend/compare/v1.190.0...v1.190.1) (2026-11-27)
+
+
+### Bug Fixes
+
+* **a11y:** improve screen reader and keyboard support in the dialog list ([#4877](https://github.com/Altinn/dialogporten-frontend/issues/4877)) ([c478647](https://github.com/Altinn/dialogporten-frontend/commit/c4786477fdc211bd8d24bbeebba2d07a3e5d5b59))
+
 ## [1.190.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.189.0...v1.190.0) (2026-11-27)
 
 
