@@ -15,14 +15,7 @@ import {
   PlusIcon,
   TrashIcon,
 } from '@navikt/aksel-icons';
-import {
-  getAccessAMUILink,
-  getFrontPageLink,
-  getInboxHelpLink,
-  getNeedHelpLink,
-  getNewFormLink,
-  getStartNewBusinessLink,
-} from '../../../auth';
+import { getAccessAMUILink, getInfoPortalLink } from '../../../auth';
 import { i18n } from '../../../i18n/config.ts';
 import { pruneSearchQueryParams } from '../../../pages/Inbox/queryParams.ts';
 import { PageRoutes } from '../../../pages/routes.ts';
@@ -73,7 +66,7 @@ export function buildInboxMenu({
       icon: PlusIcon,
       title: t('altinn.new_schema'),
       as: createMenuItemComponent({
-        to: getNewFormLink(i18n.language),
+        to: getInfoPortalLink('formsOverview', i18n.language),
       }),
     },
     {
@@ -108,7 +101,7 @@ export function buildInboxMenu({
       icon: Buildings2Icon,
       title: t('global_menu.start_business'),
       as: createMenuItemComponent({
-        to: getStartNewBusinessLink(i18n.language),
+        to: getInfoPortalLink('startNewBusiness', i18n.language),
       }),
     },
     {
@@ -118,7 +111,7 @@ export function buildInboxMenu({
       icon: ChatExclamationmarkIcon,
       title: t('global_menu.need_help'),
       as: createMenuItemComponent({
-        to: getNeedHelpLink(i18n.language),
+        to: getInfoPortalLink('help', i18n.language),
       }),
     },
   ];
@@ -205,7 +198,7 @@ export function buildInboxMenu({
         icon: ChatExclamationmarkIcon,
         title: t('floating_dropdown.help_pages'),
         as: createMenuItemComponent({
-          to: getInboxHelpLink(i18n.language),
+          to: getInfoPortalLink('inboxHelp', i18n.language),
         }),
       },
     ],
@@ -279,7 +272,7 @@ export function buildInboxMenu({
         icon: MenuGridIcon,
         title: t('global_menu.all_forms_services'),
         as: createMenuItemComponent({
-          to: getNewFormLink(i18n.language),
+          to: getInfoPortalLink('formsOverview', i18n.language),
         }),
         selected: false,
       },
@@ -290,7 +283,7 @@ export function buildInboxMenu({
         icon: MagnifyingGlassIcon,
         title: t('global_menu.altinn_search'),
         as: createMenuItemComponent({
-          to: `${getFrontPageLink()}/sok?`,
+          to: getInfoPortalLink('search', i18n.language),
         }),
         selected: false,
       },

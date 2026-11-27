@@ -3,7 +3,7 @@ import { PersonCircleIcon } from '@navikt/aksel-icons';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelfIdentifiedUserType } from '../../api/hooks/usePartiesSelectors.ts';
-import { getAlternativeLoginLink, getAltinn2AccountLink } from '../../auth';
+import { getAltinn2AccountLink, getInfoPortalLink } from '../../auth';
 
 const SI_NOTICE_DISMISSED_KEY = 'si-notice:email-connect:dismissed';
 
@@ -38,7 +38,7 @@ export const SINotice = () => {
     case 'Legacy':
       return (
         <Alert variant="info" heading={t('inbox.si_notice.legacy.title')}>
-          <a href={getAlternativeLoginLink(i18n.language)}>{t('inbox.si_notice.legacy.link_text')}</a>
+          <a href={getInfoPortalLink('alternativeLogin', i18n.language)}>{t('inbox.si_notice.legacy.link_text')}</a>
         </Alert>
       );
     default:

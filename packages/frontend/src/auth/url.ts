@@ -108,14 +108,52 @@ const INFO_PORTAL_HOST_MAP: Record<hostEnv, string> = {
   prod: 'https://info.altinn.no',
 };
 
-export type LinkPathConfig = {
+type LinkPathConfig = {
   nb: string;
   en: string;
   nn: string;
 };
 
-export const createInfoPortalLink = (pathConfig: LinkPathConfig, language?: string) => {
+const INFO_PORTAL_PATHS = {
+  formsOverview: { nb: '/skjemaoversikt/', en: '/en/forms-overview/', nn: '/nn/skjemaoversikt/' },
+  search: { nb: '/sok/', en: '/en/search/', nn: '/nn/sok/' },
+  alternativeLogin: {
+    nb: '/hjelp/innlogging/logg-inn-uten-f-d-nr/',
+    en: '/en/help/logging-in/altinn-alternative-log-in-methods/',
+    nn: '/nn/hjelp/innlogging/alternativ-innlogging-i-altinn/',
+  },
+  startNewBusiness: { nb: '/starte-og-drive/', en: '/en/start-and-run-business/', nn: '/nn/starte-og-drive/' },
+  help: { nb: '/hjelp/', en: '/en/help/', nn: '/nn/hjelp/' },
+  inboxHelp: { nb: '/hjelp/innboks/', en: '/en/help/inbox/', nn: '/nn/hjelp/innboks/' },
+  inboxSearchHelp: {
+    nb: '/hjelp/innboks/#finne-brev-eller-skjema-i-innboksen',
+    en: '/en/help/inbox/#find-a-letter-or-form-in-your-inbox',
+    nn: '/nn/hjelp/innboks/#finne-brev-eller-skjema-i-innboksen',
+  },
+  profileHelp: {
+    nb: '/hjelp/varsling-og-kontakt/',
+    en: '/en/help/notifications-and-contact-information/',
+    nn: '/nn/hjelp/varsling-og-kontakt/',
+  },
+  aboutAltinn: { nb: '/om-altinn/', en: '/en/about-altinn/', nn: '/nn/om-altinn/' },
+  serviceAnnouncements: {
+    nb: '/om-altinn/driftsmeldinger/',
+    en: '/en/about-altinn/service-announcements/',
+    nn: '/nn/om-altinn/driftsmeldingar/',
+  },
+  privacy: { nb: '/om-altinn/personvern/', en: '/en/about-altinn/privacy/', nn: '/nn/om-altinn/personvern/' },
+  accessibility: {
+    nb: '/om-altinn/tilgjengelighet/',
+    en: '/en/about-altinn/accessibility/',
+    nn: '/nn/om-altinn/tilgjengelegheit-paa-altinnno/',
+  },
+} satisfies Record<string, LinkPathConfig>;
+
+export type InfoPortalPage = keyof typeof INFO_PORTAL_PATHS;
+
+export const getInfoPortalLink = (page: InfoPortalPage, language?: string) => {
   const baseHost = INFO_PORTAL_HOST_MAP[getEnvByHost()];
+  const pathConfig: LinkPathConfig = INFO_PORTAL_PATHS[page];
 
   let path: string;
   if (language === 'en') {
@@ -129,74 +167,8 @@ export const createInfoPortalLink = (pathConfig: LinkPathConfig, language?: stri
   return baseHost + path;
 };
 
-export const getNewFormLink = (language?: string) => {
-  return createInfoPortalLink(
-    {
-      nb: '/skjemaoversikt/',
-      en: '/en/forms-overview/',
-      nn: '/nn/skjemaoversikt/',
-    },
-    language,
-  );
-};
-
 export const getFrontPageLink = (language?: string) => {
   return getInfoSiteURL(language);
-};
-
-export const getAlternativeLoginLink = (language?: string) => {
-  return createInfoPortalLink(
-    {
-      nb: '/hjelp/innlogging/logg-inn-uten-f-d-nr/',
-      en: '/nn/hjelp/innlogging/alternativ-innlogging-i-altinn/',
-      nn: '/en/help/logging-in/altinn-alternative-log-in-methods/',
-    },
-    language,
-  );
-};
-
-export const getStartNewBusinessLink = (language?: string) => {
-  return createInfoPortalLink(
-    {
-      nb: '/starte-og-drive/',
-      en: '/en/start-and-run-business/',
-      nn: '/nn/starte-og-drive/',
-    },
-    language,
-  );
-};
-
-export const getNeedHelpLink = (language?: string) => {
-  return createInfoPortalLink(
-    {
-      nb: '/hjelp/',
-      en: '/en/help/',
-      nn: '/nn/hjelp/',
-    },
-    language,
-  );
-};
-
-export const getInboxHelpLink = (language?: string) => {
-  return createInfoPortalLink(
-    {
-      nb: '/hjelp/ny-innboks-beta/',
-      en: '/en/help/inbox/',
-      nn: '/nn/hjelp/innboks/',
-    },
-    language,
-  );
-};
-
-export const getProfileHelpLink = (language?: string) => {
-  return createInfoPortalLink(
-    {
-      nb: '/hjelp/oversikt-over-varslingsinnstillinger/',
-      en: '/en/help/contact-information-and-notification-settings/',
-      nn: '/nn/hjelp/kontaktinformasjon-og-varslingsinnstillingar/',
-    },
-    language,
-  );
 };
 
 export const getCookieDomain = () => {
