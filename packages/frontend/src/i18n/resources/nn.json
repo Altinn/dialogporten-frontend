@@ -264,8 +264,6 @@
   "inbox.si_notice.email.body": "Akkurat no kan vi ikkje vise meldingar frå den gamle innboksen din. For å sjå desse må du logge ut og velje «Altinn innlogging». Der loggar du inn med brukarnamn og passord som tidlegare.",
   "inbox.si_notice.email.link_text": "Les meir på hjelpesidene våre",
   "inbox.si_notice.email.title": "Saknar du meldingar i innboksen din?",
-  "inbox.si_notice.legacy.link_text": "Les meir om ny innlogging på hjelpesidene våre",
-  "inbox.si_notice.legacy.title": "Etter 19. juni 2026 kan du ikkje bruke denne innloggingsmetoden.",
   "inbox.unable_to_load_parties.body": "Vi kan ikkje hente brukaropplysningane dine akkurat no. Prøv igjen seinare eller ",
   "inbox.unable_to_load_parties.link": "logg ut",
   "inbox.unable_to_load_parties.title": "Teknisk feil",

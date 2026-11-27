@@ -19,7 +19,7 @@ import { graphQLSDK } from '../queries.ts';
 import { MAX_DIALOG_PARTY_SIZE } from './useDialogs.tsx';
 
 export type ProfileType = 'company' | 'person' | 'neutral';
-export type SelfIdentifiedUserType = 'None' | 'Email' | 'Legacy';
+export type SelfIdentifiedUserType = 'None' | 'Email';
 
 interface UsePartiesOutput {
   parties: PartyFieldsFragment[];
@@ -303,7 +303,6 @@ export const useParties = (): UsePartiesOutput => {
     if (currentEndUser?.partyType !== 'SelfIdentified') return 'None';
 
     if (currentEndUser.party.includes('urn:altinn:person:idporten-email:')) return 'Email';
-    if (currentEndUser.party.includes('urn:altinn:person:legacy-selfidentified:')) return 'Legacy';
 
     return 'None';
   }, [currentEndUser]);

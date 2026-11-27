@@ -117,11 +117,6 @@ type LinkPathConfig = {
 const INFO_PORTAL_PATHS = {
   formsOverview: { nb: '/skjemaoversikt/', en: '/en/forms-overview/', nn: '/nn/skjemaoversikt/' },
   search: { nb: '/sok/', en: '/en/search/', nn: '/nn/sok/' },
-  alternativeLogin: {
-    nb: '/hjelp/innlogging/logg-inn-uten-f-d-nr/',
-    en: '/en/help/logging-in/altinn-alternative-log-in-methods/',
-    nn: '/nn/hjelp/innlogging/alternativ-innlogging-i-altinn/',
-  },
   startNewBusiness: { nb: '/starte-og-drive/', en: '/en/start-and-run-business/', nn: '/nn/starte-og-drive/' },
   help: { nb: '/hjelp/', en: '/en/help/', nn: '/nn/hjelp/' },
   inboxHelp: { nb: '/hjelp/innboks/', en: '/en/help/inbox/', nn: '/nn/hjelp/innboks/' },
