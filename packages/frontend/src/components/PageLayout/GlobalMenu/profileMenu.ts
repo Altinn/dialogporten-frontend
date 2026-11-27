@@ -14,10 +14,10 @@ import {
 } from '@navikt/aksel-icons';
 import {
   getAccessAMUILink,
-  getFrontPageLink,
   getNeedHelpLink,
   getNewFormLink,
   getProfileHelpLink,
+  getSearchLink,
   getStartNewBusinessLink,
 } from '../../../auth';
 import { i18n } from '../../../i18n/config.ts';
@@ -222,7 +222,7 @@ export function buildProfileMenu({
       icon: MagnifyingGlassIcon,
       title: t('global_menu.altinn_search'),
       as: createMenuItemComponent({
-        to: `${getFrontPageLink()}/sok?`,
+        to: getSearchLink(i18n.language),
       }),
       selected: false,
     },

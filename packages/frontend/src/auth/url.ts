@@ -140,6 +140,17 @@ export const getNewFormLink = (language?: string) => {
   );
 };
 
+export const getSearchLink = (language?: string) => {
+  return createInfoPortalLink(
+    {
+      nb: '/sok/',
+      en: '/en/search/',
+      nn: '/nn/sok/',
+    },
+    language,
+  );
+};
+
 export const getFrontPageLink = (language?: string) => {
   return getInfoSiteURL(language);
 };
@@ -148,8 +159,8 @@ export const getAlternativeLoginLink = (language?: string) => {
   return createInfoPortalLink(
     {
       nb: '/hjelp/innlogging/logg-inn-uten-f-d-nr/',
-      en: '/nn/hjelp/innlogging/alternativ-innlogging-i-altinn/',
-      nn: '/en/help/logging-in/altinn-alternative-log-in-methods/',
+      en: '/en/help/logging-in/altinn-alternative-log-in-methods/',
+      nn: '/nn/hjelp/innlogging/alternativ-innlogging-i-altinn/',
     },
     language,
   );

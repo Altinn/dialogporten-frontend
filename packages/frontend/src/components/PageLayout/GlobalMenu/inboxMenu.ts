@@ -17,10 +17,10 @@ import {
 } from '@navikt/aksel-icons';
 import {
   getAccessAMUILink,
-  getFrontPageLink,
   getInboxHelpLink,
   getNeedHelpLink,
   getNewFormLink,
+  getSearchLink,
   getStartNewBusinessLink,
 } from '../../../auth';
 import { i18n } from '../../../i18n/config.ts';
@@ -290,7 +290,7 @@ export function buildInboxMenu({
         icon: MagnifyingGlassIcon,
         title: t('global_menu.altinn_search'),
         as: createMenuItemComponent({
-          to: `${getFrontPageLink()}/sok?`,
+          to: getSearchLink(i18n.language),
         }),
         selected: false,
       },
