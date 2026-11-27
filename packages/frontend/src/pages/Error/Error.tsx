@@ -1,12 +1,13 @@
 import { Article, ArticleHeader, Button, PageBase, Typography } from '@altinn/altinn-components';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router';
+import { getInfoPortalLink } from '../../auth';
 import { usePageTitle } from '../../hooks/usePageTitle.ts';
 
 export const ErrorPage = () => {
   const location = useLocation();
   const { componentName } = location.state || { componentName: 'Unknown Component' };
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
   usePageTitle({ baseTitle: t('word.error') });
@@ -30,7 +31,7 @@ export const ErrorPage = () => {
           <Typography>
             <p>
               {t('error.check_status_on')}{' '}
-              <a target="_blank" href="https://info.altinn.no/om-altinn/driftsmeldinger/" rel="noreferrer">
+              <a target="_blank" href={getInfoPortalLink('serviceAnnouncements', i18n.language)} rel="noreferrer">
                 {t('error.service_status')}
               </a>
             </p>

@@ -1,14 +1,16 @@
 import { Button, ButtonGroup, Checkbox, Modal, ModalBody, ModalHeader, Typography } from '@altinn/altinn-components';
 import { type ReactNode, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import { getInfoPortalLink } from '../../auth';
 
-const PARTY_LIMIT_INFO_HELP_URL = 'https://info.altinn.no/hjelp/ny-innboks-beta/sortering-og-sok/';
-
-const HelpLink = ({ children }: { children?: ReactNode }) => (
-  <a href={PARTY_LIMIT_INFO_HELP_URL} target="_blank" rel="noreferrer">
-    {children}
-  </a>
-);
+const HelpLink = ({ children }: { children?: ReactNode }) => {
+  const { i18n } = useTranslation();
+  return (
+    <a href={getInfoPortalLink('inboxHelp', i18n.language)} target="_blank" rel="noreferrer">
+      {children}
+    </a>
+  );
+};
 
 export interface PartyLimitInfoModalProps {
   isOpen: boolean;

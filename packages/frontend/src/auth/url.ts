@@ -124,11 +124,11 @@ const INFO_PORTAL_PATHS = {
   },
   startNewBusiness: { nb: '/starte-og-drive/', en: '/en/start-and-run-business/', nn: '/nn/starte-og-drive/' },
   help: { nb: '/hjelp/', en: '/en/help/', nn: '/nn/hjelp/' },
-  inboxHelp: { nb: '/hjelp/ny-innboks-beta/', en: '/en/help/inbox/', nn: '/nn/hjelp/innboks/' },
+  inboxHelp: { nb: '/hjelp/innboks/', en: '/en/help/inbox/', nn: '/nn/hjelp/innboks/' },
   profileHelp: {
-    nb: '/hjelp/oversikt-over-varslingsinnstillinger/',
-    en: '/en/help/contact-information-and-notification-settings/',
-    nn: '/nn/hjelp/kontaktinformasjon-og-varslingsinnstillingar/',
+    nb: '/hjelp/varsling-og-kontakt/',
+    en: '/en/help/notifications-and-contact-information/',
+    nn: '/nn/hjelp/varsling-og-kontakt/',
   },
   aboutAltinn: { nb: '/om-altinn/', en: '/en/about-altinn/', nn: '/nn/om-altinn/' },
   serviceAnnouncements: {
@@ -139,8 +139,8 @@ const INFO_PORTAL_PATHS = {
   privacy: { nb: '/om-altinn/personvern/', en: '/en/about-altinn/privacy/', nn: '/nn/om-altinn/personvern/' },
   accessibility: {
     nb: '/om-altinn/tilgjengelighet/',
-    en: '/en/about-altinn/tilgjengelighet/',
-    nn: '/nn/om-altinn/tilgjengelighet/',
+    en: '/en/about-altinn/accessibility/',
+    nn: '/nn/om-altinn/tilgjengelegheit-paa-altinnno/',
   },
 } satisfies Record<string, LinkPathConfig>;
 
