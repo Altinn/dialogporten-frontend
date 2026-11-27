@@ -19,9 +19,23 @@ export interface PartyItemProp extends AccountMenuItemProps {
 
 export type OrgSkeletonItem = { party: PartyFieldsFragment; isParent: boolean; parent?: PartyFieldsFragment };
 
+export interface AccountLabels {
+  born: string;
+  orgNo: string;
+  partOf: string;
+  deleted: string;
+}
+
+export const getAccountLabels = (t: (key: string) => string): AccountLabels => ({
+  born: t('word.born'),
+  orgNo: t('word.orgNo'),
+  partOf: t('profile.account.partOf'),
+  deleted: t('badge.deleted'),
+});
+
 export interface MapAccountOptions {
   showDescription?: boolean;
-  t: (key: string) => string;
+  labels: AccountLabels;
 }
 
 export const getOrgNo = (partyId: string): string => {
@@ -90,7 +104,7 @@ export const buildOrgSkeleton = (organizations: PartyFieldsFragment[], partyGrap
 
 export const mapPersonToAccount = (
   person: PartyFieldsFragment,
-  { showDescription, t }: MapAccountOptions,
+  { showDescription, labels }: MapAccountOptions,
 ): PartyItemProp => {
   const birthDate = formatDate(person.dateOfBirth ?? undefined);
   return {
@@ -104,23 +118,23 @@ export const mapPersonToAccount = (
     isCurrentEndUser: false,
     uuid: person.partyUuid,
     altinnId: person.partyId,
-    description: showDescription && birthDate ? t('word.born') + birthDate : undefined,
-    badge: person.isDeleted ? { color: 'neutral', label: t('badge.deleted'), variant: 'subtle' } : undefined,
+    description: showDescription && birthDate ? labels.born + birthDate : undefined,
+    badge: person.isDeleted ? { color: 'neutral', label: labels.deleted, variant: 'subtle' } : undefined,
     groupId: 'persons',
   } as PartyItemProp;
 };
 
 export const mapOrgItemToAccount = (
   item: OrgSkeletonItem,
-  { showDescription, t }: MapAccountOptions,
+  { showDescription, labels }: MapAccountOptions,
 ): PartyItemProp => {
   const { party, isParent, parent } = item;
   const orgNo = getOrgNo(party.party);
   const formattedId = formatOrgNo(orgNo);
   const description = showDescription
     ? parent?.name && party?.party
-      ? `↳ ${t('word.orgNo')} ${formattedId}, ${t('profile.account.partOf')} ${parent.name}`
-      : `${t('word.orgNo')} ${formattedId}`
+      ? `↳ ${labels.orgNo} ${formattedId}, ${labels.partOf} ${parent.name}`
+      : `${labels.orgNo} ${formattedId}`
     : undefined;
   return {
     id: party.party,
@@ -138,7 +152,7 @@ export const mapOrgItemToAccount = (
     parentId: parent?.party,
     parentName: parent?.name,
     description,
-    badge: party.isDeleted ? { color: 'neutral', label: t('badge.deleted'), variant: 'subtle' } : undefined,
+    badge: party.isDeleted ? { color: 'neutral', label: labels.deleted, variant: 'subtle' } : undefined,
     groupId: parent?.party ?? party.party,
   } as PartyItemProp;
 };

@@ -21,6 +21,8 @@ import { MAX_DIALOG_PARTY_SIZE } from './useDialogs.tsx';
 export type ProfileType = 'company' | 'person' | 'neutral';
 export type SelfIdentifiedUserType = 'None' | 'Email' | 'Legacy';
 
+export const EMPTY_PARTIES: PartyFieldsFragment[] = [];
+
 interface UsePartiesOutput {
   parties: PartyFieldsFragment[];
   isSuccess: boolean;
@@ -319,7 +321,7 @@ export const useParties = (): UsePartiesOutput => {
     selectedPartyIds,
     setSelectedParties: handleSetSelectedParties,
     setSelectedPartyIds,
-    parties: data ?? [],
+    parties: data ?? EMPTY_PARTIES,
     currentEndUser,
     selectedGroup,
     allOrganizationsSelected,
