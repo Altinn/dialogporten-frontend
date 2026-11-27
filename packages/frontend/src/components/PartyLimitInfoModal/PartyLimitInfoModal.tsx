@@ -6,7 +6,7 @@ import { getInfoPortalLink } from '../../auth';
 const HelpLink = ({ children }: { children?: ReactNode }) => {
   const { i18n } = useTranslation();
   return (
-    <a href={getInfoPortalLink('inboxHelp', i18n.language)} target="_blank" rel="noreferrer">
+    <a href={getInfoPortalLink('inboxSearchHelp', i18n.language)} target="_blank" rel="noreferrer">
       {children}
     </a>
   );

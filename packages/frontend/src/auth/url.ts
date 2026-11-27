@@ -125,6 +125,11 @@ const INFO_PORTAL_PATHS = {
   startNewBusiness: { nb: '/starte-og-drive/', en: '/en/start-and-run-business/', nn: '/nn/starte-og-drive/' },
   help: { nb: '/hjelp/', en: '/en/help/', nn: '/nn/hjelp/' },
   inboxHelp: { nb: '/hjelp/innboks/', en: '/en/help/inbox/', nn: '/nn/hjelp/innboks/' },
+  inboxSearchHelp: {
+    nb: '/hjelp/innboks/#finne-brev-eller-skjema-i-innboksen',
+    en: '/en/help/inbox/#find-a-letter-or-form-in-your-inbox',
+    nn: '/nn/hjelp/innboks/#finne-brev-eller-skjema-i-innboksen',
+  },
   profileHelp: {
     nb: '/hjelp/varsling-og-kontakt/',
     en: '/en/help/notifications-and-contact-information/',
