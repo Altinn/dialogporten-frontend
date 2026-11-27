@@ -1,6 +1,6 @@
 import { type FooterProps, type MenuItemProps, useConsent } from '@altinn/altinn-components';
 import { useTranslation } from 'react-i18next';
-import { createInfoPortalLink } from '../../../auth/url.ts';
+import { getInfoPortalLink } from '../../../auth/url.ts';
 import { useFeatureFlag } from '../../../featureFlags';
 
 export const useFooter = (): FooterProps => {
@@ -17,44 +17,27 @@ export const useFooter = (): FooterProps => {
         {
           id: 'footer.nav.help_contact',
           title: t('footer.nav.help_contact'),
-          href: createInfoPortalLink({ nb: '/hjelp/', en: '/en/help/', nn: '/nn/hjelp/' }, language),
+          href: getInfoPortalLink('help', language),
         },
         {
           id: 'footer.nav.about_altinn',
           title: t('footer.nav.about_altinn'),
-          href: createInfoPortalLink({ nb: '/om-altinn/', en: '/en/about-altinn/', nn: '/nn/om-altinn/' }, language),
+          href: getInfoPortalLink('aboutAltinn', language),
         },
         {
           id: 'footer.nav.service_announcements',
           title: t('footer.nav.service_announcements'),
-          href: createInfoPortalLink(
-            {
-              nb: '/om-altinn/driftsmeldinger/',
-              en: '/en/about-altinn/service-announcements/',
-              nn: '/nn/om-altinn/driftsmeldingar/',
-            },
-            language,
-          ),
+          href: getInfoPortalLink('serviceAnnouncements', language),
         },
         {
           id: 'footer.nav.privacy_policy',
           title: t('footer.nav.privacy_policy'),
-          href: createInfoPortalLink(
-            { nb: '/om-altinn/personvern/', en: '/en/about-altinn/privacy/', nn: '/nn/om-altinn/personvern/' },
-            language,
-          ),
+          href: getInfoPortalLink('privacy', language),
         },
         {
           id: 'footer.nav.accessibility',
           title: t('footer.nav.accessibility'),
-          href: createInfoPortalLink(
-            {
-              nb: '/om-altinn/tilgjengelighet/',
-              en: '/en/about-altinn/tilgjengelighet/',
-              nn: '/nn/om-altinn/tilgjengelighet/',
-            },
-            language,
-          ),
+          href: getInfoPortalLink('accessibility', language),
         },
         ...(isCookieBannerEnabled
           ? [

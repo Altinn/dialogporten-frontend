@@ -12,14 +12,7 @@ import {
   PadlockLockedFillIcon,
   PersonCircleIcon,
 } from '@navikt/aksel-icons';
-import {
-  getAccessAMUILink,
-  getNeedHelpLink,
-  getNewFormLink,
-  getProfileHelpLink,
-  getSearchLink,
-  getStartNewBusinessLink,
-} from '../../../auth';
+import { getAccessAMUILink, getInfoPortalLink } from '../../../auth';
 import { i18n } from '../../../i18n/config.ts';
 import { pruneSearchQueryParams } from '../../../pages/Inbox/queryParams.ts';
 import { PageRoutes } from '../../../pages/routes.ts';
@@ -129,7 +122,7 @@ export function buildProfileMenu({
       size: 'sm',
       title: t('global_menu.start_business'),
       as: createMenuItemComponent({
-        to: getStartNewBusinessLink(i18n.language),
+        to: getInfoPortalLink('startNewBusiness', i18n.language),
       }),
     },
     {
@@ -140,7 +133,7 @@ export function buildProfileMenu({
       size: 'sm',
       title: t('global_menu.need_help'),
       as: createMenuItemComponent({
-        to: getNeedHelpLink(i18n.language),
+        to: getInfoPortalLink('help', i18n.language),
       }),
     },
   ];
@@ -174,7 +167,7 @@ export function buildProfileMenu({
         icon: ChatExclamationmarkIcon,
         title: t('floating_dropdown.help_pages'),
         as: createMenuItemComponent({
-          to: getProfileHelpLink(i18n.language),
+          to: getInfoPortalLink('profileHelp', i18n.language),
         }),
       },
     ],
@@ -211,7 +204,7 @@ export function buildProfileMenu({
       icon: MenuGridIcon,
       title: t('global_menu.all_forms_services'),
       as: createMenuItemComponent({
-        to: getNewFormLink(i18n.language),
+        to: getInfoPortalLink('formsOverview', i18n.language),
       }),
       selected: false,
     },
@@ -222,7 +215,7 @@ export function buildProfileMenu({
       icon: MagnifyingGlassIcon,
       title: t('global_menu.altinn_search'),
       as: createMenuItemComponent({
-        to: getSearchLink(i18n.language),
+        to: getInfoPortalLink('search', i18n.language),
       }),
       selected: false,
     },
