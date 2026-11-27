@@ -35,9 +35,11 @@ const expectPageRendered = async (page: Page) => {
   await expect(page.locator('[aria-busy="true"]')).toHaveCount(0);
 };
 
-const expectWithFilterViolations = async (violations, disabledRules: string[] = []) => {
+type AxeViolation = Awaited<ReturnType<AxeBuilder['analyze']>>['violations'][number];
+
+const expectWithFilterViolations = async (violations: AxeViolation[], disabledRules: string[] = []) => {
   const filteredViolations = violations
-    .filter((violation) => VIOLATION_FILTERS.includes(violation.impact))
+    .filter((violation) => violation.impact && VIOLATION_FILTERS.includes(violation.impact))
     .filter((violation) => !disabledRules.includes(violation.id));
   expect(filteredViolations).toEqual([]);
 };
@@ -115,7 +117,7 @@ test.describe('Axe test', () => {
     page,
   }) => {
     await page.goto(appUrlWithPlaywrightId('login-party-context'));
-    await expect(page.locator('h2').filter({ hasText: /^Skatten din for 2022$/ })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).toBeVisible();
     await page.getByRole('link', { name: 'Skatten din for 2022' }).click();
     await page.getByRole('button', { name: 'Flytt til papirkurv' }).click();
     await expect(page.getByText('Flyttet til papirkurv')).toBeVisible();
@@ -134,7 +136,7 @@ test.describe('Axe test', () => {
     page,
   }) => {
     await page.goto(appURLInbox);
-    await expect(page.locator('h2').filter({ hasText: /^Skatten din for 2022$/ })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).toBeVisible();
     await page.getByRole('link', { name: 'Skatten din for 2022' }).click();
 
     const accessibilityScanResults = await new AxeBuilder({ page }).withTags(WCAG_TAGS_CONFIG).analyze();
@@ -176,7 +178,7 @@ test.describe('Axe test', () => {
     page,
   }) => {
     await page.goto(appURLInbox);
-    await expect(page.locator('h2').filter({ hasText: /^Skatten din for 2022$/ })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).toBeVisible();
     await page.getByRole('link', { name: 'Skatten din for 2022' }).click();
     await page.locator('#dialog-context-menu-root').getByRole('button', { name: 'Åpne meny' }).click();
     await page.getByRole('menuitem', { name: 'Videresend på e-post' }).click();

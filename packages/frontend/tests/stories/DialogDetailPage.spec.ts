@@ -17,7 +17,7 @@ test.describe('DialogDetailsPage', () => {
     const binLink = getSidebarMenuItem(page, PageRoutes.bin);
 
     await page.goto(defaultAppURL);
-    await expect(page.locator('h2').filter({ hasText: /^Skatten din for 2022$/ })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).toBeVisible();
     await page.getByRole('link', { name: 'Skatten din for 2022' }).click();
 
     await page

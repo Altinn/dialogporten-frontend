@@ -46,7 +46,7 @@ test.describe('Message navigation', () => {
   test('Back button navigates to previous page the message has been opened from', async ({ page }) => {
     await page.goto(pageWithMockOrganizations);
 
-    await expect(page.locator('h2').filter({ hasText: /^Skatten din for 2022$/ })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Skatten din for 2022' })).toBeVisible();
     await page.getByRole('link', { name: 'Skatten din for 2022' }).click();
     await page
       .getByRole('button', { name: /flytt til papirkurv/i })

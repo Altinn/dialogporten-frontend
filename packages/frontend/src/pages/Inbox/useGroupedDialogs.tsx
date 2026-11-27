@@ -314,13 +314,15 @@ const useGroupedDialogs = ({
         unreadItemsLabel: t('word.unread_content'),
         unreadItems: item.unreadItems,
         selectable: bulkMode,
-        tabIndex: bulkMode ? 0 : undefined,
+        tabIndex: bulkMode ? -1 : undefined,
         selected: bulkedIds?.includes(item.id),
         controls: bulkMode ? (
           <ItemSelect
             checked={bulkedIds?.includes(item.id)}
-            onClick={() => onToggleBulkId(item.id)}
+            onChange={() => onToggleBulkId(item.id)}
             disabled={disabledBulkItem}
+            aria-label={item.title}
+            aria-description={item.summary}
           />
         ) : (
           <ContextMenu {...contextMenu} />
