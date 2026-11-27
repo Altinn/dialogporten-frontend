@@ -264,8 +264,6 @@
   "inbox.si_notice.email.body": "Right now, we can’t show messages from your old inbox. To see them, log out and choose ‘Altinn sign-in’. There you can log in with the same username and password as before.",
   "inbox.si_notice.email.link_text": "Read more on our help pages",
   "inbox.si_notice.email.title": "Missing messages in your inbox?",
-  "inbox.si_notice.legacy.link_text": "Read more about the new sign-in on our help pages",
-  "inbox.si_notice.legacy.title": "After 19 June 2026, you can’t use this sign-in method.",
   "inbox.unable_to_load_parties.body": "We are unable to retrieve your user information at the moment. Please try again later or ",
   "inbox.unable_to_load_parties.link": "log out",
   "inbox.unable_to_load_parties.title": "Technical Error",

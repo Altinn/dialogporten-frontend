@@ -33,7 +33,6 @@ const selectSelfIdentifiedUserType = (parties: PartyFieldsFragment[]): SelfIdent
   const endUser = parties.find((p) => p.isCurrentEndUser);
   if (endUser?.partyType !== 'SelfIdentified') return 'None';
   if (endUser.party.includes('urn:altinn:person:idporten-email:')) return 'Email';
-  if (endUser.party.includes('urn:altinn:person:legacy-selfidentified:')) return 'Legacy';
   return 'None';
 };
 
