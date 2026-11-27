@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.190.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.189.0...v1.190.0) (2026-11-27)
+
+
+### Features
+
+* **inbox:** include dialog summary as a column in the CSV export ([7f7d33e](https://github.com/Altinn/dialogporten-frontend/commit/7f7d33e33b241e18f4a88ff6faa8d4238d0cb059))
+
+
+### Bug Fixes
+
+* **frontend:** only suggest «Del og gi fullmakt» when the dialog can be delegated ([76466d9](https://github.com/Altinn/dialogporten-frontend/commit/76466d9dfec9b275697b022e6a08ea216da1cb71))
+
 ## [1.189.0](https://github.com/Altinn/dialogporten-frontend/compare/v1.188.3...v1.189.0) (2026-11-20)
 
 

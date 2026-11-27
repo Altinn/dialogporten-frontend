@@ -7,6 +7,7 @@ interface ForwardingScenario {
   summary: string;
   forwarding: ForwardingMock;
   attachmentCount: number;
+  isDelegable?: boolean;
 }
 
 const forwardingScenarios: ForwardingScenario[] = [
@@ -58,9 +59,19 @@ const forwardingScenarios: ForwardingScenario[] = [
   {
     id: '019241f7-f0a0-7000-8000-000000000005',
     title: 'Videresending: ikke tillatt',
-    summary: 'Taushetsbelagt melding. Viser at videresending ikke er mulig.',
+    summary:
+      'Taushetsbelagt melding som ikke kan deles. Viser at videresending ikke er mulig, uten å foreslå «Del og gi fullmakt».',
     forwarding: 'notAllowed',
     attachmentCount: 1,
+  },
+  {
+    id: '019241f7-f0a0-7000-8000-000000000009',
+    title: 'Videresending: forslag om deling',
+    summary:
+      'Taushetsbelagt melding som kan deles. Viser at videresending ikke er mulig, og foreslår «Del og gi fullmakt».',
+    forwarding: 'notAllowed',
+    attachmentCount: 1,
+    isDelegable: true,
   },
   {
     id: '019241f7-f0a0-7000-8000-000000000006',
@@ -73,7 +84,7 @@ const forwardingScenarios: ForwardingScenario[] = [
 ];
 
 export const dialogs: MockDialog[] = forwardingScenarios.map(
-  ({ id, title, summary, forwarding, attachmentCount }, index) => {
+  ({ id, title, summary, forwarding, attachmentCount, isDelegable = false }, index) => {
     const updatedAt = new Date(Date.UTC(2024, 10, 30 - index, 10)).toISOString();
     return mockDialog({
       hasUnopenedContent: false,
@@ -106,6 +117,7 @@ export const dialogs: MockDialog[] = forwardingScenarios.map(
       },
       attachments: Array.from({ length: attachmentCount }, (_, attachmentIndex) => mockAttachment(id, attachmentIndex)),
       forwarding,
+      isDelegable,
     });
   },
 );

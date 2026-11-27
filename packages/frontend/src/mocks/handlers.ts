@@ -797,7 +797,7 @@ const dialogLookupMock = graphql.query('dialogLookup', ({ variables }) => {
         lookup: {
           instanceRef: getLookupInstanceRef(dialog, instanceRef),
           dialogId: dialog.id,
-          serviceResource: { id: dialog.serviceResource, isDelegable: false },
+          serviceResource: { id: dialog.serviceResource, isDelegable: dialog.isDelegable },
         },
         errors: [],
       },

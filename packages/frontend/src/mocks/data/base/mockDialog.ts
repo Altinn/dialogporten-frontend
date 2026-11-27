@@ -40,6 +40,7 @@ export type MockDialog = Omit<
   notificationLogs: Omit<NotificationLogsResponse, 'dialogId'>[];
   labelAssignmentLog?: LabelAssignmentLogFieldsFragment[];
   forwarding: ForwardingMock;
+  isDelegable: boolean;
 };
 
 type MockTransmissionInput = Omit<TransmissionFieldsFragment, 'navigationalActions'> & {
@@ -157,5 +158,6 @@ export const mockDialog = ({ id, content, transmissions = [], ...overrides }: Mo
   mainContentReference: getMockedMarkdownFCEContent(),
   notificationLogs: [],
   forwarding: 'allowed',
+  isDelegable: false,
   ...overrides,
 });

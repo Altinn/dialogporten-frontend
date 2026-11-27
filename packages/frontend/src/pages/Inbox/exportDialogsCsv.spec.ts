@@ -20,6 +20,7 @@ const createItem = (overrides: Partial<InboxItemInput> = {}): InboxItemInput =>
     id: 'dialog-1',
     party: 'urn:altinn:organization:identifier-no:999888777',
     title: 'Søknad om tilskudd',
+    summary: 'Sykmelding for perioden 01.08.2026–14.08.2026',
     contentUpdatedAt: '2026-08-06T10:00:00Z',
     sender: { name: 'NAV Arbeid', type: 'company' },
     serviceOwnerName: 'Skatteetaten',
@@ -65,6 +66,7 @@ describe('buildDialogCsvRows', () => {
 
     expect(rows[0]).toEqual([
       'inbox.export.column.title',
+      'inbox.export.column.summary',
       'inbox.export.column.updated_at',
       'inbox.export.column.service_owner',
       'inbox.export.column.sender_name',
@@ -76,6 +78,7 @@ describe('buildDialogCsvRows', () => {
     ]);
     expect(rows[1]).toEqual([
       'Søknad om tilskudd',
+      'Sykmelding for perioden 01.08.2026–14.08.2026',
       'dt:2026-08-06T10:00:00Z',
       'Skatteetaten',
       'NAV Arbeid',
@@ -89,13 +92,18 @@ describe('buildDialogCsvRows', () => {
 
   it('leaves the stated sender name empty when the dialog has none', () => {
     const rows = buildDialogCsvRows([createItem({ senderName: undefined })], { t, formatDateTime, formatDate });
-    expect(rows[1]?.[3]).toBe('');
-    expect(rows[1]?.[2]).toBe('Skatteetaten');
+    expect(rows[1]?.[4]).toBe('');
+    expect(rows[1]?.[3]).toBe('Skatteetaten');
+  });
+
+  it('leaves the summary column empty when the dialog has none', () => {
+    const rows = buildDialogCsvRows([createItem({ summary: '' })], { t, formatDateTime, formatDate });
+    expect(rows[1]?.[1]).toBe('');
   });
 
   it('leaves the due at column empty when there is no deadline', () => {
     const rows = buildDialogCsvRows([createItem({ dueAt: null })], { t, formatDateTime, formatDate });
-    expect(rows[1]?.[8]).toBe('');
+    expect(rows[1]?.[9]).toBe('');
   });
 
   it('reports the read status of each dialog', () => {
@@ -104,9 +112,9 @@ describe('buildDialogCsvRows', () => {
       { t, formatDateTime, formatDate },
     );
 
-    expect(rows[1]?.[7]).toBe('word.unread');
-    expect(rows[2]?.[7]).toBe('word.unread_content');
-    expect(rows[3]?.[7]).toBe('word.read');
+    expect(rows[1]?.[8]).toBe('word.unread');
+    expect(rows[2]?.[8]).toBe('word.unread_content');
+    expect(rows[3]?.[8]).toBe('word.read');
   });
 
   it('leaves date columns empty for unparseable timestamps', () => {
@@ -115,7 +123,7 @@ describe('buildDialogCsvRows', () => {
       formatDateTime,
       formatDate,
     });
-    expect(rows[1]?.[1]).toBe('');
+    expect(rows[1]?.[2]).toBe('');
   });
 
   it('returns only the header when there are no dialogs', () => {

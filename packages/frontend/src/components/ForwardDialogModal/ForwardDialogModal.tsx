@@ -29,6 +29,7 @@ interface ForwardDialogModalProps {
   dialogToken: string | undefined;
   attachmentCount: number;
   refreshDialogToken: () => Promise<string | undefined>;
+  canDelegate: boolean;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -55,6 +56,7 @@ export const ForwardDialogModal = ({
   dialogToken,
   attachmentCount,
   refreshDialogToken,
+  canDelegate,
   isOpen,
   onClose,
 }: ForwardDialogModalProps) => {
@@ -260,7 +262,11 @@ export const ForwardDialogModal = ({
         </form>
       ) : (
         <Typography>
-          <p>{t('dialog.forward.not_allowed.body', { menuItem: t('altinn.delegate_access') })}</p>
+          <p>
+            {canDelegate
+              ? t('dialog.forward.not_allowed.body_with_delegation', { menuItem: t('altinn.delegate_access') })
+              : t('dialog.forward.not_allowed.body')}
+          </p>
         </Typography>
       )}
     </SettingsModal>
