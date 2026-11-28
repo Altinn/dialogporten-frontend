@@ -182,7 +182,7 @@ export const DialogDetailsPage = () => {
       <ForwardDialogModal
         dialogId={dialogId}
         dialogToken={dialog?.dialogToken}
-        attachmentCount={dialog?.attachments.length ?? 0}
+        attachmentCount={dialog?.attachments.items.length ?? 0}
         refreshDialogToken={refreshDialogToken}
         canDelegate={!!delegationHref}
         isOpen={isForwardOpen}

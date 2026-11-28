@@ -349,6 +349,41 @@ describe('getTransmissionVisibility', () => {
     expect(getTransmissionVisibility(t)).toBe('visible');
   });
 
+  it('isAuthorized=true, only excluded attachments → shown, not empty', () => {
+    const t = makeTransmission({ excludedAttachments: [{ id: 'x1', createdAt: '2024-01-01T00:00:00Z' }] });
+    expect(getTransmissionVisibility(t)).toBe('visible');
+  });
+
+  it('isAuthorized=true, API-only attachment and excluded attachment → shown, not filtered', () => {
+    const t = makeTransmission({
+      attachments: [
+        {
+          id: 'a1',
+          displayName: [],
+          expiresAt: null,
+          urls: [
+            { id: 'u1', url: 'https://api.example.com', consumerType: AttachmentUrlConsumer.Api, mediaType: null },
+          ],
+        },
+      ],
+      excludedAttachments: [{ id: 'x1', createdAt: '2024-01-01T00:00:00Z' }],
+    });
+    expect(getTransmissionVisibility(t)).toBe('visible');
+  });
+
+  it('isAuthorized=true, only excluded navigational actions → shown, not empty', () => {
+    const t = makeTransmission({ excludedNavigationalActions: [{ id: 'x1', createdAt: '2024-01-01T00:00:00Z' }] });
+    expect(getTransmissionVisibility(t)).toBe('visible');
+  });
+
+  it('isAuthorized=false, excluded attachments → disabled', () => {
+    const t = makeTransmission({
+      isAuthorized: false,
+      excludedAttachments: [{ id: 'x1', createdAt: '2024-01-01T00:00:00Z' }],
+    });
+    expect(getTransmissionVisibility(t)).toBe('disabled');
+  });
+
   it('isAuthorized=false, navigational action only → disabled', () => {
     const t = makeTransmission({
       isAuthorized: false,
@@ -472,5 +507,97 @@ describe('unread state', () => {
       type: ActivityType.TransmissionOpened,
     } as unknown as DialogActivityFragment;
     expect(unreadOf(TransmissionType.Information, [opened])).toBeUndefined();
+  });
+});
+
+describe('excluded content', () => {
+  const transmissionsOf = (
+    transmissions: TransmissionFieldsFragment[],
+    excludedTransmissions?: { id: string; createdAt: string }[] | null,
+  ) =>
+    getTransmissions({
+      transmissions,
+      excludedTransmissions,
+      format: (date) => String(date),
+      stopReversingPersonNameOrder: true,
+      locale: {} as Locale,
+    });
+
+  it('gives each excluded transmission its own segment, sorted in by date', () => {
+    const segments = transmissionsOf(
+      [
+        makeTransmission({ id: 'newest', createdAt: '2024-01-03T00:00:00Z' }),
+        makeTransmission({ id: 'oldest', createdAt: '2024-01-01T00:00:00Z' }),
+      ],
+      [
+        { id: 'hidden-latest', createdAt: '2024-01-04T00:00:00Z' },
+        { id: 'hidden-middle', createdAt: '2024-01-02T00:00:00Z' },
+      ],
+    );
+
+    expect(segments.map(({ id }) => id)).toEqual(['hidden-latest', 'newest', 'hidden-middle', 'oldest']);
+    const [hidden] = segments[0].items;
+    expect(hidden).toEqual({
+      id: 'hidden-latest',
+      createdAt: '2024-01-04T00:00:00Z',
+      createdAtLabel: '2024-01-04T00:00:00Z',
+      hiddenLabel: expect.any(String),
+    });
+  });
+
+  it('keeps the segments as they are when there are no excluded transmissions', () => {
+    const transmissions = [
+      makeTransmission({ id: 'newest', createdAt: '2024-01-03T00:00:00Z' }),
+      makeTransmission({ id: 'oldest', createdAt: '2024-01-01T00:00:00Z' }),
+    ];
+    expect(transmissionsOf(transmissions, null).map(({ id }) => id)).toEqual(['newest', 'oldest']);
+  });
+
+  const excluded = [
+    { id: 'x1', createdAt: '2024-01-01T00:00:00Z' },
+    { id: 'x2', createdAt: '2024-01-01T00:00:00Z' },
+  ];
+  const hiddenHint = 'Avsender har skjult disse fordi du ikke har tilgang.';
+  const navigationalAction = {
+    title: [{ value: 'Gå til kvittering', languageCode: 'nb' }],
+    url: 'https://example.com/kvittering',
+    expiresAt: null,
+  };
+
+  it('says how many attachments are hidden, and why', () => {
+    const [segment] = transmissionsOf([makeTransmission({ excludedAttachments: excluded })]);
+    expect(segment.items[0].attachments).toEqual({
+      title: 'Ingen vedlegg',
+      items: [],
+      hiddenItemsLabel: '2 vedlegg du ikke har tilgang til å se.',
+      hiddenItemsTooltip: hiddenHint,
+    });
+  });
+
+  it('says how many navigational actions are hidden, and why', () => {
+    const [segment] = transmissionsOf([makeTransmission({ excludedNavigationalActions: excluded })]);
+    expect(segment.items[0].excludedNavigationalActions).toEqual({
+      hiddenItemsLabel: '2 handlinger du ikke har tilgang til.',
+      hiddenItemsTooltip: hiddenHint,
+    });
+  });
+
+  it('adds a plus to the hidden navigational actions when some are visible', () => {
+    const [segment] = transmissionsOf([
+      makeTransmission({ navigationalActions: [navigationalAction], excludedNavigationalActions: excluded.slice(1) }),
+    ]);
+    expect(segment.items[0].excludedNavigationalActions?.hiddenItemsLabel).toBe(
+      '+ 1 handling du ikke har tilgang til.',
+    );
+  });
+
+  it('says nothing about hidden navigational actions when there are none', () => {
+    const [segment] = transmissionsOf([makeTransmission()]);
+    expect(segment.items[0].excludedNavigationalActions).toEqual({});
+  });
+
+  it('says nothing about hidden attachments when the list is null', () => {
+    const [segment] = transmissionsOf([makeTransmission({ excludedAttachments: null })]);
+    expect(segment.items[0].attachments).toEqual({ title: expect.any(String), items: [] });
   });
 });

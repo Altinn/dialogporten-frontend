@@ -53,12 +53,14 @@ A transmission is classified before it is rendered, and the classification decid
 
 | # | Condition | Outcome |
 |---|---|---|
-| A | Has attachments, none GUI-consumable, no summary and no content reference | `filter` — dropped from the timeline, shown in the log as *"Forsendelse kun med maskinlesbart vedlegg"* |
+| A | Has attachments, none GUI-consumable, no summary, no content reference and no excluded attachments or navigational actions | `filter` — dropped from the timeline, shown in the log as *"Forsendelse kun med maskinlesbart vedlegg"* |
 | B | `isAuthorized` is false | `disabled` — card stays in the timeline but cannot expand; in the log it reads *"Forsendelse du ikke har tilgang til"* |
-| C | Authorized, but no summary, no content reference and no GUI attachment | `empty` — expands to an empty-state explanation; in the log only the title is shown |
+| C | Authorized, but no summary, no content reference, no GUI attachment and no excluded attachments or navigational actions | `empty` — expands to an empty-state explanation; in the log only the title is shown |
 | D | Anything else | `visible` — a normal expandable card |
 
 Only **D** becomes a card in the log. **A**, **B** and **C** become plain sentences, because there is nothing worth expanding. The sentence for **B** ends in a preposition, so *tilgang til* (and *access to*) is joined by a non-breaking space: on a narrow screen the line would otherwise break before *til*, and the first line reads as a complete sentence without it.
+
+**Excluded transmissions are not classified.** When a transmission's [authorization context](https://docs.altinn.studio/nb/dialogporten/reference/authorization/authorization-contexts/) sets `unauthorizedPresentation` to `Excluded` and the user is not authorized, Dialogporten leaves it out of `transmissions` and lists only its `id` and `createdAt` in `excludedTransmissions`. Each one becomes a segment of its own, placed by `createdAt`, that shows the date and *"Forsendelse du ikke har tilgang til å se."* and cannot expand. The log shows the same entry. It has no title, so a search never matches it. Excluded attachments and navigational actions count as content, so a transmission with nothing but excluded items still expands and says how many are hidden.
 
 Related transmissions are grouped into one segment via `relatedTransmissionId`, resolved as a bidirectional graph so a chain of replies collapses into a single entry rather than several.
 

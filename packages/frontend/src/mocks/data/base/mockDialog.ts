@@ -6,11 +6,11 @@ import {
   type DialogActivityFragment,
   type DialogByIdFieldsFragment,
   DialogStatus,
+  type ExcludedElementFieldsFragment,
   type GuiActionFieldsFragment,
   GuiActionPriority,
   HttpVerb,
   type LabelAssignmentLogFieldsFragment,
-  type NavigationalActionFieldsFragment,
   type NotificationLogsResponse,
   type SearchDialogFieldsFragment,
   SystemLabel,
@@ -31,9 +31,12 @@ export type MockDialog = Omit<
 > & {
   content: NonNullable<SearchDialogFieldsFragment['content']>;
   attachments: AttachmentFieldsFragment[];
+  excludedAttachments: ExcludedElementFieldsFragment[];
   activities: DialogActivityFragment[];
   transmissions: TransmissionFieldsFragment[];
+  excludedTransmissions: ExcludedElementFieldsFragment[];
   guiActions: GuiActionFieldsFragment[];
+  excludedGuiActions: ExcludedElementFieldsFragment[];
   additionalInfo: string;
   mainContentReference: NonNullable<DialogByIdFieldsFragment['content']>['mainContentReference'];
   mainContentMarkdown?: string;
@@ -43,9 +46,10 @@ export type MockDialog = Omit<
   isDelegable: boolean;
 };
 
-type MockTransmissionInput = Omit<TransmissionFieldsFragment, 'navigationalActions'> & {
-  navigationalActions?: NavigationalActionFieldsFragment[];
-};
+type OptionalTransmissionFields = 'navigationalActions' | 'excludedAttachments' | 'excludedNavigationalActions';
+
+type MockTransmissionInput = Omit<TransmissionFieldsFragment, OptionalTransmissionFields> &
+  Partial<Pick<TransmissionFieldsFragment, OptionalTransmissionFields>>;
 
 export type MockDialogInput = Pick<MockDialog, 'id' | 'content'> &
   Partial<Omit<MockDialog, 'id' | 'content' | 'transmissions'>> & { transmissions?: MockTransmissionInput[] };
@@ -151,9 +155,17 @@ export const mockDialog = ({ id, content, transmissions = [], ...overrides }: Mo
   seenSinceLastContentUpdate: [],
   endUserContext: { systemLabels: [SystemLabel.Default] },
   attachments: [mockAttachment(id)],
+  excludedAttachments: [],
   activities: defaultActivities(id),
-  transmissions: transmissions.map((transmission) => ({ navigationalActions: [], ...transmission })),
+  transmissions: transmissions.map((transmission) => ({
+    navigationalActions: [],
+    excludedAttachments: [],
+    excludedNavigationalActions: [],
+    ...transmission,
+  })),
+  excludedTransmissions: [],
   guiActions: defaultGuiActions(id),
+  excludedGuiActions: [],
   additionalInfo: 'Denne setningen inneholder tilleggsinformasjon for dialogen.',
   mainContentReference: getMockedMarkdownFCEContent(),
   notificationLogs: [],

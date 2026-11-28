@@ -211,6 +211,44 @@ test.describe('Dialog builder', () => {
     await expect(page.getByRole('link', { name: 'Vedtak', exact: true })).toBeEnabled();
   });
 
+  test('shows elements the user has no access to as disabled or hidden', async ({ page }) => {
+    await openFilledBuilder(page);
+
+    await openDetails(page, /^Vedlegg/);
+    await openDetails(page, 'Vedlegg 2: Les mer om ordningen');
+    await getField(page, 'attachments.1.authorizationContext').click();
+    await getField(page, 'attachments.1.authorizationContext.unauthorizedPresentation').selectOption('Excluded');
+
+    await openDetails(page, /^Handlinger/);
+    await openDetails(page, /^Handling 1/);
+    await getField(page, 'guiActions.0.authorizationContext').click();
+    await expect(getField(page, 'guiActions.0.authorizationContext.action')).toHaveValue('read');
+
+    await openDetails(page, /^Forsendelser/);
+    await openDetails(page, /^Forsendelse 1/);
+    await openDetails(page, /^Navigasjonshandling 1/);
+    await getField(page, 'transmissions.0.navigationalActions.0.authorizationContext').click();
+    await getField(
+      page,
+      'transmissions.0.navigationalActions.0.authorizationContext.unauthorizedPresentation',
+    ).selectOption('Excluded');
+
+    await expect(getOutput(page).getByText('Ingen feil funnet')).toBeVisible();
+    await expect(getOutput(page)).toContainText('"unauthorizedPresentation": "Excluded"');
+    await expect(getOutput(page)).toContainText('"unauthorizedPresentation": "Disabled"');
+    await getPreviewButton(page).click();
+
+    await expect(page.getByRole('link', { name: 'Kopi av innsendt søknad' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Les mer om ordningen' })).toHaveCount(0);
+    await expect(page.getByText('+ 1 vedlegg du ikke har tilgang til å se.', { exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Still spørsmål' })).toBeDisabled();
+
+    await page.getByRole('heading', { name: 'Svar på søknad' }).click();
+    await expect(page.getByRole('link', { name: 'Vedtak', exact: true })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Svar på vedtaket' })).toHaveCount(0);
+    await expect(page.getByText('1 handling du ikke har tilgang til.', { exact: true })).toBeVisible();
+  });
+
   test('shows where navigational actions are added', async ({ page }) => {
     await page.goto(builderURL);
     await openDetails(page, /^Forsendelser og navigasjonshandlinger/);

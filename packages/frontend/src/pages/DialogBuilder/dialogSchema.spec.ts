@@ -142,6 +142,84 @@ describe('validateCreateDialog', () => {
   });
 });
 
+describe('validateCreateDialog authorization contexts', () => {
+  const disabled = { unauthorizedPresentation: 'Disabled' as const };
+  const attachment = {
+    displayName: nb('Vedtak'),
+    urls: [{ url: 'https://example.com/vedtak.pdf', consumerType: 'Gui' as const }],
+  };
+  const transmission = {
+    type: 'Information' as const,
+    sender: { actorType: 'ServiceOwner' as const },
+    content: { title: { value: nb('Svar') } },
+  };
+  const { action: _action, ...actionWithoutPolicyAction } = guiAction('Primary');
+
+  it('accepts a context on every element that can have one', () => {
+    const { errors, warnings } = validateCreateDialog({
+      ...validDialog,
+      attachments: [{ ...attachment, authorizationContext: disabled }],
+      guiActions: [{ ...actionWithoutPolicyAction, authorizationContext: { ...disabled, action: 'write' } }],
+      transmissions: [
+        {
+          ...transmission,
+          authorizationContext: {
+            unauthorizedPresentation: 'Excluded',
+            dialogPartyChecks: [{ accessRestriction: 'None' }],
+            additionalResourceAttribute: 'urn:altinn:task:Task_1',
+          },
+          attachments: [{ ...attachment, authorizationContext: disabled }],
+          navigationalActions: [{ title: nb('Svar'), url: 'https://example.com/svar', authorizationContext: disabled }],
+        },
+      ],
+    });
+    expect(errors).toEqual([]);
+    expect(warnings).toEqual([]);
+  });
+
+  it('requires unauthorizedPresentation, since Dialogporten has no default', () => {
+    const { errors } = validateCreateDialog({
+      ...validDialog,
+      attachments: [{ ...attachment, authorizationContext: {} }],
+    });
+    expect(errors.map(({ path }) => path)).toEqual(['attachments.0.authorizationContext.unauthorizedPresentation']);
+  });
+
+  it('requires the action on a GUI action only when it has no context', () => {
+    const { errors } = validateCreateDialog({
+      ...validDialog,
+      guiActions: [actionWithoutPolicyAction, { ...guiAction('Secondary'), authorizationContext: disabled }],
+    });
+    expect(errors).toEqual([
+      { path: 'guiActions.0.action', message: 'Må fylles ut.' },
+      {
+        path: 'guiActions.1.action',
+        message: 'Kan ikke settes sammen med authorizationContext. Bruk authorizationContext.action.',
+      },
+    ]);
+  });
+
+  it('rejects authorizationAttribute together with a context', () => {
+    const { errors } = validateCreateDialog({
+      ...validDialog,
+      guiActions: [
+        {
+          ...actionWithoutPolicyAction,
+          authorizationAttribute: 'urn:altinn:task:Task_1',
+          authorizationContext: disabled,
+        },
+      ],
+      transmissions: [
+        { ...transmission, authorizationAttribute: 'urn:altinn:task:Task_1', authorizationContext: disabled },
+      ],
+    });
+    expect(errors.map(({ path }) => path)).toEqual([
+      'guiActions.0.authorizationAttribute',
+      'transmissions.0.authorizationAttribute',
+    ]);
+  });
+});
+
 describe('validatePreviewDialog', () => {
   it('does not require party', () => {
     const { party: _party, ...dialogWithoutParty } = validDialog;
